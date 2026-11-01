@@ -52,17 +52,18 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   const dateLine = day ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${day.today}T12:00:00Z`)) : "Today";
   const sub = `${dateLine}${ready ? ` · ${clock(ready.observedAt, timeZone)}` : ""}`;
   const where = (name: string) => places ? ` · ${name}` : "";
-  return <CorpPage className="c-who" labelledBy="who-title">
+  // A7: a single-column page, capped at the kit's narrow width on desktop.
+  return <CorpPage className="c-who c-page--narrow" labelledBy="who-title">
     <CorpNav back={{ href: homeHref, label: "Home" }} title="Who’s working" phoneOnly />
     <CorpTitle id="who-title" title="Who’s working" sub={sub} wide />
     <p className="c-phone-sub" aria-hidden="true">{sub}</p>
     <CorpCard id="who-in" label={ready ? `Clocked in (${people.length})` : "Clocked in"} aside={ready ? <CorpPill tone="teal">Live</CorpPill> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
-          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} />}
+          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} grey />}
             detail={`${person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${clock(person.breakStartAt, timeZone)}` : `In since ${clock(person.clockInAt, timeZone)}`}${where(person.locationName)}`}
             trail={person.state === "ON_BREAK" ? <CorpPill tone="blue">On break</CorpPill> : undefined} chevron />
-        </li>)}</ul> : <CorpBody><p className="c-who__state">No one is clocked in right now.</p></CorpBody>}
+        </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">People appear here when they clock in.</span></div>}
       {ready && !all && people.length > SHOWN ? <button type="button" className="c-who__more" onClick={() => setAll(true)}>{`Show ${people.length - SHOWN} more`}</button> : null}
     </CorpCard>
     {today?.state === "unavailable" ? <CorpCard as="div" ariaLabel="Shifts today"><CorpBody>
@@ -70,7 +71,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
       {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>Try again</CorpButton> : null}
     </CorpBody></CorpCard> : null}
     {late.length ? <CorpCard id="who-late" label={`Not in yet (${late.length})`}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
-      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} />}
+      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
         detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="red" chevron />
     </li>)}</ul></CorpCard> : null}
     {none.length ? <CorpCard id="who-none" label={`No clock-in (${none.length})`}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>

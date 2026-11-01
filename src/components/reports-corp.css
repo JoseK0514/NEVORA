@@ -23,8 +23,9 @@
 :is(#c-root, html) .c-ins .c-ins__state { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-ins [role="status"] + .c-btn { margin-top: 12px; }
 :is(#c-root, html) .c-ins .c-ins__labor { display: flex; align-items: baseline; gap: 8px; padding: 14px 16px 0; }
-:is(#c-root, html) .c-ins .c-ins__labor b { font-size: 20px; line-height: 26px; font-weight: 600; }
-:is(#c-root, html) .c-ins .c-ins__labor span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* Rule 4: the number and its context at one size ("24.1 h recorded", "24.1 h of 30 h planned"). */
+:is(#c-root, html) .c-ins .c-ins__labor { flex-wrap: wrap; gap: 0 5px; }
+:is(#c-root, html) .c-ins .c-ins__labor :is(b, span) { font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-ins .c-ins__labor:last-child { padding-bottom: 14px; }
 :is(#c-root, html) .c-ins .c-ins__bar { display: block; height: 6px; margin: 10px 16px 16px; overflow: hidden; border-radius: 3px; background: var(--c-neutral-bg); }
 :is(#c-root, html) .c-ins .c-ins__bar > span { display: block; height: 100%; border-radius: 3px; background: var(--c-teal); }
@@ -35,6 +36,7 @@
 :is(#c-root, html) .c-ins .c-ins__col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; height: 100%; min-width: 0; }
 :is(#c-root, html) .c-ins .c-ins__col small { font-size: 13px; line-height: 16px; color: var(--c-ink2); }
 :is(#c-root, html) .c-ins .c-ins__col i { display: block; width: 100%; max-width: 32px; min-height: 2px; border-radius: 4px 4px 0 0; background: var(--c-teal); }
+:is(#c-root, html) .c-ins .c-ins__col i.c-ins__zero { min-height: 0; height: 2px; border-radius: 1px; background: #EDEEEF; }
 :is(#c-root, html) .c-ins .c-ins__col em { min-height: 16px; font-style: normal; font-size: 13px; line-height: 16px; color: var(--c-grey); }
 :is(#c-root, html) .c-ins .c-ins__counted { border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
 :is(#c-root, html) .c-ins .c-ins__counted summary { display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 16px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; list-style: none; cursor: pointer; }
@@ -48,3 +50,10 @@
 :is(#c-root, html) .c-ins #ins-people .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
 /* A stat's label wraps on a narrow phone rather than being cut off. */
 :is(#c-root, html) .c-ins #ins-attendance .c-stat__label { white-space: normal; overflow: visible; }
+/* A narrow phone: the attendance labels may take two lines; the numbers stay on one baseline. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .c-ins #ins-attendance .c-stat { display: flex; flex-direction: column; justify-content: space-between; }
+}
+/* Every tap answers (phone P4). */
+:is(#c-root, html) .c-ins .c-ins__counted summary { -webkit-tap-highlight-color: transparent; transition: opacity 150ms ease-out; }
+:is(#c-root, html) .c-ins .c-ins__counted summary:active { opacity: .55; transition: none; }

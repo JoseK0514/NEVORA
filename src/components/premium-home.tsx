@@ -147,7 +147,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   // Corporate (Release 1, approved board C-Owner): Today, Payday and Things to do on the corporate kit.
   if (corporate) return <OwnerHomeCorp greeting={greeting} dateLabel={dateLabel} summary={summary} today={today} monitor={monitor} monitorPending={monitorPending}
     todayRefreshing={todayRefreshing} onRetryToday={onRetryToday} offline={offline} value={value} connection={offline ? "offline" : actionsConnection} onRetryActions={retryAll}
-    timecards={items.filter(item => item.type === "TIMECARD")} nextPay={nextPay} setup={setup} liveReaders={liveReaders} />;
+    timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} setup={setup} liveReaders={liveReaders} />;
   // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
   return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
     <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>

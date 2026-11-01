@@ -31,24 +31,30 @@ const items = [
   item('target2', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT', {href: '/app/schedule/settings#target-hours'}),
 ];
 
-it('shows one card per kind with its count, in the board order, and the Owner sees open shifts first', () => {
-  const html = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
+it('shows at most three cards, one per job, each kind in its own anchored list, and the Owner sees open shifts first', () => {
+  const html = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true}).replace(/\u00a0/g, ' ');
+  // A5: Shifts (open shifts and no clock-in) and Requests; each card's count adds its kinds, so they sum to the badge (4).
+  expect(html.match(/class="c-card"/g)).toHaveLength(2);
+  expect(html).toContain('>Shifts (2)<');
+  expect(html).toContain('>Requests (2)<');
   const order = ['todo-open', 'todo-missed', 'todo-time-off', 'todo-swaps'].map(id => html.indexOf(`id="${id}"`));
   expect(order.every(index => index > 0)).toBe(true);
   expect([...order].sort((a, b) => a - b)).toEqual(order);
-  expect(html).toContain('>Time off (1)<');
-  expect(html).toContain('>Shift swaps (1)<');
-  expect(html).toContain('>Open shifts (1)<');
-  expect(html).toContain('>Not clocked in (1)<');
-  // The page lists exactly what Home counts (4); the rest is one row away, under More to review.
+  expect(html).toMatch(/<section id="todo-open" class="c-todo__kind" aria-label="Open shifts \(1\)">/);
+  // Each row names its kind.
+  expect(html).toContain('Time off · Thu, Nov 12 · All day');
+  expect(html).toContain('>Shift swap · ');
+  expect(html).toContain('No clock-in · began 8:00 AM');
+  // What isn't counted is one quiet link with no number, not a fourth card or a "More to review 5" row.
   for (const id of ['todo-corrections', 'todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
-  expect(html).toContain('href="/app/inbox?view=more"');
-  expect(html).toMatch(/More to review<\/span><span class="c-row__detail"><span>Corrections, timecards and planning<\/span><\/span><\/span><span class="c-row__value c-row__value--soft">5</);
+  expect(html).toMatch(/<nav class="c-todo__links" aria-label="More lists">.*href="\/app\/inbox\?view=more"[^>]*>Later and past<\/a><\/nav>/);
+  expect(html).not.toContain('More to review');
   const more = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true, view: 'more'});
   const moreOrder = ['todo-corrections', 'todo-timecards', 'todo-plan'].map(id => more.indexOf(`id="${id}"`));
   expect(moreOrder.every(index => index > 0)).toBe(true);
   expect([...moreOrder].sort((a, b) => a - b)).toEqual(moreOrder);
   expect(more).not.toContain('id="todo-time-off"');
+  expect(more).toContain('>Later and past<');
   expect(more).toMatch(/<a class="c-nav__back" href="\/app\/inbox">.*Things to do<\/a>/);
   expect(more).toContain('>Time corrections (1)<');
   expect(more).toContain('>Timecards to approve (2)<');
@@ -58,6 +64,15 @@ it('shows one card per kind with its count, in the board order, and the Owner se
   // A Manager sees who is not clocked in first.
   const manager = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')])});
   expect(manager.indexOf('id="todo-missed"')).toBeLessThan(manager.indexOf('id="todo-open"'));
+});
+
+it('puts urgent corrections and timecards in a third card, To review, and never more than three cards', () => {
+  const urgent = [...items, item('fix2', 'TIME_CORRECTION', 'timekeeping', 'URGENT', {href: '/app/timecards?correction=fix2'}), item('cancel', 'CALLOUT', 'requests', 'URGENT')];
+  const html = page({snapshot: ready(urgent), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
+  expect(html.match(/class="c-card"/g)).toHaveLength(3);
+  expect(html).toContain('>To review (1)<');
+  expect(html).toContain('id="todo-corrections"');
+  expect(html).toContain('>Requests (3)<');
 });
 
 it('names the person and the dates on a request, and every row opens its full review (no decisions in the list)', () => {
@@ -73,7 +88,7 @@ it('names the person and the dates on a request, and every row opens its full re
 });
 
 it('reads an open shift and a pay period the way the board does', () => {
-  expect(page({snapshot: ready(items)})).toMatch(/c-row__title c-row__title--b">Barista 1:00 PM – 3:00 PM<\/span><span class="c-row__detail"><span>Today · Condado · 1 open</);
+  expect(page({snapshot: ready(items)}).replace(/\u00a0/g, ' ')).toMatch(/c-row__title c-row__title--b">Barista 1:00 PM – 3:00 PM<\/span><span class="c-row__detail"><span>Today · Condado · 1 open</);
   const html = page({snapshot: ready(items), view: 'more'});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
   expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 12 – 18: Marco, Priya">/);
@@ -105,7 +120,7 @@ it('has a phone Back to Home, one live summary, and the same count as Home', () 
 });
 
 it('says all set only for a ready, empty observation, and offers Try again or Sign in otherwise', () => {
-  expect(page({snapshot: ready([])})).toContain('You’re all set. Nothing needs you right now.');
+  expect(page({snapshot: ready([])})).toContain('You’re all set</b><span class="c-empty__body">Nothing needs you right now.</span>');
   // Time off and shift requests stay reachable when nothing waits.
   expect(page({snapshot: ready([])})).toContain('href="/app/requests"');
   expect(page({snapshot: ready([])})).toContain('href="/app/exchange"');
@@ -120,7 +135,7 @@ it('says all set only for a ready, empty observation, and offers Try again or Si
 
 it('shortens "Need 1 employee" to "1 needed" even when the read keeps the count and noun together with a no-break space', () => {
   const gap = item('gap2', 'COVERAGE_GAP', 'scheduling', 'URGENT', {title: 'Coverage gap at Old San Juan', detail: '2026-10-16 · 12:00 AM–10:00 AM · Need 1 employee', dateTime: '2026-10-16T00:00', href: '/app/schedule?shift=gap2'});
-  expect(page({snapshot: ready([gap])})).toContain('Today · Old San Juan · 1 needed');
+  expect(page({snapshot: ready([gap])}).replace(/\u00a0/g, ' ')).toContain('Open shift · Today · Old San Juan · 1 needed');
 });
 
 it('groups a week of earlier coverage gaps into one row with its count', () => {
