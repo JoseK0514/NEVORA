@@ -1,8 +1,8 @@
 # Claude → Codex: NEVORA Release 1 is ready for inspection, then deploy
 
-Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8). Branch: `claude-codex-collab-nevora`.
+Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), and 2026-11-01 for the Owner premium upgrade (§1b). Branch: `claude-codex-collab-nevora`.
 
-**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `95f9b79dda64f4e4f50d6ac383720e97f117af61` onward: that commit is the CI change, and later commits change only `docs/`, `src/test/` and test drivers in `scripts/`. Check it with `git diff --quiet 95f9b79d HEAD -- . ':(exclude)docs' ':(exclude)src/test' ':(exclude)scripts'`, which must succeed; §4 lists every later test change. The full local gate (§4) ran on `f486a96fed567c760a81a29934b7b1129301562d`; the only non-docs change after it is the CI change, re-checked on `03e18d7c62ff6b3cb118b72c1cfd4b04a48fdc8c`. Any later commit makes a new candidate.
+**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `885003d6723b6cb4505a20d20feb3cfdb75e4b82` onward: later commits change only `docs/`, `src/test/` and test drivers in `scripts/`. Check it with `git diff --quiet 885003d6 HEAD -- . ':(exclude)docs' ':(exclude)src/test' ':(exclude)scripts'`, which must succeed. The full local gate (§4) ran on `cdb92ceaeccfecd9191f412b0c88797e7e5836b1` (Nov 1). The previous candidate `7b14776a` is superseded; do not deploy it. Any later commit makes a new candidate.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -90,6 +90,36 @@ The independent inspection (code, release audit, Owner UI and Employee UI review
 - On 320px phones the week strip's days are about 40px wide (still 44px tall). Accepted.
 - Making the kit respect the browser's text-size setting is the first item of Release 1.1. Page zoom already scales everything.
 
+## 1b. Owner premium upgrade (Oct 31 – Nov 1, before Jose's device test)
+
+Jose asked for a cleaner, more premium Owner side before testing on his devices. Two rounds, presentation only, on top of `7b14776a`:
+- Round 1: `docs/product/reviews/owner-premium-2026-10-31/PLAN.md` (A1–A12, phone P1–P11, your review's A11/A12).
+- Round 2: `ROUND2-PLAN.md` in the same folder (R1–R14): type scale (titles 24/30 phone, 28/34 desktop, also on Employee
+  pages), tabular figures, calmer colour, one button and sheet system, Home with one focus, Timecards and Schedule grid
+  polish, short motion, and a copy pass (`round2-critique-copy.md`).
+- Jose's decisions: the NEVORA wordmark tile replaces the flame icon (manifest theme colour is now white; service worker
+  cache `v5`); in-row badges and avatars are neutral grey, sidebar and tab totals stay teal; "Time" in the tab and sidebar,
+  "Timecards" as the page title; "Share pay statements" (the status reads "Shared").
+
+**No server action, API, schema, permission or migration changed.** Please still look at these presentation-side reads:
+- `src/app/app/payroll/payroll-route.tsx`: Payroll sub-pages (not Home) read `listEmployees()` to show names first, inside
+  the same gated route; a failed read falls back to the old rows.
+- `src/app/app/payroll-export/page.tsx`: reads `readPayrollCapabilities(proof)` (inside `withOperationalCompany`) to show the
+  Payroll tabs the person may use.
+- `src/app/app/settings/clocker/pins/page.tsx`: reads `readOperationalDirectory(proof)` and `listPositions()` to show each
+  person's role and position on Clocker PINs; a failed read shows names only.
+- New page `src/app/app/timecards/corrections/page.tsx` (`MANAGER_ROLES`, `readOperationalAuthority`, the existing
+  corrections component). Corrections also stay on Who's working, because 9 Phase D scripts use `#review` there.
+- `schedule/generation-actions.ts`: one success message's wording only ("Build draft", "Fill gaps only").
+
+**Visible text that changed** (the browser suites follow it; no check was removed or loosened): "Time corrections"
+(collapsed row label "Time corrections and flagged clock-ins"), "Nothing to fix", "Hours worked", "How we count", one
+Insights period control per width (phone segments This week / Last week / 30 days / Custom; menu on wider screens),
+"Older items" (a plain row with no count), "Add tablet" / "Tablet name" / "Get setup code", "Check code", "Nothing saved
+for this code", "Search by name", "Help for your team", "Save" / "Save help details", punch-photo events as switches, Sign
+out once (More on phones, sidebar on desktop), "Help someone sign in", "Clocker tablets". The timecard sheet's accessible
+name now includes the person ("Timecard Avery …").
+
 ## 2. Migrations
 
 - **Release 1 is the first production release of this line.** Codex's read-only preflight (Oct 31, `docs/handoffs/2026-10-31-codex-to-claude-release-1-preflight.md` in Codex's workspace) found production's catalog (Neon `rough-fire-63258908`, main branch, us-east-1) structurally identical to an owned local database built from `0001`–`0004`, with no migration ledger. Reconcile again at cutover, by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
@@ -124,6 +154,34 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 - **Region:** the privacy policy says servers are in Northern Virginia (`src/lib/legal/policies.ts:21`). Codex's preflight found production Neon main in us-east-1 (matches) and only a cancelled historical Vercel Production deployment in iad1; the final deployment's function region and `DATABASE_URL` binding are still to verify. Don't carry over the fictional Preview's pdx1/us-west-2 setting. Production env values are hidden from the connector and remain unverified against the table above.
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
+
+### Gate on the Owner premium candidate (Nov 1)
+
+The full gate ran in one ordered pass on `cdb92ceaeccfecd9191f412b0c88797e7e5836b1` (Nov 1, 00:49–03:02 AST), clean tree
+throughout, 70 of 70 steps passed. Summary: `docs/handoffs/2026-11-01-release-1-gate-summary.txt`.
+
+| Step | Result |
+|---|---|
+| Typecheck, lint, audit (prod and all), advisor pilot, release build | pass |
+| CI-only checks: inspection custody (19), notifications/foundation config (6 + 8), release engineering (168) | pass |
+| Unit | 10,435 passed, 801 skipped |
+| Migrations; release Postgres; advisor integration | 11; 746 (284 + 46 + 176 + 163 + 77); 38 |
+| Clocker shards 1–4 | 147 + 132 + 151 + 142 = 572 |
+| Phase E startup and SQL | pass; 23 |
+| 22 owned database integration configs | all pass (same counts as below) |
+| Advisor browser; attendance UI; Phase D browser; remediation; D2 corrections UI | pass; 48; 207 checks 0 errors; 6; 282 |
+| Home held response; Phase E Home, Communications, Calendar, Navigation, Attention | pass; 14 of 14 cells each |
+| Clocker iPad UI; breaks UI; punch UI (now in the local gate, as in CI) | pass; 46; 90 |
+| Mobile Access; Owner Things to do | 3; 1 |
+| Employee phone configs | phase 1: 1; requests 39; planning 58; creation 48; responses 44; communications 178; hours 71; profile 185; calendar 256; pay 1; closure 1; deletion 15; device alerts 373; passkeys 294 |
+
+How it reached green: the first browser pass on `9493492e` failed 13 suites, all on wording and controls round 2 changed.
+The checks now follow the new text and structure; none was removed or loosened. Two things were real: the Things to do
+check had stopped counting (the cards became kinds with count chips), so it counted nothing and passed vacuously; it reads
+the chips again and still proves every action appears exactly once. The timecard sheet's name gained the person (above).
+A chromium-only pending `/app/more` RSC request once held the Profile idle check under load; it passed in every later run.
+
+### Earlier candidate (`7b14776a`, Oct 31): history
 
 The full gate ran in one ordered pass on `f486a96fed567c760a81a29934b7b1129301562d` (Oct 31, 10:31–12:43 AST), clean tree throughout. Script and logs: Claude's scratchpad `gate5/` (summary below is complete).
 
@@ -182,7 +240,7 @@ On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run:
 
 **Hosted fictional Preview:**
 - Neon `nevora-release1-preview-20261030` (us-west-2), Vercel Preview on this branch only, region pdx1.
-- Claude redeploys it from the release head right after this commit and reports the result with the handoff message. It was last verified on `8e29c478` (Oct 30).
+- Claude redeploys it from the release head right after this commit and reports the result with the handoff message. Before this candidate it ran `dc30ce9b` (Oct 31).
 - Link: https://nevora-git-claude-codex-collab-nevora-josekarlo-5933s-projects.vercel.app (Vercel sign-in or a share link).
 - The Preview deploys from a local clone with a local-only marker commit and `regions:["pdx1"]`. Neither is in the branch.
 
@@ -202,8 +260,11 @@ On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run:
 - **Suites not run on the release SHA:** company-access (31 files, 532 tests, including `schedule_pending_edits` assertions), premium-*, `phase-e-integration`, `owned-app-cancellation`. The generic owned runner fails company-access the same way on 001031aa (488 failed / 44 passed on both); another runner on 08728bc5 gave 496 passed / 36 failed, all 36 in `company-access-shift-changes.integration.ts` refusing a non-disposable target. Mobile Access (re-anchored to the corporate Home) and every employee-mobile browser config now run in the gate (§4).
 - **UI gaps Jose accepted or deferred (Oct 31):** on 320px phones the week strip's days are about 40px wide (44px tall); the kit sets type in px, so the browser text-size setting doesn't enlarge it (page zoom does), first item of Release 1.1; Lead pages (on hold) show two `h1`s; More keeps the name visible during a held sign-out.
 - **Clocker browser suites:** only the iPad UI suite runs with `NEVORA_CLOCKER_UI_V2=true`; `--punch-ui` and `--breaks-ui` run the old tablet look.
+- **Older Clocker scripts outside CI and the gate** (`phase-c-devices-ui-qa`, `-monitor-ui-qa`, `-pins-ui-qa`, `-punch-http-qa`, `-employee-time-ui-qa`) were already written for pages before the boards and were not updated.
+- **Time corrections** live on Who's working and on `/app/timecards/corrections`; moving them off Who's working and a corrections detail page are Release 1.1.
+- **Release 1.1 (Jose, Oct 31):** the Lead role choice in Add employee; Add employee step 2 validation timing; a real prepare-by deadline setting; a dev-only React key warning on Schedule.
 - **Pre-release payroll drafts:** reading as `NATIVE_REVIEW_STALE` rests on the hash compare at approval and the calculator version in `NATIVE_RULES_SHA256`; no test approves a pre-V11 draft. Drafts held under the old `DAILY_BOUNDARY_SENSITIVE` status show "Recalculate this draft".
-- Gate logs live outside the repo (`.../scratchpad/final-gate/summary.txt` on Jose's Mac); the final candidate's summary will be committed next to this file.
+- Gate logs live outside the repo (Claude's scratchpad `gate7/`); the summary is committed next to this file.
 
 ## 6. Not done here (yours or Jose's)
 
