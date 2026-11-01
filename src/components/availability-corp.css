@@ -80,5 +80,7 @@
 
 /* Wide screens: the day sheet is a centred card as tall as its content (the kit's sheet height would fill the screen). */
 @media (min-width: 768px) {
-  :is(#c-root, html) dialog.q-sheet:has(.c-sheet.c-avail-sheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
+  /* Reliability R-01: only outside the corporate shell; there every kit sheet is the right-hand panel, and this
+   * centring (its translate) would lift that panel half off the screen. */
+  :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-sheet.c-avail-sheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
 }

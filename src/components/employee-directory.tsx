@@ -6,7 +6,7 @@ import { employeeInitials, employeeRoleLabel } from "@/lib/employee-display";
 import { formatPhoneNumber } from "@/lib/phone";
 import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-directory";
 import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "./corp/corp";
-import { EmployeeDirectoryFilters } from "./employee-directory-filters";
+import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
 import { TeamLivePill, TeamLiveProvider, TeamWorkingNow } from "./team-live";
 import "./employee-directory-corp.css";
 
@@ -65,7 +65,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         <label className="c-in c-team-search__field">
           <span className="c-sr">Search {people}</span>
           <MagnifyingGlass className="c-ic" aria-hidden="true" />
-          <input key={filters.query} name="q" type="search" defaultValue={filters.query} placeholder="Search by name or position" maxLength={128} />
+          <EmployeeSearchInput query={filters.query} placeholder="Search by name or position" />
         </label>
       </EmployeeDirectoryFilters>
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</p>

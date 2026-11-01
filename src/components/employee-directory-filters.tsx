@@ -12,7 +12,6 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
   const router = useRouter();
   const form = useRef<HTMLFormElement>(null);
   const timer = useRef<number | null>(null);
-  const restore = useRef<{ start: number; end: number } | null>(null);
   const [pending, startTransition] = useTransition();
 
   function navigate(data: FormData, replace: boolean) {
@@ -33,20 +32,12 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
     if (!(field instanceof HTMLInputElement) || field.type !== "search") return;
     if (timer.current) window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
-      // The search field remounts with the new query; keep the caret where the person left it.
-      restore.current = { start: field.selectionStart ?? field.value.length, end: field.selectionEnd ?? field.value.length };
       if (form.current) navigate(new FormData(form.current, applyButton()), true);
     }, TYPE_DELAY);
   }
   // The Apply button carries the current status; status segments are submit buttons too.
   function applyButton() { return form.current?.querySelector<HTMLButtonElement>('button[data-apply]') ?? form.current?.querySelector<HTMLButtonElement>('button[type="submit"]') ?? null; }
 
-  useEffect(() => {
-    if (pending || !restore.current) return;
-    const input = form.current?.querySelector<HTMLInputElement>('input[type="search"]');
-    if (input) { input.focus({ preventScroll: true }); input.setSelectionRange(restore.current.start, restore.current.end); }
-    restore.current = null;
-  }, [pending]);
   useEffect(() => () => { if (timer.current) window.clearTimeout(timer.current); }, []);
   // Filters apply as you type once scripts run, so the Apply button stops being a tab stop (IS-35).
   useEffect(() => {
@@ -58,4 +49,16 @@ export function EmployeeDirectoryFilters({ children, className }: { children: Re
     {children}
     {pending ? <p className={className ? "premium-note" : styles.pending} role="status">Updating employees…</p> : null}
   </form>;
+}
+
+/** Reliability R-03: the search field keeps what the person is typing. A results page that arrives for an earlier
+ * query never replaces the draft (or moves the caret) while the field has focus; a query that changes from elsewhere
+ * (Clear search, Back) fills it in once the field isn't being typed in. */
+export function EmployeeSearchInput({ query, placeholder }: { query: string; placeholder: string }) {
+  const input = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const field = input.current;
+    if (field && document.activeElement !== field && field.value !== query) field.value = query;
+  }, [query]);
+  return <input ref={input} name="q" type="search" defaultValue={query} placeholder={placeholder} maxLength={128} />;
 }

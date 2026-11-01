@@ -11,5 +11,7 @@
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row__detail { color: var(--c-grey); font-weight: 400; }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row--danger .c-row__detail span { color: var(--c-grey); }
 @media (min-width: 768px) {
-  :is(#c-root, html) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
+  /* Reliability R-01: only outside the corporate shell; there every kit sheet is the right-hand panel, and this
+   * centring (its translate) would lift that panel half off the screen. */
+  :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
 }

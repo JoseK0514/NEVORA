@@ -175,10 +175,14 @@ export function SheetGestures() {
       target.focus({ preventScroll: true });
     };
 
-    // The page lock follows every popover toggle and every dialog opening or closing.
-    const onToggleLock = () => requestAnimationFrame(syncPageLock);
-    const dialogs = new MutationObserver(onToggleLock);
-    dialogs.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["open"] });
+    // The page lock follows every popover toggle and every dialog opening or closing. A sheet can also leave without
+    // closing (browser Back unmounts an intercepted sheet route), so while the page is locked a removal re-checks it too.
+    let lockFrame = 0;
+    const onToggleLock = () => { if (!lockFrame) lockFrame = requestAnimationFrame(() => { lockFrame = 0; syncPageLock(); }); };
+    const dialogs = new MutationObserver(records => {
+      if (records.some(record => record.type === "attributes" || (record.removedNodes.length > 0 && document.documentElement.hasAttribute("data-c-lock")))) onToggleLock();
+    });
+    dialogs.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["open"] });
     document.addEventListener("toggle", onToggleLock, true);
     window.addEventListener("pointerdown", onOutsideDown, { capture: true, passive: true });
     window.addEventListener("pointerup", onOutsideUp, { capture: true, passive: true });
@@ -190,6 +194,7 @@ export function SheetGestures() {
     document.addEventListener("beforetoggle", onBeforeToggle, true);
     return () => {
       dialogs.disconnect();
+      cancelAnimationFrame(lockFrame);
       document.removeEventListener("toggle", onToggleLock, true);
       document.documentElement.removeAttribute("data-c-lock");
       disarmOutside();

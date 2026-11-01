@@ -10,6 +10,7 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 vi.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
+vi.mock('next/navigation',()=>({useSearchParams:()=>null}));
 import {Timecards} from './timecards';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:'DRAFT',revision:0,sourceHash:'a'.repeat(32),history:[]};}

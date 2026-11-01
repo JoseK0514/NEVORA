@@ -6,8 +6,10 @@
     color: #1A1C1E;
     font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
   }
-  /* In the desktop sheet (a centred dialog) the card is the dialog itself. */
-  :is(#q-root, html) body .app-shell .q-sheet .q-page.q-shiftchange.q-shiftchange { padding: 0; background: #FFFFFF; }
+  /* In the desktop sheet (the right-hand panel) the card is the panel itself: white from top to bottom, the bar at its
+   * top edge (the shell's 48px page band is for pages, not for a page shown in a panel). */
+  :is(#q-root, html) body .app-shell .q-sheet .q-page.q-shiftchange.q-shiftchange { padding: 0 !important; background: #FFFFFF; }
+  :is(#q-root, html) body .app-shell dialog.q-sheet:has(.q-page.q-shiftchange) { background: #FFFFFF; }
     :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange :is(.q-scform div:has(> .q-nav), form.q-scform:has(> fieldset > .q-nav), .q-shiftchange__card) {
     max-width: 720px; margin: 0 auto; padding-bottom: 16px; overflow: hidden; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6;
   }
