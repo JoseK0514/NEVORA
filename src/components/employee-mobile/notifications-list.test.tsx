@@ -14,13 +14,21 @@ it('groups by day in the workplace time zone',()=>{
 });
 it('board E-Notifications: All / Unread tabs, Yesterday and Earlier cards, an unread dot and plain times',()=>{
  const html=draw(),text=plain(html);
- expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread (1)');
+ expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread 1');expect(text).not.toContain('Unread (1)');expect(html).toContain('<span class="c-count">1</span>');
  expect(text.indexOf('Yesterday')).toBeLessThan(text.indexOf('Earlier'));expect(text).toContain('7:45 PM');expect(text).toContain('Wed, Oct 28 · 8:00 AM');
- expect(text).not.toMatch(/\bAST\b|\bEDT\b|GMT/);expect(html).toContain('em-notif-dot');expect(text).toContain('Action needed');
+ expect(text).not.toMatch(/\bAST\b|\bEDT\b|GMT/);expect(html).toContain('em-notif-dot');expect(text).toContain('Action needed · 7:45 PM');
+ // Upscale B7: one dot and no icon tile or pill.
+ expect(html.match(/em-notif-dot/g)).toHaveLength(1);expect(html).not.toMatch(/em-notif-icon|c-pill/);
  for(const gone of ['Search this page','Show','Your information only','Review schedule'])expect(text).not.toContain(gone);
  expect(html).toContain('href="/app/notifications/open?notificationId=a"');
 });
 it('Unread shows only unread notices, and says when there are none',()=>{
  const text=plain(draw('unread'));expect(text).toContain('Schedule update');expect(text).not.toContain('Time off update');
  expect(plain(draw('unread',[items[1]]))).toContain('You’re all caught up');expect(plain(draw('all',[]))).toContain('No current notifications');
+});
+it('a tapped notice stays pressed with its own spinner while it opens',()=>{
+ const html=renderToStaticMarkup(<EmployeeNotificationList items={items} partial={false} tab="all" onTab={()=>{}} timeZone={zone} now={now} opening="a"/>);
+ const row=html.slice(html.indexOf('id="message-a"'),html.indexOf('</a>',html.indexOf('id="message-a"')));
+ expect(row).toContain('aria-busy="true"');expect(row).toContain('em-notif-row--busy');expect(row).toContain('em-notif-spin');expect(row).not.toContain('em-notif-dot');
+ expect(plain(html)).not.toContain('Opening current details');
 });

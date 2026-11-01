@@ -188,7 +188,7 @@ export default async function AvailabilityPage({
 
   const proof=await requireSessionMutationProof();
   return (
-    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail">
+    <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="availability" selection={selectedWeek??'normal'}><CorpPage className="c-avail c-page--narrow">
       <CorpNav back={{ href: "/app/schedule", label: "Schedule" }} title="Availability" phoneOnly />
       <CorpTitle wide title="Availability" sub={sub} />
       {notices}

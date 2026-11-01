@@ -4,13 +4,19 @@
 :is(#c-root, html) dialog.q-sheet:has(.c-esheet) .q-sheet__top { background: #FFFFFF; }
 :is(#c-root, html) .c-sheet.c-esheet { gap: 16px; padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__nav { min-height: 52px; }
-:is(#c-root, html) .c-sheet.c-esheet .c-sheet__shift { margin: 0; padding: 0; background: none; box-shadow: none; gap: 2px; }
-:is(#c-root, html) .c-sheet.c-esheet .c-sheet__time .c-big { font-size: 22px; line-height: 28px; letter-spacing: -0.3px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__shift { margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; gap: 2px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__place { color: #4A4F54; }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row { min-height: 52px; }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row:not(.c-row--one) { min-height: 60px; }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row__detail { color: var(--c-grey); font-weight: 400; }
 :is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row--danger .c-row__detail span { color: var(--c-grey); }
 @media (min-width: 768px) {
+  /* Upscale S12: in the right-hand panel the details sit in a white card on the grey panel, like the Owner timecard
+   * panel, with the actions card 12px under it. */
+  :is(#c-root, html) .app-shell[data-nv-corp] dialog.q-sheet:has(.c-esheet), :is(#c-root, html) .app-shell[data-nv-corp] dialog.q-sheet:has(.c-esheet) .q-sheet__top { background: #F5F6F6; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet { gap: 12px; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet .c-sheet__nav { margin-bottom: 4px; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet .c-esheet__card { padding: 14px 16px 16px; border-radius: 12px; background: #FFFFFF; box-shadow: var(--c-shadow-card); }
   /* Reliability R-01: only outside the corporate shell; there every kit sheet is the right-hand panel, and this
    * centring (its translate) would lift that panel half off the screen. */
   :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }

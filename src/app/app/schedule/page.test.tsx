@@ -42,7 +42,7 @@ it('loads actual history and renders own changes behind authenticated access',as
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
  f.after=[...f.before];expect(await html()).not.toContain('What changed');
- f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toContain('Shift removed');expect(result).not.toContain('Location 110');
+ f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/Removed\s·/);expect(result).not.toContain('Location 110');
 });
 it('push feature off retains canonical review while protected access loss discloses no history',async()=>{
  f.enabled=false;expect(await html()).toContain('What changed');
