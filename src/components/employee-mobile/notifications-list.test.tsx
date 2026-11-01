@@ -14,7 +14,7 @@ it('groups by day in the workplace time zone',()=>{
 });
 it('board E-Notifications: All / Unread tabs, Yesterday and Earlier cards, an unread dot and plain times',()=>{
  const html=draw(),text=plain(html);
- expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread 1');expect(text).not.toContain('Unread (1)');expect(html).toContain('<span class="c-count">1</span>');
+ expect(html).toMatch(/aria-pressed="true"[^>]*>All</);expect(text).toContain('Unread 1');expect(text).not.toContain('Unread (1)');expect(html).toMatch(/<span class="c-count[^"]*"[^>]*>1<\/span>/);
  expect(text.indexOf('Yesterday')).toBeLessThan(text.indexOf('Earlier'));expect(text).toContain('7:45 PM');expect(text).toContain('Wed, Oct 28 · 8:00 AM');
  expect(text).not.toMatch(/\bAST\b|\bEDT\b|GMT/);expect(html).toContain('em-notif-dot');expect(text).toContain('Action needed · 7:45 PM');
  // Upscale B7: one dot and no icon tile or pill.

@@ -175,7 +175,8 @@ function cardPill(state:CardState,issues:TimecardIssue[]){
 }
 export const cardsHref=(period:Period)=>'/app/my-time?view=cards&start='+period.startDate+'&end='+period.endDate;
 const weekOf=(monday:string):Period=>({startDate:monday,endDate:addDays(monday,6)});
-const EARLIER_STEP=4,EARLIER_MAX=26;
+// At most 8 earlier weeks on screen (each card is its own private read); "Earlier weeks" then moves the list back.
+const EARLIER_STEP=4,EARLIER_MAX=8;
 /** One earlier week as a card: its range and state, then its total (17/600) linking to the week. Each card reads its week
  * through the same private hours read as the page (paused and cleared with it). */
 function WeekCard({authority,period}:{authority:string;period:Period}){

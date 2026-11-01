@@ -178,7 +178,8 @@ it('shows own published statements, linked corrections and protected PDFs with t
      record('An ended session hides statements, offers Sign in, and a PDF link returns to Pay after sign-in');
    }else{
    // Release 1 boards (G-E-Pay, E-PayHistory, E-Paycheck): an Employee's Pay is the kit page on every width. Pay lists Recent
-   // pay (newest three) with Pay history for all; each statement opens its own Paycheck page with View PDF and Download PDF.
+   // pay (newest three) with Pay history for all; each statement opens its own Paycheck page with one "Pay statement (PDF)"
+   // row (Nov 1 upscale S8: it opens the PDF separately; the attachment route stays for statements without a viewer link).
    const paycheck=(id:string)=>app.url+'/app/my-pay?paycheck='+id;
    await page.goto(app.url+'/login');await login(page,actor);
    stage='open-from-more';/* An Employee reaches More from the header avatar (corporate shell); a Lead from its More tab. */await page.locator('a[href="/app/more"]:visible').first().click();await page.waitForURL(app.url+'/app/more');
@@ -186,7 +187,9 @@ it('shows own published statements, linked corrections and protected PDFs with t
    // Month and day are joined by a no-break space on screen (PAY-UI-7); compare words, not spacing.
    const body=(await page.locator('.c-pay').innerText()).replace(/ /g,' ');
    expect(body).toContain('Recent pay');expect(body).toContain('Correction');expect(body).toContain('Replaced');expect(body).not.toMatch(/\$|deposit|net pay/i);
-   expect(body).toContain('This pay period');expect(body).toContain('From your workplace’s pay schedule');expect(body).not.toContain('Downloaded files may contain personal pay information.');
+   expect(body).toContain('This pay period');expect(body).not.toContain('From your workplace’s pay schedule');expect(body).not.toContain('Downloaded files may contain personal pay information.');
+   /* Upscale S16: the next payday is said once: the card's body is the payday's date and the line under it how far away it is (no Payday pill). */
+   expect(await page.locator('#pay-period .c-pill').count()).toBe(0);expect((await page.locator('#pay-period .c-big').innerText()).replace(/ /g,' ')).toMatch(/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun), [A-Z][a-z]{2} \d{1,2}$/);expect(await page.locator('#pay-period .c-line3').innerText()).toMatch(/^Payday (is today|is tomorrow|in \d+ days)$/);
    const rows=page.locator('#pay-recent .c-rows > li > a');expect(await rows.count()).toBe(3);
    expect(await rows.first().getAttribute('id')).toBe(`pay-statement-${correction.id}`);expect((await rows.first().getAttribute('aria-label'))!.replace(/ /g,' ')).toContain(`February 2, ${year}, corrected statement`);
    expect(await rows.nth(1).getAttribute('id')).toBe(`pay-statement-${original.id}`);expect(await rows.nth(1).innerText()).toContain('Replaced');
@@ -201,33 +204,36 @@ it('shows own published statements, linked corrections and protected PDFs with t
 
    stage='correction-link';await page.locator(`#pay-statement-${original.id}`).click();await page.waitForURL(paycheck(original.id));await state('ready');
    const originalCard=page.locator('#pay-paycheck');expect(await originalCard.innerText()).toContain('A corrected statement replaced this one.');expect(await originalCard.innerText()).toContain('Replaced');
-   const actions=originalCard.locator('.c-rows > li > a');expect(await actions.first().innerText()).toBe('Use the corrected statement');expect(await actions.nth(1).getAttribute('id')).toBe(`pay-view-${original.id}`);expect(await actions.nth(2).getAttribute('id')).toBe(`pay-download-${original.id}`);
+   const actions=originalCard.locator('.c-rows > li > a');expect(await actions.first().innerText()).toBe('Use the corrected statement');expect(await actions.count()).toBe(2);expect(await actions.nth(1).getAttribute('id')).toBe(`pay-pdf-${original.id}`);expect(await actions.nth(1).innerText()).toBe('Pay statement (PDF)');expect(await actions.nth(1).getAttribute('href')).toBe(`/api/payroll/documents/${original.id}/view`);expect(await actions.nth(1).getAttribute('target')).toBe('_blank');expect(await originalCard.getByRole('link',{name:/^(View|Download) PDF$/}).count()).toBe(0);
    await page.getByRole('link',{name:'Use the corrected statement',exact:true}).click();await page.waitForURL(paycheck(correction.id));
    await expect.poll(()=>focused('#pay-page-title')).toBe(true);expect(await page.locator('#pay-paycheck').innerText()).toContain('This corrects your earlier statement for the same period.');expect(await page.locator('.c-pay').innerText()).toContain('Downloaded files may contain personal pay information.');
    record('A replaced statement leads with Use the corrected statement, keeps its own files after it, and moves focus to the correction’s Paycheck');
 
    stage='view';const viewed=context.waitForEvent('response',(response:{url():string})=>response.url().endsWith(`/api/payroll/documents/${correction.id}/view`));
-   // Real keyboard: from the focused Paycheck title, native Tab reaches View PDF; Enter opens it.
-   await page.keyboard.press(forwardKey);expect(await focused(`#pay-view-${correction.id}`)).toBe(true);
+   // Real keyboard: from the focused Paycheck title, native Tab reaches Pay statement (PDF); Enter opens it.
+   await page.keyboard.press(forwardKey);expect(await focused(`#pay-pdf-${correction.id}`)).toBe(true);
    const popup=context.waitForEvent('page');await page.keyboard.press('Enter');
    const response=await viewed,tab=await popup;expect(response.status()).toBe(200);
    const headers=await response.allHeaders();expect(headers['content-type']).toBe('application/pdf');expect(headers['cache-control']).toBe('no-store, private');expect(headers['content-disposition']).toBe(`inline; filename="statement-correction-${engine}.pdf"`);
    expect(createHash('sha256').update(correction.bytes).digest('hex')).toBe(headers['x-content-sha256']);
-   await tab.close();await page.bringToFront();await expect.poll(()=>focused(`#pay-view-${correction.id}`)).toBe(true);
-   record('Keyboard '+forwardKey+' and Enter open the verified PDF in a new tab (never cached); focus is on View PDF after returning');
+   await tab.close();await page.bringToFront();await expect.poll(()=>focused(`#pay-pdf-${correction.id}`)).toBe(true);expect(page.url()).toBe(paycheck(correction.id));
+   record('Keyboard '+forwardKey+' and Enter open the verified PDF in a new tab (never cached); focus is on Pay statement (PDF) after returning and the Paycheck stays');
 
-   stage='download';const download=page.waitForEvent('download');await page.locator(`#pay-download-${correction.id}`).click();const file=await download;
-   expect(file.suggestedFilename()).toBe(`statement-correction-${engine}.pdf`);const saved=evidence+'/'+engine+'-downloaded.pdf';await file.saveAs(saved);
+   // Upscale S8 retired the separate Download row (the PDF opens separately and its viewer offers Save). The attachment route
+   // the row falls back to still delivers the exact published bytes, read here with this session's own cookies.
+   stage='download';const attachment=await page.request.get(app.url+`/api/payroll/documents/${correction.id}`);expect(attachment.status()).toBe(200);
+   const attachmentHeaders=attachment.headers();expect(attachmentHeaders['content-type']).toBe('application/pdf');expect(attachmentHeaders['content-disposition']).toBe(`attachment; filename="statement-correction-${engine}.pdf"`);
+   const saved=evidence+'/'+engine+'-downloaded.pdf';await writeFile(saved,await attachment.body());
    expect(createHash('sha256').update(await readFile(saved)).digest('hex')).toBe(createHash('sha256').update(correction.bytes).digest('hex'));
    expect(page.url()).toBe(paycheck(correction.id));
-   record('Download delivers the exact published bytes without leaving the Paycheck');
+   record('The statement file route delivers the exact published bytes as an attachment while the Paycheck stays open');
    stage='download-fails';expectedFailure=true;await modules(['payStatements']);
-   // The Paycheck is still on screen; access ended on the server. Download must navigate back, not save a file (PAY-CR-9).
-   const savedFile=page.waitForEvent('download',{timeout:5000}).then(()=>true,()=>false);
-   await page.locator(`#pay-download-${correction.id}`).click();await page.waitForURL(new RegExp('/app/my-pay\\?document=unavailable$'));
-   expect(await savedFile).toBe(false);await page.waitForLoadState('domcontentloaded');await shot('download-after-access-ended');
+   // The Paycheck is still on screen; access ended on the server. Opening the PDF must land on Pay's notice, not save or show a file (PAY-CR-9).
+   const savedFile=context.waitForEvent('download',{timeout:5000}).then(()=>true,()=>false);const failedTab=context.waitForEvent('page');
+   await page.locator(`#pay-pdf-${correction.id}`).click();const failedPage=await failedTab;await failedPage.waitForURL(new RegExp('/app/my-pay\\?document=unavailable$'));
+   expect(await savedFile).toBe(false);await failedPage.waitForLoadState('domcontentloaded');expect(page.url()).toBe(paycheck(correction.id));await failedPage.screenshot({path:evidence+'/'+engine+'-download-after-access-ended.png',style:'nextjs-portal {visibility:hidden;}',caret:'initial'});captures.push(engine+'-download-after-access-ended.png');await failedPage.close();await page.bringToFront();
    await modules([]);await page.goto(app.url+'/app/my-pay');await state('ready');expectedFailure=false;
-   record('A Download whose access ended navigates back to Pay instead of saving a file');
+   record('Opening a statement whose access ended navigates to Pay instead of saving or showing a file');
 
    // Kit tokens: 24px tab title on Pay (round 2 R1 type scale, was 22px), 17px pushed-page title on Paycheck (v5 used 32px); 44px targets.
    stage='matrix';
@@ -247,7 +253,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
     expect(await last.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
     await page.evaluate(()=>scrollTo(0,0));await shot(prefix+'-text200-top');await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot(prefix+'-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
    };
-   await matrix('pay','24px',[['title','.c-pay h1'],['recent','#pay-recent-label'],['period','#pay-period .c-line3'],['chip','#pay-period .c-pill'],['payday','#pay-recent .c-row__title'],['dates','#pay-recent .c-row__detail'],['pill','#pay-recent .c-pill']]);
+   await matrix('pay','24px',[['title','.c-pay h1'],['recent','#pay-recent-label'],['period','#pay-period .c-line3'],['next-payday','#pay-period .c-big'],['payday','#pay-recent .c-row__title'],['dates','#pay-recent .c-row__detail'],['state','#pay-recent .c-row__trail .c-meta']]);
    await page.goto(paycheck(correction.id));await state('ready');
    await matrix('paycheck','17px',[['title','.c-pay h1'],['payday','#pay-paycheck .c-big'],['view','#pay-paycheck .c-pay-action'],['privacy','.c-pay > .c-note']]);
    await page.goto(app.url+'/app/my-pay');await state('ready');

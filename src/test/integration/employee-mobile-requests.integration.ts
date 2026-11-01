@@ -88,7 +88,7 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
    stage='requests';
    await load('/app/requests/hub');
    expect(await page.getByRole('heading',{name:'Requests',exact:true}).count()).toBe(1);
-   expect(await view.getByRole('link',{name:'New request',exact:true}).getAttribute('href')).toBe('/app/requests?tab=new');
+   expect(await view.getByRole('link',{name:'Request time off',exact:true}).getAttribute('href')).toBe('/app/requests?tab=new');expect(await view.getByRole('link',{name:'New request',exact:true}).count()).toBe(0);
    expect(await view.locator('#requests-waiting a[href="/app/requests?requestId=req-own-'+index+'"]').count()).toBe(1);
    expect(await view.locator('a[href*="req-peer-"]').count()).toBe(0);
    expect(await view.innerText()).not.toContain('PRIVATE REASON');
@@ -113,9 +113,10 @@ it('integrates protected Employee Requests and eligible pickup using actual SQL 
     record('Controlled incoming-null presentation has a recovery action and destination; retry restores actual checked zero');
     stage='requests';
    }
-   // Board E-OpenShifts: Open shifts is reached from Schedule (View open shifts, then the shift's Pick up; the hub no longer lists it); its back goes to Schedule.
+   // Board E-OpenShifts: Open shifts is reached from Schedule (the Open shifts row, then the shift's Pick up; the hub no longer lists it); its back goes to Schedule.
+   // Nov 1 upscale S13: the Open shifts card is one row link (no View button), named by what it holds.
    const [offer]=await q<{id:string}>("SELECT id FROM shift_exchanges WHERE source_shift_id=$1 AND status='OPEN'",[f.targetId]),[openShift]=await q<{date:string}>('SELECT date::text AS date FROM shifts WHERE id=$1',[f.targetId]);
-   await page.goto(app.url+'/app/schedule?week='+f.week);await page.getByRole('link',{name:'View open shifts',exact:true}).click();await page.waitForURL(/\/app\/schedule\?.*view=open/);await page.locator('.c-esched:visible a[href="/app/exchange?tab=available#request-'+offer.id+'"]').click();await page.waitForURL(app.url+'/app/exchange?tab=available#request-'+offer.id);await ready();
+   await page.goto(app.url+'/app/schedule?week='+f.week);const openRow=page.locator('.c-esched:visible .c-card[aria-label="Open shifts"]').getByRole('link',{name:/^(\d+ open shifts? you can pick up|Open shifts, none right now|Open shifts, couldn’t be checked)$/});expect(await openRow.count()).toBe(1);expect(await page.getByRole('link',{name:'View open shifts',exact:true}).count()).toBe(0);expect(await openRow.getAttribute('href')).toBe('/app/schedule?week='+f.week+'&view=open');await openRow.click();await page.waitForURL(/\/app\/schedule\?.*view=open/);await page.locator('.c-esched:visible a[href="/app/exchange?tab=available#request-'+offer.id+'"]').click();await page.waitForURL(app.url+'/app/exchange?tab=available#request-'+offer.id);await ready();
    await page.getByRole('heading',{name:'Open shifts',exact:true}).waitFor();
    expect(await page.locator('.mobile-header .brand:visible').count()).toBe(0);
    expect(await page.getByRole('heading',{name:'Open shifts',exact:true}).count()).toBe(1);

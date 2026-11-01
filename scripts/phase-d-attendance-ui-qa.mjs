@@ -310,6 +310,11 @@ try {
     // "Time corrections" row, collapsed until opened; #review is the deep link that opens it on load.
     await page.goto(app.url + '/app?view=attendance', { waitUntil: 'networkidle' });
     await page.locator('#who-title').waitFor();
+    // Nov 1 upscale: the Clocked in card says when its list was read ("Updated 2:37 PM", grey text) instead of "Live"; the
+    // title's subtitle is the day only. The time shows once the list is read (the label then carries its count).
+    assert.equal(await page.locator('#who-in').getByText('Live', { exact: true }).count(), 0, 'No "Live" state word');
+    if (await page.locator('#who-in .c-card__label .c-count').count()) assert.match((await page.locator('#who-in .c-card__aside').innerText()).trim(), /^Updated \d{1,2}:\d{2}\s(AM|PM)$/, 'Clocked in says when it was read');
+    assert.doesNotMatch((await page.locator('.c-who .c-title__sub').first().innerText()).trim(), /\d{1,2}:\d{2}/, 'The subtitle is the day, without the read time');
     assert.equal(await page.locator('.attendance-review').count(), 0, 'review stays collapsed until opened');
     assert.equal(await page.getByText('Alexandria Attendance Review Employee With A Long Name').count(), 0);
     await page.getByRole('button', { name: 'Time corrections and flagged clock-ins, collapsed', exact: true }).click();
