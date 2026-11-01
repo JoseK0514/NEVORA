@@ -48,7 +48,7 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
   const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
-    { id: 'action:shift', group: 'Actions', label: 'Add a shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },
+    { id: 'action:shift', group: 'Actions', label: 'Add shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },
     { id: 'action:employee', group: 'Actions', label: 'Add an employee', href: '/app/employees/new', keywords: 'add new hire person team employee staff' },
     { id: 'action:update', group: 'Actions', label: 'Send an update', href: '/app/updates/compose', keywords: 'send message announcement compose post' },
     // UX7: verbs that live inside a page open that page where the action is.

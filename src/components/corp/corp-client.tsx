@@ -78,7 +78,8 @@ export function CorpSkeleton({ route, label }: { route?: string; label: string }
   const shape = (route && SHAPES[route]) || { parts: ["card", "rows"], rows: 4 } as SkelShape;
   if (slow) return <div className="c-page c-embed c-skel c-skel--slow" data-corp="">
     <section className="c-card c-error-card" role="alert">
-      <span className="c-error-card__title">{offline ? "You’re offline" : `${label.charAt(0).toUpperCase()}${label.slice(1)} is taking longer than usual`}</span>
+      {/* Round 2 copy (row 180): one sentence that reads right for every page name, singular or plural. */}
+      <span className="c-error-card__title">{offline ? "You’re offline" : "This is taking longer than usual"}</span>
       <span className="c-error-card__body">{offline ? "Reconnect, then try again." : "Check your connection, then try again."}</span>
       <span className="c-error-card__action"><CorpRetryButton /></span>
     </section>
@@ -92,4 +93,22 @@ export function CorpSkeleton({ route, label }: { route?: string; label: string }
           : <span key={key++} className={part === "tall" ? "c-skel__shape c-skel__shape--tall" : "c-skel__shape c-skel__shape--card"} />)}
     </div>
   </div>;
+}
+
+/** Round 2 (R12): a row leaves after a server-confirmed change. Call it once the save has succeeded and before the page's
+ * data refreshes: the row fades and folds to nothing in 200ms on the kit curve, then the promise resolves (at once with
+ * reduced motion). If the refreshed page still shows the row, it comes back after a moment instead of staying hidden.
+ *   await action(); await leaveRow(rowElement); router.refresh();
+ * A row that arrives can carry data-new="" for a 200ms fade-in (corp.css). */
+export function leaveRow(row: Element | null | undefined): Promise<void> {
+  if (!(row instanceof HTMLElement) || typeof window === "undefined") return Promise.resolve();
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || typeof row.animate !== "function") return Promise.resolve();
+  const height = row.getBoundingClientRect().height;
+  row.setAttribute("data-leaving", "");
+  const motion = row.animate(
+    [{ opacity: 1, height: `${height}px`, minHeight: "0px" }, { opacity: 0, height: "0px", minHeight: "0px", paddingTop: "0px", paddingBottom: "0px" }],
+    { duration: 200, easing: "cubic-bezier(.32, .72, 0, 1)", fill: "forwards" });
+  // Safety: a row the refresh kept (the change did not remove it) is shown again rather than left folded.
+  window.setTimeout(() => { if (row.isConnected) { motion.cancel(); row.removeAttribute("data-leaving"); } }, 2400);
+  return motion.finished.then(() => undefined, () => undefined);
 }
