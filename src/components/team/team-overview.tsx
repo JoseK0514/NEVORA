@@ -37,7 +37,8 @@ export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek,
       <CorpStats items={[
         { label: "Active", value: activeEmployees },
         { label: "Availability", value: `${availabilitySubmitted} of ${availabilityEligible}` },
-        { label: "Off target", value: outside, tone: outside ? "amber" : undefined },
+        // R3: figures are ink; each person's line below says under or over.
+        { label: "Off target", value: outside },
       ]} />
     </CorpCard>
     <CorpCard id="team-hours" label="Scheduled hours" aside={<CorpLink href="/app/schedule/settings">Manage targets</CorpLink>}>

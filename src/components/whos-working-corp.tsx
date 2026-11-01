@@ -2,7 +2,7 @@
 import "./whos-working-corp.css";
 import { useEffect, useState, type ReactNode } from "react";
 import { CaretDownIcon } from "@phosphor-icons/react/ssr";
-import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpTitle } from "./corp/corp";
+import { CorpAvatar, CorpBody, CorpButton, CorpCard, CorpNav, CorpPage, CorpRow, CorpTitle } from "./corp/corp";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 import { useToday } from "./manager-today";
 import type { ClockMonitor } from "@/lib/time-clock";
@@ -19,6 +19,8 @@ const lateBy = (start: string, observedAt: string) => {
   return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
 };
 const SHOWN = 5;
+/** R3: one count voice. The label, then the figure in grey, no brackets ("Clocked in 2"). */
+const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
 const REVIEW_FRAGMENT = /^#(?:review$|attendance-.|correction-.)/;
 
 export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: ReactNode; homeHref?: string }) {
@@ -57,30 +59,31 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     <CorpNav back={{ href: homeHref, label: "Home" }} title="Who’s working" phoneOnly />
     <CorpTitle id="who-title" title="Who’s working" sub={sub} wide />
     <p className="c-phone-sub" aria-hidden="true">{sub}</p>
-    <CorpCard id="who-in" label={ready ? `Clocked in (${people.length})` : "Clocked in"} aside={ready ? <CorpPill tone="teal">Live</CorpPill> : undefined}>
+    {/* R3: "Live" is the default state, so it is grey text, not a green pill. */}
+    <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta">Live</span> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
           <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} grey />}
             detail={`${person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${clock(person.breakStartAt, timeZone)}` : `In since ${clock(person.clockInAt, timeZone)}`}${where(person.locationName)}`}
-            trail={person.state === "ON_BREAK" ? <CorpPill tone="blue">On break</CorpPill> : undefined} chevron />
-        </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">People appear here when they clock in.</span></div>}
+            chevron />
+        </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">They show up here when they clock in.</span></div>}
       {ready && !all && people.length > SHOWN ? <button type="button" className="c-who__more" onClick={() => setAll(true)}>{`Show ${people.length - SHOWN} more`}</button> : null}
     </CorpCard>
     {today?.state === "unavailable" ? <CorpCard as="div" ariaLabel="Shifts today"><CorpBody>
       <p className="c-who__state">Today’s shifts aren’t available right now.</p>
       {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>Try again</CorpButton> : null}
     </CorpBody></CorpCard> : null}
-    {late.length ? <CorpCard id="who-late" label={`Not in yet (${late.length})`}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
+    {late.length ? <CorpCard id="who-late" label={headed("Not in yet", late.length)}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
         detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="red" chevron />
     </li>)}</ul></CorpCard> : null}
-    {none.length ? <CorpCard id="who-none" label={`No clock-in (${none.length})`}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>
+    {none.length ? <CorpCard id="who-none" label={headed("Missed clock-ins", none.length)}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>
       <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
         detail={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}${where(shift.locationName)}`} chevron />
     </li>)}</ul></CorpCard> : null}
     {children ? <CorpCard as="div" ariaLabel="Review">
-      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Clock-ins and corrections" detail="Review flagged clock-ins and time corrections" chevron={false}
-        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Clock-ins and corrections, ${reviewOpen ? "expanded" : "collapsed"}`} />
+      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Time corrections" chevron={false}
+        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Time corrections and flagged clock-ins, ${reviewOpen ? "expanded" : "collapsed"}`} />
     </CorpCard> : null}
     {children && reviewOpen ? <div className="c-who__review" id="review">{children}</div> : null}
   </CorpPage>;

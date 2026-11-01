@@ -3,7 +3,7 @@ import {createElement, type ComponentProps} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 vi.mock('next/link', () => ({default: ({children, ...props}: ComponentProps<'a'>) => createElement('a', props, children)}));
 import {ActionCenterSurface} from './manager-action-center';
-import {OwnerSetupCard, hoursReason} from './owner-setup-card';
+import {OwnerSetupCard, OwnerSetupCorp, hoursReason} from './owner-setup-card';
 import {PresentationProvider} from './presentation-context';
 import {setupSteps, withoutSetupItems} from '../lib/action-center/setup';
 import {WORD_PRESETS} from '../lib/workspace-presentation/words';
@@ -100,4 +100,12 @@ it('uses the company vocabulary (B2) as two whole strings', () => {
   expect(hoursReason(1, retail)).toBe('1 associate has no weekly hour target.');
   const html = renderToStaticMarkup(<PresentationProvider words={retail}><OwnerSetupCard steps={{coverageOpen: false, missingTargets: 2}} locationCount={1}/></PresentationProvider>);
   expect(html).toContain('2 associates have no weekly hour target.');
+});
+
+it('corporate Home: one row naming the next step in short words (round 2, copy row 5)', () => {
+  const row = (steps: {coverageOpen: boolean; missingTargets: number}, locations = 1) => renderToStaticMarkup(<OwnerSetupCorp steps={steps} locationCount={locations}/>);
+  expect(row({coverageOpen: false, missingTargets: 2})).toContain('>1 of 2 done · Next: weekly hour targets<');
+  expect(row({coverageOpen: true, missingTargets: 0})).toContain('>1 of 2 done · Next: coverage periods<');
+  expect(row({coverageOpen: true, missingTargets: 2}, 0)).toContain('>0 of 2 done · Next: add a location<');
+  expect(row({coverageOpen: false, missingTargets: 0})).toBe('');
 });

@@ -112,7 +112,9 @@ export function OwnerSetupCorp({steps, locationCount}: {steps: SetupSteps | null
   const next = steps.coverageOpen
     ? locationCount === 0 ? {href: '/app/settings/locations', label: 'add a location'} : {href: '/app/schedule/settings#coverage-staffing', label: 'set coverage periods'}
     : {href: '/app/schedule/settings#target-hours', label: 'set weekly hour targets'};
-  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of 2 steps done · Next, ${next.label}`} chevron /></div>;
+  // R7 (copy row 5): "1 of 2 done · Next: weekly hour targets".
+  const step = steps.coverageOpen ? locationCount === 0 ? 'add a location' : 'coverage periods' : 'weekly hour targets';
+  return <div id="home-setup" className="c-home__setup"><CorpRow href={next.href} title="Finish setting up" detail={`${done} of 2 done · Next: ${step}`} chevron /></div>;
 }
 
 export function OwnerSetupCorpLive({locationCount}: {locationCount: number}) {

@@ -17,7 +17,7 @@ import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor, ClockMonitorEmployee } from "@/lib/time-clock";
 import { useClockMonitor } from "./clean/use-clock-monitor";
-import { OwnerHomeCorp } from "./owner-home-corp";
+import { OwnerHomeCorp, toDoSentence } from "./owner-home-corp";
 import { keepWhole } from "@/lib/keep-whole";
 import type { NextPay } from "./payroll/my-pay";
 
@@ -113,7 +113,8 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   const value = readyActions && (readyToday || todayFailed) ? needsYou(items, day, readyToday?.missed ?? []) : null;
   const retryAll = () => { onRetryActions?.(); onRetryToday?.(); focusAfterRetry("#home-needs-you .nv-card__title", ".premium-pending-failed .nv-btn"); };
   // The band's one live line. Once Home has numbers the Needs you card says them, so the line is for screen readers only.
-  const summary = value ? needsYouSentence(value.count)
+  // Corporate Home names its card ("5 things to do today."); the older looks keep their line.
+  const summary = value ? corporate ? toDoSentence(value.count) : needsYouSentence(value.count)
     : actionsConnection === "offline" ? "You’re offline."
     : actionsConnection === "paused" ? "Paused while you’re away."
     : actionsConnection === "unavailable" || actionsConnection === "access_lost" || today?.state === "unavailable" ? "Couldn’t load everything."

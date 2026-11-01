@@ -30,10 +30,10 @@ it('the Owner preview renders the D3 sidebar, the search button and the setup ca
   for (const gone of ['Requests', 'Employees', 'Availability', 'Shift requests', 'Templates', 'Payroll export']) expect(sidebar).not.toContain(`>${gone}<`);
   expect(sidebar).not.toContain('>Scheduling rules<');
   expect(html).toContain('aria-label="Search"');
-  // Release 1 (corporate): setup is one row inside Things to do, "N of 2 steps done", naming the next step.
+  // Release 1 (corporate): setup is one row inside Things to do, "N of 2 done", naming the next step (round 2 copy).
   expect(html).toContain('id="home-setup" class="c-home__setup"');
   expect(html).toContain('Finish setting up');
-  expect(html).toMatch(/\d of 2 steps done · Next, /);
+  expect(html).toMatch(/\d of 2 done · Next: /);
   expect(html).toContain('href="/app/schedule/settings#coverage-staffing"');
 });
 
@@ -45,7 +45,7 @@ it('Today strip and rail read one fixture source at one frozen moment', () => {
   expect(previewToday.state === 'ready' && previewToday.counts.clockedIn).toBe(rows);
   expect(previewActionCenter.state === 'ready' && previewActionCenter.observedAt).toBe(previewObservedAt);
   const html = renderToStaticMarkup(<HomePreview/>);
-  // Release 1 (corporate): Today's "Clocked in" stat reads the frozen fixture (the four people on the clock).
-  expect(html).toMatch(/Clocked in<\/dt><dd class="c-stat__value">4 of \d+<\/dd>/);
+  // Release 1 (corporate): Today's "On shift now" figure reads the frozen fixture (the four people on the clock).
+  expect(html).toMatch(/On shift now<\/span><span class="c-stat__value c-num">4 of \d+<\/span>/);
   expect(html).not.toContain('No one is clocked in right now');
 });
