@@ -406,15 +406,15 @@ try{
       await op.goto(app.url+'/app/clocker-recovery',{waitUntil:'commit'});
       await op.getByRole('heading',{name:'Current view needs a fresh check',exact:true}).waitFor();
       assert.equal(await op.getByLabel('Code from the tablet',{exact:true}).count(),0,'Company Access withholds the recovery form before initialization');
-      assert.equal(await op.getByRole('button',{name:'Check',exact:true}).count(),0,'Receipt submission is unavailable before fresh authorization');
+      assert.equal(await op.getByRole('button',{name:'Check code',exact:true}).count(),0,'Receipt submission is unavailable before fresh authorization');
       assert.equal(preinitReceiptRequests,0,'No receipt lookup is sent while initialization is held');
     }finally{op.off('request',beforeInitialization);releaseScripts();await Promise.all(heldScripts);}
-    await op.getByLabel('Code from the tablet',{exact:true}).waitFor();assert(await op.getByLabel('Code from the tablet',{exact:true}).isEnabled());assert(await op.getByRole('button',{name:'Check',exact:true}).isEnabled());checked(engine+': UX-05 delayed scripts withhold receipt controls until current access and initialization');
+    await op.getByLabel('Code from the tablet',{exact:true}).waitFor();assert(await op.getByLabel('Code from the tablet',{exact:true}).isEnabled());assert(await op.getByRole('button',{name:'Check code',exact:true}).isEnabled());checked(engine+': UX-05 delayed scripts withhold receipt controls until current access and initialization');
     const receiptRequests=[],receiptReplies=[];
     const requestReceipt=request=>{if(request.url().endsWith('/api/manager/clocker-recovery'))receiptRequests.push({commandId:request.postDataJSON()?.commandId});};
     const responseReceipt=async response=>{if(!response.url().endsWith('/api/manager/clocker-recovery'))return;try{const data=await response.json();receiptReplies.push({status:response.status(),state:data.state,reason:data.reason,commandId:data.commandId,observedAt:data.observedAt,validForMs:data.validForMs,receiptCount:data.receipts?.length});}catch{receiptReplies.push({status:response.status(),body:'unavailable'});}};
     op.on('request',requestReceipt);op.on('response',responseReceipt);
-    try{await op.getByLabel('Code from the tablet',{exact:true}).fill(reference);await op.getByRole('button',{name:'Check',exact:true}).click();await op.getByRole('status').filter({hasText:'Recorded action found'}).waitFor();assert.match(await op.locator('main').innerText(),/Fictional Avery Recovery QA/);}
+    try{await op.getByLabel('Code from the tablet',{exact:true}).fill(reference);await op.getByRole('button',{name:'Check code',exact:true}).click();await op.getByRole('status').filter({hasText:'Recorded action found'}).waitFor();assert.match(await op.locator('main').innerText(),/Fictional Avery Recovery QA/);}
     catch(error){console.log(JSON.stringify({engine,receiptReview:{requests:receiptRequests,replies:receiptReplies,ui:await op.locator('main').innerText(),input:await op.getByLabel('Code from the tablet',{exact:true}).inputValue(),browser:await op.evaluate(()=>({visibility:document.visibilityState,focused:document.hasFocus(),readyState:document.readyState}))}}));throw error;}
     finally{op.off('request',requestReceipt);op.off('response',responseReceipt);}
     checked(engine+': UX-05 actual manager-assisted immutable receipt review');
@@ -431,9 +431,9 @@ try{
     checked(engine+': UX-05 access return retains the selected reference, withholds private receipts until a fresh protected read, and preserves the immutable clock ledger');
     const missingReference=crypto.randomUUID(),beforeMissingReceipt=await immutableClock();clockWrites=0;op.on('request',observeClockWrite);
     try{
-      await op.getByLabel('Code from the tablet',{exact:true}).fill(missingReference);const missingReply=op.waitForResponse(response=>new URL(response.url()).pathname==='/api/manager/clocker-recovery'&&response.request().postDataJSON()?.commandId===missingReference);await op.getByRole('button',{name:'Check',exact:true}).click();
+      await op.getByLabel('Code from the tablet',{exact:true}).fill(missingReference);const missingReply=op.waitForResponse(response=>new URL(response.url()).pathname==='/api/manager/clocker-recovery'&&response.request().postDataJSON()?.commandId===missingReference);await op.getByRole('button',{name:'Check code',exact:true}).click();
       const response=await missingReply;assert.equal(response.status(),200);const missing=await response.json();assert.equal(missing.state,'ready');assert.equal(missing.commandId,missingReference);assert.deepEqual(missing.receipts,[]);
-      await op.getByRole('status').getByText('No saved receipt found',{exact:true}).waitFor();await op.getByText('It may still be in progress. They check again on the same tablet.',{exact:true}).waitFor();assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),0);assert.deepEqual(await immutableClock(),beforeMissingReceipt);assert.equal(clockWrites,0,'A missing receipt never replays or cancels a clock command');
+      await op.getByRole('status').getByText('Nothing saved for this code',{exact:true}).waitFor();await op.getByText('It may still be in progress. They check again on the same tablet.',{exact:true}).waitFor();assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),0);assert.deepEqual(await immutableClock(),beforeMissingReceipt);assert.equal(clockWrites,0,'A missing receipt never replays or cancels a clock command');
     }finally{op.off('request',observeClockWrite);}
     checked(engine+': UX-05 manager missing receipt remains unconfirmed without mutating or replaying the recorded command');
     await ownerContext.setOffline(true);await op.evaluate(()=>window.dispatchEvent(new Event('offline')));assert.equal(await op.getByRole('status').filter({hasText:'Recorded action found'}).count(),0);checked(engine+': UX-05 manager review offline privacy clearing');
