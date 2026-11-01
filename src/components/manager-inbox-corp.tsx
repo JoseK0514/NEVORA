@@ -1,13 +1,12 @@
 "use client";
 import "./manager-inbox-corp.css";
 import type { ReactNode } from "react";
-import Link from "next/link";
-import { CorpBadge, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { useToday } from "./manager-today";
 import { gapPlace, itemEntry, lateBy, planLabel, shiftEntry } from "./manager-inbox";
-import { needsYou, needsYouSentence } from "@/lib/action-center/needs-you";
+import { needsYou } from "@/lib/action-center/needs-you";
 import { itemPerson, presentItem, readableDates, spacedRanges } from "@/lib/action-center/present";
 import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
@@ -17,7 +16,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
  * count; each row opens the full review, where the decision is made (no Approve or Decline in the list). */
 
-type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red"; badge?: number };
+type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" };
 type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string } };
 type Family = { id: string; title: string; groups: Group[] };
 
@@ -29,7 +28,11 @@ const statusText: Record<ActionCenterConnection, string> = {
 
 const clock = (iso: string, timeZone: string) => new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso));
 const dayText = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${date}T00:00:00Z`));
-const hhmm = (value: string) => { const [h, m] = value.split(":").map(Number); if (h === 24 || (h === 0 && m === 0)) return "midnight"; return `${(h % 12) || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+// R7 (copy row 12): midnight reads as Schedule does, "12:00 AM".
+const hhmm = (value: string) => { const [h, m] = value.split(":").map(Number); const hour = h % 24; return `${(hour % 12) || 12}:${String(m).padStart(2, "0")} ${hour < 12 ? "AM" : "PM"}`; };
+const midnight = (text: string) => text.replace(/\bmidnight\b/gi, "12:00 AM");
+/** R7 (copy row 3): "Need 1 employee" reads "Needs 1 person" ("Needs 2 people"), the count kept with its noun. */
+const needs = (text: string) => text.replace(/Need\s(\d+)\semployees?/g, (_, n: string) => `Needs ${n}\u00a0${n === "1" ? "person" : "people"}`);
 const plain = (text: string) => text.replace(/ /g, " ");
 
 /** Codex's optional request facts (dates and partial-day times), when the read carries them. */
@@ -45,24 +48,24 @@ function itemRow(item: ActionItem, timeZone: string, calm = false): Row {
   const entry = itemEntry(item, calm, "all", timeZone);
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, actionCenterNavigation(item).label, timeZone);
   const request = item.category === "requests";
-  // "Need 1 employee" reads "1 needed", so a row's line fits a 320px phone whole.
-  return { key: item.id, href: entry.href, label: entry.label, title: plain(request ? shown.person ?? shown.title : shown.title),
-    detail: plain(request ? requestDetail(item, shown.detail) : shown.detail).replace(/Need\s(\d+)\semployees?/g, "$1 needed") };
+  return { key: item.id, href: entry.href, label: midnight(entry.label), title: plain(request ? shown.person ?? shown.title : shown.title),
+    detail: needs(midnight(plain(request ? requestDetail(item, shown.detail) : shown.detail))) };
 }
 
-/** An open shift as the board reads it: "Barista 1:00 PM – 3:00 PM" over "Today · Condado · 1 open". */
+/** An open shift as the board reads it: "Barista 1:00 PM – 3:00 PM" over "Today · Condado · 1 open", or
+ * "12:00 AM – 8:00 AM" over "Today · Condado · Needs 1 person"; a whole-day gap is "Open all day". */
 export function gapRow(item: ActionItem, timeZone: string, day: string): Row {
   const row = itemRow(item, timeZone);
   const [date, when, ...parts] = mobileActionDetail(item.detail).split(" · ");
-  // "Need 1 employee" reads "1 needed", so the line fits a 320px phone whole.
   // The read may keep the count with its noun using a no-break space, so any space matches.
-  const rest = parts.map(part => part.replace(/^Need\s(\d+)\semployees?$/, "$1 needed"));
+  const rest = parts.map(needs);
   if (!when) return { ...row, title: plain(gapPlace(item)) };
   // One position short reads as that position ("Barista 1:00 PM – 3:00 PM", "1 open"); otherwise the time and the need.
   const single = rest.length === 1 && /^[^;]+: \d+ open$/.test(rest[0]) ? rest[0].split(": ") : null;
   const dayText = item.dateTime?.slice(0, 10) === day ? "Today" : date;
-  // "all day" from the read is a row title here: "All day".
-  const time = when.replace(/\s*–\s*/, " – ").replace(/^./, letter => letter.toUpperCase());
+  // "all day" from the read is a row title here: "Open all day" (copy row 11); "midnight" reads "12:00 AM" (row 12).
+  // R2: thin spaces round the en dash ("12:00 AM – 8:00 AM"), as the kit's timeRangeText sets them.
+  const time = /^all day$/i.test(when.trim()) ? "Open all day" : midnight(when.replace(/\s*–\s*/, "\u2009–\u2009"));
   return { ...row, title: plain(single ? `${single[0]} ${time}` : time), detail: plain([dayText, gapPlace(item), ...(single ? [single[1]] : rest)].join(" · ")) };
 }
 
@@ -85,7 +88,8 @@ function timecardRows(items: ActionItem[]): Row[] {
 function shiftRow(shift: TodayShift, timeZone: string, observedAt: string | undefined, showPlace: boolean): Row {
   const entry = shiftEntry(shift, timeZone, observedAt, showPlace);
   const running = shift.status === "not_clocked_in";
-  const when = `No clock-in · ${running ? "began" : "ended"} ${clock(running ? shift.startAt : shift.endAt, timeZone)}`;
+  // R7 (copy row 9): the heading says Missed clock-ins, so the line says only when the shift began or ended.
+  const when = `Shift ${running ? "began" : "ended"} ${clock(running ? shift.startAt : shift.endAt, timeZone)}`;
   return { key: entry.key, href: entry.href, label: entry.label, title: shift.employeeName, detail: plain(showPlace ? `${when} · ${shift.locationName}` : when),
     value: running ? lateBy(shift, observedAt) : undefined, valueTone: "red" };
 }
@@ -98,16 +102,21 @@ function planRows(items: ActionItem[], timeZone: string): Row[] {
     const first = itemRow(list[0], timeZone);
     const title = planLabel[type] ?? first.title;
     return list.length === 1 ? { ...first, title, label: first.label }
-      : { key: `plan:${type}`, href: first.href, label: `${title}, ${list.length}`, title, badge: list.length };
+      : { key: `plan:${type}`, href: first.href, label: `${title}, ${list.length}`, title, value: String(list.length), valueTone: "soft" };
   });
 }
 
 /** Things to do lists exactly what Home and the sidebar count (who hasn't clocked in, today's urgent items and people's
- * requests). Owner premium (Oct 31, A5): at most three cards, one per job (Shifts, Requests, To review). Each kind keeps
- * its own list and anchor inside its card (#todo-open, #todo-missed, #todo-time-off, …), and each row's detail names its
- * kind. A card's count is the sum of its rows' items, so the three counts add up to the sidebar badge. Everything else the
- * action center holds (corrections and timecards that aren't urgent, planning and earlier gaps) is one quiet link away,
- * on its own page, and is never counted. Presentation only: the same reads and the same counts as before. */
+ * requests). Owner premium round 2 (R3, R6): every kind has its own heading with its count ("Open shifts 3", "Missed
+ * clock-ins 1"), and related kinds share a card, so the page never shows more than three cards:
+ *   1. Open shifts (the schedule's job);
+ *   2. Time: missed clock-ins, other urgent clock-in items, time corrections and timecards to approve (the time job);
+ *   3. Requests: time off, swaps, can't-work and other requests, ending with "More requests" (the full request lists and
+ *      Older items), which is its own card only when no request is waiting.
+ * Each kind keeps its anchor (#todo-open, #todo-missed, #todo-time-off, …) and the Time card keeps #todo-review, so Home's
+ * links still land. The headings' counts add up to the sidebar badge. Everything else the action center holds
+ * (corrections and timecards that aren't urgent, planning and earlier gaps) is on Older items and is never counted.
+ * Presentation only: the same reads and the same counts as before. */
 export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready" }>, today: Today | null, timeZone: string, coverageFirst: boolean) {
   const day = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(snapshot.observedAt));
   const value = needsYou(snapshot.items, day, today?.state === "ready" ? today.missed : []);
@@ -117,37 +126,42 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   const known: ActionItem["type"][] = ["TIME_OFF", "EXCHANGE", "CALLOUT"];
   const timeKinds: ActionItem["type"][] = ["TIME_CORRECTION", "TIMECARD"];
   const places = new Set(value.noClockIn.map(shift => shift.locationName)).size > 1;
-  const kind = (prefix: string) => (row: Row): Row => ({ ...row, detail: row.detail ? `${prefix} · ${row.detail}` : prefix });
-  const missed: Group = { id: "missed", title: "No clock-in", rows: value.noClockIn.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places)) };
-  // An open shift for one position already reads "1 open"; otherwise the row says it is an open shift.
-  // On a narrow phone the line may wrap; "1 needed" stays together.
-  const gaps: Group = { id: "open", title: "Open shifts", rows: of(["COVERAGE_GAP"], urgent).map(item => gapRow(item, timeZone, day))
-    .map(row => / open$/.test(row.detail ?? "") ? row : kind("Open shift")(row)).map(row => ({ ...row, detail: row.detail?.replace(/ (\d+) (needed|open)$/, " $1\u00a0$2") })) };
-  const families: Family[] = [
-    { id: "shifts", title: "Shifts", groups: coverageFirst ? [gaps, missed] : [missed, gaps] },
-    { id: "requests", title: "Requests", groups: [
-      { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => kind("Time off")(itemRow(item, timeZone))) },
-      { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => kind("Shift swap")(itemRow(item, timeZone))) },
-      { id: "cant-work", title: "Can’t work", rows: of(["CALLOUT"], requests).map(item => kind("Can’t work")(itemRow(item, timeZone))) },
-      { id: "requests", title: "Other requests", rows: requests.filter(item => !known.includes(item.type)).map(item => itemRow(item, timeZone)) },
-    ] },
-    { id: "review", title: "To review", groups: [
-      { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type)).map(item => itemRow(item, timeZone)) },
-      { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], urgent).map(item => kind("Time correction")(itemRow(item, timeZone))) },
-      { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], urgent)).map(kind("Timecards")), count: of(["TIMECARD"], urgent).length },
-    ] },
-  ].map(family => ({ ...family, groups: family.groups.filter(group => group.rows.length) })).filter(family => family.groups.length);
+  // On a narrow phone the line may wrap; the count stays with its noun ("1 open", "Needs 1 person").
+  const open: Group = { id: "open", title: "Open shifts", rows: of(["COVERAGE_GAP"], urgent).map(item => gapRow(item, timeZone, day))
+    .map(row => ({ ...row, detail: row.detail?.replace(/ (\d+) open$/, " $1\u00a0open") })) };
+  const time: Group[] = [
+    { id: "missed", title: "Missed clock-ins", rows: value.noClockIn.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places)) },
+    { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type)).map(item => itemRow(item, timeZone)) },
+    { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], urgent).map(item => itemRow(item, timeZone)) },
+    { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], urgent)), count: of(["TIMECARD"], urgent).length },
+  ];
+  const asked: Group[] = [
+    { id: "time-off", title: "Time off", rows: of(["TIME_OFF"], requests).map(item => itemRow(item, timeZone)) },
+    { id: "swaps", title: "Shift swaps", rows: of(["EXCHANGE"], requests).map(item => itemRow(item, timeZone)) },
+    { id: "cant-work", title: "Can’t work", rows: of(["CALLOUT"], requests).map(item => itemRow(item, timeZone)) },
+    { id: "requests", title: "Other requests", rows: requests.filter(item => !known.includes(item.type)).map(item => itemRow(item, timeZone)) },
+  ];
+  const shown = (groups: Group[]) => groups.filter(group => group.rows.length);
+  const cards: Family[] = [
+    { id: "card-open", title: "Open shifts", groups: shown([open]) },
+    { id: "review", title: "Time", groups: shown(time) },
+    { id: "card-requests", title: "Requests", groups: shown(asked) },
+  ];
+  const families = (coverageFirst ? cards : [cards[1], cards[0], cards[2]]).filter(family => family.groups.length);
   const more: Group[] = [
     { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)) },
     { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], later)), count: of(["TIMECARD"], later).length },
     { id: "plan", title: "Plan ahead", rows: planRows(later.filter(item => !timeKinds.includes(item.type)), timeZone), count: later.filter(item => !timeKinds.includes(item.type)).length },
     // Earlier this week: one row per kind (a week of past coverage gaps is one row with its count, not a long list).
     { id: "earlier", title: "Earlier this week", rows: value.past.length > 1
-      ? [{ key: "earlier:gaps", href: "/app/schedule", label: `Coverage gaps earlier this week, ${value.past.length}`, title: "Coverage gaps", badge: value.past.length }]
+      ? [{ key: "earlier:gaps", href: "/app/schedule", label: `Coverage gaps earlier this week, ${value.past.length}`, title: "Coverage gaps", value: String(value.past.length), valueTone: "soft" as const }]
       : value.past.map(item => itemRow(item, timeZone, true)), count: value.past.length },
   ].filter(group => group.rows.length);
   return { value, families, more };
 }
+
+/** R7 (copy row 6): the screen-reader line matches the page's name. "5 things to do today", never "need you". */
+export const toDoSentence = (n: number) => n === 0 ? "Nothing to do right now." : `${n}\u00a0${n === 1 ? "thing" : "things"} to do today.`;
 
 const groupCount = (group: Group) => group.count ?? group.rows.length;
 
@@ -158,14 +172,32 @@ export function ManagerInboxCorp({ weekStart, actorId, timeZone, coverageFirst =
 }
 
 const rowOf = (row: Row) => <li key={row.key}>
-  <CorpRow href={row.href} label={row.label} title={row.title} bold detail={row.detail} value={row.value} valueTone={row.valueTone}
-    trail={row.badge ? <CorpBadge count={row.badge} /> : undefined} chevron />
+  <CorpRow href={row.href} label={row.label} title={row.title} bold detail={row.detail} value={row.value} valueTone={row.valueTone} chevron />
 </li>;
+
+/** R3: one count voice. The label, then the figure in grey, no brackets ("Open shifts 3"). */
+const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
+
+/** One kind inside a card: its heading row with the count, then its rows. */
+const kindOf = (group: Group) => <section key={group.id} id={`todo-${group.id}`} className="c-todo__kind" aria-labelledby={`todo-${group.id}-label`}>
+  <div className="c-card__head"><h2 className="c-card__label" id={`todo-${group.id}-label`}>{headed(group.title, groupCount(group))}</h2></div>
+  <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
+</section>;
+
+/** "More requests": the full request lists and Older items (what Things to do lists but doesn't count), as plain rows. */
+const moreRequests = <section key="more" id="todo-more" className="c-todo__kind" aria-labelledby="todo-more-label">
+  <div className="c-card__head"><h2 className="c-card__label" id="todo-more-label">More requests</h2></div>
+  <CorpRows label="More requests">
+    <li><CorpRow href="/app/requests" label="All time off requests" title="Time off requests" one chevron /></li>
+    <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>
+    <li><CorpRow href="/app/inbox?view=more" label="Older items, not counted in today’s total" title="Older items" one chevron /></li>
+  </CorpRows>
+</section>;
 
 /** Presentation only: the released action center observation and today's shifts. */
 export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, timeZone, coverageFirst = false, view = "today" }: {
   snapshot: ActionCenter | null; today?: Today | null; connection: ActionCenterConnection; onRefresh: () => void; timeZone: string; coverageFirst?: boolean;
-  /** "more": Later and past, the items Things to do doesn't count (its own page, Back to Things to do). */
+  /** "more": Older items, the items Things to do doesn't count (its own page, Back to Things to do). */
   view?: "today" | "more";
 }) {
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
@@ -174,7 +206,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   const moreView = view === "more";
   const shown = moreView ? more.length : families.length;
   const todayFailed = today?.state === "unavailable";
-  const summary = value ? `${needsYouSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : statusText[connection];
+  const summary = value ? `${toDoSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : statusText[connection];
   let body: ReactNode;
   if (!ready && (connection === "unavailable" || connection === "ready")) {
     // P3: the kit's one error card.
@@ -190,21 +222,23 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   } else if (!shown) {
     // A10: the kit's empty card, never one bare line.
     body = <CorpCard as="div" ariaLabel="Things to do"><div className="c-empty c-empty--card">{moreView
-      ? <><b className="c-empty__title">Nothing later or from earlier</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
+      ? <><b className="c-empty__title">No older items</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
       : <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>}</div></CorpCard>;
   } else if (moreView) {
-    body = more.map(group => <CorpCard key={group.id} id={`todo-${group.id}`} label={`${group.title} (${groupCount(group)})`}>
+    body = more.map(group => <CorpCard key={group.id} id={`todo-${group.id}`} label={headed(group.title, groupCount(group))}>
       <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
     </CorpCard>);
   } else {
-    // At most three cards; each kind keeps its own list and anchor, so links to #todo-open or #todo-missed still land.
-    body = families.map(family => <CorpCard key={family.id} as="div" id={`todo-${family.id}`} label={`${family.title} (${family.groups.reduce((total, group) => total + groupCount(group), 0)})`}>
-      {family.groups.map(group => <section key={group.id} id={`todo-${group.id}`} className="c-todo__kind" aria-label={`${group.title} (${groupCount(group)})`}>
-        <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
-      </section>)}
-    </CorpCard>);
+    // At most three cards (see groupThingsToDo); "More requests" closes the Requests card, or is the last card.
+    const hasRequests = families.some(family => family.id === "card-requests");
+    body = families.map(family => <div key={family.id} id={`todo-${family.id}`} className="c-card c-todo__card" role="group" aria-label={family.title}>
+      {family.groups.map(kindOf)}{family.id === "card-requests" ? moreRequests : null}
+    </div>);
+    if (!hasRequests) body = <>{body}<div className="c-card c-todo__card" role="group" aria-label="More requests">{moreRequests}</div></>;
   }
-  const title = moreView ? "Later and past" : "Things to do";
+  // The request lists stay one tap away while the page loads, fails or has nothing waiting.
+  if (!moreView && (!ready || !shown)) body = <>{body}<div className="c-card c-todo__card" role="group" aria-label="More requests">{moreRequests}</div></>;
+  const title = moreView ? "Older items" : "Things to do";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
@@ -216,13 +250,6 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
       <CorpButton kind="secondary" size="md" onClick={onRefresh}>Try again</CorpButton>
     </CorpBody></CorpCard> : null}
     {body}
-    {/* Every request list stays one tap away, with or without waiting items (the menus no longer carry them), and what
-      * Things to do doesn't count (planning, earlier gaps) is one quiet link, with no number competing with the cards. */}
-    {!moreView ? <nav className="c-todo__links" aria-label="More lists">
-      <Link href="/app/requests" aria-label="All time off requests">Time off requests</Link>
-      <Link href="/app/exchange" aria-label="All shift requests">Shift requests</Link>
-      <Link href="/app/inbox?view=more" aria-label="Later and past items, not counted in today’s total">Later and past</Link>
-    </nav> : null}
     {ready?.limitedAttendance ? <CorpNote>Some attendance comparisons are unavailable.</CorpNote> : null}
   </CorpPage>;
 }

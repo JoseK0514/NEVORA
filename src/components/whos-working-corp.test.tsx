@@ -16,15 +16,16 @@ const html = (props: Partial<ComponentProps<typeof WhosWorkingView>>) => renderT
 it("lists who is clocked in (earliest first), who isn't in yet with how late, and shifts that ended with no clock-in", () => {
   const out = html({ monitor: monitor([person("b", "2026-10-30T11:58:00Z"), person("a", "2026-10-30T09:54:00Z", { state: "ON_BREAK", breakStartAt: "2026-10-30T12:10:00Z" })]),
     today: today([shift("c", "not_clocked_in", "2026-10-30T12:00:00Z"), shift("d", "no_punches", "2026-10-30T04:00:00Z")]) });
-  expect(out).toContain(">Clocked in (2)<");
-  expect(out).toContain(">Live<");
+  expect(out).toContain('>Clocked in<span class="c-count c-num">2</span><');
+  expect(out).toContain('<span class="c-meta">Live</span>');
+  expect(out).not.toContain("c-pill");
   expect(out.indexOf("Person a")).toBeLessThan(out.indexOf("Person b"));
   expect(out).toContain("On break since 8:10 AM");
   expect(out).toContain("In since 7:58 AM");
-  expect(out).toContain(">Not in yet (1)<");
+  expect(out).toContain('>Not in yet<span class="c-count c-num">1</span><');
   expect(out).toContain("Due 8:00 AM");
   expect(out).toContain("c-row__value--red\">24 min late<");
-  expect(out).toContain(">No clock-in (1)<");
+  expect(out).toContain('>Missed clock-ins<span class="c-count c-num">1</span><');
   expect(out).toContain('href="/app/timecards#timecard-d"');
   expect(out).toContain('<a class="c-nav__back" href="/app">');
 });
@@ -33,7 +34,7 @@ it("says when clock-ins are loading or unavailable and never shows a false empty
   expect(html({})).toContain("Checking who’s clocked in…");
   expect(html({ monitor: { state: "unavailable", reason: "read_failed" } })).toContain("Clock-ins aren’t available right now.");
   expect(html({})).not.toContain("No one is clocked in");
-  expect(html({ monitor: monitor([]) })).toContain("No one is clocked in right now</b><span class=\"c-empty__body\">People appear here when they clock in.</span>");
+  expect(html({ monitor: monitor([]) })).toContain("No one is clocked in right now</b><span class=\"c-empty__body\">They show up here when they clock in.</span>");
   expect(html({ monitor: monitor([]), today: { state: "unavailable", reason: "read_failed" } as Today, onRetry: () => {} })).toContain(">Try again<");
 });
 
