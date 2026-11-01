@@ -72,7 +72,7 @@ export default async function LocationsPage({ searchParams }: { searchParams?: P
     <SettingsFrame title={words.locations}>
       <p className="q-sr" role="status">{activeCount} active of {locations.length} {locations.length === 1 ? place : places}</p>
       {visible.length ? <ul className="q-list" aria-label={words.locations}>
-        <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? place : places} · ${team} ${peopleWord(team)}`}</span></li>
+        <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? place : places}`}</span></li>
         {visible.map(({ location, readiness, eligibleCount }) => <li key={location.id} data-location={location.id}>
           <Link className={location.name !== location.shortName || readiness.state !== "READY" ? "q-row" : "q-row q-row--one"} href={`${directoryPath}/${encodeURIComponent(location.id)}`} aria-label={`Edit ${location.name}`}>
             <span className="q-rt"><b>{location.shortName}</b>{location.name !== location.shortName || readiness.state !== "READY" ? <i>{[location.name !== location.shortName ? location.name : null,

@@ -27,7 +27,7 @@ export default async function WorkspacePage() {
         {locked ? <ul className="q-list" style={{ marginTop: 24 }}>
           <li><div className="q-row q-row--one" id="workspace-timezone" aria-describedby="timezone-help"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{timeZoneLabel(workspace.timeZone).replace(/ time$/, "")}</span></div></li>
           <li><Fact label="Week starts" value="Monday" /></li>
-          <p className="q-sr" id="timezone-help">{new WorkspaceTimezoneLockedError().message}</p>
+          <p className="q-sr" id="timezone-help">Time zone is locked because you have shifts and timecards. Contact support to change it.</p>
         </ul> : <>
           <Field label="Time zone" id="workspace-timezone" name="timeZone" defaultValue={workspace.timeZone} required autoComplete="off" spellCheck={false} autoCapitalize="none" enterKeyHint="done" help="For example America/New_York." />
           <ul className="q-list" style={{ marginTop: 24 }}><li><Fact label="Week starts" value="Monday" /></li></ul>

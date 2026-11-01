@@ -9,11 +9,11 @@ import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
 import { listBreakTypes } from "@/lib/clocker/break-types.server";
 import { listClockerDevices } from "@/lib/clocker/devices.server";
-import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import "./settings-corp.css";
 
-/** The one place for the company's settings (Owner premium A9). Corporate cards with their group as the card header, one-line
- * 15/400 rows, each with its current value. A count of zero says "Set up" instead of a bare 0. Your profile and the
+/** The one place for the company's settings (Owner premium A9). Corporate cards with their group's label above them (R5), one-line
+ * 15/400 rows, each with its current value. A count of zero says "None yet" instead of a bare 0. Your profile and the
  * notification feed live in More and the top bar, so they are not repeated here. */
 export default async function SettingsPage() {
   await requireRoles(["OWNER"]);
@@ -35,44 +35,44 @@ export default async function SettingsPage() {
   // while the page lists two; otherwise the number in use; nothing at all reads "Set up".
   const waiting = devices?.filter(device => ["UNREGISTERED", "PENDING", "EXPIRED"].includes(device.state)).length ?? 0;
   const inUse = devices?.filter(device => device.state === "ACTIVE").length ?? 0;
-  const tablets = devices === null ? null : waiting ? `${waiting} need${waiting === 1 ? "s" : ""} setup` : inUse || 0;
-  const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "Set up" : String(value);
+  const tablets = devices === null ? null : waiting ? `${waiting} not set up` : inUse || 0;
+  const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
   const row = (href: string, title: string, value?: string | number | null) => pathEnabled(href, presentation.modules)
     ? <li key={href}><CorpRow href={href} title={title} one value={value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft" chevron /></li> : null;
   return (
     <CorpPage className="c-settings c-page--narrow" labelledBy="settings-title">
       <CorpNav back={{ href: "/app/more", label: "More" }} title="Settings" titleId="settings-nav-title" phoneOnly />
       <CorpTitle id="settings-title" title="Settings" wide />
-      <CorpCard id="settings-company" label="Company">
+      <CorpSection id="settings-company" label="Company"><CorpCard as="div">
         <CorpRows label="Company">
           {row("/app/settings/workspace", "Company profile")}
           {row("/app/settings/locations", words.locations, locations?.length)}
           {row("/app/settings/branding", "Branding")}
-          {row("/app/settings/features", "Features and words")}
+          {row("/app/settings/features", "Features and team terms")}
           {row("/app/settings/company-policies", "Company policies")}
         </CorpRows>
-      </CorpCard>
-      <CorpCard id="settings-scheduling" label="Scheduling">
+      </CorpCard></CorpSection>
+      <CorpSection id="settings-scheduling" label="Scheduling"><CorpCard as="div">
         <CorpRows label="Scheduling">
           {row("/app/settings/positions", "Positions", positions?.length)}
           {row("/app/settings/breaks", "Break types", breakTypes?.length)}
           {row("/app/schedule/settings", "Scheduling rules")}
         </CorpRows>
-      </CorpCard>
-      <CorpCard id="settings-clocker" label="Clocker">
+      </CorpCard></CorpSection>
+      <CorpSection id="settings-clocker" label="Clocker"><CorpCard as="div">
         <CorpRows label="Clocker">
           {row("/app/settings/clocker", "Clocker tablets", tablets)}
-          {row("/app/settings/clocker/pins", "Employee PINs")}
+          {row("/app/settings/clocker/pins", "Clocker PINs")}
           {row("/app/settings/clocker/photos", "Punch photos")}
           {/* Team's "Clocker PIN" row used to open this by mistake (A2); its place is with the other Clocker tools. */}
           {row("/app/clocker-recovery?from=settings", "Clocker recovery")}
         </CorpRows>
-      </CorpCard>
-      {payroll?.canConfigure ? <CorpCard id="settings-pay" label="Pay">
+      </CorpCard></CorpSection>
+      {payroll?.canConfigure ? <CorpSection id="settings-pay" label="Pay"><CorpCard as="div">
         <CorpRows label="Pay">
           {row("/app/settings/payroll", "Payroll settings", frequency)}
         </CorpRows>
-      </CorpCard> : null}
+      </CorpCard></CorpSection> : null}
     </CorpPage>
   );
 }

@@ -7,3 +7,6 @@
 :is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 /* Owner premium: the search at 16px on phones (no iOS zoom). */
 @media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 16px; } }
+/* Owner premium R13: each tab is its label and a grey count ("No PIN 9"), one count voice, and no tab repeats another. */
+:is(#c-root, html) .c-pins .c-pins__seg button { gap: 6px; }
+:is(#c-root, html) .c-pins .c-pins__count { font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }

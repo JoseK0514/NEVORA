@@ -16,7 +16,7 @@ export default async function FeaturesPage() {
   const latest = history[0];
   const settings = readSettings(latest?.settings);
   return (
-    <SettingsFrame title="Features and words" back={{ href: "/app/settings", label: "Settings" }}>
+    <SettingsFrame title="Features and team terms" back={{ href: "/app/settings", label: "Settings" }}>
       <FeaturesEditor
         key={latest?.revision ?? 0}
         revision={latest?.revision ?? 0}

@@ -128,3 +128,5 @@
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates .q-seg { max-width: 480px; }
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates > :is(.q-hd, .updates-inbox) { max-width: 752px; }
 }
+/* Round 2: the empty card on the 720px single-column width, 16px in like every list (it was 712, with a 20px inset). */
+:is(#q-root, html) .app-shell[data-nv-corp] .page-frame [data-nv-page].q-page.premium-updates .updates-inbox .updates-empty:not(#nv-kit) { padding: 0 16px; }

@@ -44,7 +44,8 @@ it("explains a protected timezone without locking the workspace name", async () 
   expect(html).toContain('<span class="q-rv q-rv--l">Puerto Rico</span>');
   expect(html).not.toContain(">America/Puerto_Rico<");
   expect(html).not.toMatch(/<(?:input|textarea)(?=[^>]*name="name")(?=[^>]*disabled="")[^>]*>/);
-  expect(html).toContain("Changing the business timezone requires a separately reviewed conversion because operational records already exist.");
+  // Owner premium R7: the reason in plain words (the server's own error keeps its wording for a rejected save).
+  expect(html).toContain("Time zone is locked because you have shifts and timecards. Contact support to change it.");
   expect(html).toContain('aria-describedby="timezone-help"');
 });
 

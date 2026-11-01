@@ -14,10 +14,10 @@ import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
 
 const errors: Record<string, string> = {
   permission: "Only an Owner can add another Owner.",
-  save: "Employee could not be saved. Check that the ID and email are unique and the selected locations and positions are active.",
+  save: "Couldn’t add this person. Check that the employee ID and email aren’t already in use.",
   id: "Enter a unique employee ID with no more than 128 characters.",
-  name: "Enter a first and last name with no more than 160 characters each.",
-  email: "Enter a valid email address, or leave the optional email field empty.",
+  name: "Enter a first and last name.",
+  email: "Check the email, or leave it blank.",
 };
 
 export default async function NewEmployeePage({

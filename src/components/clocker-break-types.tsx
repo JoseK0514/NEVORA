@@ -101,7 +101,7 @@ export function ClockerBreakTypes({ initialTypes, action }: {
         : [...current, result.breakType]);
       toast(selection.operation === 'ARCHIVE' ? 'Break type archived. Existing records stay unchanged.'
         : selection.operation === 'REACTIVATE' ? 'Break type reactivated.'
-          : existing ? 'Break settings saved. Earlier breaks keep their recorded settings.' : 'Break type created.');
+          : existing ? 'Break settings saved. They apply to new breaks.' : 'Break type created.');
       busy.current = false;
       close();
     } catch {
@@ -129,16 +129,16 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   return <SettingsFrame className={ownerStyles.owner} title="Break types">
     <p className="q-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
     <ul className="q-list" aria-label="Configured break types">
-      <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? 'break type' : 'break types'}`}</span></li>
+      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? 'break type' : 'break types'}`}</span></li> : null}
       {types.filter(type => type.active).map(row)}
-      {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes.</span>}</li> : null}
+      {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes, like a 30-minute meal.</span>}</li> : null}
       <li><button ref={addButton} type="button" className="wc-addrow" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon aria-hidden="true" weight="bold" />Add break type</button></li>
     </ul>
     {archived.length ? <ul className="q-list" aria-label="Archived break types">
       <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
       {archived.map(row)}
     </ul> : null}
-    <p className="wc-foot">Changes apply to future breaks only. Earlier breaks keep their recorded settings.</p>
+    <p className="wc-foot">Changes apply to new breaks only.</p>
     <dialog ref={dialog} className="wc-dialog" aria-labelledby="break-editor-title" aria-describedby="break-editor-description" onCancel={event => { event.preventDefault(); close(); }}>
       {selection ? <form noValidate key={selection.operation + '-' + (selection.type?.id ?? 'new')} onSubmit={submit} aria-busy={pending} className="wc-dialog__form" {...handlers}>
         <div className="wc-dialog__head">

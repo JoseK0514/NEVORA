@@ -19,7 +19,7 @@ import { listPositions } from "@/lib/data/positions";
 import { readOperationalRuleProfileView } from "@/lib/data/shift-change-views";
 import { employeeRoleLabel } from "@/lib/employee-display";
 import Link from "next/link";
-import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpMeta, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { TeamLivePill, TeamLiveProvider } from "@/components/team-live";
 import { ChatTextIcon } from "@phosphor-icons/react/dist/ssr/ChatText";
 import { PhoneIcon } from "@phosphor-icons/react/dist/ssr/Phone";
@@ -80,12 +80,15 @@ export default async function EmployeeProfilePage({
     <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
       <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
       <CorpTitle id="person-title" title={name} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
-      <CorpCard id="person-who" label={`Employee ID ${employee.id}`} aside={employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpPill tone="neutral">Inactive</CorpPill>}>
+      {/* Owner premium R7: what they do and where first; the employee ID moves to the detail line, and their state is grey
+        words beside it (R3), not a header or a pill. */}
+      <CorpCard id="person-who" ariaLabel={name}>
         <div className="c-person__who">
           <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
           <span className="c-row__main">
             <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).join(" · ")}</span>
-            <span className="c-row__detail"><span>{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
+            <span className="c-row__detail"><span><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span>{" · "}<span className="c-person__bit">{`ID ${employee.id}`}</span></span>
+              {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
           </span>
           {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon className="c-ic" aria-hidden="true" /></a> : null}
           {dial ? <a className="c-person__act" href={`sms:${dial}`} aria-label={`Message ${name}`}><ChatTextIcon className="c-ic" aria-hidden="true" /></a> : null}
@@ -99,8 +102,9 @@ export default async function EmployeeProfilePage({
         </CorpRows>
       </CorpCard>
       <CorpCard as="div" ariaLabel="Access and sign-in">
+        {/* Owner premium R7: the one thing to act on (no Clocker PIN yet, an invitation), else their role. */}
         <CorpRow href={`${base}?view=access`} bold title="Access and sign-in" chevron
-          detail={[roleLabel, pinShown ? (pin ? (pin.configured ? "Clocker PIN set" : "No Clocker PIN") : null) : null, accountValue].filter(Boolean).join(" · ")} />
+          detail={pinShown && pin && !pin.configured ? "No Clocker PIN yet" : accountValue !== "Active" ? accountValue : roleLabel} />
       </CorpCard>
     </CorpPage>
     </TeamLiveProvider>
