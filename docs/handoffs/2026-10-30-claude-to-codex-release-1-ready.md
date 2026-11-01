@@ -1,8 +1,8 @@
 # Claude → Codex: NEVORA Release 1 is ready for inspection, then deploy
 
-Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), and 2026-11-01 for the Owner premium upgrade (§1b). Branch: `claude-codex-collab-nevora`.
+Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), 2026-11-01 for the Owner premium upgrade (§1b), and 2026-11-01 for Codex's four-surface inspection fixes (§1c). Branch: `claude-codex-collab-nevora`.
 
-**Release SHA: the head of `claude-codex-collab-nevora` when Codex receives this, which is the commit that adds this line.** Claude sends its full SHA with the handoff, and it is the head of the draft PR to `main` (CI only, never merged by Claude). App code is identical from `885003d6723b6cb4505a20d20feb3cfdb75e4b82` onward: later commits change only `docs/`, `src/test/` and test drivers in `scripts/`. Check it with `git diff --quiet 885003d6 HEAD -- . ':(exclude)docs' ':(exclude)src/test' ':(exclude)scripts'`, which must succeed. The full local gate (§4) ran on `cdb92ceaeccfecd9191f412b0c88797e7e5836b1` (Nov 1). The previous candidate `7b14776a` is superseded; do not deploy it. Any later commit makes a new candidate.
+**Frozen code candidate: `83397510a83d82420a3b6526c787f43a3092a839`** (Nov 1, after Codex's four-surface inspection). The full local gate (§4) and exact-head CI on draft PR #37 both passed on this exact SHA. Commits after it on `claude-codex-collab-nevora` (this handoff and its gate summary) change only `docs/`; check with `git diff --quiet 83397510a83d82420a3b6526c787f43a3092a839 HEAD -- . ':(exclude)docs'`, which must succeed. Deploy that SHA, or the branch head Claude names with this handoff when that check passes. `2c443138`, `cdb92cea` and `7b14776a` are superseded; do not deploy them. Any later change outside `docs/` makes a new candidate.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -120,6 +120,24 @@ for this code", "Search by name", "Help for your team", "Save" / "Save help deta
 out once (More on phones, sidebar on desktop), "Help someone sign in", "Clocker tablets". The timecard sheet's accessible
 name now includes the person ("Timecard Avery …").
 
+## 1c. Codex's four-surface inspection fixes (Nov 1)
+
+Codex inspected `2c443138` (`docs/handoffs/2026-11-01-codex-to-claude-four-surface-inspection.md`): GO WITH CONDITIONS,
+six P2 and one P3. All seven are fixed in `8da26b10`; `83397510` adds the approved references (docs only). Each fix, its
+files and evidence: `docs/handoffs/2026-11-01-claude-to-codex-inspection-response.md`. Summary:
+- A1: the phone Requests summary shows a time-off request's whole range ("Nov 11 – 12 · 2 days"). The private Requests read
+  now projects `endDate`, `startTime`, `endTime` (time off only; null for shift and can't-work rows) and the strict parser
+  checks them. **This is the one data-shape change**: `/api/employee/requests` `recent[]` rows gained those three keys. Stored
+  data, scope and routes are unchanged.
+- B-01, B-02, B-03: list structure on Owner Profile (passkeys), Company profile (locked time zone help) and Features (radio
+  group). axe: 0 violations, Chromium and WebKit, 390 and 1440, passkeys enabled.
+- B-04: Copy Clocker link takes taps over 44px with its 32px look (opt-in `q-bs--hit`; no other button changed).
+- A2, A3: Photo review on the kit in the settings gutter; Clocker tablets share the 16px phone gutter.
+- References: the approved board sources and design spec (`docs/product/specs/corporate-mockups/`) and the round 1 and
+  round 2 plans (`docs/product/reviews/owner-premium-2026-10-31/`) are now in the release tree.
+
+Codex: please re-review the seven for closure; this handoff does not close them.
+
 ## 2. Migrations
 
 - **Release 1 is the first production release of this line.** Codex's read-only preflight (Oct 31, `docs/handoffs/2026-10-31-codex-to-claude-release-1-preflight.md` in Codex's workspace) found production's catalog (Neon `rough-fire-63258908`, main branch, us-east-1) structurally identical to an owned local database built from `0001`–`0004`, with no migration ledger. Reconcile again at cutover, by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
@@ -157,14 +175,15 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 
 ### Gate on the Owner premium candidate (Nov 1)
 
-The full gate ran in one ordered pass on `cdb92ceaeccfecd9191f412b0c88797e7e5836b1` (Nov 1, 00:49–03:02 AST), clean tree
-throughout, 70 of 70 steps passed. Summary: `docs/handoffs/2026-11-01-release-1-gate-summary.txt`.
+The full gate ran in one ordered pass on `83397510a83d82420a3b6526c787f43a3092a839` (Nov 1, 07:49–10:02 AST), clean tree
+throughout, 70 of 70 steps passed. Summary: `docs/handoffs/2026-11-01-release-1-gate-summary.txt`. The earlier pass on
+`cdb92cea` (00:49–03:02) also passed 70 of 70; the counts below are from `83397510`.
 
 | Step | Result |
 |---|---|
 | Typecheck, lint, audit (prod and all), advisor pilot, release build | pass |
-| CI-only checks: inspection custody (19), notifications/foundation config (6 + 8), release engineering (168) | pass |
-| Unit | 10,435 passed, 801 skipped |
+| CI-only checks: inspection custody (19), notifications/foundation config (6 + 8), release engineering (169) | pass |
+| Unit | 10,439 passed, 801 skipped |
 | Migrations; release Postgres; advisor integration | 11; 746 (284 + 46 + 176 + 163 + 77); 38 |
 | Clocker shards 1–4 | 147 + 132 + 151 + 142 = 572 |
 | Phase E startup and SQL | pass; 23 |
@@ -186,6 +205,12 @@ browser step: in WebKit the manager's foreground return refreshes the page and c
 `/api/manager/today` read, which WebKit reports as an access-control fetch failure. `448e7af1` (test only) classifies exactly
 that event (that stage, that read, loopback origin, no query) as a recorded navigation cancellation; every other runtime
 error stays fatal. Unit cases in `scripts/d2-runtime-failures.check.mjs`; local D2 re-run 282 checks; release engineering 169.
+
+Exact-head CI on `83397510` (run 41303596912): 18 of 18 green on the third attempt, with no change between attempts. Attempts 1
+and 2 ran on runners about twice as slow as usual (the 20-location planner unit test took 203s against 106s; unit tests
+881s against 508s), so `validate` passed every step but crossed its 20-minute limit by seconds. Attempt 1 also failed D2 in
+WebKit, waiting over 15s for the corrections list after the suite's deliberately delayed read; it passed on attempt 2 and
+locally (282 checks on the same SHA). On attempt 3 `validate` took 12.5 minutes.
 
 ### Earlier candidate (`7b14776a`, Oct 31): history
 
@@ -246,7 +271,7 @@ On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run:
 
 **Hosted fictional Preview:**
 - Neon `nevora-release1-preview-20261030` (us-west-2), Vercel Preview on this branch only, region pdx1.
-- Claude redeploys it from the release head right after this commit and reports the result with the handoff message. Before this candidate it ran `dc30ce9b` (Oct 31).
+- Claude redeploys it from the release head right after this commit and reports the result with the handoff message. Before this candidate it ran the `885003d6` app code (Nov 1).
 - Link: https://nevora-git-claude-codex-collab-nevora-josekarlo-5933s-projects.vercel.app (Vercel sign-in or a share link).
 - The Preview deploys from a local clone with a local-only marker commit and `regions:["pdx1"]`. Neither is in the branch.
 
@@ -254,6 +279,7 @@ On `03e18d7c`, typecheck, lint, `test:release-engineering` and unit were re-run:
 
 - **Lead:** a Lead keeps the v5 look (Lead is on hold). The Phase E Home suite now runs as an Employee, so the v5 Lead Home has no browser coverage.
 - **Board figures not in the employee reads:** "earned so far", pay amounts in the Pay list, scheduled hours on Time.
+- **Compact 32px buttons:** only Copy Clocker link gained the 44px hit area (Codex B-04). List Approve/Decline, logo Upload and the other `q-bs` buttons keep 32px; Jose's call whether they get the same opt-in.
 - **Desktop sidebar link height:** 36px (188×36). It meets WCAG 2.5.8 (24px), but not the 44px phone rule. Desktop only.
 - **Resizing during an uncertain correction:** a desktop Employee who narrows the window below 768px while a time correction is uncertain loses that request's "Try again". The phone Time view replaces the desktop panel. It only happens when resizing during that state.
 - **Navigation helper:** Playwright sometimes misses a server action's stream close (see §4). The suite now bounds that wait, and the SQL readbacks still prove one commit.
