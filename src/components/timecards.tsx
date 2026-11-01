@@ -336,7 +336,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // actions, history and wording.
     const days=openItem?dayRows(openItem.card):[];
     const btn=(kind:'primary'|'secondary')=>`c-btn c-btn--full${kind==='secondary'?' c-btn--secondary':''}`;
-    const sheetNode=<QuietSheet open={sheetOpen} labelledBy="cm-tc-sheet-heading" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
+    const sheetNode=<QuietSheet open={sheetOpen} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
       <div className="c-sheet c-tc-sheet">
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
           <SheetCancel href="#" className="c-sheet__done cm-tc-done">Done</SheetCancel></div>
