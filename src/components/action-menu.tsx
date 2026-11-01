@@ -3,7 +3,7 @@ import { isPopoverOpen, hidePopover, showPopover } from "./kit/popover-open";
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
-import { DotsThreeIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { CaretDownIcon, DotsThreeIcon, XIcon } from "@phosphor-icons/react/ssr";
 
 type ActionMenuProps = {
   id: string;
@@ -18,6 +18,8 @@ type ActionMenuProps = {
   triggerContent?: ReactNode;
   /** A full sheet (the Owner and Manager More): announced as a modal dialog, and focus moves into it however it opens. */
   sheet?: boolean;
+  /** The phone sheet's header title ("Schedule options", "Location"); defaults to the label. */
+  title?: string;
 };
 
 export function ActionMenu({
@@ -31,6 +33,7 @@ export function ActionMenu({
   triggerClassName,
   triggerContent,
   sheet = false,
+  title,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -140,22 +143,8 @@ export function ActionMenu({
         {triggerContent ?? <>{triggerIcon}
         {!iconOnly ? <DotsThreeIcon className="mobile-workforce-action-symbol" size={24} weight="regular" aria-hidden="true"/> : null}
         <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
-        {!iconOnly ? <svg
-          className="nevora-action-menu-chevron"
-          aria-hidden="true"
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-        >
-          <path
-            d="m4 6 4 4 4-4"
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="1.6"
-          />
-        </svg> : null}</>}
+        {/* Owner premium (visual-craft M): the Phosphor caret, 16px, like every other inline chevron. */}
+        {!iconOnly ? <CaretDownIcon className="nevora-action-menu-chevron" size={16} aria-hidden="true" /> : null}</>}
       </button>
       <div
         ref={menuRef}
@@ -166,6 +155,11 @@ export function ActionMenu({
         aria-modal={sheet || undefined}
         aria-label={ariaLabel ?? `${label} actions`}
       >
+        {/* Owner premium (phone-native M4, visual-craft O): on a phone the menu is a sheet with a titled header and Done.
+          The header is hidden wherever the menu is a popover (CSS), so desktop menus are unchanged. */}
+        <div className="c-menu-head" aria-hidden="true">
+          <span className="c-menu-head__title">{title ?? label}</span>
+        </div>
         {children}
         <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"
           onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
