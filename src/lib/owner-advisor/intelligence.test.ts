@@ -22,8 +22,8 @@ it("gathers fresh evidence, selects one actual joint alternative, and retains se
     bodies.push(JSON.parse(String(init.body)));
     return Response.json(bodies.length === 1 ? { output: [read] } : decisionReply(coverageDecision()));
   } });
-  const input = bodies[1].input as { type?: string; output?: string }[];
-  expect(JSON.parse(input.find(item => item.type === "function_call_output")!.output!)).toMatchObject({ evidenceId: "E2", coveragePlans: { sourceVersion: "a".repeat(64) } });
+  const input = bodies[1].input as { type?: string; call_id?: string; output?: string }[];
+  expect(JSON.parse(input.find(item => item.type === "function_call_output" && item.call_id === "coverage-1")!.output!)).toMatchObject({ evidenceId: "E2", coveragePlans: { sourceVersion: "a".repeat(64) } });
   expect(result.coveragePlans).toEqual(plans);
   expect(result.text).toContain("2026-10-22");
   expect(result.text).toContain("COMPLETE");

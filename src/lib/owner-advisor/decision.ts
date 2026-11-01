@@ -102,23 +102,29 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
   };
   const es = d.language === "es";
   const lines = [d.summary];
+  const unverified: string[] = [];
+  let hasCanonicalCoverage = false;
   for (const observation of d.observations) lines.push(`${observation.statement} [${observation.evidenceIds.join(", ")}]`);
   for (const option of d.options) {
     lines.push(`${option.id}: ${option.description} ${es ? "Consecuencia" : "Tradeoff"}: ${option.tradeoff}`);
     const ref = option.coverage;
     if (!ref) {
-      lines.push(es ? "Viabilidad sin verificar; es una opción para revisión." : "Feasibility unverified; this is a review option.");
+      unverified.push(option.id);
       continue;
     }
+    hasCanonicalCoverage = true;
     const plan = byId.get(ref.evidenceId)!.result.coveragePlans!, alternative = plan.alternatives[ref.alternativeIndex];
     const included = plan.locations.filter(l => l.state === "INCLUDED").length;
     lines.push(es
       ? `${ref.evidenceId}, alternativa ${ref.alternativeIndex + 1}: ${plan.date}; ubicaciones incluidas: ${included}. Ubicaciones excluidas: ${plan.locations.length - included}. Estado de búsqueda: ${alternative.status}. Bloques pendientes: ${alternative.remaining.total}. Minutos añadidos: ${alternative.addedMinutes}. Destinos publicados: ${alternative.publishedTargets}.`
       : `${ref.evidenceId}, alternative ${ref.alternativeIndex + 1}: ${plan.date}; included locations: ${included}. Excluded locations: ${plan.locations.length - included}. Search status: ${alternative.status}. Remaining blocks: ${alternative.remaining.total}. Added minutes: ${alternative.addedMinutes}. Published targets: ${alternative.publishedTargets}.`);
-    lines.push(es
-      ? "Son asignaciones hipotéticas para esa fecha y alcance; cada alternativa es independiente. La búsqueda acotada no prueba optimalidad ni imposibilidad. La disponibilidad real requiere confirmación."
-      : "These are hypothetical allocations for that date and scope; each alternative is separate. Bounded search is not proof of optimality or impossibility. Actual availability still needs confirmation.");
   }
+  if (unverified.length) lines.push(es
+    ? `Opciones sin verificar: ${unverified.join(", ")}. Son opciones para revisión.`
+    : `Unverified options: ${unverified.join(", ")}. These are review options.`);
+  if (hasCanonicalCoverage) lines.push(es
+    ? "Son asignaciones hipotéticas para esa fecha y alcance; cada alternativa es independiente. La búsqueda acotada no prueba optimalidad ni imposibilidad. La disponibilidad real requiere confirmación."
+    : "These are hypothetical allocations for that date and scope; each alternative is separate. Bounded search is not proof of optimality or impossibility. Actual availability still needs confirmation.");
   lines.push(`${es ? "Recomendación" : "Recommendation"}: ${d.recommendation.optionId ? d.recommendation.optionId + ". " : ""}${d.recommendation.rationale}`);
   if (d.uncertainties.length) lines.push(`${es ? "Por confirmar" : "Unknowns"}: ${d.uncertainties.join(" ")}`);
   for (const e of incomplete) lines.push(es ? `${e.id} es parcial; los datos omitidos o no disponibles siguen sin verificar.` : `${e.id} is partial; omitted or unavailable facts remain unverified.`);
