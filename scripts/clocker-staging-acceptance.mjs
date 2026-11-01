@@ -20,10 +20,10 @@ async function idle(page){await page.getByRole('heading',{name:'Enter your PIN',
 async function photoCheck(portal,page,tablet,verify){
  await go(portal,'/app/settings/clocker/photos');
  await portal.getByLabel('Assistance contact',{exact:true}).fill('Fictional staging Owner desk');await portal.getByLabel('Assistance instructions',{exact:true}).fill('Fictional acceptance testing only. Ask the test Owner for an accessible alternative.');
- await portal.getByRole('button',{name:'Save assistance settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'The current photo notice is prepared'}).waitFor();
+ await portal.getByRole('button',{name:'Save help details',exact:true}).click();await portal.getByRole('status').filter({hasText:'Help details saved'}).waitFor();
  const enabled=portal.getByRole('switch',{name:/^Take punch photos/});await enabled.check();
- for(const name of ['Start break','End break','Clock out'])await portal.getByRole('checkbox',{name,exact:true}).uncheck();
- await portal.getByRole('button',{name:'Save company settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'Company photo settings saved'}).waitFor();
+ for(const name of ['Start break','End break','Clock out'])await portal.getByRole('switch',{name,exact:true}).uncheck();
+ await portal.getByRole('button',{name:'Save',exact:true}).click();await portal.getByRole('status').filter({hasText:'Saved. These settings start when photos are available.'}).waitFor();
  try{
   await tablet.grantPermissions(['camera'],{origin});await page.reload();await verify();await page.getByRole('button',{name:'Clock In',exact:true}).click();
   await page.getByRole('button',{name:'Open camera',exact:true}).click();await page.getByRole('button',{name:'Take photo',exact:true}).click();await page.getByRole('button',{name:'Use photo & continue',exact:true}).click();
@@ -35,8 +35,8 @@ async function photoCheck(portal,page,tablet,verify){
   }else checks.push('chromium synthetic image retained only for platform-expiry acceptance');
  }finally{
   await go(portal,'/app/settings/clocker/photos');await portal.getByRole('switch',{name:/^Take punch photos/}).uncheck();
-  for(const name of ['Clock in','Start break','End break','Clock out'])await portal.getByRole('checkbox',{name,exact:true}).check();
-  await portal.getByRole('button',{name:'Save company settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'Company photo settings saved'}).waitFor();
+  for(const name of ['Clock in','Start break','End break','Clock out'])await portal.getByRole('switch',{name,exact:true}).check();
+  await portal.getByRole('button',{name:'Save',exact:true}).click();await portal.getByRole('status').filter({hasText:'Saved. These settings start when photos are available.'}).waitFor();
  }
  await verify();await page.getByRole('button',{name:'Clock Out',exact:true}).click();await page.getByRole('button',{name:'Confirm Clock Out',exact:true}).click();await page.getByRole('heading',{name:'Clock Out Recorded',exact:true}).waitFor();await page.getByRole('button',{name:'Done',exact:true}).click();await idle(page);checks.push('chromium photo preference restored Off and canonical time remains intact');
 }

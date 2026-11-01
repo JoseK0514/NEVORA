@@ -229,7 +229,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
    await modules([]);await page.goto(app.url+'/app/my-pay');await state('ready');expectedFailure=false;
    record('A Download whose access ended navigates back to Pay instead of saving a file');
 
-   // Kit tokens: 22px tab title on Pay, 17px pushed-page title on Paycheck (v5 used 32px); 44px targets.
+   // Kit tokens: 24px tab title on Pay (round 2 R1 type scale, was 22px), 17px pushed-page title on Paycheck (v5 used 32px); 44px targets.
    stage='matrix';
    const matrix=async(prefix:string,title:string,subjects:readonly (readonly [string,string])[])=>{
     for(const theme of ['light','dark'])for(const width of [320,390,430]){
@@ -247,7 +247,7 @@ it('shows own published statements, linked corrections and protected PDFs with t
     expect(await last.evaluate((el:HTMLElement)=>el.getBoundingClientRect().bottom<=document.querySelector('.mobile-nav')!.getBoundingClientRect().top+1)).toBe(true);
     await page.evaluate(()=>scrollTo(0,0));await shot(prefix+'-text200-top');await page.evaluate(()=>scrollTo(0,document.body.scrollHeight));await shot(prefix+'-text200');await page.evaluate(()=>{document.documentElement.style.fontSize='';});await page.setViewportSize({width:390,height:844});await page.emulateMedia({colorScheme:'light'});
    };
-   await matrix('pay','22px',[['title','.c-pay h1'],['recent','#pay-recent-label'],['period','#pay-period .c-line3'],['chip','#pay-period .c-pill'],['payday','#pay-recent .c-row__title'],['dates','#pay-recent .c-row__detail'],['pill','#pay-recent .c-pill']]);
+   await matrix('pay','24px',[['title','.c-pay h1'],['recent','#pay-recent-label'],['period','#pay-period .c-line3'],['chip','#pay-period .c-pill'],['payday','#pay-recent .c-row__title'],['dates','#pay-recent .c-row__detail'],['pill','#pay-recent .c-pill']]);
    await page.goto(paycheck(correction.id));await state('ready');
    await matrix('paycheck','17px',[['title','.c-pay h1'],['payday','#pay-paycheck .c-big'],['view','#pay-paycheck .c-pay-action'],['privacy','.c-pay > .c-note']]);
    await page.goto(app.url+'/app/my-pay');await state('ready');
