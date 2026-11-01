@@ -41,6 +41,7 @@ import {
   listOpenCoverage,
 } from "@/lib/data/exchanges";
 import {readShiftChangeOperationView} from '@/lib/data/shift-change-views';
+import "../requests/owner-lists.css";
 
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_SHIFT: "That shift is no longer available for exchange.",

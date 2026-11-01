@@ -10,7 +10,7 @@ const idle:GenerationActionState={status:'idle',message:''};
 function PendingActions({disabled}:{disabled:boolean}) {
   const {pending,data}=useFormStatus();
   const mode=data?.get("mode");
-  return <div className="schedule-generation-peers"><button className="schedule-generation-action primary" type="submit" name="mode" value="BUILD_WEEK" disabled={disabled||pending}>{pending&&mode==='BUILD_WEEK'?'Building…':'Build week'}</button><button className="schedule-generation-action secondary" type="submit" name="mode" value="FILL_GAPS_ONLY" disabled={disabled||pending}>{pending&&mode==='FILL_GAPS_ONLY'?'Filling…':'Fill gaps only'}</button></div>;
+  return <div className="schedule-generation-peers"><button className="schedule-generation-action primary" type="submit" name="mode" value="BUILD_WEEK" disabled={disabled||pending}>{pending&&mode==='BUILD_WEEK'?'Building…':'Build draft'}</button><button className="schedule-generation-action secondary" type="submit" name="mode" value="FILL_GAPS_ONLY" disabled={disabled||pending}>{pending&&mode==='FILL_GAPS_ONLY'?'Filling…':'Fill gaps only'}</button></div>;
 }
 function ClearButton() {const {pending}=useFormStatus();return <button className="schedule-generation-action secondary" type="submit" disabled={pending}>{pending?'Allowing…':'Allow auto-fill'}</button>;}
 function Coverage({coverage}:{coverage:ScheduleGenerationReview['coverage']}) {return <span>{coverage&&!coverage.unavailable&&coverage.percentage!==null?`${Math.round(coverage.percentage)}% of needed hours covered`:'Coverage unavailable'}</span>;}

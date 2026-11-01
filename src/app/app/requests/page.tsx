@@ -14,6 +14,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { CorpButtonLink, CorpNav, CorpNote, CorpPage, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import { TimeOffListRow, TimeOffRequestCard, canWithdrawTimeOff, timeOffDates, type TimeOffView } from "@/components/employee-mobile/timeoff-parts";
 import "@/components/employee-mobile/timeoff-corp.css";
+import "./owner-lists.css";
 
 /* Employee Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet), in the desktop column.
  * The phone draws the same pages from its planning read (employee-mobile/timeoff). Same reads, actions and fields. */

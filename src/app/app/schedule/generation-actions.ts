@@ -87,6 +87,6 @@ export async function clearGenerationExclusionAction(_previous:GenerationActionS
     await clearGenerationExclusion({proof,workspaceId:workspace.id,actorEmployeeId:session.id,weekStart,locationId,exclusionId});
     await assertOriginalOperationalAccess(proof,original);
     revalidatePath('/app/schedule');
-    return {status:'success',message:'Automatic fill allowed for this need. Run Build Week or Fill Gaps Only when ready.'};
+    return {status:'success',message:'Automatic fill allowed for this need. Run Build draft or Fill gaps only when ready.'};
   } catch(error) {if(original){try{await assertOriginalOperationalAccess(proof,original);}catch(lost){return failure(lost);}}return failure(error);}
 }

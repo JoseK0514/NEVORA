@@ -27,6 +27,7 @@ import {
   addDays, isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 import type { AvailabilityState } from "@/lib/availability-presets";
+import "../requests/owner-lists.css";
 
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 

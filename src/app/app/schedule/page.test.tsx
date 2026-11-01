@@ -103,8 +103,8 @@ vi.mock('@/lib/data/schedule-generation-review',()=>({getScheduleGenerationRevie
 vi.mock('@/components/schedule-generation-controls',()=>import('../../../components/schedule-generation-controls'));
 vi.mock('@/app/app/schedule/generation-actions',()=>({generateWeekAction:vi.fn(),clearGenerationExclusionAction:vi.fn()}));
 it('Manager Schedule uses the shared viewport-safe action menu instead of a page-local details dropdown',async()=>{f.role='MANAGER';const output=await html();expect(output).toContain('class="nevora-action-menu"');expect(output).toContain('popover="auto"');expect(output).not.toContain('<details class="schedule-more-menu"');});
-it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('href="/app/schedule/publish?week=2026-10-05"');expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}))).toContain('Build week');});
-it('Employee/Lead do not load Manager review or position catalogs',async()=>{for(const role of ['EMPLOYEE','LEAD']){f.role=role;expect(await html()).not.toContain('Build week');}expect(f.managerReads).not.toHaveBeenCalled();});
+it('Manager renders actual assigned positions and captured published names without invented labels',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'draft',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'},{id:'published',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-06',startTime:'08:00',endTime:'12:00',scheduleStatus:'PUBLISHED'},{id:'legacy',employeeId:'worker',locationId:'north',date:'2026-10-07',startTime:'08:00',endTime:'12:00',scheduleStatus:'DRAFT'}];f.captured=[{sourceShiftId:'published',positionName:'Captured Cashier'}];const output=await html();expect(output).toContain('Renamed Cashier');expect(output).toContain('Captured Cashier');expect(output.match(/schedule-assigned-position/g)).toHaveLength(2);expect(output).toContain('href="/app/schedule/publish?week=2026-10-05"');expect(renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',plan:'1'})}))).toContain('Build draft');});
+it('Employee/Lead do not load Manager review or position catalogs',async()=>{for(const role of ['EMPLOYEE','LEAD']){f.role=role;expect(await html()).not.toContain('Build draft');}expect(f.managerReads).not.toHaveBeenCalled();});
 it('protected generated deletion reports scheduling history truthfully',async()=>{f.role='MANAGER';const output=renderToStaticMarkup(await SchedulePage({searchParams:Promise.resolve({week:'2026-10-05',error:'SHIFT_HAS_EXCHANGE_HISTORY'})}));expect(output).toContain('scheduling history');});
 it('archived historical assignments retain their captured position identity',async()=>{f.role='MANAGER';f.positions=[{id:'cashier',name:'Renamed Cashier'}];f.employees=[{id:'worker',active:true,firstName:'Fictional',lastName:'Worker',role:'EMPLOYEE'}];f.shifts=[{id:'archived',employeeId:'worker',locationId:'north',positionId:'cashier',date:'2026-10-05',startTime:'08:00',endTime:'12:00',scheduleStatus:'ARCHIVED'}];f.captured=[{sourceShiftId:'archived',positionName:'Original Cashier'}];const output=await html();expect(output).toContain('Original Cashier');expect(output).not.toContain('Renamed Cashier');});
 
@@ -280,14 +280,16 @@ it('7d: with held changes the per-location panel sends the Owner to Build and pu
  f.pending=null;
  expect(await page({plan:'1'})).toContain('Publish Main Office');
 });
-it('Publish is the primary action while something waits, and steps back once everything is published',async()=>{
+// Owner premium (A12): the action is named by the week's state; publication itself is unchanged.
+it('names the title action by state: Publish changes while edits wait, nothing once everything is published',async()=>{
  twoPublished();f.pending={...moved(),hasPendingChanges:false,pendingCount:0,locations:[],changes:[],changedShiftIds:[]};
- // A ready read with nothing held: hasPendingChanges false.
- expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--secondary c-btn--sm">Publish</);
+ // A ready read with nothing held: hasPendingChanges false, so no action (Activity has the publication history).
+ const quiet=await page({});
+ expect(quiet).not.toMatch(/href="\/app\/schedule\/publish\?week=[^"]*" aria-label=/);expect(quiet).not.toContain('>Publish changes<');
  f.pending=moved();
- expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--sm">Publish</);
- f.pending=null; // a failed read: unknown, so Publish stays primary
- expect(await page({})).toMatch(/aria-label="Build and publish [^"]*" class="c-btn c-btn--sm">Publish</);
+ expect(await page({})).toMatch(/aria-label="Publish changes, [^"]*" class="c-btn c-btn--sm">Publish changes</);
+ f.pending=null; // a failed read: unknown, so Publish stays
+ expect(await page({})).toMatch(/aria-label="Publish, [^"]*" class="c-btn c-btn--sm">Publish</);
 });
 it('the "…" menu opens Schedule activity for the week shown',async()=>{
  f.role='OWNER';f.locations=[{id:'main',shortName:'Main Office'}];

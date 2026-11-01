@@ -1,0 +1,9 @@
+/* Owner premium (A7, A10; visual-craft F/K): the Owner's Time off, Shift requests and Availability lists. One width for
+ * single-column pages on tablets and desktop (720px, on the title's left edge), the segmented control a control (480px),
+ * and an empty list said in a card instead of a bare line on the grey page. */
+:is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > .q-empty { padding: 32px 16px; border-radius: 12px; background: #FFFFFF;
+  box-shadow: 0 0 0 1px #E3E5E6; text-align: center; font-size: 15px; line-height: 20px; color: #6B7075; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > :not(.q-nav):not(.q-hd) { width: 100%; max-width: 720px; }
+  :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > .q-seg.q-seg.q-seg { max-width: 480px; }
+}

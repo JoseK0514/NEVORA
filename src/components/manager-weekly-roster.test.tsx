@@ -129,7 +129,8 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   // Today's card: the shift with its time column, the open shift with Find cover, the count with hours, and Add shift on this day.
   expect(output).toContain("Today · Tue, Oct 6");
   expect(output).toContain("2 shifts · 4 h");
-  expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b>8:00\sPM<\/b><span>midnight<\/span>/);
+  // Owner premium: one time format; midnight reads 12:00 AM.
+  expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b>8:00\sPM<\/b><span>12:00\sAM<\/span>/);
   expect(output).toContain('href="/app/schedule/coverage?repair=x"');
   expect(output).toContain(">Find cover</a>");
   expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;date=2026-10-06"');
