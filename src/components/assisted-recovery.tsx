@@ -6,6 +6,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {keepWhole} from '@/lib/keep-whole';
 import {Notice,SettingsFrame} from '@/app/app/settings/wave-c-kit';
 import {ButtonLabel,Field,FieldErrors,useFieldErrors} from '@/app/app/settings/wave-c-form';
+import {ReturnToNext} from './team/return-to-next';
 
 /** Quiet (v4): how the Owner or Manager checked who someone is; each is a complete sentence the server records. */
 const METHODS=[
@@ -27,13 +28,15 @@ type Props={
  from?:'settings';
  /** The company's timezone, for the code's expiry. */
  timeZone?:string;
+ /** An Owner also resets Clocker PINs: the page links to Employee PINs (A2: Team's one "Help someone sign in" row). */
+ pins?:boolean;
  onSubmit:(event:FormEvent<HTMLFormElement>)=>void;
  onStartAgain:()=>void;
 };
 
 /** Wave C: assisted account recovery on the kit (Owners and Managers). AccountRecovery keeps the request,
  * the private-data clearing and the lifecycle; this is presentation only. */
-export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,timeZone,onSubmit,onStartAgain}:Props){
+export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,timeZone,pins=false,onSubmit,onStartAgain}:Props){
  // The band's Back names where it goes: the employee it was opened from, Settings, or Home.
  const [method,setMethod]=useState(METHODS[0].value);
  const [confirmed,setConfirmed]=useState(false);
@@ -49,7 +52,8 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
  const until=issued?keepWhole(new Date(issued.expiresAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone,timeZoneName:'short'})):'';
 
  // Quiet (v4, approved Oct 23): the employee's ID, how you checked who they are, a confirmation switch, then one button.
- return <SettingsFrame back={back} settingsCrumb={false} title="Account recovery" summary="Give someone a one-time code to get back in.">
+ // One name per place (A3): Team's row and this page are both "Help someone sign in".
+ return <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery" title="Help someone sign in" summary="Give someone a one-time code to get back in.">
   {issued?<section aria-labelledby="assisted-receipt-title">
    <div ref={feedback} tabIndex={-1} role="status" aria-labelledby="assisted-receipt-title" className="q-lead" style={{ marginTop: 24 }}>
     <b id="assisted-receipt-title">Recovery code ready</b><i>{`For ${issued.employeeId} · works once, until `}<time dateTime={issued.expiresAt}>{until}</time></i>
@@ -64,11 +68,12 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <p className="q-help">Issuing another code retires any unused earlier code. The code hides when you leave this page.</p>
   </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
    <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
+   <ReturnToNext/>
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
     <FieldErrors errors={errors}>
      <h2 className="q-sr" id="assisted-verify-title">Verify the employee</h2>
      <Field label="Employee ID" inputRef={employee} placeholder="e.g. 10482"
-      id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="username" autoCapitalize="none" spellCheck={false}/>
+      id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done"/>
      <ul className="q-list" style={{ marginTop: 24 }}>
       <li><label className="q-row q-row--one q-select-row">
        <span className="q-rt"><b>How you checked</b></span>
@@ -96,6 +101,10 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <button className="q-btn" type="submit" disabled={!hydrated||busy||!confirmed} aria-describedby={confirmed?undefined:'assisted-confirm-needed'}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
    {confirmed?null:<p className="q-sr" id="assisted-confirm-needed">Turn on “I confirmed who they are” first.</p>}
   </form>}
+  {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
+   <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>
+   <ul className="q-list"><li><Link className="q-row" href="/app/settings/clocker/pins"><span className="q-rt"><b>Reset a Clocker PIN</b><i>Set a new PIN for someone who forgot theirs</i></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li></ul>
+  </section>:null}
  </SettingsFrame>;
 }
 

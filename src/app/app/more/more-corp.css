@@ -1,10 +1,11 @@
-/* More (board O-More): values are quiet, the icons grey, Sign out a red outline at the end. */
+/* More (board O-More, Owner premium A9): values are quiet, the icons grey, rows the kit's 52px (V2: one row height), and
+ * Sign out a 15/600 red text row in its own last card (as iOS Settings does), never a red outline bar. */
 :is(#c-root, html) .c-more .c-row__value { font-weight: 400; color: var(--c-grey); }
 :is(#c-root, html) .c-more .c-row__icon { color: var(--c-ink2); }
 :is(#c-root, html) .c-more .c-more__signout { margin: 0; }
-/* Board O-More: one-line rows of 44px with 20px icons. */
-:is(#c-root, html) .c-more .c-row--one { min-height: 44px; padding-top: 4px; padding-bottom: 4px; }
 :is(#c-root, html) .c-more .c-row__icon .c-ic { width: 20px; height: 20px; }
+:is(#c-root, html) .c-more:not(.c-more--employee) .c-more__signout-row { cursor: pointer; }
+:is(#c-root, html) .c-more:not(.c-more--employee) .c-more__signout-row .c-row__title { font-weight: 600; color: var(--c-red); }
 /* Board E-More (an Employee's More): 52px rows with 15/600 titles, the unread count a teal badge, Sign out a white card. */
 :is(#c-root, html) .c-more--employee .c-row--one { min-height: 52px; padding-top: 8px; padding-bottom: 8px; }
 :is(#c-root, html) .c-more--employee .c-row__title { font-weight: 600; }

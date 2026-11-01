@@ -77,12 +77,12 @@ export default async function EmployeeProfilePage({
   // Release 1, board O-Person: who they are with Call and Message, their work, then one row to Access and sign-in.
   if (!editing && !accessView) return (<ScopedReadFrame observation={source}>
     <TeamLiveProvider>
-    <CorpPage className="c-person" labelledBy="person-title">
+    <CorpPage className="c-person c-page--narrow" labelledBy="person-title">
       <CorpNav back={{ href: "/app/employees", label: "Team" }} title={name} titleId="person-nav-title" right={canManageCore ? <Link href={`${base}?edit=1`}>Edit</Link> : undefined} phoneOnly />
       <CorpTitle id="person-title" title={name} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
       <CorpCard id="person-who" label={`Employee ID ${employee.id}`} aside={employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpPill tone="neutral">Inactive</CorpPill>}>
         <div className="c-person__who">
-          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
+          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey large />
           <span className="c-row__main">
             <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).join(" · ")}</span>
             <span className="c-row__detail"><span>{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
@@ -109,7 +109,7 @@ export default async function EmployeeProfilePage({
   // Release 1, board O-PersonAccess: role, Clocker PIN and account; reset password; the Owner's invitation and management
   // access controls; then Deactivate (red outline) at the bottom.
   if (accessView) return (<ScopedReadFrame observation={source}>
-    <CorpPage className="c-person c-access" labelledBy="access-title">
+    <CorpPage className="c-person c-access c-page--narrow" labelledBy="access-title">
       <CorpNav back={{ href: base, label: employee.firstName }} title="Access and sign-in" titleId="access-nav-title" phoneOnly />
       <CorpTitle id="access-title" title="Access and sign-in" sub={name} wide />
       <CorpCard id="person-access" label="Access">

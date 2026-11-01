@@ -27,9 +27,9 @@ export function FormHeadBack({ onClick, children }: { onClick: () => void; child
 }
 
 /** The mobile phone field: "(787) 555-0142" while typed; the form's command saves it as 787-555-0142. */
-export function PhoneField({ id, name, defaultValue = "", required, autoComplete }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string }) {
+export function PhoneField({ id, name, defaultValue = "", required, autoComplete, enterKeyHint }: { id: string; name: string; defaultValue?: string; required?: boolean; autoComplete?: string; enterKeyHint?: "next" | "done" }) {
   const [value, setValue] = useState(() => phoneTyping(defaultValue));
-  return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} value={value} required={required}
+  return <input id={id} className="c-in" name={name} type="tel" inputMode="tel" autoComplete={autoComplete} enterKeyHint={enterKeyHint} value={value} required={required}
     placeholder="(787) 555-0123" maxLength={14} pattern="\(\d{3}\) \d{3}-\d{4}" title="A ten-digit phone number"
     onChange={event => {
       const next = event.target.value;

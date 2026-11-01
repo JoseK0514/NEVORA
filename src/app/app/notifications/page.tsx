@@ -23,6 +23,6 @@ export default async function NotificationsPage(){
   </ResponsiveEmployeeMessages>;
  }
  // Quiet (v4, approved Oct 23): back to Today, the title, then the list.
- return <QuietPage><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title="Notifications"/>
+ return <QuietPage className="c-page--narrow"><QuietNav back={{href:'/app',label:'Home'}}/><QuietHeader title="Notifications"/>
   <EmployeeAccountPanel key={authority} kind="notifications" authority={authority} endpoint="/api/notifications" markReadAllowed/></QuietPage>;
 }

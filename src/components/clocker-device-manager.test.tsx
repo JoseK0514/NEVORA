@@ -158,31 +158,50 @@ describe('device options, driven through the component’s handlers', () => {
 
   it('Active: options offer Rename, Replace tablet and Revoke access; the name field takes focus', () => {
     press('Fictional front desk tablet, options');
-    expect(sheet()).toEqual({ title: 'Rename device', open: true });
+    // Owner premium C1: the sheet is titled with the tablet's name.
+    expect(sheet()).toEqual({ title: 'Fictional front desk tablet', open: true });
     expect(dialogOpen).toBe(true);
     expect(focused).toEqual(['Device name']);
     for (const label of ['Save name', 'Replace tablet', 'Revoke access', 'Cancel']) expect(button(label).disabled, label).toBeFalsy();
     expect(has('Reconnect tablet')).toBe(false);
-    expect(has('New setup code')).toBe(false);
+    expect(has('Get setup code')).toBe(false);
   });
 
-  it('Needs setup: every waiting tablet offers New setup code and Revoke access', () => {
+  it('Needs setup: every waiting tablet leads with Get setup code (primary), then Save name, Revoke access and Cancel', () => {
     const shown = draw().filter(node => node.props['data-clocker-device']).map(node => node.props['data-clocker-device']);
     expect(shown).toEqual(['front', 'new', 'waiting', 'lapsed', 'gone']);
     for (const name of ['Fictional new tablet', 'Fictional waiting tablet', 'Fictional lapsed tablet']) {
       press(`${name}, options`);
-      expect(has('New setup code'), name).toBe(true);
+      expect(sheet().title, name).toBe(name);
+      expect(button('Get setup code').className, name).toBe('q-btn');
+      expect(button('Save name').className, name).toBe('q-btn q-btn--sec');
       expect(has('Revoke access'), name).toBe(true);
       expect(has('Replace tablet') || has('Reconnect tablet'), name).toBe(false);
       button('Cancel').onClick({}); settle();
     }
+    // Getting the first code confirms once, with the action named the same.
+    press('Fictional new tablet, options');
+    button('Get setup code').onClick({}); settle();
+    expect(sheet().title).toBe('Get a setup code?');
+    expect(has('Get setup code')).toBe(true);
+    expect(has('Create new code')).toBe(false);
+  });
+
+  it('says a waiting tablet once: one amber count in the card header, the state in each row in words, no Active pills', () => {
+    const html = draw();
+    const pills = html.filter(node => typeof node.props.className === 'string' && (node.props.className as string).startsWith('wc-pill'));
+    expect(pills.map(text)).toEqual(['3 need setup']);
+    expect(text(html.find(node => node.props['data-clocker-device'] === 'new'))).toContain('Needs setup');
+    expect(text(html.find(node => node.props['data-clocker-device'] === 'front'))).not.toContain('Active');
+    // While tablets wait, adding another is the secondary action.
+    expect(button('Add another tablet').className).toBe('q-btn q-btn--sec');
   });
 
   it('Removed: options offer Reconnect tablet and no Revoke access', () => {
     press('Fictional removed tablet, options');
     expect(button('Reconnect tablet').disabled).toBeFalsy();
     expect(has('Revoke access')).toBe(false);
-    expect(has('Rename device') || sheet().title === 'Rename device').toBe(true);
+    expect(sheet().title).toBe('Fictional removed tablet');
   });
 
   it('Replace and Revoke ask first, start on Cancel, and Cancel returns to the device row', () => {
@@ -226,7 +245,7 @@ describe('device options, driven through the component’s handlers', () => {
   it('before hydration no device row or Add device can be pressed, so no options can open', () => {
     hooks.server = true;
     expect(button('Fictional front desk tablet, options').disabled).toBe(true);
-    expect(button('Set up a new tablet').disabled).toBe(true);
+    expect(button('Add another tablet').disabled).toBe(true);
     expect(draw().some(node => node.type === 'form')).toBe(false);
   });
 });

@@ -6,7 +6,9 @@ import {RecoveryReset} from './recovery-reset';
 import type {AuthLang} from '@/lib/auth-copy';
 const subscribe=()=>()=>{};
 type Issued={proof:string;expiresAt:string;employeeId:string};
-export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en',mobileAccess=false}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
+export function AccountRecovery({kind,actorId,employeeId,from,timeZone,pins=false,lang='en',mobileAccess=false}:{kind:'request'|'reset'|'assisted';actorId?:string;employeeId?:string;from?:'settings';timeZone?:string;
+ /** Assisted, Owner only: link to Employee PINs from the same page. */
+ pins?:boolean;
  /** Sign-in pages only: the language the request and reset forms show (the messages stay English here). */
  lang?:AuthLang;mobileAccess?:boolean}){
  const hydrated=useSyncExternalStore(subscribe,()=>true,()=>false);
@@ -45,7 +47,7 @@ export function AccountRecovery({kind,actorId,employeeId,from,timeZone,lang='en'
   finally{clearTimeout(timeout);if(current===generation.current){setBusy(false);sending.current=false;active.current=null;}}
  }
  if(kind==='request')return <RecoveryRequest onReview={()=>{setDone(false);setMessage('');}} draft={requestDraft} mobileAccess={mobileAccess} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}/>;
- if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
+ if(kind==='assisted')return <AssistedRecovery hydrated={hydrated} busy={busy} message={message} issued={issued} employeeId={employeeId} from={from} timeZone={timeZone} pins={pins} onSubmit={submit} onStartAgain={()=>{setIssued(null);setMessage('');}}/>;
  return <RecoveryReset mobileAccess={mobileAccess} linkProof={linkProof} onDifferentCode={()=>{setLinkProof(false);if(proofInput.current){proofInput.current.value='';proofInput.current.focus();}}} lang={lang} hydrated={hydrated} busy={busy} done={done} message={message} onSubmit={submit}
   proofRef={input=>{proofInput.current=input;if(input&&incomingProof.current){input.value=incomingProof.current;incomingProof.current=null;}}}/>;
 }

@@ -18,6 +18,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   positions?: readonly Pick<Position, "id" | "name">[];
   /** The recovery tools, for roles that have them. */
   recovery?: boolean;
+  /** The Owner also resets Clocker PINs (Employee PINs is Owner-only). */
   clockerRecovery?: boolean;
   /** Company vocabulary (B2). */
   words?: WordSlots;
@@ -42,13 +43,13 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const row = (employee: Employee) => {
     const name = `${employee.firstName} ${employee.lastName}`;
     return <li key={employee.id}><CorpRow href={`/app/employees/${encodeURIComponent(employee.id)}`} bold title={name} detail={`${role(employee)} · ${where(employee)}`}
-      avatar={<CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
+      avatar={<CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey />}
       trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : <span className="c-pill c-pill--neutral">Inactive</span>} chevron={false}
       label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
   };
   return (
     <TeamLiveProvider>
-    <CorpPage className="c-team" labelledBy="team-title">
+    <CorpPage className="c-team c-page--narrow" labelledBy="team-title">
       <CorpTitle id="team-title" title="Team" sub={<>{`${activeCount} ${activeCount === 1 ? person : people}`}<TeamWorkingNow /></>}
         actions={<CorpButtonLink href="/app/employees/new" kind="secondary" size="xs" aria-label={`Add ${person}`}><Plus className="c-ic c-ic--s" weight="bold" aria-hidden="true" />Add</CorpButtonLink>} />
       <EmployeeDirectoryFilters className="c-team-search">
@@ -74,8 +75,8 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <CorpCard as="div" ariaLabel="Team tools">
         <CorpRows label="Team tools">
           <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours, person by person" chevron /></li>
-          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail="Reset a password or recover an account" chevron /></li> : null}
-          {recovery && clockerRecovery ? <li><CorpRow href="/app/clocker-recovery" bold title="Clocker PIN" detail="Reset someone’s PIN for the Clocker" chevron /></li> : null}
+          {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
+          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or recover an account"} chevron /></li> : null}
           {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
