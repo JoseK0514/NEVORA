@@ -1,7 +1,14 @@
-/* Things to do (board O-Inbox): the kit's cards and rows; only the status line is local. */
+/* Things to do (board O-Inbox): the kit's cards and rows; only the status line, the kind headings and the count are local.
+ * Round 2 (Oct 31): the round-1 badge and pressed-row fallbacks are gone (the kit owns them). */
 :is(#c-root, html) .c-todo .c-todo__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-todo .c-card__body > .c-todo__state + .c-btn { margin-top: 12px; }
-/* Narrow phones: "‹ Things to do" and "More to review" share the header row instead of overlapping. */
+/* R6: kinds that share a card follow each other, each with its own heading row; a hairline separates them. */
+:is(#c-root, html) .c-todo .c-todo__kind + .c-todo__kind > .c-card__head { box-shadow: inset 0 1px 0 var(--c-line), inset 0 -1px 0 var(--c-line); }
+/* R3: one count voice. The label, then the figure in grey, no brackets. Kit request: .c-count (until it lands, here). */
+:is(#c-root, html) .c-todo .c-count { margin-left: 6px; font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }
+/* A row's detail names its place, time and need; on a phone it takes a second line instead of being cut. */
+:is(#c-root, html) .c-todo .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+/* Narrow phones: "‹ Things to do" and "Older items" share the header row instead of overlapping. */
 @media (max-width: 374px) {
   :is(#c-root, html) .c-todo .c-nav { grid-template-columns: auto minmax(0, 1fr) auto; }
   :is(#c-root, html) .c-todo .c-nav__title { max-width: none; }

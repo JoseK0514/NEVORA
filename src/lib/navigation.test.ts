@@ -102,8 +102,11 @@ describe('phone tabs', () => {
 
 describe('section tabs', () => {
   it('lists only destinations the role can open', () => {
-    expect(sectionTabsFor('MANAGER', '/app/timecards', payroll,{operational:company})?.items.map(item => item.label)).toEqual(['Timecards','Time exports']);
-    expect(sectionTabsFor('OWNER', '/app/payroll', { ...payroll, canReview: true, canConfigure: true })?.items.map(item => item.label)).toEqual(['Timecards','Payroll runs','Time exports','Payroll settings']);
+    // Owner premium (Oct 31): Payroll draws its own tabs under its title and Timecards belongs to Time, so the shell draws none.
+    for (const path of ['/app/timecards', '/app/payroll', '/app/payroll-export', '/app/settings/payroll']) {
+      expect(sectionTabsFor('MANAGER', path, payroll,{operational:company})).toBeNull();
+      expect(sectionTabsFor('OWNER', path, { ...payroll, canReview: true, canConfigure: true })).toBeNull();
+    }
     // v5: Employees and Leads move with segments and Back; Pay lists My time and Timecards as rows.
     for (const role of ['EMPLOYEE', 'LEAD'] as const) for (const path of ['/app/my-pay', '/app/my-time', '/app/timecards']) expect(sectionTabsFor(role, path, payroll)).toBeNull();
   });
@@ -131,7 +134,7 @@ describe('More sheet groups (MG3)', () => {
     const {teamToolsForRole} = await import('./navigation');
     const withTools = moreNavigationGroups(mobileMoreForRole('MANAGER', {enabled: true} as never, {operational:company}), teamToolsForRole('MANAGER', {operational:company}));
     expect(withTools.map(group => group.label)).toEqual(['Time and pay', 'Planning', 'Team tools', 'Account']);
-    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Attendance', 'Team overview', 'Schedule activity', 'Account recovery']);
+    expect(withTools.find(group => group.label === 'Team tools')?.items.map(item => item.label)).toEqual(['Who’s working', 'Hours this week', 'Activity', 'Help someone sign in']);
     expect(teamToolsForRole('EMPLOYEE')).toEqual([]);
     expect(teamToolsForRole('LEAD')).toEqual([]);
   });

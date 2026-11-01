@@ -4,6 +4,7 @@ import {OperationalUnavailable} from '@/components/company-access/operational-un
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {ClockerPinEditor} from '@/components/clocker-pin-editor';
+import '@/components/clocker-pin-page.css';
 import { QuietNav } from '@/components/quiet/quiet';
 import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
@@ -41,7 +42,7 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
  return <ScopedReadFrame observation={source}><div className="q-page wa-pin" data-nv-page="" data-q-sheet="">
   <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={employeeHref}>Cancel</Link>} title="Clocker PIN"
    />
-  <div className="q-hd" style={{paddingTop:16}}><h1 style={{fontSize:28,lineHeight:'34px'}}>{name}</h1></div>
+  <div className="q-hd wa-pin__hd"><h1>{name}</h1><p className="wa-pin__sub">Clocker PIN</p></div>
   <div>
    {!allowed?closed('Owner access required','Only an Owner can manage another Owner’s Clocker PIN.',employeeHref,'Back to employee')
     :!employee.active?closed('Employee is inactive','Inactive people can’t use a PIN. Make them active again before setting one.',employeeHref,'View employee')

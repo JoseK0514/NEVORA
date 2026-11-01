@@ -76,6 +76,8 @@ export default async function CoverageSuggestionsPage({
       status={status}
       repair
       saved={params.saved === '1'}
+      addShiftHref={`/app/schedule/new?week=${encodeURIComponent(locator.weekStart)}&date=${encodeURIComponent(locator.date)}&locationId=${encodeURIComponent(locator.locationId)}&start=${encodeURIComponent(locator.startTime)}&end=${encodeURIComponent(locator.endTime)}`}
+      rulesHref={`/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
       refreshHref={coverageRepairUrl(locator, true)}
       requirements={review?.targets.map(target => ({
         label: needLabel(target as NeedTarget),
@@ -177,6 +179,8 @@ export default async function CoverageSuggestionsPage({
     designatedLead={params.lead === '1'}
     backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}`}
     status="READY"
+    addShiftHref={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${encodeURIComponent(locationId)}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}${params.positionId ? `&positionId=${encodeURIComponent(params.positionId)}` : ''}`}
+    rulesHref={`/app/schedule/settings?week=${weekStart}`}
     candidates={candidates.map(candidate => ({
       employeeId: candidate.employeeId,
       employeeName: candidate.employeeName,

@@ -33,9 +33,11 @@ import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {useOperationalNavigation} from './company-access/use-operational-navigation';
 import {employeeMobileChrome} from '@/lib/employee-mobile-chrome';
+import { recordNavigation } from "./corp/corp-client";
+import { CorpMotion } from "./corp/corp-motion";
 
 /** Home's views share Home's address; the trail names them as their bands do. */
-const HOME_VIEWS = { attendance: "Attendance", team: "Team overview", activity: "Schedule activity" } as const;
+const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
 
 type AppShellProps = {
   brand?: { style?: Record<string, string>; logoUrl?: string | null };
@@ -68,6 +70,25 @@ function tabIcon(icon: NavIconName): NavIconName {
 function TabPending() {
   const { pending } = useLinkStatus();
   return pending ? <span className="mobile-nav-pending" aria-hidden="true" /> : null;
+}
+
+/** Owner premium P7: a sidebar link that is on its way marks itself, so the shell's thin progress bar can show. */
+function NavPending() {
+  const { pending } = useLinkStatus();
+  return pending ? <span className="c-nav-pending" aria-hidden="true" /> : null;
+}
+
+/** Owner premium P11: whether the device is online (the page stays; a banner says what is shown). */
+function useOnline() {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine !== false);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => { window.removeEventListener("online", update); window.removeEventListener("offline", update); };
+  }, []);
+  return online;
 }
 
 /**
@@ -210,6 +231,22 @@ function AppShellView({
     return () => { if (frame) cancelAnimationFrame(frame); observer.disconnect(); changes.disconnect(); };
   }, [employee, pathname]);
 
+  // Owner premium P6: remember where the person came from, so a kit back link to that page can go back in history.
+  useEffect(() => { recordNavigation(location); }, [location]);
+
+  // Owner premium P8: headers show their hairline only once the page has scrolled.
+  useEffect(() => {
+    const shell = document.querySelector<HTMLElement>(".app-shell[data-nv-corp]");
+    if (!shell) return;
+    let frame = 0;
+    const update = () => { frame = 0; shell.toggleAttribute("data-scrolled", window.scrollY > 0); };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => { if (frame) cancelAnimationFrame(frame); window.removeEventListener("scroll", onScroll); };
+  }, [pathname]);
+  const online = useOnline();
+
   // Arrow keys move between rows of dense lists that opt in (D6).
   useEffect(() => {
     document.addEventListener("keydown", handleRowNavigation);
@@ -260,16 +297,23 @@ function AppShellView({
     {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
     <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
   </span> : null;
+  // Round 2 (R13): one profile entry. "Profile and device settings" retired from this menu; this device's alerts stay one
+  // step away: an Owner or Manager's profile page has the "Alerts on this phone" row (it opens the same device settings),
+  // and so does the sidebar's name button; an Employee gets the alerts page by its own name. With no profile page, the
+  // menu keeps a "Device settings" entry so nothing is lost.
+  const profilePage = employee || navigation.some(item => item.href === "/app/profile");
   const accountMenu = (
     <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
-      {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
+      {profilePage ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
       {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
       {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
       {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
-      {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
+      {notificationsEnabled && employee ? <Link href="/app/profile/device-alerts" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Alerts on this device</Link> : null}
+      {notificationsEnabled && !profilePage ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Device settings</button> : null}
       <div className="nevora-action-menu-divider" />
       <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
     </PortalAccountMenu>
@@ -293,6 +337,8 @@ function AppShellView({
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
       // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
       // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
+      // Owner premium (A7): a page that is itself a sidebar entry needs no "‹ Back" line on tablets and desktop.
+      data-nav-root={!employee && !toolView && sidebarItems.some(item => item.href === pathname) ? "" : undefined}
       data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
@@ -327,6 +373,7 @@ function AppShellView({
                   <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
                 </span>
                 <span className="nav-label">{item.label}</span>
+                <NavPending />
                 {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
               </Link>
             );
@@ -390,6 +437,9 @@ function AppShellView({
           {user.role !== "LEAD" ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
           </div>
         </header>
+        {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}
+        <div className="c-progress" aria-hidden="true"><i /></div>
+        {!online ? <div className="c-offline" role="status">You’re offline. Showing what was loaded.</div> : null}
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
 
@@ -411,6 +461,12 @@ function AppShellView({
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     aria-current={active ? "page" : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
+                    // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
+                    onClick={event => {
+                      if (location !== item.href || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                      event.preventDefault();
+                      window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+                    }}
                   >
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal, with Home filled and the
                       others drawn bolder. Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
@@ -431,6 +487,8 @@ function AppShellView({
         </nav>
       </div>
       <SheetGestures />
+      {/* Round 2 (R12): tab lines, the sidebar tint and segment thumbs slide to the current item. */}
+      <CorpMotion />
       <Toaster />
       <FormValidation />
       {notificationsEnabled ? employee?<EmployeeDevicePopover role={user.role}/>:<PortalDeviceSetup role={user.role} /> : null}

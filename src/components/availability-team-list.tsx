@@ -6,6 +6,7 @@ import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { initialsOf } from "@/components/quiet/quiet";
+import { CorpSegments } from "@/components/corp/corp";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
 
@@ -39,10 +40,11 @@ export function AvailabilityTeamList({ employees, employeeId }: {
   useEffect(() => { target.current?.focus(); }, [employeeId]);
 
   return <section aria-label="People">
-    <div className="q-seg" role="group" aria-label="Show">
-      <button type="button" aria-pressed={filter === "missing"} onClick={() => setFilter("missing")}>{`Not sent · ${missing}`}</button>
-      <button type="button" aria-pressed={filter === "submitted"} onClick={() => setFilter("submitted")}>{`Sent · ${employees.length - missing}`}</button>
-    </div>
+    {/* R12: the kit's segmented control (buttons); counts read "Not sent (6)", like "Waiting (1)" (copy table 14). */}
+    <CorpSegments label="Show" items={[
+      { key: "missing", label: `Not sent (${missing})`, current: filter === "missing", onSelect: () => setFilter("missing") },
+      { key: "submitted", label: `Sent (${employees.length - missing})`, current: filter === "submitted", onSelect: () => setFilter("submitted") },
+    ]} />
     <p className="q-sr" role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "person" : "people"} shown</p>
     {visible.length ? <ul className="q-list q-avail-list">
       {visible.map(employee => {

@@ -1,7 +1,5 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {createPortal} from 'react-dom';
-import {useTopBarSlot} from './clean/top-bar-slot';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
 import type {CSSProperties} from 'react';
@@ -60,7 +58,7 @@ const timecardsHref=(period:Period)=>`/app/timecards?start=${period.startDate}&e
  * and Month (the last 30 days ending today); Custom is the existing 1 to 31 day form. Each one is the same report read
  * for a different period. */
 type Mode='now'|'week'|'month'|'custom';
-const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'now',short:'This week',long:'This week so far'},{mode:'week',short:'Last week',long:'Last week'},{mode:'month',short:'Month',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
+const MODES:{mode:Mode;short:string;long:string}[]=[{mode:'now',short:'This week',long:'This week so far'},{mode:'week',short:'Last week',long:'Last week'},{mode:'month',short:'30 days',long:'Last 30 days'},{mode:'custom',short:'Custom',long:'Custom period'}];
 export function presetPeriods(today?:string):Record<'now'|'week'|'month',Period>|null{
  if(!today)return null;
  try{const day=Temporal.PlainDate.from(today);
@@ -252,9 +250,16 @@ function wholeWeek(days:{date:string;minutes:number}[]|null,period:Period):{date
  }catch{return days;}
 }
 
-/** Corporate (Release 1, board O-Insights): labor hours against the published plan, attendance, hours by day and how
- * they're counted. Overtime needs pay rules this read doesn't have, so attendance shows late clock-ins, filled cover
- * requests and time off taken instead. Every hour reads one way: "24.1 h". */
+/** R2/R7: one hour format, "24 h 7 min", "6 h", "45 min" (never decimals); a negative gap keeps its sign out of the text. */
+const spoken=(nanoseconds:bigint)=>{const minutes=Number((nanoseconds<BigInt(0)?-nanoseconds:nanoseconds)/MINUTE_NS),h=Math.floor(minutes/60),m=minutes%60;return h?m?`${h}\u00a0h ${m}\u00a0min`:`${h}\u00a0h`:`${m}\u00a0min`;};
+/** R7 (copy row 177): how the page counts, in three plain sentences. The full definitions stay in the printed report. */
+/** A figure said in words ("None", "No requests"): body size, quieter than a number, on the figures' baseline. */
+const Word=({children}:{children:string})=><span className="c-ins__word">{children}</span>;
+const HOW_WE_COUNT=['Hours come from clock-ins and include breaks.','Late means after the scheduled start. It doesn’t change pay.','These are not payroll hours.'];
+
+/** Corporate (Release 1, board O-Insights): hours worked against the published plan, attendance, and hours by day.
+ * Overtime needs pay rules this read doesn't have, so attendance shows late clock-ins, filled cover requests and time off
+ * taken instead. Round 2: every hour reads one way ("24 h 7 min"), no status pills, and a zero says so in words. */
 export function CorpReportsView({report,state}:{report:PeriodReports|null;state:State}){
  if(!report){
   const waiting=state==='loading'||state==='reconnecting';
@@ -273,31 +278,34 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const cover=report.coverageReliability;
  const days=wholeWeek(recordedByDay(report),report.period);
  const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
- const definitions=[...new Set([...report.definitions,'Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.','Late clock-ins are clock-ins after the scheduled start. They don’t decide lateness, discipline or pay.',report.coverageReliability.definition,report.scheduleStability.definition,report.overtime.reason])];
  return <>
-  <CorpCard id="ins-labor" label="Labor hours" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${quietHours((gap>BigInt(0)?gap:-gap).toString())} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>
-   <div className="c-ins__labor"><b>{quietHours(recorded.toString())}</b><span>{planned!==null?`of ${quietHours(planned.toString())} planned`:'recorded'}</span></div>
+  {/* R3: the gap to plan is grey text, not a pill. */}
+  <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<span className="c-meta">{`${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</span>:undefined}>
+   <div className="c-ins__labor"><b className="c-num">{spoken(recorded)}</b>{planned!==null?<span className="c-num">{`of ${spoken(planned)} planned`}</span>:null}</div>
    {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
   </CorpCard>
   <CorpCard id="ins-attendance" label="Attendance">
+   {/* R7 (copy rows 172–173): a zero or a missing figure says so in words; figures are ink (R3). */}
    <CorpStats items={[
-    {label:'Late clock-ins',value:report.attendance.state==='ready'||late?late:'—',tone:late?'red':undefined},
-    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:'—'},
-    {label:'Time off',value:offDays?`${offDays} d`:'0'},
+    {label:'Late clock\u2011ins',value:report.attendance.state==='ready'||late?late?late:<Word>None</Word>:<Word>Not available</Word>},
+    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:<Word>No requests</Word>},
+    {label:'Time off',value:offDays?plural(offDays,'day','days'):<Word>None</Word>},
    ]}/>
   </CorpCard>
-  <CorpCard id="ins-days" label="Hours by day" aside={<span className="c-ins__aside">{`${quietHours(recorded.toString())} total`}</span>}>
+  {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
+  <CorpCard id="ins-days" label="Hours by day">
    {days&&days.some(day=>(day.minutes??0)>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
     {days.map(day=><span key={day.date} className="c-ins__col">
-     {days.length<=7?<small>{day.minutes===null?'':Math.round(day.minutes/60)}</small>:null}
-     {day.minutes===null?null:<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>}
+     {/* Visual-craft J: a day with no recorded time gets no bar and no "0", only the baseline; days to come get nothing. */}
+     {days.length<=7?<small className="c-num">{day.minutes?Math.round(day.minutes/60):''}</small>:null}
+     {day.minutes===null?null:day.minutes>0?<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>:<i className="c-ins__zero"/>}
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
-   </div><ul className="c-sr" aria-label="Recorded time by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes!)*MINUTE_NS).toString())}</li>)}</ul></>
-    :<CorpBody><p className="c-ins__state">No recorded time in this period.</p></CorpBody>}
+   </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours'}</li>)}</ul></>
+    :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">
-    <summary>How these are counted<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
-    <ul>{definitions.map(d=><li key={d}>{d}</li>)}</ul>
+    <summary>How we count<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
+    <ul>{HOW_WE_COUNT.map(d=><li key={d}>{d}</li>)}</ul>
     <p>As of <time dateTime={report.observedAt}>{observedLabel(report.observedAt,report.timeZone)}</time> · {timeZoneLabel(report.timeZone)}</p>
    </details>
   </CorpCard>
@@ -421,15 +429,16 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   if(!presets)return;
   setCustom(false);setNotice('');setDraft(presets[next]);if(!samePeriod(period,presets[next]))setPeriod(presets[next]);
  };
- // At 1300px and wider the period picker and Export sit in the top bar (v3 mockup); narrower, in the page's own bar.
- const slot=useTopBarSlot(true,'cm-tc-bar-tools cm-insights-bar');
+ // R13: one period control per width. Tablets and desktop: the period menu (This week so far, Last week, Last 30 days,
+ // Custom period…) and Export, in the title row (R4, so the top bar no longer carries page tools). Phones: the segments,
+ // with Custom as the fourth, since the menu isn't shown there. Every period is reachable at every width.
  const tools=<>
-   <div className="cm-insights__tools">
-    <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long} · {rangeText(period,false)}</span><CaretDownIcon size={12} weight="bold" aria-hidden="true"/></button>
+   <div className="cm-insights__tools c-ins__tools">
+    <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long}</span><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></button>
     <div id="report-period-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Report period">
      {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&!presets} onClick={()=>choose(item.mode)}>{mode===item.mode?<CheckIcon size={16} weight="bold" aria-hidden="true"/>:<span className="cm-insights__menu-gap" aria-hidden="true"/>}{item.mode==='custom'?'Custom period…':item.long}</button>)}
     </div>
-    <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={16} aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
+    <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={18} aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
     <div id="report-export-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Export this period">
      <button className="cm-insights__menu-item" type="button" aria-label={exporting?'Preparing CSV…':'Download CSV'} aria-busy={exporting||undefined} disabled={!report||exporting} onClick={()=>{closeMenu('report-export-menu');void exportRef.current();}}><DownloadSimpleIcon size={18} aria-hidden="true"/>{exporting?'Preparing CSV…':'Download CSV'}</button>
      <button className="cm-insights__menu-item" type="button" aria-label="Print / Save PDF" disabled={!report} onClick={()=>{closeMenu('report-export-menu');printRef.current();}}><PrinterIcon size={18} aria-hidden="true"/>Print / Save PDF</button>
@@ -437,9 +446,8 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     </div>
    </div>
 </>;
- // Release 1 (board O-Insights), every width: back to More, the period, This week / Last week / Month, then the cards in the
- // kit's column. Wide screens add the period picker (with Custom) and Export, in the top bar from 1300px. The full report
- // stays rendered for Print / Save PDF only (print shows it; the screen shows the board's cards).
+ // Release 1 (board O-Insights): back to More, the period, then the cards in the kit's column. The full report stays
+ // rendered for Print / Save PDF only (print shows it; the screen shows the board's cards).
  const custom_=mode==='custom'?<CorpCard id="ins-custom" label="Custom period" aside="1 to 31 days">
   <form className="c-ins__custom" onSubmit={e=>{e.preventDefault();try{setPeriod(parsePeriod(draft.startDate,draft.endDate));setNotice('');}catch{setNotice(PERIOD_ERROR);document.getElementById?.('report-first-day')?.focus();}}}>
    <div className="c-field__row">
@@ -453,12 +461,12 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
  </CorpCard>:null;
  const page=<CorpPage className="c-ins" labelledBy="ins-title">
   <CorpNav back={{href:'/app/more',label:'More'}} title="Insights" phoneOnly/>
-  <CorpTitle id="ins-title" title="Insights" wide/>
-  {slot?null:<div className="c-ins__tools">{tools}</div>}
-  <div className="c-seg" role="group" aria-label="Report period" data-report-entrance="">
-   {MODES.filter(item=>item.mode!=='custom').map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={!presets||busy} onClick={()=>choose(item.mode)}>{item.short}</button>)}
+  <CorpTitle id="ins-title" title="Insights" wide actions={tools}/>
+  <div className="c-seg c-ins__seg" role="group" aria-label="Report period" data-report-entrance="">
+   {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
-  <p className="c-ins__range">{`${quietRange(period)} · All locations`}</p>
+  {/* R7 (copy row 174): this week reads "Oct 26 – 31 so far", which says why it stops before Sunday. */}
+  <p className="c-ins__range c-num">{`${quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>
@@ -467,8 +475,5 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    <p className="cm-page-foot"><span>{keepWhole(rangeText(period))}{report?<> · {timeZoneLabel(report.timeZone)}</>:null}</span><button type="button" className="cm-refresh" aria-label="Refresh" aria-busy={busy||undefined} onClick={()=>reloadRef.current()}><ArrowsClockwiseIcon size={16} aria-hidden="true"/>Refresh</button></p>
   </div>
  </CorpPage>;
- return <>
-  {page}
-  {slot?createPortal(tools,slot):null}
- </>;
+ return page;
 }

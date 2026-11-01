@@ -81,7 +81,7 @@ async function geometry(page,selector,label,engine,width){
   const root=document.querySelector(rootSelector);
   if(!root)throw new Error('D2 surface missing: '+rootSelector);
   const rb=root.getBoundingClientRect();
-  const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
+  const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&!el.closest('.sr-only,.c-sr,.nv-sr,.q-sr');};
   const controls=[...root.querySelectorAll('button,a,input,select,textarea')].filter(visible).map((el)=>{
    const r=el.getBoundingClientRect();
    // A compact control may keep its look and carry a larger tap area as an absolutely positioned ::after (the kit's
@@ -188,7 +188,7 @@ try{
   checked(engine+': Owner can read correction review inbox');
 
   const mp=await owner.newPage();mp.setDefaultTimeout(15000);
-  // Corporate Who's working (board O-OnShift): the correction review opens behind "Clock-ins and corrections"; #review opens it.
+  // Corporate Who's working (board O-OnShift): the correction review opens behind "Time corrections"; #review opens it.
   await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
@@ -208,7 +208,7 @@ try{
   checked(engine+': keyboard focus reaches employee-specific approval control');
   await approve.click();
   await mp.getByText('Correction approved. The original recorded punch remains unchanged.',{exact:true}).waitFor();
-  await mp.getByText('No correction requests',{exact:true}).waitFor();
+  await mp.getByText('Nothing to fix',{exact:true}).waitFor();
   checked(engine+': manager approves through real D2 API and inbox clears');
 
   const managerState=await owner.request.get(app.url+'/api/manager/time-corrections',{headers:{'X-Nevora-Time-Correction':'1'}});

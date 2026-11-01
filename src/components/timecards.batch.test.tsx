@@ -11,17 +11,22 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
 }));
 vi.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
 import {Timecards} from './timecards';
+import {QuietSheet} from './quiet/quiet-sheet';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
 function card(id:string){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:'DRAFT',revision:0,sourceHash:'a'.repeat(32),history:[]};}
 const ready=(validForMs=45000)=>({state:'ready',observedAt:'2026-09-29T12:00:00Z',validForMs,cards:[card('E1'),card('E2'),card('OWNER')]});
 let cleanup:void|(()=>void);let commands:TimecardCommand[]=[],actorId='OWNER',manager=true,employeeCorporate=false;
 function render(){host.cursor=0;return Timecards({initialPeriod:period,manager,actorId,employeeCorporate});}
 const html=()=>renderToStaticMarkup(render());
-function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode),...nodes(n.props.actions as ReactNode)];}
-// Release 1 (board G-O-Time): Select sits in the corporate title's actions slot, so the walk also visits `actions`.
+function nodes(v:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(v))return v.flatMap(nodes);if(!v||typeof v!=='object'||!('props'in v))return [];const n=v as ReactElement<Record<string,unknown>>;return [n,...nodes(n.props.children as ReactNode),...nodes(n.props.right as ReactNode),...nodes(n.props.actions as ReactNode),...nodes(n.props.action as ReactNode)];}
+// Release 1 (board G-O-Time): Select sits in the corporate title's actions slot, so the walk also visits `actions`; the
+// kit's error card holds Try again or Refresh in its `action` slot.
 function control(test:(n:ReactElement<Record<string,unknown>>)=>boolean){const n=nodes(render()).find(test);if(!n)throw Error('Missing rendered control');return n.props;}
 const click=(label:string)=>(control(n=>n.type==='button'&&(n.props.children===label||n.props['aria-label']===label)).onClick as ()=>unknown)();
-const check=(label:string,value=true)=>(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});
+// Owner premium (A8): the checkboxes show once the manager taps Select (it shows when a card can be approved or finalized).
+const has=(test:(n:ReactElement<Record<string,unknown>>)=>boolean)=>nodes(render()).some(test);
+function enterSelect(){if(manager&&!has(n=>n.type==='input'&&String(n.props['aria-label']??'').startsWith('Select PRIVATE')))click('Select');}
+const check=(label:string,value=true)=>{if(label.startsWith('Select ')&&!has(n=>n.type==='input'&&n.props['aria-label']===label))enterSelect();(control(n=>n.type==='input'&&n.props['aria-label']===label).onChange as (e:unknown)=>void)({target:{checked:value}});};
 const flush=()=>vi.advanceTimersByTimeAsync(0);
 async function mount(){render();host.mounted=true;cleanup=host.effects[0]();await flush();}
 function transport(outcome:'success'|'unknown'='success',validForMs=45000){vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json(ready(validForMs));const c=JSON.parse(String(init?.body)) as TimecardCommand;commands.push(c);if(outcome==='unknown')throw Error('Interrupted');return Response.json({status:'approved',operationId:c.operationId,revision:1});});}
@@ -69,7 +74,7 @@ it('renders all mixed employee issue reasons without changing their order or exp
  expect(rendered).not.toMatch(/Approve timecard|Finalize period|Reopen period|Selected timecard review/);
 });
 it('requires explicit selection, a rendered reviewed set and fresh confirmation before approval',async()=>{
- transport();await mount();expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
+ transport();await mount();enterSelect();expect(control(n=>n.type==='button'&&n.props.children==='Review selected timecards').disabled).toBe(true);
  expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE OWNER').disabled).toBe(true);
  check('Select PRIVATE E1');click('Review selected timecards');expect(html()).toContain('Reviewed approval set');expect(html()).toContain('Revision 0');
  expect(control(n=>n.type==='button'&&n.props.children==='Approve selected').disabled).toBe(true);
@@ -148,24 +153,24 @@ it('does not start the deferred first read after unmount',async()=>{
 });
 // Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
 // recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
-it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+it('counts Ready to approve as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
  const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
  const timed=card('E1');
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
  await mount();const rendered=html();
  expect(rendered).toContain('aria-label="Period overview"');
- expect(rendered).toContain('aria-label="Need review, 1"');
+ expect(rendered).toContain('aria-label="Ready to approve, 1"');
  expect(rendered).toContain('aria-label="Approved, 0"');
  expect(rendered).toContain('Missing clock-out');
  expect(rendered).toContain('Front desk');
  expect(rendered).not.toMatch(/Approve timecard|Finalize period/);
  expect(rendered).not.toContain('Each card commits separately');
- expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
+ enterSelect();expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').disabled).toBe(true);
  // UI-9: the two people with no time yet share one row, the Role column shows because a punch names one, and the row opens in place.
  expect(rendered).toContain('2 people with no time yet');
  expect(rendered).toContain('>Role</th>');
  expect(rendered).not.toContain('Select PRIVATE E2');
- (control(n=>n.type==='button'&&n.props.className==='cm-tc-idle__open').onClick as ()=>void)();
+ (control(n=>n.type==='button'&&n.props.className==='c-tc-idle__open').onClick as ()=>void)();
  expect(html()).not.toContain('people with no time yet');
  check('Select PRIVATE E2');click('Review selected timecards');
  expect(html()).toContain('Each card commits separately; a stopped set leaves remaining cards unsubmitted. Approval never automatically finalizes time.');
@@ -178,7 +183,7 @@ it('approves from the clean detail sheet with the exact current revision and cle
  // UI-9: no punch names a role, so the Role column goes; no one has time yet, so nothing folds.
  expect(html()).not.toContain('>Role</th>');
  expect(html()).not.toContain('people with no time yet');
- const person=control(n=>n.type==='button'&&n.props.className==='cm-tc-person');
+ const person=control(n=>n.type==='button'&&n.props.className==='c-tc-person');
  (person.onClick as ()=>void)();
  expect(html()).toContain('Approve timecard');
  expect(control(n=>n.type==='button'&&n.props.children==='Approve timecard').disabled).toBe(false);
@@ -200,7 +205,7 @@ it('retires failed background data and offers Try again to obtain a fresh protec
  expect(html()).not.toContain('Reviewed approval set');
  expect(html()).toContain('Couldn’t load timecards');
  expect(html()).toContain('Try again');
- (control(n=>typeof n.type==='function'&&typeof n.props.onRetry==='function').onRetry as ()=>void)();
+ (control(n=>n.props.children==='Try again').onClick as ()=>void)();
  await flush();
  expect(reads).toBe(3);
  expect(html()).toContain('PRIVATE E1');
@@ -213,7 +218,7 @@ it('offers recovery after a stalled initial read reaches its finite request dead
  await mount();await vi.advanceTimersByTimeAsync(45001);
  expect(html()).not.toContain('PRIVATE');
  expect(html()).toContain('Try again');
- expect(control(n=>n.type==='button'&&n.props['aria-label']==='Refresh timecards').disabled).toBe(false);
+ expect(control(n=>n.props.children==='Try again').disabled).toBeFalsy();
  expect(commands).toHaveLength(0);
 });
 
@@ -225,19 +230,19 @@ function sheetFocusFixture(){
  original.isConnected=false;
  const lookup=vi.fn(()=>({querySelector:()=>replacement}));
  Object.assign(document,{hasFocus:()=>true,getElementById:lookup});
- const picker=control(n=>n.type==='details'&&n.props.className==='cm-tc-period').ref as {current:unknown};
+ // Owner premium (A8): the period control is the This week / Last week segments; focus falls back to the chosen one.
+ const picker=control(n=>n.type==='div'&&n.props.className==='c-seg c-tc-seg').ref as {current:unknown};
  picker.current={querySelector:()=>chooser};
- const dialog=control(n=>n.type==='dialog').ref as {current:unknown};
- dialog.current={close:()=>closeSheet('done')};
  return {original,replacement,chooser,lookup};
 }
+// Phone-native P5: the detail is the kit's sheet. Escape, Done, a tap outside and a swipe down all close it through its
+// onClose; a close because the protected read was retired is driven by `open` and never calls onClose.
 function closeSheet(kind:'escape'|'done'|'automatic'='escape'){
- const dialog=control(n=>n.type==='dialog');
- if(kind==='escape'&&typeof dialog.onCancel==='function')dialog.onCancel();
- (dialog.onClose as ()=>void)();
+ if(kind==='automatic')return;
+ (control(n=>n.type===QuietSheet).onClose as ()=>void)();
 }
 function openFirstSheet(){
- (control(n=>n.type==='button'&&n.props.className==='cm-tc-person').onClick as ()=>void)();
+ (control(n=>n.type==='button'&&n.props.className==='c-tc-person').onClick as ()=>void)();
 }
 it.each(['escape','done'] as const)('returns focus to the replacement current row on %s after a refresh replaces the original trigger',async kind=>{
  transport();await mount();openFirstSheet();
@@ -245,8 +250,7 @@ it.each(['escape','done'] as const)('returns focus to the replacement current ro
  click('Approve timecard');await flush();
  expect(commands).toHaveLength(1);
  expect(html()).toContain('PRIVATE E1');
- if(kind==='done')(control(n=>n.type==='button'&&n.props.className==='cm-tc-done').onClick as ()=>void)();
- else closeSheet();
+ closeSheet(kind);
  expect(focus.lookup).toHaveBeenCalledWith('timecard-E1');
  expect(focus.replacement.focus).toHaveBeenCalledOnce();
  expect(focus.original.focus).not.toHaveBeenCalled();
@@ -292,10 +296,8 @@ it.each(['blur','expiry'])('does not move focus during automatic %s retirement o
 });
 it('does not restore focus after a user close is followed by window blur',async()=>{
  transport();await mount();openFirstSheet();const focus=sheetFocusFixture();
- const dialog=control(n=>n.type==='dialog');
- if(typeof dialog.onCancel==='function')dialog.onCancel();
  window.dispatchEvent(new Event('blur'));
- (control(n=>n.type==='dialog').onClose as ()=>void)();
+ closeSheet();
  expect(focus.replacement.focus).not.toHaveBeenCalled();
  expect(focus.chooser.focus).not.toHaveBeenCalled();
  expect(html()).not.toContain('PRIVATE');
@@ -347,4 +349,21 @@ it('resizing desktop → phone mid-review keeps the reviewed set and confirmatio
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');
+});
+
+// Owner premium R10 (copy table 36–38): "In progress" only where the server's period_open issue proves the period hasn't
+// ended; a Total row from the same read; Time exports and Time corrections outside the table card.
+it('R10: an open period reads In progress, totals the week and keeps the tools out of the table card',async()=>{
+ const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:'2026-09-22T16:00:00Z',rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:'2026-09-22T16:00:00Z',breaks:[]};
+ const timed=card('E1');
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-24T12:00:00Z',cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]}));
+ await mount();const rendered=html();
+ expect(rendered).toContain('In progress');
+ expect(rendered).toContain('aria-label="In progress, 1"');
+ expect(rendered).not.toContain('Needs review');
+ expect(rendered).toMatch(/<th scope="row" data-col="person">Total<\/th>/);
+ expect(rendered).toContain('8 h');
+ expect(rendered).toContain('>Time exports<');expect(rendered).toContain('>Time corrections<');
+ expect(rendered.indexOf('>Time exports<')).toBeGreaterThan(rendered.indexOf('</table>'));
+ expect(rendered).not.toContain('c-tc-bar');
 });

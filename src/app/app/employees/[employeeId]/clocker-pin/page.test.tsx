@@ -27,7 +27,9 @@ it('renders separate masked four-digit setup inputs with employee context and au
   // Quiet (v4): a sheet titled Clocker PIN, the person's name, four boxes, Save at the top right.
   expect(html).toContain('Avery'); expect(html).toContain('<span class="q-nav__t">Clocker PIN</span>');
   expect(html).toContain('name="expectedVersion" value="0"');
-  expect(html.match(/type="password"/g)).toHaveLength(2);
+  // P9: masked number-pad text fields, never password fields (no Strong Password or saved login offered for a PIN).
+  expect(html).not.toContain('type="password"');
+  expect(html.match(/type="text" inputMode="numeric" autoComplete="off"/g)).toHaveLength(2);
   expect(html.match(/pattern="\[0-9\]\{4\}"/g)).toHaveLength(2);
   expect(html).toContain('inputMode="numeric"');
   expect(html).toContain('Save PIN'); expect(html).toContain('form="clocker-pin-form"'); expect(html).toContain('Cancel');

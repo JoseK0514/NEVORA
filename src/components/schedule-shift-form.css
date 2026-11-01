@@ -26,8 +26,8 @@
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__date > select.c-in { padding-right: 44px; }
 :is(#c-root, html) .c-shift-page .c-shift__glyph { position: absolute; right: 12px; top: 14px; width: 20px; height: 20px; color: var(--c-grey); pointer-events: none; }
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__empty { color: var(--c-grey); }
-:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed { color: var(--c-ink2); cursor: default; }
-:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus { box-shadow: inset 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed { color: var(--c-ink2); cursor: default; background: var(--c-bg); box-shadow: none; }
+:is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus { box-shadow: none; }
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus-visible { box-shadow: inset 0 0 0 2px var(--c-teal); }
 :is(#c-root, html) .c-shift-page .c-shift__next { margin-top: -10px; }
 :is(#c-root, html) .c-shift-page .c-shift textarea.c-shift__note { display: block; height: auto; min-height: 48px; max-height: 144px; padding: 13px 12px; field-sizing: content; }
@@ -60,3 +60,27 @@
 }
 /* A sheet page (Add/Edit shift, Build and publish) is white to the bottom on phones. */
 @media (max-width: 767px) { html body .app-shell[data-nv-corp] .page-frame:has(.c-shift-page) { background: #FFFFFF !important; } }
+
+/* Owner premium (A7, visual-craft E/L): one Save per form. Phones: the header's Cancel · title · Save, no second button
+ * (the kit hides .c-form-foot and shows .c-only-phone there). Tablets and desktop: the header shows the title only, and the
+ * card ends with the kit's form footer, Cancel and Save on the right, Delete shift as red text on the left (its own form,
+ * placed on the footer's row). */
+:is(#c-root, html) .c-shift-page .c-shift .field-error { margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--c-red); }
+:is(#c-root, html) .c-shift-page .c-shift .c-in[aria-invalid="true"], :is(#c-root, html) .c-shift-page .c-shift .c-in[aria-invalid="true"]:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--c-red); }
+@media (max-width: 767px) {
+  /* 16px fields so iOS never zooms on focus (P1). */
+  :is(#c-root, html) .c-shift-page .c-shift .c-in { font-size: 16px; }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-shift-page .c-shift { position: relative; }
+  /* Cancel and Save are phone-only, so the title keeps the middle column. */
+  :is(#c-root, html) .c-shift-page .c-shift__title { grid-column: 2; }
+  /* The card has its own 24px inset, so the footer's line runs edge to edge. */
+  :is(#c-root, html) .c-shift-page .c-shift .c-form-foot { margin: 8px -24px 0; padding: 16px 24px 0; }
+  :is(#c-root, html) .c-shift-page .c-shift__submit { margin-top: 0; }
+  /* Delete shift: red text at the footer's left. Once tapped, its confirmation opens under the card's footer. */
+  :is(#c-root, html) .c-shift-page .c-shift__delete:has(> [aria-expanded="false"]) { position: absolute; left: 24px; bottom: 24px; margin: 0; }
+  :is(#c-root, html) .c-shift-page .c-shift__delete > [aria-expanded="false"].c-btn--danger { width: auto; min-width: 0; height: 44px; padding: 0; border: 0; background: none; box-shadow: none; color: var(--c-red); font-size: 15px; font-weight: 600; }
+  :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) { margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--c-line); align-items: flex-start; }
+  :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) > .c-btn { width: auto; min-width: 160px; }
+}

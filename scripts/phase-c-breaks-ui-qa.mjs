@@ -31,7 +31,7 @@ try{
   const browser=await playwright[engine].launch();browsers.push(browser);const owner=await context(browser);await login(owner);
   const p=await owner.newPage();p.setDefaultTimeout(15000);const errors=[],consoleErrors=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text());});
   await goto(p,'/app/settings/breaks');await p.getByRole('heading',{name:'Break types',exact:true}).waitFor();assert((await p.title()).length>0);assert.equal(new URL(p.url()).pathname,'/app/settings/breaks');
-  if(engine==='chromium'){const empty=p.getByRole('list',{name:'Configured break types',exact:true});await empty.getByText('No break types yet',{exact:true}).waitFor();await empty.getByText('0 break types',{exact:true}).waitFor();}
+  if(engine==='chromium'){const empty=p.getByRole('list',{name:'Configured break types',exact:true});await empty.getByText('No break types yet',{exact:true}).waitFor();assert.equal(await empty.getByText('0 break types',{exact:true}).count(),0,'An empty list shows its empty row, not a 0 count');}
   const name=engine+' Rest break';await create(p,name);await row(p,name).waitFor();checked(engine+': Owner explicitly creates a break type through the real server action');
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_break_types WHERE name=$1',[name]))[0].n,1);
   const stale=await owner.newPage();await goto(stale,'/app/settings/breaks');

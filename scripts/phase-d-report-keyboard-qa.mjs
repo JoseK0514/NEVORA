@@ -41,7 +41,7 @@ try{
    // sequential focus starting point across refreshes of the reused disclosure.
    await page.goto(app.url+'/app/reports?start=2026-09-21&end=2026-09-27',{waitUntil:'domcontentloaded'});
    // Insights (board O-Insights, Release 1) is one page at every width: the periods, Labor hours, Attendance and Hours by
-   // day with "How these are counted" (plus the period picker and Export on wide screens). The full tables (Period details,
+   // day with "How we count" (plus the period menu and Export on wide screens). The full tables (Period details,
    // Hours by person, their jump links and scroll regions) and the phone's former "This period · Review timecards" card are
    // no longer on screen; the tables are the printable report, checked below under print.
    await page.bringToFront();const labor=page.locator('#ins-labor .c-ins__labor b');await labor.waitFor();
@@ -54,7 +54,12 @@ try{
     const order=await page.evaluate(()=>{const root=document.querySelector('.c-page.c-ins');const shown=e=>{const r=e.getBoundingClientRect(),s=getComputedStyle(e);return r.width>0&&r.height>0&&s.visibility!=='hidden';};
      window.__insOrder=[...root.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')].filter(e=>!e.closest('.c-ins-print')&&shown(e));
      return window.__insOrder.map(e=>e.getAttribute('aria-label')||e.labels?.[0]?.textContent?.trim()||e.textContent.trim());});
-    assert(order.includes('This week')&&order.includes('Last week')&&order.includes('Month')&&order.includes('How these are counted'),'The periods and the counting disclosure are keyboard controls');
+    // R13: one period control per width. Phones show the segments (with Custom); tablets and desktop show the period menu.
+    const segmentsShown=await page.locator('.c-ins__seg').isVisible(),pickerShown=await page.locator('.c-ins__tools .cm-insights__picker').isVisible();
+    assert.notEqual(segmentsShown,pickerShown,'Exactly one period control is shown at '+width);
+    assert(order.includes('How we count'),'The counting disclosure is a keyboard control');
+    if(segmentsShown)assert(['This week','Last week','30 days','Custom'].every(name=>order.includes(name)),'The period segments are keyboard controls: '+JSON.stringify(order));
+    else assert(order.some(name=>name.startsWith('Report period:'))&&order.includes('Export'),'The period menu and Export are keyboard controls: '+JSON.stringify(order));
     const at=index=>page.evaluate(index=>document.activeElement===window.__insOrder[index],index);
     await page.evaluate(()=>window.__insOrder[0].focus());assert(await at(0));
     // A native date field (Custom period) has its own month/day/year stops; focus stays on that field until it is left.
@@ -69,7 +74,7 @@ try{
      await step(backTab,index+1,index);
     }
     await countedSummary.focus();await page.keyboard.press('Enter');await until(()=>counted.evaluate(e=>e.open));await waitForDisclosureReady(counted);
-    await counted.getByText('Recorded time includes breaks. Breaks are shown separately; no pay or deduction rules are applied.',{exact:true}).waitFor();assert(await counted.locator('time[datetime]').isVisible());
+    await counted.getByText('Hours come from clock-ins and include breaks.',{exact:true}).waitFor();assert(await counted.locator('time[datetime]').isVisible());
     await page.keyboard.press('Enter');await until(async()=>!await counted.evaluate(e=>e.open));
     const exporter=page.getByRole('button',{name:'Export',exact:true}),exportShown=await exporter.isVisible();
     if(exportShown){await exporter.focus();await page.keyboard.press('Enter');await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor();await page.keyboard.press('Escape');await page.getByRole('button',{name:'Print / Save PDF',exact:true}).waitFor({state:'hidden'});}

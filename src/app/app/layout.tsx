@@ -47,7 +47,6 @@ import { requireSession, requireSessionMutationProof } from "@/lib/auth/session"
 import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/service';
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
-import { DEFAULT_TOKENS } from "@/lib/workspace-presentation/derive";
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 
@@ -59,9 +58,9 @@ export const metadata: Metadata = {
   icons: { apple: [{ url: "/icons/fuel-apple-180.png", sizes: "180x180", type: "image/png" }] },
 };
 
-/** The browser chrome follows the company header colour (B1). */
+/** Owner premium P2 (Oct 31): the browser chrome matches the corporate header, which is white for every company. */
 export async function generateViewport(): Promise<Viewport> {
-  return { themeColor: (await currentBrand()).tokens?.masthead ?? DEFAULT_TOKENS.masthead };
+  return { themeColor: "#FFFFFF" };
 }
 
 /**

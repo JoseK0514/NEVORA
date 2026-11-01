@@ -1,7 +1,12 @@
 /* Employee PINs inside its settings page: the kit's search, segments and card, without a second page background. */
-:is(#c-root, html) .c-page.c-pins { min-height: 0; padding: 16px; background: none; }
+:is(#c-root, html) .c-page.c-embed.c-pins { min-height: 0; padding: 16px; background: none; }
 :is(#c-root, html) .c-pins .c-pins__search { gap: 8px; cursor: text; }
 :is(#c-root, html) .c-pins .c-pins__search .c-ic { width: 20px; height: 20px; color: var(--c-grey); }
 :is(#c-root, html) .c-pins .c-pins__search input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; font-size: 15px; line-height: 20px; color: var(--c-ink); outline: none; -webkit-appearance: none; appearance: none; }
 :is(#c-root, html) .c-pins .c-pins__empty { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-pins .c-pins__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* Owner premium: the search at 16px on phones (no iOS zoom). */
+@media (max-width: 767px) { :is(#c-root, html) .c-pins .c-pins__search input { font-size: 16px; } }
+/* Owner premium R13: each tab is its label and a grey count ("No PIN 9"), one count voice, and no tab repeats another. */
+:is(#c-root, html) .c-pins .c-pins__seg button { gap: 6px; }
+:is(#c-root, html) .c-pins .c-pins__count { font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }

@@ -1,5 +1,6 @@
 import { SkeletonRows } from "./skeleton";
 import { QuietSkeleton } from "./quiet/quiet";
+import { CorpSkeleton } from "./corp/corp-client";
 
 /** Page-shaped placeholder for a route segment while its server data loads.
  * The visible shape matches the page (grid, list or cards); the status line
@@ -23,5 +24,7 @@ export function RouteSkeleton({ label, shape = "list", band, overlap = true, rou
     <SkeletonRows rows={shape === "list" ? 6 : 3} variant={shape === "list" ? "card" : "line"} />
     {/* Quiet shell (Owner and Manager): one static page shape instead of the band, grid and shimmer above. */}
     <QuietSkeleton />
+    {/* Corporate shell (Owner premium P3/P7): the page-shaped placeholder; after 2.5s it says the page is slow, with Try again. */}
+    <CorpSkeleton route={route} label={label} />
   </section>;
 }

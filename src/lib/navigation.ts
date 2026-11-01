@@ -15,9 +15,12 @@ export type NavigationItem = {
   icon: NavIconName;
 };
 
+/** Owner premium A3 (Oct 31): one name per place. Each label is the page's own title (H1), so the sidebar, the finder,
+ * More and the page say the same thing: Things to do (not Inbox), Week templates, Who’s working, Hours this week, Activity.
+ * The five tabs keep their bar names (Time stays "Time" over the Timecards page, as on the approved boards). */
 const managementNavigation: NavigationItem[] = [
   { href: "/app", label: "Home", icon: "dashboard" },
-  { href: "/app/inbox", label: "Inbox", icon: "inbox" },
+  { href: "/app/inbox", label: "Things to do", icon: "inbox" },
   { href: "/app/schedule", label: "Schedule", icon: "schedule" },
   { href: "/app/availability", label: "Availability", icon: "availability" },
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
@@ -27,7 +30,7 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/timecards", label: "Timecards", icon: "clock" },
   { href: "/app/reports", label: "Insights", icon: "reports" },
   { href: "/app/payroll-export", label: "Time exports", icon: "export" },
-  { href: "/app/schedule/templates", label: "Templates", icon: "templates" },
+  { href: "/app/schedule/templates", label: "Week templates", icon: "templates" },
   { href: "/app/schedule/settings", label: "Scheduling rules", icon: "rules" },
 ];
 
@@ -106,11 +109,11 @@ export function sidebarActiveHref(role: UserRole, path: string | null | undefine
 /** Clean Manager (v3): the occasional tools that used to sit on Home. They keep their addresses (Home's views and the two
  * recovery pages); only their place in the navigation is new. Owners and Managers only. */
 const TEAM_TOOLS: NavigationItem[] = [
-  { href: "/app?view=attendance", label: "Attendance", icon: "hours" },
-  { href: "/app?view=team", label: "Team overview", icon: "employees" },
-  { href: "/app?view=activity", label: "Schedule activity", icon: "calendar" },
+  { href: "/app?view=attendance", label: "Who’s working", icon: "hours" },
+  { href: "/app?view=team", label: "Hours this week", icon: "employees" },
+  { href: "/app?view=activity", label: "Activity", icon: "calendar" },
   { href: "/app/clocker-recovery", label: "Clocker recovery", icon: "refresh" },
-  { href: "/app/account-recovery", label: "Account recovery", icon: "employee" },
+  { href: "/app/account-recovery", label: "Help someone sign in", icon: "employee" },
 ];
 /** Release 1 ("don't overwhelm"): the team tools left the desktop sidebar. Each opens from the place the boards put it
  * (Who's working on Home, Hours this week and Help someone sign in on Team, Activity from Schedule), and that place's
@@ -289,25 +292,29 @@ export type SectionTabGroup = { label: string; items: { href: string; label: str
 
 /** Pages that share one place in the navigation show tabs between each other.
  * Every tab is an existing URL; only destinations the role can open appear. */
-export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup | null {
+/** Owner premium (Oct 31): Payroll's own tabs under its title (Payroll · Time exports · Payroll settings), with the access
+ * rules the retired "Time and pay" row used. Timecards belongs to Time and is not one of them. A lone tab is no tab row. */
+export function payrollTabsFor(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup["items"] | null {
+  if (role === "EMPLOYEE" || role === "LEAD") return null;
   const modules = context.modules ?? ALL_MODULES_ON;
+  const authorized = new Set(navigationForRole(role, payroll, context).map(item => item.href));
+  if (payroll?.canConfigure) authorized.add("/app/settings/payroll");
+  const items = [
+    ...(authorized.has("/app/payroll") ? [{ href: "/app/payroll", label: "Payroll" }] : []),
+    { href: "/app/payroll-export", label: "Time exports" },
+    ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
+  ].filter(item => pathEnabled(item.href, modules) && (role !== "MANAGER" || authorized.has(item.href)));
+  return items.length > 1 ? items : null;
+}
+
+export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup | null {
   const pathname = path.split(/[?#]/, 1)[0];
   // v5 "One look" (approved Oct 24, 2026): an Employee's or Lead's pages switch views with segments and go back with the
   // bar's Back, so they have no tab row.
   if (role === "EMPLOYEE" || role === "LEAD") return null;
-  // Clean Manager (v3): Owners and Managers move between the three request pages from the band (RequestPagesNav),
-  // so those pages have one pill row.
-  const groups: SectionTabGroup[] = [
-    { label: "Time and pay", items: [
-      { href: "/app/timecards", label: "Timecards" },
-      ...(navigationForRole(role, payroll, context).some(item => item.href === "/app/payroll") ? [{ href: "/app/payroll", label: "Payroll runs" }] : []),
-      { href: "/app/payroll-export", label: "Time exports" },
-      ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
-    ] },
-  ];
-  // A turned-off module's pages leave the tabs; a lone tab is no tab row.
-  const authorized = new Set(navigationForRole(role,payroll,context).map(item=>item.href));
-  if(payroll?.canConfigure)authorized.add('/app/settings/payroll');
-  const visible = groups.map(group => ({ ...group, items: group.items.filter(item => pathEnabled(item.href, modules)&&(role!=='MANAGER'||authorized.has(item.href))) })).filter(group => group.items.length > 1);
-  return visible.find(group => group.items.some(item => item.href === pathname)) ?? null;
+  // Owner premium (Oct 31): the shell draws no section-tab row. Payroll draws its own tabs under its title (Payroll · Time
+  // exports · Payroll settings), and Timecards belongs to Time, so its page has no row leading into Payroll. Every URL is
+  // unchanged; the arguments stay so callers and a future group keep the same shape.
+  void payroll; void context; void pathname;
+  return null;
 }

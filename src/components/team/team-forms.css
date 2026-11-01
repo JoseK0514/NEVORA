@@ -44,7 +44,7 @@
 
 /* Person (O-Person) and Access (O-PersonAccess). */
 :is(#c-root, html) .c-person .c-person__who { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; }
-:is(#c-root, html) .c-person .c-person__act { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); }
+:is(#c-root, html) .c-person .c-person__act { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); } /* R4: the secondary style, no teal outline */
 :is(#c-root, html) .c-person .c-person__act .c-ic { width: 20px; height: 20px; }
 :is(#c-root, html) .c-person .c-person__act + .c-person__act { margin-left: -4px; }
 :is(#c-root, html) .c-person .c-row__value--soft { font-weight: 400; color: var(--c-ink2); }
@@ -83,3 +83,33 @@
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page.c-sheetpage { min-height: 0; border-radius: 12px; box-shadow: 0 0 0 1px var(--c-ring); }
 }
+
+/* Owner premium P10: validation in one voice. The shared inline message (FormValidation's .field-error) reads as the kit's
+ * .c-error: 13/18 red, no bullet, 6px under the field; the field gets one red ring, also while focused. */
+:is(#c-root, html) .c-teamform .field-error { display: block; margin: 6px 0 0; padding: 0; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-red); }
+:is(#c-root, html) .c-teamform .field-error::before { content: none; display: none; }
+:is(#c-root, html) .c-teamform .c-in[aria-invalid="true"], :is(#c-root, html) .c-teamform .c-in[aria-invalid="true"]:focus { outline: 0; border-color: transparent; box-shadow: inset 0 0 0 2px var(--c-red); }
+/* Fields at 16px on phones, so iOS never zooms on focus (P1; the kit sets .c-in, this covers the picker buttons too). */
+@media (max-width: 767px) { :is(#c-root, html) .c-teamform :is(.c-in, .c-pick) { font-size: 16px; } }
+
+/* Owner premium A7 (visual-craft E): Add employee on tablets and desktop is a normal page, not a phone sheet. The title
+ * (28/34 600 on the kit title scale, R1; "Step 1 of 2" under it) sits where every page title sits; the fields are one white card
+ * at most 720px wide (round 2: the single-column width rule),
+ * left-aligned with the title; the card's footer holds Cancel or Back and Next or Add on the right (.c-form-foot). The
+ * phone's Cancel · Title · Next strip keeps its title only. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-sheetpage.c-addemp { background: var(--c-bg); border-radius: 0; box-shadow: none; }
+  :is(#c-root, html) .c-addemp > .c-formhead { display: block; min-height: 0; margin: 0; padding: 0; background: none; box-shadow: none; position: static; }
+  :is(#c-root, html) .c-addemp > .c-formhead > :is(.c-formhead__l, .c-nav__right) { display: none; }
+  :is(#c-root, html) .c-addemp > .c-formhead .c-formhead__t { align-items: flex-start; }
+  :is(#c-root, html) .c-addemp > .c-formhead .c-nav__title { max-width: none; font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -.56px; text-align: left; }
+  :is(#c-root, html) .c-addemp > .c-formhead .c-formhead__step { margin-top: 4px; font-size: 13px; line-height: 18px; }
+  :is(#c-root, html) .c-addemp > .c-teamform { width: 100%; max-width: 720px; padding: 16px 16px 0; border-radius: 12px; background: #FFFFFF; box-shadow: var(--c-shadow-card, 0 0 0 1px var(--c-ring)); }
+  :is(#c-root, html) .c-addemp > .c-teamform .c-form-foot { margin: 0 -16px; }
+  :is(#c-root, html) .c-addemp > .c-teamform .c-form-foot > .c-btn { flex: none; min-width: 120px; }
+}
+/* Owner premium R7: the detail line holds the phone and the employee ID, so it wraps rather than cutting the ID off beside
+ * the Call and Message buttons; the state (Working, Inactive) stays on the right of its first line. */
+:is(#c-root, html) .c-person .c-person__who .c-row__detail { align-items: flex-start; }
+:is(#c-root, html) .c-person .c-person__who .c-row__detail > span:first-child { white-space: normal; overflow: visible; }
+:is(#c-root, html) .c-person .c-person__who .c-person__bit { white-space: nowrap; }

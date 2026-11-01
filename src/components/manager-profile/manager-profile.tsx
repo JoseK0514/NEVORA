@@ -31,7 +31,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
   const payroll = payrollFeatureEnabled() ? { enabled: true, canConfigure: false, canReview: false, canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED' } as const : undefined;
   const offersPay = navigationForRole(proof.employee.role, payroll, { modules: brand.modules }).some(item => item.href === '/app/my-pay');
   const owner = proof.employee.role === 'OWNER';
-  return <div className="q-page premium-manager-profile" data-nv-page="">
+  return <div className="q-page premium-manager-profile c-page--narrow" data-nv-page="">
     <QuietNav back={{ href: "/app/more", label: "More" }} right={owner ? <Link className="q-nav__r" href={`/app/employees/${encodeURIComponent(proof.employee.id)}?edit=1`}>Edit</Link> : undefined} />
     <div className="pmp-content">
       <ManagerProfileLive key={proof.employee.id} initial={initial} identity={{

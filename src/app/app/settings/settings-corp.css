@@ -77,3 +77,34 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-rule-list .q-rt { flex: 1 1 auto; min-width: 0; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-content .q-list:not(.clocker-steps__list) .q-rt > :is(b, i),
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page :is(.q-rule-list, .wc-help) .q-rt > :is(b, i) { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Owner premium (Oct 31): Help someone sign in and Clocker recovery. On tablets and desktop the page's one button is auto
+ * width on the right, never a 992px bar (visual-craft L); the screen-reader headings use the scale's 600 weight, not 550. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-recovery :is(h1, h2, h3).q-sr { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-recovery .wc-recovery__pins { margin-top: 32px; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-recovery .wc-form { display: flex; flex-direction: column; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-recovery .wc-form > .q-btn,
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-recovery section > .q-btn { align-self: flex-end; width: auto; min-width: 160px; padding: 0 20px; }
+}
+/* Fields at 16px on phones so iOS never zooms on focus (P1), on every Settings and recovery page. */
+@media (max-width: 767px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wc-page :is(.q-in, .q-select-row__control) { font-size: 16px; }
+}
+/* Clocker tablets: a card's one button is auto width on the right on tablets and desktop (no 970px bar). */
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardfoot { display: flex; justify-content: flex-end; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wc-cardfoot .q-btn { width: auto; min-width: 160px; padding: 0 20px; }
+}
+/* Owner premium A7/F: the Settings pages, Help someone sign in and Clocker recovery are single-column, so on tablets and
+ * desktop their content stops at 720px on the title's left edge (the eye path from a row's title to its chevron stays short). */
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wc-page > :is(.wc-content, .q-hd) { max-width: 752px; }
+}
+/* Round 2 (R7): a long page name ("Features and team terms") never runs under "‹ Settings" on a phone. The bar keeps its
+ * three columns and centres the name; when it doesn't fit between the two sides it ends in "…" (the
+ * page's large title, read first by screen readers, keeps the whole name). */
+@media (max-width: 767px) {
+  /* The back link ("‹ Settings") is at most ~88px; the centred name gets what is left on both sides of it. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wc-page:not(.q-sheet) > .q-nav > .q-nav__t { justify-self: center; min-width: 0; max-width: calc(100vw - 32px - 2 * 92px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}

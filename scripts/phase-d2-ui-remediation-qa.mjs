@@ -83,7 +83,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  };
  const safePause=async(label,selector='.manager-corrections')=>{
   const text=await mp.locator(selector).innerText();
-  assert(!text.includes('No correction requests'));assert(!text.includes('No employee time corrections are waiting for review.'));
+  assert(!text.includes('Nothing to fix'));assert(!text.includes('When someone asks to fix a time, it shows up here.'));
   assert.equal(await mp.locator('.manager-corrections-count').count(),0);
   assert.equal(await mp.locator('.manager-correction-row').count(),0);
   const [count]=await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]);
@@ -209,7 +209,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    await mp.getByText('Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
    await mp.waitForFunction(n=>document.querySelectorAll('.manager-correction-row').length===n,1-i);
   }
-  await mp.getByText('No correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
+  await mp.getByText('Nothing to fix',{exact:true}).waitFor();await shots(mp,'.manager-corrections','confirmed-empty');
   assert.equal((await q('SELECT count(*)::int AS count FROM nevora_pending_time_corrections WHERE employee_id=$1',[employeeId]))[0].count,0);
   observations.keyboard.push({decisions:'two declines activated with Enter'});
   stage='completed-history';await ep.goto(app.url+'/app/my-time?view=corrections&filter=decided',{waitUntil:'networkidle'});await hoursPage(ep,'corrections').getByRole('list',{name:'Decisions',exact:true}).getByText('Declined',{exact:true}).first().waitFor();await employeeShots('.c-hours','completed-history');

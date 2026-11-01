@@ -13,6 +13,7 @@ import { PositionQuotaFields } from "@/components/position-quota-fields";
 import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
 import { ManagerIssueFocus } from "@/components/manager-issue-focus";
 import { RulesHoursList } from "@/components/rules-hours-list";
+import { ScheduleFormKeys } from "@/components/schedule-form-keys";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
@@ -39,7 +40,7 @@ function Summary({ title, value, detail }: { title: string; value: string; detai
 }
 
 export default async function ScheduleSettingsPage({ searchParams }: {
-  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string; employeeId?: string }>;
+  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string; employeeId?: string; open?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
   const params=await searchParams;
@@ -83,13 +84,13 @@ export default async function ScheduleSettingsPage({ searchParams }: {
   const policyValue = policyUnavailable ? "Unavailable" : !policy || modes.includes(null) ? "Not set" : modes.length > 1 ? "Mixed"
     : modes[0] === "MANAGER_REVIEW" ? "Manager approves" : "Automatic";
   const open = {
-    deadline: Boolean(params.deadlineSaved || ["INVALID_DEADLINE", "DEADLINE_WORKSPACE_CHANGED", "INVALID_SHIFT"].includes(params.error ?? "")),
+    deadline: Boolean(params.deadlineSaved || params.open === "deadline" || ["INVALID_DEADLINE", "DEADLINE_WORKSPACE_CHANGED", "INVALID_SHIFT"].includes(params.error ?? "")),
     staffing: params.error === "invalid_staffing",
     hours: params.error === "invalid_hours" || Boolean(params.employeeId),
     coverage: Boolean(params.windowSaved || params.windowDeleted || ["duplicate_window", "invalid_window"].includes(params.error ?? "")),
   };
 
-  return (<ScopedReadFrame observation={source}>
+  return (<ScopedReadFrame observation={source}><ScheduleFormKeys>
     <QuietPage className="q-rules">
       {/* Release 1 (board O-ScheduleRules): "‹ Schedule  Scheduling rules", one line about when the rules apply, then the
         rules in one card, each with what it means and its current value. A row opens its settings in place. */}
@@ -162,7 +163,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
                   <label className="wb-field wb-field--wide"><span>Location</span><select name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
                   <label className="wb-field"><span>Day</span><select name="dayOfWeek" defaultValue="1" required>{[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{dayNames[day]}</option>)}</select></label>
                   <label className="wb-field"><span>Start</span><input type="time" name="startTime" required /></label>
-                  <label className="wb-field"><span>End</span><input type="time" name="endTime" required aria-describedby="rules-end-hint" /><span className="wb-help" id="rules-end-hint">Use midnight for the end of the day.</span></label>
+                  <label className="wb-field"><span>End</span><input type="time" name="endTime" required aria-describedby="rules-end-hint" /><span className="wb-help" id="rules-end-hint">Use 12:00 AM for the end of the day.</span></label>
                   <label className="wb-field"><span>Minimum staff <span className="wb-optional">Optional</span></span><input type="number" name="minimumStaff" min={1} max={100} step={1} placeholder="Location default" aria-describedby="rules-staff-hint" /><span className="wb-help" id="rules-staff-hint">Leave blank to use the location requirement.</span></label>
                 </div>
                 <PositionQuotaFields positions={positions.filter(position => position.active)} />
@@ -210,6 +211,6 @@ export default async function ScheduleSettingsPage({ searchParams }: {
           </div>
         </details>
       </div>
-    </QuietPage>
+    </QuietPage></ScheduleFormKeys>
   </ScopedReadFrame>);
 }

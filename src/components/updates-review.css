@@ -114,3 +114,19 @@
  .update-delivery-note { padding:0 20px 20px; }
 }
 @media(prefers-reduced-motion:reduce) { .updates-row,.updates-row-action svg,.update-recipient-section summary>svg { transition:none; } }
+
+/* Owner premium (Oct 31): Updates for an Owner or Manager. "New update" is a labelled action: teal text in the phone bar,
+ * the kit's 36px outline button in the title row on tablets and desktop. The empty state is the kit's card (.c-empty--card)
+ * 12px under the filter, with no second background. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.premium-updates .q-nav .updates-new { font-weight: 600; text-decoration: none; white-space: nowrap; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.premium-updates .updates-empty { width: 100%; min-height: 0; margin-top: 12px; padding: 0; background: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.premium-updates .updates-empty > .c-card { width: 100%; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates > .q-nav .updates-new { height: 36px; min-height: 36px; margin: 4px 0; padding: 0 14px; border-radius: 8px;
+    background: #FFFFFF; box-shadow: inset 0 0 0 1px #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates > .q-nav .updates-new:hover { background: #E6F1EF; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates .q-seg { max-width: 480px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-updates > :is(.q-hd, .updates-inbox) { max-width: 752px; }
+}
+/* Round 2: the empty card on the 720px single-column width, 16px in like every list (it was 712, with a 20px inset). */
+:is(#q-root, html) .app-shell[data-nv-corp] .page-frame [data-nv-page].q-page.premium-updates .updates-inbox .updates-empty:not(#nv-kit) { padding: 0 16px; }

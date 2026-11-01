@@ -28,6 +28,12 @@ const PAGE_KEYWORDS: Record<string, string> = {
 };
 
 /** UX7: Settings pages, found by name for Owners (who are the only ones who can open Settings). */
+/** Owner premium A3: the team tools are named by their page titles now; their earlier names still find them. */
+const TOOL_KEYWORDS: Record<string, string> = {
+  '/app?view=attendance': 'attendance clocked in on shift now',
+  '/app?view=team': 'team overview hours targets',
+  '/app?view=activity': 'schedule activity changes publications',
+};
 const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/workspace', label: 'Company profile', keywords: 'business name timezone time zone company' },
   { href: '/app/settings/locations', label: 'Locations', keywords: 'places sites stores offices clocker links' },
@@ -36,13 +42,13 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/company-policies', label: 'Company policies', keywords: 'policies attendance thresholds rules' },
   { href: '/app/settings/breaks', label: 'Break types', keywords: 'breaks lunch meal rest' },
   { href: '/app/settings/positions', label: 'Positions', keywords: 'positions jobs roles qualifications' },
-  { href: '/app/settings/clocker', label: 'Clocker devices', keywords: 'clocker tablets devices kiosk' },
+  { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
 ];
 
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
   const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
-    { id: 'action:shift', group: 'Actions', label: 'Add a shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },
+    { id: 'action:shift', group: 'Actions', label: 'Add shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },
     { id: 'action:employee', group: 'Actions', label: 'Add an employee', href: '/app/employees/new', keywords: 'add new hire person team employee staff' },
     { id: 'action:update', group: 'Actions', label: 'Send an update', href: '/app/updates/compose', keywords: 'send message announcement compose post' },
     // UX7: verbs that live inside a page open that page where the action is.
@@ -54,7 +60,7 @@ export function finderItems(role: UserRole, payroll: PayrollCapabilities | undef
   ];
   const known = new Set(pages.map(page => page.href));
   const tools = teamToolsForRole(role, context).filter(item => !known.has(item.href))
-    .map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, detail: 'Team tools', href: item.href, searchOnly: true }));
+    .map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, detail: 'Team tools', href: item.href, keywords: TOOL_KEYWORDS[item.href], searchOnly: true }));
   const settings = known.has('/app/settings') ? SETTINGS_PAGES.filter(page => !known.has(page.href) && pathEnabled(page.href, context.modules))
     .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, detail: 'Settings', href: page.href, keywords: page.keywords, searchOnly: true })) : [];
   const people = (data?.people ?? []).map(person => ({ id: `person:${person.id}`, group: 'People' as const, label: person.name, detail: person.role, href: `/app/employees/${encodeURIComponent(person.id)}`, keywords: person.id }));

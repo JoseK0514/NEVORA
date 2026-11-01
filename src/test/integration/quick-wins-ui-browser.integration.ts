@@ -73,7 +73,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             if (path === '/app/timecards') {
               const folded = page.getByRole('button', { name: /people with no time yet/ });
               await folded.waitFor(); await folded.click();
-              await page.waitForFunction(() => [...document.querySelectorAll('.cm-tc-person')].some(element => element === document.activeElement));
+              await page.waitForFunction(() => [...document.querySelectorAll('.c-tc-person')].some(element => element === document.activeElement));
               await visit('/app/inbox');
               await visit('/app/timecards#timecard-QAOWNER');
               await page.getByRole('dialog').waitFor();
@@ -98,7 +98,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           await page.getByRole('button', { name: 'Search', exact: true }).click();
           const search = page.getByRole('combobox', { name: 'Search pages, people and places' });
           await search.fill('add shift');
-          await page.getByRole('option', { name: /Add a shift/ }).waitFor();
+          await page.getByRole('option', { name: /Add shift/ }).waitFor();
           await search.fill('approve time off');
           await page.getByRole('option', { name: /Review time-off requests/ }).waitFor();
           await page.keyboard.press('Escape');

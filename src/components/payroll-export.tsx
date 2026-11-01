@@ -9,12 +9,14 @@ import './payroll/payroll-corp.css';
 import {neutralProfile,parseExportProfile,type ExportProfile} from '@/lib/payroll-export/model';
 import {type TimecardItem} from '@/lib/timecards/read-model';
 import {parseCurrentTimecards} from '@/lib/timecards/client';
-import {formatRecordedHours,parsePeriod,type Period} from '@/lib/timecards/project';
+import {parsePeriod,type Period} from '@/lib/timecards/project';
+import {hoursText,periodRange} from './payroll/payroll-format';
 import type {ExportCommand,PayrollExportPayload,SavedExportProfile} from '@/lib/payroll-export/service';
 import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
+import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -26,17 +28,17 @@ function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedE
 const dayText=(value:string)=>{try{return new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`));}catch{return '';}};
 const utcDay=(value:string)=>new Date(`${value}T12:00:00Z`);
 const isoDay=(date:Date)=>date.toISOString().slice(0,10);
-/** "Oct 19 – 25", or "Sep 28 – Oct 4". */
-function rangeText(start:string,end:string){const month=(v:string)=>new Intl.DateTimeFormat('en-US',{month:'short',timeZone:'UTC'}).format(utcDay(v));return start.slice(0,7)===end.slice(0,7)?`${month(start)} ${Number(start.slice(8))} – ${Number(end.slice(8))}`:`${month(start)} ${Number(start.slice(8))} – ${month(end)} ${Number(end.slice(8))}`;}
+/** "Oct 19 – 25", or "Sep 28 – Oct 4" (Payroll's one period format, R2). */
+const rangeText=periodRange;
 /** This week and the five before it, Monday to Sunday, counted from the page's default week. */
 function weekChoices(){
  const today=new Date();const base=utcDay(isoDay(new Date(Date.UTC(today.getFullYear(),today.getMonth(),today.getDate()))));
  const monday=new Date(base.getTime()-((base.getUTCDay()+6)%7)*86_400_000);
- const names=['This week','Last week'];
- const weeks=Array.from({length:6},(_,i)=>{const start=new Date(monday.getTime()-i*7*86_400_000),end=new Date(start.getTime()+6*86_400_000);const s=isoDay(start),e=isoDay(end);return {value:`${s}|${e}`,label:`${rangeText(s,e)}${names[i]?` · ${names[i]}`:''}`};});
+ const names=['this week','last week'];
+ const weeks=Array.from({length:6},(_,i)=>{const start=new Date(monday.getTime()-i*7*86_400_000),end=new Date(start.getTime()+6*86_400_000);const s=isoDay(start),e=isoDay(end);return {value:`${s}|${e}`,label:`${rangeText(s,e)}${names[i]?` (${names[i]})`:''}`};});
  return weeks;
 }
-export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;actorId:string}){
+export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null}){
  const [period,setPeriod]=useState(initialPeriod),[draftPeriod,setDraftPeriod]=useState(initialPeriod),[cards,setCards]=useState<TimecardItem[]|null>(null),[profiles,setProfiles]=useState<SavedExportProfile[]>([]),[profileId,setProfileId]=useState('neutral'),[draft,setDraft]=useState<ExportProfile>(neutralProfile),[reviewed,setReviewed]=useState(false),[selected,setSelected]=useState<string[]>([]),[state,setState]=useState('Loading finalized time'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<PayrollExportPayload|null>(null);
  const [retry,setRetry]=useState<ExportCommand|null>(null),[snapshotActor,setSnapshotActor]=useState<string|null>(null);
  const saveRetry=useRef<ProfileCommand|null>(null),generation=useRef({value:0}),abort=useRef<AbortController|null>(null),reload=useRef<()=>void>(()=>{});
@@ -137,50 +139,61 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  const approvedOnly=cards?.filter(c=>c.state==='APPROVED').length??0;
  const unapproved=cards?.filter(c=>c.state!=='FINALIZED'&&c.state!=='APPROVED'&&(c.card.entries.length>0||c.history.length>0||c.card.recordedNanoseconds!=='0')).length??0;
  const readyHours=finalized.reduce((sum,c)=>sum+BigInt(c.card.recordedNanoseconds),BigInt(0)).toString();
- const waiting=unapproved?`${unapproved} ${unapproved===1?'timecard still needs':'timecards still need'} approval${approvedOnly?` · ${approvedOnly} to finalize`:''}`:approvedOnly?`${approvedOnly} approved ${approvedOnly===1?'timecard still needs':'timecards still need'} finalizing`:'';
+ // R7: what to do next, in grey with the way to Timecards. Export takes finalized timecards only, so finalizing is
+ // still named when approved cards are waiting for it (Timecards' own action is "Finalize").
+ const waiting=unapproved?`Approve ${unapproved} ${unapproved===1?'timecard':'timecards'}${approvedOnly?` and finalize ${approvedOnly}`:''} first`:approvedOnly?`Finalize ${approvedOnly} approved ${approvedOnly===1?'timecard':'timecards'} first`:'';
  const weeks=weekChoices();
  const periodKey=`${period.startDate}|${period.endDate}`;
  const listed=weeks.some(w=>w.value===periodKey);
  const create=()=>{if(selected.length){setResult(null);generate();}else exportAll();};
  const chooseProfile=(id:string)=>{setProfileId(id);const p=profiles.find(p=>p.id===id)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);};
  const timecardsHref=`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
- return <div className="c-page c-payroll c-pay c-exp" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
+ return <div className="c-page c-payroll c-pay c-exp c-page--narrow" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={{href:'/app/payroll',label:'Payroll'}} title="Time exports" phoneOnly/>
   <CorpTitle id="time-exports-title" title="Time exports" wide/>
+  <PayrollTabs items={tabs} current="/app/payroll-export"/>
   <div className="c-field">
-   <label className="c-field__label" htmlFor="time-export-period">Pay period</label>
-   <select id="time-export-period" className="c-in" aria-label="Pay period" value={listed?periodKey:'current'} disabled={busy} onChange={e=>{const [startDate,endDate]=e.target.value.split('|');if(startDate&&endDate)choosePeriod({startDate,endDate});}}>
+   <label className="c-field__label" htmlFor="time-export-period">Week</label>
+   <select id="time-export-period" className="c-in" aria-label="Week" value={listed?periodKey:'current'} disabled={busy} onChange={e=>{const [startDate,endDate]=e.target.value.split('|');if(startDate&&endDate)choosePeriod({startDate,endDate});}}>
     {!listed?<option value="current">{rangeText(period.startDate,period.endDate)}</option>:null}
     {weeks.map(w=><option key={w.value} value={w.value}>{w.label}</option>)}
    </select>
   </div>
   {notice?<p className="c-callout c-callout--teal" role="status">{notice}</p>:null}
-  <section className="c-card" aria-labelledby="time-export-send">
-   <div className="c-card__head"><h2 className="c-card__label" id="time-export-send">Send to</h2></div>
+  {/* R5: section labels sit above their cards. */}
+  <section className="c-pay__group" aria-labelledby="time-export-send">
+   <div className="c-sec-label c-pay__sec"><h2 id="time-export-send">{profiles.length?'Send to':'File'}</h2></div>
+   <div className="c-card">
    {ready?<>
-    <ul className="c-rows" aria-label="Send to">
+    <ul className="c-rows" aria-label={profiles.length?'Send to':'File'}>
+     {/* R7: with no saved layouts the CSV is a fact, not a one-option choice. */}
+     {!profiles.length?<li><div className="c-row c-exp__file"><span className="c-row__main"><span className="c-row__title c-row__title--b">CSV file</span><span className="c-row__detail"><span>Opens in Excel or Numbers</span></span></span></div></li>:null}
      {profiles.map(p=><li key={p.id}><label className="c-row c-exp__choice"><span className="c-row__main"><span className="c-row__title c-row__title--b">{p.profile.name}</span><span className="c-row__detail"><span>{`${p.profile.product||'Saved file layout'} · revision ${p.revision}`}</span></span></span><input type="radio" name="time-export-profile" value={p.id} checked={profileId===p.id} disabled={locked} onChange={e=>chooseProfile(e.target.value)}/></label></li>)}
-     <li><label className="c-row c-exp__choice"><span className="c-row__main"><span className="c-row__title c-row__title--b">CSV file</span><span className="c-row__detail"><span>Opens in Excel or Numbers</span></span></span><input type="radio" name="time-export-profile" value="neutral" checked={profileId==='neutral'} disabled={locked} onChange={e=>chooseProfile(e.target.value)}/></label></li>
+     {profiles.length?<li><label className="c-row c-exp__choice"><span className="c-row__main"><span className="c-row__title c-row__title--b">CSV file</span><span className="c-row__detail"><span>Opens in Excel or Numbers</span></span></span><input type="radio" name="time-export-profile" value="neutral" checked={profileId==='neutral'} disabled={locked} onChange={e=>chooseProfile(e.target.value)}/></label></li>:null}
     </ul>
     <div className="c-exp__ready">
-     <b className="c-pay__strong">{`${finalized.length} ${finalized.length===1?'person':'people'} · ${formatRecordedHours(readyHours)}`}</b>
-     {waiting?<span className="c-exp__waiting">{waiting}</span>:null}
+     <b className="c-pay__strong">{finalized.length?<>{`${finalized.length} ${finalized.length===1?'person':'people'} · `}<span className="c-num">{hoursText(readyHours)}</span></>:'Nothing ready to export yet'}</b>
+     {waiting?<span className="c-exp__waiting">{`${waiting} · `}<a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></span>:null}
      {retry?<button type="button" className="c-btn c-btn--full" disabled={busy} onClick={()=>retry&&void send(retry)}>Retry same export</button>
       :<button type="button" className="c-btn c-btn--full" disabled={locked||!finalized.length||periodChanged} onClick={create}>Create export</button>}
-     <p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?<>Finalize approved timecards to export them. <a className="c-exp__inline" href={timecardsHref}>Review timecards</a></>:selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>
+     <p className="c-note">{busy?'Preparing your files…':retry?'Retry to confirm the outcome of this export.':periodChanged?'Show the dates you chose before exporting.':!finalized.length?(waiting?'Only finalized timecards are exported.':<>No one has finalized time for these dates. <a className="c-exp__inline" href={timecardsHref}>Go to Timecards</a></>):selected.length?`Exports the ${selected.length} ${selected.length===1?'person':'people'} you chose.`:`Exports every finalized timecard${visibleSelection.overLimit?' (the first 100)':''}. Hours include breaks; your payroll system decides pay types.`}</p>
     </div>
    </>:<div className="c-card__body"><p className="c-payroll__state" role="status" data-export-loading={state==='Loading finalized time'||undefined}>{stateText}</p>{state!=='Loading finalized time'?<button type="button" className="c-btn c-btn--secondary c-btn--md c-pay__gap" disabled={busy} onClick={()=>reload.current()}>Try again</button>:null}</div>}
+   </div>
   </section>
-  {ready&&result?<section className="c-card" aria-labelledby="time-export-files">
-   <div className="c-card__head"><h2 className="c-card__label" id="time-export-files">Your files</h2><span className="c-card__aside">{`${result.model.rows.length} ${result.model.rows.length===1?'person':'people'}`}</span></div>
+  {ready&&result?<section className="c-pay__group" aria-labelledby="time-export-files">
+   <div className="c-sec-label c-pay__sec"><h2 id="time-export-files">Your files</h2><span className="c-pay__count">{`${result.model.rows.length} ${result.model.rows.length===1?'person':'people'}`}</span></div>
+   <div className="c-card">
    <ul className="c-rows" aria-label="Your files">
     <li><button type="button" className="c-row" aria-label="Download mapped CSV" onClick={()=>downloadCurrent(result.csv,'text/csv;charset=utf-8',`nevora-mapped-${result.model.period.startDate}-${result.operationId}.csv`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time file</span><span className="c-row__detail"><span>{`CSV · ${result.profile.name}${result.profileRevision>0?` · Rev. ${result.profileRevision}`:''}`}</span></span></span><DownloadSimpleIcon className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
     <li><button type="button" className="c-row" aria-label="Download canonical time record" onClick={()=>downloadCurrent(stableExportJson(result.model),'application/json',`nevora-canonical-${result.model.period.startDate}-${result.operationId}.json`)}><span className="c-row__main"><span className="c-row__title c-row__title--b">Time record</span><span className="c-row__detail"><span>JSON · exact durations and sources</span></span></span><DownloadSimpleIcon className="c-ic c-exp__dl" aria-hidden="true"/></button></li>
    </ul>
    <details className="c-exp__more"><summary>Receipt and checksum</summary><dl className="c-exp__receipt"><div><dt>Receipt</dt><dd>{result.operationId}</dd></div><div><dt>CSV SHA-256</dt><dd>{result.csvSha256}</dd></div></dl></details>
+   </div>
   </section>:null}
-  {ready?<section className="c-card" aria-labelledby="time-export-options">
-   <div className="c-card__head"><h2 className="c-card__label" id="time-export-options">Options</h2></div>
+  {ready?<section className="c-pay__group" aria-labelledby="time-export-options">
+   <div className="c-sec-label c-pay__sec"><h2 id="time-export-options">Options</h2></div>
+   <div className="c-card">
    <details className="c-exp__item" open={selected.length>0||undefined}>
     <summary className="c-row"><span className="c-row__main"><span className="c-row__title">People in this export</span><span className="c-row__detail"><span>{`${selected.length} selected · ${visibleSelection.excluded} not finalized.${visibleSelection.overLimit?' Select up to 100 people at a time.':''}`}</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__body">
@@ -188,13 +201,13 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
      {cards?.length===0?<p className="c-note">No one has time in this period.</p>:<ul className="c-exp__people">{cards?.map(c=><li key={c.card.employeeId}><label className="c-exp__person" data-off={c.state!=='FINALIZED'||undefined}>
       <input type="checkbox" aria-label={`Export ${c.card.employeeName}`} disabled={c.state!=='FINALIZED'||locked||(!selected.includes(c.card.employeeId)&&selected.length>=100)} checked={selected.includes(c.card.employeeId)} onChange={e=>{setSelected(ids=>changeExportSelection(cards??[],ids,c.card.employeeId,e.target.checked));setResult(null);}}/>
       <span className="c-row__main"><span className="c-row__title">{c.card.employeeName}</span><span className="c-row__detail"><span>{c.state==='FINALIZED'?'Finalized':c.state==='APPROVED'?'Approved · not finalized':c.state==='DRAFT'?'Draft':c.state.charAt(0)+c.state.slice(1).toLowerCase().replaceAll('_',' ')}</span></span></span>
-      <span className="c-row__value c-row__value--soft">{formatRecordedHours(c.card.recordedNanoseconds)}</span>
+      <span className="c-row__value c-row__value--soft c-num">{hoursText(c.card.recordedNanoseconds)}</span>
      </label></li>)}</ul>}
-     {selected.length?<p className="c-note">{`Selected: ${formatRecordedHours(recorded)} recorded · ${formatRecordedHours(breaks)} breaks (separate).`}</p>:null}
+     {selected.length?<p className="c-note">{`Selected: ${hoursText(recorded)} recorded · ${hoursText(breaks)} of breaks, listed separately.`}</p>:null}
     </div>
    </details>
    <details className="c-exp__item">
-    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Other dates</span><span className="c-row__detail"><span>Up to 31 days of finalized time</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Other dates</span><span className="c-row__detail"><span>Up to 31 days</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <form className="c-exp__body" onSubmit={e=>{e.preventDefault();try{const nextPeriod=parsePeriod(draftPeriod.startDate,draftPeriod.endDate);if(nextPeriod.startDate===period.startDate&&nextPeriod.endDate===period.endDate){if(mutating.current){setNotice('Finish the current operation before refreshing export data.');return;}reload.current();}else{if(mutating.current||retry!==null||saveRetry.current!==null){setNotice('Finish or retry the current export or mapping save before changing the period.');return;}clearProtected.current('Loading finalized time');setPeriod(nextPeriod);}setNotice('');}catch{setNotice('Choose a period of 1 to 31 days.');}}}>
      <div className="c-field__row">
       <div className="c-field"><label className="c-field__label" htmlFor="time-export-start">Start</label><span className="c-in c-pay__date"><span aria-hidden="true">{dayText(draftPeriod.startDate)||'Choose a date'}</span><CalendarBlankIcon className="c-ic c-ic--s" aria-hidden="true"/><input id="time-export-start" type="date" required value={draftPeriod.startDate} disabled={busy} onChange={e=>setDraftPeriod({...draftPeriod,startDate:e.target.value})}/></span></div>
@@ -205,9 +218,10 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
     </form>
    </details>
    <PayrollExportMapping draft={draft} setDraft={setDraft} cards={cards??[]} reviewed={reviewed} setReviewed={setReviewed} disabled={locked} save={()=>void save()} />
+   </div>
   </section>:null}
-  <section className="c-card" aria-label="Payroll population and handoff">
-   <details className="c-exp__item c-exp__close"><summary className="c-row"><span className="c-row__main"><span className="c-row__title">Payroll population and handoff</span><span className="c-row__detail"><span>Who is paid this period, and where the files went</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
+  <section className="c-card" aria-label="Who’s included and sent files">
+   <details className="c-exp__item c-exp__close"><summary className="c-row"><span className="c-row__main"><span className="c-row__title">Who’s included and sent files</span><span className="c-row__detail"><span>People in this payroll and where files went</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></summary>
     <div className="c-exp__legacy"><PayrollPeriodClose period={period} actorId={actorId}/></div>
    </details>
   </section>

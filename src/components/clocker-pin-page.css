@@ -1,0 +1,21 @@
+/* Clocker PIN (Owner premium, visual-craft Team): the person's name at the scale's 22/600, white PIN boxes with the input
+ * ring (1px #D5D8DA, 2px teal on the box being typed), and no phone sheet strip on tablets and desktop. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__hd { padding-top: 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__hd h1 { font: 600 22px/28px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.3px; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__sub { display: none; margin: 2px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .q-pin span { border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .q-pin span i { background: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .q-pin:focus-within span[data-on] { box-shadow: inset 0 0 0 2px #0B6E69; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .q-pin input { -webkit-text-security: disc; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__actions { display: none; }
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wa-pin { max-width: 1040px !important; margin: 0 auto !important; padding: 24px 8px 48px !important; background: none; }
+  /* The phone's sheet strip gives way to the title row (the kit turns other sheets' strips into one; here the person's
+   * name is the title, so the strip is not needed at all). */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wa-pin > .q-nav { display: none !important; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; max-width: 752px; padding: 0 16px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__sub { display: block; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__actions { display: flex; flex: none; gap: 8px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin .wa-pin__actions > .q-btn { width: auto; min-width: 96px; height: 44px; margin: 0; padding: 0 16px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page.wa-pin :is(#clocker-pin-form, .wa-target) { margin-left: 16px; margin-right: 16px; max-width: 720px; }
+}

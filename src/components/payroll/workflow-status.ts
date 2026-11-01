@@ -18,7 +18,8 @@ export function noticeOutcome(outcome: PayrollJob['outcome']) {
 
 export function backlogDescription(backlog: PayrollBacklogSummary) {
   if (backlog.overflow || backlog.missingCount === null) return 'The history scan reached its limit. The missing-period count is unavailable; review older settings and original runs before preparing catch-up drafts.';
-  return `${backlog.missingCount} completed ${backlog.missingCount === 1 ? 'period has' : 'periods have'} no original payroll run. Review the oldest periods first.`;
+  // Owner premium (structure PP copy): plain words instead of "original payroll run".
+  return `${backlog.missingCount} earlier pay ${backlog.missingCount === 1 ? 'period has' : 'periods have'} no payroll yet. Start with the oldest.`;
 }
 
 export function reminderWindow(days: number[]) { return days.length ? Math.max(...days) : 0; }

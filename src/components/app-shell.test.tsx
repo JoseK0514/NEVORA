@@ -142,7 +142,8 @@ it.each(["EMPLOYEE", "MANAGER"] as const)("offers a top-right account menu with 
   expect(html).toContain('class="portal-account-menu"');
   expect(html).toContain('aria-label="Sam Cruz, account menu"');
   expect(html).toContain('id="portal-account-menu"');
-  expect(html).toContain('Signed in as ');
+  // Round 2 (copy row 99): no "Signed in as" line; the name is on the button.
+  expect(html).not.toContain('Signed in as ');
   expect(html).toContain('portal-account-signout');
   if (role === "EMPLOYEE") expect(html).toContain('>Your profile</a>');
   // Desktop has no More page; the account menu is the Employee's way to the calendar link page.

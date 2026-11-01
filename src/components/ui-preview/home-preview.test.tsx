@@ -41,7 +41,7 @@ it('the preview composition replaces private readers while the native Home keeps
   const preview = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} overviewSlots={{actions: null, activity: null, snapshots: {today: previewToday, actions: previewActionCenter}}}/>);
   expect(preview).not.toContain('data-live-reader');
   // Release 1 (corporate): the snapshots fill Today's stats.
-  expect(preview).toMatch(/Clocked in<\/dt><dd class="c-stat__value">\d+ of \d+<\/dd>/);
+  expect(preview).toMatch(/On shift now<\/span><span class="c-stat__value c-num">\d+ of \d+<\/span>/);
 });
 
 it('the clean Overview is "Today", drops the tab row, and Home\'s own views still open from their addresses', () => {
@@ -55,8 +55,8 @@ it('the clean Overview is "Today", drops the tab row, and Home\'s own views stil
   expect(html).toContain('Things to do');
   expect(html).not.toContain('Team tools');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
-  // Release 1: Team overview (Hours this week) is a kit page with a Back to Team.
-  expect(team).toContain('class="c-page c-teamweek"');
+  // Release 1: Hours this week is a kit page with a Back to Team.
+  expect(team).toContain('class="c-page c-teamweek c-page--narrow"');
   expect(team).toMatch(/<a class="c-nav__back" href="\/app\/employees">/);
 });
 

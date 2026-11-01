@@ -22,9 +22,14 @@
 :is(#c-root, html) .c-sched .c-sched-day__count { font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; }
 :is(#c-root, html) .c-sched .c-sched-row { min-height: 54px; padding-top: 7px; padding-bottom: 7px; }
 :is(#c-root, html) .c-sched .c-sched-row__time { flex: none; display: flex; flex-direction: column; width: 68px; white-space: nowrap; }
-:is(#c-root, html) .c-sched .c-sched-row__time b { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-sched .c-sched-row__time b { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); }
 :is(#c-root, html) .c-sched .c-sched-row__time span { font-size: 13px; line-height: 16px; color: var(--c-grey); }
-:is(#c-root, html) .c-sched .c-row--open.c-sched-row { min-height: 56px; }
+:is(#c-root, html) .c-sched .c-sched-row--open { min-height: 56px; }
+/* R3: a row's state (and the week's) is trailing 13/500 text, never a pill: grey; amber for Draft, Changed or held
+ * changes; red only for the day's one problem. */
+:is(#c-root, html) .c-sched :is(.c-sched-state, .c-sched-weekstate) { flex: none; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-sched :is(.c-sched-state, .c-sched-weekstate)[data-tone="amber"] { color: var(--c-amber); }
+:is(#c-root, html) .c-sched .c-sched-state[data-tone="red"] { color: var(--c-red); }
 :is(#c-root, html) .c-sched .c-sched-row__open { color: var(--c-red); }
 :is(#c-root, html) .c-sched .c-sched-row__cover { flex: none; display: inline-flex; align-items: center; min-height: 44px; }
 :is(#c-root, html) .c-sched .c-sched-day__more { display: flex; align-items: center; justify-content: center; width: 100%; height: 44px; margin: 0; padding: 0; border: 0; background: none; box-shadow: inset 0 1px 0 var(--c-line); color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; }
@@ -43,11 +48,9 @@
 
 @media (min-width: 1200px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   :is(#c-root, html) .c-sched .cm-sched-phone { display: none; }
-  /* The week card keeps its header (‹ week › and the week's state) over the grid; the grid has the days. */
-  :is(#c-root, html) .c-sched .c-sched-days { display: none; }
-  :is(#c-root, html) .c-sched .c-sched-week__head { box-shadow: none; }
-  /* Today in the grid's header is teal, as everywhere else (red stays for problems). */
-  html body .app-shell[data-nv-corp] .c-sched .cm-grid thead th[data-today] > b { background: var(--c-teal) !important; }
+  /* R11: the week bar is the grid card's head, so the separate week card goes. */
+  :is(#c-root, html) .c-sched .c-sched-weekcard { display: none; }
+  :is(#c-root, html) .c-sched .c-sched-gridbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
   :is(#c-root, html) .c-sched .cm-sched-desk { display: block; margin: 0; }
   /* The grid sits on one white card like every other surface. */
   :is(#c-root, html) .c-sched .cm-grid-wrap { border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); overflow: hidden; }
@@ -60,22 +63,73 @@
 /* The shortest phones (320–359px): the date shortens, the avatar steps aside so names and Find cover stay whole. */
 :is(#c-root, html) .c-sched .c-sched-sub__short { display: none; }
 :is(#c-root, html) .c-sched .c-row__title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* A day row's name and role wrap instead of being cut ("Alexandra R…") when a state pill sits beside them. */
-:is(#c-root, html) .c-sched .c-sched-row .c-row__title, :is(#c-root, html) .c-sched .c-sched-row .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
-:is(#c-root, html) .c-sched .c-sched-row > .c-pill { flex: none; }
+/* R3: a day row's name and its "Barista · Condado" line each stay on one line (the state beside them is short text now). */
+:is(#c-root, html) .c-sched .c-sched-row .c-row__main { min-width: 0; }
+:is(#c-root, html) .c-sched .c-sched-row .c-row__detail { display: block; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-sched .c-sched-row .c-row__detail > span:first-child { white-space: nowrap; }
+/* The state sits on the name's line, so the role and location line keeps the row's full width. */
+:is(#c-root, html) .c-sched .c-sched-row__top { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+:is(#c-root, html) .c-sched .c-sched-row__top > .c-row__title { flex: 1 1 auto; min-width: 0; }
 @media (max-width: 359px) {
   :is(#c-root, html) .c-sched .c-sched-sub__long { display: none; }
   :is(#c-root, html) .c-sched .c-sched-sub__short { display: inline; }
   :is(#c-root, html) .c-sched .c-sched-row > .c-av { display: none; }
   :is(#c-root, html) .c-sched .c-sched-row__time { width: 64px; }
+  /* The narrowest phones: a name and its state can't share a line, so the state drops under the name (never cut). */
+  :is(#c-root, html) .c-sched .c-sched-row__top { flex-wrap: wrap; column-gap: 8px; row-gap: 0; }
+  :is(#c-root, html) .c-sched .c-sched-row__top > .c-row__title { flex: 0 1 auto; }
 }
 /* Tablets and small laptops show the phone layout in the reading column. */
 @media (min-width: 768px) and (max-width: 1199px) { :is(#c-root, html) .c-page.c-sched { max-width: 640px; } }
 
-/* Desktop grid: people's initials on the teal tint, as on Team. */
-html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: var(--c-tint) !important; color: var(--c-teal) !important; }
+/* Desktop grid: people's initials in neutral grey (Jose, Oct 31: in-row avatars are #EDEEEF). */
+html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: var(--c-neutral-bg) !important; color: var(--c-ink2) !important; }
 /* A day opened from Things to do: one quiet line with Show full week (no old panel padding). */
 :is(#c-root, html) .c-sched .c-note.manager-schedule-context { display: flex; flex-wrap: wrap; align-items: center; gap: 0 12px; margin: 0; padding: 0 2px; background: none; box-shadow: none; }
 :is(#c-root, html) .c-sched .c-note.manager-schedule-context .c-link { margin: -12px 0; }
 /* The shortest phones: the week state drops its "Published ·" so the count stays whole. */
 @media (max-width: 359px) { :is(#c-root, html) .c-sched .c-sched-week__head .c-sched-state__lead { display: none; } }
+
+/* Owner premium (visual-craft I, R3): every open shift's "+" is the same grey dashed circle; red never sits on it. */
+:is(#c-root, html) .c-sched .c-sched-av--open { display: grid; place-items: center; background: #FFFFFF; border: 1.5px dashed var(--c-field); color: var(--c-ink2); }
+
+/* Owner premium (A8, visual-craft C): the desktop grid on the corporate tokens. Ink #1A1C1E and grey #6B7075; 13/600 #4A4F54
+ * heads on #FAFAFA; #EDEEEF lines; people as 15/600 names with 13px hours and 32px neutral avatars; blocks of radius 6 with
+ * 13/600 ink on the tint; drafts dashed grey; open shifts plain white blocks with a grey ring (no red dash); one red mark,
+ * the Open shifts row's icon. (Prefixed past the legacy clean-manager rules it replaces.) */
+@media (min-width: 1200px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { font-family: inherit; color: var(--c-ink); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th { height: 40px; border-bottom: 1px solid var(--c-line); border-left: 1px solid var(--c-line); background: #FAFAFA; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { border-left: 0; font-weight: 400; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > b { color: var(--c-ink); font-weight: 600; }
+  /* R11: today's header is teal text (no filled badge) and its whole column carries a faint tint. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th[data-today] { color: var(--c-teal); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th[data-today] > b { display: inline; padding: 0; border-radius: 0; background: none; color: var(--c-teal); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid :is(thead th, tbody td)[data-today] { background: #F5F9F8; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid tbody :is(th, td) { height: 56px; border-top: 1px solid var(--c-line); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid tbody:first-of-type tr:first-child > :is(th, td) { border-top: 0; }
+  /* R11: chips share a top edge (a single chip still sits centred in a 56px row). */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid tbody td { padding: 14px 6px 6px; border-left: 1px solid var(--c-line); vertical-align: top; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__open > th.cm-person { padding-top: 9px; vertical-align: top; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-open-past { display: block; padding: 5px 2px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person { padding: 8px 16px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person .nv-avatar { width: 32px; height: 32px; margin-right: 12px; border-radius: 16px; background: var(--c-neutral-bg) !important; color: var(--c-ink2) !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__text { max-width: calc(100% - 44px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__name { font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub em { color: var(--c-amber); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { min-height: 28px; padding: 4px 8px; border: 0; border-radius: 6px; background: #F1F3F4; color: var(--c-ink); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; transition: background-color 120ms ease-out; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:hover { background: #E7E9EA; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.draft { padding: 3px 7px; border: 1px dashed var(--c-faint); background: #FFFFFF; }
+  /* R11: open shifts are dashed chips in grey ink (8.6:1); no red tile. */
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.open { padding: 3px 7px; border: 1px dashed var(--c-field); background: #FFFFFF; color: var(--c-ink2); font-weight: 500; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.open:hover { background: #F7F8F8; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block__lead { color: var(--c-ink2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 1px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 6px; color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid td:hover > .cm-add { background: #F7F8F8; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__toggle button { color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .wb-note { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
+  /* Link colours need the kit's weight (its :where(a) inherit rule carries an id). */
+  :is(#c-root, html) .c-sched .cm-sched-slot .cm-block.open { color: var(--c-ink2); }
+}

@@ -1,23 +1,50 @@
-/* Owner Home on the corporate kit (Release 1, board C-Owner). Only what the kit does not already draw. */
+/* Owner Home on the corporate kit (Release 1, board C-Owner). Only what the kit does not already draw. Round 2 (Oct 31):
+ * the round-1 badge, avatar and pressed-row fallbacks are gone; the kit owns them. */
 :is(#c-root, html) .c-home .c-home__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-home .c-card__body > .c-home__state + .c-btn { margin-top: 12px; }
-:is(#c-root, html) .c-home .c-home__gap { display: flex; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: inset 0 1px 0 #EDEEEF; }
+/* R6: Today's figures are links. Label on top, the figure under it on one baseline across the three, even when a narrow
+ * phone gives a label two lines. Hover and press use the kit's row colours; colour only, so reduced motion keeps them. */
+:is(#c-root, html) .c-home .c-home__stat { display: flex; flex-direction: column; justify-content: space-between; gap: 2px; min-height: 64px; color: inherit; }
+:is(#c-root, html) .c-home .c-home__stat > .c-stat__label { white-space: normal; overflow: visible; text-overflow: clip; }
+:is(#c-root, html) .c-home .c-home__stat > .c-stat__value { margin-top: 0; }
+:is(#c-root, html) .c-home a.c-home__stat { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color var(--c-dur-press, 120ms) ease-out; }
+@media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-home a.c-home__stat:hover { background: #F7F8F8; } }
+:is(#c-root, html) .c-home a.c-home__stat:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) .c-home a.c-home__stat:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 0; z-index: 1; }
+:is(#c-root, html) .c-home .c-home__gap { display: flex; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-home .c-home__gap > .c-row__main { flex: 1; min-width: 0; }
 :is(#c-root, html) .c-home .c-home__gap > .c-btn { flex: none; }
-:is(#c-root, html) .c-home .c-home__setup { box-shadow: inset 0 1px 0 #EDEEEF; }
-/* Small phones: tighter stat columns so "No clock-in" and "Open shifts" stay whole, and Find cover moves under the
- * open shift so its time and place stay whole. */
+/* P7: the open shift's place while the reads load, at the row's final height (a 40px button plus 12px above and below). */
+:is(#c-root, html) .c-home .c-home__gap--wait { min-height: 64px; }
+:is(#c-root, html) .c-home .c-home__gap--wait .c-row__title { color: var(--c-grey); }
+:is(#c-root, html) .c-home .c-home__setup { box-shadow: inset 0 1px 0 var(--c-line); }
+/* R6: the next open shifts after the first, desktop and tablet only. */
+:is(#c-root, html) .c-home .c-home__more { display: none; }
+:is(#c-root, html) .c-home .c-home__more > li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* The setup line, Payday's step and the open shift's place and need; on a narrow phone they take a second line instead of being cut. */
+:is(#c-root, html) .c-home :is(.c-home__setup, .c-home__payday, .c-home__gap) .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+/* Payday's rows follow each other with the kit's divider. */
+:is(#c-root, html) .c-home #home-payday .c-rows > li + li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* Small phones: tighter figure columns, and Find cover moves under the open shift so its time and place stay whole. */
 @media (max-width: 359px) {
   :is(#c-root, html) .c-home .c-stat { padding: 12px 10px; }
   :is(#c-root, html) .c-home .c-home__gap { flex-wrap: wrap; }
   :is(#c-root, html) .c-home .c-home__gap > .c-btn { width: 100%; }
+  :is(#c-root, html) .c-home .c-home__gap--wait { min-height: 114px; align-items: flex-start; }
 }
-/* Desktop: two columns, so Home uses the width instead of a phone column. Today with Payday under it on the left, Things to
- * do on the right, so no card floats alone beside empty space (Release 1 fix). */
+/* R6, tablets and desktop: Today is the full-width main block; Payday and Things to do sit side by side under it and end
+ * level (each stretches to the taller one). With no Payday card, Things to do takes the full width. */
+@media (min-width: 900px) {
+  :is(#c-root, html) .c-page.c-home { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: stretch; align-content: start; gap: 12px; }
+  :is(#c-root, html) .c-page.c-home > :is(.c-title, #home-working, [data-live-readers]) { grid-column: 1 / -1; }
+  :is(#c-root, html) .c-page.c-home > #home-payday { grid-column: 1; }
+  :is(#c-root, html) .c-page.c-home > #home-needs-you { grid-column: 2; }
+  :is(#c-root, html) .c-page.c-home:not(:has(> #home-payday)) > #home-needs-you { grid-column: 1 / -1; }
+  :is(#c-root, html) .c-home #home-working .c-home__stat { min-height: 76px; padding: 14px 20px; }
+  :is(#c-root, html) .c-home #home-working .c-home__gap { padding: 12px 20px; }
+  :is(#c-root, html) .c-home .c-home__more { display: block; }
+  :is(#c-root, html) .c-home .c-home__more > li > .c-row { padding-left: 20px; padding-right: 20px; }
+}
 @media (min-width: 1100px) {
-  :is(#c-root, html) .c-page.c-home { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-flow: row dense; align-items: start; gap: 16px 16px; }
-  :is(#c-root, html) .c-page.c-home > .c-title { grid-column: 1 / -1; }
-  :is(#c-root, html) .c-page.c-home > #home-working { grid-column: 1; grid-row: 2; }
-  :is(#c-root, html) .c-page.c-home > [aria-label="Payday"] { grid-column: 1; grid-row: 3; }
-  :is(#c-root, html) .c-page.c-home > #home-needs-you { grid-column: 2; grid-row: 2 / span 2; }
+  :is(#c-root, html) .c-page.c-home { max-width: 1040px; }
 }

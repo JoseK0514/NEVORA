@@ -7,6 +7,7 @@ import { listEmployees } from '@/lib/data/employees';
 import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
 import { OwnerOnlyNotice } from '@/components/owner-only-notice';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
+import { payrollTabs } from '@/components/payroll/payroll-tabs';
 import './payroll-workflow.css';
 
 /** Every Payroll page (Release 1): the same access check, then one view of the payroll workspace. The review pages are
@@ -20,10 +21,11 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
   const current = await currentPayPeriod().catch(() => null);
-  // Names for the people a review or fix list refers to by reference (no pay data; the team list the Owner already sees).
-  const names = view === 'home' || view === 'history' ? {} : await listEmployees().then(list => Object.fromEntries(list.map(employee => [employee.id, `${employee.firstName} ${employee.lastName}`.trim()]))).catch(() => ({}));
+  // Names for the people a review, fix list or Pay history statement refers to by reference (no pay data; the team list
+  // the Owner already sees). Pay history uses them to name each statement's employee from its record, never its file name.
+  const names = view === 'home' ? {} : await listEmployees().then(list => Object.fromEntries(list.map(employee => [employee.id, `${employee.firstName} ${employee.lastName}`.trim()]))).catch(() => ({}));
   return <PayrollRuns key={recoveryScope} recoveryScope={recoveryScope} current={current} canEditSettings={proof.employee.role === 'OWNER'}
-    view={view} runId={runId} names={names} company={workspace.name} />;
+    view={view} runId={runId} names={names} company={workspace.name} tabs={view === 'home' ? payrollTabs(proof.employee.role, capabilities) : null} />;
 }
 
 export type PayrollSearch = Promise<{ run?: string | string[] }>;

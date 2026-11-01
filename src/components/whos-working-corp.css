@@ -11,3 +11,11 @@
  * and focused in its final place (IS-RC-ATTENDANCE-RECOVERY-01, carried over from the earlier attendance view). A failed or
  * focused review keeps its recovery visible. */
 :is(#c-root, html) .c-who .c-who__review:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
+/* Round 2: pressed and hover rows come from the kit. */
+:is(#c-root, html) .c-who .c-who__more:active { opacity: .55; }
+/* A narrow phone: a row's detail takes a second line instead of being cut. */
+@media (max-width: 389px) {
+  :is(#c-root, html) .c-who .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}
+/* Round 2 (R3): counts in one voice ("Live" is the kit's .c-meta). Kit request: .c-count. */
+:is(#c-root, html) .c-who .c-count { margin-left: 6px; font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }

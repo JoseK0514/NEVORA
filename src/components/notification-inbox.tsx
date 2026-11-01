@@ -24,6 +24,8 @@ import type {PrivatePanelState} from '../lib/private-snapshot-client';
 import type {EmployeeViewSnapshot,NotificationReviewState,NotificationActionState} from '../lib/employee-view';
 import {filterNotifications,groupNotifications,notificationPresentation,type NotificationFilter} from '../lib/notification-inbox-view';
 import styles from './notification-inbox.module.css';
+import './notification-inbox-corp.css';
+import {CorpEmpty} from './corp/corp';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
 import {Freshness} from './kit/kit';
 
@@ -79,10 +81,11 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
   const view=filter==='unread'?items:ready?filterNotifications(ready.items,'all',''):[];
   const sorted=[...view].sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
   return <section ref={root} aria-label="Notifications" data-private-view="notifications">
-   <div className="q-seg" role="group" aria-label="Filter notifications">
+   {/* Owner premium (N3): with nothing at all to filter, the All / Unread control steps aside for the empty card. */}
+   {onMarkRead&&ready&&!ready.items.length?null:<div className="q-seg" role="group" aria-label="Filter notifications">
     <button type="button" aria-pressed={filter!=='unread'} disabled={!ready} onClick={()=>setFilter('all')}>All</button>
     <button type="button" aria-pressed={filter==='unread'} disabled={!ready} onClick={()=>setFilter('unread')}>{unread?`Unread · ${unread}`:'Unread'}</button>
-   </div>
+   </div>}
    {ready?<p className="q-sr" role="status" aria-live="polite">{sorted.length} {sorted.length===1?'notification':'notifications'}{filter==='unread'?' unread':''}</p>:null}
    <HoldHeight holding={!ready} memory="notifications-manager" className="q-notif-hold">
    {!ready?<div className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading…'}</h2>
@@ -102,6 +105,8 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
        </Link>
       </li>;
      })}</ul>
+     :onMarkRead?<div className="c-page c-embed q-notif-empty" role="status"><CorpEmpty title={filter==='unread'?'You’re all caught up':'No notifications yet'}
+       body={filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'You’ll see requests and schedule changes here.'}/></div>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
     {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
     {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}

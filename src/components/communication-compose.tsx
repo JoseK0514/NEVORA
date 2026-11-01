@@ -83,7 +83,7 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
   </section>
   :<div className={cc.ccSubmit}><button className="sg-cta" disabled={(disabled&&!previewing)||undefined} aria-disabled={previewing||undefined} aria-busy={previewing||undefined} onClick={event=>{if(previewing)event.preventDefault();}} type="submit"><PendingLabel pending={previewing} pendingText="Checking audience…">Preview audience</PendingLabel></button><p className="sg-after">Nothing is published until you review the audience and choose Publish.</p></div>;
  return <form ref={formRef} id="compose-form" className="wb-form" onSubmit={e=>{e.preventDefault();void review();}}>
-  <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'Create update':'Message today’s team'}</legend>
+  <fieldset disabled={disabled} className="wb-form"><legend className="nv-sr">{editing?'Edit update':context.management?'New update':'Message today’s team'}</legend>
    {signature?<>
    <SigHead id="compose-message-heading" title="Message"/>
    <section className={cc.ccPaper} aria-labelledby="compose-message-heading">
@@ -114,7 +114,8 @@ export function ComposeForm({context,initial,editing,mode,authority,retained,ret
        right) checks the audience. Shift notes, important updates and Today's team stay under Type. */}
    <div className="q-fl q-first">
     <div className="q-fl__row"><label className="q-fl__label" htmlFor="communication-title">Title</label>{titleCount>100?<span id="communication-title-count" className="q-fl__opt" data-over={titleCount>120||undefined}>{titleCount}/120</span>:<span id="communication-title-count" className="q-sr">{titleCount} of 120 characters</span>}</div>
-    <input id="communication-title" className="q-in" placeholder="e.g. Holiday hours" value={title} onChange={e=>{changed();setTitle(e.target.value);}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
+    <input id="communication-title" className="q-in" placeholder="e.g. Holiday hours" autoComplete="off" autoCapitalize="sentences" enterKeyHint="next" value={title} onChange={e=>{changed();setTitle(e.target.value);}}
+     onKeyDown={e=>{if(e.key==='Enter'&&!e.nativeEvent.isComposing){e.preventDefault();document.getElementById('communication-body')?.focus();}}} aria-describedby={errorField==='title'?'communication-title-error communication-title-count':'communication-title-count'} aria-invalid={titleCount>120||errorField==='title'}/>
     {errorField==='title'&&error?<p className="q-fl__error" id="communication-title-error">{error}</p>:null}
    </div>
    <div className="q-fl">
@@ -174,7 +175,8 @@ function BoundCommunicationCompose({authority,mode,updateId}:{authority:string;m
  const composeFailed=!context&&!resource.state.refreshing;
  const hadFailure=useRef(false);
  useEffect(()=>{if(composeFailed){hadFailure.current=true;return;}if(context&&hadFailure.current){hadFailure.current=false;if(!document.activeElement||document.activeElement===document.body)document.getElementById('communication-title')?.focus({preventScroll:true});}},[composeFailed,context]);
- const title=updateId?'Edit update':mode==='manager'?'Create update':'Message today’s team';
+ // One name per place (A3): Updates' button and this page are both "New update".
+ const title=updateId?'Edit update':mode==='manager'?'New update':'Message today’s team';
  const content=<div className="nv-content">{context?<ComposeForm key={authority+':'+(editing?.revisionId??'new')} context={context} initial={editing?.management?.draft} editing={editing} mode={mode} authority={authority} retained={retained} retain={(values,revisionId)=>{retained.current={values,revisionId};}} action={action}/>:<section className="nv-card" role="status" aria-busy={resource.state.refreshing}><div className="wb-body"><div className="wb-receipt"><Tile tone="neutral">{resource.state.refreshing?<ClockIcon size={22}/>:<UsersThreeIcon size={22}/>}</Tile><div><h2 className="wb-strong">{offline?'You’re offline':signedOut?'Your session ended':resource.state.paused?'Paused while you were away':resource.state.refreshing?'Loading the form':'Couldn’t load the form'}</h2><p className="wb-note">{offline?'Connect to the internet, then try again.':signedOut?'Sign in again to keep writing.':resource.state.paused?'Come back to this page to keep writing.':resource.state.refreshing?'Getting your locations and today’s team…':'Check your connection, then try again.'}</p></div></div><div className="wb-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={resource.state.paused||resource.state.refreshing} onClick={resource.refresh}>Try again</button>{signedOut?<Link className="nv-btn" data-kind="secondary" href="/login">Sign in again</Link>:null}</div></div></section>}</div>;
  if(mode==='employee'&&!updateId)return <div ref={pageRef} className="nv-page wb-page wb-narrow wb-compose" data-nv-page="">
   <SigPage className={cc.ccRoot} band={<SigBand eyebrow="Team updates · new"><h1 className="sg-head2">Message<br/>today’s team</h1><p className="sg-sub"><span>Write it once. Everyone working today sees it.</span></p><Link className="sg-band-link" href="/app/updates"><CaretLeftIcon size={14} aria-hidden="true"/>Updates</Link></SigBand>}>{content}</SigPage>

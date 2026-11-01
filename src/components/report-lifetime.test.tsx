@@ -29,7 +29,8 @@ function ready(name=originalName,validForMs=15000,p=period){
 }
 function deferred<T>(){let resolve!:(value:T)=>void;const promise=new Promise<T>(yes=>{resolve=yes;});return {promise,resolve};}
 function bodyResponse(body:Promise<unknown>){return {status:200,ok:true,json:()=>body} as Response;}
-function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;return [node,...nodes(node.props.children as ReactNode)];}
+function nodes(value:ReactNode):ReactElement<Record<string,unknown>>[]{if(Array.isArray(value))return value.flatMap(nodes);if(!value||typeof value!=='object'||!('props'in value))return [];const node=value as ReactElement<Record<string,unknown>>;return [node,...nodes(node.props.children as ReactNode),...nodes(node.props.actions as ReactNode)];}
+// Round 2 (R13): the period menu and Export sit in the page title's actions, so the walk follows CorpTitle's actions too.
 function tree(){host.scope='reports';host.frames.reports.cursor=0;return Reports({initialPeriod:period});}
 function commit(scope:'reports'|'view'){for(const slot of host.frames[scope].slots){if(!slot.pending)continue;slot.cleanup?.();const effect=slot.pending;slot.pending=undefined;const cleanup=effect();slot.cleanup=typeof cleanup==='function'?cleanup:undefined;}}
 let focused=true;

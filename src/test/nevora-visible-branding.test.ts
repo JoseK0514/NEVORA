@@ -38,7 +38,7 @@ describe("NEVORA installation, notifications and status surfaces", () => {
     expect(NUVORA_BRAND.platformLabel).toBe("NEVORA");
     expect(manifest()).toMatchObject({
       name: "NEVORA", short_name: "NEVORA", id: "/app", start_url: "/app", scope: "/app",
-      theme_color: "#1C4A47", background_color: "#FFFFFF",
+      theme_color: "#FFFFFF", background_color: "#FFFFFF",
     });
     const offline = readFileSync("public/fuel-portal-offline.html", "utf8");
     expect(offline).toContain("NEVORA · Offline");

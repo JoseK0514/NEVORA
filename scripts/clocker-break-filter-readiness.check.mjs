@@ -29,7 +29,7 @@ const bundle=await project('esbuild').build({
  plugins:[{name:'fictional-framework-boundaries',setup(build){
   build.onResolve({filter:/^next\/(link|image|navigation)$/},args=>({path:args.path,namespace:'fixture'}));
   build.onLoad({filter:/.*/,namespace:'fixture'},args=>({contents:args.path==='next/navigation'
-   ?'export const usePathname=()=>"/fixture";export const useSearchParams=()=>new URLSearchParams();'
+   ?'export const usePathname=()=>"/fixture";export const useSearchParams=()=>new URLSearchParams();export const useRouter=()=>({refresh(){},push(){},replace(){},back(){},prefetch(){}});'
    :'import React from "react";export default function Element({children,...props}){return React.createElement('+JSON.stringify(args.path==='next/link'?'a':'img')+',props,children);}',loader:'js',resolveDir:source}));
  }}],
 });

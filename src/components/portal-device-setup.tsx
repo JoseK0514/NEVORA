@@ -145,7 +145,8 @@ export function PortalDeviceSetup({ role }: { role: UserRole }) {
     } catch { setInstallMessage('The browser install prompt is unavailable. Use the install instructions.'); setInstructions(true); }
   }
   return <div ref={popover} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}>
-    <div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close" popoverTarget="portal-device-settings" popoverTargetAction="hide" aria-label="Close device settings">×</button></div>
+    {/* Round 2 (R8): the kit sheet's header, the title centred and "Done" on the right (the × retired). */}
+    <div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close c-done" popoverTarget="portal-device-settings" popoverTargetAction="hide">Done</button></div>
     {snapshot ? <DeviceSetupContent state={snapshot.state} standalone={snapshot.standalone} ios={snapshot.capabilities.requiresStandalone} installPrompt={canInstall} testAllowed={snapshot.server.testAllowed} instructions={instructions} message={snapshot.message ?? installMessage}
       onEnable={() => { void controller.current?.enable(); }} onDismiss={dismiss} onInstructions={() => setInstructions(true)} onInstall={() => { void install(); }} onTurnOff={() => { void controller.current?.turnOff(); }} onTest={() => { void controller.current?.test(); }} onRetry={() => { void controller.current?.start(); }}/>
       : <p role="status">Checking this device…</p>}

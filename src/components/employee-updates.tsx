@@ -11,6 +11,7 @@ import {HoldHeight} from './kit/hold-height';
 import {useTopBarSlot} from './clean/top-bar-slot';
 import {UpdateEntrance, updateKinds} from './update-visual';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
+import {CorpEmpty} from '@/components/corp/corp';
 import {useCommunicationResource, type CommunicationMode} from '../lib/communications/client';
 import type {CommunicationListRead, CommunicationRead} from '../lib/communications/types';
 import './updates-review.css';
@@ -73,8 +74,9 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   };
   const needsReply = filter === 'to-review';
   return <UpdateEntrance className="employee-view communication-view updates-page">
-   <div className="q-page premium-updates cm-updates" data-nv-page="">
-   <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Create update"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
+   <div className="q-page premium-updates cm-updates c-page--narrow" data-nv-page="">
+   {/* Owner premium (visual-craft Updates): a labelled "New update" instead of a bare "+". */}
+   <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose">New update</Link>} />
    <QuietHeader title="Updates" />
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
     <div className="q-seg" role="group" aria-label="Filter updates">
@@ -89,8 +91,10 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
        <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
        <CaretRightIcon className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
-     : <div role="status" style={{ marginTop: 24 }}><p className="q-empty">{filter === 'all' ? 'No updates yet.' : 'Nothing needs a reply.'}</p>
-      {filter !== 'all' ? <button type="button" className="q-btn q-btn--quiet" onClick={() => setFilter('all')}>View all updates</button> : null}</div>}
+     : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}
+      body={filter === 'all' ? 'Tell your team about hours, menus or events.' : 'Updates that must be read show up here.'}
+      action={filter !== 'all' ? <button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => setFilter('all')}>View all updates</button>
+       : <Link className="c-btn c-btn--secondary c-btn--md" href="/app/updates/compose">New update</Link>} /></div>}
     </HoldHeight>
    </section>
    <span className="q-sr" role="status">{userRefreshing ? 'Refreshing updates…' : ''}</span>

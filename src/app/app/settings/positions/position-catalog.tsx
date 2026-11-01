@@ -92,7 +92,6 @@ export function PositionCatalog({ positions, available, createAction, updateActi
         <noscript><p className="q-help">JavaScript is required to add or edit positions.</p></noscript>
         <p className="q-sr" role="status" aria-live="polite">{positions.length ? `${counts.active} active and ${counts.inactive} archived positions` : ""}</p>
         {positions.length ? <ul className="q-list wc-editables" aria-label="Positions">
-          <li className="wc-cardhead" aria-hidden="true"><span>{`${counts.active} ${counts.active === 1 ? "position" : "positions"}`}</span></li>
           {positions.filter(position => position.active).map(position => <PositionRow key={position.id} position={position} hidden={false} ready={ready} action={updateAction} people={people?.[position.id]} />)}
           <li><button type="button" className="wc-addrow" disabled={!ready} onClick={() => setAdding(true)}><PlusIcon aria-hidden="true" weight="bold" />Add position</button></li>
         </ul> : null}
@@ -100,7 +99,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
           <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
           {archived.map(position => <PositionRow key={position.id} position={position} hidden={false} ready={ready} action={updateAction} people={people?.[position.id]} />)}
         </ul> : null}
-        {positions.length ? <p className="wc-foot">Open a position to rename it or archive it. Archived positions stay on past shifts and timecards. Some people work more than one position.</p> : null}
+        {positions.length ? <p className="wc-foot">Choose a position to rename or archive it. Past shifts keep their position.</p> : null}
         {!positions.length ? <EmptyState icon={null} title="No positions yet" action={<button type="button" className="q-btn" onClick={() => setAdding(true)} disabled={!ready}>Add position</button>}>
           Shifts can still be added without a position.</EmptyState> : null}
         <dialog ref={addDialog} className="wc-dialog" aria-labelledby="new-position-title" onClose={() => setAdding(false)} onCancel={() => setAdding(false)}>

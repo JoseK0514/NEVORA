@@ -42,7 +42,7 @@ const shapes: [string | RegExp, Shape][] = [
   ["/app/settings/company-policies", { route: "settings-policies", label: "company policies", shape: "cards", band: 232 }],
   ["/app/settings/breaks", { route: "settings-breaks", label: "break types", shape: "cards", band: 276 }],
   ["/app/settings/positions", { route: "settings-positions", label: "positions", shape: "cards", band: 276 }],
-  ["/app/settings/clocker", { route: "settings-devices", label: "Clocker devices", shape: "cards", band: 276 }],
+  ["/app/settings/clocker", { route: "settings-devices", label: "Clocker tablets", shape: "cards", band: 276 }],
   ["/app/settings", { route: "settings", label: "settings", shape: "cards", band: 232 }],
   ["/app/account-recovery", { route: "account-recovery", label: "account recovery", shape: "cards", band: 232 }],
   ["/app/clocker-recovery", { route: "clocker-recovery", label: "Clocker recovery", shape: "cards", band: 232 }],

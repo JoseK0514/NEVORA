@@ -9,7 +9,7 @@ describe('payroll operational status', () => {
   it('does not turn unknown or overflow history counts into zero', () => {
     expect(backlogDescription({ ...backlog, missingCount: null })).toContain('count is unavailable');
     expect(backlogDescription({ ...backlog, overflow: true, missingCount: 0 })).toContain('count is unavailable');
-    expect(backlogDescription(backlog)).toContain('2 completed periods');
+    expect(backlogDescription(backlog)).toContain('2 earlier pay periods have no payroll yet');
   });
   it('treats absent readiness as disabled and enabled readiness as requiring access and consent', () => {
     expect(noticeReadiness(capabilities)).toContain('delivery is disabled');
