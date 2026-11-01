@@ -72,6 +72,9 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toContain('/app/employees/');
     expect(html).not.toContain('/app/my-pay');
     expect(html).toContain('popoverTarget="portal-device-settings"');
+    // Nov 1 upscale: "this phone" on a phone and "this device" elsewhere (CSS picks one); a chevron, not a teal "Turn on".
+    expect(html).toContain('Alerts on this <span class="pmp-device-phone">phone</span><span class="pmp-device-other">device</span>');
+    expect(html).not.toContain('Turn on');
   });
 
   it('says what is not there yet without blame words, and lets an Owner add an email', () => {
@@ -80,6 +83,9 @@ describe('Owner and Manager Profile', () => {
     expect(html).not.toMatch(/missing|missed/i);
     const ownerEmpty = render(owner, parseManagerProfile({ ...fixture('owner'), contact: { email: null, phone: null } }));
     expect(ownerEmpty).toContain('href="/app/employees/qa-owner?edit=1"');
+    // Nov 1 upscale: label + grey value + chevron, never a teal inline action.
+    expect(ownerEmpty).toMatch(/<b>Email<\/b><\/span><span class="q-rv q-rv--l">Not added<\/span><svg[^>]*class="q-chev"/);
+    expect(ownerEmpty).not.toContain('q-rv--go');
   });
 
   it('places the account rows after Notifications, with Sign out left to More and the sidebar (Owner premium A9)', () => {

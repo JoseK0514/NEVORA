@@ -71,10 +71,10 @@
 :is(#c-root, html) .c-ins .c-card__aside button.c-link { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
 /* Hours by person names the person whose hours these are: a long name wraps rather than being cut off (reflow). */
 :is(#c-root, html) .c-ins #ins-people .c-row__title { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
-/* A stat's label, and a figure said in words ("No requests", "Not available"), wrap on a narrow phone rather than run
- * into the next column. */
+/* A stat's label wraps on a narrow phone rather than running into the next column. Nov 1 upscale: figures are numbers or
+ * the kit's grey "—"; why a figure is missing is one 13px line under the figures. */
 :is(#c-root, html) .c-ins #ins-attendance :is(.c-stat__label, .c-stat__value) { white-space: normal; overflow: visible; }
-:is(#c-root, html) .c-ins #ins-attendance .c-ins__word { display: inline-block; padding-top: 3px; font-size: 15px; line-height: 20px; font-weight: 500; letter-spacing: 0; color: var(--c-ink2); }
+:is(#c-root, html) .c-ins #ins-attendance .c-ins__reason { margin: 0; padding: 0 16px 14px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 /* A narrow phone: the attendance labels may take two lines; the numbers stay on one baseline. */
 @media (max-width: 359px) {
   :is(#c-root, html) .c-ins #ins-attendance .c-stat { display: flex; flex-direction: column; justify-content: space-between; }

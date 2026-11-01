@@ -18,7 +18,10 @@ export function useSheetClose() {
 
 const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
-export function QuietSheet({open, onClose, label, labelledBy, children}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; children: ReactNode}) {
+/** `modal={false}` (Owner Timecards on wide screens, Nov 1 upscale): the same panel opened as a non-modal inspector, so
+ * the page behind stays live and unlocked: no scrim, focus stays where it was, Escape still closes it (and its onClose
+ * returns focus), and a click outside doesn't close it. Every other sheet is modal, as before. */
+export function QuietSheet({open, onClose, label, labelledBy, children, modal = true}: {open: boolean; onClose: () => void; label?: string; labelledBy?: string; children: ReactNode; modal?: boolean}) {
   const dialog = useRef<HTMLDialogElement>(null);
   const closing = useRef(false);
   const drag = useRef<{y: number; t: number; dy: number} | null>(null);
@@ -37,17 +40,29 @@ export function QuietSheet({open, onClose, label, labelledBy, children}: {open: 
   useEffect(() => {
     const node = dialog.current;
     if (!node) return;
-    if (open && !node.open) { node.removeAttribute('data-closing'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
+    if (open && !node.open) {
+      node.removeAttribute('data-closing');
+      if (modal) { node.removeAttribute('data-inspector'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
+      else { node.setAttribute('data-inspector', ''); node.show(); }
+    }
     if (!open && node.open) node.close();
-    return () => { if (!document.querySelector('dialog.q-sheet[open]')) document.documentElement.removeAttribute('data-q-sheet'); };
-  }, [open]);
+    return () => { if (!document.querySelector('dialog.q-sheet[open]:not([data-inspector])')) document.documentElement.removeAttribute('data-q-sheet'); };
+  }, [open, modal]);
+
+  // A non-modal panel gets no "cancel" event from Escape, so it listens for the key itself while it is open.
+  useEffect(() => {
+    if (modal || !open) return;
+    const key = (event: KeyboardEvent) => { if (event.key === 'Escape' && !event.defaultPrevented && !document.querySelector('dialog[open]:modal')) { event.preventDefault(); close(); } };
+    document.addEventListener('keydown', key);
+    return () => document.removeEventListener('keydown', key);
+  }, [modal, open, close]);
 
   useEffect(() => {
     const node = dialog.current;
     if (!node) return;
     // Escape: animate out like every other close.
     const cancel = (event: Event) => { event.preventDefault(); close(); };
-    const closed = () => { if (!document.querySelector('dialog.q-sheet[open]')) document.documentElement.removeAttribute('data-q-sheet'); };
+    const closed = () => { if (!document.querySelector('dialog.q-sheet[open]:not([data-inspector])')) document.documentElement.removeAttribute('data-q-sheet'); };
     node.addEventListener('cancel', cancel);
     node.addEventListener('close', closed);
     return () => { node.removeEventListener('cancel', cancel); node.removeEventListener('close', closed); };
@@ -55,7 +70,7 @@ export function QuietSheet({open, onClose, label, labelledBy, children}: {open: 
 
   return <dialog ref={dialog} className="q-page q-sheet" aria-label={label} aria-labelledby={labelledBy} tabIndex={-1}
     // A tap on the dim area outside the sheet (the dialog's own box, not its content) closes it.
-    onClick={event => { if (event.target === event.currentTarget) close(); }}
+    onClick={event => { if (modal && event.target === event.currentTarget) close(); }}
     onPointerDown={event => {
       const target = event.target as HTMLElement;
       if (!target.closest('.q-sheet__top') || target.closest('a, button, input, textarea, select, label')) return;

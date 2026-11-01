@@ -58,8 +58,11 @@ it("tints shifts by position name, stably and within six tints", async () => {
   for (const name of ["Barista", "Cashier", "Shift lead", "Cook", "Host", "Support"]) expect(positionTint(name)).toBeGreaterThanOrEqual(0), expect(positionTint(name)).toBeLessThan(6);
   expect(positionTint(undefined)).toBe(0);
   // Clean Manager v3: the approved roster draws every shift in one light tint (the mockup), so blocks no longer carry a
-  // position tint; the position is read out with the shift instead, and the lead keeps its own marker.
-  expect(html()).toMatch(/class="cm-block lead"/);
+  // position tint; the position is read out with the shift instead. Nov 1 upscale: the Lead role is on hold, so a lead
+  // shift carries no seal, class or "Lead" (the flag stays in the data).
+  expect(html()).not.toMatch(/class="cm-block lead"/);
+  expect(html()).not.toContain("cm-block__lead");
+  expect(html()).not.toMatch(/[,·] Lead\b/);
   expect(html()).toContain('<span class="sr-only schedule-assigned-position">, Captured support</span>');
 });
 it("shows weekly hours against target and flags hours over the limit", () => {
@@ -126,14 +129,20 @@ it("corporate (board G-O-Schedule): a week card with the week and its state, the
   expect(output).toContain('aria-label="Previous week"');
   expect(output).toContain('class="c-sched-week__label">Oct 5 – 11<');
   expect(output).toContain(">Draft</span>");
-  // Today's card: the shift with its time column, the open shift with Find cover, the count with hours, and Add shift on this day.
+  // Today's card: the shift with its time column, the open shift (the whole row opens Find cover, with a chevron), the
+  // count with hours, and Add shift on this day.
   expect(output).toContain("Today · Tue, Oct 6");
   expect(output).toContain("2 shifts · 4 h");
   // Owner premium: one time format; midnight reads 12:00 AM.
   // R2: each end is the kit's time (CorpTime: a quieter AM/PM joined by a narrow no-break space).
   expect(output).toMatch(/c-sched-row__time" aria-hidden="true"><b><span class="c-time">8:00\s<span class="c-ampm">PM<\/span><\/span><\/b><span><span class="c-time">12:00\s<span class="c-ampm">AM<\/span>/);
-  expect(output).toContain('href="/app/schedule/coverage?repair=x"');
-  expect(output).toContain(">Find cover</a>");
+  expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="\/app\/schedule\/coverage\?repair=x" aria-label="Find cover for the open shift, 1:00\sPM to 3:00\sPM, Main Office">/);
+  expect(output).not.toContain(">Find cover</a>");
+  expect(output).not.toContain("c-sched-row__cover");
+  // Nov 1 upscale: "Open shift" in ink when it isn't the day's one problem; the grid's day headers carry the day's hours.
+  expect(output).toMatch(/class="cm-grid__dayhours c-num"><span class="sr-only">, <\/span>\d+ h<\/span>/);
+  // On the current week there is no Today link.
+  expect(output).not.toContain("c-sched-week__today");
   expect(output).toContain('href="/app/schedule/new?week=2026-10-05&amp;date=2026-10-06"');
   // A draft shift says so; the Quiet strip is gone.
   expect(output).toContain('class="c-pill c-pill--amber">Draft</span>');
@@ -149,4 +158,30 @@ it("corporate: a shift edited since the week was published says Changed (Publish
   const plain = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees: roster, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
     corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
   expect(plain).not.toContain(">Changed<");
+});
+
+// Nov 1 upscale: an open shift that already ended earlier today (business time zone) reads "Not filled" with no action, as
+// a past day's does; one still to come keeps its row link; an overnight one or one that runs to midnight is never over today.
+it("corporate: today's open shifts that already ended say Not filled, and another week offers Today", () => {
+  const openShifts = [
+    { id: "early", date: "2026-10-06", startTime: "06:00", endTime: "10:00", location: "Main Office", href: "/app/schedule/coverage?shift=early" },
+    { id: "later", date: "2026-10-06", startTime: "16:00", endTime: "20:00", location: "Main Office", href: "/app/schedule/coverage?shift=later" },
+    { id: "late", date: "2026-10-06", startTime: "18:00", endTime: "24:00", location: "Main Office", href: "/app/schedule/coverage?shift=late" },
+    { id: "night", date: "2026-10-06", startTime: "22:00", endTime: "06:00", location: "Main Office", href: "/app/schedule/coverage?shift=night" },
+  ];
+  // 3:13 PM in Puerto Rico (UTC−4).
+  const out = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts,
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05", observedAt: "2026-10-06T19:13:00Z", todayHref: "/app/schedule?week=2026-10-12" } }));
+  expect(out).not.toContain('href="/app/schedule/coverage?shift=early"');
+  expect(out.match(/<span class="c-meta">Not filled<\/span>/g)).toHaveLength(1);
+  for (const id of ["later", "late", "night"]) expect(out).toContain(`class="c-row c-sched-row c-sched-row--open" href="/app/schedule/coverage?shift=${id}"`);
+  // The desktop grid's today column: the ended one collapses to a grey line with no action.
+  expect(out).toContain('<span aria-hidden="true">1 not filled</span>');
+  expect(out).toContain('<a class="c-sched-week__today" href="/app/schedule?week=2026-10-12" aria-label="Go to this week">Today</a>');
+  // Without the read time, today's open shifts all stay open.
+  const unknown = renderToStaticMarkup(createElement(ManagerWeeklyRoster, { employees, dates: weekDates("2026-10-05"), today: "2026-10-06", timeZone: "America/Puerto_Rico",
+    absences: { state: "ready", employeeIds: ["fictional", "unassigned"], rows: [] } as never, openShifts,
+    corp: { weekLabel: "Oct 5 – 11", previousHref: "/p", nextHref: "/n", addShiftHref: "/app/schedule/new?week=2026-10-05" } }));
+  expect(unknown).not.toContain(">Not filled<");
 });

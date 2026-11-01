@@ -127,6 +127,7 @@ const samePeriod=(a:Period,b:Period)=>a.startDate===b.startDate&&a.endDate===b.e
 /** Board G-O-Time: "31 h 32 min", "32 h" or "45 min". */
 const quietHours=(nanoseconds:string)=>{if(!/^\d+$/.test(nanoseconds))return '—';const minutes=Number(BigInt(nanoseconds)/BigInt(60_000_000_000)),h=Math.floor(minutes/60),m=minutes%60;return h&&m?`${h} h ${m} min`:h?`${h} h`:`${m} min`;};
 const PHONE_QUERY='(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)';
+const INSPECTOR_QUERY='(min-width: 1024px)';
 
 /** While there is no current snapshot (paused, offline, expired, failed or signed out), say so where the cards were, with the
  * one way forward: a primary Try again after a failed read, a 44px Sign in when signed out. */
@@ -270,6 +271,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // Clean Manager and Owner (v3) state. Hooks stay unconditional; the employee view below never reads them.
   const [tab,setTab]=useState<'all'|'review'|'approved'>('all'),[selecting,setSelecting]=useState(false),[openId,setOpenId]=useState<string|null>(null);
   const [phone,setPhone]=useState(false);
+  // Nov 1 upscale (review M5): from 1024px up the timecard panel is a non-modal inspector beside the live table.
+  const [inspector,setInspector]=useState(false);
   const userClosedSheet=useRef(false);
   // Owner premium (A8): one period control, This week and Last week. Focus falls back to its chosen segment.
   const periodRef=useRef<HTMLDivElement|null>(null);
@@ -288,6 +291,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   useEffect(()=>{
     if(!manager||typeof window.matchMedia!=='function')return;
     const query=window.matchMedia(PHONE_QUERY),sync=()=>setPhone(query.matches);
+    sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
+  },[manager]);
+  useEffect(()=>{
+    if(!manager||typeof window.matchMedia!=='function')return;
+    const query=window.matchMedia(INSPECTOR_QUERY),sync=()=>setInspector(query.matches);
     sync();query.addEventListener('change',sync);return ()=>query.removeEventListener('change',sync);
   },[manager]);
   // The detail is the kit's sheet (P5). It stays open while its card refreshes and closes when the protected read is
@@ -350,7 +358,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // actions, history and wording.
     const days=openItem?dayRows(openItem.card):[];
     const btn=(kind:'primary'|'secondary')=>`c-btn c-btn--full${kind==='secondary'?' c-btn--secondary':''}`;
-    const sheetNode=<QuietSheet open={sheetOpen} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
+    // Nov 1 upscale: from 1024px up (the table's layout) the panel is non-modal: no scrim, the table stays live, Escape and
+    // Done close it and give focus back to the person's row. Below that it stays the modal sheet.
+    const nonModal=inspector&&!phone;
+    const sheetNode=<QuietSheet open={sheetOpen} modal={!nonModal} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
       <div className="c-sheet c-tc-sheet">
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
           <SheetCancel href="#" className="c-sheet__done cm-tc-done">Done</SheetCancel></div>
@@ -384,7 +395,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
               own?<p className="c-tc-sheet__note">Your timecard requires a different manager.</p>:
-              waiting&&!pending&&!outcomes?<p className="c-tc-sheet__note">{`You can approve from ${approveFrom(period)}`}</p>:
+              // Nov 1 upscale: no caption under the panel while approval isn't open (the page's subtitle says when it opens).
+              waiting&&!pending&&!outcomes?null:
               <><button type="button" className={btn('primary')} disabled={locked||own||!!openItem.card.issues.length} onClick={()=>void act(openItem,'APPROVE')}>Approve timecard</button>
                 <button type="button" className={btn('secondary')} disabled={locked||own||openItem.state!=='APPROVED'||!!openItem.card.issues.length} onClick={()=>void act(openItem,'FINALIZE')}>Finalize period</button></>}
           </div>
@@ -431,7 +443,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // "Approve N ready" counts every card that can be approved, including people with no time; the note says how many.
     const noTimeReady=eligible.filter(item=>item.card.recordedNanoseconds==='0').length;
     const summaryTitle=allApproved?`All ${cards.length} approved`:approvedCount?`${approvedCount} of ${cards.length} approved`:open?`You can approve from ${approveFrom(period)}`:'Not approved yet';
-    const summary=ready&&cards.length&&!showBulk?<CorpCard as="div" ariaLabel="Period overview">
+    // Nov 1 upscale (review S15): while approval hasn't opened and nothing is approved, the card would only say when it
+    // opens, so that line joins the subtitle instead ("Oct 26 – Nov 1 · 9 people · Approval opens Mon, Nov 2").
+    const folded=open&&!approvedCount;
+    const subtitle=ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}${folded&&cards.length?` · Approval opens ${approveFrom(period)}`:''}`:rangeText(period);
+    const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
           {!open&&eligible.length?<CorpButton size="md" onClick={()=>{setSelecting(true);selectAll(true);}}>{`Approve ${Math.min(eligible.length,100)} ready`}</CorpButton>:null}</div>
@@ -486,7 +502,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // Corporate (Release 1, board G-O-Time): Time is a tab, so no Back. Rows are name, state (plain text) and hours.
       const breaksOf=(item:TimecardItem)=>/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?` · ${quietHours(item.card.breakNanoseconds)} breaks`:'';
       return <CorpPage className="c-tc" labelledBy="tc-title">
-        <CorpTitle id="tc-title" title="Timecards" sub={ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}`:rangeText(period)} actions={selectButton}/>
+        <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
           {stateCard}
@@ -522,7 +538,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // then the period's table on the corporate tokens. Select shows the checkboxes; the bulk review sits above the table.
     const cols=(showRole?1:0)+(selecting?5:4);
     return <CorpPage className="c-tc c-tc-desk" labelledBy="tc-title">
-      <CorpTitle id="tc-title" title="Timecards" sub={ready?`${rangeText(period)} · ${cards.length} ${cards.length===1?'person':'people'}`:rangeText(period)} actions={selectButton}/>
+      <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
       {seg}
       <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
         {stateCard}
@@ -552,7 +568,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             {([['all','All',cards.length],['review',inProgress?'In progress':'Ready to approve',reviewItems.length],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
               <button key={value} type="button" aria-pressed={tab===value} aria-label={`${label}, ${count}`} onClick={()=>setTab(value)}>{label}<em aria-hidden="true">{count}</em></button>)}
           </div>
-          <div className="c-tc-tablebox"><table className="c-tc-table" aria-label="Timecards in this period" data-row-nav="tbody > tr" data-selecting={selecting||undefined}>
+          {/* ↑/↓ move focus between people (the shell's row navigation); while the inspector is open it follows. */}
+          <div className="c-tc-tablebox" onKeyDown={event=>{
+            if(!nonModal||!sheetOpen||(event.key!=='ArrowDown'&&event.key!=='ArrowUp'))return;
+            requestAnimationFrame(()=>{const row=(document.activeElement as HTMLElement|null)?.closest<HTMLElement>('tr[id^="timecard-"]');const next=row?.id.slice('timecard-'.length);if(next&&next!==openId)setOpenId(next);});
+          }}><table className="c-tc-table" aria-label="Timecards in this period" data-row-nav="tbody > tr" data-selecting={selecting||undefined}>
             <thead><tr>
               {selecting?<th scope="col" className="c-tc-check"><label className="c-tc-hit"><input type="checkbox" className="c-tc-box" aria-label="Select all eligible timecards" checked={allEligible}
                 disabled={locked||!eligible.length} onChange={e=>selectAll(e.target.checked)}/></label></th>:null}
@@ -560,9 +580,12 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             </tr></thead>
             <tbody>{tableItems.length||fold?tableItems.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),breaks=item.card.breakNanoseconds==='0'?'0h':quietHours(item.card.breakNanoseconds);
-              return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined}>
+              // Nov 1 upscale: a row opens its panel from anywhere on it (the name stays the keyboard's way in); the open
+              // person's row is tinted with a teal bar.
+              return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined} data-open={openId===id||undefined}
+                className={selecting?undefined:'c-clickable'} onClick={selecting?undefined:event=>{if(!(event.target as HTMLElement).closest('button, a, input, label'))setOpenId(id);}}>
                 {selecting?<td className="c-tc-check"><label className="c-tc-hit"><input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></label></td>:null}
-                <td data-col="person"><button type="button" className="c-tc-person" onClick={()=>setOpenId(id)}><CorpAvatar initials={initialsOf(name)}/><span>{name}</span></button></td>
+                <td data-col="person"><button type="button" className="c-tc-person" aria-current={openId===id?'true':undefined} onClick={()=>setOpenId(id)}><CorpAvatar initials={initialsOf(name)}/><span>{name}</span></button></td>
                 {showRole?<td data-col="role" className="c-tc-muted">{roleOf(item.card)??'—'}</td>:null}
                 <td data-col="recorded" className="c-tc-num"><CorpDuration>{quietHours(item.card.recordedNanoseconds)}</CorpDuration></td>
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>

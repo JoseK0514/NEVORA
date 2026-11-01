@@ -1,5 +1,8 @@
-/* Schedule (Release 1, board G-O-Schedule). Phones, phone landscape and tablets: the week card and the day card.
- * Desktop (1200px and wider, where all seven days fit beside the sidebar): the people × days grid (its v3 styling stays on .cm-sched-slot). Never both. */
+/* Schedule (Release 1, board G-O-Schedule). Phones, phone landscape and narrow content: the week card and the day card.
+ * Nov 1 upscale (M3): the people × days grid shows whenever the page's content is at least 760px wide (iPad landscape
+ * and up, with the sidebar open or closed), measured on the page itself (a size container), so the sidebar's width never
+ * needs to be known here. Its v3 styling stays on .cm-sched-slot. Never both. */
+:is(#c-root, html) .c-page.c-sched { container: c-sched / inline-size; }
 :is(#c-root, html) .c-sched .cm-roster { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; background: none; box-shadow: none; }
 :is(#c-root, html) .c-sched .cm-roster > :empty { display: none; }
 
@@ -46,7 +49,7 @@
 :is(#c-root, html) .c-sched .c-sched-plan__intro { margin: 0 0 12px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-sched .mws-print-title { display: none; }
 
-@media (min-width: 1200px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)) { @container c-sched (min-width: 760px) {
   :is(#c-root, html) .c-sched .cm-sched-phone { display: none; }
   /* R11: the week bar is the grid card's head, so the separate week card goes. */
   :is(#c-root, html) .c-sched .c-sched-weekcard { display: none; }
@@ -54,8 +57,12 @@
   :is(#c-root, html) .c-sched .cm-sched-desk { display: block; margin: 0; }
   /* The grid sits on one white card like every other surface. */
   :is(#c-root, html) .c-sched .cm-grid-wrap { border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); overflow: hidden; }
+} }
+@container c-sched (max-width: 759px) {
+  :is(#c-root, html) .c-sched .cm-sched-desk { display: none; }
+  :is(#c-root, html) .c-sched .cm-sched-phone { display: block; }
 }
-@media (max-width: 1199px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
   :is(#c-root, html) .c-sched .cm-sched-desk { display: none; }
   :is(#c-root, html) .c-sched .cm-sched-phone { display: block; }
 }
@@ -79,8 +86,11 @@
   :is(#c-root, html) .c-sched .c-sched-row__top { flex-wrap: wrap; column-gap: 8px; row-gap: 0; }
   :is(#c-root, html) .c-sched .c-sched-row__top > .c-row__title { flex: 0 1 auto; }
 }
-/* Tablets and small laptops show the phone layout in the reading column. */
-@media (min-width: 768px) and (max-width: 1199px) { :is(#c-root, html) .c-page.c-sched { max-width: 640px; } }
+/* Tablets and small laptops below 760px of content show the phone layout in a 592px reading column (the old 640px page
+ * less its padding), centred; the page itself stays full width so it can measure itself. */
+@media (min-width: 768px) { @container c-sched (max-width: 759px) {
+  :is(#c-root, html) .c-page.c-sched > * { width: 100%; max-width: 592px; margin-left: auto; margin-right: auto; }
+} }
 
 /* Desktop grid: people's initials in neutral grey (Jose, Oct 31: in-row avatars are #EDEEEF). */
 html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: var(--c-neutral-bg) !important; color: var(--c-ink2) !important; }
@@ -97,9 +107,9 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
  * heads on #FAFAFA; #EDEEEF lines; people as 15/600 names with 13px hours and 32px neutral avatars; blocks of radius 6 with
  * 13/600 ink on the tint; drafts dashed grey; open shifts plain white blocks with a grey ring (no red dash); one red mark,
  * the Open shifts row's icon. (Prefixed past the legacy clean-manager rules it replaces.) */
-@media (min-width: 1200px) {
+@container c-sched (min-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { font-family: inherit; color: var(--c-ink); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th { height: 40px; border-bottom: 1px solid var(--c-line); border-left: 1px solid var(--c-line); background: #FAFAFA; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink2); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th { height: 52px; padding-top: 7px; padding-bottom: 7px; vertical-align: top; border-bottom: 1px solid var(--c-line); border-left: 1px solid var(--c-line); background: #FAFAFA; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink2); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { border-left: 0; font-weight: 400; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > b { color: var(--c-ink); font-weight: 600; }
   /* R11: today's header is teal text (no filled badge) and its whole column carries a faint tint. */
@@ -118,7 +128,7 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__name { font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-ink); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person__sub em { color: var(--c-amber); }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { min-height: 28px; padding: 4px 8px; border: 0; border-radius: 6px; background: #F1F3F4; color: var(--c-ink); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; transition: background-color 120ms ease-out; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { min-height: 28px; padding: 4px 8px; border: 0; border-radius: 8px; background: #F1F3F4; color: var(--c-ink); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; transition: background-color 120ms ease-out; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:hover { background: #E7E9EA; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.draft { padding: 3px 7px; border: 1px dashed var(--c-faint); background: #FFFFFF; }
   /* R11: open shifts are dashed chips in grey ink (8.6:1); no red tile. */
@@ -126,10 +136,100 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block.open:hover { background: #F7F8F8; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block__lead { color: var(--c-ink2); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 1px; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 6px; color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-add { border-radius: 8px; color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid td:hover > .cm-add { background: #F7F8F8; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid__toggle button { color: var(--c-teal); font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .wb-note { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-grey); }
   /* Link colours need the kit's weight (its :where(a) inherit rule carries an id). */
   :is(#c-root, html) .c-sched .cm-sched-slot .cm-block.open { color: var(--c-ink2); }
+}
+
+/* ---------- Nov 1 upscale (approved mockups pair-2, pair-5, pair-6/6b) ---------- */
+/* The title row: "Schedule" on the left; on desktop [All locations ▾] and a 40×40 "…" (then Publish) on its right, the
+ * subtitle (the date alone) under the title. Phones keep the title at the same height as Home and Payroll: the "…" (and
+ * Publish) overhang the 30px title line, and the location control sits on the subtitle's line at 36px. */
+:is(#c-root, html) .c-sched .c-sched-actions { display: flex; align-items: center; gap: 8px; }
+:is(#c-root, html) .c-sched .c-title__row { min-height: 30px; }
+:is(#c-root, html) .c-page .c-sched-loc { position: relative; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-sched > .c-title { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; }
+  :is(#c-root, html) .c-sched > .c-title > .c-title__row, :is(#c-root, html) .c-sched > .c-title .c-title__actions { display: contents; }
+  :is(#c-root, html) .c-sched > .c-title h1 { grid-row: 1; grid-column: 1; }
+  :is(#c-root, html) .c-sched > .c-title .c-sched-actions { grid-row: 1; grid-column: 2; justify-self: end; }
+  :is(#c-root, html) .c-sched > .c-title .c-sched-actions .c-icon-btn { margin-block: -7px; }
+  :is(#c-root, html) .c-sched > .c-title .c-title__actions > .nevora-action-menu { grid-row: 2; grid-column: 2; justify-self: end; margin-top: 4px; }
+  :is(#c-root, html) .c-sched > .c-title > .c-title__sub { grid-row: 2; grid-column: 1; align-self: center; margin-top: 4px; }
+  /* The quieter control: 36px, 15/500 ink, a 16px grey caret; its hit area stays 44px. */
+  :is(#c-root, html) .c-page .c-select-btn.c-sched-loc { height: 36px; min-height: 36px; padding: 0 12px; gap: 6px; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); }
+  :is(#c-root, html) .c-page .c-select-btn.c-sched-loc::before { content: ""; position: absolute; inset: -4px; }
+  :is(#c-root, html) .c-page .c-select-btn.c-sched-loc .c-ic { width: 16px; height: 16px; color: var(--c-grey); }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-sched .c-title__row { min-height: 40px; }
+  :is(#c-root, html) .c-sched .c-title__actions { gap: 8px; }
+  /* The "…" as a 40×40 outlined button beside the 40px location select (a 44px hit area on touch). */
+  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more { position: relative; width: 40px; height: 40px; margin: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); }
+  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more::before { content: ""; position: absolute; inset: -2px; }
+  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more:hover { background: #F2F4F4; }
+  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more .c-ic { width: 20px; height: 20px; }
+}
+
+/* Open shifts in the day card: the whole row opens Find cover, with the kit's chevron; "Open shift" is ink. */
+:is(#c-root, html) .c-sched a.c-sched-row--open > .c-chev { flex: none; margin-left: auto; }
+:is(#c-root, html) .c-sched .c-sched-row--open > .c-meta { flex: none; margin-left: auto; }
+
+/* The week bar's "Today" (only off the current week): teal 13/600 text with a 44px target. */
+:is(#c-root, html) .c-sched .c-sched-week__today { display: inline-flex; align-items: center; min-height: 44px; margin: 0 0 0 4px; padding: 0 8px; border-radius: 8px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+@media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-sched .c-sched-week__today:hover { background: #F2F4F4; } }
+
+/* The grid at any content width from 760px (M3/M8): the name column 168–220px, the seven days share the rest (84px and
+ * up); each day header carries its hours under the date; chips have the controls' radius 8. */
+@container c-sched (min-width: 760px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { min-width: 0; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: clamp(168px, 22%, 220px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > .cm-grid__dayhours { display: block; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; color: var(--c-grey); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+@container c-sched (min-width: 760px) and (max-width: 959px) {
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid tbody td { padding-left: 4px; padding-right: 4px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-block { padding-left: 6px; padding-right: 6px; }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person { padding-left: 12px; padding-right: 8px; }
+}
+
+/* Schedule options and Location (S5, M7): rows on the page grid, 48px tall with 16px insets, 15/500 ink, hairlines from
+ * the text edge (none after a group's last row), the current choice's check 16px from the right. Schedule options is two
+ * grouped lists, This week and Settings, each under a 13px label; links end in a 16px grey chevron. */
+html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item {
+  position: relative; display: flex !important; align-items: center !important; gap: 8px; width: 100%; min-height: 48px !important; margin: 0 !important; padding: 0 16px !important;
+  border: 0 !important; border-radius: 0 !important; background: none; box-shadow: none !important; text-align: left;
+  font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: #1A1C1E !important; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: #EDEEEF; }
+html body .app-shell .c-sched #schedule-location-menu .nevora-action-menu-item:last-of-type::before,
+html body .app-shell .c-sched #schedule-more-actions .c-menu-card > :last-child .nevora-action-menu-item::before,
+html body .app-shell .c-sched #schedule-more-actions .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item[aria-current="true"]::after { right: 16px; }
+html body .app-shell .c-sched #schedule-more-actions .nevora-action-menu-item > strong { flex: 1 1 auto; min-width: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: inherit !important; color: inherit !important; }
+html body .app-shell .c-sched #schedule-more-actions .nevora-action-menu-item > :not(strong):not(.c-menu-value):not(.c-menu-chev) { display: none !important; }
+html body .app-shell .c-sched #schedule-more-actions .c-menu-value { flex: none; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
+html body .app-shell .c-sched #schedule-more-actions .c-menu-chev { flex: none; width: 16px; height: 16px; color: #A7ACB1; }
+html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 16px 16px 8px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.04px; color: #6B7075; }
+html body .app-shell .c-sched #schedule-more-actions .c-menu-card > div { margin: 0; }
+html body .app-shell .c-sched #schedule-more-actions .c-menu-card > div > p { margin: 0 16px 8px; font-size: 13px; line-height: 18px; color: #6B7075; }
+@media (hover: hover) and (pointer: fine) {
+  html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item:hover { background: #F2F4F4; }
+}
+html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item:active { background: #EDEEEF; }
+/* Phones: the sheet is grey (#F5F6F6) with each group as a white inset card, labels on the cards' text edge. */
+@media (max-width: 760px) {
+  html body .app-shell .c-sched #schedule-more-actions.nevora-action-menu-popover { background: #F5F6F6 !important; padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important; }
+  html body .app-shell .c-sched #schedule-more-actions > .c-menu-head { margin: 0 !important; background: #FFFFFF; }
+  html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 16px 32px 8px; }
+  html body .app-shell .c-sched #schedule-more-actions .c-menu-card { margin: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; overflow: hidden; }
+}
+/* Desktop popover: the two groups one above the other, a hairline between them. */
+@media (min-width: 761px) {
+  html body .app-shell .c-sched #schedule-more-actions .c-menu-group + .c-menu-group { box-shadow: inset 0 1px 0 #EDEEEF; }
+  html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 12px 16px 4px; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item { min-height: 40px !important; }
+  html body .app-shell .c-sched #schedule-more-actions { min-width: 280px; }
 }

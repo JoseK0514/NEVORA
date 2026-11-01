@@ -61,7 +61,7 @@
 
 /* Owner premium (A8): Timecards on wide screens. One period control (the segmented control, max 480px), the period card,
  * then one white card holding the filters, the table and Export. Corporate tokens only: radius 12, 1px #E3E5E6 ring,
- * 13/600 #4A4F54 heads, 15/400 cells, 52px rows, hover #F7F8F8. */
+ * 13/600 #4A4F54 heads, 15/400 cells, 52px rows, the kit's row hover. */
 @media (min-width: 761px) {
   :is(#c-root, html) .c-tc .c-tc-seg { max-width: 480px; }
   /* The table total repeats nothing on wide screens: the summary's recorded figure is phone-only. */
@@ -84,8 +84,7 @@
   :is(#c-root, html) .c-tc-desk .c-tc-table tfoot .c-tc-muted { font-weight: 500; color: var(--c-grey); }
   :is(#c-root, html) .c-tc-desk .c-tc-table td { height: 52px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); vertical-align: middle; }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:first-child td { box-shadow: none; }
-  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr { transition: background-color 120ms ease-out; }
-  @media (hover: hover) { :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:hover { background: #F7F8F8; } }
+  /* Nov 1 upscale: rows that open the panel carry the kit's .c-clickable hover and press (#F2F4F4 / #EDEEEF). */
   /* Reliability N1: the Person column takes the room that's left and a long name ends in an ellipsis (its full text
    * stays the button's name), so Recorded, Breaks and Status always fit the card, e.g. at 1024px with the sidebar. */
   :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="person"] { width: 100%; max-width: 0; }
@@ -124,4 +123,23 @@
   :is(#c-root, html) .c-tc-desk .c-tc-dbulk__foot { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
   :is(#c-root, html) .c-tc-desk .c-tc-refresh { min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
   :is(#c-root, html) .c-tc-desk .c-tc-refresh:disabled { color: var(--c-faint); cursor: default; }
+}
+
+/* Nov 1 upscale (review M5, approved pair-3): from 1024px up the timecard panel is a non-modal inspector. It sits under the
+ * 52px top bar on the right, with a hairline instead of a scrim and a shadow; the table stays live beside it. The open
+ * person's row is tinted #E6F1EF with a 2px teal bar. From 1280px the page makes room for the panel; between 1024 and
+ * 1279 it lies over the table's right side (the names stay in view). Below 1024 the modal sheet and its scrim stay. */
+@media (min-width: 761px) {
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td { background: var(--c-tint); }
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td:first-child { box-shadow: inset 2px 0 0 var(--c-teal); }
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] + tr > td { box-shadow: none; }
+}
+@media (min-width: 1024px) {
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[data-inspector]:has(.c-tc-sheet) {
+    position: fixed; inset: var(--c-topbar, 52px) 0 0 auto; z-index: 30; height: auto; max-height: none; margin: 0; overflow: auto; overscroll-behavior: contain;
+    box-shadow: inset 1px 0 0 var(--c-ring, #E3E5E6); }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[data-inspector]:has(.c-tc-sheet) > .q-sheet__in { min-height: 100%; }
+}
+@media (min-width: 1280px) {
+  :is(#c-root, html) .c-page.c-tc-desk:has(dialog.q-sheet[data-inspector][open]) { max-width: none; margin-left: 0; margin-right: 0; padding-right: 420px; }
 }

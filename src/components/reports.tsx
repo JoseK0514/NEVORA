@@ -23,7 +23,7 @@ import {Avatar,Card,KitLink,Row,Rows,StatGrid,Status,Tile,type KitTone} from './
 import {keepWhole} from '../lib/keep-whole';
 import {timeZoneLabel} from '../lib/time-zone-label';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
-import {CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,CorpRows,CorpStats,CorpTitle} from './corp/corp';
+import {CORP_NO_VALUE,CorpBody,CorpButtonLink,CorpCard,CorpNav,CorpPage,CorpPill,CorpRow,CorpRows,CorpStats,CorpTitle} from './corp/corp';
 import './reports-corp.css';
 type State='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'paused'|'access_lost';
 /** IS-B1, IS-B29: a fresh snapshot is read a third of the way through the current one's life (and retried while there's time)
@@ -253,8 +253,6 @@ function wholeWeek(days:{date:string;minutes:number}[]|null,period:Period):{date
 /** R2/R7: one hour format, "24 h 7 min", "6 h", "45 min" (never decimals); a negative gap keeps its sign out of the text. */
 const spoken=(nanoseconds:bigint)=>{const minutes=Number((nanoseconds<BigInt(0)?-nanoseconds:nanoseconds)/MINUTE_NS),h=Math.floor(minutes/60),m=minutes%60;return h?m?`${h}\u00a0h ${m}\u00a0min`:`${h}\u00a0h`:`${m}\u00a0min`;};
 /** R7 (copy row 177): how the page counts, in three plain sentences. The full definitions stay in the printed report. */
-/** A figure said in words ("None", "No requests"): body size, quieter than a number, on the figures' baseline. */
-const Word=({children}:{children:string})=><span className="c-ins__word">{children}</span>;
 const HOW_WE_COUNT=['Hours come from clock-ins and include breaks.','Late means after the scheduled start. It doesn’t change pay.','These are not payroll hours.'];
 
 /** Corporate (Release 1, board O-Insights): hours worked against the published plan, attendance, and hours by day.
@@ -276,6 +274,8 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const offDays=timeOffDays(report);
  const late=report.attendance.groups.reduce((total,group)=>total+group.observations.filter(o=>o.kind==='CLOCK_IN_AFTER_SCHEDULE_START').length,0);
  const cover=report.coverageReliability;
+ const lateKnown=report.attendance.state==='ready'||late>0;
+ const reasons=[lateKnown?null:'Late clock-ins aren’t tracked yet.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
  return <>
@@ -285,12 +285,14 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
    {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
   </CorpCard>
   <CorpCard id="ins-attendance" label="Attendance">
-   {/* R7 (copy rows 172–173): a zero or a missing figure says so in words; figures are ink (R3). */}
+   {/* Nov 1 upscale (review S14): a figure slot never holds words. A zero is "0"; a figure the period can't give is the
+     kit's grey "—", and the reason is one 13px line under the figures. Figures are ink (R3). */}
    <CorpStats items={[
-    {label:'Late clock\u2011ins',value:report.attendance.state==='ready'||late?late?late:<Word>None</Word>:<Word>Not available</Word>},
-    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:<Word>No requests</Word>},
-    {label:'Time off',value:offDays?plural(offDays,'day','days'):<Word>None</Word>},
+    {label:'Late clock\u2011ins',value:lateKnown?late:CORP_NO_VALUE},
+    {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:CORP_NO_VALUE},
+    {label:'Time off',value:offDays?plural(offDays,'day','days'):'0'},
    ]}/>
+   {reasons.length?<p className="c-ins__reason">{reasons.join(' ')}</p>:null}
   </CorpCard>
   {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
   <CorpCard id="ins-days" label="Hours by day">

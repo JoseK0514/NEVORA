@@ -84,7 +84,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
       </CorpCard>
     </div>
     {/* Copy table 29–33 and R14: plain words, no "lead" (the role is on hold), and no big zero. */}
-    {props.status === "READY" ? <CorpCard id="coverage-people" label="Who can cover" aside={<span className="c-meta c-cover__state">{count ? `${plural(count, "person", "people")} free` : "No one free"}</span>}>
+    {props.status === "READY" ? <CorpCard id="coverage-people" label="Who can cover" aside={count ? <span className="c-meta c-cover__state">{`${plural(count, "person", "people")} free`}</span> : undefined}>
       {count ? <ScheduleCoverPick repair={props.repair} people={props.candidates.map(employee => ({ employeeId: employee.employeeId, employeeName: employee.employeeName, detail: personDetail(employee), href: employee.href }))} />
         : <CorpBody>
           {/* Owner premium (structure-experience F1/F2): a decision, not a dead end. The same read; the next steps are the
