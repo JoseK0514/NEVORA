@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type FormEvent } from 'react';
 import { CaretRightIcon, PlusIcon, TrashIcon, WarningCircleIcon } from '@phosphor-icons/react/ssr';
 import { CorpCard, CorpNav, CorpPage, CorpTitle } from '../corp/corp';
+import { PayGroup } from './pay-group';
 import { Feedback } from './payroll-feedback';
 import { PayDateField } from './pay-date-field';
 import './payroll-corp.css';
@@ -88,13 +89,13 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
     {resource.loading ? <p className="c-note" role="status">Loading payroll settings…</p> : resource.error ? <CorpCard as="div" ariaLabel="Payroll settings"><div className="c-card__body"><p className="c-pset__state" role="alert">{resource.error}</p><button type="button" className="c-btn c-btn--secondary c-btn--md" onClick={() => void resource.reload()}>Try again</button></div></CorpCard> : data && <>
       {!revision && <p className="c-note">These are unsaved starting preferences. Choose your company settings and an effective date. {data.capabilities.internalCalculatorAvailable ? 'Native payroll uses verified recorded time and employee payroll facts.' : 'imported provider amounts remain the authority.'}</p>}
       <CompanyPreferences key={revision?.revision ?? 0} preferences={revision?.preferences ?? defaults} revision={revision?.revision ?? 0} data={data} operation={operation} />
-      <CorpCard id="payroll-people-settings" label="People">
-        <details className="c-pset__item"><SettingRow title="Exceptions" value={exceptionCount ? String(exceptionCount) : 'None'} /><div className="c-pset__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
+      <PayGroup id="payroll-people-settings" label="People">
+        <details className="c-pset__item"><SettingRow title="People with different settings" value={exceptionCount ? String(exceptionCount) : 'None'} /><div className="c-pset__body"><EmployeeException data={data} preferences={revision?.preferences ?? defaults} operation={operation} /></div></details>
         {!data.capabilities.internalCalculatorAvailable && <details className="c-pset__item"><SettingRow title="Payroll access" value={data.grants.length ? String(data.grants.length) : 'Owner only'} /><div className="c-pset__body"><PayrollAccess data={data} operation={operation} /></div></details>}
         {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="c-pset__item" id="payroll-setup" open={openSetup || undefined}><SettingRow title="Payroll setup" detail="Wages, withholding and opening balances" /><div className="c-pset__body payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
-      </CorpCard>
-      <CorpCard as="div" ariaLabel="Audit details">
-        <details className="c-pset__item"><SettingRow title="Audit details" detail={latest ? `Last change ${shortDate(latest.createdAt)}${actorName ? ` · ${actorName}` : ''}` : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
+      </PayGroup>
+      <CorpCard as="div" ariaLabel="Change history">
+        <details className="c-pset__item"><SettingRow title="Change history" detail={latest ? (actorName ? `${actorName.split(/\s+/)[0]} changed this ${shortDate(latest.createdAt)}` : `Changed ${shortDate(latest.createdAt)}`) : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
       </CorpCard>
     </>}
     {!data && !resource.loading && nativeSources !== null ? <div className="payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div> : null}
@@ -157,23 +158,23 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const lead = reminderWindow(preferences.automation.reminderLeadDays);
   const reminderValue = !preferences.automation.reminders ? 'Off' : lead === 0 ? 'On payday' : `${lead} ${lead === 1 ? 'day' : 'days'} before`;
   return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}><fieldset disabled={locked} className="c-pset__fields">
-    <CorpCard id="payroll-schedule" label="Pay schedule">
+    <PayGroup id="payroll-schedule" label="Pay schedule">
     <details className="c-pset__item"><SettingRow title="How often" value={frequencyLabel} /><div className="c-pset__body wb-form">
       <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
     </div></details>
     <details className="c-pset__item"><SettingRow title="Payday" value={paydayValue} /><div className="c-pset__body wb-form">
       <label>Payday after period end<input type="number" inputMode="numeric" autoComplete="off" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">Days after the period ends.</small></label>
     </div></details>
-    <details className="c-pset__item"><SettingRow title="Periods start" value={anchor ? anchorValue : 'Not set'} /><div className="c-pset__body wb-form">
+    <details className="c-pset__item"><SettingRow title="First period" value={anchor ? `${anchor <= today(zone) ? 'Started' : 'Starts'} ${anchorValue}` : 'Not set'} /><div className="c-pset__body wb-form">
       <PayDateField name="anchorDate" label="Schedule anchor date" required defaultValue={preferences.schedule.anchorDate} />
       <p className="wb-note">Weekly and every-two-week periods begin on the anchor date. Twice-a-month periods are days <span className="nv-nowrap">1–15</span> and <span className="nv-nowrap">16–month end</span>; monthly periods use calendar months. For those schedules, the anchor is the date automation begins.</p>
     </div></details>
-    </CorpCard>
-    <CorpCard id="payroll-notices" label="Notices and documents">
-    <details className="c-pset__item"><SettingRow title="Reminders" value={reminderValue} /><div className="c-pset__body wb-form">
+    </PayGroup>
+    <PayGroup id="payroll-notices" label="Reminders and pay statements">
+    <details className="c-pset__item"><SettingRow title="Payroll reminders" value={reminderValue} /><div className="c-pset__body wb-form">
       <p className="wb-note">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label>}{native && <p className="wb-note">Native statements publish automatically after generation and verification. Approval remains separate from publication and payment.</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" inputMode="numeric" autoComplete="off" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">Notice sending is turned off, so queued notices aren’t sent.</p> : null}
     </div></details>
-    <details className="c-pset__item"><SettingRow title="Document language" value={preferences.language === 'es' ? 'Español' : 'English'} /><div className="c-pset__body wb-form">
+    <details className="c-pset__item"><SettingRow title="Pay statement language" value={preferences.language === 'es' ? 'Español' : 'English'} /><div className="c-pset__body wb-form">
       <label>Company name on documents<input name="companyName" autoComplete="organization" defaultValue={preferences.companyName} maxLength={160} required /></label>
       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
       {!native && <label>Payroll provider preference<select aria-label="Payroll provider preference" name="sourceProvider" defaultValue={preferences.sourceProvider ?? ''}><option value="">No provider preference saved</option><option value="ADP_RUN">ADP RUN</option><option value="QUICKBOOKS_PAYROLL">QuickBooks Payroll</option><option value="PAYCHEX">Paychex</option><option value="GUSTO">Gusto</option><option value="OTHER">Other provider or accountant</option></select></label>}
@@ -185,7 +186,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <label>Desired bank channel<select aria-label="Desired bank channel" name="bankChannel" defaultValue={preferences.bankChannel ?? ''}><option value="">No channel preference saved</option><option value="POPULAR_WCM_TEXT">Popular Web Cash Manager · text</option><option value="POPULAR_WCM_NACHA">Popular Web Cash Manager · NACHA</option><option value="POPULAR_COMMERCIAL_MANUAL">Popular commercial · manual</option><option value="OTHER">Other bank or channel</option></select></label>
       <p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p>
     </div></details>}
-    </CorpCard>
+    </PayGroup>
     <div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
       <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div>
   </fieldset></form>;

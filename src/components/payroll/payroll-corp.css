@@ -90,16 +90,6 @@
 :is(#c-root, html) .c-pay__date:focus-within { box-shadow: inset 0 0 0 2px var(--c-teal); }
 :is(#c-root, html) .c-pay__date:has(input:disabled) { opacity: .5; cursor: default; }
 
-/* Desktop: Payroll uses the width like Home: Up next and Recent payrolls on the left, the tools on the right. */
-@media (min-width: 1100px) {
-  :is(#c-root, html) .c-page.c-pay--home { max-width: 1040px; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); align-items: start; gap: 16px; }
-  /* Title, tabs, feedback and the unpaid notice span both columns; the tools card sits beside Up next (dense placement
-   * fills the first free right-hand row, whichever of those lines are present). */
-  :is(#c-root, html) .c-page.c-pay--home { grid-auto-flow: row dense; }
-  :is(#c-root, html) .c-page.c-pay--home > :is(.c-title, .c-pay-tabs, .c-pay__feedback, .c-pay__unpaid) { grid-column: 1 / -1; }
-  :is(#c-root, html) .c-page.c-pay--home > :is(#payroll-next, #payroll-recent, [aria-label="Pay schedule"]) { grid-column: 1; }
-  :is(#c-root, html) .c-page.c-pay--home > [aria-label="Payroll tools"] { grid-column: 2; grid-row: span 2; }
-}
 @media (max-width: 359px) {
   :is(#c-root, html) .c-pay .c-field__row { grid-auto-flow: row; }
 }
@@ -152,8 +142,8 @@
 :is(#c-root, html) .c-exp .c-exp__ready { display: flex; flex-direction: column; gap: 2px; padding: 12px 16px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-exp .c-exp__ready > .c-btn { margin-top: 12px; }
 :is(#c-root, html) .c-exp .c-exp__ready > .c-note { margin-top: 8px; display: block; }
-:is(#c-root, html) .c-exp .c-exp__waiting { font-size: 13px; line-height: 18px; color: var(--c-amber); }
-:is(#c-root, html) .c-exp .c-exp__inline { display: inline; padding: 14px 0; margin: -14px 0; color: var(--c-teal); font: inherit; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-exp .c-exp__waiting { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-exp .c-exp__inline { display: inline; padding: 15px 0; margin: -15px 0; color: var(--c-teal); font: inherit; font-weight: 600; white-space: nowrap; }
 :is(#c-root, html) .c-exp .c-exp__dl { width: 18px; height: 18px; color: var(--c-teal); }
 :is(#c-root, html) .c-exp details.c-exp__more { padding: 0 16px 4px; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-exp details.c-exp__more > summary { display: flex; align-items: center; min-height: 44px; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; list-style: none; }
@@ -190,20 +180,17 @@
 :is(#c-root, html) .c-exp .c-exp__mapping p { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-exp .c-exp__mapping select { appearance: none; -webkit-appearance: none; padding-right: 36px; }
 /* Saving a provider file layout is a secondary action here: Create export stays the page's one primary. */
-:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal); font-family: inherit; font-weight: 600; font-size: 15px; line-height: 20px; opacity: 1; }
+:is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"] { height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font-family: inherit; font-weight: 500; font-size: 15px; line-height: 20px; opacity: 1; }
 :is(#c-root, html) .c-exp .c-exp__mapping button[class*="__primary"]:disabled { box-shadow: none; background: var(--c-neutral-bg); color: var(--c-faint); }
 :is(#c-root, html) .c-exp .c-exp__close .c-exp__legacy :is(button, .button) { min-height: 44px; }
 
-/* File names wrap instead of hiding their ending; on small phones a row's 13px detail wraps rather than clipping. */
+/* Long names wrap instead of hiding their ending; on small phones a row's 13px detail wraps rather than clipping. */
 :is(#c-root, html) .c-pay .c-pay__doc .c-row__title { white-space: normal; overflow-wrap: anywhere; }
 @media (max-width: 359px) {
   :is(#c-root, html) .c-pay .c-row__detail > span:first-child { white-space: normal; }
 }
 
 :is(#c-root, html) .c-pset .c-pset__save .wb-box { background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
-/* A long file name keeps the line; View and Download move under it when the row is narrow. */
-:is(#c-root, html) .c-pay .c-pay__doc { flex-wrap: wrap; row-gap: 0; }
-:is(#c-root, html) .c-pay .c-pay__doc .c-row__main { flex: 1 1 200px; }
 
 /* ---- Owner premium upgrade (Oct 31): Payroll ---- */
 
@@ -225,13 +212,6 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-pay-tabs__tab { transition: none; } }
 
-/* Unpaid periods first (A6): the kit's red callout, its action a 44px 13/600 red link on the right (under on phones). */
-:is(#c-root, html) .c-pay .c-pay__unpaid { flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 0; padding: 12px 16px; }
-:is(#c-root, html) .c-pay .c-pay__unpaid > span { flex: 1 1 240px; min-width: 0; }
-:is(#c-root, html) .c-pay .c-pay__unpaid b { font-size: 15px; line-height: 20px; }
-:is(#c-root, html) .c-pay .c-pay__unpaid-go { display: inline-flex; align-items: center; min-height: 44px; margin: 0 0 -8px; color: var(--c-red); font-size: 13px; line-height: 18px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
-@media (min-width: 768px) { :is(#c-root, html) .c-pay .c-pay__unpaid-go { margin: -8px 0; } }
-/* The period a "Start with …" link opens lands under the sticky header. */
 :is(#c-root, html) .c-pay [id^="unpaid-"] { scroll-margin-top: 96px; }
 
 /* One empty or "not available" state (visual-craft K): the kit's centred empty line in a card, one secondary step. */
@@ -239,27 +219,6 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-pay .c-pay__empty b { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-pay .c-pay__empty span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-pay .c-pay__empty-action { display: flex; justify-content: center; padding: 0 16px 24px; margin-top: -12px; }
-
-/* Pay history and documents (A11): name, period and payday, relationship and status, a quiet file line; View is the
- * row's one teal action, Download a neutral 44px icon button. On narrow phones the actions sit under the text. */
-:is(#c-root, html) .c-pay .c-pay__statement-head { display: none; }
-:is(#c-root, html) .c-pay .c-pay__stmt { display: flex; flex-wrap: nowrap; align-items: center; column-gap: 8px; row-gap: 4px; min-height: 64px; padding-top: 10px; padding-bottom: 10px; }
-:is(#c-root, html) .c-pay .c-pay__stmt > .c-row__main { flex: 1 1 0; min-width: 0; }
-:is(#c-root, html) .c-pay .c-pay__stmt .c-row__detail > span { white-space: normal; }
-:is(#c-root, html) .c-pay .c-pay__fname { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-faint); overflow-wrap: anywhere; }
-:is(#c-root, html) .c-pay .c-pay__stmt-actions { display: flex; align-items: center; gap: 8px; flex: none; margin-left: auto; }
-:is(#c-root, html) .c-pay .c-row.c-pay__stmt .c-pay__stmt-view { min-width: 44px; min-height: 44px; margin: 0; padding: 0 4px; justify-content: center; }
-:is(#c-root, html) .c-pay .c-pay__icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; color: var(--c-ink2); transition: background-color 120ms ease-out; }
-:is(#c-root, html) .c-pay .c-pay__icon-btn .c-ic { width: 20px; height: 20px; }
-:is(#c-root, html) .c-pay .c-pay__icon-btn:active { background: var(--c-neutral-bg); }
-@media (hover: hover) { :is(#c-root, html) .c-pay .c-pay__icon-btn:hover { background: #F7F8F8; color: var(--c-ink); } }
-@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-pay__icon-btn { transition: none; } }
-/* Phones: the text keeps the row's full width and View · Download sit on their own line at the right edge. */
-@media (max-width: 599px) {
-  :is(#c-root, html) .c-pay .c-pay__stmt { flex-wrap: wrap; row-gap: 0; padding-bottom: 4px; }
-  :is(#c-root, html) .c-pay .c-pay__stmt > .c-row__main { flex-basis: 100%; }
-  :is(#c-root, html) .c-pay .c-pay__stmt-actions { width: 100%; justify-content: flex-end; margin: 0 -8px 0 0; }
-}
 
 /* Forms (P9, P10): a field marked as a problem shows one red ring; the date field's ring follows its hidden input.
  * Phones get 16px text in every payroll field, so iOS doesn't zoom. */
@@ -284,3 +243,77 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
   :is(#c-root, html) .c-page.c-pay.c-page--narrow .c-pay__approve > .c-pay__check { align-self: stretch; }
   :is(#c-root, html) .c-page.c-pay.c-page--narrow .c-pay__approve > .c-note { align-self: stretch; text-align: right; }
 }
+
+/* ---- Owner premium round 2 (Oct 31): Payroll ---- */
+
+/* R2: figures line up (amounts, dates, periods), with the dash at capital height. Page-scoped until the kit's .c-num. */
+:is(#c-root, html) :is(.c-pay, .c-pset, .c-exp) .c-num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1, "case" 1; white-space: nowrap; }
+
+/* R4: one secondary button: white, a 1px grey ring, ink 15/500 (no teal outline). Page-scoped until the kit restyles
+ * .c-btn--secondary the same way. */
+:is(#c-root, html) :is(.c-pay, .c-pset, .c-exp) .c-btn--secondary { box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-weight: 500; }
+:is(#c-root, html) :is(.c-pay, .c-pset, .c-exp) .c-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F8F8; }
+:is(#c-root, html) :is(.c-pay, .c-pset, .c-exp) .c-btn--secondary:active:not(:disabled):not([aria-disabled="true"]) { background: #EDEEEF; }
+:is(#c-root, html) :is(.c-pay, .c-pset, .c-exp) .c-btn--secondary:disabled { box-shadow: none; }
+
+/* R5: a list card's section label sits above the card (13/500 grey, 16px in, 8px over the card); 32px between groups. */
+:is(#c-root, html) .c-pay .c-pay__group { display: block; min-width: 0; }
+:is(#c-root, html) .c-pay .c-pay__sec { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 18px; margin: 0 16px 8px; }
+:is(#c-root, html) .c-pay .c-pay__sec h2 { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); }
+:is(#c-root, html) .c-pay .c-pay__sec-aside { flex: none; display: flex; align-items: center; }
+:is(#c-root, html) .c-pay .c-pay__sec-aside button.c-link { border: 0; background: none; cursor: pointer; }
+:is(#c-root, html) .c-pay .c-pay__sec-aside .c-link:disabled { color: var(--c-faint); cursor: default; }
+:is(#c-root, html) .c-pay .c-pay__count { margin-left: 6px; color: var(--c-grey); }
+:is(#c-root, html) .c-page.c-pay > :is(.c-pay__group, .c-card) + :is(.c-pay__group, .c-card, div),
+:is(#c-root, html) .c-page.c-pay > .c-pay__group + div { margin-top: 20px; }
+
+/* R1: the Up next figure at the key-figure size. */
+:is(#c-root, html) .c-payroll .c-payroll__next b { letter-spacing: -0.36px; }
+
+/* R3: the unpaid-periods notice is a white card. Its title is the screen's one red mark; the line under it is grey; its
+ * action is the neutral secondary button (right on wider screens, full width under the text on phones). */
+:is(#c-root, html) .c-pay .c-pay__unpaid { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: 16px; row-gap: 12px; padding: 16px; }
+:is(#c-root, html) .c-pay .c-pay__unpaid-text { flex: 1 1 280px; min-width: 0; }
+:is(#c-root, html) .c-pay .c-pay__unpaid-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-red); }
+:is(#c-root, html) .c-pay .c-pay__unpaid-body { margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-pay .c-pay__unpaid-go { flex: none; }
+@media (max-width: 599px) {
+  :is(#c-root, html) .c-pay .c-pay__unpaid-go { flex: 1 1 100%; }
+}
+
+/* Prepare payroll: "Other dates" is one row like the period rows; its link stays inside the card's 16px edge. */
+:is(#c-root, html) .c-pay .c-row span.c-link { margin: 0; padding: 0; min-width: 0; min-height: 0; }
+:is(#c-root, html) .c-pay .c-pay__check-dates { display: flex; flex-direction: column; }
+
+/* Payroll tools (phones): a row hidden on wider screens doesn't leave its divider on the next one. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-pay .c-rows > li.c-only-phone + li > .c-row { box-shadow: none; }
+}
+
+/* R9: Pay history statements and payroll documents as two lines, name first. View and Download sit on the first line,
+ * right; on desktop they centre on the two lines, on phones the second line runs under them at full width. */
+:is(#c-root, html) .c-pay .c-pay__stmt { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name act" "detail act"; align-items: center; column-gap: 8px; row-gap: 0; min-height: 56px; padding-top: 10px; padding-bottom: 10px; }
+:is(#c-root, html) .c-pay .c-pay__stmt > .c-row__main { display: contents; }
+:is(#c-root, html) .c-pay .c-pay__stmt .c-row__title { grid-area: name; align-self: end; }
+:is(#c-root, html) .c-pay .c-pay__stmt .c-row__detail { grid-area: detail; align-self: start; }
+:is(#c-root, html) .c-pay .c-pay__stmt .c-row__detail > span { white-space: normal; text-wrap: pretty; }
+:is(#c-root, html) .c-pay .c-pay__stmt-actions { grid-area: act; display: flex; align-items: center; gap: 8px; margin-right: -8px; }
+:is(#c-root, html) .c-pay .c-row.c-pay__stmt .c-pay__stmt-view { min-width: 44px; min-height: 44px; margin: 0; padding: 0 4px; justify-content: center; }
+:is(#c-root, html) .c-pay .c-pay__icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 8px; color: var(--c-ink2); transition: background-color 120ms ease-out; }
+:is(#c-root, html) .c-pay .c-pay__icon-btn .c-ic { width: 20px; height: 20px; }
+:is(#c-root, html) .c-pay .c-pay__icon-btn:active { background: var(--c-neutral-bg); }
+@media (hover: hover) { :is(#c-root, html) .c-pay .c-pay__icon-btn:hover { background: #F7F8F8; color: var(--c-ink); } }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-pay__icon-btn { transition: none; } }
+@media (max-width: 599px) {
+  :is(#c-root, html) .c-pay .c-pay__stmt { grid-template-areas: "name act" "detail detail"; }
+  :is(#c-root, html) .c-pay .c-pay__stmt .c-row__title { align-self: center; }
+  /* The 44px View and Download keep their hit area but take only the first line's 20px. */
+  :is(#c-root, html) .c-pay .c-pay__stmt-actions { margin-top: -12px; margin-bottom: -12px; }
+}
+
+/* Time exports: the one file type is a plain row, not a choice. */
+:is(#c-root, html) .c-exp .c-exp__file { cursor: default; }
+/* Payroll settings: the same 32px between its labelled groups. */
+:is(#c-root, html) .c-pset .c-pset__fields > .c-pay__group + .c-pay__group,
+:is(#c-root, html) .c-page.c-pset > .c-pset__form + .c-pay__group { margin-top: 20px; }
+:is(#c-root, html) .c-pay .c-pay__sec-aside .c-pay__aside { font-size: 13px; line-height: 18px; color: var(--c-grey); }

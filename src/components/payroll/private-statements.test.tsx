@@ -42,8 +42,9 @@ describe('private employee statement presentation', () => {
   });
   it('shows current scoped employee history and preserves the linked correction context', () => {
     const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" view="history" />);
-    expect(html).toContain('Private employee statements');
-    expect(html).toContain('Fictional payroll correction');
+    // Round 2 (R9): "Pay statements", and a correction row says so on its second line (its reason is on Payroll details).
+    expect(html).toContain('Pay statements');
+    expect(html).toMatch(/Payday <span class="c-num">Fri, Oct 16<\/span>\u00a0· Correction/);
     expect(html).toContain(statement.viewUrl);
   });
   it('distinguishes empty own history from a failed private read', () => {
