@@ -24,11 +24,14 @@ export default async function WorkspacePage() {
         {/* P9 (F9): the business name is one line; Return moves on (or closes the keyboard) and never saves. */}
         <ReturnToNext />
         <Field label="Business name" id="workspace-name" name="name" defaultValue={workspace.name} required maxLength={160} autoComplete="organization" autoCapitalize="words" enterKeyHint={locked ? "done" : "next"} />
-        {locked ? <ul className="q-list" style={{ marginTop: 24 }}>
-          <li><div className="q-row q-row--one" id="workspace-timezone" aria-describedby="timezone-help"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{timeZoneLabel(workspace.timeZone).replace(/ time$/, "")}</span></div></li>
-          <li><Fact label="Week starts" value="Monday" /></li>
+        {locked ? <>
+          <ul className="q-list" style={{ marginTop: 24 }}>
+            <li><div className="q-row q-row--one" id="workspace-timezone" aria-describedby="timezone-help"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{timeZoneLabel(workspace.timeZone).replace(/ time$/, "")}</span></div></li>
+            <li><Fact label="Week starts" value="Monday" /></li>
+          </ul>
+          {/* Codex B-02: the help stays outside the list (a list holds only its items) and keeps its id for the row. */}
           <p className="q-sr" id="timezone-help">Time zone is locked because you have shifts and timecards. Contact support to change it.</p>
-        </ul> : <>
+        </> : <>
           <Field label="Time zone" id="workspace-timezone" name="timeZone" defaultValue={workspace.timeZone} required autoComplete="off" spellCheck={false} autoCapitalize="none" enterKeyHint="done" help="For example America/New_York." />
           <ul className="q-list" style={{ marginTop: 24 }}><li><Fact label="Week starts" value="Monday" /></li></ul>
         </>}

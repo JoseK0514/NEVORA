@@ -80,13 +80,14 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
   return <div className="wc-main" data-revision={revision}>
     <section aria-labelledby="features-words-title">
       <div className="q-grp"><h2 id="features-words-title">What to call people and places</h2></div>
-      <ul className="q-list" role="radiogroup" aria-labelledby="features-words-title">
+      {/* Codex B-03: the group wraps the list, so the list keeps its items and the radios keep their group name. */}
+      <div role="radiogroup" aria-labelledby="features-words-title"><ul className="q-list">
         {WORD_PRESETS.map(p => <li key={p.id}><label className="q-row" data-checked={words === p.id || undefined}>
           <input className="q-sr" type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
           <span className="q-rt"><b>{p.name}</b><i>{`${p.en.people}, ${p.en.locations.toLowerCase()}`}</i></span>
           {words === p.id ? <CheckIcon className="q-check" aria-hidden="true" /> : null}
         </label></li>)}
-      </ul>
+      </ul></div>
     </section>
 
     <section aria-labelledby="features-modules-title" id="features">

@@ -5,7 +5,8 @@ import {usePathname} from 'next/navigation';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpPill,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
-import {EmployeeRequestsCorp,requestDay,shiftPill,timeOffPill,waitingStatus,type CorpRequestRow} from '../employee-requests-corp';
+import {EmployeeRequestsCorp,requestDay,shiftPill,timeOffDetail,timeOffPill,waitingStatus,type CorpRequestRow} from '../employee-requests-corp';
+import {keepWhole} from '@/lib/keep-whole';
 import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/private-snapshot-client';
 import {parseEmployeeRequests,type EmployeeRequestsSnapshot,type OpenEmployeeShift,type OwnRequest} from '@/lib/employee-requests';
 import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/actions';
@@ -19,7 +20,10 @@ const day=requestDay;
 const href=(row:OwnRequest)=>row.kind==='timeOff'?`/app/requests?requestId=${encodeURIComponent(row.id)}`:`/app/exchange?tab=requests&requestId=${encodeURIComponent(row.id)}`;
 const requestRow=(row:OwnRequest):CorpRequestRow=>{
  const title=row.kind==='timeOff'?'Time off':row.kind==='callout'?'Can’t work':'Shift request';
- return {key:row.kind+row.id,href:href(row),title,detail:day(row.date),pill:row.kind==='timeOff'?timeOffPill(row.status):shiftPill(row.status,row.kind==='callout'),label:`${title}, ${day(row.date)}`};
+ // Time off shows its whole range and length (Codex A1: Nov 11–12 read as Nov 11 alone). The row's name is the kit's
+ // "title, detail, status", the same as on desktop.
+ const detail=row.kind==='timeOff'&&row.endDate?keepWhole(timeOffDetail({startDate:row.date,endDate:row.endDate,startTime:row.startTime,endTime:row.endTime})):day(row.date);
+ return {key:row.kind+row.id,href:href(row),title,detail,pill:row.kind==='timeOff'?timeOffPill(row.status):shiftPill(row.status,row.kind==='callout')};
 };
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){

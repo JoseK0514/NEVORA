@@ -2,7 +2,8 @@ export type OpenEmployeeShift = {
  id:string;revision:number;date:string;startTime:string;endTime:string;location:string;position:string|null;
  check:'eligible'|'refused'|'unavailable';notice:string|null;outcome:'completed'|'pending'|null;
 };
-export type OwnRequest = {id:string;kind:'timeOff'|'shift'|'callout';status:string;date:string;createdAt:string};
+/** `endDate`, `startTime` and `endTime` belong to time off only (its last day and a part-day's hours); null for the others. */
+export type OwnRequest = {id:string;kind:'timeOff'|'shift'|'callout';status:string;date:string;endDate:string|null;startTime:string|null;endTime:string|null;createdAt:string};
 export type EmployeeRequestsSnapshot = {
  state:'ready';kind:'requests';authority:string;observedAt:string;validForMs:number;timeZone:string;
  modules:{timeOff:boolean;marketplace:boolean};open:OpenEmployeeShift[]|null;recent:OwnRequest[]|null;incoming:number|null;
@@ -26,7 +27,8 @@ export function parseEmployeeRequests(value:unknown):EmployeeRequestsSnapshot {
   &&text(row.id)&&Number.isSafeInteger(row.revision)&&Number(row.revision)>0&&date(row.date)&&time(row.startTime)&&time(row.endTime)&&text(row.location)
   &&(row.position===null||text(row.position))&&['eligible','refused','unavailable'].includes(String(row.check))&&(row.notice===null||text(row.notice,1000))
   &&(row.check==='eligible'?['completed','pending'].includes(String(row.outcome)):row.outcome===null))))return unavailable();
- if(value.recent!==null&&(!Array.isArray(value.recent)||!value.recent.every(row=>object(row)&&keys(row,['id','kind','status','date','createdAt'])&&text(row.id)&&['timeOff','shift','callout'].includes(String(row.kind))&&text(row.status)&&date(row.date)&&instant(row.createdAt))))return unavailable();
+ if(value.recent!==null&&(!Array.isArray(value.recent)||!value.recent.every(row=>object(row)&&keys(row,['id','kind','status','date','endDate','startTime','endTime','createdAt'])&&text(row.id)&&['timeOff','shift','callout'].includes(String(row.kind))&&text(row.status)&&date(row.date)&&instant(row.createdAt)
+  &&(row.kind==='timeOff'?date(row.endDate)&&String(row.endDate)>=String(row.date)&&(row.startTime===null&&row.endTime===null||time(row.startTime)&&time(row.endTime)):row.endDate===null&&row.startTime===null&&row.endTime===null))))return unavailable();
  if(value.incoming!==null&&(!Number.isSafeInteger(value.incoming)||Number(value.incoming)<0))return unavailable();
  if(!value.modules.marketplace&&(value.incoming!==0||value.open===null||value.open.length||Array.isArray(value.recent)&&value.recent.some(row=>row.kind!=='timeOff')))return unavailable();
  if(!value.modules.timeOff&&Array.isArray(value.recent)&&value.recent.some(row=>row.kind==='timeOff'))return unavailable();

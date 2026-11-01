@@ -45,7 +45,8 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         payrollAlerts: payrollFeatureEnabled(),
       }} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
-        <PasskeySection />
+        {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
+        <li className="pmp-passkeys"><PasskeySection /></li>
         <AccountPrivacyLinks variant="quiet" />
       </>} />
     </div>

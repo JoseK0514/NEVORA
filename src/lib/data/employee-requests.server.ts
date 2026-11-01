@@ -40,9 +40,9 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
     check:eligible?'eligible' as const:check?.refusal?'refused' as const:'unavailable' as const,notice:check?.notice??(eligible?null:'Eligibility could not be checked. Refresh before continuing.'),outcome:eligible?check.outcome as 'completed'|'pending':null};
   }));
   const recent:OwnRequest[]|null=activity===null||timeOff===null||callouts===null?null:[
-   ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,createdAt:row.createdAt})),
-   ...activity.filter(row=>row.requestedByEmployeeId===own||row.targetEmployeeId===own).map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,createdAt:row.createdAt})),
-   ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,createdAt:row.createdAt})),
+   ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,endDate:row.endDate,startTime:row.startTime&&row.endTime?row.startTime:null,endTime:row.startTime&&row.endTime?row.endTime:null,createdAt:row.createdAt})),
+   ...activity.filter(row=>row.requestedByEmployeeId===own||row.targetEmployeeId===own).map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
+   ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
   ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,8);
   // Recheck current module revision after all independent reads; mixed policy observations never escape.
   const current=await readActivePresentation(workspace.id,guarded,{strict:true});

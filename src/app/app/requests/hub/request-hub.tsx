@@ -2,7 +2,7 @@ import { keepWhole } from "@/lib/keep-whole";
 import { ALL_MODULES_ON, type EnabledModules } from "@/lib/workspace-presentation/modules";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
 import { CorpButtonLink, CorpCard, CorpRow, CorpRows } from "@/components/corp/corp";
-import { EmployeeRequestsCorp, requestDay, timeOffPill, type CorpRequestRow } from "@/components/employee-requests-corp";
+import { EmployeeRequestsCorp, timeOffDetail, timeOffPill, type CorpRequestRow } from "@/components/employee-requests-corp";
 
 /* Requests on the corporate kit (Release 1, board G-E-Requests), the desktop page: "Requests" with New request, then the
  * person's time off Waiting and Decided. The same own-request read the Time off page uses; a failed read says so and
@@ -13,23 +13,6 @@ export type HubTimeOffRequest = {
   startTime?: string | null; endTime?: string | null; createdAt: string;
 };
 
-const utc = (date: string) => new Date(`${date}T12:00:00Z`);
-const monthDay = (date: string) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", month: "short", day: "numeric" }).format(utc(date));
-
-/** "Oct 29 – 30", "Oct 30 – Nov 2" or "Fri, Nov 13". */
-function rangeLabel(request: HubTimeOffRequest) {
-  if (request.startDate === request.endDate) return requestDay(request.startDate);
-  const sameMonth = request.startDate.slice(0, 7) === request.endDate.slice(0, 7);
-  return `${monthDay(request.startDate)} – ${sameMonth ? Number(request.endDate.slice(8)) : monthDay(request.endDate)}`;
-}
-
-/** The same length words as Time off: "All day", "3 days" or "Part of day". */
-function lengthLabel(request: HubTimeOffRequest) {
-  if (request.startTime && request.endTime) return "Part of day";
-  const days = Math.round((utc(request.endDate).getTime() - utc(request.startDate).getTime()) / 86_400_000) + 1;
-  return days === 1 ? "All day" : `${days} days`;
-}
-
 export function RequestHub({ modules = ALL_MODULES_ON, requests }: {
   modules?: EnabledModules;
   /** The person's own time-off requests, newest first; null when they couldn't be read. Omitted when time off is off. */
@@ -38,7 +21,7 @@ export function RequestHub({ modules = ALL_MODULES_ON, requests }: {
 }) {
   const row = (request: HubTimeOffRequest): CorpRequestRow => ({
     key: request.id, id: `request-${request.id}`, href: `/app/requests?requestId=${encodeURIComponent(request.id)}`,
-    title: "Time off", detail: keepWhole(`${rangeLabel(request)} · ${lengthLabel(request)}`), pill: timeOffPill(request.status),
+    title: "Time off", detail: keepWhole(timeOffDetail(request)), pill: timeOffPill(request.status),
   });
   const list = requests ?? [];
   const waiting = list.filter(request => request.status === "PENDING");

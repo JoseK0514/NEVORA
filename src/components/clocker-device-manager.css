@@ -1,7 +1,8 @@
 /* Clocker tablets (Owner premium R3, R8; round 2). The page: the tablets card (text rows, no icons or pills), the setup
  * steps as a numbered list that doesn't look tappable, one primary in its footer. The sheet: the kit's c-sheet (centred
  * title, Done or Cancel), its one action full width and "Remove tablet" as quiet red text under it. */
-:is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { display: flex; flex-direction: column; gap: 12px; min-height: 0; margin-top: 12px; padding: 0; background: none; }
+/* Codex A3: on a phone the cards and the note share the settings pages' 16px gutter. */
+:is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { display: flex; flex-direction: column; gap: 12px; min-height: 0; margin-top: 12px; padding: 0 16px; background: none; }
 :is(#c-root, html) .c-tablets .c-tablets__row { cursor: pointer; }
 :is(#c-root, html) .c-tablets .c-rows > li + li > .c-tablets__row { box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-tablets .c-tablets__row:disabled { cursor: default; }
@@ -11,9 +12,9 @@
   font-size: 13px; line-height: 1; font-weight: 600; font-variant-numeric: tabular-nums; }
 :is(#c-root, html) .c-tablets .c-tablets__foot { flex-direction: column-reverse; align-items: stretch; }
 :is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { flex: none; width: 100%; }
-:is(#c-root, html) .c-tablets .c-tablets__note { margin: 0 16px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { margin-top: 16px; }
+  :is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { margin-top: 16px; padding: 0; }
   :is(#c-root, html) .c-tablets .c-tablets__foot { flex-direction: row; justify-content: flex-end; }
   :is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { width: auto; min-width: 140px; }
   :is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; }
