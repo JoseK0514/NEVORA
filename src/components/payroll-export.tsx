@@ -15,6 +15,7 @@ import {verifyExportReply} from '@/lib/payroll-export/client';
 import {stableExportJson} from '@/lib/payroll-export/json';
 import {selectVisibleFinalized,changeExportSelection} from '@/lib/payroll-export/selection';
 import {PayrollExportMapping} from './payroll-export-mapping';
+import {PayrollTabs,type PayrollTab} from './payroll/payroll-tabs';
 function download(text:string,type:string,name:string){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 type ProfileCommand={operationId:string;id:string;expectedRevision:number;profile:ExportProfile};
 function payrollSourceKey(cards:readonly TimecardItem[],profiles:readonly SavedExportProfile[]){
@@ -36,7 +37,7 @@ function weekChoices(){
  const weeks=Array.from({length:6},(_,i)=>{const start=new Date(monday.getTime()-i*7*86_400_000),end=new Date(start.getTime()+6*86_400_000);const s=isoDay(start),e=isoDay(end);return {value:`${s}|${e}`,label:`${rangeText(s,e)}${names[i]?` · ${names[i]}`:''}`};});
  return weeks;
 }
-export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;actorId:string}){
+export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:Period;actorId:string;tabs?:PayrollTab[]|null}){
  const [period,setPeriod]=useState(initialPeriod),[draftPeriod,setDraftPeriod]=useState(initialPeriod),[cards,setCards]=useState<TimecardItem[]|null>(null),[profiles,setProfiles]=useState<SavedExportProfile[]>([]),[profileId,setProfileId]=useState('neutral'),[draft,setDraft]=useState<ExportProfile>(neutralProfile),[reviewed,setReviewed]=useState(false),[selected,setSelected]=useState<string[]>([]),[state,setState]=useState('Loading finalized time'),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[result,setResult]=useState<PayrollExportPayload|null>(null);
  const [retry,setRetry]=useState<ExportCommand|null>(null),[snapshotActor,setSnapshotActor]=useState<string|null>(null);
  const saveRetry=useRef<ProfileCommand|null>(null),generation=useRef({value:0}),abort=useRef<AbortController|null>(null),reload=useRef<()=>void>(()=>{});
@@ -144,9 +145,10 @@ export function PayrollExport({initialPeriod,actorId}:{initialPeriod:Period;acto
  const create=()=>{if(selected.length){setResult(null);generate();}else exportAll();};
  const chooseProfile=(id:string)=>{setProfileId(id);const p=profiles.find(p=>p.id===id)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);};
  const timecardsHref=`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
- return <div className="c-page c-payroll c-pay c-exp" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
+ return <div className="c-page c-payroll c-pay c-exp c-page--narrow" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
   <CorpNav back={{href:'/app/payroll',label:'Payroll'}} title="Time exports" phoneOnly/>
   <CorpTitle id="time-exports-title" title="Time exports" wide/>
+  <PayrollTabs items={tabs} current="/app/payroll-export"/>
   <div className="c-field">
    <label className="c-field__label" htmlFor="time-export-period">Pay period</label>
    <select id="time-export-period" className="c-in" aria-label="Pay period" value={listed?periodKey:'current'} disabled={busy} onChange={e=>{const [startDate,endDate]=e.target.value.split('|');if(startDate&&endDate)choosePeriod({startDate,endDate});}}>
