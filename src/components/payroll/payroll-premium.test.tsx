@@ -18,6 +18,8 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll', useRouter
 const current: OpenPayPeriod = { period: { startDate: '2026-10-05', endDate: '2026-10-11' }, payday: '2099-10-16', frequency: 'WEEKLY' } as OpenPayPeriod;
 const missing = { period: { startDate: '2026-09-21', endDate: '2026-09-27' }, payday: '2026-09-29', settingsRevision: 1, state: 'MISSING', issues: [] };
 const backlog = { asOfDate: '2026-10-30', rangeStart: '2026-09-01', rangeEnd: '2026-10-30', missingCount: 3, remainingCount: 0, returnedCount: 3, ambiguousCount: 0, overflow: false };
+/** Payroll writes a range with thin spaces around the dash (R2). */
+const thin = (text: string) => text.replaceAll(' – ', '\u2009–\u2009');
 const home = (extra: Partial<Parameters<typeof PayrollRuns>[0]> = {}) => renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings {...extra} />);
 beforeEach(() => { boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [], jobs: [] }; boundary.statements = []; });
 
@@ -48,48 +50,104 @@ describe('Payroll next step (A2)', () => {
   });
 });
 
-describe('Unpaid periods first (A6)', () => {
-  it('names the oldest period whose payday passed, in one red notice, with only known facts', () => {
+describe('Unpaid periods first (A6, round 2 R3)', () => {
+  it('names the oldest period whose payday passed in one white card with one red title, with only known facts', () => {
     boundary.data = { ...boundary.data!, missingPeriods: [missing], backlog } as unknown as PayrollRunsResponse;
     const html = home();
-    expect(html).toContain('3 pay periods weren’t run');
-    expect(html).toContain('Oldest: Sep 21 – 27 · payday was Tue, Sep 29.');
-    expect(html).toContain('href="/app/payroll/prepare#unpaid-2026-09-21"');
-    expect(html.match(/c-callout--red/g)?.length).toBe(1);
+    expect(html).toContain('3 pay periods have no payroll');
+    expect(html).toContain(thin('Oldest is <span class="c-num">Sep 21 – 27</span>. Its payday was <span class="c-num">Tue, Sep 29</span>.'));
+    // A neutral secondary button that opens the period on Prepare payroll (it never prepares anything by itself).
+    expect(html).toMatch(/class="c-btn c-btn--secondary c-btn--md c-pay__unpaid-go" href="\/app\/payroll\/prepare#unpaid-2026-09-21">Start with Sep 21 – 27</);
+    expect(html.match(/c-pay__unpaid-title/g)?.length).toBe(1);
+    expect(html).not.toContain('c-callout--red');
     // The quiet tools row isn't repeated under the notice.
     expect(html).not.toContain('Periods with no payroll');
   });
   it('shows no notice when no unpaid payday has passed, and no count it doesn’t have', () => {
     boundary.data = { ...boundary.data!, missingPeriods: [{ ...missing, payday: '2099-01-01' }], backlog: { ...backlog, missingCount: null, overflow: true } } as unknown as PayrollRunsResponse;
     const html = home();
-    expect(html).not.toContain('c-callout--red');
+    expect(html).not.toContain('c-pay__unpaid');
     expect(html).toContain('Periods with no payroll');
+    expect(html).toContain('>Check<');
+  });
+  it('isn’t repeated on Prepare payroll, where the oldest period’s row opens with the one filled Prepare payroll', () => {
+    boundary.data = { ...boundary.data!, missingPeriods: [missing, { ...missing, period: { startDate: '2026-09-28', endDate: '2026-10-04' }, payday: '2026-10-06' }], backlog } as unknown as PayrollRunsResponse;
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="prepare" current={current} />);
+    expect(html).not.toContain('c-pay__unpaid');
+    expect(html).not.toContain('Start with the oldest');
+    expect(html).toContain('Periods with no payroll');
+    // One filled primary (the oldest period); the current week's Prepare payroll is secondary.
+    const buttons = html.match(/<button[^>]*>Prepare payroll</g) ?? [];
+    expect(buttons.length).toBe(2);
+    expect(buttons.filter(button => !button.includes('c-btn--secondary'))).toHaveLength(1);
+    expect(buttons.find(button => !button.includes('c-btn--secondary'))).toContain(thin('aria-label="Prepare payroll for Sep 21 – 27"'));
+    expect(html).not.toContain('Prepare draft');
   });
 });
 
-describe('Pay history (A11)', () => {
-  it('names each statement from records, never from its file name, with period, payday and relationship', () => {
+describe('One status for the open period (R7)', () => {
+  it('drops the due pill and never invents a prepare-by date before payday', () => {
+    const html = home();
+    expect(html).not.toContain('Due in');
+    expect(html).not.toContain('Not prepared yet');
+    expect(html).toContain('Prepare by payday');
+    expect(html).toMatch(/ · Payday <span class="c-num">[A-Z][a-z]{2}, Oct 16<\/span>/);
+  });
+  it('names Pay history once, as the Recent payrolls link', () => {
+    const html = home();
+    expect(html.match(/href="\/app\/payroll\/history"/g)?.length).toBe(1);
+    expect(html).toContain('>Pay history</a>');
+  });
+});
+
+describe('Pay history (A11, round 2 R9)', () => {
+  it('names each statement from records, never from its file name, in two lines with period, payday and relationship', () => {
     const original = nativeRun({ id: 'fictional-original', status: 'APPROVED', rows: null, documents: [{ ...statement, id: 'doc-original', filename: 'statement-ZZ9999-parsed-name.pdf' }] });
     const correction = nativeRun({ id: 'fictional-correction', status: 'APPROVED', rows: null, correctionOf: 'fictional-original', documents: [statement] });
     boundary.data!.runs = [original, correction];
     boundary.statements = [{ ...statement, id: 'doc-original', filename: 'statement-ZZ9999-parsed-name.pdf' }, statement];
     const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="history" names={{ E1: 'Fictional Person' }} />);
     expect(html).toContain('Fictional Person');
-    expect(html).not.toContain('ZZ9999 ');
-    expect(html).toContain('Payday Fri, Oct 16');
-    expect(html).toContain('Correction of Oct 5 – Oct 11');
+    // The file name and revision leave the row: only the Download label and tooltip hold them.
+    expect(html).not.toMatch(/>[^<]*ZZ9999[^<]*</);
+    expect(html).not.toMatch(/>[^<]*Revision[^<]*</);
+    expect(html).toContain('title="statement-ZZ9999-parsed-name.pdf, revision 2"');
+    expect(html).toContain('Payday <span class="c-num">Fri, Oct 16</span>\u00a0· Correction');
     expect(html).toContain('Replaced by a correction');
+    // One date format: "Oct 5 – 11", never "Oct 5 – Oct 11".
+    expect(html).not.toContain('Oct 5 – Oct 11');
     // The correction comes before the statement it replaces.
-    expect(html.indexOf('Correction of')).toBeLessThan(html.indexOf('Replaced by a correction'));
+    expect(html.indexOf('· Correction</span>')).toBeLessThan(html.indexOf('Replaced by a correction'));
     // One teal action per row (View); Download is a neutral icon button.
     expect(html.match(/c-pay__stmt-view/g)?.length).toBe(2);
     expect(html.match(/c-pay__icon-btn/g)?.length).toBe(2);
+    // Two payroll rows for one week differ in their titles.
+    expect(html).toContain(thin('<span class="c-num">Oct 5 – 11</span> · Correction'));
   });
   it('says Employee statement when no record names the person', () => {
     boundary.data!.runs = [nativeRun({ status: 'APPROVED', rows: null, documents: [statement] })];
     boundary.statements = [statement];
     const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="history" />);
     expect(html).toContain('Employee statement');
+  });
+  it('never shows a missing payroll amount as zero, and Approved never says Paid', () => {
+    boundary.data!.runs = [nativeRun({ status: 'APPROVED', totals: null, rows: null })];
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="history" />);
+    expect(html).not.toContain('$0.00');
+    expect(html).toContain('Approved');
+    expect(html).not.toMatch(/\bPaid\b/);
+  });
+});
+
+describe('Payroll details documents (R9)', () => {
+  it('names a statement from the payroll’s own rows and keeps the file name out of the row', () => {
+    boundary.data!.runs = [nativeRun({ status: 'APPROVED', approvedAt: '2026-10-12T16:00:00Z', documents: [{ ...statement, filename: 'statement-ZZ9999.pdf' }] })];
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="review" runId={nativeRun().id} />);
+    expect(html).toContain('>Fictional Employee<');
+    expect(html).toContain('Pay statement · Shared with employee');
+    expect(html).not.toMatch(/>[^<]*statement-ZZ9999[^<]*</);
+    expect(html).not.toContain('Revision 2 approved');
+    expect(html).toMatch(/>Approved [A-Z][a-z]{2} 12/);
   });
 });
 

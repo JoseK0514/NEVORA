@@ -53,11 +53,12 @@ describe('source-aware payroll review presentation', () => {
   it('separates approved native payroll from automatic publication and exposes no bank/payment export', () => {
     boundary.data!.runs = [nativeRun({ status: 'APPROVED', approvedBy: 'fictional-owner', approvedAt: '2026-10-12T16:00:00Z', documents: [{ ...statement, published: false }] })];
     const html = render();
-    expect(html).toContain('Statements not published yet');
+    expect(html).toContain('Statements not shared yet');
     expect(html).toContain('automatically');
     expect(html).not.toContain('Publish employee statements');
     expect(html).not.toContain('Prepare payment instructions');
-    expect(html).toContain('Create correction');
+    // Round 2 copy (R7): the correction row is named by what it does.
+    expect(html).toContain('Fix this payroll');
   });
   it('preserves linked corrections without rewriting the original review', () => {
     boundary.data!.runs = [nativeRun({ correctionOf: 'original-run', nativeCorrection: { rootRunId: 'original-run', reason: 'Fictional recorded-time correction' } })];

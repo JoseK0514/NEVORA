@@ -23,7 +23,7 @@ type Props = {
 
 export function PayrollExportMapping({draft, setDraft, cards, reviewed, setReviewed, disabled, save}: Props) {
   return <details className="c-exp__item c-exp__mapping" id="payroll-mapping">
-    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">Provider file setup</span><span className="c-row__detail"><span>Columns and IDs for your payroll system</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /></summary>
+    <summary className="c-row"><span className="c-row__main"><span className="c-row__title">File format</span><span className="c-row__detail"><span>Columns your payroll provider needs</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /></summary>
     <fieldset disabled={disabled} className={styles.mappingBody} {...fieldKeys}>
       <div className={styles.mappingSection}>
         <h3>Product &amp; template</h3>

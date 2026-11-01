@@ -6,4 +6,4 @@
 :is(#c-root, html) .c-payroll .c-payroll__go span { font-size: 13px; line-height: 18px; color: var(--c-ink2); }
 :is(#c-root, html) .c-payroll .c-payroll__state { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-payroll .c-payroll__state + .c-btn { margin-top: 12px; }
-:is(#c-root, html) .c-payroll .c-card__aside button.c-link { min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
+:is(#c-root, html) .c-payroll .c-card__aside button.c-link { min-height: 44px; border: 0; background: none; cursor: pointer; }
