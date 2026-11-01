@@ -77,7 +77,7 @@
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .mobile-nav-link::before { content:none; display:none; }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link.active { color:var(--em-teal); background:var(--em-wash); box-shadow:none; font-weight:var(--em-weight-label); }
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"][data-nv-e5] .mobile-nav .mobile-nav-link svg { width:22px; height:22px; }
-  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(a,button,input,select,textarea,summary):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(a,button,input,select,textarea,summary):focus-visible { outline:2px solid var(--em-focus); outline-offset:2px; }
   /* A page or section title takes focus only so screen readers announce it; it is not a control, so it draws no ring. */
   html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(h1,h2)[tabindex="-1"]:focus { outline:none; }
   /* One gap between every page title and its subtitle; page-level paragraph resets don't remove it. */

@@ -53,9 +53,17 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect(html).toContain('Shift began 8:00 AM');
   expect(html).not.toContain('No clock-in');
   expect(html).not.toContain('Time off · ');
-  // What isn't counted is a row in More requests, with no number.
+  // What isn't counted is a row in the More card, with no number. Nov 1 upscale: the Time off card ends with "See all
+  // time off", and More is its own card under its own label: Shift requests and Done and older.
   for (const id of ['todo-corrections', 'todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
-  expect(html).toMatch(/<section id="todo-more"[^>]*>.*href="\/app\/requests".*href="\/app\/exchange".*href="\/app\/inbox\?view=more" aria-label="Older items, not counted in today’s total">.*Older items/);
+  const timeOff = html.slice(html.indexOf('id="todo-time-off"'), html.indexOf('id="todo-swaps"'));
+  expect(timeOff).toMatch(/<li class="c-todo__seeall"><a class="c-row c-row--one" href="\/app\/requests" aria-label="See all time off requests">/);
+  expect(html).toMatch(/<\/div><section id="todo-more" class="c-section c-todo__more" aria-labelledby="todo-more-label"><h2 class="c-section__label" id="todo-more-label">More<\/h2><div class="c-card">/);
+  const moreCard = html.slice(html.indexOf('id="todo-more"'));
+  expect(moreCard).not.toContain('href="/app/requests"');
+  expect(moreCard).toMatch(/href="\/app\/exchange".*href="\/app\/inbox\?view=more" aria-label="Done and older, not counted in today’s total">.*Done and older/);
+  expect(html).not.toContain('More requests');
+  expect(html).not.toContain('Older items');
   expect(html).not.toContain('Later and past');
   const more = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true, view: 'more'});
   const moreOrder = ['todo-corrections', 'todo-timecards', 'todo-plan'].map(id => more.indexOf(`id="${id}"`));
@@ -63,7 +71,7 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   expect([...moreOrder].sort((a, b) => a - b)).toEqual(moreOrder);
   expect(more).not.toContain('id="todo-time-off"');
   expect(more).not.toContain('id="todo-more"');
-  expect(more).toContain('>Older items<');
+  expect(more).toContain('>Done and older<');
   expect(more).toMatch(/<a class="c-nav__back" href="\/app\/inbox">.*Things to do<\/a>/);
   expect(more).toContain(count('Time corrections', 1));
   expect(more).toContain(count('Timecards to approve', 2));
@@ -83,10 +91,10 @@ it('puts urgent corrections with missed clock-ins in the Time card, and More req
   expect(time).toContain('id="todo-missed"');
   expect(time).toContain('id="todo-corrections"');
   expect(html).toContain(count('Can’t work', 1));
-  // No request waiting: More requests is its own card, still three at most.
+  // No request waiting: the More card follows the two cards, and lists Time off requests too.
   const noRequests = page({snapshot: ready(urgent.filter(entry => entry.category !== 'requests')), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
-  expect(noRequests.match(/class="c-card c-todo__card"/g)).toHaveLength(3);
-  expect(noRequests).toContain('aria-label="More requests"');
+  expect(noRequests.match(/class="c-card c-todo__card"/g)).toHaveLength(2);
+  expect(noRequests.slice(noRequests.indexOf('id="todo-more"'))).toContain('href="/app/requests" aria-label="All time off requests"');
 });
 
 it('names the person and the dates on a request, and every row opens its full review (no decisions in the list)', () => {

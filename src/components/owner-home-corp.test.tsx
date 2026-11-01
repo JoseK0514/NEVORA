@@ -7,6 +7,8 @@ import type { ActionItem } from "@/lib/action-center/project";
 import { needsYou } from "@/lib/action-center/needs-you";
 
 vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
+// The kit's "Couldn't load · Try again" refreshes the page through the router when no retry is given.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: () => {}, push: () => {}, replace: () => {} }), usePathname: () => "/app" }));
 const { OwnerHomeCorp } = await import("./owner-home-corp");
 
 const shift = (id: string, status: TodayShift["status"]): TodayShift => ({
@@ -46,13 +48,18 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
   it("counts who is on shift out of who is scheduled, missed clock-ins and open shifts in ink, each opening its list, and offers Find cover once", () => {
     const out = html().replace(/\u2009/g, " ");
     // R6: each figure is a link (Who's working, the missed clock-ins, the one open shift's Find cover); R3: no red or amber.
-    expect(out).toContain('<a href="/app?view=attendance" class="c-stat c-home__stat" aria-label="On shift now: 1 of 3. Who’s working"><span class="c-stat__label">On shift now</span><span class="c-stat__value c-num">1 of 3</span></a>');
-    expect(out).toMatch(/href="\/app\/inbox#todo-missed" class="c-stat c-home__stat" aria-label="Missed clock-ins: 1"><span class="c-stat__label">Missed clock-ins<\/span><span class="c-stat__value c-num">1<\/span>/);
+    expect(out).toContain('<a href="/app?view=attendance" class="c-stat c-home__stat" aria-label="Clocked in: 1 of 3. Who’s working"><span class="c-stat__label">Clocked in</span><span class="c-stat__value c-num">1<span class="c-home__of"> of 3</span></span></a>');
+    // Nov 1 upscale: the short labels Who's working uses, so all three sit on one line.
+    expect(out).not.toContain("On shift now");
+    expect(out).not.toContain("Missed clock-ins");
+    expect(out).toMatch(/href="\/app\/inbox#todo-missed" class="c-stat c-home__stat" aria-label="Missed: 1"><span class="c-stat__label">Missed<\/span><span class="c-stat__value c-num">1<\/span>/);
     expect(out).toMatch(/href="\/app\/schedule\/coverage\?shift=gap1[^"]*" class="c-stat c-home__stat" aria-label="Open shifts: 1. Find cover"><span class="c-stat__label">Open shifts<\/span><span class="c-stat__value c-num">1<\/span>/);
     expect(out).not.toMatch(/c-stat__value--(red|amber)/);
     // The open shift reads as on Things to do (board O-Inbox wording) and opens its coverage review.
     expect(out).toContain(">Barista 1:00 PM – 3:00 PM<");
-    expect(out).toContain(">Today · Condado · 1 open<");
+    // Nov 1 upscale: the card's header says Today, so the detail starts at the place.
+    expect(out).toContain(">Condado · 1 open<");
+    expect(out).not.toContain(">Today · Condado");
     expect(out).toMatch(/href="\/app\/schedule\/coverage\?shift=gap1[^"]*"/);
     expect(out.match(/>Find cover</g)).toHaveLength(1);
     // Several open shifts: the figure opens the Schedule, and the hero lists the next two (shown from tablet width).
@@ -62,7 +69,8 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(many).toContain('<ul class="c-rows c-home__more" aria-label="More open shifts today">');
     expect(many).toContain("Open all day");
     expect(many).toContain("6:00 PM – 12:00 AM");
-    expect(many).toContain("Today · Condado · Needs 1 person");
+    expect(many).toContain(">Condado · Needs 1 person<");
+    expect(many).not.toContain("Today · Condado");
     expect(many).not.toContain("7:00 PM");
     expect(out.match(/class="c-btn( c-btn--md)?"/g)).toHaveLength(1);
   });
@@ -112,15 +120,21 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(html({ value: null, connection: "unavailable", onRetryActions: () => {} })).toContain(">Try again<");
     expect(html({ value: null, connection: "unavailable", onRetryActions: () => {} })).toContain('class="c-error-card"');
     expect(html({ value: null, connection: "offline", offline: true })).not.toContain(">Try again<");
+    // Nov 1 upscale: a failed Today keeps its shape, every figure "—" (never a false zero), and the header offers Try again.
     const failedToday = html({ today: { state: "unavailable", reason: "read_failed" } as Today, onRetryToday: () => {} });
     expect(failedToday).toContain("Who’s on shift isn’t available");
-    expect(failedToday).not.toContain("c-stat__value");
-    // A figure still on its way is plain text, never a link.
-    expect(html({ value: null })).toContain('<div class="c-stat c-home__stat"><span class="c-stat__label">Missed clock-ins</span><span class="c-stat__value c-num">…</span></div>');
-    // P7: while Today loads, the card already has its final shape (the three counts as "…").
+    expect(failedToday).toContain("Couldn’t load");
+    expect(failedToday).toMatch(/<div class="c-card__aside"><span class="c-fail">.*>Try again<\/button>/);
+    expect(failedToday).not.toContain('class="c-error-card"');
+    expect(failedToday.match(/<span class="c-stat__value c-stat__value--none c-num">—<\/span>/g)).toHaveLength(3);
+    expect(failedToday).not.toMatch(/c-stat__value c-num">\d/);
+    // A figure still on its way is the grey dash, plain text, never a link.
+    expect(html({ value: null })).toContain('<div class="c-stat c-home__stat"><span class="c-stat__label">Missed</span><span class="c-stat__value c-stat__value--none c-num">—</span></div>');
+    expect(html({ value: null })).not.toContain(">…<");
+    // P7: while Today loads, the card already has its final shape (the three counts as "—").
     const loadingToday = html({ today: null, value: null, connection: "loading" });
     expect(loadingToday).toContain('aria-busy="true"');
-    expect(loadingToday.match(/<span class="c-stat__value c-num">…<\/span><\/div>/g)).toHaveLength(3);
+    expect(loadingToday.match(/<span class="c-stat__value c-stat__value--none c-num">—<\/span><\/div>/g)).toHaveLength(3);
   });
   it("shows the all-set card when nothing needs the Owner, and says where shift items are when only those wait", () => {
     const out = html({ value: needsYou([], "2026-10-30", []) });

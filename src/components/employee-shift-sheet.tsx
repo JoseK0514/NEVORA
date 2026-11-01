@@ -71,12 +71,13 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
   </li>;
 }
 
-/** Corporate (Release 1, board E-ShiftDetail): the same row and sheet on the corporate kit. The row is a kit row (day in
+/** Corporate (Release 1, board E-ShiftDetail; Nov 1 upscale S5, S12): the same row and sheet on the corporate kit. The row is a kit row (day in
  * the lead column, hours and place); the sheet shows the shift in full, then Swap, Offer for cover and I can't work. */
-export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, when, initiallyOpen = false}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; when?: string | null; initiallyOpen?: boolean}) {
+export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, initiallyOpen = false}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; initiallyOpen?: boolean}) {
   const [open, setOpen] = useState(initiallyOpen);
   const id = encodeURIComponent(shift.id);
-  const facts = [shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re the shift lead' : null].filter(Boolean).join(' · ');
+  // Upscale S5/S12: the details on one line ("Barista · Condado · 8 h"), in a white card under the "Tomorrow, Nov 2" title.
+  const facts = [shift.position, shift.location, shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re the shift lead' : null, shift.calloutApproved ? 'Unable to work approved' : null].filter(Boolean).join(' · ');
   return <li>
     <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={event => {
       if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
@@ -94,10 +95,9 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
     }}>
       <div className="c-sheet c-esheet" data-corp="">
         <div className="c-sheet__nav"><span/><h1 className="c-sheet__title" id={`shift-${shift.id}-title`}>{shift.day}</h1><SheetCancel href={closeHref} className="c-sheet__done">Done</SheetCancel></div>
-        <div className="c-sheet__shift">
-          <div className="c-sheet__time"><b className="c-big">{shift.hours}</b>{when ? <span className="c-pill c-pill--teal">{when}</span> : null}</div>
-          <span className="c-sheet__place">{[shift.position, shift.location].filter(Boolean).join(' · ')}</span>
-          <span className="c-sheet__facts">{facts}{shift.calloutApproved ? ' · Unable to work approved' : ''}</span>
+        <div className="c-card c-sheet__shift c-esheet__card">
+          <b className="c-big">{shift.hours}</b>
+          <span className="c-sheet__place">{facts}</span>
         </div>
         {shift.canSwap || shift.canReport ? <>
           <ul className="c-card c-rows c-sheet__actions" aria-label="Change this shift" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>

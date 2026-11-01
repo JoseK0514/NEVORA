@@ -45,7 +45,7 @@ it('Today strip and rail read one fixture source at one frozen moment', () => {
   expect(previewToday.state === 'ready' && previewToday.counts.clockedIn).toBe(rows);
   expect(previewActionCenter.state === 'ready' && previewActionCenter.observedAt).toBe(previewObservedAt);
   const html = renderToStaticMarkup(<HomePreview/>);
-  // Release 1 (corporate): Today's "On shift now" figure reads the frozen fixture (the four people on the clock).
-  expect(html).toMatch(/On shift now<\/span><span class="c-stat__value c-num">4 of \d+<\/span>/);
+  // Release 1 (corporate): Today's "Clocked in" figure reads the frozen fixture (the four people on the clock).
+  expect(html).toMatch(/Clocked in<\/span><span class="c-stat__value c-num">4<span class="c-home__of"> of \d+<\/span><\/span>/);
   expect(html).not.toContain('No one is clocked in right now');
 });

@@ -16,7 +16,10 @@ import { ClockIcon } from "@phosphor-icons/react/dist/ssr/Clock";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
 import { InfoIcon } from "@phosphor-icons/react/dist/ssr/Info";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
-import { ChartBarIcon, GearSixIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
+import { Suspense, type ReactNode } from "react";
+import { Temporal } from "@js-temporal/polyfill";
+import { readReports } from "@/lib/reports/service";
+import type { SessionMutationProof } from "@/lib/shift-changes/types";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -50,7 +53,7 @@ async function EmployeeMore({ firstName, lastName, role }: { firstName: string; 
       <QuietRow href="/app/profile#employee-calendar-title" icon={ic(CalendarCheckIcon)} title="Add shifts to your calendar" />
     </QuietList>
     <QuietList label="Help" style={{ marginTop: 24 }}>
-      <QuietRow href="/support" icon={ic(InfoIcon)} title="Support" />
+      <QuietRow href="/app/help" icon={ic(InfoIcon)} title="Support" />
       <QuietRow href="/privacy" icon={ic(ShieldCheckIcon)} title="Privacy and terms" />
     </QuietList>
     {/* Profile's Session section moved off Profile (board E-Profile); on a phone a Lead signs out here. */}
@@ -87,12 +90,27 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
     </CorpCard>
     <CorpCard as="div" label="Help and legal">
       <CorpRows>
-        <li><CorpRow href="/support" title="Help" one /></li>
+        <li><CorpRow href="/app/help" title="Help" one /></li>
         <li><CorpRow href="/privacy" title="Privacy and terms" one /></li>
       </CorpRows>
     </CorpCard>
     <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--danger c-btn--full">Sign out</button></PortalSignout>
   </CorpPage>;
+}
+
+/** Insights' grey value on More: the hours recorded this week so far (Monday to today, as Insights opens), from the same
+ * read Insights uses. It streams in after the page; a failed or empty read shows nothing, never a zero it doesn't know. */
+async function weekHours(proof: SessionMutationProof, timeZone: string): Promise<string | null> {
+  try {
+    const today = Temporal.Now.zonedDateTimeISO(timeZone).toPlainDate();
+    const monday = today.subtract({ days: today.dayOfWeek - 1 });
+    const result = await readReports(proof, { startDate: monday.toString(), endDate: today.toString() });
+    if (result.state !== "ready" || !/^\d+$/.test(result.report.summary.recordedNanoseconds)) return null;
+    return `${Math.round(Number(BigInt(result.report.summary.recordedNanoseconds) / BigInt(60_000_000_000)) / 60)} h this week`;
+  } catch { return null; }
+}
+async function WeekHours({ proof, timeZone }: { proof: SessionMutationProof; timeZone: string }) {
+  return await weekHours(proof, timeZone);
 }
 
 export default async function MorePage() {
@@ -112,9 +130,9 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
-  const ic = (Icon: typeof BellIcon) => <Icon className="c-ic" aria-hidden="true" />;
-  const row = (href: string, title: string, Icon: typeof BellIcon, value?: string) =>
-    <li key={href}><CorpRow href={href} title={title} icon={ic(Icon)} value={value} valueTone="soft" one chevron /></li>;
+  // Nov 1 upscale (board O-More): no row icons; a row may end in a grey value before its chevron ("24 h this week").
+  const row = (href: string, title: string, value?: ReactNode) =>
+    <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
@@ -131,17 +149,17 @@ export default async function MorePage() {
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
     {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
       <CorpRows label="Work">
-        {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), ChartBarIcon) : null}
-        {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates"), MegaphoneIcon) : null}
-        {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager"), SparkleIcon) : null}
+        {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), <Suspense fallback={null}><WeekHours proof={proof} timeZone={workspace.timeZone} /></Suspense>) : null}
+        {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates")) : null}
+        {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager")) : null}
       </CorpRows>
     </CorpCard></CorpSection> : null}
     <CorpSection ariaLabel="Settings and help"><CorpCard as="div">
       <CorpRows label="Settings and help">
-        {settings ? row("/app/settings", "Settings", GearSixIcon) : null}
+        {settings ? row("/app/settings", "Settings") : null}
         {/* A Manager has no Settings; Scheduling rules is theirs to open (it also opens from Schedule). */}
-        {!settings && has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules", CalendarCheckIcon) : null}
-        {row("/support", "Help", InfoIcon)}
+        {!settings && has("/app/schedule/settings") ? row("/app/schedule/settings", "Scheduling rules") : null}
+        {row("/app/help", "Help")}
       </CorpRows>
     </CorpCard></CorpSection>
     <CorpSection ariaLabel="Sign out"><CorpCard as="div">

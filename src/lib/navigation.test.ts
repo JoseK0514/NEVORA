@@ -46,14 +46,20 @@ it.each(['EMPLOYEE','LEAD'] as const)('Home_Schedule_MyTime_More_all_routes_reac
 });
 
 describe('phone tabs', () => {
-  // Corporate (Release 1, board C-Employee): an Employee's tabs are Home, Schedule, Time, Pay and Requests; More, Updates
-  // and Profile open from the header avatar, so Home stays lit there.
+  // Corporate (Release 1, board C-Employee): an Employee's tabs are Home, Schedule, Time, Pay and Requests. Upscale (Nov 1):
+  // More, Updates, Profile and Notifications open from the header avatar or bell, so no tab is lit there (nor on Help or
+  // an unknown address).
   it('gives EMPLOYEE Home, Schedule, Time, Pay and Requests, with Pay only while payroll is on', () => {
     expect(mobileTabsForRole('EMPLOYEE').map(tab => tab.label)).toEqual(['Home','Schedule','Time','Requests']);
     expect(mobileTabsForRole('EMPLOYEE', payroll).map(tab => [tab.label, tab.href])).toEqual([['Home','/app'],['Schedule','/app/schedule'],['Time','/app/my-time'],['Pay','/app/my-pay'],['Requests','/app/requests/hub']]);
     expect(activeMobileTab('EMPLOYEE', '/app/my-time', payroll)).toBe('/app/my-time');
     expect(activeMobileTab('EMPLOYEE', '/app/timecards', payroll)).toBe('/app/my-time');
-    for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/profile']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app');
+    const tabs = mobileTabsForRole('EMPLOYEE', payroll).map(tab => tab.href);
+    for (const path of ['/app/notifications', '/app/more', '/app/updates', '/app/updates/own-update', '/app/profile', '/app/profile/calendar', '/app/help', '/app/no-such-page']) {
+      expect(tabs).not.toContain(activeMobileTab('EMPLOYEE', path, payroll));
+    }
+    expect(mobileTabsForRole('EMPLOYEE', payroll)[0].owns).toEqual(['/app']);
+    expect(activeMobileTab('EMPLOYEE', '/app', payroll)).toBe('/app');
     expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/requests/hub');
     // Release 1: opened from Schedule, these stay on Schedule; the rest of Requests stays on Requests.
     for (const path of ['/app/availability', '/app/exchange/swap?shiftId=s1', '/app/exchange/callout?shiftId=s1', '/app/exchange?tab=available']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app/schedule');

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ConfigurationForm, type ConfigurationResult } from "./configuration-form";
 import { designatedLeadAfterEmployeeChange, positionAfterEmployeeChange } from "./shift-assignment-fields";
 import { addDays, formatTime, isValidIsoDate } from "../lib/date-utils";
@@ -13,7 +12,8 @@ import "./schedule-shift-form.css";
 /* Add shift and Edit shift (Release 1, boards O-AddShift and O-EditShift): one sheet. Cancel · title · Save over a
  * hairline, then Person, Location and Position side by side, Date, Start and End, the Shift lead switch, Note, and the
  * save. Same form fields and actions as before; the date and times are chosen from lists (the week's seven days and quarter
- * hours), so no browser date or time glyphs show.
+ * hours), so no browser date or time glyphs show. Nov 1 upscale: every select carries the kit's caret (the date's calendar
+ * glyph is gone); the Lead role is on hold, so the lead line names Owners and Managers only.
  * Owner premium (A7, P9/P10): one Save. Phones keep the header's Cancel · title · Save; tablets and desktop have the card's
  * footer (Cancel and Save on the right) instead. Missing fields are all flagged at once by the shell's form validation
  * (form-validation.tsx), drawn in the kit's one red style. */
@@ -52,8 +52,10 @@ export type ScheduleShiftFormProps = {
   /** Hidden fields the action reads (shiftId, weekStart). */
   hidden: Record<string, string>;
   cancelHref: string;
-  /** Edit: the shift's state ("Not published · Was 12:00 PM – 8:00 PM"). */
+  /** Edit: a line above the fields (the held edit's "Was 12:00 PM – 8:00 PM"). */
   status?: ReactNode;
+  /** Edit: the header's 13px line under the title, the shift's state and day ("Published · Sun, Nov 1"). */
+  subtitle?: ReactNode;
   /** A save that came back with an error (from the page's ?error=). */
   error?: { title: string; body: string };
   /** Why nothing can be added yet (no people or no locations). */
@@ -93,7 +95,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
     <span className="q-page" data-q-sheet="" hidden />
     <header className="c-shift__head">
       <Link className="c-shift__cancel c-only-phone" href={props.cancelHref}>Cancel</Link>
-      <h1 className="c-shift__title">{title}</h1>
+      {/* Nov 1 upscale: the shift's state is the title's subtitle (no pill alone above the form). */}
+      {props.subtitle ? <span className="c-shift__titles"><h1 className="c-shift__title">{title}</h1><span className="c-shift__sub">{props.subtitle}</span></span>
+        : <h1 className="c-shift__title">{title}</h1>}
       <button type="submit" form={formId} className="c-shift__save c-only-phone" disabled={!!props.blocked}>Save</button>
     </header>
     <ConfigurationForm action={props.action} id={formId} className="c-shift__form">
@@ -146,7 +150,6 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
             {!days.includes(day) ? <option value={day} disabled>{isValidIsoDate(day) ? dayText(day) : "Choose"}</option> : null}
             {days.map(value => <option key={value} value={value}>{dayText(value)}</option>)}
           </select>
-          <CalendarBlankIcon className="c-shift__glyph" aria-hidden="true" />
         </span>
       </div>
 
@@ -169,7 +172,7 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
       {nextDay ? <p className="c-field__help c-shift__next" id={id("next-day")} aria-live="polite">{`Ends ${nextDay}`}</p> : null}
 
       <label className="c-shift__lead">
-        <span className="c-shift__lead-text"><b>Shift lead</b><span>Owners, Managers and Leads can lead a shift</span></span>
+        <span className="c-shift__lead-text"><b>Shift lead</b><span>Owners and Managers can lead a shift</span></span>
         <input type="checkbox" role="switch" className="c-switch" name="isDesignatedLead" checked={lead} onChange={event => setLead(event.target.checked)} />
       </label>
 

@@ -67,8 +67,9 @@ it("distinguishes missing, intentionally unavailable and submitted windows witho
   // Times are kept whole with no-break spaces; compare the words.
   const html = renderToStaticMarkup(await ManagerAvailability({ timeZone:"America/Puerto_Rico",currentWeek:"2026-09-28"})).replace(/\u00a0/g, " ");
   // Quiet (v4): Not sent and Sent carry the counts; seeded hours on someone who hasn't sent don't count or show.
-  // R12 / copy table 14: the kit's segmented control, counts as "Not sent (1)".
-  expect(html).toContain(">Not sent (1)</button>"); expect(html).toContain(">Sent (2)</button>");
+  // R12 / copy table 14: the kit's segmented control. Nov 1 upscale: counts read "Not sent 1", the figure in the kit's count style.
+  expect(html).toContain(">Not sent<span class=\"c-count c-num\">1</span></button>"); expect(html).toContain(">Sent<span class=\"c-count c-num\">2</span></button>");
+  expect(html).not.toMatch(/\(\d+\)<\/button>/);
   expect(html).toContain("2 of 3 sent");
   expect(html).toContain('aria-label="Missing Person, No primary location, not sent"'); expect(html).not.toContain("7:00 AM");
   // A link to someone who has sent opens the Sent list with their hours.
@@ -94,7 +95,7 @@ it("a Lead-gap suggestion URL rejects otherwise eligible Employees using the sha
  const general = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve(params) }));
  expect(general).toContain("1\u00a0person");
  const leadOnly = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve({ ...params, lead: "1" }) }));
- expect(leadOnly).toContain("No one free"); expect(leadOnly).toContain("No one is free");
+ expect(leadOnly).not.toContain("No one free"); expect(leadOnly).toContain("No one is free");
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));

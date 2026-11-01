@@ -2,7 +2,7 @@
 import "./owner-home-corp.css";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
-import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
+import { CORP_NO_VALUE, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpLoadFailed, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
 import type { ActionCenterConnection } from "./manager-action-center";
@@ -69,36 +69,37 @@ const noSubscribe = () => () => {};
 const rememberedGap = () => { try { return sessionStorage.getItem(GAP_KEY) === "1"; } catch { return false; } };
 
 /** One Today figure. Owner premium R6: each figure opens its list (hover and press from the kit's row states, focus ring
- * from the kit); while a read is on its way it is plain text, so a "…" never links anywhere. Figures are ink (R3): the
- * row under the figures and the list it opens say what is wrong, not a colour. */
+ * from the kit); while a read is on its way it is plain text, so an empty figure never links anywhere. Figures are ink
+ * (R3): the row under the figures and the list it opens say what is wrong, not a colour. Nov 1 upscale: a figure that
+ * hasn't arrived or couldn't load is the kit's grey "—" (never a word or "…"). */
 function Stat({ label, value, href, aria }: { label: string; value: ReactNode; href?: string; aria?: string }) {
-  const body = <><span className="c-stat__label">{label}</span><span className="c-stat__value c-num">{value}</span></>;
+  const none = value === CORP_NO_VALUE;
+  const body = <><span className="c-stat__label">{label}</span><span className={none ? "c-stat__value c-stat__value--none c-num" : "c-stat__value c-num"}>{value}</span></>;
   return href ? <Link className="c-stat c-home__stat" href={href} aria-label={aria}>{body}</Link> : <div className="c-stat c-home__stat">{body}</div>;
 }
 
 /** Today: who is on shift out of who is scheduled, shifts with no clock-in, open shifts; the first open shift offers Find cover.
  * R6: Home's one focus. Full width on desktop, the figures open Who's working, the missed clock-ins and the open shifts. */
 function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryToday, offline, value, connection }: OwnerHomeCorpProps) {
-  const card = (body: ReactNode) => <CorpCard id="home-working" label="Today" aside={<CorpLink href="/app?view=attendance">Who’s working</CorpLink>}>{body}</CorpCard>;
+  const card = (body: ReactNode, aside: ReactNode = <CorpLink href="/app?view=attendance">Who’s working</CorpLink>) => <CorpCard id="home-working" label="Today" aside={aside}>{body}</CorpCard>;
+  const dash = <div className="c-stats c-home__stats"><Stat label={LABELS.on} value={CORP_NO_VALUE} /><Stat label={LABELS.missed} value={CORP_NO_VALUE} /><Stat label={LABELS.open} value={CORP_NO_VALUE} /></div>;
   const hadGap = useSyncExternalStore(noSubscribe, rememberedGap, () => false);
   const gaps = value ? value.now.filter(item => item.type === "COVERAGE_GAP") : null;
   const gapCount = today?.state === "ready" && gaps ? gaps.length : null;
   useEffect(() => { if (gapCount !== null) try { sessionStorage.setItem(GAP_KEY, gapCount ? "1" : "0"); } catch { /* storage off: the next load assumes no open shift */ } }, [gapCount]);
   const failed = today?.state === "unavailable";
   const waiting = !failed && !offline && connection !== "paused";
-  // While a read is on its way the card already has its final shape: the three counts as "…", and the open-shift row's
+  // While a read is on its way the card already has its final shape: the three counts as "—", and the open-shift row's
   // place when the last Home had one.
   const pendingGap = hadGap && waiting && gaps === null ? <div className="c-home__gap c-home__gap--wait">
     <span className="c-row__main"><span className="c-row__title">Checking open shifts…</span></span>
   </div> : null;
   if (!today || today.state !== "ready") {
-    if (!failed && waiting) return card(<div aria-busy="true"><p className="c-sr">Checking who’s on shift…</p>
-      <div className="c-stats c-home__stats"><Stat label={LABELS.on} value="…" /><Stat label={LABELS.missed} value="…" /><Stat label={LABELS.open} value="…" /></div>{pendingGap}</div>);
-    // P3: the kit's one error card when the read failed; offline and paused say so in a plain line.
-    if (failed) return card(<div className="c-error-card"><p className="c-error-card__title">Who’s on shift isn’t available</p>
-      <p className="c-error-card__body">Check your connection, then try again.</p>
-      {onRetryToday ? <CorpButton kind="neutral" className="c-error-card__action premium-today-retry" aria-disabled={todayRefreshing || undefined}
-        onClick={() => { if (todayRefreshing) return; onRetryToday(); focusAfterRetry("#home-working-label", ".premium-today-retry"); }}>{todayRefreshing ? "Trying…" : "Try again"}</CorpButton> : null}</div>);
+    if (!failed && waiting) return card(<div aria-busy="true"><p className="c-sr">Checking who’s on shift…</p>{dash}{pendingGap}</div>);
+    // Nov 1 upscale (kit consistency 7): a failed read keeps the card's shape, its figures "—", and the header says
+    // "Couldn't load · Try again"; offline and paused say so in a plain line.
+    if (failed) return card(<><p className="c-sr">Who’s on shift isn’t available.</p>{dash}</>,
+      <CorpLoadFailed busy={todayRefreshing} onRetry={onRetryToday ? () => { onRetryToday(); focusAfterRetry("#home-working-label", "#home-working .c-fail__retry"); } : undefined} />);
     return card(<CorpBody><p className="c-home__state">{offline ? "You’re offline. Updates when you reconnect." : "Paused while you’re away."}</p></CorpBody>);
   }
   const open = monitor?.state === "ready" ? monitor.employees : null;
@@ -106,19 +107,22 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
   const onShift = open ? new Set(open.map(person => person.employeeId)).size : people(today.shifts.filter(working)) || today.counts.clockedIn;
   const checking = monitorPending && !open && today.counts.clockedIn > 0;
   const noClockIn = value ? value.noClockIn.length : null;
-  // The first open shift reads as on Things to do: "12:00 AM – 6:00 AM" over "Today · Condado · Needs 1 person".
-  const gap = gaps?.[0] ? gapRow(gaps[0], today.timeZone, today.today) : undefined;
+  // The first open shift reads as on Things to do, without the "Today ·" the card's header already says (Nov 1 upscale):
+  // "12:00 AM – 6:00 AM" over "Condado · Needs 1 person".
+  const gap = gaps?.[0] ? homeGap(gapRow(gaps[0], today.timeZone, today.today)) : undefined;
   // R6, desktop: the hero lists today's next two open shifts under the first (phones keep one, so Home stays short).
-  const more = (gaps ?? []).slice(1, 3).map(item => gapRow(item, today.timeZone, today.today));
-  const onValue = checking ? "…" : scheduled ? `${onShift} of ${scheduled}` : String(onShift);
+  const more = (gaps ?? []).slice(1, 3).map(item => homeGap(gapRow(item, today.timeZone, today.today)));
+  const onText = checking ? CORP_NO_VALUE : scheduled ? `${onShift} of ${scheduled}` : String(onShift);
+  // Rule 4: the figure in ink and its context ("of 1") quieter, on one line.
+  const onValue = !checking && scheduled ? <>{onShift}<span className="c-home__of"> of {scheduled}</span></> : onText;
   // One open shift opens its Find cover; several (or none) open the Schedule, where every open shift is.
   const openHref = gaps?.length === 1 && gap ? gap.href : "/app/schedule";
   return card(<>
     <div className="c-stats c-home__stats">
       {/* Rule 4: the number and its context at one size ("0 of 1"). */}
-      <Stat label={LABELS.on} value={onValue} href={checking ? undefined : "/app?view=attendance"} aria={checking ? undefined : `${LABELS.on}: ${onValue}. Who’s working`} />
-      <Stat label={LABELS.missed} value={noClockIn ?? "…"} href={noClockIn === null ? undefined : "/app/inbox#todo-missed"} aria={noClockIn === null ? undefined : `${LABELS.missed}: ${noClockIn}`} />
-      <Stat label={LABELS.open} value={gaps ? gaps.length : "…"} href={gaps ? openHref : undefined}
+      <Stat label={LABELS.on} value={onValue} href={checking ? undefined : "/app?view=attendance"} aria={checking ? undefined : `${LABELS.on}: ${onText}. Who’s working`} />
+      <Stat label={LABELS.missed} value={noClockIn ?? CORP_NO_VALUE} href={noClockIn === null ? undefined : "/app/inbox#todo-missed"} aria={noClockIn === null ? undefined : `${LABELS.missed}: ${noClockIn}`} />
+      <Stat label={LABELS.open} value={gaps ? gaps.length : CORP_NO_VALUE} href={gaps ? openHref : undefined}
         aria={gaps ? `${LABELS.open}: ${gaps.length}. ${gaps.length === 1 ? "Find cover" : "Schedule"}` : undefined} />
     </div>
     {gap ? <div className="c-home__gap">
@@ -130,7 +134,11 @@ function TodayCard({ today, monitor, monitorPending, todayRefreshing, onRetryTod
     </li>)}</ul> : null}
   </>);
 }
-const LABELS = { on: "On shift now", missed: "Missed clock-ins", open: "Open shifts" } as const;
+/* Nov 1 upscale: one short word or two per figure, so all three labels sit on one line on a phone. "Clocked in" is the word
+ * Who's working uses for the same people. */
+const LABELS = { on: "Clocked in", missed: "Missed", open: "Open shifts" } as const;
+/** Home's Today card already says Today, so an open shift's detail starts at its place ("Condado · Needs 1 person"). */
+const homeGap = <T extends { detail?: string }>(row: T): T => row.detail ? { ...row, detail: row.detail.replace(/^Today · /, "") } : row;
 
 const dayName = (date: string, style: "long" | "short") => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: style, ...(style === "short" ? { month: "short", day: "numeric" } : {}) }).format(new Date(`${date}T12:00:00Z`));
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);

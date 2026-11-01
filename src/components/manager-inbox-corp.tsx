@@ -178,20 +178,26 @@ const rowOf = (row: Row) => <li key={row.key}>
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Open shifts 3"). */
 const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
 
-/** One kind inside a card: its heading row with the count, then its rows. */
+/** One kind inside a card: its heading row with the count, then its rows. Nov 1 upscale: the Time off kind ends with
+ * "See all time off ›", the way to every time off request. */
 const kindOf = (group: Group) => <section key={group.id} id={`todo-${group.id}`} className="c-todo__kind" aria-labelledby={`todo-${group.id}-label`}>
   <div className="c-card__head"><h2 className="c-card__label" id={`todo-${group.id}-label`}>{headed(group.title, groupCount(group))}</h2></div>
-  <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
+  <CorpRows label={group.title}>{group.rows.map(rowOf)}
+    {group.id === "time-off" ? <li className="c-todo__seeall"><CorpRow href="/app/requests" label="See all time off requests" title="See all time off" one chevron /></li> : null}
+  </CorpRows>
 </section>;
 
-/** "More requests": the full request lists and Older items (what Things to do lists but doesn't count), as plain rows. */
-const moreRequests = <section key="more" id="todo-more" className="c-todo__kind" aria-labelledby="todo-more-label">
-  <div className="c-card__head"><h2 className="c-card__label" id="todo-more-label">More requests</h2></div>
-  <CorpRows label="More requests">
-    <li><CorpRow href="/app/requests" label="All time off requests" title="Time off requests" one chevron /></li>
-    <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>
-    <li><CorpRow href="/app/inbox?view=more" label="Older items, not counted in today’s total" title="Older items" one chevron /></li>
-  </CorpRows>
+/** Nov 1 upscale: "More" is its own card under its own label, after the cards: Shift requests and Done and older (what
+ * Things to do lists but doesn't count), as plain rows; Time off requests too while no Time off card ends with its link. */
+const moreCard = (timeOffShown: boolean) => <section key="more" id="todo-more" className="c-section c-todo__more" aria-labelledby="todo-more-label">
+  <h2 className="c-section__label" id="todo-more-label">More</h2>
+  <div className="c-card">
+    <CorpRows label="More">
+      {timeOffShown ? null : <li><CorpRow href="/app/requests" label="All time off requests" title="Time off requests" one chevron /></li>}
+      <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>
+      <li><CorpRow href="/app/inbox?view=more" label="Done and older, not counted in today’s total" title="Done and older" one chevron /></li>
+    </CorpRows>
+  </div>
 </section>;
 
 /** Presentation only: the released action center observation and today's shifts. */
@@ -222,23 +228,22 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   } else if (!shown) {
     // A10: the kit's empty card, never one bare line.
     body = <CorpCard as="div" ariaLabel="Things to do"><div className="c-empty c-empty--card">{moreView
-      ? <><b className="c-empty__title">No older items</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
+      ? <><b className="c-empty__title">Nothing done or older</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
       : <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>}</div></CorpCard>;
   } else if (moreView) {
     body = more.map(group => <CorpCard key={group.id} id={`todo-${group.id}`} label={headed(group.title, groupCount(group))}>
       <CorpRows label={group.title}>{group.rows.map(rowOf)}</CorpRows>
     </CorpCard>);
   } else {
-    // At most three cards (see groupThingsToDo); "More requests" closes the Requests card, or is the last card.
-    const hasRequests = families.some(family => family.id === "card-requests");
-    body = families.map(family => <div key={family.id} id={`todo-${family.id}`} className="c-card c-todo__card" role="group" aria-label={family.title}>
-      {family.groups.map(kindOf)}{family.id === "card-requests" ? moreRequests : null}
-    </div>);
-    if (!hasRequests) body = <>{body}<div className="c-card c-todo__card" role="group" aria-label="More requests">{moreRequests}</div></>;
+    // At most three cards of things to do (see groupThingsToDo), then the More card.
+    const timeOffShown = families.some(family => family.groups.some(group => group.id === "time-off"));
+    body = <>{families.map(family => <div key={family.id} id={`todo-${family.id}`} className="c-card c-todo__card" role="group" aria-label={family.title}>
+      {family.groups.map(kindOf)}
+    </div>)}{moreCard(timeOffShown)}</>;
   }
   // The request lists stay one tap away while the page loads, fails or has nothing waiting.
-  if (!moreView && (!ready || !shown)) body = <>{body}<div className="c-card c-todo__card" role="group" aria-label="More requests">{moreRequests}</div></>;
-  const title = moreView ? "Older items" : "Things to do";
+  if (!moreView && (!ready || !shown)) body = <>{body}{moreCard(false)}</>;
+  const title = moreView ? "Done and older" : "Things to do";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />

@@ -20,7 +20,8 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
 it('offers withdrawal only on the current employee pending request page, as one red-outline button',async()=>{
  const id='dc6b44c9-6e3f-4f0e-890c-328067ebfe9e';
  const html=renderToStaticMarkup(await RequestsPage({searchParams:Promise.resolve({requestId:id})}));
- expect(html).toContain('c-pill--amber">Waiting<');
+ // Upscale S4: the state is said once, in the decision row, with no amber pill.
+ expect(html).toContain('>Waiting for your manager<');expect(html).not.toContain('c-pill--amber');
  expect(html.match(/>Withdraw request<\/button>/g)).toHaveLength(1);expect(html).toContain('c-btn c-btn--danger c-btn--full');
  expect(html).toContain(`TIME_OFF_WITHDRAW:${id}`);expect(html).toContain('We’ll ask you to confirm first.');
  expect(html).not.toContain('contact your manager');
@@ -40,5 +41,5 @@ it('keeps withdrawal on its own request page, next to the facts and the waiting 
  const page=await RequestsPage({searchParams:Promise.resolve({requestId:'dc6b44c9-6e3f-4f0e-890c-328067ebfe9e'})});
  const withdrawal=pageNodes(page).filter(node=>node.type===TimeOffWithdrawal);
  expect(withdrawal).toHaveLength(1);expect(withdrawal[0].props.requestId).toBe('dc6b44c9-6e3f-4f0e-890c-328067ebfe9e');
- expect(renderToStaticMarkup(page)).toContain('>Waiting<');
+ expect(renderToStaticMarkup(page)).toContain('>Waiting for your manager<');
 });

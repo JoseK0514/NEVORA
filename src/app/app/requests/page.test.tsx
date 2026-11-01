@@ -15,15 +15,17 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
   { id: 'withdrawn', status: 'CANCELLED', startDate: '2030-10-11', endDate: '2030-10-11', allDay: true, createdAt: '2030-10-01T15:00:00.000Z', reviewedAt: '2030-10-03T15:00:00.000Z' },
 ] }));
 
-it('lists waiting and decided requests with filled status pills, each opening its own page', async () => {
+it('lists waiting and decided requests with their state in grey text, each opening its own page', async () => {
   const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
-  // Corporate (board E-TimeOffDetail): Waiting lists the waiting request with an amber pill; the row opens its page.
-  expect(html).toContain('data-employee-status="PENDING"');expect(html).toContain('c-pill--amber">Waiting<');
+  // Upscale S4: Waiting lists the waiting request with its state in grey (no amber pill); the row opens its page.
+  expect(html).toContain('data-employee-status="PENDING"');expect(html).toContain('c-meta">Waiting<');expect(html).not.toMatch(/c-pill--(amber|blue)/);
   expect(html).toContain('href="/app/requests?requestId=pending"');expect(html).not.toContain('Waiting for approval');
   const decided = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) }));
-  expect(decided).toContain('c-pill--teal">Approved<');expect(decided).toContain('data-employee-status="APPROVED"');expect(decided).toContain('c-pill--neutral">Withdrawn<');
+  expect(decided).toContain('c-meta">Approved<');expect(decided).toContain('data-employee-status="APPROVED"');expect(decided).toContain('c-meta">Withdrawn<');
   const detail = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'pending' }) }));
-  expect(detail).toContain('Waiting on your manager');expect(detail).toContain('Fictional pending request');
+  // The detail says the state once ("Waiting for your manager"), with no pill and no icon tile.
+  expect(detail).toContain('Waiting for your manager');expect(detail).toContain('Fictional pending request');
+  expect(detail.match(/Waiting/g)).toHaveLength(1);expect(detail).not.toMatch(/c-pill|c-av--grey/);
   // An older request without a withdraw identity says one true sentence and offers no button.
   expect(detail).toContain('To change this request, contact your manager.');expect(detail).not.toContain('Withdraw request');
 });

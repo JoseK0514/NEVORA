@@ -17,5 +17,3 @@
 @media (max-width: 389px) {
   :is(#c-root, html) .c-who .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 }
-/* Round 2 (R3): counts in one voice ("Live" is the kit's .c-meta). Kit request: .c-count. */
-:is(#c-root, html) .c-who .c-count { margin-left: 6px; font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; }

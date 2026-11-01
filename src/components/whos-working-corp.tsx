@@ -52,15 +52,16 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   const none = day ? day.missed.filter(shift => shift.status === "no_punches") : [];
   const places = new Set([...people.map(person => person.locationId), ...(day?.shifts ?? []).map(shift => shift.locationId)]).size > 1;
   const dateLine = day ? new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }).format(new Date(`${day.today}T12:00:00Z`)) : "Today";
-  const sub = `${dateLine}${ready ? ` · ${clock(ready.observedAt, timeZone)}` : ""}`;
+  // Nov 1 upscale: the time of the last read sits on the Clocked in card ("Updated 2:37 PM"), so the subtitle is the day.
+  const sub = dateLine;
   const where = (name: string) => places ? ` · ${name}` : "";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-who c-page--narrow" labelledBy="who-title">
     <CorpNav back={{ href: homeHref, label: "Home" }} title="Who’s working" phoneOnly />
     <CorpTitle id="who-title" title="Who’s working" sub={sub} wide />
     <p className="c-phone-sub" aria-hidden="true">{sub}</p>
-    {/* R3: "Live" is the default state, so it is grey text, not a green pill. */}
-    <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta">Live</span> : undefined}>
+    {/* R3: grey text, not a pill. Nov 1 upscale: it says when the list was read ("Updated 2:37 PM") instead of "Live". */}
+    <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta c-num">{`Updated ${clock(ready.observedAt, timeZone)}`}</span> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
           <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} grey />}

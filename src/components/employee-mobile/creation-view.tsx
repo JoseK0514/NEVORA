@@ -2,8 +2,6 @@
 import './creation-corp.css';
 import Link from 'next/link';
 import {useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
-import {UserIcon} from '@phosphor-icons/react/dist/ssr/User';
-import {UsersThreeIcon} from '@phosphor-icons/react/dist/ssr/UsersThree';
 import {SheetCancel,useSheetClose} from '../quiet/quiet-sheet';
 import {CorpNav} from '../corp/corp';
 import {shiftChangeFeedback} from '../shift-change-form-state';
@@ -16,7 +14,7 @@ import type {EmployeeCreationOperation} from './creation-operation';
 
 /* Swap shift, Offer for cover and Can't work this shift on the corporate kit (Release 1, boards E-SwapSheet, E-CoverSheet,
  * E-CantWorkSheet). Opened from a shift it is a bottom sheet over Schedule (Cancel · title); opened by its URL, the same
- * content under a pushed-page header. Presentation only: the read, draft, operation, receipt and every state are as before. */
+ * content under a pushed-page header, as cards on the grey page (upscale S15: no card inside a card). Presentation only: the read, draft, operation, receipt and every state are as before. */
 
 const titles={swap:'Swap shift',cover:'Offer for cover',callout:'Can’t work this shift'};
 const sendLabels={swap:'Send swap request',cover:'Offer shift',callout:'Send to manager'};
@@ -114,7 +112,8 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
       {draft.targetKey&&!read.targets?.some(target=>creationKey(target.fields)===draft.targetKey)?<p className="c-xs-notice" role="status">Your selected shift changed or is no longer available. Choose a shift again.</p>:null}
      </fieldset>
      :mode==='cover'?<div className="c-field"><span className="c-field__label">Who can take it</span>
-      <div className="c-xs-who"><span className="c-av c-av--grey" aria-hidden="true"><UsersThreeIcon className="c-ic c-ic--s" weight="bold"/></span><span className="c-xs-option__main"><b>Your team at {source.location}</b><span>They can request it in Open shifts</span></span></div>
+      {/* Upscale S10: the read names no one, so the row is text only (no icon tile). */}
+      <div className="c-xs-who"><span className="c-xs-option__main"><b>Your team at {source.location}</b><span>They can request it in Open shifts</span></span></div>
      </div>
      :<>
       <fieldset className="c-xs-group" aria-describedby={error?errorId:undefined}><legend className="c-field__label">Reason</legend><ul className="c-xs-options">{reasons.map(([value,label])=><li key={value}><label className="c-xs-option c-xs-option--one">
@@ -125,7 +124,7 @@ export function CreationView({state,authority,mode,sourceId,draft,operation,onDr
        <textarea className="c-in c-xs-note" id={noteId} name="reasonNote" value={draft.note} maxLength={300} rows={3} placeholder="Add a note" aria-describedby={[draft.reason==='OTHER'?noteId+'-hint':null,error?errorId:null].filter(Boolean).join(' ')||undefined} aria-invalid={!!error&&draft.reason==='OTHER'} onChange={event=>change({note:event.target.value})}/>
        {draft.reason==='OTHER'?<span className="c-field__help" id={noteId+'-hint'}>Add at least 3 characters of detail.</span>:null}
       </div>
-      <div className="c-xs-who c-xs-who--fill"><span className="c-av" aria-hidden="true"><UserIcon className="c-ic c-ic--s" weight="bold"/></span><span className="c-xs-option__main"><b>Your manager gets this right away</b><span>You keep the shift until they decide</span></span></div>
+      <div className="c-xs-who c-xs-who--fill"><span className="c-xs-option__main"><b>Your manager gets this right away</b><span>You keep the shift until they decide</span></span></div>
      </>}
      {mode==='swap'&&read.targets?.length?<p className="c-xs-foot">{chosen?first(chosen.person):'Your teammate'} says yes first, then your manager may need to approve.</p>
       :mode==='cover'?<p className="c-xs-foot">The shift stays yours until someone picks it up and any review is done.</p>:null}

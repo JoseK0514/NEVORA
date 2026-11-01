@@ -12,7 +12,9 @@ export function PlanningFrame({title,sub,back,backLabel='Requests',selection,sta
  const heading=useRef<HTMLHeadingElement>(null),focused=useRef<string|null>(null);
  useEffect(()=>{if(!ready||focused.current===selection)return;focused.current=selection;const id=window.location.hash.slice(1);if(id)document.getElementById(id)?.focus();else heading.current?.focus();},[ready,selection]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
- return <div className={'c-page tof-frame em-planning'+(sheet?' tof-frame--sheet':'')} data-corp="" data-planning-selection={selection} data-planning-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
+ return <div className={'c-page c-page--narrow tof-frame em-planning'+(sheet?' tof-frame--sheet':'')} data-corp="" data-planning-selection={selection} data-planning-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
+  {/* Upscale M2: Request time off reads as a sheet on a phone (grabber, 16px top corners, no tab bar). */}
+  {sheet?<div className="tof-grab" aria-hidden="true"/>:null}
   <div className="c-nav">
    {sheet?<Link href={back} className="c-nav__back tof-cancel">Cancel</Link>:<Link href={back} className="c-nav__back"><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true"/>{backLabel}</Link>}
    <h1 className="c-nav__title" ref={heading} tabIndex={-1}>{title}</h1><span className="c-nav__right"/>
