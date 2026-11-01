@@ -178,9 +178,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
     {modules.marketplace && view === 'mine' ? <CorpCard as="div" ariaLabel="Open shifts">
       <CorpRows><li><CorpRow href={`/app/schedule?week=${weekStart}&view=open`} label={openCount === null ? 'Open shifts, couldn’t be checked' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts, none right now'}
         title={openCount === null ? 'Open shifts' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts'}
-        detail={openCount === null ? 'We couldn’t check open shifts right now'
+        // QA D10: each detail fits one line on a 320px phone; the row's label still says the whole thing.
+        detail={openCount === null ? 'Couldn’t check right now'
           : openCount ? keepWhole(`${[...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')}${(() => { const places = [...new Set(props.openShifts!.available.map(shift => shift.location))]; return places.length === 1 ? ` · ${places[0]}` : ''; })()}`)
-          : 'None right now. New ones show here when a teammate offers a shift'} /></li></CorpRows>
+          : 'None right now'} /></li></CorpRows>
     </CorpCard> : null}
   </CorpPage>;
 }

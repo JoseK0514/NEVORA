@@ -30,7 +30,9 @@ it('S12: past days are quiet, today is the selected day, and a chosen day is sol
 it('S13/B12: open shifts are one row to the Open shifts page, with no View button even when there are none', () => {
   const output = html();
   expect(output).toContain('href="/app/schedule?week=2026-10-26&amp;view=open"');expect(output).not.toContain('>View<');
-  expect(output.replace(/<[^>]+>/g, ' ')).toContain('None right now. New ones show here when a teammate offers a shift');
+  // QA D10: the detail is short enough for one line at 320px.
+  const plain = output.replace(/<[^>]+>/g, ' ');expect(plain).toContain('None right now');expect(plain).not.toContain('New ones show here');
+  expect(output).toContain('aria-label="Open shifts, none right now"');
 });
 
 it('M5: an empty Open shifts page is one left-aligned card with a title, a sentence and one next step', () => {

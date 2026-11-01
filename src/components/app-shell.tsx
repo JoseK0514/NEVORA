@@ -33,6 +33,7 @@ import type { PayrollCapabilities } from '@/lib/payroll/contracts';
 import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {useOperationalNavigation} from './company-access/use-operational-navigation';
 import {employeeMobileChrome} from '@/lib/employee-mobile-chrome';
+import {rootChromeClaimed,subscribeRootChrome} from '@/lib/root-chrome';
 import { recordNavigation } from "./corp/corp-client";
 import { CorpMotion } from "./corp/corp-motion";
 import { SidebarRailTooltip } from "./sidebar-rail-tooltip";
@@ -167,6 +168,8 @@ function AppShellView({
   }
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const employeeMobile = useEmployeeMobile() && employee;
+  // QA D16: a page with no tab address (the signed-in 404) can ask for a tab page's phone header.
+  const rootChrome = useSyncExternalStore(subscribeRootChrome, rootChromeClaimed, () => false);
   useEmployeeNavigationLayout(employee);
   // Refresh the retained layout's server identity without interrupting the destination document's streamed content.
   const identityReload=useIdentityReload(()=>router.refresh());
@@ -366,7 +369,7 @@ function AppShellView({
       id={employee ? "employee-mobile" : undefined}
       data-employee-mobile={employee ? "true" : undefined}
       data-employee-mobile-active={employeeMobile ? "true" : undefined}
-      data-employee-mobile-chrome={employeeMobileChrome(user.role,pathname,mobileTabs,search)}
+      data-employee-mobile-chrome={rootChrome && user.role === "EMPLOYEE" ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
       data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/my-time" || pathname === "/app/timecards" ? "hours" : pathname === "/app/my-pay" ? "pay" : (pathname === "/app/requests/hub" || pathname === "/app/requests" || pathname === "/app/availability") || (pathname === "/app/exchange" || pathname.startsWith("/app/exchange/")) ? "requests" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
@@ -381,7 +384,7 @@ function AppShellView({
       // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
       // Owner premium (A7): a page that is itself a sidebar entry needs no "‹ Back" line on tablets and desktop.
       data-nav-root={!employee && !toolView && sidebarItems.some(item => item.href === pathname) ? "" : undefined}
-      data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
+      data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && (rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>

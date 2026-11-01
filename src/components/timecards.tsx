@@ -7,7 +7,7 @@ import { timeZoneLabel } from '@/lib/time-zone-label';
 import {NavIcon} from './nav-icon';
 import {HoldHeight} from './kit/hold-height';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
-import {useCallback,useEffect,useRef,useState,type CSSProperties,type FormEvent} from 'react';
+import {useCallback,useEffect,useRef,useState,type CSSProperties,type FormEvent,type KeyboardEvent as ReactKeyboardEvent} from 'react';
 import {formatRecordedHours,parsePeriod,type Period,type Timecard} from '@/lib/timecards/project';
 import {type TimecardItem,type TimecardsResult} from '@/lib/timecards/read-model';
 import type {TimecardCommand,TimecardMutation} from '@/lib/timecards/service';
@@ -361,8 +361,18 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Nov 1 upscale: from 1024px up (the table's layout) the panel is non-modal: no scrim, the table stays live, Escape and
     // Done close it and give focus back to the person's row. Below that it stays the modal sheet.
     const nonModal=inspector&&!phone;
+    // QA D13: ↑/↓ also step through people while focus is in the non-modal panel (on Done or any control that isn't a text
+    // field); focus stays where it is and the newly open row scrolls into view.
+    const panelKeys=(event:ReactKeyboardEvent<HTMLElement>)=>{
+      if(!nonModal||!sheetOpen||(event.key!=='ArrowDown'&&event.key!=='ArrowUp')||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+      if((event.target as HTMLElement).closest('input:not([type="checkbox"]):not([type="radio"]),select,textarea,[contenteditable="true"]'))return;
+      const rows=[...document.querySelectorAll<HTMLElement>('.c-tc-table tbody tr[id^="timecard-"]')].filter(row=>row.getClientRects().length>0);
+      const at=rows.findIndex(row=>row.id===`timecard-${openId}`),next=at<0?undefined:rows[at+(event.key==='ArrowDown'?1:-1)];
+      if(!next)return;
+      event.preventDefault();setOpenId(next.id.slice('timecard-'.length));next.scrollIntoView({block:'nearest'});
+    };
     const sheetNode=<QuietSheet open={sheetOpen} modal={!nonModal} labelledBy="cm-tc-sheet-heading cm-tc-sheet-title" onClose={()=>{userClosedSheet.current=true;closeSheet();}}>
-      <div className="c-sheet c-tc-sheet">
+      <div className="c-sheet c-tc-sheet" onKeyDown={nonModal?panelKeys:undefined}>
         <div className="c-sheet__nav c-tc-sheet__bar"><span aria-hidden="true"/><h2 className="c-sheet__title" id="cm-tc-sheet-heading">Timecard</h2>
           <SheetCancel href="#" className="c-sheet__done cm-tc-done">Done</SheetCancel></div>
         {openItem?<>

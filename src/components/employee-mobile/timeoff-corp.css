@@ -79,13 +79,23 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
   :is(#c-root, html) body .c-page.tof-frame--sheet {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; flex-direction: column; gap: 0;
     width: auto; max-width: none; min-height: 0; max-height: calc(100dvh - max(env(safe-area-inset-top, 0px), 12px) - 12px); margin: 0; padding: 0;
-    border-radius: 16px 16px 0 0; background: #FFFFFF; box-shadow: 0 -8px 24px rgb(0 0 0 / 0.10), 0 0 0 100vmax rgb(26 28 30 / 0.38);
+    border-radius: 16px 16px 0 0; background: #FFFFFF; box-shadow: 0 -8px 24px rgb(0 0 0 / 0.10), 0 0 0 100vmax rgb(26 28 30 / 0.24);
     overflow: hidden; animation: tof-sheet-in 360ms cubic-bezier(.32, .72, 0, 1);
   }
   :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-grab { display: block; flex: none; width: 36px; height: 5px; margin: 6px auto 0; border-radius: 3px; background: #D6D9DC; }
-  :is(#c-root, html) body .c-page.tof-frame--sheet > .c-nav { position: static; flex: none; min-height: 48px; height: 48px; margin: 0; padding: 0 16px; background: transparent; box-shadow: inset 0 -1px 0 var(--c-line); }
-  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav) { margin-left: 16px; margin-right: 16px; }
-  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav):first-of-type { margin-top: 16px; }
+  /* QA D3: the bar is the title's positioning box (relative, not static), so the shell's absolutely centred pushed-page
+   * title sits on Cancel's line inside the sheet instead of against the fixed sheet's bottom edge (over Send). */
+  :is(#c-root, html) body .c-page.tof-frame--sheet > .c-nav { position: relative; flex: none; min-height: 48px; height: 48px; margin: 0; padding: 0 16px; background: transparent; box-shadow: inset 0 -1px 0 var(--c-line); }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav):not(.tof-form) { margin-left: 16px; margin-right: 16px; }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav):not(.tof-form):first-of-type { margin-top: 16px; }
+  /* The sheet's header hairline always shows (the shell's scroll-linked header line starts transparent). */
+  :is(#c-root, html) body .app-shell[data-nv-corp] .c-page.tof-frame--sheet > .c-nav { box-shadow: inset 0 -1px 0 var(--c-line); transition: none; }
+  /* The title on Cancel's 44px line: the bar is 48px and Cancel is centred in it, 2px from its bottom. Cancel is short, so
+   * the title keeps 80px each side (not the shell's 104px for a 96px back link) and stays whole at 320px. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page.tof-frame--sheet > .c-nav > .c-nav__title { bottom: 2px !important; max-width: calc(100% - 160px) !important; }
+  /* Behind the sheet: the kit's page background under the 24% dim (the Requests hub is its own route and reads, so it
+   * isn't drawn behind this one). */
+  html body .app-shell :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet) { background: var(--c-bg, #F5F6F6) !important; }
   :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-form { flex: 1 1 auto; min-height: 0; margin: 0; padding: 16px 16px 0; overflow-y: auto; overscroll-behavior: contain; }
   :is(#c-root, html) body .c-page.tof-frame--sheet .tof-foot { position: sticky; bottom: 0; margin: 0 -16px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: #FFFFFF; box-shadow: inset 0 1px 0 var(--c-line); }
   :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-done, :is(#c-root, html) body .c-page.tof-frame--sheet > .c-card { margin-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }

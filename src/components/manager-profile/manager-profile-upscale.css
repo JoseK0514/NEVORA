@@ -1,7 +1,10 @@
 /* Owner and Manager Profile, Nov 1 upscale (review M5, B13): every row is a label, a grey value and a chevron.
  * Face ID (Passkeys off a phone) is one such row; it opens to the same explanation, list and actions, which no longer
  * repeat its title. "Alerts on this phone" says "device" on tablets and desktop. */
-:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row { box-shadow: inset 0 1px 0 #EDEEEF; }
+/* QA D11: one 1px line between rows. The row above already draws its bottom line (::after) and Privacy and terms draws
+ * its own top line (premium-profile.css), so the Face ID row draws neither; when it opens, the line stays above Privacy. */
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row { box-shadow: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > summary.q-row::after { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section > .nv-card__head { display: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys__row > .pk-section { grid-template-columns: minmax(0, 1fr); row-gap: 12px; padding-top: 4px; box-shadow: none; }
 :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-other { display: none; }

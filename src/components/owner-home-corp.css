@@ -21,9 +21,11 @@
 :is(#c-root, html) .c-home .c-home__gap--wait { min-height: 64px; }
 :is(#c-root, html) .c-home .c-home__gap--wait .c-row__title { color: var(--c-grey); }
 :is(#c-root, html) .c-home .c-home__setup { box-shadow: inset 0 1px 0 var(--c-line); }
-/* R6: the next open shifts after the first, desktop and tablet only. */
+/* R6: the next open shifts after the first, tablet and desktop only (from 768px, below). */
 :is(#c-root, html) .c-home .c-home__more { display: none; }
 :is(#c-root, html) .c-home .c-home__more > li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* QA D6: tablets from 768px (iPad portrait, 820) list every open shift too, not only desktop from 900px. */
+@media (min-width: 768px) { :is(#c-root, html) .c-home .c-home__more { display: block; } }
 /* The setup line, Payday's step and the open shift's place and need; on a narrow phone they take a second line instead of being cut. */
 :is(#c-root, html) .c-home :is(.c-home__setup, .c-home__payday, .c-home__gap) .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 /* Payday's rows follow each other with the kit's divider. */
@@ -45,7 +47,6 @@
   :is(#c-root, html) .c-page.c-home:not(:has(> #home-payday)) > #home-needs-you { grid-column: 1 / -1; }
   :is(#c-root, html) .c-home #home-working .c-home__stat { min-height: 76px; padding: 14px 20px; }
   :is(#c-root, html) .c-home #home-working .c-home__gap { padding: 12px 20px; }
-  :is(#c-root, html) .c-home .c-home__more { display: block; }
   :is(#c-root, html) .c-home .c-home__more > li > .c-row { padding-left: 20px; padding-right: 20px; }
 }
 @media (min-width: 1100px) {

@@ -644,6 +644,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
 @media (max-width: 767px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__row { display: flex !important; align-items: center !important; min-height: 30px !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__actions { margin-block: -7px !important; }
+  /* QA D15: a 44px button overhangs the 30px row by 7px, so the subtitle under it starts 11px down (4px clear of the
+   * button) instead of the usual 4px. Schedule lays its title out on its own grid and keeps its spacing. */
+  :is(#c-root, html) .c-page .c-title:not(.c-sched > .c-title):has(> .c-title__row .c-title__actions .c-btn) > .c-title__sub { margin-top: 11px; }
 }
 @media (min-width: 768px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__row { display: flex !important; align-items: center !important; min-height: 40px !important; }

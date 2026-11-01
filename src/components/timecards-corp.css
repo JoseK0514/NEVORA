@@ -106,7 +106,8 @@
   :is(#c-root, html) .c-tc-desk .c-tc-idle__open:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 6px; }
   /* Narrower cards: Role goes first, then Breaks (both are in the sheet); Person and Recorded always stay. */
   @container (max-width: 760px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="role"] { display: none; } }
-  @container (max-width: 600px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="breaks"] { display: none; } }
+  /* Breaks folds away only under 520px, so the table beside the open panel at 1280 (548px) keeps every column. */
+  @container (max-width: 520px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="breaks"] { display: none; } }
 
   /* The reviewed batch: one white card above the table, buttons at their own width. */
   :is(#c-root, html) .c-tc-desk .c-tc-dbulk { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
@@ -131,6 +132,8 @@
  * 1279 it lies over the table's right side (the names stay in view). Below 1024 the modal sheet and its scrim stay. */
 @media (min-width: 761px) {
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td { background: var(--c-tint); }
+  /* QA D13: #6B7075 on the #E6F1EF tint is 4.33:1, so the open row's grey text (status, breaks, units) is #4A4F54. */
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] { --c-grey: var(--c-ink2); }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] > td:first-child { box-shadow: inset 2px 0 0 var(--c-teal); }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr[data-open] + tr > td { box-shadow: none; }
 }
@@ -140,6 +143,13 @@
     box-shadow: inset 1px 0 0 var(--c-ring, #E3E5E6); }
   :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[data-inspector]:has(.c-tc-sheet) > .q-sheet__in { min-height: 100%; }
 }
+/* QA D2: the page makes room for the 420px panel from 1024px up, so no column sits under it. The shell's frame rule
+ * (corp-shell.css, .c-page:not(.c-embed) with !important padding and a 1040px max-width) has to be outranked here. The
+ * content ends 24px before the panel: 420 + 24 minus the frame's own right padding (8px below 1280, 32px from 1280),
+ * and never grows past the usual 992px column (100% - 1016px = the frame minus 992 and the 24px left padding). */
+@media (min-width: 1024px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame .c-page.c-tc-desk:has(dialog.q-sheet[data-inspector][open]) { max-width: none !important; padding-right: max(436px, calc(100% - 1016px)) !important; }
+}
 @media (min-width: 1280px) {
-  :is(#c-root, html) .c-page.c-tc-desk:has(dialog.q-sheet[data-inspector][open]) { max-width: none; margin-left: 0; margin-right: 0; padding-right: 420px; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .page-frame .c-page.c-tc-desk:has(dialog.q-sheet[data-inspector][open]) { padding-right: max(412px, calc(100% - 1016px)) !important; }
 }

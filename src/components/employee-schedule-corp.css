@@ -84,11 +84,13 @@
 :is(#c-root, html) .c-esched .c-esched__confirm .c-row__title--b { white-space: normal; }
 /* Upscale (Nov 1) S12: the week strip. Past days are quiet (no fill; grey numbers, darker where a shift was worked), shift
  * days still ahead keep the tint, today is ringed, and the selected day (the chosen day, else today) is solid teal. */
-:is(#c-root, html) .c-esched .c-esched__days .is-past b { background: transparent; color: #A7ACB1; font-weight: 500; }
-:is(#c-root, html) .c-esched .c-esched__days .is-past.is-work b { color: #6B7075; font-weight: 600; }
+/* QA D9: past numbers pass AA on white: #6B7075/500 (not worked, 4.9:1) and #4A4F54/600 (worked, 8.1:1). */
+:is(#c-root, html) .c-esched .c-esched__days .is-past b { background: transparent; color: #6B7075; font-weight: 500; }
+:is(#c-root, html) .c-esched .c-esched__days .is-past.is-work b { color: #4A4F54; font-weight: 600; }
 :is(#c-root, html) .c-esched .c-esched__days .is-today b { background: transparent; color: var(--c-teal); font-weight: 600; box-shadow: inset 0 0 0 1.5px var(--c-teal); }
 :is(#c-root, html) .c-esched .c-esched__days .is-today.is-work b { background: var(--c-tint); }
-:is(#c-root, html) .c-esched .c-esched__days .is-on b, :is(#c-root, html) .c-esched .c-esched__days .is-on.is-today b { background: var(--c-teal); color: #FFFFFF; font-weight: 600; box-shadow: none; }
+/* QA D4: the selected day is white on teal whatever else it is (a past worked day's grey rule is more specific than .is-on). */
+:is(#c-root, html) .c-esched .c-esched__days :is(.is-on, .is-on.is-today, .is-on.is-past.is-work) b { background: var(--c-teal); color: #FFFFFF; font-weight: 600; box-shadow: none; }
 :is(#c-root, html) .c-esched .c-esched__days .is-on small { color: var(--c-ink); font-weight: 600; }
 :is(#c-root, html) .c-esched .c-esched__days .is-today small { color: var(--c-teal); font-weight: 600; }
 :is(#c-root, html) .c-esched .c-esched__days b { transition: background-color var(--c-dur-ui, 120ms) ease-out, color var(--c-dur-ui, 120ms) ease-out; }

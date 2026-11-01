@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CorpButtonLink, CorpCard, CorpPage, CorpTitle } from "@/components/corp/corp";
+import { RootChrome } from "@/components/root-chrome";
 
 export const metadata: Metadata = { title: "Page not found" };
 
@@ -8,6 +9,8 @@ export const metadata: Metadata = { title: "Page not found" };
  * /app address reaches it through app/app/[...missing]; a page that calls notFound() reaches it too. */
 export default function NotFound() {
   return <CorpPage className="c-page--narrow c-notfound" labelledBy="not-found-title">
+    {/* QA D16: on a phone the 404 keeps a tab page's header (wordmark, bell, avatar) like the other top-level pages. */}
+    <RootChrome />
     <CorpTitle id="not-found-title" title="This page doesn’t exist" />
     <CorpCard as="div">
       <div className="c-error-card">

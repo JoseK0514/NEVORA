@@ -154,6 +154,9 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
 @media (max-width: 767px) {
   :is(#c-root, html) .c-sched > .c-title { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; }
   :is(#c-root, html) .c-sched > .c-title > .c-title__row, :is(#c-root, html) .c-sched > .c-title .c-title__actions { display: contents; }
+  /* corp-shell's phone rule (every tab's title row is one 30px flex line, !important) would otherwise win here and put
+   * "All locations" mid-row; only Schedule's row dissolves into this grid, so the shell rule still holds on other tabs. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page.c-sched > .c-title > .c-title__row { display: contents !important; }
   :is(#c-root, html) .c-sched > .c-title h1 { grid-row: 1; grid-column: 1; }
   :is(#c-root, html) .c-sched > .c-title .c-sched-actions { grid-row: 1; grid-column: 2; justify-self: end; }
   :is(#c-root, html) .c-sched > .c-title .c-sched-actions .c-icon-btn { margin-block: -7px; }
@@ -168,10 +171,10 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   :is(#c-root, html) .c-sched .c-title__row { min-height: 40px; }
   :is(#c-root, html) .c-sched .c-title__actions { gap: 8px; }
   /* The "…" as a 40×40 outlined button beside the 40px location select (a 44px hit area on touch). */
-  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more { position: relative; width: 40px; height: 40px; margin: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); }
-  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more::before { content: ""; position: absolute; inset: -2px; }
-  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more:hover { background: #F2F4F4; }
-  :is(#c-root, html) .c-page .c-sched .c-title__actions .c-icon-btn.c-sched-more .c-ic { width: 20px; height: 20px; }
+  :is(#c-root, html) .c-page.c-sched .c-title__actions .c-icon-btn.c-sched-more { position: relative; width: 40px; height: 40px; margin: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); }
+  :is(#c-root, html) .c-page.c-sched .c-title__actions .c-icon-btn.c-sched-more::before { content: ""; position: absolute; inset: -2px; }
+  :is(#c-root, html) .c-page.c-sched .c-title__actions .c-icon-btn.c-sched-more:hover { background: #F2F4F4; }
+  :is(#c-root, html) .c-page.c-sched .c-title__actions .c-icon-btn.c-sched-more .c-ic { width: 20px; height: 20px; }
 }
 
 /* Open shifts in the day card: the whole row opens Find cover, with the kit's chevron; "Open shift" is ink. */
@@ -183,10 +186,12 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
 @media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-sched .c-sched-week__today:hover { background: #F2F4F4; } }
 
 /* The grid at any content width from 760px (M3/M8): the name column 168–220px, the seven days share the rest (84px and
- * up); each day header carries its hours under the date; chips have the controls' radius 8. */
+ * up); each day header carries its hours under the date; chips have the controls' radius 8.
+ * The name column is sized in container units, not %: under table-layout:fixed Chrome treats a %-and-px clamp() as auto,
+ * which shared the width equally across all eight columns. */
 @container c-sched (min-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid { min-width: 0; }
-  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: clamp(168px, 22%, 220px); }
+  html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner { width: clamp(168px, 22cqi, 220px); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid thead th > .cm-grid__dayhours { display: block; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; font-variant-numeric: tabular-nums; color: var(--c-grey); }
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
