@@ -14,7 +14,8 @@
 :is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { flex: none; width: 100%; }
 :is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { margin-top: 16px; padding: 0; }
+  /* The 16px inset stays on wide screens too, so the cards line up with the title like the other Settings pages. */
+  :is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { margin-top: 16px; }
   :is(#c-root, html) .c-tablets .c-tablets__foot { flex-direction: row; justify-content: flex-end; }
   :is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { width: auto; min-width: 140px; }
   :is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; }

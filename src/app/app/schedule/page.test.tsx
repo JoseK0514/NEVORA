@@ -189,6 +189,8 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  f.dashboard={availabilitySubmissionSummary:{submittedEmployees:0,eligibleEmployees:8},latestRevision:{affectedLocationId:'main',createdAt:'2026-10-02T15:00:00Z'},
   managerActions:[{id:'COVERAGE:a',type:'COVERAGE_GAP',priority:'URGENT',title:'Coverage gap at Main Office',detail:'',href:repair,locationId:'main'},
    {id:'COVERAGE:setup',type:'COVERAGE_GAP',priority:'REVIEW',title:'Staffing setup needed at West Office',detail:'',href:'/app/schedule/settings',locationId:'west'}]};
+ // The open shift is still to come (Find cover is offered only before its day is over), so the clock is pinned before it.
+ vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(new Date('2026-10-04T12:00:00Z'));
  const output=(await html()).replace(/ /g,' ');
  // Release 1 (board G-O-Schedule): the week card says the week and how much of it the team can see.
  expect(output).toContain('class="c-sched-week__label">Oct 5 – 11<');
@@ -202,6 +204,12 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  // The planning panel (through Build and publish), copy week, templates and add shift stay reachable.
  expect(output).toContain('plan=1#schedule-planning');expect(output).toContain('Copy previous week');
  expect(output).toContain('/app/schedule/templates?week=2026-10-05');expect(output).toMatch(/href="\/app\/schedule\/new\?week=2026-10-05&amp;date=2026-10-\d\d"/);
+ // Once that day is over the phone day says "Not filled" with no action, as the desktop grid does (Owner review, Nov 1).
+ vi.setSystemTime(new Date('2026-10-13T12:00:00Z'));
+ const past=(await html()).replace(/ /g,' ');
+ expect(past).toContain('<span class="c-meta">Not filled</span>');
+ expect(past).not.toContain('>Find cover</a>');
+ vi.useRealTimers();
 });
 it('v3: a failed dashboard read leaves availability and open shifts out instead of showing zero',async()=>{
  f.role='MANAGER';f.locations=[{id:'main',shortName:'Main Office'}];f.dashboard=null;
