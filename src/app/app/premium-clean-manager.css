@@ -16,6 +16,11 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
   font-family: var(--cm-sys);
 }
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) :is(button, input, select, textarea, h1, h2, h3, p, a, span, li, td, th, label, dt, dd) { font-family: var(--cm-sys); }
+/* Owner premium A1 (Oct 31): one typeface. Under the corporate shell the "system" stack is the kit's Inter stack, so every
+ * rule above that names --cm-sys renders in Inter, the same family as the kit pages, the sidebar and the phone header. */
+html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) {
+  --cm-sys: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
 /* Monograms and status words are shared by both widths. */
 html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .nv-avatar { background: linear-gradient(180deg, #A6ABB9, #858994); color: #fff; font-weight: 600; letter-spacing: .2px; box-shadow: none; border: 0; }

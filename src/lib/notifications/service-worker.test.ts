@@ -225,9 +225,9 @@ describe('portal service worker source', () => {
     expect(h.windows[0].navigate).not.toHaveBeenCalled(); expect(h.self.clients.openWindow).not.toHaveBeenCalled();
   });
   it('updates retain the normal waiting lifecycle and clean only owned cache versions', async () => {
-    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('fuel-portal-public-v2', new Map()); h.stores.set('fuel-portal-public-v3', new Map()); h.stores.set('another-app-v1', new Map());
+    const h = harness(); h.stores.set('fuel-portal-public-v0', new Map()); h.stores.set('fuel-portal-public-v1', new Map()); h.stores.set('fuel-portal-public-v2', new Map()); h.stores.set('fuel-portal-public-v3', new Map()); h.stores.set('fuel-portal-public-v4', new Map()); h.stores.set('another-app-v1', new Map());
     await h.dispatch('install'); await h.dispatch('activate'); await h.message('UPDATE_WAITING');
-    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('fuel-portal-public-v1')).toBe(false); expect(h.stores.has('fuel-portal-public-v2')).toBe(false); expect(h.stores.has('fuel-portal-public-v3')).toBe(false); expect(h.stores.has('fuel-portal-public-v4')).toBe(true); expect(h.stores.has('another-app-v1')).toBe(true);
+    expect(h.stores.has('fuel-portal-public-v0')).toBe(false); expect(h.stores.has('fuel-portal-public-v1')).toBe(false); expect(h.stores.has('fuel-portal-public-v2')).toBe(false); expect(h.stores.has('fuel-portal-public-v3')).toBe(false); expect(h.stores.has('fuel-portal-public-v4')).toBe(false); expect(h.stores.has('fuel-portal-public-v5')).toBe(true); expect(h.stores.has('another-app-v1')).toBe(true);
     expect(h.self.skipWaiting).not.toHaveBeenCalled(); expect(h.self.clients.claim).not.toHaveBeenCalled(); expect(h.self.registration.unregister).not.toHaveBeenCalled(); expect(h.windows[0].navigate).not.toHaveBeenCalled();
     expect(h.windows[0].postMessage).toHaveBeenCalledWith({ version: 1, type: 'UPDATE_WAITING' });
   });
