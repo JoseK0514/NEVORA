@@ -55,32 +55,59 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(out.match(/>Find cover</g)).toHaveLength(1);
     expect(out.match(/class="c-btn( c-btn--md)?"/g)).toHaveLength(1);
   });
-  it("names the next payday with its period and the timecards still to approve", () => {
-    expect(html()).toContain("Payday tomorrow");
-    expect(html()).toContain("Oct 26 – Nov 1 · 2 timecards to approve");
+  it("names the next payday and says honestly where its timecards stand", () => {
+    const open = [item("card1", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-26&end=2026-11-01#timecard-a" }),
+      item("card2", "TIMECARD", "REVIEW", "timekeeping", { href: "/app/timecards?start=2026-10-26&end=2026-11-01#timecard-b" })];
+    // Before the period ends, approvals aren't open: the card says when they open, not "2 timecards to approve".
+    const before = html({ timecards: open, timecardsReady: true, businessDay: "2026-10-30" }).replace(/\u00a0/g, " ");
+    expect(before).toContain("Payday tomorrow");
+    expect(before).toContain("Oct 26 – Nov 1 · Approvals open after Sunday");
+    expect(before).not.toContain("to approve");
+    expect(before).not.toMatch(/>Review</);
+    // Once it has ended, the count and Review.
+    const after = html({ timecards: open, timecardsReady: true, businessDay: "2026-11-02" }).replace(/\u00a0/g, " ");
+    expect(after).toContain("Oct 26 – Nov 1 · 2 timecards to approve");
+    expect(after).toMatch(/>Review</);
+    // P3: never "approved" — not while loading, not when the read failed, not when there are simply none.
+    const loading = html({ value: null, connection: "loading", timecards: [], timecardsReady: false, businessDay: "2026-10-30" });
+    expect(loading).toContain("Oct 26 – Nov 1 · Checking timecards…");
+    const failed = html({ value: null, connection: "unavailable", timecards: [], timecardsReady: false, businessDay: "2026-10-30" });
+    expect(failed).toContain(">Oct 26 – Nov 1 · Timecards aren’t available right now<");
+    const none = html({ timecards: [], timecardsReady: true, businessDay: "2026-11-02" });
+    expect(none).toContain("Oct 26 – Nov 1 · No timecards waiting");
+    for (const out of [before, after, loading, failed, none]) expect(out).not.toMatch(/approved/i);
     expect(html({ nextPay: null, timecards: [] })).not.toContain('aria-label="Payday"');
   });
-  it("lists Things to do with the shared count, one row per kind, each opening where the decision is made", () => {
+  it("lists only decisions under Things to do, so the shift counts in Today don't show twice", () => {
     const out = html();
-    expect(out).toContain("Things to do (5)");
+    expect(out).toContain(">Things to do<");
+    expect(out).not.toContain("Things to do (");
     expect(out).toContain('aria-label="Time off requests, 1"');
     expect(out).toContain('aria-label="Shift swaps, 2"');
     expect(out).toContain('href="/app/exchange"');
-    expect(out).toContain('aria-label="Shifts with no clock-in, 1"');
+    expect(out).not.toContain("Shifts with no clock-in");
+    expect(out).not.toContain('aria-label="Open shifts');
     expect(out).not.toContain("TIMECARD title");
   });
   it("says so while loading or offline, offers Try again when a read fails, and never shows a false zero", () => {
     expect(html({ value: null, connection: "loading" })).toContain("Checking what needs you…");
     expect(html({ value: null, connection: "unavailable", onRetryActions: () => {} })).toContain(">Try again<");
+    expect(html({ value: null, connection: "unavailable", onRetryActions: () => {} })).toContain('class="c-error-card"');
     expect(html({ value: null, connection: "offline", offline: true })).not.toContain(">Try again<");
     const failedToday = html({ today: { state: "unavailable", reason: "read_failed" } as Today, onRetryToday: () => {} });
-    expect(failedToday).toContain("Who’s on shift isn’t available right now.");
+    expect(failedToday).toContain("Who’s on shift isn’t available");
     expect(failedToday).not.toContain("c-stat__value");
     expect(html({ value: null })).toContain('<dd class="c-stat__value">…</dd>');
+    // P7: while Today loads, the card already has its final shape (the three counts as "…").
+    const loadingToday = html({ today: null, value: null, connection: "loading" });
+    expect(loadingToday).toContain('aria-busy="true"');
+    expect(loadingToday.match(/<dd class="c-stat__value">…<\/dd>/g)).toHaveLength(3);
   });
-  it("shows the all-set line when nothing needs the Owner", () => {
+  it("shows the all-set card when nothing needs the Owner, and says where shift items are when only those wait", () => {
     const out = html({ value: needsYou([], "2026-10-30", []) });
-    expect(out).toContain("Things to do (0)");
-    expect(out).toContain("You’re all set. Nothing needs you right now.");
+    expect(out).toContain("You’re all set</b>");
+    expect(out).toContain("Nothing needs you right now.");
+    const shiftsOnly = html({ value: needsYou([items[0]], "2026-10-30", []) });
+    expect(shiftsOnly).toContain("No requests waiting</b>");
   });
 });

@@ -101,9 +101,9 @@ type Props = {
 
 const tabs: Array<{ id: ManagerDashboardView; label: string }> = [
   { id: "overview", label: "Overview" },
-  { id: "attendance", label: "Attendance" },
-  { id: "team", label: "Team overview" },
-  { id: "activity", label: "Schedule activity" },
+  { id: "attendance", label: "Who’s working" },
+  { id: "team", label: "Hours this week" },
+  { id: "activity", label: "Activity" },
 ];
 
 function dashboardHref(
@@ -234,9 +234,10 @@ function PremiumOverview(props: Props) {
 }
 
 const viewTitle: Record<Exclude<ManagerDashboardView, 'overview'>, { title: string; summary: string }> = {
-  attendance: { title: 'Attendance', summary: 'Clock-ins today and corrections to review.' },
-  team: { title: 'Team overview', summary: 'Hours and availability by person.' },
-  activity: { title: 'Schedule activity', summary: 'Publications and changes.' },
+  // Owner premium (A3): one name per place, the names the pages use (Who's working, Hours this week, Activity).
+  attendance: { title: 'Who’s working', summary: 'Clock-ins today and corrections to review.' },
+  team: { title: 'Hours this week', summary: 'Hours and availability by person.' },
+  activity: { title: 'Activity', summary: 'Publications and changes.' },
 };
 
 /** Home's other views (Phase 7, IS-9): the band, a Back to Home, and the views as pills on the band. */

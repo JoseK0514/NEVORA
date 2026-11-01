@@ -33,7 +33,7 @@ it("says when clock-ins are loading or unavailable and never shows a false empty
   expect(html({})).toContain("Checking who’s clocked in…");
   expect(html({ monitor: { state: "unavailable", reason: "read_failed" } })).toContain("Clock-ins aren’t available right now.");
   expect(html({})).not.toContain("No one is clocked in");
-  expect(html({ monitor: monitor([]) })).toContain("No one is clocked in right now.");
+  expect(html({ monitor: monitor([]) })).toContain("No one is clocked in right now</b><span class=\"c-empty__body\">People appear here when they clock in.</span>");
   expect(html({ monitor: monitor([]), today: { state: "unavailable", reason: "read_failed" } as Today, onRetry: () => {} })).toContain(">Try again<");
 });
 

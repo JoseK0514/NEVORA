@@ -281,7 +281,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
   </CorpCard>
   <CorpCard id="ins-attendance" label="Attendance">
    <CorpStats items={[
-    {label:'Late clock-ins',value:report.attendance.state==='ready'||late?late:'—',tone:late?'red':undefined},
+    {label:'Late clock\u2011ins',value:report.attendance.state==='ready'||late?late:'—',tone:late?'red':undefined},
     {label:'Cover filled',value:cover.observedCoverageRequests?`${cover.completedCoverageRequests} of ${cover.observedCoverageRequests}`:'—'},
     {label:'Time off',value:offDays?`${offDays} d`:'0'},
    ]}/>
@@ -289,12 +289,13 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
   <CorpCard id="ins-days" label="Hours by day" aside={<span className="c-ins__aside">{`${quietHours(recorded.toString())} total`}</span>}>
    {days&&days.some(day=>(day.minutes??0)>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
     {days.map(day=><span key={day.date} className="c-ins__col">
-     {days.length<=7?<small>{day.minutes===null?'':Math.round(day.minutes/60)}</small>:null}
-     {day.minutes===null?null:<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>}
+     {/* Visual-craft J: a day with no recorded time gets no bar and no "0", only the baseline; days to come get nothing. */}
+     {days.length<=7?<small>{day.minutes?Math.round(day.minutes/60):''}</small>:null}
+     {day.minutes===null?null:day.minutes>0?<i style={{height:`${Math.round(day.minutes/most*100)}%`}}/>:<i className="c-ins__zero"/>}
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
    </div><ul className="c-sr" aria-label="Recorded time by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {formatRecordedHours((BigInt(day.minutes!)*MINUTE_NS).toString())}</li>)}</ul></>
-    :<CorpBody><p className="c-ins__state">No recorded time in this period.</p></CorpBody>}
+    :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">
     <summary>How these are counted<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
     <ul>{definitions.map(d=><li key={d}>{d}</li>)}</ul>

@@ -18,7 +18,7 @@ export default async function InboxPage({ searchParams }: { searchParams?: Promi
   if (!isManagerRole(session.role)) redirect("/app/requests/hub");
   const workspace = await getWorkspace();
   const weekStart = weekStartFor(businessDate(new Date(), workspace.timeZone));
-  // ?view=more: More to review, the items Things to do lists but doesn't count (Home and the sidebar count the rest).
+  // ?view=more: Later and past, the items Things to do lists but doesn't count (Home and the sidebar count the rest).
   const view = (await searchParams)?.view === "more" ? "more" : "today";
   return <ManagerInboxCorp weekStart={weekStart} actorId={session.id} timeZone={workspace.timeZone} coverageFirst={session.role === "OWNER"} view={view} />;
 }

@@ -55,8 +55,8 @@ it('the clean Overview is "Today", drops the tab row, and Home\'s own views stil
   expect(html).toContain('Things to do');
   expect(html).not.toContain('Team tools');
   const team = renderToStaticMarkup(<ManagerDashboard {...previewManagerHome} view="team"/>);
-  // Release 1: Team overview (Hours this week) is a kit page with a Back to Team.
-  expect(team).toContain('class="c-page c-teamweek"');
+  // Release 1: Hours this week is a kit page with a Back to Team.
+  expect(team).toContain('class="c-page c-teamweek c-page--narrow"');
   expect(team).toMatch(/<a class="c-nav__back" href="\/app\/employees">/);
 });
 

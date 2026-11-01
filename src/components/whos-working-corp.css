@@ -11,3 +11,12 @@
  * and focused in its final place (IS-RC-ATTENDANCE-RECOVERY-01, carried over from the earlier attendance view). A failed or
  * focused review keeps its recovery visible. */
 :is(#c-root, html) .c-who .c-who__review:has(.attendance-review[data-attendance-state="loading"]):not(:focus-within) :is(.attendance-review-footer, .attendance-review > details, .manager-corrections, .manager-corrections ~ *) { display: none; }
+/* Owner premium (Oct 31): every tap answers (phone P4) — rows darken while pressed; hover on a pointer. Colour only. */
+:is(#c-root, html) .c-who a.c-row, :is(#c-root, html) .c-who button.c-row { -webkit-tap-highlight-color: transparent; transition: background-color 200ms ease-out; }
+@media (hover: hover) { :is(#c-root, html) .c-who :is(a, button).c-row:hover { background: #F7F8F8; } }
+:is(#c-root, html) .c-who :is(a, button).c-row:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) .c-who .c-who__more:active { opacity: .55; }
+/* A narrow phone: a row's detail takes a second line instead of being cut ("Review flagged clock-ins and time corrections"). */
+@media (max-width: 389px) {
+  :is(#c-root, html) .c-who .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}

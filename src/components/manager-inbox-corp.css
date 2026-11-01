@@ -1,7 +1,26 @@
 /* Things to do (board O-Inbox): the kit's cards and rows; only the status line is local. */
 :is(#c-root, html) .c-todo .c-todo__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-todo .c-card__body > .c-todo__state + .c-btn { margin-top: 12px; }
-/* Narrow phones: "‹ Things to do" and "More to review" share the header row instead of overlapping. */
+/* Owner premium (A5): one card per job; its kinds follow each other with the kit's row divider between them. */
+:is(#c-root, html) .c-todo .c-todo__kind + .c-todo__kind > .c-rows > li:first-child > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+/* A row's detail names its kind and place; on a narrow phone it takes a second line instead of being cut. */
+@media (max-width: 389px) {
+  :is(#c-root, html) .c-todo .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+}
+/* In-row counts are neutral (Jose, Oct 31): grey fill, ink text; teal stays on the sidebar total and the one primary action.
+ * The kit's token takes over when it lands. */
+:is(#c-root, html) .c-todo .c-badge { background: var(--c-badge-neutral-bg, #EDEEEF); color: var(--c-badge-neutral-ink, #1A1C1E); }
+/* The request lists and Later and past: quiet links under the cards, not a fourth card and not a number. */
+:is(#c-root, html) .c-todo .c-todo__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 20px; margin-top: 4px; }
+:is(#c-root, html) .c-todo .c-todo__links > a { display: inline-flex; align-items: center; min-height: 44px; color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600;
+  -webkit-tap-highlight-color: transparent; transition: opacity 150ms ease-out; }
+:is(#c-root, html) .c-todo .c-todo__links > a:active { opacity: .55; transition: none; }
+@media (hover: hover) { :is(#c-root, html) .c-todo .c-todo__links > a:hover { color: var(--c-ink); text-decoration: underline; text-underline-offset: 3px; } }
+/* Every tap answers (phone P4): rows darken while pressed; hover on a pointer. Colour only, so reduced motion keeps it. */
+:is(#c-root, html) .c-todo a.c-row { -webkit-tap-highlight-color: transparent; transition: background-color 200ms ease-out; }
+@media (hover: hover) { :is(#c-root, html) .c-todo a.c-row:hover { background: #F7F8F8; } }
+:is(#c-root, html) .c-todo a.c-row:active { background: #EDEEEF; transition: none; }
+/* Narrow phones: "‹ Things to do" and "Later and past" share the header row instead of overlapping. */
 @media (max-width: 374px) {
   :is(#c-root, html) .c-todo .c-nav { grid-template-columns: auto minmax(0, 1fr) auto; }
   :is(#c-root, html) .c-todo .c-nav__title { max-width: none; }
