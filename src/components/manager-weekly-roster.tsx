@@ -254,7 +254,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
         <span className={redKey === open.id ? "c-row__title c-row__title--b c-sched-row__open" : "c-row__title c-row__title--b"}>Open shift</span>
         <span className="c-row__detail"><span>{open.location || "No one assigned"}</span></span>
       </span>
-      <Link className="c-link c-link--l c-sched-row__cover" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>
+      {/* A day that's over can't be covered (as on the desktop grid): its open shift reads "Not filled", with no action. */}
+      {!openAlertable ? <span className="c-meta">Not filled</span>
+        : <Link className="c-link c-link--l c-sched-row__cover" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>}
     </div></li> })),
   ].sort((a, b) => a.start.localeCompare(b.start));
   const SHOWN_CORP = 5;

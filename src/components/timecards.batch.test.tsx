@@ -10,6 +10,7 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
  useEffect:(effect:()=>void|(()=>void))=>{if(!host.mounted)host.effects.push(effect);},
 }));
 vi.mock('./clean/top-bar-slot',()=>({useTopBarSlot:()=>null}));
+vi.mock('next/navigation',()=>({useSearchParams:()=>null}));
 import {Timecards} from './timecards';
 import {QuietSheet} from './quiet/quiet-sheet';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
@@ -366,4 +367,24 @@ it('R10: an open period reads In progress, totals the week and keeps the tools o
  expect(rendered).toContain('>Time exports<');expect(rendered).toContain('>Time corrections<');
  expect(rendered.indexOf('>Time exports<')).toBeGreaterThan(rendered.indexOf('</table>'));
  expect(rendered).not.toContain('c-tc-bar');
+});
+it('says how many ready cards have no time and shows each reviewed card’s recorded time (Codex inspection, Approve N ready)',async()=>{
+ const closed={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:'2026-09-22T12:00:00Z',rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:'2026-09-22T12:00:00Z',breaks:[]};
+ const timed=card('E1');
+ vi.stubGlobal('fetch',async(path:string)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[closed]}},card('E2'),card('OWNER')]});throw Error('No command expected');});
+ await mount();const mixed=html();
+ expect(mixed).toContain('Approve 2 ready');
+ expect(mixed).toContain('2 ready · 1 with no time');
+ expect(mixed).toContain(' · 4 h recorded');
+ enterSelect();check('Select all eligible timecards');click('Review selected timecards');
+ const reviewed=html();
+ expect(reviewed).toContain('PRIVATE E1 · 4 h recorded · Revision 0');
+ expect(reviewed).toContain('PRIVATE E2 · No time · Revision 0');
+ expect(commands).toEqual([]);
+});
+it('says “no time recorded” once when no ready card has time',async()=>{
+ vi.stubGlobal('fetch',async(path:string)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[card('E1'),card('E2'),card('OWNER')]});throw Error('No command expected');});
+ await mount();const rendered=html();
+ expect(rendered).toContain('2 ready · no time recorded');
+ expect(rendered).not.toMatch(/0 min recorded/);
 });

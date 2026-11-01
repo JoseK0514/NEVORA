@@ -5,8 +5,10 @@ import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
 import type {OwnerReviewRequestsResult} from '../lib/clocker/review-requests.server';
 export function ClockerOwnerRequests({actorId,timeZone,onSelect}:{actorId:string;timeZone:string;onSelect:(reference:string)=>void}){
  const [state,setState]=useState<OwnerReviewRequestsResult|null>(null),[loading,setLoading]=useState(true),cursor=useRef<string|undefined>(undefined),controller=useRef<ReturnType<typeof createPrivateSnapshotController<OwnerReviewRequestsResult>>|null>(null);
+ // Reliability R-05: a routine renewal keeps the current list (and the reader's place and focus) on screen; the
+ // controller still clears it the moment it expires, access ends or the window is left.
  useEffect(()=>{
-  const c=createPrivateSnapshotController<OwnerReviewRequestsResult>(s=>{setState(s.refreshing?null:s.snapshot);setLoading(s.refreshing);},async signal=>{
+  const c=createPrivateSnapshotController<OwnerReviewRequestsResult>(s=>{const shown=s.refreshing&&s.snapshot?.state!=='ready'?null:s.snapshot;setState(shown);setLoading(s.refreshing&&!shown);},async signal=>{
    const response=await fetch('/api/owner/clocker-recovery',{method:'POST',credentials:'same-origin',cache:'no-store',signal,headers:{'content-type':'application/json','x-nevora-clocker-recovery':'1','x-nevora-actor':actorId},body:JSON.stringify({operation:'requests',limit:50,...(cursor.current?{cursor:cursor.current}:{})})});
    if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'};if(!response.ok)throw Error();return response.json();
   },value=>{const v=value as OwnerReviewRequestsResult;if(v?.state==='unavailable')return v;if(v?.state!=='ready'||!Array.isArray(v.requests)||v.requests.length>100||!Number.isFinite(v.validForMs)||v.validForMs<1||v.validForMs>15000||!Number.isFinite(Date.parse(v.observedAt))||v.nextCursor!==null&&typeof v.nextCursor!=='string'||v.requests.some(r=>!r||typeof r.requestId!=='string'||typeof r.requesterName!=='string'||typeof r.deviceName!=='string'||typeof r.locationName!=='string'||typeof r.requestedAt!=='string'||!Number.isFinite(Date.parse(r.requestedAt))||r.commandId!==null&&typeof r.commandId!=='string'))throw Error();return v;},reason=>({state:'unavailable',reason}),()=> 'read_failed');

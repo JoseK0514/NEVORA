@@ -86,7 +86,9 @@
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:first-child td { box-shadow: none; }
   :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr { transition: background-color 120ms ease-out; }
   @media (hover: hover) { :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:hover { background: #F7F8F8; } }
-  :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="person"] { width: 100%; }
+  /* Reliability N1: the Person column takes the room that's left and a long name ends in an ellipsis (its full text
+   * stays the button's name), so Recorded, Breaks and Status always fit the card, e.g. at 1024px with the sidebar. */
+  :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="person"] { width: 100%; max-width: 0; }
   :is(#c-root, html) .c-tc-desk .c-tc-table .c-tc-num { text-align: right; white-space: nowrap; }
   :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="status"] { min-width: 168px; white-space: nowrap; }
   :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="role"] { white-space: nowrap; }
