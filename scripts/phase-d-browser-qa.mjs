@@ -238,7 +238,8 @@ try{
     await management.setOffline(false);await mp.evaluate(()=>window.dispatchEvent(new Event('online')));await mp.locator('#ins-labor').waitFor();
     await mp.route('**/api/reports',route=>route.fulfill({status:403,contentType:'application/json',body:'{"state":"unavailable"}'}));// The board's report refreshes itself; its only refresh control is in the printable copy, so the next protected read is the
     // Owner choosing another period.
-    await mp.getByRole('group',{name:'Report period',exact:true}).filter({has:mp.getByRole('button',{name:'This week',exact:true})}).getByRole('button',{name:'This week',exact:true}).click();await mp.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await mp.locator('#ins-labor').count(),0);assert.equal(await mp.locator('main').getByText(/Avery Period QA/).count(),0);checked(engine+': report authorization-loss clearing');
+    // R13: one period control per width; at this desktop width it is the period menu.
+    await mp.locator('.c-ins__tools .cm-insights__picker').click();await mp.locator('#report-period-menu').getByRole('button',{name:'This week so far',exact:true}).click();await mp.getByRole('heading',{name:'Your session ended',exact:true}).waitFor();assert.equal(await mp.locator('#ins-labor').count(),0);assert.equal(await mp.locator('main').getByText(/Avery Period QA/).count(),0);checked(engine+': report authorization-loss clearing');
     await lp.goto(app.url+'/app/reports');await lp.waitForURL(u=>u.pathname==='/app');checked(engine+': Lead denied reports');
     await mp.bringToFront();currentPage=mp;const corrections=mp.locator('main .manager-corrections');let releaseQueue;await mp.route('**/api/manager/time-corrections',route=>new Promise(resolve=>{releaseQueue=()=>route.continue().then(resolve);}));
     // Corporate Who's working (board O-OnShift): time corrections sit behind the "Time corrections" row; #review opens it.
