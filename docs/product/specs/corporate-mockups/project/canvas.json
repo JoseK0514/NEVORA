@@ -1,0 +1,627 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-26T03:40:00Z"
+ },
+ "title": "NEVORA corporate · all pages",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "C-Employee.dc.html": {
+   "x": 0,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Home"
+  },
+  "G-E-Schedule.dc.html": {
+   "x": 470,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Schedule"
+  },
+  "E-ShiftDetail.dc.html": {
+   "x": 940,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Shift"
+  },
+  "E-SwapSheet.dc.html": {
+   "x": 1410,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Swap"
+  },
+  "E-CoverSheet.dc.html": {
+   "x": 1880,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Offer for cover"
+  },
+  "E-CantWorkSheet.dc.html": {
+   "x": 2350,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Can't work"
+  },
+  "E-OpenShifts.dc.html": {
+   "x": 2820,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Open shifts"
+  },
+  "E-Availability.dc.html": {
+   "x": 3290,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Availability"
+  },
+  "E-Calendar.dc.html": {
+   "x": 3760,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Calendar"
+  },
+  "G-E-Time.dc.html": {
+   "x": 4230,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Time · before shift"
+  },
+  "E-TimeOnClock.dc.html": {
+   "x": 4700,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Time · on the clock"
+  },
+  "E-CorrectionSheet.dc.html": {
+   "x": 5170,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Fix my time"
+  },
+  "E-PastTimecards.dc.html": {
+   "x": 5640,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Past timecards"
+  },
+  "E-TimecardDay.dc.html": {
+   "x": 6110,
+   "y": 300,
+   "w": 390,
+   "h": 844,
+   "title": "Timecard day"
+  },
+  "G-E-Pay.dc.html": {
+   "x": 0,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Pay"
+  },
+  "E-Paycheck.dc.html": {
+   "x": 470,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Paycheck"
+  },
+  "E-PaycheckDetails.dc.html": {
+   "x": 940,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Paycheck details"
+  },
+  "E-PayHistory.dc.html": {
+   "x": 1410,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Pay history"
+  },
+  "G-E-Requests.dc.html": {
+   "x": 1880,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Requests"
+  },
+  "E-TimeOffSheet.dc.html": {
+   "x": 2350,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Request time off"
+  },
+  "E-TimeOffDetail.dc.html": {
+   "x": 2820,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Time off"
+  },
+  "E-Updates.dc.html": {
+   "x": 3290,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Updates"
+  },
+  "E-UpdateDetail.dc.html": {
+   "x": 3760,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Update"
+  },
+  "E-Notifications.dc.html": {
+   "x": 4230,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Notifications"
+  },
+  "E-NotificationSettings.dc.html": {
+   "x": 4700,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Alerts"
+  },
+  "E-More.dc.html": {
+   "x": 5170,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "More"
+  },
+  "E-Profile.dc.html": {
+   "x": 5640,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Profile"
+  },
+  "E-DeleteAccount.dc.html": {
+   "x": 6110,
+   "y": 1564,
+   "w": 390,
+   "h": 844,
+   "title": "Delete account"
+  },
+  "L-Home.dc.html": {
+   "x": 0,
+   "y": 2828,
+   "w": 390,
+   "h": 844,
+   "title": "Lead · Home"
+  },
+  "L-MessageTeam.dc.html": {
+   "x": 470,
+   "y": 2828,
+   "w": 390,
+   "h": 844,
+   "title": "Lead · Message team"
+  },
+  "C-Owner.dc.html": {
+   "x": 0,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Home"
+  },
+  "O-OnShift.dc.html": {
+   "x": 470,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Who's working"
+  },
+  "O-Inbox.dc.html": {
+   "x": 940,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Things to do"
+  },
+  "O-RequestDetail.dc.html": {
+   "x": 1410,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Time off request"
+  },
+  "G-O-Schedule.dc.html": {
+   "x": 1880,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Schedule"
+  },
+  "O-AddShift.dc.html": {
+   "x": 2350,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Add shift"
+  },
+  "O-EditShift.dc.html": {
+   "x": 2820,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Edit shift"
+  },
+  "O-FindCover.dc.html": {
+   "x": 3290,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Find cover"
+  },
+  "O-BuildPublish.dc.html": {
+   "x": 3760,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Build and publish"
+  },
+  "O-Activity.dc.html": {
+   "x": 4230,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Activity"
+  },
+  "O-ScheduleRules.dc.html": {
+   "x": 4700,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Scheduling rules"
+  },
+  "O-Templates.dc.html": {
+   "x": 5170,
+   "y": 4092,
+   "w": 390,
+   "h": 844,
+   "title": "Week templates"
+  },
+  "G-O-Time.dc.html": {
+   "x": 0,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Timecards"
+  },
+  "O-TimecardDetail.dc.html": {
+   "x": 470,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Timecard"
+  },
+  "O-CorrectionDetail.dc.html": {
+   "x": 940,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Missed clock-out"
+  },
+  "G-O-Payroll.dc.html": {
+   "x": 1410,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Payroll"
+  },
+  "O-PayrollReview.dc.html": {
+   "x": 1880,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Review payroll"
+  },
+  "O-PayrollFix.dc.html": {
+   "x": 2350,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Fix before payroll"
+  },
+  "O-PayrollSettings.dc.html": {
+   "x": 2820,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Payroll settings"
+  },
+  "O-TimeExports.dc.html": {
+   "x": 3290,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Time exports"
+  },
+  "G-O-Team.dc.html": {
+   "x": 3760,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Team"
+  },
+  "O-Person.dc.html": {
+   "x": 4230,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Person"
+  },
+  "O-PersonAccess.dc.html": {
+   "x": 4700,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Access and sign-in"
+  },
+  "O-AddEmployee.dc.html": {
+   "x": 5170,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Add employee · 1 of 2"
+  },
+  "O-AddEmployeePay.dc.html": {
+   "x": 5640,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Add employee · 2 of 2"
+  },
+  "O-EditEmployee.dc.html": {
+   "x": 6110,
+   "y": 5356,
+   "w": 390,
+   "h": 844,
+   "title": "Edit employee"
+  },
+  "O-More.dc.html": {
+   "x": 0,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "More"
+  },
+  "O-Locations.dc.html": {
+   "x": 470,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "Locations"
+  },
+  "O-Positions.dc.html": {
+   "x": 940,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "Positions"
+  },
+  "O-Breaks.dc.html": {
+   "x": 1410,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "Break types"
+  },
+  "O-ClockerDevices.dc.html": {
+   "x": 1880,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "Clocker tablets"
+  },
+  "O-Insights.dc.html": {
+   "x": 2350,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "Insights"
+  },
+  "O-ComposeUpdate.dc.html": {
+   "x": 2820,
+   "y": 6620,
+   "w": 390,
+   "h": 844,
+   "title": "New update"
+  },
+  "M-Home.dc.html": {
+   "x": 0,
+   "y": 7884,
+   "w": 390,
+   "h": 844,
+   "title": "Home"
+  },
+  "M-NoAccess.dc.html": {
+   "x": 470,
+   "y": 7884,
+   "w": 390,
+   "h": 844,
+   "title": "Waiting for access"
+  },
+  "P-SignIn.dc.html": {
+   "x": 0,
+   "y": 9148,
+   "w": 390,
+   "h": 844,
+   "title": "Sign in"
+  },
+  "P-Activate.dc.html": {
+   "x": 470,
+   "y": 9148,
+   "w": 390,
+   "h": 844,
+   "title": "Activate"
+  },
+  "P-Forgot.dc.html": {
+   "x": 940,
+   "y": 9148,
+   "w": 390,
+   "h": 844,
+   "title": "Reset password"
+  },
+  "P-ClockerKiosk.dc.html": {
+   "x": 1410,
+   "y": 9148,
+   "w": 390,
+   "h": 844,
+   "title": "Clocker tablet"
+  }
+ },
+ "order": [
+  "C-Employee.dc.html",
+  "G-E-Schedule.dc.html",
+  "E-ShiftDetail.dc.html",
+  "E-SwapSheet.dc.html",
+  "E-CoverSheet.dc.html",
+  "E-CantWorkSheet.dc.html",
+  "E-OpenShifts.dc.html",
+  "E-Availability.dc.html",
+  "E-Calendar.dc.html",
+  "G-E-Time.dc.html",
+  "E-TimeOnClock.dc.html",
+  "E-CorrectionSheet.dc.html",
+  "E-PastTimecards.dc.html",
+  "E-TimecardDay.dc.html",
+  "G-E-Pay.dc.html",
+  "E-Paycheck.dc.html",
+  "E-PaycheckDetails.dc.html",
+  "E-PayHistory.dc.html",
+  "G-E-Requests.dc.html",
+  "E-TimeOffSheet.dc.html",
+  "E-TimeOffDetail.dc.html",
+  "E-Updates.dc.html",
+  "E-UpdateDetail.dc.html",
+  "E-Notifications.dc.html",
+  "E-NotificationSettings.dc.html",
+  "E-More.dc.html",
+  "E-Profile.dc.html",
+  "E-DeleteAccount.dc.html",
+  "L-Home.dc.html",
+  "L-MessageTeam.dc.html",
+  "C-Owner.dc.html",
+  "O-OnShift.dc.html",
+  "O-Inbox.dc.html",
+  "O-RequestDetail.dc.html",
+  "G-O-Schedule.dc.html",
+  "O-AddShift.dc.html",
+  "O-EditShift.dc.html",
+  "O-FindCover.dc.html",
+  "O-BuildPublish.dc.html",
+  "O-Activity.dc.html",
+  "O-ScheduleRules.dc.html",
+  "O-Templates.dc.html",
+  "G-O-Time.dc.html",
+  "O-TimecardDetail.dc.html",
+  "O-CorrectionDetail.dc.html",
+  "G-O-Payroll.dc.html",
+  "O-PayrollReview.dc.html",
+  "O-PayrollFix.dc.html",
+  "O-PayrollSettings.dc.html",
+  "O-TimeExports.dc.html",
+  "G-O-Team.dc.html",
+  "O-Person.dc.html",
+  "O-PersonAccess.dc.html",
+  "O-AddEmployee.dc.html",
+  "O-AddEmployeePay.dc.html",
+  "O-EditEmployee.dc.html",
+  "O-More.dc.html",
+  "O-Locations.dc.html",
+  "O-Positions.dc.html",
+  "O-Breaks.dc.html",
+  "O-ClockerDevices.dc.html",
+  "O-Insights.dc.html",
+  "O-ComposeUpdate.dc.html",
+  "M-Home.dc.html",
+  "M-NoAccess.dc.html",
+  "P-SignIn.dc.html",
+  "P-Activate.dc.html",
+  "P-Forgot.dc.html",
+  "P-ClockerKiosk.dc.html"
+ ],
+ "notes": {
+  "row0": {
+   "x": 0,
+   "y": 20,
+   "text": "Employee · shifts and time",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row1": {
+   "x": 0,
+   "y": 1284,
+   "text": "Employee · pay, requests and account",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row2": {
+   "x": 0,
+   "y": 2548,
+   "text": "Lead (Employee screens plus today's team)",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row3": {
+   "x": 0,
+   "y": 3812,
+   "text": "Owner · today and schedule",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row4": {
+   "x": 0,
+   "y": 5076,
+   "text": "Owner · time, payroll and team",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row5": {
+   "x": 0,
+   "y": 6340,
+   "text": "Owner · company settings (company-wide Manager sees these without payroll settings)",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row6": {
+   "x": 0,
+   "y": 7604,
+   "text": "Location Manager (Ana Colón · Condado + Old San Juan · no payroll)",
+   "kind": "title1",
+   "maxW": 6500
+  },
+  "row7": {
+   "x": 0,
+   "y": 8868,
+   "text": "Sign in and Clocker",
+   "kind": "title1",
+   "maxW": 6500
+  }
+ },
+ "designSystems": []
+}

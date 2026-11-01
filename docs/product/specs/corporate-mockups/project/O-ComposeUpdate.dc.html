@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New Update</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F5F6F6; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+
+  <div aria-hidden="true">
+    <header style="background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding: 52px 16px 12px">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 44px">
+        <span style="display: inline-flex; align-items: center; gap: 2px; margin-left: -6px; color: #0B6E69; font-size: 15px; font-weight: 600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>More</span>
+        <span style="font-size: 17px; line-height: 22px; font-weight: 600">Updates</span>
+        <span></span>
+      </div>
+    </header>
+    <div style="padding: 16px 16px 0">
+      <div style="border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6">
+        <div style="display: flex; align-items: center; height: 44px; padding: 0 16px; box-shadow: inset 0 -1px 0 #EDEEEF; font-size: 13px; font-weight: 600; color: #4A4F54">Sent</div>
+        <div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px">
+          <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">New closing checklist</span><span style="font-size: 13px; color: #6B7075">Oct 26 · 18 of 26 confirmed</span></span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; box-shadow: inset 0 1px 0 #EDEEEF">
+          <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Holiday hours for Thu, Nov 19</span><span style="font-size: 13px; color: #6B7075">Oct 23 · 24 of 26 confirmed</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(26,28,30,0.40)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; left: 0; right: 0; top: 356px; bottom: 0; border-radius: 16px 16px 0 0; background: #FFFFFF">
+    <div aria-hidden="true" style="width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: #D5D8DA"></div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 52px; padding: 0 6px; box-shadow: inset 0 -1px 0 #EDEEEF">
+      <button type="button" style="justify-self: start; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 400 15px Inter, sans-serif">Cancel</button>
+      <h2 id="sheet-title" style="margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; white-space: nowrap">New update</h2>
+      <button type="submit" form="update-form" style="justify-self: end; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 600 15px Inter, sans-serif">Send</button>
+    </div>
+
+    <form id="update-form" style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span id="to-label" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">To</span>
+        <div role="group" aria-labelledby="to-label" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); height: 36px; padding: 2px; border-radius: 8px; background: #EDEEEF; box-sizing: border-box">
+          <button type="button" aria-pressed="true" style="border: 0; border-radius: 6px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.08); color: #1A1C1E; font: 600 13px Inter, sans-serif">All locations · 26</button>
+          <button type="button" aria-pressed="false" style="border: 0; border-radius: 6px; background: none; color: #4A4F54; font: 600 13px Inter, sans-serif">Pick locations</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="update-title" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Title</label>
+        <input id="update-title" type="text" value="Fall menu training" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="update-message" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Message</label>
+        <textarea id="update-message" rows="4" style="box-sizing: border-box; width: 100%; height: 104px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 2px #0B6E69; padding: 12px; font: 400 15px/20px Inter, sans-serif; color: #1A1C1E; resize: none">Training is Mon, Nov 2 at 3:00 PM at Condado. It’s paid time. Please bring your apron.</textarea>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 56px">
+        <span style="flex: 1; display: flex; flex-direction: column"><span id="confirm-label" style="font-size: 15px; font-weight: 600">Ask people to confirm</span><span style="font-size: 13px; color: #6B7075">You’ll see who has read it</span></span>
+        <button type="button" role="switch" aria-checked="true" aria-labelledby="confirm-label" style="width: 51px; height: 44px; flex: none; border: 0; padding: 0; background: none; display: grid; place-items: center"><span aria-hidden="true" style="position: relative; display: block; width: 51px; height: 31px; border-radius: 16px; background: #0B6E69"><span style="position: absolute; top: 2px; left: 22px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0,0,0,0.08)"></span></span></button>
+      </div>
+    </form>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -12,6 +12,17 @@ export type CorpRequestRow = {key: string; href: string; title: string; detail: 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 /** "Thu, Nov 12" */
 export const requestDay = (date: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
+const monthDay = (date: string) => new Intl.DateTimeFormat('en-US', {timeZone: 'UTC', month: 'short', day: 'numeric'}).format(utcDay(date));
+
+/** A time-off request's dates and length, the same words on phone and desktop: "Fri, Nov 13 · All day",
+ * "Nov 11 – 12 · 2 days", "Oct 30 – Nov 2 · 4 days" or "Fri, Nov 13 · Part of day". */
+export function timeOffDetail(request: {startDate: string; endDate: string; startTime?: string | null; endTime?: string | null}) {
+  const sameMonth = request.startDate.slice(0, 7) === request.endDate.slice(0, 7);
+  const range = request.startDate === request.endDate ? requestDay(request.startDate)
+    : `${monthDay(request.startDate)} – ${sameMonth ? Number(request.endDate.slice(8)) : monthDay(request.endDate)}`;
+  const days = Math.round((utcDay(request.endDate).getTime() - utcDay(request.startDate).getTime()) / 86_400_000) + 1;
+  return `${range} · ${request.startTime && request.endTime ? 'Part of day' : days === 1 ? 'All day' : `${days} days`}`;
+}
 
 /** One vocabulary for a time-off request's pill, the same as on Time off. */
 export function timeOffPill(status: string): {tone: Tone; text: string} {

@@ -73,6 +73,9 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .q-btn--danger { background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #B42318 !important; font-weight: 500; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-bs { height: 32px; padding: 0 12px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: 0; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-bs--go { background: #0B6E69; box-shadow: none; color: #FFFFFF !important; }
+/* Codex B-04: a compact button that stands alone in a row keeps its 32px look but takes taps over 44px. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs--hit { position: relative; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs--hit::after { content: ""; position: absolute; inset: -6px 0; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-acts { padding: 0 16px 12px 60px; }
 
 /* Text blocks. */
