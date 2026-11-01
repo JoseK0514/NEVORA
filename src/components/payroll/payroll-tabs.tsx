@@ -1,17 +1,15 @@
 import Link from 'next/link';
 import type { UserRole } from '@/lib/domain';
 import type { PayrollCapabilities } from '@/lib/payroll/contracts';
-import { sectionTabsFor } from '@/lib/navigation';
+import { payrollTabsFor } from '@/lib/navigation';
 
 export type PayrollTab = { href: string; label: string };
 
 /** Owner premium (structure P3, visual-craft D): Payroll's own pages as tabs under the title. Timecards is not one of
  * them (it belongs to Time, and its tab moved the reader out of Payroll with no way back). The list and its access
- * rules come from the shell's section tabs, so a page appears here only where the shell already offered it. */
+ * rules are the ones the shell's retired "Time and pay" row used (navigation.ts payrollTabsFor). */
 export function payrollTabs(role: UserRole, payroll?: PayrollCapabilities): PayrollTab[] | null {
-  const group = sectionTabsFor(role, '/app/payroll-export', payroll);
-  const items = (group?.items ?? []).filter(item => item.href !== '/app/timecards').map(item => item.href === '/app/payroll' ? { ...item, label: 'Payroll' } : item);
-  return items.length > 1 ? items : null;
+  return payrollTabsFor(role, payroll);
 }
 
 /** 44px text tabs with a 2px teal line under the current one, on tablets and desktop (a phone reaches these pages from

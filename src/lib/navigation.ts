@@ -292,6 +292,21 @@ export type SectionTabGroup = { label: string; items: { href: string; label: str
 
 /** Pages that share one place in the navigation show tabs between each other.
  * Every tab is an existing URL; only destinations the role can open appear. */
+/** Owner premium (Oct 31): Payroll's own tabs under its title (Payroll · Time exports · Payroll settings), with the access
+ * rules the retired "Time and pay" row used. Timecards belongs to Time and is not one of them. A lone tab is no tab row. */
+export function payrollTabsFor(role: UserRole, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup["items"] | null {
+  if (role === "EMPLOYEE" || role === "LEAD") return null;
+  const modules = context.modules ?? ALL_MODULES_ON;
+  const authorized = new Set(navigationForRole(role, payroll, context).map(item => item.href));
+  if (payroll?.canConfigure) authorized.add("/app/settings/payroll");
+  const items = [
+    ...(authorized.has("/app/payroll") ? [{ href: "/app/payroll", label: "Payroll" }] : []),
+    { href: "/app/payroll-export", label: "Time exports" },
+    ...(payroll?.canConfigure ? [{ href: "/app/settings/payroll", label: "Payroll settings" }] : []),
+  ].filter(item => pathEnabled(item.href, modules) && (role !== "MANAGER" || authorized.has(item.href)));
+  return items.length > 1 ? items : null;
+}
+
 export function sectionTabsFor(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): SectionTabGroup | null {
   const pathname = path.split(/[?#]/, 1)[0];
   // v5 "One look" (approved Oct 24, 2026): an Employee's or Lead's pages switch views with segments and go back with the

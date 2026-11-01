@@ -389,6 +389,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const seg=<div className="c-seg c-tc-seg" role="group" aria-label="Week" ref={periodRef}>
       <button type="button" aria-pressed={periodName==='This week'} disabled={paused||busy||!!pending} onClick={()=>goTo(thisWeek)}>This week</button>
       <button type="button" aria-pressed={periodName==='Last week'} disabled={paused||busy||!!pending} onClick={()=>goTo(lastWeek)}>Last week</button>
+      {/* Owner premium (integration): older weeks stay one tap away (each tap goes one week further back). */}
+      <button type="button" aria-pressed={periodName===null} aria-label={periodName===null?`Earlier: ${rangeText(period)}. Show the week before`:'Earlier weeks'} disabled={paused||busy||!!pending} onClick={()=>goTo(shiftPeriod(periodName===null?period:lastWeek,-1))}>Earlier</button>
     </div>;
     // Board G-O-Time on every width: the period card says how many are approved (one size, "None approved yet" at zero),
     // with a progress bar and when approvals open. Once the period ends it offers "Review N ready" (the same batch).

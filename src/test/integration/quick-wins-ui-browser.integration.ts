@@ -73,7 +73,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
             if (path === '/app/timecards') {
               const folded = page.getByRole('button', { name: /people with no time yet/ });
               await folded.waitFor(); await folded.click();
-              await page.waitForFunction(() => [...document.querySelectorAll('.cm-tc-person')].some(element => element === document.activeElement));
+              await page.waitForFunction(() => [...document.querySelectorAll('.c-tc-person')].some(element => element === document.activeElement));
               await visit('/app/inbox');
               await visit('/app/timecards#timecard-QAOWNER');
               await page.getByRole('dialog').waitFor();
