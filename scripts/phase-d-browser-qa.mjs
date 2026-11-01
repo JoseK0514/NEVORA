@@ -262,7 +262,7 @@ try{
     await mp.bringToFront();currentPage=mp;const centerUrl=app.url+'/app/inbox',center=mp.locator('main .c-todo');let releaseActions;
     const readyInbox=()=>mp.waitForFunction(()=>['ready','clear'].includes(document.querySelector('main .c-todo [data-todo-state]')?.getAttribute('data-todo-state')));
     const todoCards=center.locator('section.c-card[id^="todo-"]'),todoRows=todoCards.locator('.c-rows a.c-row'),todoRow=href=>todoCards.locator('a.c-row[href="'+href+'"]');
-    // Things to do lists only what Home counts; the rest sits behind one counted "More to review" row (/app/inbox?view=more).
+    // Things to do lists only what Home counts; the rest sits behind one uncounted "Older items" row (/app/inbox?view=more).
     // The "Time off requests" and "Shift requests" rows are always-present links to the full lists, with no private data or count.
     const moreRow=center.locator('a.c-row[href="/app/inbox?view=more"]'),requestLists=['/app/requests','/app/exchange','/app/inbox?view=more'];
     const recheckInbox=()=>mp.evaluate(()=>window.dispatchEvent(new Event('nevora:time-correction-changed')));
@@ -278,20 +278,21 @@ try{
     const sum=cards=>cards.reduce((total,card)=>total+card.count,0);
     const cardCounts=await readCards();
     assert(cardCounts.every(card=>Number.isInteger(card.count)&&card.count>0));
-    const moreCount=await moreRow.count()?Number(await moreRow.locator('.c-row__value').innerText()):0;let moreCards=[];
-    if(moreCount){
-      await moreRow.click();await mp.waitForURL(u=>u.pathname==='/app/inbox'&&u.searchParams.get('view')==='more');await readyInbox();await mp.getByRole('heading',{name:'More to review',exact:true,level:1}).waitFor();
-      moreCards=await readCards();assert(moreCards.every(card=>Number.isInteger(card.count)&&card.count>0));assert.equal(sum(moreCards),moreCount,'More to review counts exactly the items on its page');
-      assert.deepEqual(moreCards.map(card=>card.id),['todo-corrections','todo-timecards','todo-plan','todo-earlier'].filter(id=>moreCards.some(card=>card.id===id)),'More to review follows the approved order');
+    // Round 2: Older items is a plain row with no number (it is never counted); its page still lists every item it holds.
+    const moreShown=await moreRow.count()>0;let moreCards=[];
+    if(moreShown){assert.equal(await moreRow.locator('.c-row__value').count(),0,'Older items shows no count');
+      await moreRow.click();await mp.waitForURL(u=>u.pathname==='/app/inbox'&&u.searchParams.get('view')==='more');await readyInbox();await mp.getByRole('heading',{name:'Older items',exact:true,level:1}).waitFor();
+      moreCards=await readCards();assert(moreCards.every(card=>Number.isInteger(card.count)&&card.count>0));
+      assert.deepEqual(moreCards.map(card=>card.id),['todo-corrections','todo-timecards','todo-plan','todo-earlier'].filter(id=>moreCards.some(card=>card.id===id)),'Older items follows the approved order');
       await mp.goto(centerUrl);await readyInbox();
     }
     (report.inboxVisibility??=[]).push({engine,cards:cardCounts,more:moreCards});
     const expectedTotal=inboxActions.items.length+(todaySource.state==='ready'?todaySource.missed.length:0);
-    assert.equal(sum(cardCounts)+sum(moreCards),expectedTotal,'Things to do and More to review count every current-week canonical action and current missed shift exactly once');
+    assert.equal(sum(cardCounts)+sum(moreCards),expectedTotal,'Things to do and Older items hold every current-week canonical action and current missed shift exactly once');
     // Owners see coverage first, then the approved card order.
     const order=['todo-open','todo-missed','todo-now','todo-time-off','todo-swaps','todo-cant-work','todo-requests','todo-corrections','todo-timecards'];
     assert.deepEqual(cardCounts.map(card=>card.id),order.filter(id=>cardCounts.some(card=>card.id===id)),'Cards follow the approved order');
-    // A row lives on Things to do when Home counts it, otherwise on More to review; either way exactly once.
+    // A row lives on Things to do when Home counts it, otherwise on Older items; either way exactly once.
     const viewOf=href=>{const today=cardCounts.flatMap(card=>card.hrefs).filter(item=>item===href).length,later=moreCards.flatMap(card=>card.hrefs).filter(item=>item===href).length;assert.equal(today+later,1,'One row for '+href);return today?'':'?view=more';};
     const correctionHref='/app?view=attendance#correction-'+encodeURIComponent(submittedBody.requestId),correctionView=viewOf(correctionHref);
     const timeOffRow=center.locator('#todo-time-off a.c-row[href*="requestId='+encodeURIComponent(timeOffId)+'"]');assert.equal(await timeOffRow.count(),1,'The private time off request has one row');
