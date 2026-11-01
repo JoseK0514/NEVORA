@@ -25,6 +25,7 @@ import type {EmployeeViewSnapshot,NotificationReviewState,NotificationActionStat
 import {filterNotifications,groupNotifications,notificationPresentation,type NotificationFilter} from '../lib/notification-inbox-view';
 import styles from './notification-inbox.module.css';
 import './notification-inbox-corp.css';
+import {CorpEmpty} from './corp/corp';
 import {KeepSelectedVisible} from './kit/keep-selected-visible';
 import {Freshness} from './kit/kit';
 
@@ -104,9 +105,8 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
        </Link>
       </li>;
      })}</ul>
-     :onMarkRead?<div className="c-page c-embed q-notif-empty"><div className="c-card c-empty--card" role="status">
-       <b className="c-empty__title">{filter==='unread'?'You’re all caught up':'No notifications yet'}</b>
-       <span className="c-empty__body">{filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'Requests, changes and alerts for you show up here.'}</span></div></div>
+     :onMarkRead?<div className="c-page c-embed q-notif-empty" role="status"><CorpEmpty title={filter==='unread'?'You’re all caught up':'No notifications yet'}
+       body={filter==='unread'?'Nothing unread. Earlier notifications stay under All.':'Requests, changes and alerts for you show up here.'}/></div>
      :<p className="q-empty q-first">{filter==='unread'?'You’re all caught up.':'No notifications yet.'}</p>}
     {readNotice&&readNotice.startsWith('We could not')?<p className="q-help" role="status">We couldn’t mark that one read.</p>:null}
     {!onMarkRead&&sorted.length?<p className="q-help">Opening one doesn’t complete it.</p>:null}

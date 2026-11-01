@@ -82,7 +82,7 @@ export default async function EmployeeProfilePage({
       <CorpTitle id="person-title" title={name} wide actions={canManageCore ? <CorpButtonLink href={`${base}?edit=1`} kind="secondary" size="sm">Edit</CorpButtonLink> : undefined} />
       <CorpCard id="person-who" label={`Employee ID ${employee.id}`} aside={employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpPill tone="neutral">Inactive</CorpPill>}>
         <div className="c-person__who">
-          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey large />
+          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
           <span className="c-row__main">
             <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).join(" · ")}</span>
             <span className="c-row__detail"><span>{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
