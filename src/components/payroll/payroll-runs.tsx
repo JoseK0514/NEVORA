@@ -294,9 +294,9 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     </div> : <p className="c-note c-note--center">An authorized payroll approver must approve this revision.</p>) : null}
     {approved ? <ApprovedNote run={run} names={names} /> : null}
     {approved && unpublished ? (capabilities.canApprove ? <div className="c-pay__approve">
-      <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>Make the approved statements available to their employees.</Check>
-      <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Publish employee statements</CorpButton>
-    </div> : <p className="c-note c-note--center">An authorized payroll approver must publish the employee statements.</p>) : null}
+      <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>Share the approved pay statements with each employee.</Check>
+      <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Share pay statements</CorpButton>
+    </div> : <p className="c-note c-note--center">An authorized payroll approver must share the pay statements.</p>) : null}
   </>;
 }
 

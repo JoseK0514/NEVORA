@@ -98,7 +98,7 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           await page.getByRole('button', { name: 'Search', exact: true }).click();
           const search = page.getByRole('combobox', { name: 'Search pages, people and places' });
           await search.fill('add shift');
-          await page.getByRole('option', { name: /Add a shift/ }).waitFor();
+          await page.getByRole('option', { name: /Add shift/ }).waitFor();
           await search.fill('approve time off');
           await page.getByRole('option', { name: /Review time-off requests/ }).waitFor();
           await page.keyboard.press('Escape');

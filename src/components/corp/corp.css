@@ -311,12 +311,12 @@
   --c-dur-press: 120ms; --c-dur-ui: 200ms; --c-dur-sheet: 360ms; --c-dur-sheet-out: calc(var(--c-dur-sheet) * 2 / 3);
   --c-ease: cubic-bezier(.32, .72, 0, 1);
   /* Round 2 tokens (R2, R3, R5, R11). Elevation: cards sit on a cool 7% ring with two soft layers; sheets, side panels and
-   * popovers one step up. Numbers: tabular figures, case-sensitive dashes and Inter cv11, in one place so the set can be
+   * popovers one step up. Numbers: tabular figures, and case-sensitive dashes, in one place so the set can be
    * tuned at once. Grey text for default states and for past items that must stay readable (#6B7075 is 4.98:1 on white,
    * 4.57:1 on the #F5F6F6 canvas). */
   --c-shadow-card: 0 0 0 1px rgb(16 24 32 / 0.07), 0 1px 2px rgb(16 24 32 / 0.05), 0 2px 8px -2px rgb(16 24 32 / 0.05);
   --c-shadow-pop: 0 0 0 1px rgb(16 24 32 / 0.06), 0 8px 24px -4px rgb(16 24 32 / 0.14);
-  --c-num-features: "tnum" 1, "case" 1, "cv11" 1;
+  --c-num-features: "tnum" 1, "case" 1;
   --c-meta: #6B7075; --c-past-ink: #6B7075; --c-ampm: #4A4F54;
   --c-gap-group: 32px; --c-gap-item: 12px;
 }

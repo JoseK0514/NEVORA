@@ -55,7 +55,7 @@ describe('source-aware payroll review presentation', () => {
     const html = render();
     expect(html).toContain('Statements not shared yet');
     expect(html).toContain('automatically');
-    expect(html).not.toContain('Publish employee statements');
+    expect(html).not.toContain('Share pay statements');
     expect(html).not.toContain('Prepare payment instructions');
     // Round 2 copy (R7): the correction row is named by what it does.
     expect(html).toContain('Fix this payroll');

@@ -211,8 +211,8 @@ try {
       const documents = (await fresh.json()).runs.find(run => run.id === fixture.runId).documents;
       assert(documents.some(document => document.sha256 === createHash('sha256').update(bytes).digest('hex')));
       pass('Private PDF downloads contain real PDF bytes and match immutable server SHA-256');
-      await page.getByRole('checkbox', { name: 'Make the approved statements available to their employees.', exact: true }).check();
-      await page.getByRole('button', { name: 'Publish employee statements', exact: true }).click();
+      await page.getByRole('checkbox', { name: 'Share the approved pay statements with each employee.', exact: true }).check();
+      await page.getByRole('button', { name: 'Share pay statements', exact: true }).click();
       await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       pass('Publication is a separate recorded action and worker stage');
@@ -233,8 +233,8 @@ try {
       const approvedCorrection = await correctionApproval; assert.equal(approvedCorrection.status(), 200, await approvedCorrection.text());
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       await page.getByRole('button', { name: 'Refresh', exact: true }).click(); await page.locator('.pw-document').first().waitFor();
-      await page.getByRole('checkbox', { name: 'Make the approved statements available to their employees.', exact: true }).check();
-      await page.getByRole('button', { name: 'Publish employee statements', exact: true }).click();
+      await page.getByRole('checkbox', { name: 'Share the approved pay statements with each employee.', exact: true }).check();
+      await page.getByRole('button', { name: 'Share pay statements', exact: true }).click();
       await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       const correctionRuns = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const correctedRun = (await correctionRuns.json()).runs.find(run => run.id === correctionReceipt.runId);
