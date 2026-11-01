@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add Employee</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F5F6F6; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+
+  <div aria-hidden="true">
+    <header style="background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding: 52px 16px 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+        <span role="img" aria-label="NEVORA Workforce" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 44px"><img src="assets/nevora-wordmark.png" alt="" style="display: block; height: 14px; width: auto; mix-blend-mode: multiply"><span aria-hidden="true" style="display: block; font-size: 9px; line-height: 12px; font-weight: 600; letter-spacing: 2.4px; margin-right: -2.4px; color: #6B7075; text-transform: uppercase">Workforce</span></span>
+        <span style="width: 32px; height: 32px; margin-right: 6px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; display: grid; place-items: center; font-size: 13px; font-weight: 600">CO</span>
+      </div>
+    </header>
+    <div style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 12px">
+      <div>
+        <div style="font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px">Team</div>
+        <div style="margin-top: 2px; font-size: 13px; color: #6B7075">26 people · 7 working now</div>
+      </div>
+      <div style="height: 48px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; display: flex; align-items: center; gap: 8px; padding: 0 12px; font-size: 15px; color: #6B7075"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>Search by name or position</div>
+      <div style="border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6">
+        <div style="display: flex; align-items: center; height: 44px; padding: 0 16px; box-shadow: inset 0 -1px 0 #EDEEEF; font-size: 13px; font-weight: 600; color: #4A4F54">People</div>
+        <div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px;">
+          <span style="width: 32px; height: 32px; flex: none; border-radius: 16px; background: #E6F1EF; color: #0B6E69; display: grid; place-items: center; font-size: 13px; font-weight: 600">AR</span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Alexandra Rivera</span><span style="font-size: 13px; color: #6B7075">Barista · Condado</span></span>
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; background: #E6F1EF; color: #0B6E69; font-size: 13px; font-weight: 600">Working</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; box-shadow: inset 0 1px 0 #EDEEEF;">
+          <span style="width: 32px; height: 32px; flex: none; border-radius: 16px; background: #EDEEEF; color: #4A4F54; display: grid; place-items: center; font-size: 13px; font-weight: 600">DK</span>
+          <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Dana Kim</span><span style="font-size: 13px; color: #6B7075">Barista · Condado</span></span>
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 11px; background: #EDEEEF; color: #4A4F54; font-size: 13px; font-weight: 600">Off</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(26,28,30,0.40)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="sheet-title" aria-describedby="sheet-step" style="position: absolute; left: 0; right: 0; top: 392px; bottom: 0; border-radius: 16px 16px 0 0; background: #FFFFFF">
+    <div aria-hidden="true" style="width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: #D5D8DA"></div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 52px; padding: 0 6px; box-shadow: inset 0 -1px 0 #EDEEEF">
+      <button type="button" style="justify-self: start; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 400 15px Inter, sans-serif">Cancel</button>
+      <div style="text-align: center"><h2 id="sheet-title" style="margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; white-space: nowrap">Add employee</h2><div id="sheet-step" style="font-size: 13px; line-height: 16px; color: #6B7075">Step 1 of 2</div></div>
+      <button type="submit" form="add-step-1" style="justify-self: end; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 600 15px Inter, sans-serif">Next</button>
+    </div>
+    <form id="add-step-1" style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="first-name" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">First name</label>
+          <input id="first-name" type="text" autocomplete="given-name" value="Gabriela" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="last-name" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Last name</label>
+          <input id="last-name" type="text" autocomplete="family-name" value="Méndez" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="phone" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Mobile phone</label>
+        <input id="phone" type="tel" autocomplete="tel" value="(787) 555-0187" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="email" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Email (optional)</label>
+        <input id="email" type="email" autocomplete="email" placeholder="name@example.com" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="role" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Role</label>
+          <div style="position: relative">
+            <select id="role" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 36px 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E; -webkit-appearance: none; appearance: none"><option selected>Employee</option><option>Lead</option><option>Manager</option></select>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4F54" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 16px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="location" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Location</label>
+          <div style="position: relative">
+            <select id="location" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 36px 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E; -webkit-appearance: none; appearance: none"><option>Condado</option><option>Old San Juan</option><option selected>Isla Verde</option><option>Hato Rey</option><option>Dorado</option></select>
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4F54" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 16px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
