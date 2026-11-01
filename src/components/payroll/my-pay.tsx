@@ -8,10 +8,11 @@ import type { PayrollStatementsResponse } from '@/lib/payroll/contracts';
 import Link from 'next/link';
 import { DownloadIcon } from '../signature/signature';
 import styles from './my-pay.module.css';
-import { QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from '../quiet/quiet';
+import { QuietHeader, QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { useEmployeeMobile } from '../employee-mobile/use-mobile';
 import { EmployeePayView } from '../employee-mobile/pay';
 import { CorpPayView } from '../employee-mobile/pay-corp';
+import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -84,22 +85,27 @@ export function MyPay({ nextPay = null, statement = null, document = null, corpo
   </QuietPage>;
 }
 
-/** Quiet (v4, approved Oct 23): My pay for Owners and Managers. The next payday as one lead line, then the statements. */
+/** My pay for Owners and Managers. Nov 1 upscale (review M4): on the kit's card pattern, a pushed page ("‹ More", My pay
+ * centred on a phone): a Payday card (the next payday and how far away it is), then a Statements card (each statement a
+ * row that downloads it, or the kit's empty state). Same statements read, refresh, download links and wording. */
 export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
   const { data, loading, error, reload } = usePayrollResource('/api/payroll/statements', readStatements);
   const statements = data ? [...data.statements].sort(newestFirst) : [];
   const days = nextPay?.daysUntil;
-  const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' }).format(utc(nextPay.payday)) : null;
-  return <QuietPage>
-    <QuietNav back={{ href: '/app/more', label: 'More' }} />
-    <QuietHeader title="My pay" />
-    {payday ? <div className="q-lead"><b>{`Next payday is ${payday}`}</b>{days !== undefined ? <i>{days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`}</i> : null}</div> : null}
-    <div className="q-grp" style={{ marginTop: payday ? 40 : 28 }}><h2 id="mp-statements">Statements</h2></div>
-    {loading ? <p className="q-empty" role="status">Loading…</p>
-      : error ? <div className="q-emptyblock" role="alert"><p className="q-empty">{error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'}</p>
-        <div className="q-emptyblock__action">{error === PAYROLL_SIGNED_OUT ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : <button type="button" className="q-btn q-btn--sec" onClick={() => void reload()}>Try again</button>}</div></div>
-      : statements.length ? <QuietList label="Statements">{statements.map(statement => <QuietRow key={statement.id} href={documentHref(statement)}
-          title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} />)}</QuietList>
-      : <p className="q-empty">No statements yet. Only you can see them.</p>}
-  </QuietPage>;
+  const payday = nextPay ? new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'short', month: 'short', day: 'numeric' }).format(utc(nextPay.payday)) : null;
+  const away = days === undefined ? undefined : days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`;
+  return <CorpPage className="c-mypay c-page--narrow" labelledBy="mypay-title">
+    <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
+    <CorpTitle id="mypay-title" title="My pay" wide />
+    {payday ? <CorpCard id="mypay-payday" label="Payday">
+      <CorpRows label="Payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
+    </CorpCard> : null}
+    {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
+      : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}
+        action={error === PAYROLL_SIGNED_OUT ? <CorpButtonLink href="/login" kind="neutral" size="md">Sign in</CorpButtonLink> : <button type="button" className="c-btn c-btn--neutral c-btn--md" onClick={() => void reload()}>Try again</button>} />
+      : <CorpCard id="mypay-statements" label="Statements">{statements.length
+        ? <CorpRows label="Statements">{statements.map(statement => <li key={statement.id}><CorpRow href={documentHref(statement)} native bold
+          title={`Payday ${formatDisplayDate(statement.payday)}`} detail={`${periodLabel(statement.period.startDate, statement.period.endDate)} · PDF`} label={`Download ${statement.filename}`} chevron /></li>)}</CorpRows>
+        : <div className="c-empty c-empty--card"><b className="c-empty__title">No statements yet</b><span className="c-empty__body">Only you can see them.</span></div>}</CorpCard>}
+  </CorpPage>;
 }

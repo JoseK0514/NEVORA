@@ -5,7 +5,10 @@
 /* R6: Today's figures are links. Label on top, the figure under it on one baseline across the three, even when a narrow
  * phone gives a label two lines. Hover and press use the kit's row colours; colour only, so reduced motion keeps them. */
 :is(#c-root, html) .c-home .c-home__stat { display: flex; flex-direction: column; justify-content: space-between; gap: 2px; min-height: 64px; color: inherit; }
-:is(#c-root, html) .c-home .c-home__stat > .c-stat__label { white-space: normal; overflow: visible; text-overflow: clip; }
+/* Nov 1 upscale: the labels are short enough ("Clocked in", "Missed", "Open shifts") to stay on one line at 320px. */
+:is(#c-root, html) .c-home .c-home__stat > .c-stat__label { white-space: nowrap; overflow: visible; text-overflow: clip; }
+/* "0 of 1": the figure in ink, its context quieter at body size. */
+:is(#c-root, html) .c-home .c-home__stat .c-home__of { font-size: 15px; line-height: 20px; font-weight: 500; letter-spacing: 0; color: var(--c-grey, #6B7075); }
 :is(#c-root, html) .c-home .c-home__stat > .c-stat__value { margin-top: 0; }
 :is(#c-root, html) .c-home a.c-home__stat { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color var(--c-dur-press, 120ms) ease-out; }
 @media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-home a.c-home__stat:hover { background: #F7F8F8; } }

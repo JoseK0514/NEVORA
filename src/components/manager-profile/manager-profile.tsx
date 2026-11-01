@@ -12,6 +12,7 @@ import { parseManagerProfile } from './contract';
 import { ManagerProfileLive } from './manager-profile-live';
 import { PasskeySection } from '@/components/passkeys/passkey-section';
 import { AccountPrivacyLinks } from '@/components/legal/account-privacy-links';
+import './manager-profile-upscale.css';
 
 /** Phase 3.5: the Owner and Manager Profile, laid out like the employee Profile (band, details, settings, Sign out).
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
@@ -46,7 +47,7 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
       }} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}
         {/* Codex B-01: the passkeys row is a list item like its neighbours; the item hides while passkeys are off. */}
-        <li className="pmp-passkeys"><PasskeySection /></li>
+        <li className="pmp-passkeys"><PasskeySection asRow /></li>
         <AccountPrivacyLinks variant="quiet" />
       </>} />
     </div>

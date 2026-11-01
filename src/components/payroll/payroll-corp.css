@@ -268,7 +268,7 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-page.c-pay > .c-pay__group + div { margin-top: 20px; }
 
 /* R1: the Up next figure at the key-figure size. */
-:is(#c-root, html) .c-payroll .c-payroll__next b { letter-spacing: -0.36px; }
+:is(#c-root, html) .c-payroll .c-payroll__next b { letter-spacing: -0.2px; }
 
 /* R3: the unpaid-periods notice is a white card. Its title is the screen's one red mark; the line under it is grey; its
  * action is the neutral secondary button (right on wider screens, full width under the text on phones). */
