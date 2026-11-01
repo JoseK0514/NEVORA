@@ -181,6 +181,12 @@ check had stopped counting (the cards became kinds with count chips), so it coun
 the chips again and still proves every action appears exactly once. The timecard sheet's name gained the person (above).
 A chromium-only pending `/app/more` RSC request once held the Profile idle check under load; it passed in every later run.
 
+After the gate, exact-head CI on draft PR #37 (`a9f0b342`) failed one job, `phase-d-attendance-ui`, at the D2 correction
+browser step: in WebKit the manager's foreground return refreshes the page and cancels Who's working's own
+`/api/manager/today` read, which WebKit reports as an access-control fetch failure. `448e7af1` (test only) classifies exactly
+that event (that stage, that read, loopback origin, no query) as a recorded navigation cancellation; every other runtime
+error stays fatal. Unit cases in `scripts/d2-runtime-failures.check.mjs`; local D2 re-run 282 checks; release engineering 169.
+
 ### Earlier candidate (`7b14776a`, Oct 31): history
 
 The full gate ran in one ordered pass on `f486a96fed567c760a81a29934b7b1129301562d` (Oct 31, 10:31–12:43 AST), clean tree throughout. Script and logs: Claude's scratchpad `gate5/` (summary below is complete).

@@ -5,7 +5,7 @@ import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
-import {safeD2Error,safeD2Text,unexpectedD2Runtime} from './d2-runtime-failures.mjs';
+import {safeD2Error,safeD2Text,unexpectedD2Runtime,d2NavigationCancellation} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
 import {clockText,fixForm,fixValues,hoursPage,whatToFix} from './employee-fix-time-browser.mjs';
 
@@ -225,6 +225,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await q("UPDATE employees SET role='OWNER' WHERE id='QAOWNER'");
   // Record all native errors. Only explicitly injected transport failures may be classified.
   await Promise.all(consoleDetails);
+  observations.navigationCancellations=observations.runtime.filter(d2NavigationCancellation);
   const unexpected=unexpectedD2Runtime(observations);
   observations.unexpectedRuntime=unexpected.runtime;observations.unexpectedConsole=unexpected.console;
   assert.deepEqual(observations.unexpectedRuntime,[]);
