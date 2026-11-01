@@ -19,7 +19,7 @@ async function go(page,path){const r=await page.goto(origin+path,{waitUntil:'net
 async function idle(page){await page.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();}
 async function photoCheck(portal,page,tablet,verify){
  await go(portal,'/app/settings/clocker/photos');
- await portal.getByLabel('Assistance contact',{exact:true}).fill('Fictional staging Owner desk');await portal.getByLabel('Assistance instructions',{exact:true}).fill('Fictional acceptance testing only. Ask the test Owner for an accessible alternative.');
+ {const help=portal.locator('details.c-photos__help');if(!await help.evaluate(e=>e.open))await help.locator(':scope > summary').click();}await portal.getByLabel('Assistance contact',{exact:true}).fill('Fictional staging Owner desk');await portal.getByLabel('Assistance instructions',{exact:true}).fill('Fictional acceptance testing only. Ask the test Owner for an accessible alternative.');
  await portal.getByRole('button',{name:'Save help details',exact:true}).click();await portal.getByRole('status').filter({hasText:'Help details saved'}).waitFor();
  const enabled=portal.getByRole('switch',{name:/^Take punch photos/});await enabled.check();
  for(const name of ['Start break','End break','Clock out'])await portal.getByRole('switch',{name,exact:true}).uncheck();

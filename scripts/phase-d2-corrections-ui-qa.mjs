@@ -81,7 +81,7 @@ async function geometry(page,selector,label,engine,width){
   const root=document.querySelector(rootSelector);
   if(!root)throw new Error('D2 surface missing: '+rootSelector);
   const rb=root.getBoundingClientRect();
-  const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';};
+  const visible=(el)=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden'&&!el.closest('.sr-only,.c-sr,.nv-sr,.q-sr');};
   const controls=[...root.querySelectorAll('button,a,input,select,textarea')].filter(visible).map((el)=>{
    const r=el.getBoundingClientRect();
    // A compact control may keep its look and carry a larger tap area as an absolutely positioned ::after (the kit's
