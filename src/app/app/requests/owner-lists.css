@@ -3,7 +3,13 @@
  * and an empty list said in a card instead of a bare line on the grey page. */
 :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > .q-empty { padding: 32px 16px; border-radius: 12px; background: #FFFFFF;
   box-shadow: 0 0 0 1px #E3E5E6; text-align: center; font-size: 15px; line-height: 20px; color: #6B7075; }
+/* R12: these lists use the kit's segmented control (.c-seg, whose thumb slides); it sits where the Quiet one did. */
+:is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) .c-seg { margin: 16px 16px 12px; }
+/* Jose (Oct 31): avatars in rows are neutral grey (#EDEEEF, ink 600 13px); teal stays for totals and the one action.
+ * (Kit request: the same on .q-av in corp-quiet-bridge.css for every Quiet list.) */
+:is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) .q-av:not(.q-av--open) { background: #EDEEEF; color: #1A1C1E; }
 @media (min-width: 768px) {
   :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > :not(.q-nav):not(.q-hd) { width: 100%; max-width: 720px; }
   :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) > .q-seg.q-seg.q-seg { max-width: 480px; }
+  :is(#c-root, html) .q-page:is(.q-timeoff, .q-shiftreq, .q-availability) .c-seg.c-seg { max-width: 480px; }
 }

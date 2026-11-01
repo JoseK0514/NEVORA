@@ -153,13 +153,13 @@ it('does not start the deferred first read after unmount',async()=>{
 });
 // Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
 // recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
-it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+it('counts Ready to approve as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
  const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
  const timed=card('E1');
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
  await mount();const rendered=html();
  expect(rendered).toContain('aria-label="Period overview"');
- expect(rendered).toContain('aria-label="Need review, 1"');
+ expect(rendered).toContain('aria-label="Ready to approve, 1"');
  expect(rendered).toContain('aria-label="Approved, 0"');
  expect(rendered).toContain('Missing clock-out');
  expect(rendered).toContain('Front desk');
@@ -349,4 +349,21 @@ it('resizing desktop → phone mid-review keeps the reviewed set and confirmatio
 it('phone: blur clears the selection and the reviewed private rows',async()=>{
  phoneWindow();transport();await mountAll();click('Select');check('Select PRIVATE E1');click('Review selected timecards');window.dispatchEvent(new Event('blur'));
  expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');
+});
+
+// Owner premium R10 (copy table 36–38): "In progress" only where the server's period_open issue proves the period hasn't
+// ended; a Total row from the same read; Time exports and Time corrections outside the table card.
+it('R10: an open period reads In progress, totals the week and keeps the tools out of the table card',async()=>{
+ const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:'2026-09-22T16:00:00Z',rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:'2026-09-22T16:00:00Z',breaks:[]};
+ const timed=card('E1');
+ vi.stubGlobal('fetch',async()=>Response.json({...ready(),observedAt:'2026-09-24T12:00:00Z',cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]}));
+ await mount();const rendered=html();
+ expect(rendered).toContain('In progress');
+ expect(rendered).toContain('aria-label="In progress, 1"');
+ expect(rendered).not.toContain('Needs review');
+ expect(rendered).toMatch(/<th scope="row" data-col="person">Total<\/th>/);
+ expect(rendered).toContain('8 h');
+ expect(rendered).toContain('>Time exports<');expect(rendered).toContain('>Time corrections<');
+ expect(rendered.indexOf('>Time exports<')).toBeGreaterThan(rendered.indexOf('</table>'));
+ expect(rendered).not.toContain('c-tc-bar');
 });

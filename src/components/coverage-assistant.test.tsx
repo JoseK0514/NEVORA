@@ -19,8 +19,8 @@ const render = (patch: Partial<CoverageAssistantProps> = {}) => renderToStaticMa
 it("keeps the suggested order, picks the best fit first and Assign opens that person's review", () => {
   const html = render();
   expect(html.indexOf("Avery Cruz")).toBeLessThan(html.indexOf("Blair Rivera"));
-  // Board O-FindCover: "Best fit first" as radios, the first chosen and marked Best fit; Assign is the one action.
-  expect(html).toContain(">Best fit first<"); expect(html).toContain("2\u00a0people free");
+  // Board O-FindCover: "Who can cover" as radios, the first chosen and marked Best fit; Assign is the one action.
+  expect(html).toContain(">Who can cover<"); expect(html).toContain("2\u00a0people free");
   expect(html).toContain('name="coverPerson" checked="" value="E1"'); expect(html).toContain('name="coverPerson" value="E2"/>');
   expect(html.indexOf(">Best fit<")).toBeLessThan(html.indexOf("Blair Rivera"));
   expect(html).toContain('href="/app/schedule/new?employeeId=E1&amp;start=08:00" class="c-btn c-btn--full" aria-label="Review shift for Avery Cruz"');
@@ -57,7 +57,7 @@ it("keeps signed replacement review links and selected requirements intact", () 
   });
   expect(html).toContain('href="/app/schedule/new?review=signed-review-token"');
   expect(html).toContain('href="/app/schedule/coverage?repair=current-position" class="c-row c-row--one" aria-current="true"');
-  expect(html).toContain(">Open shift<"); expect(html).toContain(">Not filled<"); expect(html).toContain("Operations · Mon, Oct 12 · Main Office · Shift lead needed");
+  expect(html).toContain(">Open shift<"); expect(html).not.toContain("Not filled"); expect(html).toContain("Operations · Mon, Oct 12 · Main Office · Shift lead needed");
   expect(html).toContain("Review replacement for Avery Cruz");
   // One need only: no chooser.
   expect(render({ repair: true, requirements: [{ label: "1 more person needed", href: "/app/schedule/coverage?repair=one", selected: true }] })).not.toContain("repair=one");
@@ -65,9 +65,11 @@ it("keeps signed replacement review links and selected requirements intact", () 
 
 it("labels overnight context and empty results without an assignment action", () => {
   // Dates and times are kept whole with no-break spaces; compare the words.
-  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/\u00a0/g, " ");
+  // R2: the time is the kit's CorpTime (thin and narrow spaces, AM/PM in spans), so compare the words without tags.
+  const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/[\u00a0\u2009\u202f]/g, " ").replace(/<span class="c-ampm">([^<]*)<\/span>/g, "$1");
   expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("10:00 PM – 6:00 AM");
-  expect(html).toContain("0 people"); expect(html).not.toContain("/app/schedule/new?");
+  // Owner premium R14 / copy table 29–31: words for zero, and no "lead" (the role is on hold).
+  expect(html).toContain("No one free"); expect(html).toContain("No one is free"); expect(html).not.toContain("lead, location"); expect(html).not.toContain("/app/schedule/new?");
   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
 });
 

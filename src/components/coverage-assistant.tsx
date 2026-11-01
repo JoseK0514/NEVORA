@@ -3,8 +3,7 @@ import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowClockwis
 import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { addDays, formatDayLabel, formatTime } from "@/lib/date-utils";
 import { durationText } from "@/lib/duration-text";
-import { keepWhole } from "@/lib/keep-whole";
-import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from "./corp/corp";
+import { CorpBody, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTime, CorpTitle } from "./corp/corp";
 import { ManagerIssueFocus } from "./manager-issue-focus";
 import { ScheduleCoverPick } from "./schedule-cover-pick";
 import "./coverage-assistant.css";
@@ -58,7 +57,8 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
   const nextDay = overnight ? formatDayLabel(addDays(props.date, 1)) : null;
   const shortDate = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${props.date}T12:00:00Z`));
   const count = props.candidates.length;
-  const state = props.status === "RESOLVED" ? <CorpPill tone="teal">Covered</CorpPill> : props.status === "STALE" ? <CorpPill tone="amber">Changed</CorpPill> : <CorpPill tone="red">Not filled</CorpPill>;
+  // R3 / copy table 28: no "Not filled" pill (the card already says Open shift); a change of state is plain grey text.
+  const state = props.status === "RESOLVED" ? <span className="c-meta c-cover__state">Covered</span> : props.status === "STALE" ? <span className="c-meta c-cover__state">Changed</span> : null;
   const facts = [props.positionName, shortDate, props.locationName, props.designatedLead ? "Shift lead needed" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const needs = props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") && (props.requirements.length > 1 || props.status === "CHOOSE") ? props.requirements : null;
   return <CorpPage className="c-cover c-page--narrow" labelledBy="coverage-title">
@@ -67,9 +67,9 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
     <ManagerIssueFocus prefix="coverage-" />
     {props.saved ? <CorpNote icon={<CheckIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />}>Replacement saved. What’s below is the schedule as it is now.</CorpNote> : null}
     <div className="wa-target" id="coverage-issue" tabIndex={-1}>
-      <CorpCard id="coverage-shift" label="Open shift" aside={state}>
+      <CorpCard id="coverage-shift" label="Open shift" aside={state ?? undefined}>
         <CorpBody>
-          <span className="c-big">{keepWhole(`${formatTime(props.startTime)} – ${formatTime(props.endTime)}`)}</span>
+          <span className="c-big"><CorpTime start={formatTime(props.startTime)} end={formatTime(props.endTime)} /></span>
           <span className="c-line3">{facts}</span>
         </CorpBody>
         {needs ? <nav className="c-cover__needs" aria-label="Choose what to fill">
@@ -77,22 +77,23 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
           <CorpRows label="What it needs">{needs.map(requirement => <li key={requirement.href}>
             <Link className="c-row c-row--one" href={requirement.href} aria-current={requirement.selected ? "true" : undefined}>
               <span className="c-row__main"><span className="c-row__title">{requirement.label}</span></span>
-              {requirement.selected ? <CorpPill tone="teal">Selected</CorpPill> : null}
+              {requirement.selected ? <span className="c-meta c-cover__state">Selected</span> : null}
             </Link>
           </li>)}</CorpRows>
         </nav> : null}
       </CorpCard>
     </div>
-    {props.status === "READY" ? <CorpCard id="coverage-people" label="Best fit first" aside={`${plural(count, "person", "people")} free`}>
+    {/* Copy table 29–33 and R14: plain words, no "lead" (the role is on hold), and no big zero. */}
+    {props.status === "READY" ? <CorpCard id="coverage-people" label="Who can cover" aside={<span className="c-meta c-cover__state">{count ? `${plural(count, "person", "people")} free` : "No one free"}</span>}>
       {count ? <ScheduleCoverPick repair={props.repair} people={props.candidates.map(employee => ({ employeeId: employee.employeeId, employeeName: employee.employeeName, detail: personDetail(employee), href: employee.href }))} />
         : <CorpBody>
           {/* Owner premium (structure-experience F1/F2): a decision, not a dead end. The same read; the next steps are the
             existing Add shift form (its review checks the person) and the coverage need in Scheduling rules. */}
-          <p className="c-cover__empty">No one is free for this shift</p>
-          <p className="c-line3">{props.repair ? "No one meets this position, lead, location and availability right now." : `Everyone is unavailable, already working, off, or can’t work at ${props.locationName}.`}{props.addShiftHref || props.rulesHref ? " You can still add the shift for someone, or change what this time needs." : ""}</p>
+          <p className="c-cover__empty">No one is free</p>
+          <p className="c-line3">{`Everyone is busy, off or not set up for ${props.locationName}.`}{props.addShiftHref ? " You can still give the shift to someone." : ""}</p>
           {props.addShiftHref || props.rulesHref ? <div className="c-cover__next">
-            {props.addShiftHref ? <CorpButtonLink href={props.addShiftHref} kind="secondary" size="md">Add shift for someone</CorpButtonLink> : null}
-            {props.rulesHref ? <Link className="c-link c-link--l" href={props.rulesHref}>Change coverage needs</Link> : null}
+            {props.addShiftHref ? <CorpButtonLink href={props.addShiftHref} kind="secondary" size="md">Give to someone</CorpButtonLink> : null}
+            {props.rulesHref ? <Link className="c-link c-link--l" href={props.rulesHref}>Change what’s needed</Link> : null}
           </div> : null}
         </CorpBody>}
     </CorpCard> : <CorpCard id="coverage-people" label={props.status === "RESOLVED" ? "This shift is covered" : props.status === "STALE" ? "Coverage changed" : "Choose what to fill"}>

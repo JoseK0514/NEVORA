@@ -66,7 +66,9 @@ export function ManagerTimeCorrectionsSurface({
   const ready=mode==='ready'&&snapshot?.state==='ready'?snapshot:null;
   usePrivateFragmentFocus('correction-',!!ready);
   return <section className="manager-corrections" aria-labelledby="manager-corrections-title">
-    <header className="manager-corrections-header">
+    {/* Copy table 49: when nothing is waiting, the header's "Correction requests 0" would repeat the empty state, so it is
+      kept for screen readers only. */}
+    <header className={ready&&!ready.requests.length?"manager-corrections-header sr-only":"manager-corrections-header"}>
       <div>
         <p>Time corrections</p>
         <h2 id="manager-corrections-title">Correction requests</h2>
@@ -97,7 +99,7 @@ export function ManagerTimeCorrectionsSurface({
             <button className="primary" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>
           </div>
         </article>)}
-      </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>No correction requests</strong><small>No employee time corrections are waiting for review.</small></div>}
+      </div>:<div className="manager-corrections-empty" role="status"><span aria-hidden="true">✓</span><strong>Nothing to fix</strong><small>When someone asks to fix a time, it shows up here.</small></div>}
   </section>;
 }
 

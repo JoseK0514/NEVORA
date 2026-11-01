@@ -2,7 +2,6 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { useState } from "react";
-import { CorpPill } from "./corp/corp";
 
 export type CoverPickPerson = { employeeId: string; employeeName: string; detail: string; href: string };
 
@@ -15,7 +14,7 @@ function AssignLabel() {
   return <span role={pending ? "status" : undefined} aria-live="polite" aria-atomic="true">{pending ? "Opening review…" : "Assign"}</span>;
 }
 
-/** Find cover (board O-FindCover): "Best fit first" as a radio list in the suggested order, the first one chosen, then
+/** Find cover (board O-FindCover): "Who can cover" as a radio list in the suggested order, the first one chosen, then
  * Assign, which opens the existing review for the chosen person. Nothing is saved on this page. */
 export function ScheduleCoverPick({ people, repair }: { people: CoverPickPerson[]; repair?: boolean }) {
   const [chosen, setChosen] = useState(people[0]?.employeeId ?? "");
@@ -35,7 +34,8 @@ export function ScheduleCoverPick({ people, repair }: { people: CoverPickPerson[
               <span className="c-row__title c-row__title--b">{item.employeeName}</span>
               <span className="c-row__detail"><span>{item.detail}</span></span>
             </span>
-            {index === 0 ? <CorpPill tone="teal">Best fit</CorpPill> : null}
+            {/* R3: "Best fit" is plain grey text, not a teal pill (teal is for actions). */}
+            {index === 0 ? <span className="c-meta c-cover__state">Best fit</span> : null}
           </label>
         </li>)}
       </ul>
