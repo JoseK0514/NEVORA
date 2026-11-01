@@ -13,7 +13,7 @@ import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { AuthBrand } from "./auth-brand";
 import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon, type NavIconName } from "@/components/nav-icon";
-import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
 import { PortalDeviceSetup } from "./portal-device-setup";
 import {EmployeeDeviceProvider,EmployeeDevicePopover} from './employee-mobile/device-owner';
@@ -35,9 +35,31 @@ import {useOperationalNavigation} from './company-access/use-operational-navigat
 import {employeeMobileChrome} from '@/lib/employee-mobile-chrome';
 import { recordNavigation } from "./corp/corp-client";
 import { CorpMotion } from "./corp/corp-motion";
+import { SidebarRailTooltip } from "./sidebar-rail-tooltip";
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
+
+/** Upscale M2: tablets (768–1279px) open with the sidebar as a rail; the person's own choice there is kept apart from
+ * their desktop choice, in a second cookie beside the one the server reads. */
+const TABLET_SIDEBAR_QUERY = "(min-width: 768px) and (max-width: 1279px)";
+const ROLE_LABELS: Record<UserRole, string> = { OWNER: "Owner", MANAGER: "Manager", LEAD: "Lead", EMPLOYEE: "Employee" };
+function readCookie(name: string) {
+  for (const part of document.cookie.split(";")) {
+    const [key, ...value] = part.trim().split("=");
+    if (key === name) return value.join("=");
+  }
+  return undefined;
+}
+function subscribeTablet(changed: () => void) {
+  const media = window.matchMedia(TABLET_SIDEBAR_QUERY);
+  media.addEventListener("change", changed);
+  return () => media.removeEventListener("change", changed);
+}
+const noSubscription = () => () => {};
+function writeSidebarCookie(name: string, rail: boolean) {
+  if (/^[a-z0-9_]+$/i.test(name)) document.cookie = `${name}=${rail ? "collapsed" : "expanded"}; Path=/app; Max-Age=31536000; SameSite=Lax`;
+}
 
 type AppShellProps = {
   brand?: { style?: Record<string, string>; logoUrl?: string | null };
@@ -119,10 +141,29 @@ function AppShellView({
   const pathname = usePathname();
   const search = useSearchParams();
   const router = useRouter();
+  // Upscale M1/M2: the sidebar is a 72px rail or the full 232px list. Desktop (1280px and up) follows the cookie the server
+  // reads; tablets (768–1279px) open as a rail until the person chooses otherwise there. The server cannot know the width,
+  // so it renders both choices (data-sidebar-desktop, data-sidebar-tablet) and the CSS picks by width, with no jump on load.
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const tabletCookie = `${preferenceCookie}_tablet`;
+  // The stored tablet choice is read in the browser only (the server renders the default, the rail).
+  const storedTablet = useSyncExternalStore(noSubscription, () => readCookie(tabletCookie), () => undefined);
+  const [tabletChoice, setTabletChoice] = useState<boolean | null>(null);
+  const tabletRail = tabletChoice ?? storedTablet !== "expanded";
+  const tabletWidth = useSyncExternalStore(subscribeTablet, () => window.matchMedia(TABLET_SIDEBAR_QUERY).matches, () => false);
+  const [sidebarMotion, setSidebarMotion] = useState<"collapse" | "expand" | null>(null);
+  const motionTimer = useRef(0);
+  const sidebarRef = useRef<HTMLElement>(null);
+  useEffect(() => () => window.clearTimeout(motionTimer.current), []);
+  const railed = tabletWidth ? tabletRail : collapsed;
   function toggleSidebar() {
-    const next = !collapsed; setCollapsed(next);
-    if (/^[a-z0-9_]+$/i.test(preferenceCookie)) document.cookie = `${preferenceCookie}=${next ? "collapsed" : "expanded"}; Path=/app; Max-Age=31536000; SameSite=Lax`;
+    const next = !railed;
+    if (tabletWidth) { setTabletChoice(next); writeSidebarCookie(tabletCookie, next); }
+    else { setCollapsed(next); writeSidebarCookie(preferenceCookie, next); }
+    // The width eases only when the person toggles it (never on load or when the window crosses a breakpoint).
+    setSidebarMotion(next ? "collapse" : "expand");
+    window.clearTimeout(motionTimer.current);
+    motionTimer.current = window.setTimeout(() => setSidebarMotion(null), 400);
   }
   const employee = user.role === "EMPLOYEE" || user.role === "LEAD";
   const employeeMobile = useEmployeeMobile() && employee;
@@ -303,7 +344,7 @@ function AppShellView({
   // menu keeps a "Device settings" entry so nothing is lost.
   const profilePage = employee || navigation.some(item => item.href === "/app/profile");
   const accountMenu = (
-    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
+    <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`} detail={`${ROLE_LABELS[user.role] ?? ""} · ${workspaceName}`}>
       {profilePage ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
       {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
@@ -319,7 +360,8 @@ function AppShellView({
     </PortalAccountMenu>
   );
   return (
-    <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={collapsed}
+    <div className={employee ? "app-shell employee-shell nevora-portal" : "app-shell nevora-portal"} data-sidebar-collapsed={railed}
+      data-sidebar-desktop={collapsed ? "rail" : "full"} data-sidebar-tablet={tabletRail ? "rail" : "full"} data-sidebar-motion={sidebarMotion ?? undefined}
       // Clean Manager and Owner app (v3): premium-clean-manager.css applies only under this attribute, so Employee and Lead pages never change.
       id={employee ? "employee-mobile" : undefined}
       data-employee-mobile={employee ? "true" : undefined}
@@ -342,16 +384,17 @@ function AppShellView({
       data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && mobileTabs.some(tab => tab.href === pathname) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
-      <aside className="sidebar" data-collapsed={collapsed}>
+      <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>
         <div className="sidebar-heading">
         <Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}>
           <AuthBrand />
         </Link>
         {companyLogo}
-        {/* v3: the workspace at the top of the sidebar (Owner and Manager; desktop only). */}
-        {!employee ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
+        {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
+          in the rail it is the 32px initials avatar. */}
+        {user.role !== "LEAD" ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
 
-        <button className="sidebar-toggle" type="button" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={22} /></button>
+        <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
         <nav id="desktop-primary-navigation" className="sidebar-nav" aria-label="Primary navigation">
           {navGroups.map(group => <div className="sidebar-nav-group" data-group={group.label || undefined} key={group.label}>
@@ -367,7 +410,6 @@ function AppShellView({
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
                 aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
-                title={collapsed ? item.label : undefined}
               >
                 <span className="nav-icon">
                   <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
@@ -426,13 +468,13 @@ function AppShellView({
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
-          {/* Employee app (new style): the avatar comes first, so focus order matches the phone header (avatar left; "+" and the
-            bell right). On desktop its CSS order puts it back at the end of the top bar. */}
-          {employee ? accountMenu : null}
-          {/* Employee app (new style): a round "+" for a new request, next to the bell. */}
-          {employee ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
+          {/* A Lead (v5 look, on hold) keeps its header: the avatar first, then a round "+" for a new request, then the bell. */}
+          {user.role === "LEAD" ? accountMenu : null}
+          {user.role === "LEAD" ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
-          {!employee ? accountMenu : null}
+          {/* Upscale B2: one desktop top bar for every role, Search · bell · avatar. The Employee "+" retired (New request
+            lives on Requests). */}
+          {user.role !== "LEAD" ? accountMenu : null}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
           {user.role !== "LEAD" ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
           </div>
@@ -468,10 +510,10 @@ function AppShellView({
                       window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
                     }}
                   >
-                    {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal, with Home filled and the
-                      others drawn bolder. Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
+                    {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
+                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
                     <NavIcon name={user.role === "LEAD" ? (item.icon === "employees" ? "team" : item.icon) : tabIcon(item.icon)} size={24}
-                      weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? (item.icon === "dashboard" ? "fill" : "bold") : "regular"} />
+                      weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? "fill" : "regular"} />
                     <span>{item.label}</span>
                     <TabPending />
                   </Link>
@@ -486,6 +528,7 @@ function AppShellView({
             </>
         </nav>
       </div>
+      <SidebarRailTooltip sidebar={sidebarRef} enabled={railed} />
       <SheetGestures />
       {/* Round 2 (R12): tab lines, the sidebar tint and segment thumbs slide to the current item. */}
       <CorpMotion />

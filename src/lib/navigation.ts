@@ -246,7 +246,9 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   const requests: MobileTab = { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] };
   if (role === "EMPLOYEE") {
     // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Pay and Requests; More opens from the header avatar.
-    const tabs: MobileTab[] = [{ ...home, owns: ["/app", "/app/notifications", "/app/more", "/app/updates", "/app/profile"] }, schedule, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
+    // Upscale (Nov 1): pages opened from the avatar or the bell (More, Updates, Profile, Notifications), Help and unknown
+    // addresses light no tab; Home owns Home only.
+    const tabs: MobileTab[] = [home, schedule, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
     if (payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements) tabs.push({ href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay"] });
     return [...tabs, requests];
   }
