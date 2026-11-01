@@ -15,6 +15,8 @@ import type { ReactNode } from 'react';
 import { KeepFocusClear } from '../wave-b-forms';
 import { PendingLabel } from '../employee-submit-button';
 import { reminderWindow } from './workflow-status';
+import { flagProblems, formKeys } from './form-keys';
+import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { formatDateRange } from '@/lib/date-utils';
 import { keepWhole } from '@/lib/keep-whole';
 import { revealFeedback } from '@/lib/reveal-feedback';
@@ -62,7 +64,7 @@ function rulesFromForm(values: FormData, rules: PayrollRule[]): PayrollRule[] {
   });
 }
 
-export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone = 'America/Puerto_Rico', openSetup = false }: { recoveryScope: string; nativeSources?: NativeConfigurationSources|null; timeZone?: string; openSetup?: boolean }) {
+export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone = 'America/Puerto_Rico', openSetup = false, tabs = null }: { recoveryScope: string; nativeSources?: NativeConfigurationSources|null; timeZone?: string; openSetup?: boolean; tabs?: PayrollTab[] | null }) {
   const resource = usePayrollResource('/api/payroll/settings', readSettings);
   const operation = usePayrollOperation('/api/payroll/settings', resource.reload, recoveryScope);
   const savingForm = useState<string | null>(null);
@@ -76,9 +78,10 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   const actorName = latest ? data?.employees.find(employee => employee.id === latest.actorId)?.name : undefined;
   // Corporate (Release 1, board O-PayrollSettings): grouped rows; each opens its own fields in place. Saving asks for the
   // effective date and a reason, as before. On desktop the Time and pay tabs lead here, so there is no Back.
-  return <CorpPage className="c-pay c-pset" labelledBy="payroll-settings-title">
+  return <CorpPage className="c-pay c-pset c-page--narrow" labelledBy="payroll-settings-title">
     <CorpNav back={{ href: '/app/payroll', label: 'Payroll' }} title="Payroll settings" phoneOnly />
     <CorpTitle id="payroll-settings-title" title="Payroll settings" sub="US dollars" wide />
+    <PayrollTabs items={tabs} current="/app/settings/payroll" />
     <BusinessZone.Provider value={timeZone}><SavingForm.Provider value={savingForm}>
     <KeepFocusClear />
     <Feedback operation={operation} />
@@ -121,7 +124,10 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   },[operation.busy]);
   const native = data.capabilities.internalCalculatorAvailable;
   const save = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); if(locked)return; setSaving('company'); setError(''); const values = new FormData(event.currentTarget);
+    event.preventDefault(); if(locked)return; setError('');
+    // Owner premium P10: every missing field at once (closed rows open), in this form's one error line.
+    const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
+    setSaving('company'); const values = new FormData(event.currentTarget);
     try {
       const reminderLeadDays = values.has('reminders') ? [integer(values.get('reminderDays'), 'Preparation reminder window', 0, 31)] : [];
       const next: PayrollPreferences = {
@@ -150,13 +156,13 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
   const anchorValue = anchor ? new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${anchor}T12:00:00Z`)) : '';
   const lead = reminderWindow(preferences.automation.reminderLeadDays);
   const reminderValue = !preferences.automation.reminders ? 'Off' : lead === 0 ? 'On payday' : `${lead} ${lead === 1 ? 'day' : 'days'} before`;
-  return <form ref={form} className="c-pset__form" data-form="company" onSubmit={save} aria-label={`Company defaults, revision ${revision}`}><fieldset disabled={locked} className="c-pset__fields">
+  return <form ref={form} className="c-pset__form" data-form="company" {...formKeys} onSubmit={save} aria-label={`Company defaults, revision ${revision}`}><fieldset disabled={locked} className="c-pset__fields">
     <CorpCard id="payroll-schedule" label="Pay schedule">
     <details className="c-pset__item"><SettingRow title="How often" value={frequencyLabel} /><div className="c-pset__body wb-form">
       <label>Frequency<select aria-label="Frequency" name="frequency" defaultValue={preferences.schedule.frequency}><option value="WEEKLY">Weekly</option><option value="BIWEEKLY">Every two weeks</option><option value="SEMIMONTHLY">Twice a month</option><option value="MONTHLY">Monthly</option></select></label>
     </div></details>
     <details className="c-pset__item"><SettingRow title="Payday" value={paydayValue} /><div className="c-pset__body wb-form">
-      <label>Payday after period end<input type="number" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">Days after the period ends.</small></label>
+      <label>Payday after period end<input type="number" inputMode="numeric" autoComplete="off" name="paydayOffset" min={0} max={31} required defaultValue={preferences.schedule.paydayOffsetDays} /><small className="wb-help">Days after the period ends.</small></label>
     </div></details>
     <details className="c-pset__item"><SettingRow title="Periods start" value={anchor ? anchorValue : 'Not set'} /><div className="c-pset__body wb-form">
       <PayDateField name="anchorDate" label="Schedule anchor date" required defaultValue={preferences.schedule.anchorDate} />
@@ -165,10 +171,10 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
     </CorpCard>
     <CorpCard id="payroll-notices" label="Notices and documents">
     <details className="c-pset__item"><SettingRow title="Reminders" value={reminderValue} /><div className="c-pset__body wb-form">
-      <p className="wb-note">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label>}{native && <p className="wb-note">Native statements publish automatically after generation and verification. Approval remains separate from publication and payment.</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">Notice sending is turned off, so queued notices aren’t sent.</p> : null}
+      <p className="wb-note">Preparation creates drafts and waits for required amounts and exceptions. Approval remains an authorized, separate action.</p><label className="wb-check"><input name="prepare" type="checkbox" defaultChecked={preferences.automation.prepare} /><span>Prepare scheduled drafts</span></label>{!native && <label className="wb-check"><input name="publish" type="checkbox" defaultChecked={preferences.automation.publish} /><span>Publish statements after an authorized approval</span></label>}{native && <p className="wb-note">Native statements publish automatically after generation and verification. Approval remains separate from publication and payment.</p>}<label className="wb-check"><input name="reminders" type="checkbox" checked={noticesEnabled} onChange={event => setNoticesEnabled(event.target.checked)} /><span>Queue private payroll notices</span></label><label>Preparation reminder window<input aria-label="Preparation reminder window" aria-describedby="payroll-notice-window-help" name="reminderDays" type="number" inputMode="numeric" autoComplete="off" min={0} max={31} required={noticesEnabled} disabled={!noticesEnabled} defaultValue={reminderWindow(preferences.automation.reminderLeadDays)} /><small className="wb-help" id="payroll-notice-window-help">Remind once within this many days before payday; 0 is payday. A missed window can catch up with one current actionable notice.</small></label><p className="wb-note">The notice preference also enables statement-availability notices after publication. Notices contain generic private references. Eligibility, consent and current access are checked separately; queued does not mean delivered.</p>{data.capabilities.noticeDelivery !== 'ENABLED' ? <p className="wb-note">Notice sending is turned off, so queued notices aren’t sent.</p> : null}
     </div></details>
     <details className="c-pset__item"><SettingRow title="Document language" value={preferences.language === 'es' ? 'Español' : 'English'} /><div className="c-pset__body wb-form">
-      <label>Company name on documents<input name="companyName" defaultValue={preferences.companyName} maxLength={160} required /></label>
+      <label>Company name on documents<input name="companyName" autoComplete="organization" defaultValue={preferences.companyName} maxLength={160} required /></label>
       <label>Default statement language<select aria-label="Default statement language" name="language" defaultValue={preferences.language}><option value="en">English</option><option value="es">Español</option></select></label>
       {!native && <label>Payroll provider preference<select aria-label="Payroll provider preference" name="sourceProvider" defaultValue={preferences.sourceProvider ?? ''}><option value="">No provider preference saved</option><option value="ADP_RUN">ADP RUN</option><option value="QUICKBOOKS_PAYROLL">QuickBooks Payroll</option><option value="PAYCHEX">Paychex</option><option value="GUSTO">Gusto</option><option value="OTHER">Other provider or accountant</option></select></label>}
       <p className="wb-note">{native ? 'Native payroll uses verified recorded time and employee payroll facts. Provider imports remain the source for historical provider runs.' : 'Provider selection records a preference. It does not connect an account or verify a provider format. All sources currently use the neutral payroll import.'}</p>
@@ -180,7 +186,7 @@ function CompanyPreferences({ preferences, revision, data, operation }: { prefer
       <p className="wb-note">Channel selection records your intended workflow. Bank compatibility has not been verified. NEVORA currently generates neutral instructions and does not submit payments or confirm processing.</p>
     </div></details>}
     </CorpCard>
-    <div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
+    <div className="c-pset__save wb-form"><PayDateField name="effectiveFrom" label="Effective date" required defaultValue={today(zone)} /><label>Reason for change<input name="reason" autoComplete="off" required maxLength={300} /></label><ImpactPreview data={data} /><p className="wb-note">Approved payroll stays frozen. Unapproved drafts require a fresh review after settings or exception revisions change.</p>{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
       <button type="submit" className="c-btn c-btn--full" aria-disabled={locked}><PendingLabel pending={operation.busy && savingId === 'company'} pendingText="Saving…">Save company preferences</PendingLabel></button></div>
   </fieldset></form>;
 }
@@ -192,7 +198,7 @@ function RuleEditor({ rules, onChange }: { rules: PayrollRule[]; onChange: (rule
     return <fieldset className="wb-rule" key={rule.id}>
       <legend>Rule {index + 1}</legend>
       <div className="wb-grid">
-        <label>Rule name<input name={name('name')} defaultValue={rule.name} required maxLength={100} /></label>
+        <label>Rule name<input name={name('name')} autoComplete="off" defaultValue={rule.name} required maxLength={100} /></label>
         <label>Type<select name={name('kind')} defaultValue={rule.kind}><option value="EMPLOYEE_DEDUCTION">Employee deduction</option><option value="EMPLOYER_CONTRIBUTION">Employer contribution</option></select></label>
         <label>Method<select name={name('method')} value={rule.method} onChange={event => onChange(rules.map(item => item.id === rule.id ? { ...item, method: event.target.value === 'PERCENTAGE' ? 'PERCENTAGE' : 'FIXED' } : item))}><option value="FIXED">Fixed USD amount</option><option value="PERCENTAGE">Percentage of gross</option></select></label>
         {rule.method === 'FIXED' ? <label>Amount in USD<input name={name('amount')} inputMode="decimal" required defaultValue={rule.amountMinor === null ? '' : minorToDollars(rule.amountMinor)} placeholder="0.00" /></label> : <label>Percent of gross<input name={name('percent')} inputMode="decimal" required defaultValue={rule.basisPoints === null ? '' : minorToDollars(String(rule.basisPoints))} placeholder="0.00" /></label>}
@@ -222,9 +228,10 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
   const [rules, setRules] = useState(initialRules ?? preferences.rules);
   const [error, setError] = useState('');
   const [savingId, setSaving] = useContext(SavingForm);
-  return <form className="wb-form" data-form="exception" onSubmit={event => {
-    setSaving('exception');
-    event.preventDefault(); setError(''); const values = new FormData(event.currentTarget);
+  return <form className="wb-form" data-form="exception" {...formKeys} onSubmit={event => {
+    event.preventDefault(); setError('');
+    const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
+    setSaving('exception'); const values = new FormData(event.currentTarget);
     try { const chosen = values.get('exceptionLanguage'); void operation.submit({ action: 'SAVE_EXCEPTION', expectedRevision: revision, effectiveFrom: String(values.get('effectiveFrom')), reason: String(values.get('reason')).trim(), exception: { employeeId, language: chosen === 'en' || chosen === 'es' ? chosen : null, rules: native ? initialRules : inherit ? null : rulesFromForm(values, rules) } }); }
     catch (failure) { setError(failure instanceof Error ? failure.message : 'Check this employee exception.'); }
   }}><fieldset disabled={operation.locked} className="wb-form">
@@ -232,7 +239,7 @@ function ExceptionForm({ employeeId, revision, language, initialRules, preferenc
     <label>Statement language<select aria-label="Statement language" name="exceptionLanguage" defaultValue={language ?? ''}><option value="">Inherit company language</option><option value="en">English</option><option value="es">Español</option></select></label>
     {!native && <label className="wb-check"><input type="checkbox" checked={inherit} onChange={event => setInherit(event.target.checked)} /><span>Inherit company deduction and contribution rules</span></label>}
     {!native && !inherit && <><RuleEditor rules={rules} onChange={setRules} /><button className="c-btn c-btn--secondary c-btn--md" type="button" data-add-rule="" onClick={() => setRules(items => [...items, newRule(zone)])}><PlusIcon className="c-ic c-ic--s" aria-hidden />Add employee rule</button></>}
-    <PayDateField name="effectiveFrom" label="Exception effective date" required defaultValue={today(zone)} /><label>Exception reason<input name="reason" required maxLength={300} /></label>
+    <PayDateField name="effectiveFrom" label="Exception effective date" required defaultValue={today(zone)} /><label>Exception reason<input name="reason" autoComplete="off" required maxLength={300} /></label>
     <ImpactPreview data={data} />{error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
     <button className="c-btn c-btn--full" type="submit">{operation.busy && savingId === 'exception' ? 'Saving…' : 'Save employee exception'}</button>
   </fieldset></form>;
@@ -248,15 +255,18 @@ function GrantForm({ employeeId, revision, review, approve, operation }: { emplo
   const [canReview, setReview] = useState(review);
   const [canApprove, setApprove] = useState(approve);
   const [savingId, setSaving] = useContext(SavingForm);
-  return <form className="wb-form" data-form="access" onSubmit={event => {
-    setSaving('access');
-    event.preventDefault(); const values = new FormData(event.currentTarget);
+  const [error, setError] = useState('');
+  return <form className="wb-form" data-form="access" {...formKeys} onSubmit={event => {
+    event.preventDefault(); setError('');
+    const problem = flagProblems(event.currentTarget); if (problem) { setError(problem); return; }
+    setSaving('access'); const values = new FormData(event.currentTarget);
     void operation.submit({ action: 'SET_GRANT', expectedRevision: revision, reason: String(values.get('reason')).trim(), grant: { employeeId, review: canReview, approve: canApprove } });
   }}><fieldset disabled={operation.locked} className="wb-form">
     <label className="wb-check"><input type="checkbox" checked={canReview} onChange={event => { setReview(event.target.checked); if (!event.target.checked) setApprove(false); }} /><span>Review payroll amounts and documents</span></label>
     <label className="wb-check"><input type="checkbox" checked={canApprove} onChange={event => { setApprove(event.target.checked); if (event.target.checked) setReview(true); }} /><span>Approve an exact reviewed payroll revision</span></label>
     <label>Access change reason<textarea name="reason" required maxLength={300} rows={3} /></label>
     <p className="wb-note">Approval requires review access. Clear both permissions to revoke this grant. The server checks the current grant on every action.</p>
+    {error && <p className="wb-error" role="alert"><WarningCircleIcon size={18} aria-hidden /><span>{error}</span></p>}
     <button type="submit" className="c-btn c-btn--full">{operation.busy && savingId === 'access' ? 'Saving…' : 'Save payroll access'}</button>
   </fieldset></form>;
 }

@@ -7,6 +7,7 @@ import { listBreakTypes } from '@/lib/clocker/break-types.server';
 import type { NativeConfigurationSources } from '@/components/payroll/native-payroll-config';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { payrollRecoveryScope } from '@/components/payroll/recovery-scope';
+import { payrollTabs } from '@/components/payroll/payroll-tabs';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
 
@@ -26,5 +27,5 @@ export default async function PayrollSettingsPage({ searchParams }: { searchPara
   }
   if (nativeSources && !(await readPayrollCapabilities(proof)).canConfigure) redirect('/app');
   const openSetup = (await searchParams).open === 'setup';
-  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} openSetup={openSetup} />;
+  return <PayrollSettings nativeSources={nativeSources} key={recoveryScope} recoveryScope={recoveryScope} timeZone={workspace.timeZone} openSetup={openSetup} tabs={payrollTabs(proof.employee.role, capabilities)} />;
 }

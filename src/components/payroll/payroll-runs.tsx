@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { CorpAvatar, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 import './payroll-home-corp.css';
 import './payroll-corp.css';
@@ -18,6 +17,8 @@ import { backlogDescription, noticeOutcome, payrollExceptionMessage, payrollRevi
 import { PayDateField } from './pay-date-field';
 import { DocumentRow } from './document-row';
 import { Feedback } from './payroll-feedback';
+import { PayrollTabs, type PayrollTab } from './payroll-tabs';
+import { flagProblems, formKeys } from './form-keys';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
 type Operation = ReturnType<typeof usePayrollOperation>;
@@ -51,13 +52,22 @@ const periodText = (run: Pick<PayrollRun, 'period' | 'payday'>) => `${quietRange
 /** Blocking items the Fix page lists: everything except the provider-amounts wait (that is the import step). */
 const fixItems = (run: PayrollRun) => run.status === 'APPROVED' ? [] : payrollReviewNotes(run.exceptions).blocking.filter(item => item !== 'WAITING_FOR_AMOUNTS');
 
-/** A pushed page's header: "‹ Back · Title" on a phone; on wider screens a teal back link over the page title. */
+/** A pushed page's header: "‹ Back · Title" on a phone; on wider screens the kit shows the same back link on its own
+ * line over the page title (Owner premium A7), so Payroll no longer draws a second one. */
 function Pushed({ back, title, id }: { back: { href: string; label: string }; title: string; id: string }) {
   return <>
     <CorpNav back={back} title={title} phoneOnly />
-    <Link className="c-pay__deskback" href={back.href}><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{back.label}</Link>
     <CorpTitle id={id} title={title} wide />
   </>;
+}
+
+/** Owner premium (visual-craft K): one empty or "not available" state, a centred card with a 15/600 line, an optional
+ * 13px line and at most one secondary next step. No icon or illustration. */
+export function EmptyCard({ title, detail, action, alert, label = 'Payroll' }: { title: string; detail?: ReactNode; action?: { href: string; label: string }; alert?: boolean; label?: string }) {
+  return <CorpCard as="div" ariaLabel={label}>
+    <div className="c-empty c-pay__empty" role={alert ? 'alert' : 'status'}><b>{title}</b>{detail ? <span>{detail}</span> : null}</div>
+    {action ? <div className="c-pay__empty-action"><CorpButtonLink href={action.href} kind="secondary" size="md">{action.label}</CorpButtonLink></div> : null}
+  </CorpCard>;
 }
 
 function StateCard({ children, alert, retry }: { children: ReactNode; alert?: boolean; retry?: () => void }) {
@@ -72,8 +82,8 @@ function Check({ checked, onChange, disabled, children }: { checked: boolean; on
   return <label className="c-pay__check"><input type="checkbox" checked={checked} disabled={disabled} onChange={event => onChange(event.target.checked)} /><span>{children}</span></label>;
 }
 
-export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company }: {
-  recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean; view?: PayrollView; runId?: string | null; names?: Record<string, string>; company?: string;
+export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company, tabs = null }: {
+  recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean; view?: PayrollView; runId?: string | null; names?: Record<string, string>; company?: string; tabs?: PayrollTab[] | null;
 }) {
   const resource = usePayrollResource('/api/payroll/runs', readRuns);
   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
@@ -90,39 +100,82 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
     : !data ? <StateCard alert>Your account can’t review payroll.</StateCard> : null;
   const run = data && runId ? data.runs.find(item => item.id === runId) ?? null : null;
   const missingRun = data && (view === 'review' || view === 'fix' || view === 'people') && !run
-    ? <StateCard alert>This payroll isn’t available. It may have been replaced by a newer revision.</StateCard> : null;
+    ? <EmptyCard alert title="This payroll isn’t available" detail="It may have been replaced by a newer revision." action={{ href: '/app/payroll', label: 'Go to Payroll' }} /> : null;
 
-  if (view === 'home') return <PayrollHome current={current} data={data} state={state} today={today} canEditSettings={canEditSettings} company={company} operation={operation} />;
-  if (view === 'prepare') return <CorpPage className="c-payroll c-pay" labelledBy="payroll-prepare-title">
+  if (view === 'home') return <PayrollHome current={current} data={data} state={state} today={today} canEditSettings={canEditSettings} company={company} operation={operation} tabs={tabs} />;
+  // Single-column pushed pages use the 720px desktop width (visual-craft F).
+  if (view === 'prepare') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-prepare-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Prepare payroll" id="payroll-prepare-title" />
     <Feedback operation={operation} />
-    {state ?? (data && <PreparePayroll current={current} data={data} operation={operation} />)}
+    {state ?? (data && <PreparePayroll current={current} data={data} today={today} operation={operation} />)}
   </CorpPage>;
-  if (view === 'history') return <CorpPage className="c-payroll c-pay" labelledBy="payroll-history-title">
+  if (view === 'history') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-history-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title="Pay history" id="payroll-history-title" />
     <Feedback operation={operation} />
-    {state ?? (data && <PayHistory data={data} operation={operation} />)}
+    {state ?? (data && <PayHistory data={data} names={names} operation={operation} />)}
   </CorpPage>;
-  if (view === 'fix') return <CorpPage className="c-payroll c-pay" labelledBy="payroll-fix-title">
+  if (view === 'fix') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-fix-title">
     <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="Fix before payroll" id="payroll-fix-title" />
     <Feedback operation={operation} />
     {state ?? missingRun ?? (run && data && <FixList run={run} capabilities={data.capabilities} names={names} operation={operation} />)}
   </CorpPage>;
-  if (view === 'people') return <CorpPage className="c-payroll c-pay" labelledBy="payroll-people-title">
+  if (view === 'people') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-people-title">
     <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="People" id="payroll-people-title" />
     {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
   </CorpPage>;
-  return <CorpPage className="c-payroll c-pay" labelledBy="payroll-review-title">
+  return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">
     <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title={run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll'} id="payroll-review-title" />
     <Feedback operation={operation} />
     {state ?? missingRun ?? (run && data && <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} data={data} names={names} operation={operation} />)}
   </CorpPage>;
 }
 
-/** Corporate (Release 1, board G-O-Payroll): Payroll is a tab, so no Back. Up next (the open period, its payday and one
- * Review), recent payrolls, then Time exports. Review opens that period's review, or prepares its draft. */
-function PayrollHome({ current, data, state, today, canEditSettings, company, operation }: {
-  current: OpenPayPeriod | null; data: PayrollRunsResponse | null; state: ReactNode; today: string; canEditSettings: boolean; company?: string; operation: Operation;
+/** The oldest completed period with no payroll whose payday has already passed (missing periods arrive oldest first;
+ * sorted again here so the notice never depends on that order). Null when none has passed, or nothing is known. */
+function overduePeriod(data: PayrollRunsResponse | null, today: string) {
+  const passed = (data?.missingPeriods ?? []).filter(item => item.payday < today);
+  return passed.sort((a, b) => a.period.startDate.localeCompare(b.period.startDate))[0] ?? null;
+}
+
+/** Owner premium A6 (structure P2): the pay periods that were never run come first, in red, naming the oldest. Only
+ * what the page already read: the backlog count when it is known, the oldest period and its payday. */
+function UnpaidNotice({ data, oldest, action }: { data: PayrollRunsResponse; oldest: PayrollMissingPeriod; action: ReactNode }) {
+  const count = data.backlog && !data.backlog.overflow ? data.backlog.missingCount : null;
+  const range = quietRange(oldest.period.startDate, oldest.period.endDate);
+  const title = count === 1 ? `${range} wasn’t run` : count !== null && count > 1 ? `${count} pay periods weren’t run` : 'Pay periods weren’t run';
+  const detail = count === 1 ? `Payday was ${quietDay(oldest.payday)}.` : `Oldest: ${range} · payday was ${quietDay(oldest.payday)}.`;
+  return <section className="c-callout c-callout--red c-pay__unpaid" aria-label="Pay periods with no payroll">
+    <span><b>{title}</b>{detail}</span>
+    {action}
+  </section>;
+}
+const unpaidHash = (item: PayrollMissingPeriod) => `unpaid-${item.period.startDate}`;
+const unpaidAction = (item: PayrollMissingPeriod) => `Start with ${quietRange(item.period.startDate, item.period.endDate)}`;
+
+/** Owner premium A2 (Codex priority 2): the Up next button is the next step the Owner can take now. Prepare before a
+ * draft exists; Review issue(s) when something stops it; Review payroll once a draft is ready; details once approved. */
+function nextStep(open: PayrollRun | undefined): { label: string; href: string; quiet?: boolean } {
+  if (!open) return { label: 'Prepare payroll', href: '/app/payroll/prepare' };
+  const fixes = fixItems(open);
+  if (fixes.length) return { label: fixes.length === 1 ? 'Review issue' : 'Review issues', href: `/app/payroll/fix?run=${encodeURIComponent(open.id)}` };
+  if (open.status === 'APPROVED') return { label: 'Payroll details', href: reviewHref(open.id), quiet: true };
+  return { label: 'Review payroll', href: reviewHref(open.id) };
+}
+
+/** A payroll's status as quiet detail words when it is approved (the usual state), and as a pill only when it needs
+ * something (visual-craft I). "Approved" never says paid. */
+function runRow(item: PayrollRun) {
+  const approved = item.status === 'APPROVED';
+  return {
+    detail: [item.correctionOf ? 'Correction' : null, `Payday ${quietDay(item.payday)}`, approved ? 'Approved' : null].filter(Boolean).join(' · '),
+    trail: approved ? undefined : <CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill>,
+  };
+}
+
+/** Corporate (Release 1, board G-O-Payroll): Payroll is a tab, so no Back. Unpaid periods first, then Up next (the open
+ * period, its payday and its next step), recent payrolls, then Time exports. */
+function PayrollHome({ current, data, state, today, canEditSettings, company, operation, tabs }: {
+  current: OpenPayPeriod | null; data: PayrollRunsResponse | null; state: ReactNode; today: string; canEditSettings: boolean; company?: string; operation: Operation; tabs: PayrollTab[] | null;
 }) {
   const runs = data?.runs ?? [];
   const open = current ? runs.find(item => item.period.startDate === current.period.startDate && item.period.endDate === current.period.endDate && !item.correctionOf) : undefined;
@@ -130,15 +183,22 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   const due = current ? daysBetween(today, current.payday) : null;
   const people = open?.rows ?? [];
   const missing = data?.backlog && (data.backlog.overflow || (data.backlog.missingCount ?? 0) > 0) ? data.backlog : null;
+  const oldest = overduePeriod(data, today);
+  const step = nextStep(open);
   const sub = [current?.frequency ? FREQUENCY[current.frequency] : null, open?.totals ? plural(open.totals.employeeCount, 'person', 'people') : null, company || null].filter(Boolean).join(' · ');
+  // Visual-craft L: one pattern in the title row, neutral buttons of one size. On tablets and desktop Payroll settings
+  // is a tab under the title, so its button is for phones only.
+  const settingsTab = !!tabs?.some(item => item.href === '/app/settings/payroll');
   return <CorpPage className="c-payroll c-pay c-pay--home" labelledBy="payroll-title">
     <CorpTitle id="payroll-title" title="Payroll" sub={sub || undefined}
       actions={<>
-        {canEditSettings ? <Link className="c-pay__textlink" href="/app/settings/payroll">Settings</Link> : null}
+        {canEditSettings ? <CorpButtonLink href="/app/settings/payroll" kind="neutral" className={settingsTab ? 'c-pay__tap c-pay__phone' : 'c-pay__tap'}>Settings</CorpButtonLink> : null}
         <CorpButtonLink href="/app/payroll/history" kind="neutral" className="c-pay__tap">Pay history</CorpButtonLink>
       </>} />
+    <PayrollTabs items={tabs} current="/app/payroll" />
     <Feedback operation={operation} />
     {state ?? <>
+      {data && oldest ? <UnpaidNotice data={data} oldest={oldest} action={<Link className="c-pay__unpaid-go" href={`/app/payroll/prepare#${unpaidHash(oldest)}`}>{unpaidAction(oldest)}</Link>} /> : null}
       {current ? <CorpCard id="payroll-next" label="Up next" aside={<CorpPill tone={due !== null && due <= 1 ? 'amber' : 'neutral'}>{dueText(current.payday, today)}</CorpPill>}>
         <div className="c-payroll__next">
           <b>{`${current.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll')}</b>
@@ -149,23 +209,21 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             <span className="c-avs c-pay__avs">{people.slice(0, 3).map((row, index) => <CorpAvatar key={row.employeeId} initials={initials(row.employeeName)} grey={index === 1} />)}</span>
             {people.length > 3 ? <span>{`and ${people.length - 3} more`}</span> : null}
           </span> : <span>{open ? statusLabels[open.status] : 'Not prepared yet'}</span>}
-          <CorpButtonLink size="md" href={open ? reviewHref(open.id) : '/app/payroll/prepare'}>Review</CorpButtonLink>
+          <CorpButtonLink size="md" kind={step.quiet ? 'secondary' : undefined} href={step.href}>{step.label}</CorpButtonLink>
         </div>
-      </CorpCard> : <CorpCard as="div" ariaLabel="Pay schedule"><CorpBody>
-        <p className="c-payroll__state">Set your pay schedule to see the current period.</p>
-        {canEditSettings ? <CorpButtonLink href="/app/settings/payroll" kind="secondary" size="md">Payroll settings</CorpButtonLink> : null}
-      </CorpBody></CorpCard>}
+      </CorpCard> : <EmptyCard label="Pay schedule" title="No pay schedule yet" detail="Set your pay schedule to see the current period."
+        action={canEditSettings ? { href: '/app/settings/payroll', label: 'Payroll settings' } : undefined} />}
       <CorpCard id="payroll-recent" label="Recent payrolls" aside={past.length ? <Link className="c-link" href="/app/payroll/history">See all</Link> : undefined}>
         {past.length ? <CorpRows label="Past periods">{past.slice(0, 3).map(item => <li key={item.id}>
           <CorpRow href={reviewHref(item.id)} bold title={quietRange(item.period.startDate, item.period.endDate)}
-            detail={`${item.correctionOf ? 'Correction · ' : ''}Payday ${quietDay(item.payday)}`} value={item.totals ? formatPayrollMoney(item.totals.netMinor) : undefined}
-            trail={<CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill>} chevron />
-        </li>)}</CorpRows> : <CorpBody><p className="c-payroll__state">No past periods yet.</p></CorpBody>}
+            detail={runRow(item).detail} value={item.totals ? formatPayrollMoney(item.totals.netMinor) : undefined}
+            trail={runRow(item).trail} chevron />
+        </li>)}</CorpRows> : <div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div>}
       </CorpCard>
       <CorpCard as="div" ariaLabel="Payroll tools">
         <CorpRows label="Payroll tools">
           <li><CorpRow href={current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export'} bold title="Time exports" detail="Send hours to payroll or a file" chevron /></li>
-          {missing ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare a draft for each one" value={missing.missingCount === null ? 'Check' : String(missing.missingCount)} valueTone="amber" chevron /></li> : null}
+          {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare a draft for each one" value={missing.missingCount === null ? 'Check' : String(missing.missingCount)} chevron /></li> : null}
         </CorpRows>
       </CorpCard>
     </>}
@@ -179,6 +237,7 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
   const [reviewed, setReviewed] = useState(false);
   const [publishConfirmed, setPublishConfirmed] = useState(false);
   const [correctionOpen, setCorrectionOpen] = useState(false);
+  const [correctionError, setCorrectionError] = useState('');
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
   const native = run.sourceAuthority === 'NATIVE_RECORDED_TIME';
   const notes = payrollReviewNotes(run.exceptions);
@@ -207,10 +266,11 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     </li></CorpRows></CorpCard> : null}
     {!native && (!approved || correctionOpen) ? <ImportAmounts run={run} capabilities={capabilities} operation={operation} correction={correctionOpen} primary={run.status === 'WAITING_FOR_AMOUNTS' || correctionOpen} /> : null}
     {native && correctionOpen ? <CorpCard id="payroll-correction" label="Create a linked correction"><CorpBody>
-      <form className="c-form" onSubmit={event => { event.preventDefault(); const reason = String(new FormData(event.currentTarget).get('nativeCorrectionReason') ?? '').trim(); if (reason) void operation.submit({ action: 'CORRECT_NATIVE', runId: run.id, expectedRevision: run.revision, reason }); }}>
+      <form className="c-form" {...formKeys} onSubmit={event => { event.preventDefault(); setCorrectionError(''); const problem = flagProblems(event.currentTarget); if (problem) { setCorrectionError(problem); return; } const reason = String(new FormData(event.currentTarget).get('nativeCorrectionReason') ?? '').trim(); if (reason) void operation.submit({ action: 'CORRECT_NATIVE', runId: run.id, expectedRevision: run.revision, reason }); }}>
         <fieldset className="c-pay__fieldset" disabled={locked || !capabilities.canReview}>
           <p className="c-pay__detail">Corrections recalculate a separate linked draft from recorded time and current facts. The replacement requires a new review and approval; original statements stay in history.</p>
           <label className="c-field"><span className="c-field__label">Correction reason</span><textarea className="c-in" name="nativeCorrectionReason" required maxLength={300} rows={3} /></label>
+          {correctionError ? <p className="c-error" role="alert">{correctionError}</p> : null}
           <CorpButton type="submit" full>Create correction draft</CorpButton>
         </fieldset>
       </form>
@@ -227,7 +287,10 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     </CorpRows></CorpCard> : null}
     {(run.status === 'REVIEW_REQUIRED' || run.status === 'BLOCKED') ? (capabilities.canApprove ? <div className="c-pay__approve">
       {run.status === 'REVIEW_REQUIRED' ? <Check checked={reviewed} onChange={setReviewed} disabled={locked || operation.revisionConflict}>I reviewed revision {run.revision}, {native ? 'the recorded-time calculation' : 'the provider amounts'} and all employee details.</Check> : null}
-      <CorpButton full disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve payroll</CorpButton>
+      {/* Owner premium A2 (Codex priority 2): while something stops payroll, the step the Owner can take (Review issues)
+        * is the primary; the unavailable Approve stays visible as a quiet secondary. Its rule (canApproveNow) is unchanged. */}
+      {fixes.length ? <CorpButtonLink full href={`/app/payroll/fix?run=${encodeURIComponent(run.id)}`}>{fixes.length === 1 ? 'Review issue' : 'Review issues'}</CorpButtonLink> : null}
+      <CorpButton full kind={fixes.length ? 'secondary' : undefined} disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve payroll</CorpButton>
       <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.'}</p>
     </div> : <p className="c-note c-note--center">An authorized payroll approver must approve this revision.</p>) : null}
     {approved ? <ApprovedNote run={run} names={names} /> : null}
@@ -273,6 +336,7 @@ function ImportAmounts({ run, capabilities, operation, correction, primary }: { 
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setImportError('');
+    const problem = flagProblems(event.currentTarget); if (problem) { setImportError(problem); return; }
     try {
       const amounts = parsePayrollImport(importText);
       if (amounts.period.startDate !== run.period.startDate || amounts.period.endDate !== run.period.endDate || amounts.payday !== run.payday) throw new Error('The import period and payday must match this draft.');
@@ -284,7 +348,7 @@ function ImportAmounts({ run, capabilities, operation, correction, primary }: { 
     } catch (failure) { setImportError(failure instanceof Error ? failure.message : 'Check the payroll import.'); }
   };
   return <CorpCard id="payroll-import" label={correction ? 'Create a linked correction' : 'Import provider amounts'} aside={run.sourceName ? <span className="c-pay__aside">{run.sourceName}</span> : undefined}><CorpBody>
-    <form className="c-form" onSubmit={submit}><fieldset className="c-pay__fieldset" disabled={locked}>
+    <form className="c-form" {...formKeys} onSubmit={submit}><fieldset className="c-pay__fieldset" disabled={locked}>
       <p className="c-pay__detail">Use the neutral JSON import supplied by your payroll provider or accountant. {capabilities.internalCalculatorAvailable ? 'Historical provider runs retain their imported amounts. Native payroll does not replace the source of this historical review.' : 'NEVORA preserves imported amounts; a statutory calculator is unavailable.'}</p>
       <div className="c-field"><label className="c-field__label" htmlFor={fileId}>Payroll import file</label><input id={fileId} className="c-in c-pay__file" type="file" accept="application/json,.json" onChange={async event => {
         const file = event.target.files?.[0]; if (!file) return;
@@ -340,7 +404,7 @@ function FixList({ run, capabilities, names, operation }: { run: PayrollRun; cap
     </CorpCard>;
   });
   return <>
-    {cards.length ? cards : <StateCard>Nothing stops this payroll.</StateCard>}
+    {cards.length ? cards : <EmptyCard title="Nothing stops this payroll" />}
     {cards.length ? <p className="c-note">{cards.length === 1 ? 'Payroll can be approved once this is fixed.' : cards.length === 2 ? 'Payroll can be approved once both are fixed.' : 'Payroll can be approved once these are fixed.'}{native ? ' Then recalculate the draft.' : ''}</p> : null}
     {native ? <CorpButton kind="secondary" full disabled={locked || !capabilities.canReview} onClick={() => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })}>Recalculate draft</CorpButton> : null}
   </>;
@@ -362,7 +426,7 @@ function PeopleAmounts({ run }: { run: PayrollRun }) {
       </dl>
     </CorpCard> : null}
     {run.rows ? <CorpCard id="payroll-people" label="Employee amounts">
-      <div className="c-pay__search"><label className="c-sr" htmlFor={searchId}>Find employee amounts</label><input id={searchId} className="c-in" type="search" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></div>
+      <div className="c-pay__search"><label className="c-sr" htmlFor={searchId}>Find employee amounts</label><input id={searchId} className="c-in" type="search" enterKeyHint="search" autoComplete="off" placeholder="Find an employee" value={filter} onChange={event => setFilter(event.target.value)} /></div>
       <ul className="c-rows" aria-label="Employee amounts">{rows.map(row => {
         const result = native ? run.nativeCalculation?.employees.find(item => item.employeeId === row.employeeId) : undefined;
         const exception = run.exceptionRevisions.find(item => item.employeeId === row.employeeId)?.revision;
@@ -382,17 +446,23 @@ function PeopleAmounts({ run }: { run: PayrollRun }) {
           </div>
         </details></li>;
       })}</ul>
-      {rows.length === 0 ? <CorpBody><p className="c-payroll__state">No employees match your search.</p></CorpBody> : null}
-    </CorpCard> : <StateCard>No employee amounts are saved for this payroll.</StateCard>}
+      {rows.length === 0 ? <div className="c-empty c-pay__empty" role="status"><b>No employees match</b><span>Check the spelling or clear the search.</span></div> : null}
+    </CorpCard> : <EmptyCard title="No employee amounts are saved for this payroll" />}
   </>;
 }
 
-/** Up next's Review before a draft exists: prepare it (or a period that never had one). */
-function PreparePayroll({ current, data, operation }: { current: OpenPayPeriod | null; data: PayrollRunsResponse; operation: Operation }) {
+/** Up next's Prepare before a draft exists: prepare it (or a period that never had one). When a payday has already
+ * passed with no payroll, that period leads (structure PP1): the red notice names it, its row is the one primary, and
+ * the current week's button steps back to secondary. Every Prepare still needs its own press. */
+function PreparePayroll({ current, data, today, operation }: { current: OpenPayPeriod | null; data: PayrollRunsResponse; today: string; operation: Operation }) {
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
   const open = current ? data.runs.find(item => item.period.startDate === current.period.startDate && item.period.endDate === current.period.endDate && !item.correctionOf) : undefined;
   const [other, setOther] = useState(false);
+  const [otherError, setOtherError] = useState('');
+  const oldest = overduePeriod(data, today);
+  const step = nextStep(open);
   return <>
+    {oldest ? <UnpaidNotice data={data} oldest={oldest} action={<a className="c-pay__unpaid-go" href={`#${unpaidHash(oldest)}`}>{unpaidAction(oldest)}</a>} /> : null}
     {current ? <CorpCard id="payroll-prepare" label="Up next">
       <div className="c-payroll__next">
         <b>{`${current.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll')}</b>
@@ -400,34 +470,55 @@ function PreparePayroll({ current, data, operation }: { current: OpenPayPeriod |
       </div>
       <CorpBody tight>
         <p className="c-pay__detail">A draft checks approved time. It doesn’t approve timecards, approve payroll or send a payment.</p>
-        {open ? <CorpButtonLink href={reviewHref(open.id)} full className="c-pay__gap">Review</CorpButtonLink>
-          : <CorpButton full className="c-pay__gap" disabled={locked} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>Prepare draft</CorpButton>}
+        {open ? <CorpButtonLink href={step.href} full kind={step.quiet || oldest ? 'secondary' : undefined} className="c-pay__gap">{step.label}</CorpButtonLink>
+          : <CorpButton full kind={oldest ? 'secondary' : undefined} className="c-pay__gap" disabled={locked} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>Prepare draft</CorpButton>}
       </CorpBody>
     </CorpCard> : null}
-    <Backlog data={data} operation={operation} />
+    <Backlog data={data} operation={operation} lead={oldest} />
     <CorpCard id="payroll-other" label="Another period" aside={<button type="button" className="c-link" aria-expanded={other} aria-controls="payroll-other-form" onClick={() => setOther(value => !value)}>{other ? 'Close' : 'Choose dates'}</button>}>
-      {other ? <CorpBody><form id="payroll-other-form" className="c-form" onSubmit={event => {
-        event.preventDefault(); const values = new FormData(event.currentTarget);
+      {other ? <CorpBody><form id="payroll-other-form" className="c-form" {...formKeys} onSubmit={event => {
+        event.preventDefault(); setOtherError('');
+        const problem = flagProblems(event.currentTarget); if (problem) { setOtherError(problem); return; }
+        const values = new FormData(event.currentTarget);
         void operation.submit({ action: 'PREPARE', period: { startDate: String(values.get('start')), endDate: String(values.get('end')) }, payday: String(values.get('payday')) });
       }}><fieldset className="c-pay__fieldset" disabled={locked}>
         <div className="c-field__row"><PayDateField name="start" label="Period start" defaultValue={current?.period.startDate} required /><PayDateField name="end" label="Period end" defaultValue={current?.period.endDate} required /></div>
         <PayDateField name="payday" label="Payday" defaultValue={current?.payday} required />
+        {otherError ? <p className="c-error" role="alert">{otherError}</p> : null}
         <CorpButton type="submit" kind="secondary" full>Prepare draft</CorpButton>
       </fieldset></form></CorpBody> : <CorpBody tight><p className="c-pay__detail">Prepare a draft for dates outside your pay schedule.</p></CorpBody>}
     </CorpCard>
   </>;
 }
 
-/** Completed periods with no original payroll run (oldest first). */
-function Backlog({ data, operation }: { data: PayrollRunsResponse; operation: Operation }) {
+/** Completed periods with no original payroll run (oldest first). The notice's "Start with …" link (here or from
+ * Payroll) opens that period's row; it never prepares anything by itself. */
+function Backlog({ data, operation, lead }: { data: PayrollRunsResponse; operation: Operation; lead: PayrollMissingPeriod | null }) {
   const [expanded, setExpanded] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
-  const missing = data.missingPeriods ?? [];
+  const missing = useMemo(() => data.missingPeriods ?? [], [data.missingPeriods]);
   const backlog = data.backlog;
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
-  if (!backlog || (!backlog.overflow && backlog.missingCount === 0 && missing.length === 0)) return null;
   const key = (item: PayrollMissingPeriod) => JSON.stringify(item);
+  useEffect(() => {
+    const openFromHash = () => {
+      const start = window.location.hash.match(/^#unpaid-(\d{4}-\d{2}-\d{2})$/)?.[1];
+      const index = start ? missing.findIndex(item => item.period.startDate === start) : -1;
+      if (index < 0) return;
+      if (index >= 3) setExpanded(true);
+      setSelected(JSON.stringify(missing[index])); setAcknowledged(false);
+      requestAnimationFrame(() => {
+        const row = document.getElementById(`unpaid-${start}`);
+        row?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+        row?.querySelector<HTMLElement>('button.c-row')?.focus({ preventScroll: true });
+      });
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  }, [missing]);
+  if (!backlog || (!backlog.overflow && backlog.missingCount === 0 && missing.length === 0)) return null;
   const visible = expanded ? missing : missing.slice(0, 3);
   return <CorpCard id="payroll-backlog" label="Periods with no payroll" aside={missing.length > 3 ? <button type="button" className="c-link" disabled={locked} onClick={() => setExpanded(value => !value)}>{expanded ? 'Show fewer' : `Show all ${missing.length}`}</button> : undefined}>
     <CorpBody tight><p className="c-pay__detail">{backlogDescription(backlog)}</p>
@@ -436,7 +527,9 @@ function Backlog({ data, operation }: { data: PayrollRunsResponse; operation: Op
     <ul className="c-rows" aria-label="Periods with no payroll">{visible.map(item => {
       const open = selected === key(item);
       const id = `period-${item.period.startDate}-${item.settingsRevision}`;
-      return <li key={key(item)}>
+      // The oldest period whose payday passed is the page's one primary once its row is open.
+      const primary = !!lead && key(lead) === key(item);
+      return <li key={key(item)} id={unpaidHash(item)}>
         <button type="button" className="c-row" aria-expanded={open} aria-controls={id} disabled={locked} onClick={() => { setSelected(open ? null : key(item)); setAcknowledged(false); }}>
           <span className="c-row__main"><span className="c-row__title c-row__title--b">{quietRange(item.period.startDate, item.period.endDate)}</span><span className="c-row__detail"><span>{`Payday ${quietDay(item.payday)}`}</span></span></span>
           {item.state === 'AMBIGUOUS_TRANSITION' ? <CorpPill tone="amber">Check dates</CorpPill> : null}
@@ -446,7 +539,7 @@ function Backlog({ data, operation }: { data: PayrollRunsResponse; operation: Op
           {item.state === 'AMBIGUOUS_TRANSITION' ? <div className="c-callout"><span><b>Review the schedule transition</b>{item.issues.join(' ')} Confirm these period boundaries and payday before manual preparation.</span></div> : null}
           <p className="c-pay__detail">This draft uses the saved effective settings. Review its timecards, population and provider amounts before a separate approval.</p>
           {item.state === 'AMBIGUOUS_TRANSITION' ? <Check checked={acknowledged} disabled={locked} onChange={setAcknowledged}>I reviewed this schedule transition, period boundaries and payday.</Check> : null}
-          <CorpButton kind="secondary" size="md" full disabled={locked || (item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged)} onClick={() => void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday })}>Prepare this period</CorpButton>
+          <CorpButton kind={primary ? undefined : 'secondary'} size="md" full disabled={locked || (item.state === 'AMBIGUOUS_TRANSITION' && !acknowledged)} onClick={() => void operation.submit({ action: 'PREPARE', period: item.period, payday: item.payday })}>Prepare this period</CorpButton>
         </div> : null}
       </li>;
     })}</ul>
@@ -455,7 +548,7 @@ function Backlog({ data, operation }: { data: PayrollRunsResponse; operation: Op
 }
 
 /** Every payroll, the private statement history and any delivery work not tied to one payroll. */
-function PayHistory({ data, operation }: { data: PayrollRunsResponse; operation: Operation }) {
+function PayHistory({ data, names, operation }: { data: PayrollRunsResponse; names: Record<string, string>; operation: Operation }) {
   const runs = [...data.runs].sort((a, b) => b.period.startDate.localeCompare(a.period.startDate) || b.createdAt.localeCompare(a.createdAt));
   const locked = operation.busy || (!!operation.pending && !operation.resuming);
   const loose = data.jobs.filter(job => !job.runId);
@@ -463,11 +556,11 @@ function PayHistory({ data, operation }: { data: PayrollRunsResponse; operation:
     <CorpCard id="payroll-all" label="Payrolls">
       {runs.length ? <CorpRows label="Payrolls">{runs.map(item => <li key={item.id}>
         <CorpRow href={reviewHref(item.id)} bold title={quietRange(item.period.startDate, item.period.endDate)}
-          detail={`${item.correctionOf ? 'Correction · ' : ''}Payday ${quietDay(item.payday)}`} value={item.totals ? formatPayrollMoney(item.totals.netMinor) : undefined}
-          trail={<CorpPill tone={statusTone[item.status]}>{statusLabels[item.status]}</CorpPill>} chevron />
-      </li>)}</CorpRows> : <CorpBody><p className="c-payroll__state">No payroll runs yet. Prepare a draft from Up next.</p></CorpBody>}
+          detail={runRow(item).detail} value={item.totals ? formatPayrollMoney(item.totals.netMinor) : undefined}
+          trail={runRow(item).trail} chevron />
+      </li>)}</CorpRows> : <div className="c-empty c-pay__empty"><b>No payrolls yet</b><span>Prepare a draft from Up next.</span></div>}
     </CorpCard>
-    <PortalStatements runs={data.runs} />
+    <PortalStatements runs={data.runs} names={names} />
     {loose.length ? <Jobs jobs={loose} canApprove={data.capabilities.canApprove} locked={locked} operation={operation} /> : null}
   </>;
 }
