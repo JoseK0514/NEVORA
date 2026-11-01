@@ -95,7 +95,7 @@ it('integrates frozen mobile Access with real sessions, activation, recovery and
     try{
      step=engine+': '+actor+' More navigation';
      /* Release 1: an Employee opens More from the header avatar (its tab bar has no More); a Manager still has the More tab. */await join.locator('.mobile-nav:visible a[href="/app/more"], a.c-top-avatar[href="/app/more"]:visible').first().click();await join.waitForURL('**/app/more');
-     /* Release 1 Manager More (board): the business card and the Your profile row both open Profile; the row is the named way in. */const profile=actor==='Employee'?join.locator('main a[href="/app/profile"]:visible'):join.locator('main').getByRole('link',{name:'Your profile',exact:true});await profile.waitFor();expect(await profile.count()).toBe(1);
+     /* Owner premium: More opens Profile from one row (the person's name) for every role. */const profile=join.locator('main a[href="/app/profile"]:visible');await profile.waitFor();expect(await profile.count()).toBe(1);
      state='More ready';profileNavigation.push({engine,actor,elapsedMs:Date.now()-started,state,path:new URL(join.url()).pathname});
      step=engine+': '+actor+' Profile navigation';await profile.click();
      await join.waitForURL('**/app/profile');/* Release 1 (board E-Profile): an Employee's Sign out lives on More, so Profile is ready at its Display card; a Manager's Profile keeps Sign out. */if(actor==='Employee')await join.locator('#profile-display').waitFor();else await join.getByRole('button',{name:'Sign out',exact:true}).waitFor();

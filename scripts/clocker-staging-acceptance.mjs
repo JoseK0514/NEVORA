@@ -21,7 +21,7 @@ async function photoCheck(portal,page,tablet,verify){
  await go(portal,'/app/settings/clocker/photos');
  await portal.getByLabel('Assistance contact',{exact:true}).fill('Fictional staging Owner desk');await portal.getByLabel('Assistance instructions',{exact:true}).fill('Fictional acceptance testing only. Ask the test Owner for an accessible alternative.');
  await portal.getByRole('button',{name:'Save assistance settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'The current photo notice is prepared'}).waitFor();
- const enabled=portal.getByRole('checkbox',{name:/^Enable punch photos/});await enabled.check();
+ const enabled=portal.getByRole('switch',{name:/^Take punch photos/});await enabled.check();
  for(const name of ['Start break','End break','Clock out'])await portal.getByRole('checkbox',{name,exact:true}).uncheck();
  await portal.getByRole('button',{name:'Save company settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'Company photo settings saved'}).waitFor();
  try{
@@ -34,7 +34,7 @@ async function photoCheck(portal,page,tablet,verify){
    await portal.getByRole('button',{name:'Remove photo',exact:true}).click();await portal.getByRole('button',{name:'Confirm photo removal',exact:true}).click();await portal.getByRole('status').filter({hasText:'Punch photo removal confirmed.'}).waitFor();checks.push('chromium actual hosted Owner-only private photo read/removal');
   }else checks.push('chromium synthetic image retained only for platform-expiry acceptance');
  }finally{
-  await go(portal,'/app/settings/clocker/photos');await portal.getByRole('checkbox',{name:/^Enable punch photos/}).uncheck();
+  await go(portal,'/app/settings/clocker/photos');await portal.getByRole('switch',{name:/^Take punch photos/}).uncheck();
   for(const name of ['Clock in','Start break','End break','Clock out'])await portal.getByRole('checkbox',{name,exact:true}).check();
   await portal.getByRole('button',{name:'Save company settings',exact:true}).click();await portal.getByRole('status').filter({hasText:'Company photo settings saved'}).waitFor();
  }

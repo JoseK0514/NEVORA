@@ -354,7 +354,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-account-avata
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page[data-q-sheet]:not(.q-sheet) > :not(.q-nav) { max-width: 752px; }
   /* Quiet pages can opt into the 720px column too (the class page builders add to single-column pages). */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow > :not(.q-nav) { max-width: 752px; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: 720px; justify-content: flex-end; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, 100%); max-width: 100%; box-sizing: border-box; justify-content: flex-end; }
 }
 
 /* P8: headers that stay and tell you where you are. Quiet pushed bars stick like the kit's; the hairline under a header
@@ -496,3 +496,6 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   grid-column: 3; justify-self: end; display: inline-flex; align-items: center; justify-content: flex-end; width: auto; min-width: 44px; height: 44px; padding: 0 8px; border: 0; background: none; box-shadow: none;
   color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; cursor: pointer; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settings .portal-device-heading > .portal-device-close.c-done:active { opacity: .55; }
+
+/* Owner premium integration: the shared read frame's "Refresh current view" keeps a full 44px tap height at every width. */
+:is(#c-root, html) .app-shell[data-nv-corp] .scoped-unavailable__refresh { min-height: 44px; height: auto; }
