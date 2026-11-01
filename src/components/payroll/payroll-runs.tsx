@@ -220,12 +220,13 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
             trail={runRow(item).trail} chevron />
         </li>)}</CorpRows> : <div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div>}
       </CorpCard>
-      <CorpCard as="div" ariaLabel="Payroll tools">
+      {/* With the tabs under the title (tablet and desktop), Time exports is a tab; the card stays for phones and for any other row. */}
+      <div className={tabs?.length && !(missing && !oldest) ? 'c-only-phone' : undefined}><CorpCard as="div" ariaLabel="Payroll tools">
         <CorpRows label="Payroll tools">
           <li><CorpRow href={current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export'} bold title="Time exports" detail="Send hours to payroll or a file" chevron /></li>
           {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare a draft for each one" value={missing.missingCount === null ? 'Check' : String(missing.missingCount)} chevron /></li> : null}
         </CorpRows>
-      </CorpCard>
+      </CorpCard></div>
     </>}
   </CorpPage>;
 }
