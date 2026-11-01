@@ -3,7 +3,7 @@ import { isPopoverOpen, hidePopover, showPopover } from "./kit/popover-open";
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { actionMenuGeometry } from "./action-menu-geometry";
-import { CaretDownIcon, DotsThreeIcon, XIcon } from "@phosphor-icons/react/ssr";
+import { CaretDownIcon, DotsThreeIcon } from "@phosphor-icons/react/ssr";
 
 type ActionMenuProps = {
   id: string;
@@ -161,9 +161,10 @@ export function ActionMenu({
           <span className="c-menu-head__title">{title ?? label}</span>
         </div>
         {children}
-        <button className="mobile-workforce-sheet-close" type="button" aria-label="Close"
+        {/* Round 2 (R8): one sheet pattern, "Done" on the right of the centred title (Close and its × retired). */}
+        <button className="mobile-workforce-sheet-close" type="button"
           onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>
-          <XIcon size={20} aria-hidden="true"/><span>Close</span>
+          <span>Done</span>
         </button>
       </div>
     </div>

@@ -34,6 +34,7 @@ import type {OperationalAuthorityView} from '@/lib/company-access/model';
 import {useOperationalNavigation} from './company-access/use-operational-navigation';
 import {employeeMobileChrome} from '@/lib/employee-mobile-chrome';
 import { recordNavigation } from "./corp/corp-client";
+import { CorpMotion } from "./corp/corp-motion";
 
 /** Home's views share Home's address; the trail names them as their bands do. */
 const HOME_VIEWS = { attendance: "Who’s working", team: "Hours this week", activity: "Activity" } as const;
@@ -296,16 +297,23 @@ function AppShellView({
     {/* eslint-disable-next-line @next/next/no-img-element -- an immutable, same-origin asset already sized for the chip */}
     <img src={brand.logoUrl} alt={`${workspaceName} logo`} decoding="async" />
   </span> : null;
+  // Round 2 (R13): one profile entry. "Profile and device settings" retired from this menu; this device's alerts stay one
+  // step away: an Owner or Manager's profile page has the "Alerts on this phone" row (it opens the same device settings),
+  // and so does the sidebar's name button; an Employee gets the alerts page by its own name. With no profile page, the
+  // menu keeps a "Device settings" entry so nothing is lost.
+  const profilePage = employee || navigation.some(item => item.href === "/app/profile");
   const accountMenu = (
     <PortalAccountMenu initials={initials} name={`${user.firstName} ${user.lastName}`}>
-      {employee || navigation.some(item => item.href === "/app/profile") ? <Link href="/app/profile" className="nevora-action-menu-item"
+      {profilePage ? <Link href="/app/profile" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Your profile</Link> : null}
       {/* Desktop Employee: the calendar link page has no other way in at this width (phones reach it from More). */}
       {employee ? <Link href="/app/profile/calendar" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Add shifts to your calendar</Link> : null}
       {!employee && navigation.some(item => item.href === "/app/my-pay") ? <Link href="/app/my-pay" className="nevora-action-menu-item"
         onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>My pay</Link> : null}
-      {notificationsEnabled ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Profile and device settings</button> : null}
+      {notificationsEnabled && employee ? <Link href="/app/profile/device-alerts" className="nevora-action-menu-item"
+        onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}>Alerts on this device</Link> : null}
+      {notificationsEnabled && !profilePage ? <button type="button" className="nevora-action-menu-item" popoverTarget="portal-device-settings">Device settings</button> : null}
       <div className="nevora-action-menu-divider" />
       <PortalSignout><button className="nevora-action-menu-item portal-account-signout" type="submit">Sign out</button></PortalSignout>
     </PortalAccountMenu>
@@ -479,6 +487,8 @@ function AppShellView({
         </nav>
       </div>
       <SheetGestures />
+      {/* Round 2 (R12): tab lines, the sidebar tint and segment thumbs slide to the current item. */}
+      <CorpMotion />
       <Toaster />
       <FormValidation />
       {notificationsEnabled ? employee?<EmployeeDevicePopover role={user.role}/>:<PortalDeviceSetup role={user.role} /> : null}

@@ -1,6 +1,7 @@
 /* NEVORA corporate kit (Jose approved Oct 26, 2026; mockups in docs/product/specs/corporate-mockups).
- * Every value here reproduces the approved boards: page #F5F6F6, white cards (radius 12, 1px #E3E5E6 ring, no soft shadows),
- * card header rows of 44px, 15px rows, 13px details, filled status pills, teal #0B6E69 for actions and the current tab only.
+ * Every value here reproduces the approved boards: page #F5F6F6, white cards (radius 12; round 2: a cool 7% ring with a soft
+ * two-layer shadow, --c-shadow-card), card header rows of 44px, 15px rows, 13px details, teal #0B6E69 for actions and the
+ * current tab only. Round 2 (Oct 31, R1–R12) changes are marked "R<n>" beside the rule they change.
  * Rules are prefixed :is(#c-root, html) so they carry one id of weight over the older element rules on phone pages. */
 
 :is(#c-root, html) .c-page {
@@ -23,32 +24,35 @@
 :is(#c-root, html) .c-ic { flex: none; display: block; width: 22px; height: 22px; }
 :is(#c-root, html) .c-ic--s { width: 16px; height: 16px; }
 
-/* Page title: 22/28 600 with a 13px line under it, and an optional control on the right. */
+/* Page title (R1, R4): 24/30 600 on a phone and 28/34 on tablets and desktop (see the 768px block), in one title row whose
+ * actions sit on its right, so a button never pushes the title down. A 13px line 4px under it. */
 :is(#c-root, html) .c-title { display: block; }
-:is(#c-root, html) .c-title__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px; }
-:is(#c-root, html) .c-title h1 { min-width: 0; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--c-ink); }
-:is(#c-root, html) .c-title__sub { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-title__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; }
+:is(#c-root, html) .c-title h1 { min-width: 0; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.45px; color: var(--c-ink); }
+:is(#c-root, html) .c-title__sub { display: block; margin-top: 4px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-title__actions { flex: none; display: flex; align-items: center; gap: 8px; }
 :is(#c-root, html) .c-title__subrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px; }
 :is(#c-root, html) .c-title__subrow > .c-title__sub { margin-top: 0; min-width: 0; }
 
 /* Cards */
-:is(#c-root, html) .c-card { display: block; border-radius: 12px; background: var(--c-card); box-shadow: 0 0 0 1px var(--c-ring); overflow: hidden; }
-:is(#c-root, html) .c-card--alert { box-shadow: 0 0 0 1px var(--c-red); }
+:is(#c-root, html) .c-card { display: block; border-radius: 12px; background: var(--c-card); box-shadow: var(--c-shadow-card); overflow: hidden; }
+/* R3: an alert card is a white card whose label is the screen's one red mark (no red ring). */
+:is(#c-root, html) .c-card--alert { box-shadow: var(--c-shadow-card); }
+:is(#c-root, html) .c-card--alert > .c-card__head > .c-card__label { color: var(--c-red); font-weight: 600; }
 :is(#c-root, html) .c-card__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 0 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
-:is(#c-root, html) .c-card__label { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-card__label { min-width: 0; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 :is(#c-root, html) .c-card__aside { flex: none; display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-card__body { padding: 14px 16px 16px; }
 :is(#c-root, html) .c-card__body--tight { padding: 12px 16px; }
 :is(#c-root, html) .c-card__foot { display: flex; align-items: center; gap: 8px; padding: 12px 16px; box-shadow: inset 0 1px 0 var(--c-line); }
 :is(#c-root, html) .c-card__foot > .c-btn { flex: 1; }
-:is(#c-root, html) .c-big { display: block; font-size: 20px; line-height: 26px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-big { display: block; font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.36px; color: var(--c-ink); font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-line2 { display: block; margin-top: 2px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-line3 { display: block; margin-top: 2px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-card__body > .c-btn { margin-top: 14px; }
 
-/* Links: teal 13/600 in card headers, 15/600 as a row action. */
-:is(#c-root, html) .c-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: -13px 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+/* Links: teal 13/500 in card headers, 15/500 as a row action (R1: 600 is for titles and key figures only). */
+:is(#c-root, html) .c-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: -13px 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 500; cursor: pointer; white-space: nowrap; }
 :is(#c-root, html) .c-link:hover { color: var(--c-teal-hover); }
 :is(#c-root, html) .c-link--l { font-size: 15px; line-height: 20px; margin: 0; }
 
@@ -60,15 +64,17 @@
 :is(#c-root, html) .c-row--tall { min-height: 64px; }
 :is(#c-root, html) a.c-row, :is(#c-root, html) button.c-row, :is(#c-root, html) label.c-row { cursor: pointer; }
 :is(#c-root, html) a.c-row:active, :is(#c-root, html) button.c-row:active { background: #F7F8F8; }
-:is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--c-ink2); }
 :is(#c-root, html) .c-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-:is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; color: var(--c-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#c-root, html) .c-row__title { display: block; font-size: 15px; line-height: 20px; font-weight: 500; letter-spacing: -0.13px; color: var(--c-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Zero tolerance for wrapped labels: a row title stays on one line (the row's label carries the full text). */
-:is(#c-root, html) .c-row__title--b { font-weight: 600; }
+/* R1: one row-title weight. `bold` rows (names, places) are 500 like every other row title; 600 is for page titles and
+ * key figures. A page whose spec needs a 600 row adds its own class. */
+:is(#c-root, html) .c-row__title--b { font-weight: 500; }
 :is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); text-align: right; white-space: nowrap; }
+:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__value--soft { font-weight: 400; color: var(--c-grey); }
 :is(#c-root, html) .c-row__value--teal { color: var(--c-teal); }
 :is(#c-root, html) .c-row__value--red { color: var(--c-red); }
@@ -76,11 +82,12 @@
 :is(#c-root, html) .c-row__trail { flex: none; display: flex; align-items: center; gap: 8px; }
 :is(#c-root, html) .c-chev { flex: none; width: 16px; height: 16px; color: var(--c-faint); }
 :is(#c-root, html) .c-row--danger, :is(#c-root, html) .c-row--danger .c-row__title, :is(#c-root, html) .c-row--danger .c-row__icon { color: var(--c-red); }
-:is(#c-root, html) .c-row--open { box-shadow: inset 0 0 0 1px var(--c-red) !important; border-radius: 8px; margin: 4px 8px; width: calc(100% - 16px); padding: 8px; }
+/* R3: an open shift is an ordinary row (the dashed avatar and its words mark it); the red ring retired. */
 :is(#c-root, html) .c-row[aria-disabled="true"] { cursor: default; }
 
 /* Status pills (filled), count badges, avatars */
-:is(#c-root, html) .c-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+/* R3: pills are for exceptions only (see CorpPill); a default state is grey text (.c-meta). */
+:is(#c-root, html) .c-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 13px; line-height: 18px; font-weight: 500; white-space: nowrap; }
 :is(#c-root, html) .c-pill--teal { background: var(--c-tint); color: var(--c-teal); }
 :is(#c-root, html) .c-pill--amber { background: var(--c-amber-bg); color: var(--c-amber); }
 :is(#c-root, html) .c-pill--blue { background: var(--c-blue-bg); color: var(--c-blue); }
@@ -93,24 +100,24 @@
 :is(#c-root, html) .c-av { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: var(--c-av-bg, #EDEEEF); color: var(--c-av-ink, #4A4F54); font-size: 13px; line-height: 1; font-weight: 600; }
 :is(#c-root, html) .c-av--grey { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-av--l { width: 36px; height: 36px; border-radius: 18px; }
-:is(#c-root, html) .c-av--open { background: #FFFFFF; border: 1.5px dashed var(--c-red); color: var(--c-red); border-radius: 16px; }
+:is(#c-root, html) .c-av--open { background: #FFFFFF; border: 1.5px dashed var(--c-faint); color: var(--c-ink2); border-radius: 16px; }
 :is(#c-root, html) .c-avs { flex: none; display: inline-flex; gap: 4px; }
 
-/* Buttons: 44px pages, 40px inside cards, 36px compact. One primary per screen. */
+/* Buttons (R4, one button system): 44px on a phone, 40px on tablets and desktop (with a 44px hit area), whatever the size
+ * prop; 32px is for top-bar utilities only, which are not kit buttons. One primary (teal) per screen and one secondary
+ * style: white, a 1px #D5D8DA inset ring, ink 15/500, radius 8. No teal outline buttons. */
 :is(#c-root, html) .c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; min-width: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 8px;
   background: var(--c-teal); color: #FFFFFF !important; font-size: 15px; line-height: 20px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; }
 :is(#c-root, html) .c-btn:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-teal-hover); }
 :is(#c-root, html) .c-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
 :is(#c-root, html) .c-btn--full { display: flex; width: 100%; }
-:is(#c-root, html) .c-btn--md { height: 40px; }
-:is(#c-root, html) .c-btn--sm { height: 36px; padding: 0 14px; }
-:is(#c-root, html) .c-btn--xs { height: 32px; padding: 0 10px; font-size: 13px; line-height: 18px; }
-:is(#c-root, html) .c-btn--secondary { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-teal); color: var(--c-teal) !important; }
-:is(#c-root, html) .c-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-tint); }
-:is(#c-root, html) .c-btn--neutral { height: 32px; padding: 0 10px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-size: 13px; line-height: 18px; }
-:is(#c-root, html) .c-btn--neutral:hover:not(:disabled) { background: #F7F8F8; }
-:is(#c-root, html) .c-btn--danger { background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-red); color: var(--c-red) !important; }
-:is(#c-root, html) .c-btn--danger:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-red-bg); }
+/* The size props (md, sm, xs) no longer change the size; they stay so callers need no change. */
+:is(#c-root, html) .c-btn:is(.c-btn--md, .c-btn--sm, .c-btn--xs) { height: 44px; padding: 0 16px; font-size: 15px; line-height: 20px; }
+/* Secondary, neutral and danger are one secondary style; danger keeps red words (the screen's one red, a destructive act). */
+:is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger) { height: 44px; padding: 0 16px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-size: 15px; line-height: 20px; font-weight: 500; }
+:is(#c-root, html) .c-btn.c-btn--danger { color: var(--c-red) !important; }
+:is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F8F8; }
+:is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):active:not(:disabled):not([aria-disabled="true"]) { background: #EDEEEF; }
 :is(#c-root, html) .c-btn:disabled, :is(#c-root, html) .c-btn[aria-disabled="true"] { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
 :is(#c-root, html) .c-btns { display: flex; gap: 8px; }
 :is(#c-root, html) .c-btns > .c-btn { flex: 1; }
@@ -120,8 +127,9 @@
 :is(#c-root, html) .c-stats { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
 :is(#c-root, html) .c-stat { min-width: 0; padding: 12px 16px; }
 :is(#c-root, html) .c-stat + .c-stat { box-shadow: inset 1px 0 0 var(--c-line); }
-:is(#c-root, html) .c-stat__label { display: block; font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-:is(#c-root, html) .c-stat__value { display: block; margin-top: 2px; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-stat__label { display: block; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* R1: key figures are one size, 20/26 600 (the 17px stat value retired), with the kit's number setting (R2). */
+:is(#c-root, html) .c-stat__value { display: block; margin-top: 2px; font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.36px; color: var(--c-ink); white-space: nowrap; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-stat__value--red { color: var(--c-red); }
 :is(#c-root, html) .c-stat__value--amber { color: var(--c-amber); }
 :is(#c-root, html) .c-stat__value--teal { color: var(--c-teal); }
@@ -141,7 +149,7 @@
 /* Segmented control */
 :is(#c-root, html) .c-seg { display: flex; height: 36px; padding: 2px; border-radius: 8px; background: var(--c-neutral-bg); }
 :is(#c-root, html) .c-seg > :is(a, button) { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; height: 100%; min-height: 0; margin: 0; box-shadow: none; padding: 0 8px; border: 0; border-radius: 6px; background: none;
-  color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+  color: var(--c-ink2); font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.13px; white-space: nowrap; cursor: pointer; }
 /* Each segment is a 44px tap target (it overhangs the 36px track by 6px above and below); the white selected shape is
  * drawn 32px tall inside it, so the board's look is unchanged. */
 :is(#c-root, html) .c-seg > :is(a, button) { position: relative; isolation: isolate; height: 44px; margin: -6px 0; background: none !important; box-shadow: none !important; }
@@ -153,7 +161,7 @@
 /* Fields: label 13/600 above, 48px input with a 1px ring; focus is a 2px teal ring. */
 :is(#c-root, html) .c-form { display: flex; flex-direction: column; gap: 16px; }
 :is(#c-root, html) .c-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-:is(#c-root, html) .c-field__label { font-size: 13px; line-height: 16px; font-weight: 600; color: var(--c-ink2); }
+:is(#c-root, html) .c-field__label { font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-ink2); }
 :is(#c-root, html) .c-field__help { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-field__row { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; }
 :is(#c-root, html) .c-in { display: flex; align-items: center; width: 100%; height: 48px; margin: 0; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF;
@@ -177,7 +185,7 @@
 /* Pushed page header: white, "‹ Back" left, the title centred, an optional action right. */
 :is(#c-root, html) .c-nav { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: minmax(max-content, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px;
   margin: -16px -16px 0; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 8px) 16px 8px; background: #FFFFFF; box-shadow: 0 1px 0 var(--c-ring); }
-:is(#c-root, html) .c-nav__back { justify-self: start; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin-left: -4px; padding: 0 4px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-nav__back { justify-self: start; display: inline-flex; align-items: center; gap: 2px; min-height: 44px; margin-left: -4px; padding: 0 4px; color: var(--c-teal); font-size: 15px; line-height: 20px; font-weight: 500; white-space: nowrap; }
 :is(#c-root, html) .c-nav__back .c-ic { width: 18px; height: 18px; }
 :is(#c-root, html) .c-nav__title { min-width: 0; max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: center; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-nav__right { justify-self: end; display: flex; align-items: center; min-height: 44px; }
@@ -250,30 +258,35 @@
 :is(#c-root, html) .c-sheet .c-sheet__actions { margin: 0; padding: 0; list-style: none; }
 :is(#c-root, html) .c-sheet .c-sheet__note { margin: 0; }
 :is(#c-root, html) .c-sheet .c-sheet__nav { background: #FFFFFF; }
-:is(#c-root, html) .c-sheet .c-row__title { font-weight: 600; }
+:is(#c-root, html) .c-sheet .c-row__title { font-weight: 500; }
 :is(#c-root, html) .c-sheet .c-sheet__shift { margin: 0 -16px; padding: 12px 16px 14px; background: #FFFFFF; box-shadow: inset 0 -1px 0 #EDEEEF; }
 :is(#c-root, html) .c-sheet { padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)); }
 
 /* A kit block inside an older page frame (the Employee Time tab): the kit's tokens and resets, no page padding. */
 :is(#c-root, html) .c-page.c-embed { min-height: 0; padding: 0; background: none; }
-/* A small title action (Availability, Past timecards) keeps its 32px look and gets a 44px tap area. */
-:is(#c-root, html) .c-title__actions .c-btn--sm { position: relative; }
-:is(#c-root, html) .c-title__actions .c-btn--sm::after { content: ""; position: absolute; inset: -6px -2px; }
+/* (R4: the 32px title action and its separate tap area retired; every kit button is 44px, or 40px in a 44px hit area.) */
 
 /* Release 1 fix (B4): 44px tap targets everywhere, with the boards' smaller visuals. A compact button keeps its look
  * (40, 36 or 32px) and gets a transparent border up to 44px; the fill is clipped to the padding box and the negative
  * margin keeps the layout where it was. Rings are inset shadows, which are drawn inside the border. */
 :is(#c-root, html) .c-btn { --c-hit: 0px; box-sizing: border-box; min-width: 44px; border: var(--c-hit) solid transparent; background-clip: padding-box;
   border-radius: calc(8px + var(--c-hit)); margin-top: calc(var(--c-hit) * -1); margin-bottom: calc(var(--c-hit) * -1); }
-:is(#c-root, html) .c-btn.c-btn--md { --c-hit: 2px; height: 44px; }
-:is(#c-root, html) .c-btn.c-btn--sm { --c-hit: 4px; height: 44px; }
-:is(#c-root, html) .c-btn.c-btn--xs, :is(#c-root, html) .c-btn.c-btn--neutral { --c-hit: 6px; height: 44px; }
-:is(#c-root, html) .c-btn.c-btn--neutral { box-shadow: inset 0 0 0 1px var(--c-field); }
+/* R4: tablets and desktop draw every kit button 40px tall inside a 44px hit area (a 2px transparent border). */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-btn.c-btn { --c-hit: 2px; height: 44px; }
+}
 :is(#c-root, html) .c-card__body > .c-btn { margin-top: calc(14px - var(--c-hit)); }
 :is(#c-root, html) .c-btn:focus-visible { outline: 2px solid var(--c-teal); outline-offset: calc(2px - var(--c-hit)); border-radius: calc(8px + var(--c-hit)); }
 /* The neutral select-like control ("All locations ▾") the same way. */
-:is(#c-root, html) .c-page .c-select-btn { box-sizing: border-box; height: 44px; margin-top: -6px; margin-bottom: -6px; border: 6px solid transparent; border-radius: 14px; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--c-field); }
-:is(#c-root, html) .c-page .c-select-btn:focus-visible { outline-offset: -4px; border-radius: 14px; }
+/* R4: the select-like control is a secondary button: 44px on a phone, 40px in a 44px hit area on tablets and desktop. */
+:is(#c-root, html) .c-page .c-select-btn { box-sizing: border-box; height: 44px; margin: 0; padding: 0 12px 0 16px; border: 0 solid transparent; border-radius: 8px; background-clip: padding-box; box-shadow: inset 0 0 0 1px var(--c-field);
+  font-size: 15px; line-height: 20px; font-weight: 500; }
+:is(#c-root, html) .c-page .c-select-btn .c-ic { width: 16px; height: 16px; color: var(--c-grey); }
+:is(#c-root, html) .c-page .c-select-btn:focus-visible { outline-offset: 0; border-radius: 8px; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page .c-select-btn { margin: -2px 0; border-width: 2px; border-radius: 10px; }
+  :is(#c-root, html) .c-page .c-select-btn:focus-visible { outline-offset: -2px; border-radius: 10px; }
+}
 /* Text links are at least 44px wide: 8px of padding each side, taken back with a negative margin so the words stay put. */
 :is(#c-root, html) :is(a, button).c-link { justify-content: center; min-width: 44px; padding: 0 8px; margin: -13px -8px; }
 :is(#c-root, html) :is(a, button).c-link--l { margin: 0 -8px; }
@@ -297,6 +310,15 @@
 :root {
   --c-dur-press: 120ms; --c-dur-ui: 200ms; --c-dur-sheet: 360ms; --c-dur-sheet-out: calc(var(--c-dur-sheet) * 2 / 3);
   --c-ease: cubic-bezier(.32, .72, 0, 1);
+  /* Round 2 tokens (R2, R3, R5, R11). Elevation: cards sit on a cool 7% ring with two soft layers; sheets, side panels and
+   * popovers one step up. Numbers: tabular figures, case-sensitive dashes and Inter cv11, in one place so the set can be
+   * tuned at once. Grey text for default states and for past items that must stay readable (#6B7075 is 4.98:1 on white,
+   * 4.57:1 on the #F5F6F6 canvas). */
+  --c-shadow-card: 0 0 0 1px rgb(16 24 32 / 0.07), 0 1px 2px rgb(16 24 32 / 0.05), 0 2px 8px -2px rgb(16 24 32 / 0.05);
+  --c-shadow-pop: 0 0 0 1px rgb(16 24 32 / 0.06), 0 8px 24px -4px rgb(16 24 32 / 0.14);
+  --c-num-features: "tnum" 1, "case" 1, "cv11" 1;
+  --c-meta: #6B7075; --c-past-ink: #6B7075; --c-ampm: #4A4F54;
+  --c-gap-group: 32px; --c-gap-item: 12px;
 }
 
 /* Pressed states (P4): every tap answers. Rows darken to #EDEEEF at once and fade back; text links, back links and
@@ -394,13 +416,13 @@
 @keyframes c-skel-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-skel__shapes { animation-duration: 1ms; } }
 :is(#c-root, html) .c-page.c-skel { min-height: 0; padding: 16px 16px 24px; background: none; }
-:is(#c-root, html) .c-skel__title { display: block; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px; color: var(--c-ink); }
-:is(#c-root, html) .c-skel__bar--title { width: 46%; max-width: 280px; height: 28px; border-radius: 8px; }
+:is(#c-root, html) .c-skel__title { display: block; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.45px; color: var(--c-ink); }
+:is(#c-root, html) .c-skel__bar--title { width: 46%; max-width: 280px; height: 30px; border-radius: 8px; }
 :is(#c-root, html) .c-skel__shape--card { height: 108px; }
 :is(#c-root, html) .c-skel__shape--tall { height: 260px; }
 :is(#c-root, html) .c-skel__shape:has(> .c-skel__row) { overflow: hidden; }
 @media (min-width: 768px) {
-  :is(#c-root, html) .c-page.c-skel { width: 100%; max-width: 1040px; margin: 0 auto; padding: 24px 24px 48px; }
+  :is(#c-root, html) .c-page.c-skel { width: 100%; max-width: 1040px; margin: 0 auto; padding: 48px 24px 48px; }
 }
 /* The phone back link is at least 44px wide, even as a chevron alone at 320 (Payroll builder request). */
 :is(#c-root, html) .c-nav__back { min-width: 44px; }
@@ -410,3 +432,146 @@
 @media (min-width: 768px) {
   :is(#c-root, html) dialog.q-sheet:has(.c-sheet) { height: fit-content; max-height: min(86dvh, 820px); margin: auto; }
 }
+
+/* =====================================================================================================================
+ * Owner premium, round 2 (Oct 31, 2026; docs/product/reviews/owner-premium-2026-10-31/ROUND2-PLAN.md). Kit-wide values;
+ * the new pieces (.c-num, .c-time, .c-meta, .c-section, .c-tabs, list motion) are opt-in classes or kit components.
+ * =================================================================================================================== */
+
+/* R2: signature numbers. .c-num sets any time, date, duration or amount; the kit applies it to stat values, row values,
+ * row lead columns and .c-big. CorpTime (corp.tsx) sets a time or a range: AM/PM at 0.8em 500 #4A4F54, thin spaces round
+ * the en dash. .c-unit is a duration's unit ("8 h 2 min": h and min at 0.85em grey). */
+:is(#c-root, html) .c-num, :is(#c-root, html) .c-time { font-variant-numeric: tabular-nums; font-feature-settings: var(--c-num-features); }
+:is(#c-root, html) :is(.c-num, .c-time) { white-space: nowrap; }
+:is(#c-root, html) .c-ampm { font-size: 0.8em; font-weight: 500; letter-spacing: 0.02em; color: var(--c-ampm); }
+:is(#c-root, html) .c-unit { font-size: 0.85em; font-weight: 500; color: var(--c-grey); }
+/* Inside a grey or coloured line the AM/PM follows its line's colour instead of turning darker than it. */
+:is(#c-root, html) :is(.c-row__detail, .c-title__sub, .c-meta, .c-line3, .c-note, .c-stat__label, .c-row__value--soft) .c-ampm { color: inherit; }
+
+/* R3: grey text for a default state ("Published", "Due Mon, Nov 2", "Needs setup"): 13/18 500 #6B7075 where a pill used to
+ * be. CorpPill is for exceptions only. */
+:is(#c-root, html) .c-meta { flex: none; display: inline-block; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-meta); white-space: nowrap; }
+/* R11: a past item that stays on screen is readable grey, never faded below 4.5:1. */
+:is(#c-root, html) .c-past { color: var(--c-past-ink); }
+
+/* R5: rhythm. 12px between cards of one group (the page's gap), 32px between groups. A list page groups its cards in
+ * CorpSection: a 13/18 500 grey label 16px in from the card's edge and 8px above it, instead of a 44px header strip. */
+:is(#c-root, html) .c-section { display: flex; flex-direction: column; gap: var(--c-gap-item); min-width: 0; }
+:is(#c-root, html) .c-page > .c-section + *, :is(#c-root, html) .c-page > * + .c-section,
+:is(#c-root, html) .c-page > .c-group + *, :is(#c-root, html) .c-page > * + .c-group { margin-top: calc(var(--c-gap-group) - var(--c-gap-item)); }
+:is(#c-root, html) .c-page > :is(.c-title, .c-nav, .c-phone-sub) + :is(.c-section, .c-group) { margin-top: 0; }
+:is(#c-root, html) .c-section__label { margin: 0 16px -4px; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
+:is(#c-root, html) .c-section__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px -4px; }
+:is(#c-root, html) .c-section__head > .c-section__label { margin: 0; }
+:is(#c-root, html) .c-group { display: flex; flex-direction: column; gap: var(--c-gap-item); min-width: 0; }
+/* The same label as a bare element above a card (Payroll builder's request): .c-sec-label holds an h2 (13/18 500 grey) and
+ * an optional aside on the right; margin 0 16px 8px (the page's 12px gap still follows it). A .c-sec-label starts a new group, 32px under what came before. */
+:is(#c-root, html) .c-sec-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px 8px; }
+:is(#c-root, html) .c-sec-label > h2 { margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
+:is(#c-root, html) .c-page > * + .c-sec-label { margin-top: calc(var(--c-gap-group) - var(--c-gap-item)); }
+:is(#c-root, html) .c-page > :is(.c-title, .c-nav, .c-phone-sub) + .c-sec-label { margin-top: 0; }
+
+/* R1, R4: tablets and desktop. The title row is 40px with the title at 28/34; every page's title sits at the same height
+ * (48px under the top bar), because a pushed page's "‹ Section" link no longer takes a line of its own: it sits in the
+ * band above the title, the same on every page. The first content is 24px under the title block. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page { position: relative; }
+  :is(#c-root, html) .c-page:not(.c-embed), :is(#c-root, html) .c-page.c-page--wide:not(.c-embed) { padding-top: 48px; }
+  :is(#c-root, html) .c-title__row { min-height: 40px; }
+  :is(#c-root, html) .c-title h1, :is(#c-root, html) .c-nav__title, :is(#c-root, html) .c-skel__title { font-size: 28px; line-height: 34px; letter-spacing: -0.56px; }
+  :is(#c-root, html) .c-nav { grid-template-areas: "title right"; row-gap: 0; min-height: 40px; }
+  :is(#c-root, html) .c-nav__right { min-height: 40px; }
+  :is(#c-root, html) .c-page > .c-nav > .c-nav__back { position: absolute; top: 2px; left: 16px; z-index: 1; margin: 0; padding: 0 8px; font-weight: 500; }
+  :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + :not(.c-phone-sub):not(.c-section):not(.c-group),
+  :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + .c-phone-sub + :not(.c-section):not(.c-group) { margin-top: 12px; }
+  :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + :is(.c-section, .c-group),
+  :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + .c-phone-sub + :is(.c-section, .c-group) { margin-top: 12px; }
+  :is(#c-root, html) .c-skel__bar--title { height: 34px; }
+  /* A 44px icon button ("…") in the title row takes 40px of layout, so it never pushes the title down. */
+  :is(#c-root, html) :is(.c-title__actions, .c-title__row, .c-nav__right) .c-icon-btn { margin-top: -2px; margin-bottom: -2px; }
+}
+
+/* R12: the segmented control has one thumb that slides (200ms on the kit curve) over an inset track. CorpSegments sets
+ * data-slide with --n (segments) and --i (the current one); a hand-built .c-seg keeps the per-segment shape. */
+:is(#c-root, html) .c-seg { position: relative; box-shadow: inset 0 1px 2px rgb(26 28 30 / 0.06); }
+:is(#c-root, html) .c-seg[data-slide]::before { content: ""; position: absolute; top: 2px; bottom: 2px; left: 2px; z-index: 0; width: calc((100% - 4px) / var(--n, 2)); border-radius: 6px; background: #FFFFFF;
+  box-shadow: 0 1px 2px rgb(16 24 32 / 0.10), 0 0 0 0.5px rgb(16 24 32 / 0.04); transform: translateX(calc(100% * var(--i, 0))); transition: transform var(--c-dur-ui) var(--c-ease); pointer-events: none; }
+:is(#c-root, html) .c-seg[data-slide][data-slide-none]::before { opacity: 0; }
+:is(#c-root, html) .c-seg[data-slide] > :is(a, button) { z-index: 1; transition: color var(--c-dur-press) ease-out; }
+:is(#c-root, html) .c-seg[data-slide] > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"])::before { background: none; box-shadow: none; }
+:is(#c-root, html) .c-seg[data-c-slide-instant]::before { transition: none; }
+
+/* R12: tab rows (.c-tabs, Payroll's .c-pay-tabs, Timecards' .c-tc-tabs, any [data-c-tabs]) get one 2px teal line that
+ * slides to the current tab, and the sidebar's tint slides to the current entry. CorpMotion (corp-motion.tsx, in the shell)
+ * measures the current item and sets --c-x/--c-w (and --c-y/--c-h); until it has, each row draws its own static mark. */
+:is(#c-root, html) .c-tabs { display: flex; gap: 24px; box-shadow: inset 0 -1px 0 var(--c-ring); overflow-x: auto; scrollbar-width: none; }
+:is(#c-root, html) .c-tabs::-webkit-scrollbar { display: none; }
+:is(#c-root, html) .c-tabs > :is(a, button) { display: inline-flex; align-items: center; flex: none; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-grey); font-size: 15px; line-height: 20px; font-weight: 500; white-space: nowrap; cursor: pointer; transition: color var(--c-dur-press) ease-out; }
+:is(#c-root, html) .c-tabs > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) { color: var(--c-ink); box-shadow: inset 0 -2px 0 var(--c-teal); }
+:is(#c-root, html) .c-tabs > :is(a, button):focus-visible { outline-offset: -2px; border-radius: 4px; }
+[data-c-slide="x"] { position: relative; }
+[data-c-slide="x"]::after { content: ""; position: absolute; left: 0; bottom: 0; z-index: 1; width: 1px; height: 2px; background: var(--c-teal, #0B6E69); transform-origin: 0 0;
+  transform: translateX(var(--c-x, 0px)) scaleX(var(--c-w, 0)); transition: transform var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)); pointer-events: none; }
+[data-c-slide="x"][data-c-slide-ready] > :is([aria-current="page"], [aria-pressed="true"], [aria-selected="true"]) { box-shadow: none !important; }
+[data-c-slide="x"]:not([data-c-slide-ready])::after { content: none; }
+[data-c-slide][data-c-slide-instant]::after, [data-c-slide][data-c-slide-instant]::before { transition: none !important; }
+
+/* R12: rows that leave after a server-confirmed change fade and fold in 200ms (leaveRow in corp-client.tsx); rows that
+ * arrive (data-new) fade up 4px. The fold animates height once, for one row, after the change is saved. */
+:is(#c-root, html) [data-leaving] { overflow: hidden; pointer-events: none; }
+@media (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) :is(.c-rows > li, .c-row, .c-card)[data-new] { animation: c-row-in var(--c-dur-ui) var(--c-ease) both; }
+}
+@keyframes c-row-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* R8: one sheet pattern. On a phone a sheet rises from the bottom with a centred title and Done on the right. On tablets
+ * and desktop every kit sheet is a 420px panel on the right, full height, that slides in from the edge (360ms in, 240ms
+ * out on the kit curve); reduced motion fades. */
+@media (min-width: 768px) {
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet { inset: 0 0 0 auto; width: 420px; max-width: calc(100vw - 48px); height: 100dvh; max-height: 100dvh; margin: 0; border-radius: 0;
+    box-shadow: var(--c-shadow-pop); opacity: 1; transform: translateX(0); transition: transform var(--c-dur-sheet) var(--c-ease); }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[data-closing] { transform: translateX(100%); transition-duration: var(--c-dur-sheet-out); transition-timing-function: cubic-bezier(.32, 0, .67, 0); }
+  @starting-style { :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[open] { opacity: 1; transform: translateX(100%); } }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet > .q-sheet__in { min-height: 100%; }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet::backdrop { background: rgb(16 24 32 / 0.24); }
+  /* The panel's bar sits at its top edge (no grabber on a wide screen). */
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet .q-sheet__top { height: 0; }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet :is(.c-sheet__nav, .q-nav, .c-sheet-head) { top: 0; }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet .c-sheet__nav { min-height: 56px; }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet { transform: none; transition: opacity 160ms ease-out; }
+  :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[data-closing] { transform: none; opacity: 0; transition-duration: 120ms; }
+  @starting-style { :is(#c-root, html) body .app-shell[data-nv-corp] dialog.q-sheet[open] { transform: none; opacity: 0; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-seg[data-slide]::before, [data-c-slide]::after, [data-c-slide]::before, :is(#c-root, html) .c-tabs > :is(a, button) { transition: none !important; }
+}
+
+/* Round 2 requests from the Home and Insights builder. */
+/* A stat that links to its list. The link fills the stat; hover #F7F8F8, press #EDEEEF, an inset 2px teal focus ring. */
+:is(#c-root, html) .c-stat.c-stat--link { padding: 0; }
+:is(#c-root, html) .c-stat__link { display: block; height: 100%; padding: 12px 16px; color: inherit; text-decoration: none; transition: background-color var(--c-dur-press) ease-out; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-stat__link:hover { background: #F7F8F8; } }
+:is(#c-root, html) .c-stat__link:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) .c-page .c-stat__link:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--c-teal); border-radius: 0; }
+/* A count after a label, in place of "(3)". */
+:is(#c-root, html) .c-count { margin-left: 6px; font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; font-feature-settings: var(--c-num-features); }
+/* A sub-head inside a card for a second kind of row. */
+:is(#c-root, html) .c-card__sub { display: block; margin: 0; padding: 12px 16px 8px; box-shadow: inset 0 1px 0 var(--c-line); font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
+:is(#c-root, html) .c-card > .c-card__sub:first-child { box-shadow: none; }
+/* A secondary button that opens a menu: its label and a 16px grey caret. */
+:is(#c-root, html) .c-btn.c-btn--menu { gap: 6px; padding: 0 12px 0 16px; }
+:is(#c-root, html) .c-btn--menu .c-btn__caret { flex: none; width: 16px; height: 16px; color: var(--c-grey); }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-stat__link { transition: none; } }
+
+/* Round 2 requests from the Team builder. A kit sheet rendered outside a .c-page (a dialog at the page's root) gets the
+ * kit's colour tokens too, so its buttons, rings and text never fall back to transparent. */
+:is(#c-root, html) :is(dialog.q-sheet, .c-sheet) {
+  --c-bg: #F5F6F6; --c-card: #FFFFFF; --c-ring: #E3E5E6; --c-line: #EDEEEF; --c-ink: #1A1C1E; --c-ink2: #4A4F54; --c-grey: #6B7075;
+  --c-faint: #A7ACB1; --c-field: #D5D8DA; --c-teal: #0B6E69; --c-teal-hover: #084F4B; --c-tint: #E6F1EF;
+  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-blue-bg: #EAF0FD; --c-blue: #1D4ED8; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
+  --c-badge-neutral-bg: #EDEEEF; --c-badge-neutral-ink: #1A1C1E; --c-av-bg: #EDEEEF; --c-av-ink: #4A4F54;
+}
+/* A Cancel-style action in a sheet's bar that is disabled reads grey. */
+:is(#c-root, html) .c-sheet__nav .c-sheet-head__l:is(:disabled, [aria-disabled="true"]) { color: var(--c-grey); cursor: default; }

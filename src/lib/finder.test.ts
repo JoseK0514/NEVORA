@@ -8,7 +8,7 @@ describe('finder', () => {
   it('opens on actions and pages only, never the whole team', () => {
     const results = rankFinder(items, '');
     expect(results.every(item => item.group === 'Actions' || item.group === 'Pages')).toBe(true);
-    expect(results[0].label).toBe('Add a shift');
+    expect(results[0].label).toBe('Add shift');
   });
   it('ranks label starts, then word starts, then contains, then keywords', () => {
     expect(rankFinder(items, 'riv').filter(i => i.group === 'People').map(i => i.label)).toEqual(['Alexandra Rivera', 'Morgan Rivera']);

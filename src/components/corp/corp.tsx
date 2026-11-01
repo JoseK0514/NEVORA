@@ -1,13 +1,16 @@
 import "./corp.css";
 import Link from "next/link";
-import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
+import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { BrandWordmark } from "@/components/brand-mark";
 import { NUVORA_BRAND } from "@/lib/brand";
 import { CorpBackLink } from "./corp-client";
+import { ActionMenu } from "@/components/action-menu";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 
-export { CorpBackLink, CorpRetryButton } from "./corp-client";
+export { CorpBackLink, CorpRetryButton, leaveRow } from "./corp-client";
+export { RANGE_DASH, periodRange, payDay, daysBetween, hoursText, minutesText } from "./corp-format";
 
 /* NEVORA corporate kit (approved Oct 26, 2026; docs/product/specs/corporate-mockups). Presentation only: callers pass
  * authorized, formatted data and keep their own actions. Each piece reproduces one element of the approved boards. */
@@ -19,7 +22,8 @@ export function CorpPage({ children, label, labelledBy, className }: { children:
   return <div className={className ? `c-page ${className}` : "c-page"} data-nv-page="" data-corp="" aria-label={label} aria-labelledby={labelledBy}>{children}</div>;
 }
 
-/** 22/600 page title, an optional 13px line under it and optional controls on its right. */
+/** The page title (round 2, R1/R4): 24/30 600 on a phone, 28/34 on tablets and desktop, in a 40px title row at the same
+ * height on every page; its actions (`actions`) sit in that row on the right. An optional 13px line 4px under it. */
 /** `wide`: a pushed page's title for tablets and desktop; on a phone its CorpNav (phoneOnly) shows the title instead. */
 /** `subAside`: a control on the subtitle's line, right ("All locations ▾"). */
 export function CorpTitle({ title, sub, actions, id, wide, subAside }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean; subAside?: ReactNode }) {
@@ -46,7 +50,10 @@ export function CorpBody({ children, tight }: { children: ReactNode; tight?: boo
   return <div className={tight ? "c-card__body c-card__body--tight" : "c-card__body"}>{children}</div>;
 }
 
-/** A filled status pill. */
+/** A filled status pill, for EXCEPTIONS ONLY (round 2, R3): something the person must notice or act on that the row's
+ * words don't already say ("Correction", "Overdue"). A default or expected state ("Published", "Due Mon, Nov 2", "Needs
+ * setup", "Live", "Waiting", "Not filled") is grey text: use CorpMeta. Red appears once per screen at most: prefer
+ * tone="neutral", and keep "red" for the one real problem. */
 export function CorpPill({ tone = "neutral", dot, children, label }: { tone?: Tone; dot?: boolean; children: ReactNode; label?: string }) {
   return <span className={`c-pill c-pill--${tone}`} aria-label={label}>{dot ? <span className="c-pill__dot" aria-hidden="true" /> : null}{children}</span>;
 }
@@ -135,17 +142,29 @@ export function CorpLink({ href, children, large, label, prefetch }: { href: str
   return <Link href={href} className={large ? "c-link c-link--l" : "c-link"} aria-label={label} prefetch={prefetch}>{children}</Link>;
 }
 
-/** Equal stat columns with a hairline between ("Clocked in 7 of 9 · Late 1 · Open shifts 1"). */
-export function CorpStats({ items }: { items: { label: ReactNode; value: ReactNode; tone?: "red" | "amber" | "teal" }[] }) {
-  return <dl className="c-stats">{items.map((item, index) => <div className="c-stat" key={index}>
-    <dt className="c-stat__label">{item.label}</dt>
-    <dd className={item.tone ? `c-stat__value c-stat__value--${item.tone}` : "c-stat__value"}>{item.value}</dd>
-  </div>)}</dl>;
+/** Equal stat columns with a hairline between ("Clocked in 7 of 9 · Late 1 · Open shifts 1"). Values are key figures,
+ * 20/26 600 with tabular figures (R1, R2). Figures are ink: a `tone` is for the screen's one real problem only (R3). */
+/** Round 2 (Home builder's request): a stat with `href` is a link to its list (hover #F7F8F8, press #EDEEEF, an inset
+ * teal focus ring); `ariaLabel` names it when the label and figure alone don't ("3 open shifts"). */
+export function CorpStats({ items }: { items: { label: ReactNode; value: ReactNode; tone?: "red" | "amber" | "teal"; href?: string; ariaLabel?: string }[] }) {
+  return <dl className="c-stats">{items.map((item, index) => {
+    const inner = <>
+      <dt className="c-stat__label">{item.label}</dt>
+      <dd className={item.tone ? `c-stat__value c-stat__value--${item.tone}` : "c-stat__value"}>{item.value}</dd>
+    </>;
+    return item.href
+      ? <div className="c-stat c-stat--link" key={index}><Link className="c-stat__link" href={item.href} aria-label={item.ariaLabel}>{inner}</Link></div>
+      : <div className="c-stat" key={index}>{inner}</div>;
+  })}</dl>;
 }
 
-/** Segmented control made of links (or buttons via `onSelect`). */
+/** Segmented control made of links (or buttons via `onSelect`). Round 2 (R12): one white thumb slides to the current
+ * segment (200ms on the kit curve; no travel with reduced motion). The thumb is CSS, from --n and --i set here; the shell's
+ * CorpMotion carries it across a page change that remounts the control. */
 export function CorpSegments({ label, items }: { label: string; items: { key?: string; href?: string; onSelect?: () => void; label: ReactNode; current?: boolean; ariaLabel?: string }[] }) {
-  return <nav className="c-seg" aria-label={label}>
+  const current = items.findIndex(item => item.current);
+  const style = { "--n": items.length, "--i": Math.max(0, current) } as CSSProperties;
+  return <nav className="c-seg" aria-label={label} data-slide="" data-slide-none={current < 0 ? "" : undefined} style={style}>
     {items.map((item, index) => item.href
       ? <Link key={item.key ?? item.href} href={item.href} aria-current={item.current ? "page" : undefined} aria-label={item.ariaLabel}>{item.label}</Link>
       : <button key={item.key ?? index} type="button" aria-pressed={item.current ? "true" : "false"} aria-label={item.ariaLabel} onClick={item.onSelect}>{item.label}</button>)}
@@ -208,4 +227,98 @@ export function CorpErrorCard({ title, body = "Check your connection, then try a
  * (secondary) and the primary on the right, auto width. Hidden on phones, where the header's Cancel and Save are used. */
 export function CorpFormFooter({ children, danger }: { children: ReactNode; danger?: ReactNode }) {
   return <div className="c-form-foot">{danger ?? null}{children}</div>;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Round 2 (Oct 31, 2026; ROUND2-PLAN.md R2, R3, R5, R12). Presentation only.
+ * ------------------------------------------------------------------------------------------------------------------- */
+
+// No lookbehind: Safari before 16.4 cannot parse it, and this module loads on every page.
+const DASH_PATTERN = /\s+[–—-]\s+|([0-9apmAPM.])[–—](?=[0-9])/g;
+const AMPM = /(\d)(\s?)(AM|PM|am|pm|a\.m\.|p\.m\.|a|p)(?![A-Za-z])/g;
+const THIN = "\u2009", NARROW = "\u202F";
+
+/** R2: "8:00 AM – 4:00 PM" as text, with thin spaces round the en dash (for aria-labels, titles and plain strings). */
+export function timeRangeText(start: string, end: string) {
+  return `${start}${THIN}–${THIN}${end}`;
+}
+
+/** R2: splits an already formatted time or range into kit spans: AM/PM (and the short "a"/"p" of "12a – 6a") at 0.8em 500
+ * #4A4F54 joined to its digits by a narrow no-break space, and thin spaces round the en dash. The words never change; only
+ * spacing and size do, so a page passes the string it already shows. */
+export function timeParts(text: string): ReactNode[] {
+  const spaced = text.replace(DASH_PATTERN, (_match, before?: string) => `${before ?? ""}${THIN}–${THIN}`);
+  const parts: ReactNode[] = [];
+  let last = 0, key = 0;
+  for (const match of spaced.matchAll(AMPM)) {
+    const at = match.index ?? 0;
+    parts.push(spaced.slice(last, at) + match[1] + (match[2] ? NARROW : ""));
+    parts.push(<span key={key++} className="c-ampm">{match[3]}</span>);
+    last = at + match[0].length;
+  }
+  parts.push(spaced.slice(last));
+  return parts.filter(part => part !== "");
+}
+
+/** R2, the shift-time signature: a time, a range or a date set with tabular, case-sensitive figures. Pass the formatted
+ * string as children ("8:00 AM – 4:00 PM", "12a – 6a", "Mon, Nov 2"), or `start` and `end` for a range. */
+export function CorpTime({ children, start, end, className, label }: { children?: string; start?: string; end?: string; className?: string; label?: string }) {
+  const text = start !== undefined && end !== undefined ? timeRangeText(start, end) : children ?? start ?? "";
+  return <span className={className ? `c-time ${className}` : "c-time"} aria-label={label}>{timeParts(text)}</span>;
+}
+
+/** R2: a duration ("8 h 2 min", "151 h") with its units at 0.85em grey and tabular figures. Children is the formatted text. */
+export function CorpDuration({ children, className }: { children: string; className?: string }) {
+  const parts: ReactNode[] = [];
+  let last = 0, key = 0;
+  for (const match of children.matchAll(/(\d)(\s?)(h|min|m|hr|hrs)(?![A-Za-z])/g)) {
+    const at = match.index ?? 0;
+    parts.push(children.slice(last, at) + match[1] + (match[2] ? NARROW : ""));
+    parts.push(<span key={key++} className="c-unit">{match[3]}</span>);
+    last = at + match[0].length;
+  }
+  parts.push(children.slice(last));
+  return <span className={className ? `c-num ${className}` : "c-num"}>{parts.filter(part => part !== "")}</span>;
+}
+
+/** R3: a default state as grey text (13/18 500 #6B7075), where a pill used to be ("Published", "Due Mon, Nov 2"). */
+export function CorpMeta({ children, label }: { children: ReactNode; label?: string }) {
+  return <span className="c-meta" aria-label={label}>{children}</span>;
+}
+
+/** R5: a group of cards with its label above them (13/18 500 grey, inset 16px), for list pages (Settings, More, Team, Pay
+ * history, Things to do): no 44px header strip. Groups are 32px apart; cards in a group 12px. `aside` sits on the label's
+ * line, right (a "See all" link). */
+export function CorpSection({ label, aside, id, children, ariaLabel }: { label?: ReactNode; aside?: ReactNode; id?: string; children: ReactNode; ariaLabel?: string }) {
+  const headingId = id && label ? `${id}-label` : undefined;
+  const heading = label ? <h2 className="c-section__label" id={headingId}>{label}</h2> : null;
+  return <section id={id} className="c-section" aria-labelledby={ariaLabel ? undefined : headingId} aria-label={ariaLabel}>
+    {heading && aside ? <div className="c-section__head">{heading}<span className="c-card__aside">{aside}</span></div> : heading}
+    {children}
+  </section>;
+}
+
+/** R12: a row of tabs that are pages (links). The current tab is ink over a 2px teal line that slides between tabs. */
+export function CorpTabs({ label, items }: { label: string; items: { href: string; label: ReactNode; current?: boolean; ariaLabel?: string }[] }) {
+  return <nav className="c-tabs" aria-label={label} data-c-tabs="">
+    {items.map(item => <Link key={item.href} href={item.href} aria-current={item.current ? "page" : undefined} aria-label={item.ariaLabel}>{item.label}</Link>)}
+  </nav>;
+}
+
+/** A count after a label ("Open shifts  3"): grey 500 with tabular figures, in place of "(3)". */
+export function CorpCount({ children, label }: { children: ReactNode; label?: string }) {
+  return <span className="c-count" aria-label={label}>{children}</span>;
+}
+
+/** A sub-head inside a card, for a second kind of row in the same card ("Missed clock-ins" under "Open shifts"). */
+export function CorpCardSub({ children, id }: { children: ReactNode; id?: string }) {
+  return <h3 className="c-card__sub" id={id}>{children}</h3>;
+}
+
+/** A secondary button that opens a menu ("This week so far ▾"): the kit's secondary style with a 16px caret; the menu is
+ * the kit's ActionMenu (a popover on wide screens, a sheet with a centred title and Done on a phone). */
+export function CorpMenuButton({ id, label, title, ariaLabel, align, children }: { id: string; label: string; title?: string; ariaLabel?: string; align?: "start" | "end"; children: ReactNode }) {
+  return <ActionMenu id={id} label={label} ariaLabel={ariaLabel} title={title ?? label} align={align}
+    triggerClassName="c-btn c-btn--secondary c-btn--menu"
+    triggerContent={<>{label}<CaretDownIcon className="c-btn__caret" size={16} aria-hidden="true" /></>}>{children}</ActionMenu>;
 }
