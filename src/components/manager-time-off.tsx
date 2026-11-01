@@ -85,7 +85,7 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
   const sent = sentLabel((request as { createdAt?: string }).createdAt, timeZone);
   const offNames = others ? [...new Set(others.filter(other => other.employeeId !== request.employeeId && other.startDate <= request.endDate && other.endDate >= request.startDate).map(other => other.employeeName))] : null;
   const offLabel = request.startDate === request.endDate ? `Others off ${dayLabel(request.startDate)}` : "Others off these days";
-  return <CorpPage className="c-request" labelledBy="request-title">
+  return <CorpPage className="c-request c-page--narrow" labelledBy="request-title">
     <CorpNav back={backTo(origin)} title="Time off request" titleId="request-nav-title" phoneOnly />
     <CorpTitle id="request-title" title="Time off request" sub={request.employeeName} wide />
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}

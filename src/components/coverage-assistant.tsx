@@ -35,6 +35,10 @@ export type CoverageAssistantProps = {
   refreshHref?: string;
   saved?: boolean;
   repair?: boolean;
+  /** Add shift, prefilled with this day, time and location (the existing form; its review checks the person). */
+  addShiftHref?: string;
+  /** Scheduling rules, where this time's coverage need is set. */
+  rulesHref?: string;
 };
 
 const hours = (value: number) => durationText(Math.round(value * 60));
@@ -57,7 +61,7 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
   const state = props.status === "RESOLVED" ? <CorpPill tone="teal">Covered</CorpPill> : props.status === "STALE" ? <CorpPill tone="amber">Changed</CorpPill> : <CorpPill tone="red">Not filled</CorpPill>;
   const facts = [props.positionName, shortDate, props.locationName, props.designatedLead ? "Shift lead needed" : null, nextDay ? `Ends ${nextDay.weekday},\u00a0${nextDay.day}` : null].filter(Boolean).join(" · ");
   const needs = props.requirements?.length && (props.status === "READY" || props.status === "CHOOSE") && (props.requirements.length > 1 || props.status === "CHOOSE") ? props.requirements : null;
-  return <CorpPage className="c-cover" labelledBy="coverage-title">
+  return <CorpPage className="c-cover c-page--narrow" labelledBy="coverage-title">
     <CorpNav back={{ href: props.backHref, label: "Schedule" }} title="Find cover" titleId="coverage-title" phoneOnly />
     <CorpTitle title="Find cover" wide />
     <ManagerIssueFocus prefix="coverage-" />
@@ -82,8 +86,14 @@ export function CoverageAssistant(props: CoverageAssistantProps) {
     {props.status === "READY" ? <CorpCard id="coverage-people" label="Best fit first" aside={`${plural(count, "person", "people")} free`}>
       {count ? <ScheduleCoverPick repair={props.repair} people={props.candidates.map(employee => ({ employeeId: employee.employeeId, employeeName: employee.employeeName, detail: personDetail(employee), href: employee.href }))} />
         : <CorpBody>
-          <p className="c-cover__empty">No one can work it</p>
-          <p className="c-line3">{props.repair ? "No one meets this position, lead, location, availability and scheduling need right now." : "Everyone is unavailable, already working, on approved time off, inactive, or can’t work at this location."}</p>
+          {/* Owner premium (structure-experience F1/F2): a decision, not a dead end. The same read; the next steps are the
+            existing Add shift form (its review checks the person) and the coverage need in Scheduling rules. */}
+          <p className="c-cover__empty">No one is free for this shift</p>
+          <p className="c-line3">{props.repair ? "No one meets this position, lead, location and availability right now." : `Everyone is unavailable, already working, off, or can’t work at ${props.locationName}.`}{props.addShiftHref || props.rulesHref ? " You can still add the shift for someone, or change what this time needs." : ""}</p>
+          {props.addShiftHref || props.rulesHref ? <div className="c-cover__next">
+            {props.addShiftHref ? <CorpButtonLink href={props.addShiftHref} kind="secondary" size="md">Add shift for someone</CorpButtonLink> : null}
+            {props.rulesHref ? <Link className="c-link c-link--l" href={props.rulesHref}>Change coverage needs</Link> : null}
+          </div> : null}
         </CorpBody>}
     </CorpCard> : <CorpCard id="coverage-people" label={props.status === "RESOLVED" ? "This shift is covered" : props.status === "STALE" ? "Coverage changed" : "Choose what to fill"}>
       <CorpBody>

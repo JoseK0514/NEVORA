@@ -21,16 +21,19 @@
 :is(#c-root, html) .app-shell[data-nv-corp] .c-tc .c-tc-bulk :is(.q-list, .q-help, .q-btn) { margin-left: 0; margin-right: 0; }
 :is(#c-root, html) .app-shell[data-nv-corp] .c-tc .c-tc-bulk .q-btn { width: 100%; }
 
-/* Timecard detail sheet (board O-TimecardDetail): a bottom sheet on phones, a centred panel on wider screens. */
-:is(#c-root, html) dialog.c-tc-sheet { width: min(100%, 560px); max-width: 100%; max-height: 92dvh; margin: auto auto 0; padding: 0; border: 0; border-radius: 16px 16px 0 0; background: #F5F6F6; box-shadow: 0 -8px 40px rgba(26, 28, 30, .18); overflow: auto; }
-:is(#c-root, html) dialog.c-tc-sheet::backdrop { background: rgba(26, 28, 30, .40); }
-@media (min-width: 768px) { :is(#c-root, html) dialog.c-tc-sheet { margin: auto; border-radius: 16px; } }
-:is(#c-root, html) .c-tc-sheet .c-tc-sheet__page { min-height: 0; padding: 0 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
-:is(#c-root, html) .c-tc-sheet .c-tc-sheet__bar { position: sticky; top: 0; z-index: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 52px; margin: 0 -16px; padding: 0 16px; background: #FFFFFF; box-shadow: 0 1px 0 var(--c-ring); }
-:is(#c-root, html) .c-tc-sheet .c-tc-sheet__heading { font-size: 17px; line-height: 22px; font-weight: 600; }
-:is(#c-root, html) .c-tc-sheet .cm-tc-done { justify-self: end; min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; cursor: pointer; }
+/* Timecard detail sheet (board O-TimecardDetail, phone-native P5): the kit's sheet (QuietSheet + .c-sheet): a grabber,
+ * swipe down, 360ms in and 240ms out, the page locked behind; a centred panel on wider screens. Its header stays on top. */
+:is(#c-root, html) .c-tc-sheet { gap: 12px; }
+:is(#c-root, html) .c-tc-sheet .c-tc-sheet__bar { position: sticky; top: 11px; z-index: 2; }
+:is(#c-root, html) .c-tc-sheet .c-sheet__title { text-align: center; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-tc-sheet .c-tc-sheet__bar { top: 8px; }
+  /* Wide screens: a centred panel as tall as its content (the kit's c-sheet height would otherwise fill the window). */
+  :is(#c-root, html) dialog.q-sheet:has(.c-tc-sheet) { height: fit-content; max-height: min(86dvh, 820px); margin: auto; }
+  :is(#c-root, html) dialog.q-sheet:has(.c-tc-sheet) .q-sheet__in { min-height: 0; padding-bottom: 16px; }
+}
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__who { display: flex; align-items: center; gap: 12px; padding: 12px 16px; box-shadow: inset 0 -1px 0 var(--c-line); }
-:is(#c-root, html) .c-tc-sheet .c-tc-sheet__who h2 { margin: 0; }
+:is(#c-root, html) .c-tc-sheet .c-tc-sheet__who h3 { margin: 0; font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__issue { padding: 12px 14px; border-radius: 8px; background: var(--c-amber-bg); color: var(--c-amber); font-size: 13px; line-height: 18px; }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__issue[data-tone="neutral"] { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__issue b { display: block; font-weight: 600; }
@@ -46,3 +49,68 @@
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__history h3 { font-size: 13px; line-height: 18px; font-weight: 600; }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__actions { display: flex; flex-direction: column; gap: 8px; }
 :is(#c-root, html) .c-tc-sheet .c-tc-sheet__actions .c-field { margin-bottom: 4px; }
+
+/* Owner premium (A5): a row's state is plain 13px text, grey while it is the normal waiting state and amber only when
+ * someone can act on it now. No pills on rows, so names keep their room at 320px. */
+:is(#c-root, html) .c-tc .c-tc-cue { color: var(--c-grey); }
+:is(#c-root, html) .c-tc .c-tc-cue[data-act] { color: var(--c-amber); }
+:is(#c-root, html) .c-tc .c-row > .c-row__value { flex: none; font-size: 15px; line-height: 20px; color: var(--c-ink); white-space: nowrap; }
+:is(#c-root, html) .c-tc .c-tc-corrections { box-shadow: inset 0 1px 0 var(--c-line); }
+
+/* Owner premium (A8): Timecards on wide screens. One period control (the segmented control, max 480px), the period card,
+ * then one white card holding the filters, the table and Export. Corporate tokens only: radius 12, 1px #E3E5E6 ring,
+ * 13/600 #4A4F54 heads, 15/400 cells, 52px rows, hover #F7F8F8. */
+@media (min-width: 761px) {
+  :is(#c-root, html) .c-tc .c-tc-seg { max-width: 480px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-tablecard { overflow: hidden; }
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs { display: flex; align-items: stretch; justify-content: flex-start; gap: 24px; padding: 0 16px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 44px; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
+    color: var(--c-grey); font: inherit; font-size: 13px; line-height: 18px; font-weight: 600; cursor: pointer; transition: color 120ms ease-out; }
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs button em { font-style: normal; font-weight: 400; }
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs button[aria-pressed="true"] { color: var(--c-ink); box-shadow: inset 0 -2px 0 var(--c-teal); }
+  :is(#c-root, html) .c-tc-desk .c-tc-tabs button:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 4px; }
+  @media (hover: hover) { :is(#c-root, html) .c-tc-desk .c-tc-tabs button:hover { color: var(--c-ink); } }
+  :is(#c-root, html) .c-tc-desk .c-tc-tablebox { container-type: inline-size; width: 100%; overflow-x: auto; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table { width: 100%; table-layout: auto; border-collapse: collapse; font-size: 15px; line-height: 20px; color: var(--c-ink); font-variant-numeric: tabular-nums; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table th { height: 40px; padding: 0 16px; background: #FAFAFA; box-shadow: inset 0 -1px 0 var(--c-line); text-align: left; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink2); white-space: nowrap; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table td { height: 52px; padding: 0 16px; box-shadow: inset 0 1px 0 var(--c-line); vertical-align: middle; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:first-child td { box-shadow: none; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr { transition: background-color 120ms ease-out; }
+  @media (hover: hover) { :is(#c-root, html) .c-tc-desk .c-tc-table tbody tr:hover { background: #F7F8F8; } }
+  :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="person"] { width: 100%; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table .c-tc-num { text-align: right; white-space: nowrap; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="status"] { min-width: 168px; white-space: nowrap; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="role"] { white-space: nowrap; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table .c-tc-muted { color: var(--c-grey); }
+  :is(#c-root, html) .c-tc-desk .c-tc-table .c-tc-cue { font-size: 15px; line-height: 20px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-table .c-tc-none { color: var(--c-grey); }
+  :is(#c-root, html) .c-tc-desk .c-tc-check { width: 48px; padding: 0 0 0 16px !important; }
+  :is(#c-root, html) .c-tc-desk .c-tc-hit { display: grid; place-items: center start; width: 32px; min-height: 44px; cursor: pointer; }
+  :is(#c-root, html) .c-tc-desk .c-tc-person { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; max-width: 100%; margin: 0; padding: 0; border: 0; background: none;
+    color: var(--c-ink); font: inherit; font-size: 15px; line-height: 20px; font-weight: 600; text-align: left; cursor: pointer; }
+  :is(#c-root, html) .c-tc-desk .c-tc-person > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  :is(#c-root, html) .c-tc-desk .c-tc-person:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 6px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-idle__open { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; margin: 0; padding: 0; border: 0; background: none;
+    color: var(--c-grey); font: inherit; font-size: 15px; line-height: 20px; text-align: left; cursor: pointer; }
+  :is(#c-root, html) .c-tc-desk .c-tc-idle__open > span:first-child { flex: 1; }
+  :is(#c-root, html) .c-tc-desk .c-tc-idle__open:focus-visible { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 6px; }
+  /* Narrower cards: Role goes first, then Breaks (both are in the sheet); Person and Recorded always stay. */
+  @container (max-width: 760px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="role"] { display: none; } }
+  @container (max-width: 600px) { :is(#c-root, html) .c-tc-desk .c-tc-table [data-col="breaks"] { display: none; } }
+
+  /* The reviewed batch: one white card above the table, buttons at their own width. */
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__bar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__count { flex: 1 1 240px; display: flex; flex-direction: column; gap: 2px; margin: 0; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__count strong { font-size: 17px; line-height: 22px; font-weight: 600; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__count span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__action { display: flex; flex-direction: column; gap: 4px; min-width: 200px; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--c-ink2); }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__step { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--c-line); font-size: 15px; line-height: 20px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__step h3 { font-size: 15px; line-height: 20px; font-weight: 600; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__step p { color: var(--c-ink2); }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__step ul { margin: 0; padding-left: 18px; list-style: disc; color: var(--c-ink2); }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__check { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; padding-top: 4px; cursor: pointer; }
+  :is(#c-root, html) .c-tc-desk .c-tc-dbulk__foot { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
+  :is(#c-root, html) .c-tc-desk .c-tc-refresh { min-height: 44px; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+  :is(#c-root, html) .c-tc-desk .c-tc-refresh:disabled { color: var(--c-faint); cursor: default; }
+}

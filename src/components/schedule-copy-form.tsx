@@ -12,7 +12,7 @@ export function ScheduleCopyForm({
 }: {
   command: CopyCommand;
   actorId: string;
-  label?: string;
+  label?: ReactNode;
   className?: string;
   ariaLabel?: string;
   children?: ReactNode;

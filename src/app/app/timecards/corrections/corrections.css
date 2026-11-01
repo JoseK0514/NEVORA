@@ -1,0 +1,34 @@
+/* Time corrections under Time (Owner premium A9): the existing correction queue drawn on the corporate kit. The page title
+ * names it, so the queue's own eyebrow and explainer step aside (its heading stays for screen readers); the count becomes
+ * the card header's aside; each request is a section of the one white card; Decline and Approve are 40px kit buttons. */
+:is(#c-root, html) .c-tcx .manager-corrections { border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); font-family: inherit; color: var(--c-ink); }
+:is(#c-root, html) .c-tcx .manager-corrections-header { min-height: 44px; padding: 0 16px; gap: 12px; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-tcx .manager-corrections-header > div > :is(p, span) { display: none; }
+:is(#c-root, html) .c-tcx .manager-corrections-header h2 { font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: 0; color: var(--c-ink2); }
+:is(#c-root, html) .c-tcx .manager-corrections-count { min-width: 0; height: auto; padding: 0; border-radius: 0; background: none; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .manager-corrections-notice { margin: 0; padding: 12px 16px; box-shadow: inset 0 -1px 0 var(--c-line); font-size: 13px; line-height: 18px; color: var(--c-ink2); background: none; border: 0; border-radius: 0; }
+:is(#c-root, html) .c-tcx .manager-corrections-retry { margin: 12px 16px 0; }
+:is(#c-root, html) .c-tcx .manager-corrections-empty { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 32px 16px; border: 0; border-radius: 0; background: none; text-align: center; }
+:is(#c-root, html) .c-tcx .manager-corrections-empty > span[aria-hidden] { display: none; }
+:is(#c-root, html) .c-tcx .manager-corrections-empty strong { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-tcx .manager-corrections-empty small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .manager-corrections-list { border: 0; }
+:is(#c-root, html) .c-tcx .manager-correction-row { gap: 12px; padding: 16px; border: 0; box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-tcx .manager-correction-row:first-child { box-shadow: none; }
+:is(#c-root, html) .c-tcx .manager-correction-topline strong { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-tcx .manager-correction-topline small { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* "Pending" is every row's state here, so it reads as plain grey text, not a pill. */
+:is(#c-root, html) .c-tcx .manager-correction-topline > span { padding: 0; border-radius: 0; background: none; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .correction-comparison > div { padding: 12px; border: 0; border-radius: 8px; background: var(--c-bg); }
+:is(#c-root, html) .c-tcx .correction-comparison small, :is(#c-root, html) .c-tcx .correction-context-zone, :is(#c-root, html) .c-tcx .correction-prior-decisions { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .correction-comparison strong { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-tcx :is(.manager-correction-reason, .manager-correction-provenance, .manager-correction-self) { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-tcx .manager-correction-provenance { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-tcx .manager-correction-actions { display: flex; justify-content: flex-end; gap: 8px; }
+:is(#c-root, html) .c-tcx :is(.manager-correction-actions button, .manager-corrections-retry) { display: inline-flex; align-items: center; justify-content: center; min-width: 120px; height: 44px; padding: 0 16px;
+  border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink); font: inherit; font-size: 15px; line-height: 20px; font-weight: 600; cursor: pointer; }
+:is(#c-root, html) .c-tcx .manager-correction-actions button.primary { background: var(--c-teal); box-shadow: none; color: #FFFFFF; }
+:is(#c-root, html) .c-tcx :is(.manager-correction-actions button, .manager-corrections-retry):disabled { opacity: .45; cursor: default; }
+:is(#c-root, html) .c-tcx :is(.manager-correction-actions button, .manager-corrections-retry):focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+@media (max-width: 767px) { :is(#c-root, html) .c-tcx .manager-correction-actions button { flex: 1; min-width: 0; } }
+:is(#c-root, html) .c-tcx > .c-phone-sub { font-size: 13px; line-height: 18px; color: var(--c-grey); }

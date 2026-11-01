@@ -93,7 +93,7 @@ it("a Lead-gap suggestion URL rejects otherwise eligible Employees using the sha
  const general = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve(params) }));
  expect(general).toContain("1\u00a0person");
  const leadOnly = renderToStaticMarkup(await CoverageSuggestionsPage({ searchParams: Promise.resolve({ ...params, lead: "1" }) }));
- expect(leadOnly).toContain("0\u00a0people"); expect(leadOnly).toContain("No one can work it");
+ expect(leadOnly).toContain("0\u00a0people"); expect(leadOnly).toContain("No one is free for this shift");
 });
 
 vi.mock("@/lib/business-time",()=>import("../lib/business-time"));

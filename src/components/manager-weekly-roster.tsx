@@ -27,12 +27,13 @@ import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours,
 /** An uncovered coverage block from the existing coverage read, with its Find cover link. */
 export type RosterOpenShift = { id: string; date: string; startTime: string; endTime: string; location: string; href: string };
 
-/** One time style across the app (TC-25): "8:00 AM", kept whole on one line; the end of the day reads "midnight". */
+/** One time style across the app (TC-25, Owner premium): "8:00 AM", kept whole on one line; midnight reads "12:00 AM" at
+ * either end, like every other time (no "midnight"). */
 function compactTime(time: string) {
-  if (time.startsWith("00:00") || time.startsWith("24:00")) return "midnight";
+  if (time.startsWith("00:00") || time.startsWith("24:00")) return "12:00 AM";
   return formatTime(time).replace(" ", " ");
 }
-/** The Quiet list's clock: "6:00 AM". The corporate day card uses compactTime for both ends, so midnight always reads "midnight". */
+/** The Quiet list's clock: "6:00 AM". */
 const clock = (time: string) => formatTime(time).replace(" ", " ");
 /** Quiet (v4): "12:30 – 4:00 PM", one AM/PM when both ends share it. */
 const span = (start: string, end: string) => { const a = clock(start), b = clock(end); const ma = a.slice(-2), mb = b.slice(-2); return /[AP]M/.test(ma) && ma === mb ? `${a.slice(0, -3)} – ${b}` : `${a} – ${b}`; };
@@ -73,9 +74,9 @@ function Block({ shift, person }: { shift: RosterShift; person: string }) {
   </Link>;
 }
 
-function OpenBlock({ open }: { open: RosterOpenShift }) {
+function OpenBlock({ open, past }: { open: RosterOpenShift; past?: boolean }) {
   const day = formatDayLabel(open.date);
-  return <Link className="cm-block open" href={open.href} title={`${formatTime(open.startTime)} – ${formatTime(open.endTime)} · ${open.location} · No one assigned`}
+  return <Link className="cm-block open" data-past={past || undefined} href={open.href} title={`${formatTime(open.startTime)} – ${formatTime(open.endTime)} · ${open.location} · No one assigned`}
     aria-label={`Find cover for an open shift, ${day.weekday} ${day.day}, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
     <span aria-hidden="true">{range(open.startTime, open.endTime)}</span>
   </Link>;
@@ -93,25 +94,26 @@ const overBy = (hours: NonNullable<RosterEmployee["hours"]>) => `${Number((hours
 export type RosterCorp = { weekLabel: string; previousHref: string; nextHref: string; status?: ReactNode; addShiftHref: string;
   /** Shifts edited since the week was published (Publish changes): they show "Changed". */ changedShiftIds?: readonly string[] };
 
-/** The day card's time column: start over end, both in the one time style ("midnight" at either end); a block that
+/** The day card's time column: start over end, both in the one time style (12:00 AM at either end); a block that
  * covers the whole day reads "All day". */
 function DayTime({ start, end }: { start: string; end: string }) {
   return <span className="c-sched-row__time" aria-hidden="true">{range(start, end) === "All day" ? <b>All day</b> : <><b>{compactTime(start)}</b><span>{compactTime(end)}</span></>}</span>;
 }
 
-/** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time). */
-function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): ReactNode {
+/** Today's live state for one rostered shift, from the same Today read Home uses (matched by person and start time).
+ * `problem`: a missed or late clock-in, which may take the screen's one red. */
+function liveState(shift: RosterShift, employeeId: string, today: Today | null, timeZone: string): { text: string; tone: "teal" | "blue" | "neutral"; problem?: true } | null {
   if (today?.state !== "ready" || shift.date !== today.today) return null;
   const hhmm = (iso: string) => new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(iso));
   const live: TodayShift | undefined = today.shifts.find(row => row.employeeId === employeeId && hhmm(row.startAt) === shift.startTime.slice(0, 5));
   if (!live) return null;
-  if (live.status === "clocked_in") return <CorpPill tone="teal">Working</CorpPill>;
-  if (live.status === "on_break") return <CorpPill tone="blue">On break</CorpPill>;
-  if (live.status === "no_punches") return <CorpPill tone="red">No clock-in</CorpPill>;
+  if (live.status === "clocked_in") return { text: "Working", tone: "teal" };
+  if (live.status === "on_break") return { text: "On break", tone: "blue" };
+  if (live.status === "no_punches") return { text: "No clock-in", tone: "neutral", problem: true };
   if (live.status === "not_clocked_in") {
     const minutes = Math.floor((Date.parse(today.observedAt) - Date.parse(live.startAt)) / 60_000);
     const late = minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min ` : ""}late` : `${Math.max(minutes, 1)} min late`;
-    return <CorpPill tone="red">{late}</CorpPill>;
+    return { text: late, tone: "neutral", problem: true };
   }
   return null;
 }
@@ -218,6 +220,20 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     </div>
   </CorpCard> : null;
   const corpHours = assignedHours(dayShifts.map(entry => entry.shift));
+  // Owner premium (visual-craft I, Jose's rule): red at most once per screen. The day's first problem in time order (an open
+  // shift still to come, or a missed or late clock-in) is red; the rest stay quiet (open shifts as plain rows with a grey
+  // "+", clock-in problems as neutral pills). Open shifts on a day already over carry no alert.
+  const openAlertable = phoneDay >= today;
+  const problems = [
+    ...dayShifts.flatMap(entry => liveState(entry.shift, entry.employee.id, todayRead, timeZone)?.problem ? [{ start: entry.shift.startTime, key: entry.shift.id }] : []),
+    ...(openAlertable ? dayOpen.map(open => ({ start: open.startTime, key: open.id })) : []),
+  ].sort((a, b) => a.start.localeCompare(b.start));
+  const redKey = problems[0]?.key ?? null;
+  const statePill = (shift: RosterShift, employeeId: string) => {
+    const live = liveState(shift, employeeId, todayRead, timeZone);
+    if (live) return <CorpPill tone={live.problem && redKey === shift.id ? "red" : live.tone}>{live.text}</CorpPill>;
+    return shift.status === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : corp?.changedShiftIds?.includes(shift.id) ? <CorpPill tone="amber">Changed</CorpPill> : null;
+  };
   const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={shift.id}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
     <DayTime start={shift.startTime} end={shift.endTime} />
     <CorpAvatar initials={initials(employee.name).toUpperCase()} />
@@ -225,15 +241,15 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       <span className="c-row__title c-row__title--b">{employee.name}</span>
       <span className="c-row__detail"><span>{[shift.lead ? "Shift lead" : shift.position || employee.role, !locationId ? shift.location : null].filter(Boolean).join(" · ")}</span></span>
     </span>
-    {liveState(shift, employee.id, todayRead, timeZone) ?? (shift.status === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : corp?.changedShiftIds?.includes(shift.id) ? <CorpPill tone="amber">Changed</CorpPill> : null)}
+    {statePill(shift, employee.id)}
   </Link></li>;
   const corpRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: corpShiftRow(entry) })),
-    ...dayOpen.map(open => ({ start: open.startTime, node: <li key={open.id}><div className="c-row c-row--open c-sched-row">
+    ...dayOpen.map(open => ({ start: open.startTime, node: <li key={open.id}><div className={redKey === open.id ? "c-row c-row--open c-sched-row" : "c-row c-sched-row c-sched-row--open"}>
       <DayTime start={open.startTime} end={open.endTime} />
-      <span className="c-av c-av--open" aria-hidden="true"><PlusIcon className="c-ic c-ic--s" weight="bold" /></span>
+      <span className={redKey === open.id ? "c-av c-av--open" : "c-av c-sched-av--open"} aria-hidden="true"><PlusIcon className="c-ic c-ic--s" weight="bold" /></span>
       <span className="c-row__main">
-        <span className="c-row__title c-row__title--b c-sched-row__open">Open shift</span>
+        <span className={redKey === open.id ? "c-row__title c-row__title--b c-sched-row__open" : "c-row__title c-row__title--b"}>Open shift</span>
         <span className="c-row__detail"><span>{open.location || "No one assigned"}</span></span>
       </span>
       <Link className="c-link c-link--l c-sched-row__cover" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>
@@ -310,7 +326,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
               <span className="cm-person__text"><span className="cm-person__name">Open shifts</span><span className="cm-person__sub">{focus === "all" ? `${gridOpen.length} this week` : `${gridOpen.length} this day`}</span></span>
             </th>
             {visibleDates.map(date => <td key={date} data-today={date === today || undefined}>
-              {gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime)).map(open => <OpenBlock key={open.id} open={open} />)}
+              {gridOpen.filter(open => open.date === date).sort((a, b) => a.startTime.localeCompare(b.startTime)).map(open => <OpenBlock key={open.id} open={open} past={date < today} />)}
             </td>)}
           </tr> : null}
           {scheduled.map(employee => personRow(employee))}
