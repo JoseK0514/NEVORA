@@ -205,7 +205,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Board G-E-Requests (Release 1, every width; Nov 1 upscale S7): Request time off opens the time-off form and the Decided card's See all opens
   // the decided time-off list; wider layouts add a Shift requests row. Phones have no fixed shift-requests link (each
   // request row opens its own page), so that canonical page is opened directly to verify its ownership and Back.
-  const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens; the Employee header has no "+" New request');
+  const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.locator('main').getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens');
+  // Upscale B2 retired the Employee header's "+" (New request lives on Requests). A Lead (v5 look, on hold) keeps its
+  // header's round "+" by design, so for a Lead the only New request link allowed is that header "+" to /app/requests.
+  const headerNew=await page.getByRole('link',{name:'New request',exact:true}).evaluateAll(links=>links.map(link=>link.matches('header .e5-new')?link.getAttribute('href'):'outside header: '+link.getAttribute('href')));
+  if(corporate)assert.deepEqual(headerNew,[],'The Employee header has no "+" New request');else for(const href of headerNew)assert.equal(href,'/app/requests','A Lead keeps only the header "+" New request');
   const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
   const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
   // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).
