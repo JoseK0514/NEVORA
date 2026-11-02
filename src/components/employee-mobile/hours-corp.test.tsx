@@ -1,7 +1,7 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {describe,expect,it} from 'vitest';
-import {CorpCorrections,CorpFixTime,CorpPastTimecards,CorpTimeEntry,CorpTimeTab,boardDuration,clockRange,formatClock,parseClock,timeSubtitle} from './hours-corp';
+import {CorpCorrections,CorpFixTime,CorpHoursTitle,CorpPastTimecards,CorpTimeEntry,CorpTimeTab,boardDuration,clockRange,formatClock,parseClock,timeSubtitle} from './hours-corp';
 import {HoursCorrectionOperation} from './hours-operation';
 import type {EmployeeTimeEntry,EmployeeTimeReady} from '@/lib/employee-time';
 
@@ -32,6 +32,9 @@ describe('corporate Time tab (G-E-Time, E-TimeOnClock)',()=>{
   expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
   expect(plain).not.toMatch(/Clocker|Refresh|Your information only|Checked|0h|Clock out<\/button>/);
   expect(timeSubtitle(data)).toBe('Tuesday, October 27 · Condado');
+ });
+ it('makes its title a focus target, so Back to Time can move focus there when the origin row isn’t listed',()=>{
+  expect(renderToStaticMarkup(<CorpHoursTitle sub="Monday"/>)).toMatch(/<h1 id="hours-title" tabindex="-1">Time<\/h1>/);
  });
  it('says plainly when nothing is recorded this week',()=>{
   const plain=text(renderToStaticMarkup(<CorpTimeTab data={ready({recent:{entries:[],total:0,limit:20}})}/>));

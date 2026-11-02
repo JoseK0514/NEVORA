@@ -40,9 +40,10 @@ export function CorpPage({ children, label, labelledBy, className }: { children:
  * height on every page; its actions (`actions`) sit in that row on the right. An optional 13px line 4px under it. */
 /** `wide`: a pushed page's title for tablets and desktop; on a phone its CorpNav (phoneOnly) shows the title instead. */
 /** `subAside`: a control on the subtitle's line, right ("All locations ▾"). */
-export function CorpTitle({ title, sub, actions, id, wide, subAside }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean; subAside?: ReactNode }) {
+/** `focusTarget`: the page moves focus to this title after an in-page navigation, so it takes `tabIndex={-1}`. */
+export function CorpTitle({ title, sub, actions, id, wide, subAside, focusTarget }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode; id?: string; wide?: boolean; subAside?: ReactNode; focusTarget?: boolean }) {
   return <header className={wide ? "c-title c-title--wide" : "c-title"}>
-    <div className="c-title__row"><h1 id={id}>{title}</h1>{actions ? <div className="c-title__actions">{actions}</div> : null}</div>
+    <div className="c-title__row"><h1 id={id} tabIndex={focusTarget ? -1 : undefined}>{title}</h1>{actions ? <div className="c-title__actions">{actions}</div> : null}</div>
     {subAside ? <div className="c-title__subrow"><span className="c-title__sub">{sub}</span>{subAside}</div> : sub ? <span className="c-title__sub">{sub}</span> : null}
   </header>;
 }

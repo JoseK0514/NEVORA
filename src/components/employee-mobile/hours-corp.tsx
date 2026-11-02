@@ -81,7 +81,7 @@ export function CorpHoursSheetHead({cancel,cancelLabel='Cancel',send}:{cancel:st
 }
 /** The Time tab's title: Past timecards on the right, the date and location under it. */
 export function CorpHoursTitle({sub}:{sub?:string}){
- return <CorpTitle id="hours-title" title="Time" sub={sub} actions={<CorpButtonLink href="/app/my-time?view=cards" kind="neutral" size="sm">Past timecards</CorpButtonLink>}/>;
+ return <CorpTitle id="hours-title" focusTarget title="Time" sub={sub} actions={<CorpButtonLink href="/app/my-time?view=cards" kind="neutral" size="sm">Past timecards</CorpButtonLink>}/>;
 }
 export function CorpHoursUnavailable({message,onRefresh}:{message:string;onRefresh:()=>void}){
  return <CorpCard ariaLabel="Time status"><CorpBody><p className="c-line2" role="status">{message}</p><CorpButton kind="secondary" size="md" full onClick={onRefresh}>Try again</CorpButton></CorpBody></CorpCard>;
