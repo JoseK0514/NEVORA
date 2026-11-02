@@ -80,3 +80,28 @@ it('independent published fixtures preserve identical publication event dates an
  await f.db.dispose();f=await companyAccessFixture();await seedPartnerFixture(f,'stale');const next=await partnerFactSnapshot(f);
  expect(next.canonicalFacts).toEqual(first.canonicalFacts);expect(next.source).not.toEqual(first.source);
 });
+
+it('saved Owner constraint cannot override enforced weekly hours',async()=>{
+ const {advisorService}=await import('./service.server');const {randomUUID}=await import('node:crypto');
+ const setup=await seedPartnerFixture(f,'hours-cap');
+ const tools=new AdvisorTools(new AdvisorStore(f.owner,await admitOwner(f.owner,f.db.executor),f.db.executor));
+ const before=await tools.run(setup.tool);
+ // Partial is the expected blocked allocation, not missing setup: the four-hour block exceeds the two-hour cap.
+ expect(before.coveragePlans).toMatchObject({state:'ready',partial:true});
+ expect(before.coveragePlans!.locations.every(l=>l.state!=='NEEDS_SETUP')).toBe(true);
+ expect(before.coveragePlans!.alternatives.length).toBeGreaterThan(0);
+ const minutes=(time:string)=>Number(time.slice(0,2))*60+Number(time.slice(3,5));
+ for(const alternative of before.coveragePlans!.alternatives){
+  expect(alternative.remaining.total).toBeGreaterThan(0);
+  expect(alternative.assignments.filter(x=>x.employeeId==='target').reduce((total,x)=>total+minutes(x.endTime)-minutes(x.startTime),0)).toBeLessThanOrEqual(120);
+ }
+ const [dates]=await f.q<{day:string;expiry:string}>("SELECT (clock_timestamp() AT TIME ZONE time_zone)::date::text AS day,((clock_timestamp() AT TIME ZONE time_zone)::date+30)::text AS expiry FROM workspaces WHERE singleton=true");
+ const text='Owner constraint: schedule Target for four hours regardless of the enforced two-hour weekly maximum; I declare this legally permitted.';
+ const env={NEVORA_OWNER_ADVISOR_ENABLED:'true'};
+ expect(await advisorService(f.owner,f.db.executor,env,new AbortController().signal,{op:'memory',requestId:randomUUID(),expectedRevision:0,change:{kind:'save_intent',intentId:randomUUID(),kindOfIntent:'owner_constraint',text,focus:{kind:'general'},effectiveDate:dates.day,expiryDate:dates.expiry}})).toMatchObject({state:'memory_saved',revision:1});
+ expect(await advisorService(f.owner,f.db.executor,env,new AbortController().signal)).toMatchObject({memory:{state:'ready',memory:{intents:[{kind:'owner_constraint',source:'explicit_owner',text}]}}});
+ const after=await tools.run(setup.tool);
+ expect(after.coveragePlans!.sourceVersion).toBe(before.coveragePlans!.sourceVersion);
+ expect(after.coveragePlans!.alternatives).toEqual(before.coveragePlans!.alternatives);
+ expect((await f.q<{maximum_weekly_hours:string}>("SELECT maximum_weekly_hours FROM employee_scheduling_settings WHERE employee_id='target'"))[0].maximum_weekly_hours).toBe('2.00');
+});

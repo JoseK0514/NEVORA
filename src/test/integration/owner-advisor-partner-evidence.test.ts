@@ -15,3 +15,9 @@ it('partner startup guard rejects unapproved, exhausted, reused and altered iden
  // The guard suite uses only its own mkdtemp fictional ledgers and sentinel transports.
  expect(()=>execFileSync(process.execPath,['--test','src/test/integration/owner-advisor-partner-pilot.check.mts'],{encoding:'utf8',stdio:['ignore','pipe','pipe']})).not.toThrow();
 });
+
+it('requires direct enforced-hours and historical-requirement evidence rather than adjacent validation checks',()=>{
+ const adjacent=['bounds strict explicit memory fields and rejects inference/verification inputs','bounds inference projection without silently dropping an active constraint','keeps location matching separate, hashes facts not wall clock'];
+ const results=summarizePartnerAssertions([{testResults:[{assertionResults:adjacent.map(fullName=>({fullName,status:'passed'}))}]}]);
+ for(const id of ['constraint-is-not-law','historical-rules'])expect(results.find(r=>r.id===id)!.status).toBe('incomplete');
+});

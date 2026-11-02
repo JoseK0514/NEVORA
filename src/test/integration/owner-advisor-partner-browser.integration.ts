@@ -84,6 +84,19 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
     const legal=page.getByRole('region',{name:'Legal source status',exact:true});expect(await legal.locator('article').count()).toBe(3);
     await writeFile(resolve(evidence,`${engine}-actual-legal-text.txt`),await legal.innerText());
     checks.push(`${engine}: actual server legal inspect; fixed public requests may be unavailable; source status and missing facts remain honest`);
+    const captureMode=async(label:string)=>{
+     const mode=page.getByLabel('Answer mode',{exact:true});await mode.scrollIntoViewIfNeeded();
+     const paint=await mode.evaluate((el:HTMLSelectElement)=>{const ancestors=[];for(let node:HTMLElement|null=el;node;node=node.parentElement){const c=getComputedStyle(node),r=node.getBoundingClientRect();ancestors.push({tag:node.tagName,id:node.id,className:node.className,inline:node.getAttribute('style'),display:c.display,visibility:c.visibility,opacity:c.opacity,color:c.color,background:c.backgroundColor,contentVisibility:c.contentVisibility,contain:c.contain,transform:c.transform,clipPath:c.clipPath,width:r.width,height:r.height});}return {value:el.value,text:el.selectedOptions[0]?.textContent,ancestors};});
+     await writeFile(resolve(evidence,`${engine}-${label}-mode-paint.json`),JSON.stringify(paint,null,2));
+     await mode.locator('..').screenshot({path:resolve(evidence,`${engine}-${label}-mode-control.png`)});
+    };
+    const answerMode=page.getByLabel('Answer mode',{exact:true});
+    await answerMode.focus();await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+    await expect.poll(()=>answerMode.inputValue()).toBe('decision');
+    await captureMode('before-axe-keyboard-decision');
+    await answerMode.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
+    await expect.poll(()=>answerMode.inputValue()).toBe('factual');
+    await captureMode('before-axe');
     phase='layout and axe';await page.evaluate(axe);
     for(const width of [320,390,1440]){
      await page.setViewportSize({width,height:1000});
@@ -92,6 +105,7 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
      await writeFile(resolve(evidence,`${engine}-${width}-audit.json`),JSON.stringify({layout,audit},null,2));await page.screenshot({path:resolve(evidence,`${engine}-${width}-full.png`),fullPage:true});
      expect(layout.overflow).toBe(false);expect(layout.shortTargets).toEqual([]);expect(audit.violations).toEqual([]);
     }
+    await captureMode('after-axe');
     phase='labelled browser decision API fixture';
     let decisionCalls=0,fixtureError=false,releaseAnswer:(()=>void)|undefined;
     await context.route('**/api/owner/advisor*',async(route:any)=>{
@@ -111,6 +125,7 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
     await page.getByRole('button',{name:'Ask',exact:true}).click();await expect.poll(()=>decisionCalls).toBe(1);
     expect(await page.getByLabel('Your question',{exact:true}).isDisabled()).toBe(true);await page.getByLabel('Your question',{exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:resolve(evidence,`${engine}-decision-loading.png`)});
     releaseAnswer!();await page.getByText('BROWSER API FIXTURE: review the current evidence before changes.',{exact:true}).waitFor();await page.getByText('BROWSER API FIXTURE: review the current evidence before changes.',{exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:resolve(evidence,`${engine}-decision-success.png`)});
+    await captureMode('decision-success');
     fixtureError=true;await page.getByLabel('Your question',{exact:true}).fill('Try unavailable fixture');await page.getByRole('button',{name:'Ask',exact:true}).click();await expect.poll(()=>decisionCalls).toBe(2);await expect.poll(()=>page.getByLabel('Your question',{exact:true}).isDisabled()).toBe(false);await page.getByText('Your AI manager isn’t connected yet.',{exact:true}).waitFor();await page.getByText('Your AI manager isn’t connected yet.',{exact:true}).scrollIntoViewIfNeeded();await page.screenshot({path:resolve(evidence,`${engine}-decision-error.png`)});
     checks.push(`${engine}: labelled browser API fixture only tests decision objective payload/loading/success/error, not provider or model judgment`);
     phase='authority retirement';await page.getByRole('button',{name:'Edit preference',exact:true}).click();await editor.getByLabel('Intent',{exact:true}).fill('Private draft must retire');await page.evaluate(()=>window.dispatchEvent(new Event('nevora:signout')));

@@ -98,3 +98,15 @@ it("rechecks original authority after the historical snapshot before releasing i
   await expect(readOperationalInsights(s, range, signal())).rejects.toThrow();
   expect(snapshots).toBe(1);
 });
+
+it("changed current staffing requirements do not rewrite historical observations or establish historical understaffing",async()=>{
+ await publication();await entry("matched-history","2026-10-19T08:00:00-04:00","2026-10-19T12:00:00-04:00");
+ const s=await store(),tools=new AdvisorTools(s);
+ const before=await readOperationalInsights(s,range,signal());
+ await f.q("UPDATE location_staffing_settings SET minimum_staff_per_shift=20,requires_designated_lead=true WHERE location_id='loc-1'");
+ expect(await f.q("SELECT minimum_staff_per_shift,requires_designated_lead FROM location_staffing_settings WHERE location_id='loc-1'")).toEqual([{minimum_staff_per_shift:20,requires_designated_lead:true}]);
+ const after=await tools.run({name:'operational_insights',args:range});
+ expect(after.data).toMatchObject({state:'ready',sourceVersion:before.sourceVersion,denominators:before.denominators,observations:before.observations,suggestions:[]});
+ expect(after.data).toMatchObject({limitations:expect.arrayContaining(['Current staffing configuration cannot establish historical requirements or understaffing. These observations do not assess worker risk.','Timecard counts are latest employee-period records, not distinct people. Approval or finalization does not establish current payroll or legal readiness.'])});
+ expect(after.data).not.toHaveProperty('historicalStaffingRequirements');
+});
