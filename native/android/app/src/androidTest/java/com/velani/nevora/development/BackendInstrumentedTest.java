@@ -100,7 +100,7 @@ public class BackendInstrumentedTest {
     @Test public void a_employeeActionRevocationOutageAndLogout() throws Exception {
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
         tap(By.desc("Schedule"));expectPath("/app/schedule");
-        tap(By.descStartsWith("More,"));expectPath("/app/more");tap(By.descStartsWith("Availability"));expectPath("/app/availability");expectText("Your usual week");
+        tap(By.descStartsWith("More,"));expectPath("/app/more");tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
         tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));tap(By.text("Done"));
         tap(By.text("Save"));expectText("Usual hours saved");command("verify-employee");retain("employee_saved");
         scenario.moveToState(Lifecycle.State.CREATED);command("revoke");scenario.moveToState(Lifecycle.State.RESUMED);expectText("Employee ID");

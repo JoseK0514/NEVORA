@@ -168,7 +168,7 @@ try:
             while True:
                 device('shell', 'uiautomator', 'dump', xml_path, timeout=15)
                 hierarchy = device('exec-out', 'cat', xml_path).stdout
-                expected_home = ('Team' in hierarchy and 'Schedule' in hierarchy) if backend else 'Fictional Owner Home' in hierarchy
+                expected_home = ('Welcome back, Fictional' in hierarchy and 'Team' in hierarchy and 'Schedule' in hierarchy) if backend else 'Fictional Owner Home' in hierarchy
                 if expected_home:
                     (evidence / 'cold-start.xml').write_text(hierarchy)
                     report['coldProcessRestart'] = True
