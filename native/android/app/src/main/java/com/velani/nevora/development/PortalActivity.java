@@ -160,6 +160,10 @@ public final class PortalActivity extends ComponentActivity {
             @Override public void onPageFinished(WebView view, String url) {
                 if (!current(view, ticket) || !policy.contains(uri(url))) return;
                 main.removeCallbacks(deadline); cover.setVisibility(View.GONE); view.setVisibility(View.VISIBLE);
+                // A recreated browser must regain real view focus. Shared
+                // private readers correctly stay paused while its document
+                // lacks focus, even when the Activity window is foreground.
+                view.requestFocus();
                 back.setEnabled(view.canGoBack());
             }
             @Override public void doUpdateVisitedHistory(WebView view, String url, boolean reload) {

@@ -78,7 +78,6 @@ public class BackendInstrumentedTest {
         assertTrue(directory.isDirectory()||directory.mkdirs());device.takeScreenshot(new File(directory,name+".png"));
         try{device.dumpWindowHierarchy(new File(directory,name+".xml"));}catch(java.io.IOException error){throw new AssertionError(error);}
     }
-    private void click(String selector){onWebView().withElement(findElement(Locator.CSS_SELECTOR,selector)).perform(webClick());}
     private void tap(BySelector selector) {
         UiObject2 target=device.wait(current->{if(android.os.Build.VERSION.SDK_INT>=34)InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();return current.findObject(selector);},20000L);
         if(target==null)retain("missing_touch_target");assertNotNull("Visible touch target: "+selector,target);target.click();
@@ -102,7 +101,7 @@ public class BackendInstrumentedTest {
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
         tap(By.desc("Schedule"));expectPath("/app/schedule");
         tap(By.descStartsWith("More,"));expectPath("/app/more");tap(By.descStartsWith("Availability"));expectPath("/app/availability");expectText("Your usual week");
-        tap(By.descStartsWith("Monday,"));tap(By.desc("Available on Monday"));tap(By.text("Done"));
+        tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));tap(By.text("Done"));
         tap(By.text("Save"));expectText("Usual hours saved");command("verify-employee");retain("employee_saved");
         scenario.moveToState(Lifecycle.State.CREATED);command("revoke");scenario.moveToState(Lifecycle.State.RESUMED);expectText("Employee ID");
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
