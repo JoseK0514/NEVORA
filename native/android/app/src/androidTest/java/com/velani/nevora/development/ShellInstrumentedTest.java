@@ -61,6 +61,20 @@ public class ShellInstrumentedTest {
         });
     }
     private void retainFailure(String value) {
+            java.util.concurrent.CountDownLatch observed = new java.util.concurrent.CountDownLatch(1);
+            scenario.onActivity(activity -> {
+                WebView view = browser(activity.getWindow().getDecorView());
+                if (view == null) { observed.countDown(); return; }
+                android.view.accessibility.AccessibilityManager manager = (android.view.accessibility.AccessibilityManager) activity.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE);
+                android.util.Log.i("NEVORA_QA_AX", "window=" + activity.hasWindowFocus() + " viewFocus=" + view.hasFocus()
+                    + " shown=" + view.isShown() + " important=" + view.getImportantForAccessibility()
+                    + " accessibility=" + manager.isEnabled() + " touchExploration=" + manager.isTouchExplorationEnabled());
+                view.evaluateJavascript("JSON.stringify({focus:document.hasFocus(),visible:document.visibilityState==='visible',ready:document.readyState})", result -> {
+                    android.util.Log.i("NEVORA_QA_AX", "document=" + result); observed.countDown();
+                });
+            });
+            try { observed.await(2, java.util.concurrent.TimeUnit.SECONDS); }
+            catch (InterruptedException error) { Thread.currentThread().interrupt(); }
             String key = InstrumentationRegistry.getArguments().getString("nativeEvidenceKey");
             assertNotNull(key); assertTrue(key.matches("[a-f0-9]{32}"));
             File directory = new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir(), "nevora-native-tests-" + key);
