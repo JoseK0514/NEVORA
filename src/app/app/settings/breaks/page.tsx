@@ -21,6 +21,7 @@ export default async function BreakTypesPage(){
  return <SettingsFrame title="Break types" summary="The breaks your team can start at the Clocker.">
   <section className="nv-card" role="alert" aria-labelledby="break-types-unavailable-title">
    <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold"/>} titleId="break-types-unavailable-title" title="Couldn’t load break types."
+    // eslint-disable-next-line @next/next/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
     action={<a href="/app/settings/breaks" className="nv-btn" data-kind="primary">Try again</a>}>
     The settings couldn’t be read. Existing break records haven’t changed.
    </EmptyState>

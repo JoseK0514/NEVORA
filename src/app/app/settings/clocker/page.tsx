@@ -30,6 +30,7 @@ export default async function ClockerDevicesPage() {
   return <SettingsFrame title="Clocker tablets">
     <section className="nv-card" role="alert" aria-labelledby="clocker-unavailable-title">
       <EmptyState tone="urgent" icon={<WarningCircleIcon size={22} weight="bold" />} titleId="clocker-unavailable-title" title="Couldn’t load Clocker tablets."
+        // eslint-disable-next-line @next/next/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
         action={<a className="nv-btn" data-kind="primary" href="/app/settings/clocker">Try again</a>}>
         Tablet details couldn’t be read. No tablets were changed.
       </EmptyState>

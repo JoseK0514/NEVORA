@@ -88,6 +88,7 @@ export function PositionCatalog({ positions, available, createAction, updateActi
   return (
     <SettingsFrame title="Positions">
       {!available ? <EmptyState icon={null} titleId="positions-unavailable-title" title="Couldn’t load positions."
+          // eslint-disable-next-line @next/next/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript
           action={<a className="q-btn q-btn--sec" href="/app/settings/positions">Try again</a>}>Nothing was changed.</EmptyState> : <>
         <noscript><p className="q-help">JavaScript is required to add or edit positions.</p></noscript>
         <p className="q-sr" role="status" aria-live="polite">{positions.length ? `${counts.active} active and ${counts.inactive} archived positions` : ""}</p>
