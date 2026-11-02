@@ -102,7 +102,7 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
      const body=request.postDataJSON();
      if(body.op!=='ask_decision'){await route.continue();return;}
      decisionCalls++;expect(body.objective).toBe('Review before changes');expect(body.focus).toEqual({kind:'general'});
-     if(fixtureError){await route.fulfill({status:503,json:{error:'unavailable'}});return;}
+     if(fixtureError){await route.fulfill({status:503,json:{state:'error',code:'unavailable'}});return;}
      await new Promise<void>(done=>{releaseAnswer=done;});
      const current=await(await get()).json();
      await route.fulfill({status:200,json:{state:'answered',authority:current.authority,observedAt:new Date().toISOString(),validForMs:15000,answer:{text:'BROWSER API FIXTURE: review the current evidence before changes.',sources:[],decision:{objective:body.objective,focus:body.focus}}}});
