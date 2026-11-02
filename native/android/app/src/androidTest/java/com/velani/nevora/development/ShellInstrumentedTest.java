@@ -99,6 +99,25 @@ public class ShellInstrumentedTest {
             assertEquals(204, request.getResponseCode());
         } finally { request.disconnect(); }
     }
+    private org.json.JSONObject rendererResult() throws Exception {
+        HttpURLConnection request = (HttpURLConnection) new URL(origin + "/__test/renderer-result").openConnection();
+        request.setConnectTimeout(3000); request.setReadTimeout(3000);
+        try (java.io.InputStream input = request.getInputStream()) {
+            assertEquals(200, request.getResponseCode());
+            return new org.json.JSONObject(new String(input.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
+        } finally { request.disconnect(); }
+    }
+    @Test public void g_redirectedSubresourcesAreContainedByRendererPolicy() throws Exception {
+        launch(origin); signIn("FICTIONAL"); expectText("Fictional Home");
+        device.findObject(By.text("Renderer control")).click(); expectText("Containment complete");
+        org.json.JSONObject unprotected = rendererResult();
+        assertTrue("Positive control must reach the foreign server through a redirect", unprotected.getInt("foreign") > 0);
+        device.findObject(By.text("Home")).click(); expectText("Fictional Home");
+        device.findObject(By.text("Renderer protected")).click(); expectText("Containment complete");
+        org.json.JSONObject protectedPage = rendererResult();
+        assertTrue(protectedPage.getInt("redirects") >= 2); assertTrue(protectedPage.getInt("sameOrigin") > 0);
+        assertEquals("Native renderer must block redirected foreign subresources", 0, protectedPage.getInt("foreign"));
+    }
 
     @Test public void a_unconfiguredAndInvalidOriginsFailClosed() {
         launch(null); expectText("NEVORA is not configured");

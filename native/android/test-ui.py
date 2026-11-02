@@ -50,11 +50,11 @@ def device(*command, **options):
 def source_hash():
     files = sorted(set(list((root / 'app/src').rglob('*')) + list(root.glob('*.gradle'))
         + list(root.glob('*.properties')) + list(root.glob('*.py')) + list((root / 'gradle/wrapper').glob('*'))
-        + [root / 'app/build.gradle', root / 'gradlew', root.parent / 'ios/Fixtures/server.mjs']))
+        + [root / 'app/build.gradle', root / 'gradlew', root.parent / 'ios/Fixtures/server.mjs', root.parent.parent / 'src/lib/native-shell/security.ts']))
     digest = hashlib.sha256()
     for path in files:
         if path.is_file():
-            digest.update(str(path.relative_to(root.parent)).encode() + b'\0' + path.read_bytes())
+            digest.update(str(path.relative_to(root.parent.parent)).encode() + b'\0' + path.read_bytes())
     return digest.hexdigest()
 
 fixture = None
@@ -71,7 +71,7 @@ try:
         if not selector.select(timeout=5):
             raise RuntimeError('Fixture did not become ready')
         addresses = json.loads(fixture.stdout.readline(4096))
-    for key in ['origin', 'unavailableOrigin']:
+    for key in ['origin', 'unavailableOrigin', 'foreignOrigin']:
         url = urlsplit(addresses[key])
         assert url.scheme == 'http' and url.hostname == '127.0.0.1' and url.port and not url.path and not url.query and not url.fragment and not url.username
         ports.append(url.port)
@@ -103,7 +103,7 @@ try:
         raise RuntimeError('Instrumentation did not pass; see instrumentation.log')
     report['instrumentationTests'] = int(completed[1])
     if not args.only_testing:
-        assert int(completed[1]) == 8, 'Expected complete eight-test matrix'
+        assert int(completed[1]) == 9, 'Expected complete nine-test matrix'
         device('shell', 'am', 'force-stop', 'com.velani.nevora.development')
         device('shell', 'am', 'start', '-W', '-n', 'com.velani.nevora.development/.PortalActivity', '--es', 'nevora.debug.origin', addresses['origin'])
         xml_path = f'/data/local/tmp/nevora-native-{invocation}.xml'

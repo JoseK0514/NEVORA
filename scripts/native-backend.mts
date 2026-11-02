@@ -6,6 +6,7 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {createOwnedNextApp} from '../src/test/integration/owned-next-app';
 import {seedOwnedApp, seedOwnedScenario, assignOwnedManagerCompanyAccess} from '../src/test/integration/owned-app-fixture';
 import {verifyNativeBackend, type NativeCheck} from '../src/test/integration/native-shell.integration';
+import {createOwnedSmtp} from '../src/test/integration/owned-smtp';
 import {registerOwnedProcess, captureSource, assertSourceUnchanged, safeEnvironment} from './phase-e-owned.mjs';
 
 const root = process.env.NEVORA_NATIVE_OWNED_ROOT, ownerId = process.env.PHASE_E_OWNER_ID;
@@ -18,24 +19,26 @@ const playwright = runtime('playwright');
 assert.equal(runtime('playwright/package.json').version, '1.62.1');
 let app: Awaited<ReturnType<typeof createOwnedNextApp>> | undefined;
 let server: Awaited<ReturnType<typeof playwright.chromium.launchServer>> | undefined;
+const smtp = await createOwnedSmtp();
 try {
-  app = await createOwnedNextApp(root, {mobileAccessEnabled: true, processOwnerId: ownerId,
-    onProcessStarted: async child => registerOwnedProcess({kind: 'next', pid: child.pid, ownerId}),
+  app = await createOwnedNextApp(root, {mobileAccessEnabled: true, invitationSmtpPort: smtp.port, processOwnerId: ownerId,
+    onProcessStarted: async child => { assert(child.pid); await registerOwnedProcess({kind: 'next', pid: child.pid, ownerId}); },
     initializeDatabase: async ({executor}) => {
       await seedOwnedApp(executor); await seedOwnedScenario(executor, 'NATIVE', 0);
       await executor.query({text: "UPDATE employees SET role=CASE id WHEN 'QA-NATIVE-A' THEN 'EMPLOYEE' WHEN 'QA-NATIVE-B' THEN 'MANAGER' ELSE role END WHERE id IN ('QA-NATIVE-A','QA-NATIVE-B')", values: []});
       await assignOwnedManagerCompanyAccess(executor, 'QA-NATIVE-B');
+      await executor.query({text: "INSERT INTO employees(id,first_name,last_name,email,phone,role,primary_location_id) VALUES('QA-NATIVE-JOIN','Fictional','Activation','native-join@example.invalid','555-0101','EMPLOYEE','loc-1')", values: []});
     }});
   console.log('Owned Next ready', app.url);
   server = await playwright.chromium.launchServer({headless: true, env: {...safeEnvironment(), NEVORA_OWNED_PROCESS_OWNER: ownerId}, handleSIGINT: false, handleSIGTERM: false, handleSIGHUP: false});
   await registerOwnedProcess({kind: 'browser-chromium', pid: server.process().pid, ownerId});
   const browser = await playwright.chromium.connect(server.wsEndpoint());
-  await verifyNativeBackend(app, browser, report.checks);
+  await verifyNativeBackend(app, browser, report.checks, smtp);
   if (process.env.NEVORA_NATIVE_PLATFORM !== 'contract') throw Error('Full-backend native device driver not yet installed');
   report.status = 'passed';
 } catch (error) { report.error = error instanceof Error ? error.stack : String(error); console.error(report.error); }
 finally {
-  try { await server?.close(); await app?.close(); assertSourceUnchanged(process.cwd(), custody); report.ownershipClosed = true; }
+  try { await server?.close(); await app?.close(); await smtp.close(); assertSourceUnchanged(process.cwd(), custody); report.ownershipClosed = true; }
   catch (error) { report.status = 'failed'; report.error = String(error); }
   await writeFile(join(root, 'backend-results.json'), JSON.stringify(report, null, 2), {mode: 0o600});
 }

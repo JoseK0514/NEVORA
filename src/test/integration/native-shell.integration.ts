@@ -1,21 +1,23 @@
 import assert from 'node:assert/strict';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {randomUUID} from 'node:crypto';
+import type {createOwnedSmtp} from './owned-smtp';
 import type {createOwnedNextApp} from './owned-next-app';
 import {TEST_PASSWORD} from './owned-app-fixture';
 
 type App = Awaited<ReturnType<typeof createOwnedNextApp>>;
 // Narrow structural contract for the separately installed, pinned QA runtime.
 type Response = {status(): number; ok(): boolean; headers(): Record<string,string>; json(): Promise<unknown>};
-type Locator = {fill(value: string): Promise<void>; click(): Promise<void>; waitFor(): Promise<void>; count(): Promise<number>; innerText(): Promise<string>};
+type Locator = {fill(value: string): Promise<void>; click(): Promise<void>; waitFor(): Promise<void>; count(): Promise<number>; innerText(): Promise<string>; inputValue(): Promise<string>};
 type Page = {goto(url: string): Promise<Response | null>; setDefaultTimeout(ms: number): void; waitForURL(predicate: (url: URL) => boolean): Promise<void>;
   locator(selector: string): Locator; getByLabel(label: string, options?: {exact: boolean}): Locator; getByRole(role: string, options: {name: string | RegExp; exact?: boolean}): Locator; getByText(text: string, options: {exact: boolean}): Locator;
   screenshot(options: {path: string; fullPage: boolean}): Promise<Buffer>};
-type BrowserContext = {request: {get(url: string, options?: {headers: Record<string,string>}): Promise<Response>}; newPage(): Promise<Page>; close(): Promise<void>;
+type BrowserContext = {request: {get(url: string, options?: {headers: Record<string,string>}): Promise<Response>; post(url: string, options: {headers: Record<string,string>; data: Record<string,unknown>}): Promise<Response>}; newPage(): Promise<Page>; close(): Promise<void>;
   route(pattern: string, handler: (route: {request(): {url(): string}; continue(): Promise<void>; abort(): Promise<void>}) => Promise<void>): Promise<void>};
 type Browser = {newContext(options?: {viewport: {width: number; height: number}; serviceWorkers: string; userAgent?: string}): Promise<BrowserContext>};
 export type NativeCheck = {name: string; status: 'passed'};
-export async function verifyNativeBackend(app: App, browser: Browser, checks: NativeCheck[]) {
+export async function verifyNativeBackend(app: App, browser: Browser, checks: NativeCheck[], smtp: Awaited<ReturnType<typeof createOwnedSmtp>>) {
   const contexts: BrowserContext[] = [];
   let active: Page | undefined;
   const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query<Record<string,unknown>>({text, values});
@@ -83,9 +85,10 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
       active = employee.page;
       await employee.page.goto(app.url + '/app/availability');
       await employee.page.getByRole('button', {name: /^Monday,/}).click();
-      await employee.page.getByRole('switch', {name: 'Monday availability', exact: true}).click();
+      await employee.page.getByRole('switch', {name: 'Available on Monday', exact: true}).click();
       await employee.page.getByRole('button', {name: 'Done', exact: true}).click();
-      await Promise.all([employee.page.waitForURL(url => url.searchParams.get('saved') === '1'), employee.page.getByRole('button', {name: 'Save', exact: true}).click()]);
+      await employee.page.getByRole('button', {name: 'Save', exact: true}).click();
+      await employee.page.getByRole('heading', {name: 'Usual hours saved', exact: true}).waitFor();
       const rows = await q("SELECT day_of_week FROM availability_windows WHERE employee_id='QA-NATIVE-A' ORDER BY day_of_week");
       assert.deepEqual(rows.map(row => row.day_of_week), [0, 2, 3, 4, 5, 6]);
     });
@@ -100,6 +103,27 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
       await owner.page.getByRole('button', {name: 'Save', exact: true}).click();
       await owner.page.getByText('Company profile saved', {exact: true}).waitFor();
       const rows = await q('SELECT name FROM workspaces'); assert.equal(rows[0].name, 'Fictional Native Company');
+    });
+    await check('actual-invitation-activation-and-login', async () => {
+      const path = app.url + '/api/company-access/invitations/QA-NATIVE-JOIN';
+      const headers = {Origin: app.url, 'x-nevora-company-access': '1', 'x-nevora-actor': 'QAOWNER'};
+      const currentResponse = await owner.context.request.get(path, {headers}); assert.equal(currentResponse.status(), 200);
+      const current = await currentResponse.json() as {state: string; employeeVersion: string; invitationRevision: number};
+      assert.equal(current.state, 'ready');
+      const response = await owner.context.request.post(path, {headers, data: {action: 'ISSUE', operationId: randomUUID(), expectedEmployeeVersion: current.employeeVersion, expectedInvitationRevision: current.invitationRevision}});
+      assert.equal(response.status(), 200);
+      const mail = smtp.messages.find(message => message.recipient.includes('native-join@example.invalid')); assert(mail);
+      const proof = /#proof=([A-Za-z0-9_-]{43})/.exec(mail.body.replace(/=\r?\n/g, '').replace(/=3D/g, '='))?.[1]; assert(proof);
+      assert(!JSON.stringify(await response.json()).includes(proof));
+      const context = await browser.newContext({viewport: {width: 390, height: 844}, serviceWorkers: 'block', userAgent: 'Mozilla/5.0 NEVORA-Native/iOS/1'});
+      contexts.push(context); const page = await context.newPage(); active = page; page.setDefaultTimeout(20000);
+      await page.goto(app.url + '/activate#proof=' + proof);
+      await page.locator('#activation-password').fill(TEST_PASSWORD);
+      await page.locator('#activation-confirm-password').fill(TEST_PASSWORD);
+      await page.getByRole('button', {name: 'Activate account', exact: true}).click();
+      await page.locator('#activation-employee-id').waitFor();
+      assert.equal(await page.locator('#activation-employee-id').inputValue(), 'QA-NATIVE-JOIN');
+      const activated = await login('QA-NATIVE-JOIN'); await session(activated.context, 200, 'authenticated');
     });
     await check('employee-owner-route-denied', async () => {
       await employee.page.goto(app.url + '/app/settings/workspace');
