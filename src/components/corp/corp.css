@@ -339,6 +339,9 @@
 }
 :is(#c-root, html) :is(a, button, label, summary).c-row:active, :is(#c-root, html) .c-clickable:active,
 :is(#c-root, html) .c-clickable:active > :is(td, th) { background: var(--c-row-press); transition: none; }
+/* Grey text keeps 4.5:1 on those fills and on every frame of their fade (#6B7075 is only 4.3:1 on #EDEEEF): while a row is
+ * hovered or pressed its grey is one step deeper, #63686D (4.8:1 on #EDEEEF, 5.1:1 on #F2F4F4). */
+:is(#c-root, html) :is(a, button, label, summary).c-row:is(:hover, :active), :is(#c-root, html) .c-clickable:is(:hover, :active) { --c-grey: #63686D; --c-meta: #63686D; }
 :is(#c-root, html) .c-clickable > :is(td, th) { transition: background-color var(--c-dur-row) ease-out; }
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) :is(a, button, label, summary).c-row, :is(#c-root, html) .c-clickable, :is(#c-root, html) .c-clickable > :is(td, th) { transition: none; }
