@@ -1,0 +1,117 @@
+{
+  "testedSource": "ffd6e074324e8f6c3603890cbfec08a1b74bd58e",
+  "baseSource": "143ae13019346af100e1161c0109fc6b9c2b4123",
+  "state": "local acceptance evidence ready for final review;not integrated/deployed",
+  "documentationOnlyDescendant": true,
+  "evidenceRoot": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence",
+  "sddArchiveDestination": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/sdd-archive",
+  "archiveOwner": "controller after reviews",
+  "artifacts": [
+    {
+      "check": "default",
+      "testedSource": "ffd6e074",
+      "result": "10700 passed;801 skipped;55 pending;0 failed",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-final-checks-20261101/default.json",
+      "sha256": "023c24c77ff40a50aeec98ff5f25f63732064f8b2cf6be82d1aa04ef32b690c4"
+    },
+    {
+      "check": "owned SQL",
+      "testedSource": "4f3d9380",
+      "result": "143 passed",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-4f3d9380-sql-20261101/results.json",
+      "sha256": "c392fb21e43514eff54a6c1f8c29f9572a17b8750ed403e362034db2b13510eb"
+    },
+    {
+      "check": "partner offline",
+      "testedSource": "f4d26156",
+      "result": "99 passed;32 corrected case mappings",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-f4d26156-offline-20261101/results.json",
+      "sha256": "f33a0a41215ff84554b808249ee3ccfe11a151f916325da2c39a5c08dd1e2430"
+    },
+    {
+      "check": "scripted paired",
+      "testedSource": "4f3d9380",
+      "result": "7 cases\u00d73 variants=21 passed;no model scoring",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-4f3d9380-scripted-20261101",
+      "sha256": null
+    },
+    {
+      "check": "partner browser",
+      "testedSource": "ffd6e074",
+      "result": "1 composite passed;Chromium/WebKit;visual limitation below",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-select-keyboard-browser-20261101/results.json",
+      "sha256": "d1dbddff8eed35a2067beff9001d3e370f5168352dbf4ffa6645e4b397039237"
+    },
+    {
+      "check": "existing browser",
+      "testedSource": "ffd6e074",
+      "result": "4 passed",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-existing-browser-20261101/results.json",
+      "sha256": "1324abd410de88066024b0020f1a15d1e20764a463adaecfa649866b844f03bf"
+    },
+    {
+      "check": "Node guards",
+      "testedSource": "ffd6e074",
+      "result": "43 passed;legacy check files unchanged",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-final-checks-20261101/guards.log",
+      "sha256": "9ad43c0478d671ce064c99eb4dfa1b5dc65ba73bc0e1ed7e12ac263ddfdf65e5"
+    },
+    {
+      "check": "evidence ownership/mapping",
+      "testedSource": "ffd6e074",
+      "result": "8 passed",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-final-checks-20261101/evidence.json",
+      "sha256": "79aa45630bbd0fd5cc8bd582683e4089d294d14c53039845be5be16dfe14599e"
+    },
+    {
+      "check": "types and lint",
+      "testedSource": "ffd6e074",
+      "result": "both exit0",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-final-checks-20261101/commands.json",
+      "sha256": "13e686aefe014f57bc5cfdff9a0e1188dc87e9bd7d474834350c1301f5d2df13"
+    }
+  ],
+  "defaultAssertionStates": {
+    "passed": 10700,
+    "skipped": 801,
+    "pending": 55
+  },
+  "defaultOrdinaryFiles": {
+    "passed": 712,
+    "skipped": 27
+  },
+  "defaultJsonTopLevelPending": 801,
+  "caseReport": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-f4d26156-offline-20261101/cases.json",
+  "actualModelSamples": 0,
+  "modelQuality": "not-assessed",
+  "budgetApproval": false,
+  "realLedgerInitialized": false,
+  "credentialsRetrieved": false,
+  "strongerModel": {
+    "status": "unconfigured-not-run",
+    "model": null
+  },
+  "sourceEquivalence": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-captured-source-equivalence-20261101.json",
+  "visualObservations": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-visual-observations-20261101.json",
+  "minimalNativeReproduction": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-native-full-viewport-20261101/manual-observation.json",
+  "limitations": [
+    "Intermittent Chromium full-viewport select paint omission remains unresolved despite correct closeups, keyboard changes and computed visibility; bounded native fixture did not reproduce",
+    "Six axe audits have0violations but incomplete aria-prohibited-attr and color-contrast;no full accessibility certification",
+    "Existing mocked prefetch warnings remain",
+    "Deterministic/scripted/browser fixtures do not establish semantic model quality or qualified legal applicability"
+  ],
+  "openGates": [
+    "final evidence review",
+    "mandatory whole-branch review",
+    "Chromium visual observation triage",
+    "source inventory3unclassified/remote ceiling6>3",
+    "fresh explicit budget and separately initialized partner ledger before live evaluation",
+    "manual actual-model quality comparison",
+    "qualified legal applicability",
+    "explicit production authorization and rehearsal"
+  ],
+  "migration": "0046_owner_advisor_memory.sql applied only in disposable local verification",
+  "rollback": "Disable advisor flag/application rollback while retaining additive memory storage, forgetting triggers and scrubbed receipts;no destructive downmigration or production rollback performed",
+  "nextAction": "Controller reviews final supplement, performs mandatory whole-branch review and archives ignored workspace;do not integrate until source inventory is reconciled.",
+  "finalVisualSupplement": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-final-visual-supplement-20261101.json"
+}
