@@ -19,6 +19,7 @@ type Browser = {newContext(options?: {viewport: {width: number; height: number};
 export type NativeCheck = {name: string; status: 'passed'};
 export async function verifyNativeBackend(app: App, browser: Browser, checks: NativeCheck[], smtp: Awaited<ReturnType<typeof createOwnedSmtp>>) {
   const contexts: BrowserContext[] = [];
+  const failures: unknown[] = [];
   let active: Page | undefined;
   const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query<Record<string,unknown>>({text, values});
   async function check(name: string, task: () => Promise<void>) {
@@ -28,7 +29,7 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
         await writeFile(join(app.root, 'failure-' + name + '.txt'), await active.locator('body').innerText()).catch(() => {});
         await active.screenshot({path: join(app.root, 'failure-' + name + '.png'), fullPage: true}).catch(() => {});
       }
-      throw error;
+      failures.push(error); console.error('FAIL', name, String(error));
     }
   }
   async function session(context: BrowserContext, status: number, state: string, path = '/api/mobile/v1/session', headers: Record<string,string> = {}) {
@@ -153,5 +154,6 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
       finally { await q('ALTER TABLE native_test_sessions_unavailable RENAME TO employee_sessions'); }
       await session(current.context, 200, 'authenticated');
     });
+    if (failures.length) throw new AggregateError(failures, 'Native backend assertions failed');
   } finally { await Promise.all(contexts.map(context => context.close())); }
 }
