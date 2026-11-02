@@ -1,0 +1,319 @@
+// !$*UTF8*$!
+{
+	"archiveVersion" = 1;
+	"classes" = {
+	};
+	"objectVersion" = 56;
+	"objects" = {
+		"000000000000000000000001" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/AppDelegate.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000002" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/PortalViewController.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000003" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "App/SessionProbe.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000004" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/NevoraShellCore/BackendPolicy.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000005" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "Sources/NevoraShellCore/SessionStatus.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000006" = {
+			"isa" = "PBXFileReference";
+			"lastKnownFileType" = "sourcecode.swift";
+			"path" = "UITests/NevoraUITests.swift";
+			"sourceTree" = "SOURCE_ROOT";
+		};
+		"000000000000000000000007" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.application";
+			"path" = "NEVORA.app";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"000000000000000000000008" = {
+			"isa" = "PBXFileReference";
+			"explicitFileType" = "wrapper.cfbundle";
+			"path" = "NevoraUITests.xctest";
+			"sourceTree" = "BUILT_PRODUCTS_DIR";
+		};
+		"000000000000000000000009" = {
+			"isa" = "PBXGroup";
+			"children" = ("000000000000000000000007", "000000000000000000000008");
+			"name" = "Products";
+			"sourceTree" = "<group>";
+		};
+		"00000000000000000000000A" = {
+			"isa" = "PBXGroup";
+			"children" = ("000000000000000000000001", "000000000000000000000002", "000000000000000000000003", "000000000000000000000004", "000000000000000000000005", "000000000000000000000006", "000000000000000000000009");
+			"sourceTree" = "<group>";
+		};
+		"00000000000000000000000B" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"SWIFT_VERSION" = "5.0";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "16.0";
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "0.1.0";
+				"NEVORA_BACKEND_ORIGIN" = "";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"PRODUCT_NAME" = "NEVORA";
+				"PRODUCT_MODULE_NAME" = "Nevora";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.velani.nevora.development";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+				"INFOPLIST_FILE" = "Configuration/Debug-Info.plist";
+			};
+		};
+		"00000000000000000000000C" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"SWIFT_VERSION" = "5.0";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "16.0";
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "0.1.0";
+				"NEVORA_BACKEND_ORIGIN" = "";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"PRODUCT_NAME" = "NEVORA";
+				"PRODUCT_MODULE_NAME" = "Nevora";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.velani.nevora.development";
+				"GENERATE_INFOPLIST_FILE" = "NO";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+				"INFOPLIST_FILE" = "Configuration/Release-Info.plist";
+			};
+		};
+		"00000000000000000000000D" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("00000000000000000000000B", "00000000000000000000000C");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"00000000000000000000000E" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000001";
+		};
+		"00000000000000000000000F" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000002";
+		};
+		"000000000000000000000010" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000003";
+		};
+		"000000000000000000000011" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000004";
+		};
+		"000000000000000000000012" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000005";
+		};
+		"000000000000000000000013" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ("00000000000000000000000E", "00000000000000000000000F", "000000000000000000000010", "000000000000000000000011", "000000000000000000000012");
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"000000000000000000000014" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"000000000000000000000015" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"000000000000000000000016" = {
+			"isa" = "PBXNativeTarget";
+			"name" = "NEVORA";
+			"productName" = "NEVORA";
+			"productReference" = "000000000000000000000007";
+			"productType" = "com.apple.product-type.application";
+			"buildConfigurationList" = "00000000000000000000000D";
+			"buildPhases" = ("000000000000000000000013", "000000000000000000000014", "000000000000000000000015");
+			"buildRules" = ();
+			"dependencies" = ();
+		};
+		"000000000000000000000017" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"SWIFT_VERSION" = "5.0";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "16.0";
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "0.1.0";
+				"NEVORA_BACKEND_ORIGIN" = "";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"PRODUCT_NAME" = "NevoraUITests";
+				"PRODUCT_MODULE_NAME" = "NevoraUITests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.velani.nevora.development.uitests";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_TARGET_NAME" = "NEVORA";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+			};
+		};
+		"000000000000000000000018" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"SWIFT_VERSION" = "5.0";
+				"IPHONEOS_DEPLOYMENT_TARGET" = "16.0";
+				"SDKROOT" = "iphoneos";
+				"TARGETED_DEVICE_FAMILY" = "1,2";
+				"CODE_SIGN_STYLE" = "Automatic";
+				"CURRENT_PROJECT_VERSION" = "1";
+				"MARKETING_VERSION" = "0.1.0";
+				"NEVORA_BACKEND_ORIGIN" = "";
+				"ENABLE_USER_SCRIPT_SANDBOXING" = "YES";
+				"PRODUCT_NAME" = "NevoraUITests";
+				"PRODUCT_MODULE_NAME" = "NevoraUITests";
+				"PRODUCT_BUNDLE_IDENTIFIER" = "com.velani.nevora.development.uitests";
+				"GENERATE_INFOPLIST_FILE" = "YES";
+				"TEST_TARGET_NAME" = "NEVORA";
+				"LD_RUNPATH_SEARCH_PATHS" = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+			};
+		};
+		"000000000000000000000019" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("000000000000000000000017", "000000000000000000000018");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"00000000000000000000001A" = {
+			"isa" = "PBXBuildFile";
+			"fileRef" = "000000000000000000000006";
+		};
+		"00000000000000000000001B" = {
+			"isa" = "PBXSourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ("00000000000000000000001A");
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"00000000000000000000001C" = {
+			"isa" = "PBXFrameworksBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"00000000000000000000001D" = {
+			"isa" = "PBXResourcesBuildPhase";
+			"buildActionMask" = 2147483647;
+			"files" = ();
+			"runOnlyForDeploymentPostprocessing" = 0;
+		};
+		"00000000000000000000001E" = {
+			"isa" = "PBXNativeTarget";
+			"name" = "NevoraUITests";
+			"productName" = "NevoraUITests";
+			"productReference" = "000000000000000000000008";
+			"productType" = "com.apple.product-type.bundle.ui-testing";
+			"buildConfigurationList" = "000000000000000000000019";
+			"buildPhases" = ("00000000000000000000001B", "00000000000000000000001C", "00000000000000000000001D");
+			"buildRules" = ();
+			"dependencies" = ("000000000000000000000024");
+		};
+		"00000000000000000000001F" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Debug";
+			"buildSettings" = {
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-Onone";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "DEBUG";
+			};
+		};
+		"000000000000000000000020" = {
+			"isa" = "XCBuildConfiguration";
+			"name" = "Release";
+			"buildSettings" = {
+				"CLANG_ENABLE_MODULES" = "YES";
+				"CLANG_ENABLE_OBJC_ARC" = "YES";
+				"SWIFT_OPTIMIZATION_LEVEL" = "-O";
+				"SWIFT_ACTIVE_COMPILATION_CONDITIONS" = "";
+			};
+		};
+		"000000000000000000000021" = {
+			"isa" = "XCConfigurationList";
+			"buildConfigurations" = ("00000000000000000000001F", "000000000000000000000020");
+			"defaultConfigurationIsVisible" = 0;
+			"defaultConfigurationName" = "Release";
+		};
+		"000000000000000000000022" = {
+			"isa" = "PBXProject";
+			"attributes" = {
+				"BuildIndependentTargetsInParallel" = "YES";
+				"LastUpgradeCheck" = "2700";
+				"TargetAttributes" = {
+					"000000000000000000000016" = {
+						"CreatedOnToolsVersion" = "27.0";
+					};
+					"00000000000000000000001E" = {
+						"CreatedOnToolsVersion" = "27.0";
+						"TestTargetID" = "000000000000000000000016";
+					};
+				};
+			};
+			"buildConfigurationList" = "000000000000000000000021";
+			"compatibilityVersion" = "Xcode 14.0";
+			"developmentRegion" = "en";
+			"hasScannedForEncodings" = 0;
+			"knownRegions" = ("en", "Base");
+			"mainGroup" = "00000000000000000000000A";
+			"productRefGroup" = "000000000000000000000009";
+			"projectDirPath" = "";
+			"projectRoot" = "";
+			"targets" = ("000000000000000000000016", "00000000000000000000001E");
+		};
+		"000000000000000000000023" = {
+			"isa" = "PBXContainerItemProxy";
+			"containerPortal" = "000000000000000000000022";
+			"proxyType" = 1;
+			"remoteGlobalIDString" = "000000000000000000000016";
+			"remoteInfo" = "NEVORA";
+		};
+		"000000000000000000000024" = {
+			"isa" = "PBXTargetDependency";
+			"target" = "000000000000000000000016";
+			"targetProxy" = "000000000000000000000023";
+		};
+	};
+	"rootObject" = "000000000000000000000022";
+}
