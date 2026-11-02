@@ -243,7 +243,10 @@ final class NevoraBackendUITests: XCTestCase {
         openSchedule(owner: true); link("More, ").tap(); link("Settings").tap(); link("Company profile").tap()
         let name = app.webViews.textFields["Business name"]
         XCTAssertTrue(name.waitForExistence(timeout: 20)); XCTAssertEqual(name.value as? String, "QA")
-        name.tap(); name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2) + "Fictional iOS Company")
+        name.press(forDuration: 1.1)
+        let selectAll = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Select All")).firstMatch
+        XCTAssertTrue(selectAll.waitForExistence(timeout: 5)); selectAll.tap()
+        name.typeText("Fictional iOS Company")
         XCTAssertEqual(name.value as? String, "Fictional iOS Company")
         app.webViews.buttons["Save"].tap(); expect("Company profile saved"); try command("verify-owner-ios"); retain("Owner company profile saved")
         app.terminate(); app.launch(); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
