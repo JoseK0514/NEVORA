@@ -236,6 +236,7 @@ final class NevoraBackendUITests: XCTestCase {
         XCUIDevice.shared.press(.home); try command("outage-on"); app.activate()
         XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 20)); XCTAssertEqual(app.webViews.count, 0)
         try command("outage-off"); app.buttons["Try again"].tap(); expect("Welcome back, QA NATIVE")
+        app.terminate(); app.launch(); XCTAssertEqual(app.state, .runningForeground); expect("Welcome back, QA NATIVE")
         logout(); app.terminate(); app.launch(); XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Employee signed out after restart")
     }
     func testOwnerActionAndPersistentSession() throws {

@@ -136,6 +136,9 @@ final class PortalViewController: UIViewController, WKNavigationDelegate, WKUIDe
         deadline?.cancel()
         cover.isHidden = true
         webView.isHidden = false
+        // A fresh foreground browser must acquire native focus before shared
+        // private readers can observe document.hasFocus().
+        webView.becomeFirstResponder()
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-nevora-debug-focus-report") {
             let observe = { [weak self, weak webView] in
