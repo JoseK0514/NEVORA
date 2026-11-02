@@ -1,7 +1,7 @@
 # NEVORA native Employee and Owner release design
 
 Date: November 1, 2026 (America/Puerto_Rico). Design owner: Codex. Product authority: Jose.
-Status: proposal awaiting Jose's design approval; product code has not been changed in this worktree.
+Status: **approved by Jose** ("Approve design and proceed"). Product implementation may proceed within this scope; external account/device/distribution gates remain.
 
 ## Intent and confirmed scope
 
