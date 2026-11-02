@@ -58,7 +58,7 @@ it("emits provider-compatible strict objects and accepts nullable metric index",
 it("reads explicit period instead of stale task focus and enforces two reviews and six rounds", async () => {
   const period = { objective: "Review attendance", focus: { kind: "period" as const, startDate: "2026-11-01", endDate: "2026-11-07" } };
   const reads: ToolCall[] = []; let requests = 0;
-  await expect(investigate(config, [], "", "Review", { ...deps(), decisionContext: period, tool: async c => { reads.push(c); return result; }, fetch: async () => { requests++; return Response.json(decisionReply(ownerDecision(), String(requests))); } })).rejects.toThrow("limit");
+  await expect(investigate(config, [], "", "Review", { ...deps(), savedContext: { revision: 1, goals: [], openTasks: [], selectedTask: { id: "30000000-0000-0000-0000-000000000001", objective: "Stale coverage task", notes: "", state: "open", focus: { kind: "coverage", date: "2026-10-31" }, updatedAt: "2026-10-30T12:00:00Z" } }, decisionContext: period, tool: async c => { reads.push(c); return result; }, fetch: async () => { requests++; return Response.json(decisionReply(ownerDecision(), String(requests))); } })).rejects.toThrow("limit");
   expect(requests).toBe(2);
   expect(reads[1]).toEqual({ name: "attendance_payroll_review", args: { startDate: "2026-11-01", endDate: "2026-11-07", language: "en" } });
   requests = 0;

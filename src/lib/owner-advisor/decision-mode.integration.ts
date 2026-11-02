@@ -26,7 +26,7 @@ it("settles and replays explicit decisions once with real mandatory period resul
   await expect(call({ ...c, objective: "Altered identity" })).rejects.toThrow("conflict");
   expect(await f.q("SELECT state FROM owner_advisor_requests WHERE kind='ask'")).toEqual([{ state: "completed" }]);
 });
-it("failed prose settles no answer, and memory changes fence a reviewed decision", async () => {
+it("failed prose settles no answer, and priority changes fence a reviewed decision", async () => {
   const c = command();
   await expect(call(c, async () => Response.json({ output: [{ type: "message", content: [{ type: "output_text", text: "Trust me" }] }] }))).rejects.toThrow("provider_failed");
   expect(await f.q("SELECT result FROM owner_advisor_requests WHERE kind='ask' AND result IS NOT NULL")).toEqual([]);
