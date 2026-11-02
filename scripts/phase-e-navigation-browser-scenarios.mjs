@@ -132,7 +132,9 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // past a quick second tap elsewhere), and while it is pressed the tab dims to .64 by design (Signature press feedback,
   // with no transition, so no animation is running). Wait for the press to be released; its fade back out is then an
   // animation the check below waits for. Only the tab links count: containers can keep a stale :active chain.
-  await page.waitForFunction(()=>!document.querySelector('.mobile-nav .mobile-nav-pending, .mobile-nav .mobile-nav-link:active')&&[...document.querySelectorAll('.mobile-nav, .mobile-nav *')].every(element=>element.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished'))));
+  // Nov 1 upscale: a page that replaces its loading placeholder fades in over 150ms (corp.css c-arrive, opacity only), so
+  // the page content is audited once that fade has finished too, in its settled colours.
+  await page.waitForFunction(()=>!document.querySelector('.mobile-nav .mobile-nav-pending, .mobile-nav .mobile-nav-link:active')&&[...document.querySelectorAll('.mobile-nav, .mobile-nav *, main, main *')].every(element=>element.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished'))));
   await page.addScriptTag({path:axeFile});
   const violations=await page.evaluate(async()=> (await window.axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}})).violations.map(v=>({id:v.id,nodes:v.nodes.slice(0,20).map(node=>({target:node.target.map(selector=>String(selector).replace(/https?:[^\s)]+/g,'[URL]').replace(/[A-Za-z0-9_-]{32,}/g,'[OPAQUE]')),contrast:[...node.any,...node.all,...node.none].filter(check=>check.id==='color-contrast').map(check=>({foreground:check.data?.fgColor,background:check.data?.bgColor,ratio:check.data?.contrastRatio,expected:check.data?.expectedContrastRatio}))}))})));
   await writeFile(join(evidenceDirectory,`navigation-${engine}-${width}-${name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}-axe-report.json`),JSON.stringify({engine,width,page:name,entrance,violations},null,2));
@@ -203,7 +205,11 @@ export async function runScenario({app,context,page,engine,width,evidenceDirecto
   // Board G-E-Requests (Release 1, every width; Nov 1 upscale S7): Request time off opens the time-off form and the Decided card's See all opens
   // the decided time-off list; wider layouts add a Shift requests row. Phones have no fixed shift-requests link (each
   // request row opens its own page), so that canonical page is opened directly to verify its ownership and Back.
-  const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens; the Employee header has no "+" New request');
+  const newRequest=page.locator('main').getByRole('link',{name:'Request time off',exact:true});assert.equal(await newRequest.getAttribute('href'),'/app/requests?tab=new');assert.equal(await page.locator('main').getByRole('link',{name:'New request',exact:true}).count(),0,'The primary names what it opens');
+  // Upscale B2 retired the Employee header's "+" (New request lives on Requests). A Lead (v5 look, on hold) keeps its
+  // header's round "+" by design, so for a Lead the only New request link allowed is that header "+" to /app/requests.
+  const headerNew=await page.getByRole('link',{name:'New request',exact:true}).evaluateAll(links=>links.map(link=>link.matches('header .e5-new')?link.getAttribute('href'):'outside header: '+link.getAttribute('href')));
+  if(corporate)assert.deepEqual(headerNew,[],'The Employee header has no "+" New request');else for(const href of headerNew)assert.equal(href,'/app/requests','A Lead keeps only the header "+" New request');
   const decided=page.locator('main').getByRole('link',{name:'See all decided requests',exact:true});assert.equal(await decided.getAttribute('href'),'/app/requests?filter=decided');
   const shifts=phone?null:page.locator('main').getByRole('link',{name:/^Swaps, cover and can’t work\b/});if(shifts)assert.equal(await shifts.getAttribute('href'),'/app/exchange');
   // Phones go Back to Requests from each page; a computer keeps Requests current in the sidebar (its hub one click away).

@@ -119,30 +119,26 @@ const EMPLOYEE: Record<string, Shape> = {
 };
 const FALLBACK: Shape = { parts: [card({ head: true, lines: [20, 13] }), card({ rows: 4 })] };
 
-const TITLES = "nv:titles";
 const noSubscribe = () => () => {};
 /** Whose shell this is: the name in the sidebar (titles are remembered per person, so a shared tab never shows another
  * person's greeting). */
 const shellName = () => document.querySelector(".sidebar-profile-copy strong")?.textContent?.trim() ?? "";
+/** The remembered titles live in this page's memory only, never in browser storage: a title can carry the person's name
+ * ("Welcome back, …"), and private names must not persist on the device. A reload starts with the fixed titles. */
+let remembered: { who: string; titles: Map<string, string> } = { who: "", titles: new Map() };
 
 /** CorpMotion records the title shown on each page (the page's h1); the placeholder shows it next time. */
 export function rememberTitle(path: string, title: string) {
-  try {
-    const who = shellName();
-    const saved = JSON.parse(sessionStorage.getItem(TITLES) ?? "null") as { who: string; titles: Record<string, string> } | null;
-    const titles = saved && saved.who === who ? saved.titles : {};
-    if (titles[path] === title) return;
-    titles[path] = title;
-    const keys = Object.keys(titles);
-    for (const key of keys.slice(0, Math.max(0, keys.length - 40))) delete titles[key];
-    sessionStorage.setItem(TITLES, JSON.stringify({ who, titles }));
-  } catch { /* storage off: placeholders keep their fixed titles */ }
+  const who = shellName();
+  if (remembered.who !== who) remembered = { who, titles: new Map() };
+  const { titles } = remembered;
+  if (titles.get(path) === title) return;
+  titles.delete(path);
+  titles.set(path, title);
+  for (const key of [...titles.keys()].slice(0, Math.max(0, titles.size - 40))) titles.delete(key);
 }
 function rememberedTitle(path: string): string | null {
-  try {
-    const saved = JSON.parse(sessionStorage.getItem(TITLES) ?? "null") as { who: string; titles: Record<string, string> } | null;
-    return saved && saved.who === shellName() ? saved.titles[path] ?? null : null;
-  } catch { return null; }
+  return remembered.who === shellName() ? remembered.titles.get(path) ?? null : null;
 }
 
 const bar = (height: Bar, width: string, key?: number) => <i key={key} className={height === 20 ? "c-skel__bar c-skel__bar--20" : "c-skel__bar"} style={{ width }} />;
