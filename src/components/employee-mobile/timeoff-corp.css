@@ -76,6 +76,9 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
 :is(#c-root, html) .c-page .tof-grab { display: none; }
 @media (max-width: 767px) {
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
+  /* A phone turned sideways (coarse pointer, 500px tall or less) gets corp-shell's landscape tab bar through an id-weighted
+   * rule; the sheet still hides it there, so its links aren't left under the sheet and in the Tab order. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop]:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
   :is(#c-root, html) body .c-page.tof-frame--sheet {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; flex-direction: column; gap: 0;
     width: auto; max-width: none; min-height: 0; max-height: calc(100dvh - max(env(safe-area-inset-top, 0px), 12px) - 12px); margin: 0; padding: 0;
