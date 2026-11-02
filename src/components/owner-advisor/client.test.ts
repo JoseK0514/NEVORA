@@ -91,3 +91,7 @@ it("rejects malformed public snapshots, lifetimes and untrusted source destinati
     }).answer.text,
   ).toBe("<script>evil</script>");
 });
+it("rejects malformed public decision context", () => {
+  const value = { state: "answered", answer: { text: "Reviewed", sources: [], decision: { objective: "Goal", focus: { kind: "coverage", date: "2026-02-30" } } }, authority: "owner", observedAt: "2026-11-01T12:00:00Z", validForMs: 15000 };
+  expect(() => parseAnswer(value)).toThrow();
+});

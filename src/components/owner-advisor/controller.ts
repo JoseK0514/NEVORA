@@ -1,6 +1,6 @@
 import { parseMemoryCommand, type MemoryEdit } from "@/lib/owner-advisor/memory";
 import {
-  record,
+  record, parseCommand,
   type AdvisorAnswer,
   type AdvisorCommand,
   type AdvisorSnapshot,
@@ -11,6 +11,9 @@ import { parseNotebookCommand, type NotebookEdit } from "@/lib/owner-advisor/not
 export type AdvisorView = {
   snapshot: AdvisorSnapshot | null;
   answer: AdvisorAnswer | null;
+  mode: "factual" | "decision";
+  decisionObjective: string;
+  decisionFocus: import("@/lib/owner-advisor/notebook").TaskFocus;
   question: string;
   priorities: string;
   focusedTaskId: string | null;
@@ -24,6 +27,9 @@ export type AdvisorView = {
 export const initialView: AdvisorView = {
   snapshot: null,
   answer: null,
+  mode: "factual",
+  decisionObjective: "",
+  decisionFocus: { kind: "general" },
   question: "",
   priorities: "",
   focusedTaskId: null,
@@ -194,7 +200,7 @@ export function createAdvisorController(
     const epoch = generation,
       controller = new AbortController();
     operation = controller;
-    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" || command.op === "ask_task" ? "ask" : command.op === "review_briefing" ? "review" : command.op === "notebook" ? "notebook" : command.op === "memory" ? "memory" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
+    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask_decision" || command.op === "ask" || command.op === "ask_task" ? "ask" : command.op === "review_briefing" ? "review" : command.op === "notebook" ? "notebook" : command.op === "memory" ? "memory" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await request("/api/owner/advisor", {
@@ -225,7 +231,7 @@ export function createAdvisorController(
               : command.op === "memory" && code === "unavailable" ? "Owner memory is unavailable. Refresh before trying again."
               : command.op === "memory" && code === "limit" ? "Memory reached its size or record limit. Shorten the edit or remove a record you no longer need."
               : command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again."
-              : (command.op === "memory" || command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? "Saved priorities, goals, tasks or memory changed. Your draft is preserved. Review the current saved context before continuing."
+              : (command.op === "memory" || command.op === "notebook" || command.op === "ask_task" || command.op === "ask" || command.op === "ask_decision") && code === "conflict" ? "Saved priorities, goals, tasks or memory changed. Your draft is preserved. Review the current saved context before continuing."
                 : command.op === "notebook" && code === "unavailable" ? "Saved goals and tasks are unavailable. Refresh before trying again."
                   : command.op === "notebook" && code === "limit" ? "Saved context reached its limit. Shorten the edit or remove an item you no longer need."
                     : errors[code]) ??
@@ -242,7 +248,7 @@ export function createAdvisorController(
         return;
       }
       const result =
-        command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : command.op === "memory" ? parseMemorySaved(body) : parseSaved(body);
+        command.op === "ask_decision" || command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : command.op === "memory" ? parseMemorySaved(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
         retire("Your access changed. Refresh to continue.");
@@ -340,6 +346,10 @@ export function createAdvisorController(
       paused = true;
       retire();
     },
+    editDecision(edit: { mode?: "factual" | "decision"; objective?: string; focus?: import("@/lib/owner-advisor/notebook").TaskFocus }) {
+      if (!v.snapshot || v.busy || paused || stopped) return;
+      publish({ ...(edit.mode ? { mode: edit.mode } : {}), ...(edit.objective !== undefined ? { decisionObjective: edit.objective } : {}), ...(edit.focus ? { decisionFocus: edit.focus } : {}) });
+    },
     editQuestion(question: string) {
       automaticQuestion = null;
       publish({ question });
@@ -389,6 +399,10 @@ export function createAdvisorController(
         v.question.length > 2000
       )
         return Promise.resolve();
+      if (v.mode === "decision") {
+        try { return submit(parseCommand({ op: "ask_decision", requestId: crypto.randomUUID(), message: v.question, objective: v.decisionObjective, focus: v.decisionFocus })); }
+        catch { publish({ message: "Enter a decision objective and a valid scope before asking." }); return Promise.resolve(); }
+      }
       if (v.focusedTaskId) {
         const saved = v.snapshot.notebook;
         if (saved?.state !== "ready" || !saved.notebook.tasks.some(t => t.id === v.focusedTaskId && t.state === "open")) {

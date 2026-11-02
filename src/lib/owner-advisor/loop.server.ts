@@ -127,6 +127,7 @@ export async function investigate(
     fetch?: Transport;
     savedContext?: NotebookContext;
     memoryContext?: OwnerMemoryContext;
+    decisionContext?: import("./contracts").DecisionContext;
   },
 ): Promise<AdvisorAnswer> {
   const signal = AbortSignal.any([deps.signal, AbortSignal.timeout(60000)]),
@@ -134,7 +135,7 @@ export async function investigate(
       ...history.slice(-12),
       {
         role: "user",
-        content: JSON.stringify({ savedPriorities: priorities, ...(deps.savedContext ? { savedContext: deps.savedContext } : {}), ...(deps.memoryContext ? { explicitOwnerMemory: deps.memoryContext } : {}), message }),
+        content: JSON.stringify({ savedPriorities: priorities, ...(deps.decisionContext ? { decisionContext: deps.decisionContext } : {}), ...(deps.savedContext ? { savedContext: deps.savedContext } : {}), ...(deps.memoryContext ? { explicitOwnerMemory: deps.memoryContext } : {}), message }),
       },
     ];
   const sources: AdvisorAnswer["sources"] = [];
@@ -161,7 +162,7 @@ export async function investigate(
   };
   const finish = async (text: string, chosen = evidence): Promise<AdvisorAnswer> => {
     await bounded(deps.check, signal);
-    return { ...chosen, text, sources: [...new Map(sources.map(s => [JSON.stringify([s.href, s.label, s.observedAt]), s])).values()] };
+    return { ...chosen, ...(deps.decisionContext ? { decision: deps.decisionContext } : {}), text, sources: [...new Map(sources.map(s => [JSON.stringify([s.href, s.label, s.observedAt]), s])).values()] };
   };
   const mandatoryRead = async (call: ToolCall, field: string) => {
     const output = await read(call, field);
@@ -175,7 +176,7 @@ export async function investigate(
   await mandatoryRead({ name: "company_briefing", args: {} }, "currentCompanyBriefing");
   // A resumed task's typed scope gets real evidence even when the model would
   // otherwise answer from yesterday's conversation. These are existing read tools.
-  const focus = deps.savedContext?.selectedTask?.focus;
+  const focus = deps.decisionContext?.focus ?? deps.savedContext?.selectedTask?.focus;
   if (focus && focus.kind !== "general") {
     await mandatoryRead(focus.kind === "coverage"
       ? { name: "coverage_plan", args: { date: focus.date } }
@@ -196,7 +197,7 @@ export async function investigate(
               "Content-Type": "application/json",
               Authorization: `Bearer ${config.key}`,
             },
-            body: providerBody(config, `${instructions} ${decisionInstructions} ${crisisInstructions} ${assuranceInstructions} Remaining tool/review slots: ${ADVISOR_MAX_TOOL_CALLS - count}. Remaining review attempts: ${2 - decisionAttempts}.`, input, [...tools, decisionTool]),
+            body: providerBody(config, `${instructions} ${decisionInstructions} ${crisisInstructions} ${assuranceInstructions} Explicit current preference changes change intent, never facts. Dissent requires a supported material consequence; when the Owner accepts a valid tradeoff, give useful agreement and a next step without inventing objections. Use assumptions and changeCondition to expose what would reverse the recommendation; use typed metrics for numbers, never invented calculations. ${deps.decisionContext ? "Explicit decision mode: successful review_decision is mandatory; plain prose cannot complete this request. Use the explicit objective and focus." : ""} Remaining tool/review slots: ${ADVISOR_MAX_TOOL_CALLS - count}. Remaining review attempts: ${2 - decisionAttempts}.`, input, [...tools, decisionTool]),
             signal: callSignal,
           }),
           callSignal,
@@ -223,7 +224,7 @@ export async function investigate(
         if (item.name === "review_decision") {
           await bounded(deps.check, signal);
           decisionAttempts++;
-          const review = reviewDecision(item.arguments, observations);
+          const review = reviewDecision(item.arguments, observations, deps.decisionContext);
           if (review.state === "accepted") {
             return finish(review.text, review.evidence);
           }
@@ -264,7 +265,7 @@ export async function investigate(
     }
     if (text.length > 12000) throw new AdvisorError("limit");
     if (!calls) {
-      if (!text.trim() || decisionAttempts) throw new AdvisorError("provider_failed");
+      if (!text.trim() || decisionAttempts || deps.decisionContext) throw new AdvisorError("provider_failed");
       return finish(text);
     }
   }

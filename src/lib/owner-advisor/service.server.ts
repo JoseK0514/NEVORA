@@ -120,7 +120,7 @@ export async function advisorService(
     const result = await notebook.save(command);
     return { state: "notebook_saved" as const, revision: result.revision, ...(await observation()) };
   }
-  if (command.op !== "ask" && command.op !== "ask_task") throw new AdvisorError("invalid");
+  if (command.op !== "ask" && command.op !== "ask_task" && command.op !== "ask_decision") throw new AdvisorError("invalid");
   if (!config) throw new AdvisorError("unavailable");
   await check();
   // Purge expired context before replay admission, so an expired value cannot
@@ -142,7 +142,7 @@ export async function advisorService(
     const saved = await notebook.read();
     if (command.op === "ask_task" && (saved.state !== "ready" || saved.notebook.revision !== command.expectedNotebookRevision)) throw new AdvisorError(saved.state === "ready" ? "conflict" : "unavailable");
     const savedContext = saved.state === "ready" ? notebookContext(saved.notebook, command.op === "ask_task" ? command.taskId : undefined) : undefined;
-    const memoryContext = savedMemory.state === "ready" ? ownerMemoryContext(savedMemory.memory, await memory.clock(), savedContext?.selectedTask?.focus, admission.workspace.timeZone) : undefined;
+    const memoryContext = savedMemory.state === "ready" ? ownerMemoryContext(savedMemory.memory, await memory.clock(), command.op === "ask_decision" ? command.focus : savedContext?.selectedTask?.focus, admission.workspace.timeZone) : undefined;
     const answer = await investigate(
       config,
       state.history,
@@ -150,6 +150,7 @@ export async function advisorService(
       command.message,
       {
         check,
+        ...(command.op === "ask_decision" ? { decisionContext: { objective: command.objective, focus: command.focus } } : {}),
         tool: (call) => tools.run(call),
         signal,
         ...(savedContext ? { savedContext } : {}),

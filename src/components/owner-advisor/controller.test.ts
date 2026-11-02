@@ -341,3 +341,17 @@ it("a review acknowledges only that revision and another refresh requires review
   ]);
   c.stop();
 });
+it("submits validated explicit scope/objective, refreshes answer and retires decision drafts on pause", async () => {
+  vi.useFakeTimers(); let state: AdvisorView | undefined; const posted: unknown[] = [];
+  const c = createAdvisorController(v => { state = v; }, async (_url, init) => {
+    if (init?.method === "POST") { const command = JSON.parse(String(init.body)); posted.push(command); return Response.json({ state: "answered", answer: { text: "Reviewed", sources: [], decision: { objective: command.objective, focus: command.focus } }, authority: "owner", observedAt: new Date().toISOString(), validForMs: 15000 }); }
+    return Response.json(snap());
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0); c.editQuestion("Compare options");
+  c.editDecision({ mode: "decision", objective: "Keep coverage", focus: { kind: "coverage", date: "" } });
+  await c.ask(); expect(posted).toHaveLength(0);
+  c.editDecision({ focus: { kind: "coverage", date: "2026-11-01" } });
+  await c.ask(); expect(posted).toEqual([expect.objectContaining({ op: "ask_decision", objective: "Keep coverage", focus: { kind: "coverage", date: "2026-11-01" } })]);
+  expect(state?.answer?.decision?.objective).toBe("Keep coverage");
+  c.pause(); expect(state?.decisionObjective).toBe(""); expect(state?.decisionFocus).toEqual({ kind: "general" }); c.stop();
+});

@@ -112,3 +112,11 @@ it("dates comparison staleness by its observation instead of the currently visib
   expect(earlier).toContain("This comparison predates your save");
   expect(earlier).toContain("From an earlier comparison");
 });
+it("renders bounded labeled decision objective and scope controls with review limitations", () => {
+  const html = renderToStaticMarkup(<AdvisorScreen view={{ ...initialView, loading: false, snapshot, mode: "decision", decisionObjective: "Keep coverage", decisionFocus: { kind: "coverage", date: "2026-11-01" } }} actions={actions} />);
+  expect(html).toContain('id="oa-decision-objective"');
+  expect(html).toContain('maxLength="1000"');
+  expect(html).toContain('id="oa-decision-date"');
+  expect(html).toContain("Reviewed decision");
+  expect(html).toContain("does not prove every written claim");
+});

@@ -1,9 +1,12 @@
+import { parseDecisionMetrics, renderDecisionMetric, decisionMetricNames, type DecisionMetric } from "./decision-metrics";
+import type { DecisionContext } from "./contracts";
 import { record, type ToolCall, type ToolResult } from "./contracts";
 import type { WorkflowEvidence } from "./workflow-contracts";
 
 export type DecisionEvidence = { id: string; call: ToolCall; result: ToolResult };
 type CoverageReference = { evidenceId: string; alternativeIndex: number };
 type Decision = {
+  assumptions: string[]; changeCondition: string; metrics: DecisionMetric[];
   language: "en" | "es"; summary: string;
   observations: { statement: string; evidenceIds: string[] }[];
   options: { id: string; description: string; tradeoff: string; evidenceIds: string[];
@@ -12,7 +15,7 @@ type Decision = {
   uncertainties: string[]; nextStep: string; outcomeCheck: string;
   acknowledgedPartialEvidence: string[];
 };
-type Issue = "INVALID_DECISION" | "UNKNOWN_EVIDENCE" | "INVALID_OPTION_REFERENCE" |
+type Issue = "INVALID_METRIC_REFERENCE" | "MISSING_CHANGE_CONDITION" | "INVALID_DECISION" | "UNKNOWN_EVIDENCE" | "INVALID_OPTION_REFERENCE" |
   "INVALID_COVERAGE_REFERENCE" | "MISSING_PARTIAL_ACKNOWLEDGEMENT" | "MISSING_UNCERTAINTY" | "MISSING_OBSERVATIONS" | "STALE_EVIDENCE";
 export type DecisionReview = { state: "accepted"; text: string; evidence: WorkflowEvidence } | { state: "revise"; issues: Issue[] };
 const text = (v: unknown, max: number): v is string => typeof v === "string" && !!v.trim() && v.length <= max;
@@ -23,7 +26,10 @@ function refs(v: unknown, minimum = 1): v is string[] {
   return Array.isArray(v) && v.length >= minimum && v.length <= 8 && v.every(evidenceId) && new Set(v).size === v.length;
 }
 function parse(value: unknown): Decision | null {
-  if (!object(value, "acknowledgedPartialEvidence,language,nextStep,observations,options,outcomeCheck,recommendation,summary,uncertainties") ||
+  if (record(value)) value = { assumptions: [], changeCondition: "", metrics: [], ...value };
+  if (!object(value, "acknowledgedPartialEvidence,assumptions,changeCondition,language,metrics,nextStep,observations,options,outcomeCheck,recommendation,summary,uncertainties") ||
+    !Array.isArray(value.assumptions) || value.assumptions.length > 3 || !value.assumptions.every(a => text(a, 200)) ||
+    typeof value.changeCondition !== "string" || value.changeCondition.length > 300 || !parseDecisionMetrics(value.metrics) ||
     !["en", "es"].includes(String(value.language)) || !text(value.summary, 1000) ||
     !text(value.nextStep, 500) || !text(value.outcomeCheck, 500) || !refs(value.acknowledgedPartialEvidence, 0) ||
     !Array.isArray(value.observations) || value.observations.length > 6 ||
@@ -37,7 +43,7 @@ function parse(value: unknown): Decision | null {
     !object(value.recommendation, "optionId,rationale") ||
     (value.recommendation.optionId !== null && !optionId(value.recommendation.optionId)) || !text(value.recommendation.rationale, 500) ||
     !Array.isArray(value.uncertainties) || value.uncertainties.length > 6 || !value.uncertainties.every(u => text(u, 200))) return null;
-  return value as Decision;
+  return { ...value, metrics: parseDecisionMetrics(value.metrics)! } as Decision;
 }
 
 const partial = (e: DecisionEvidence) => e.result.partial || e.result.coveragePlans?.partial === true || e.result.periodReview?.partial === true;
@@ -61,15 +67,18 @@ export function decisionEvidenceSummary(evidence: readonly DecisionEvidence[]) {
 /** Checks references/structure and canonical-plan identity, not whether arbitrary
  * model-authored prose is true. No business writer or authorization is produced.
  * The concise record renders into the existing public text/sources contract. */
-export function reviewDecision(args: unknown, evidence: readonly DecisionEvidence[]): DecisionReview {
+export function reviewDecision(args: unknown, evidence: readonly DecisionEvidence[], context?: DecisionContext): DecisionReview {
   let value: unknown;
   if (typeof args !== "string" || args.length > 20000) return { state: "revise", issues: ["INVALID_DECISION"] };
   try { value = JSON.parse(args); } catch { return { state: "revise", issues: ["INVALID_DECISION"] }; }
   const d = parse(value);
   if (!d) return { state: "revise", issues: ["INVALID_DECISION"] };
   const byId = new Map(evidence.map(e => [e.id, e]));
-  const used = new Set([...d.observations.flatMap(o => o.evidenceIds), ...d.options.flatMap(o => o.evidenceIds)]);
+  const used = new Set([...d.observations.flatMap(o => o.evidenceIds), ...d.options.flatMap(o => o.evidenceIds), ...d.metrics.map(m => m.evidenceId)]);
   const issues: Issue[] = [];
+  if (context && !d.changeCondition.trim()) issues.push("MISSING_CHANGE_CONDITION");
+  const metricLines = d.metrics.map(m => byId.has(m.evidenceId) ? renderDecisionMetric(m, byId.get(m.evidenceId)!, d.language, context?.focus) : null);
+  if (metricLines.some(line => line === null)) issues.push("INVALID_METRIC_REFERENCE");
   if ([...used, ...d.acknowledgedPartialEvidence].some(id => !byId.has(id))) issues.push("UNKNOWN_EVIDENCE");
   if ([...used].some(id => byId.has(id) && !current(byId.get(id)!, evidence))) issues.push("STALE_EVIDENCE");
   const ids = d.options.map(o => o.id);
@@ -101,9 +110,11 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
     ...(proposals.length === 1 ? { proposals: proposals[0] } : {}),
   };
   const es = d.language === "es";
-  const lines = [d.summary];
+  const lines = [d.summary, ...metricLines as string[]];
+  if (d.assumptions.length) lines.push(`${es ? "Supuestos" : "Assumptions"}: ${d.assumptions.join(" ")}`);
+  if (d.changeCondition.trim()) lines.push(`${es ? "Reconsiderar si" : "Reconsider if"}: ${d.changeCondition}`);
   const unverified: string[] = [];
-  let hasCanonicalCoverage = false;
+  let hasCanonicalCoverage = d.metrics.some(m => m.metric.startsWith("coverage_"));
   for (const observation of d.observations) lines.push(`${observation.statement} [${observation.evidenceIds.join(", ")}]`);
   for (const option of d.options) {
     lines.push(`${option.id}: ${option.description} ${es ? "Consecuencia" : "Tradeoff"}: ${option.tradeoff}`);
@@ -145,6 +156,8 @@ export const decisionTool = {
   type: "function", name: "review_decision", strict: true,
   description: "Check and present a concise evidence-based business decision. Submit alone after needed reads. Reference only evidence IDs returned in this investigation. Compare separate options/tradeoffs, recommend one or state the blocking unknown, give the next step and outcome check. Only canonical coverage references establish jointly checked hypothetical allocations; other feasibility is unverified. This is local review, never business execution. At most two attempts within the existing tool budget.",
   parameters: schemaObject({
+    assumptions: { type: "array", maxItems: 3, items: schemaText(200) }, changeCondition: schemaText(300),
+    metrics: { type: "array", maxItems: 6, items: schemaObject({ evidenceId: { type: "string", pattern: "^E[1-8]$" }, metric: { type: "string", enum: decisionMetricNames }, alternativeIndex: { anyOf: [{ type: "integer", minimum: 0, maximum: 1 }, { type: "null" }] } }) },
     language: { type: "string", enum: ["en", "es"] }, summary: schemaText(1000),
     observations: { type: "array", maxItems: 6, items: schemaObject({ statement: schemaText(400), evidenceIds: schemaRefs() }) },
     options: { type: "array", maxItems: 3, items: schemaObject({ id: { type: "string", pattern: "^[a-zA-Z0-9_-]{1,24}$" }, description: schemaText(400), tradeoff: schemaText(400), evidenceIds: schemaRefs(), feasibility: { type: "string", enum: ["unverified", "canonical_coverage"] }, coverage: { anyOf: [coverageSchema, { type: "null" }] } }) },

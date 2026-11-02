@@ -49,6 +49,7 @@ export function AdvisorScreen({
   view: AdvisorView;
   coverage?: { view: CoverageActionView; actions: Pick<ReturnType<typeof createCoverageActionController>, "acknowledge" | "save" | "recover" | "check" | "dismiss"> };
   actions: {
+    editDecision?: ReturnType<typeof createAdvisorController>["editDecision"];
     editQuestion: (s: string) => void;
     editPriorities: (s: string) => void;
     ask: () => void;
@@ -199,12 +200,24 @@ export function AdvisorScreen({
                     actions.ask();
                   }}
                 >
-                  {(saved || view.focusedTaskId) && <SelectField id="oa-investigation-task" name="investigationTask" label="Investigating" value={view.focusedTaskId ?? ""} disabled={!!view.busy} options={[
+                  <SelectField id="oa-mode" name="mode" label="Answer mode" value={view.mode} disabled={!!view.busy} options={[{ value: "factual", label: "Factual question" }, { value: "decision", label: "Reviewed decision" }]} onChange={e => actions.editDecision?.({ mode: e.target.value as "factual" | "decision" })} />
+                  {view.mode === "decision" && <>
+                    <label htmlFor="oa-decision-objective">Decision objective</label>
+                    <textarea id="oa-decision-objective" maxLength={1000} rows={2} value={view.decisionObjective} disabled={!!view.busy} onChange={e => actions.editDecision?.({ objective: e.target.value })} />
+                    <SelectField id="oa-decision-scope" name="decisionScope" label="Decision scope" value={view.decisionFocus.kind} disabled={!!view.busy} options={[{ value: "general", label: "General operations" }, { value: "coverage", label: "Coverage date" }, { value: "period", label: "Attendance period" }]} onChange={e => actions.editDecision?.({ focus: e.target.value === "coverage" ? { kind: "coverage", date: "" } : e.target.value === "period" ? { kind: "period", startDate: "", endDate: "" } : { kind: "general" } })} />
+                    {view.decisionFocus.kind === "coverage" && <><label htmlFor="oa-decision-date">Coverage date</label><input id="oa-decision-date" type="date" value={view.decisionFocus.date} disabled={!!view.busy} onChange={e => actions.editDecision?.({ focus: { kind: "coverage", date: e.target.value } })} /></>}
+                    {view.decisionFocus.kind === "period" && <>
+                      <label htmlFor="oa-decision-start">Period start</label><input id="oa-decision-start" type="date" value={view.decisionFocus.startDate} disabled={!!view.busy} onChange={e => view.decisionFocus.kind === "period" && actions.editDecision?.({ focus: { ...view.decisionFocus, startDate: e.target.value } })} />
+                      <label htmlFor="oa-decision-end">Period end</label><input id="oa-decision-end" type="date" value={view.decisionFocus.endDate} disabled={!!view.busy} onChange={e => view.decisionFocus.kind === "period" && actions.editDecision?.({ focus: { ...view.decisionFocus, endDate: e.target.value } })} />
+                    </>}
+                    <p className="oa-muted">Review checks evidence references and numeric facts; it does not prove every written claim. Changes still require your normal review workflow.</p>
+                  </>}
+                  {view.mode === "factual" && (saved || view.focusedTaskId) && <SelectField id="oa-investigation-task" name="investigationTask" label="Investigating" value={view.focusedTaskId ?? ""} disabled={!!view.busy} options={[
                     { value: "", label: "General investigation" },
                     ...openTasks.map(t => ({ value: t.id, label: t.objective })),
                     ...(selectedUnavailable ? [{ value: view.focusedTaskId!, label: "Selected task is no longer open or available" }] : []),
                   ]} onChange={e => actions.selectTask?.(e.target.value || null)} />}
-                  {selectedUnavailable && <p role="status" className="oa-notice">Choose an open task or select a general investigation to continue.</p>}
+                  {view.mode === "factual" && selectedUnavailable && <p role="status" className="oa-notice">Choose an open task or select a general investigation to continue.</p>}
                   <label htmlFor="oa-question">Your question</label>
                   <textarea
                     id="oa-question"
@@ -225,7 +238,8 @@ export function AdvisorScreen({
                       disabled={
                         disabled ||
                         current.connection !== "available" ||
-                        selectedUnavailable ||
+                        (view.mode === "factual" && selectedUnavailable) ||
+                        (view.mode === "decision" && !view.decisionObjective.trim()) ||
                         !view.question.trim()
                       }
                     >
@@ -353,6 +367,7 @@ export function OwnerAdvisor() {
         dismiss: () => { coverageRef.current?.dismiss(); if (comparisonTrigger.current?.isConnected) comparisonTrigger.current.focus(); },
       } }}
       actions={{
+        editDecision: (edit) => ref.current?.editDecision(edit),
         editQuestion: (s) => ref.current?.editQuestion(s),
         editPriorities: (s) => ref.current?.editPriorities(s),
         ask: () => void ref.current?.ask(),

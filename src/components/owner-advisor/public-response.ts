@@ -6,7 +6,7 @@ import {
   type AdvisorAnswer,
   type AdvisorProfile,
 } from "@/lib/owner-advisor/contracts";
-import { notebookId, notebookRevision, parseNotebook } from "@/lib/owner-advisor/notebook";
+import { parseTaskFocus, notebookId, notebookRevision, parseNotebook } from "@/lib/owner-advisor/notebook";
 import { parseCoveragePlans } from "./public-coverage-plans";
 function requireValue(value: unknown): asserts value {
   if (!value) throw Error("Invalid advisor response");
@@ -142,6 +142,11 @@ export function parseAnswer(value: unknown): AnswerResponse {
   sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
   if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
+  if (a.decision !== undefined) {
+    const d = a.decision;
+    requireValue(record(d) && Object.keys(d).sort().join(",") === "focus,objective" && text(d.objective, 1000) && typeof d.objective === "string" && !!d.objective.trim());
+    parseTaskFocus(d.focus);
+  }
   if (a.context !== undefined) {
     const c = a.context;
     requireValue(record(c) && Object.keys(c).every(k => ["notebookRevision", "memoryRevision", "profileRevision", "taskId"].includes(k)) &&
