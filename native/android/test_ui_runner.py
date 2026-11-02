@@ -11,6 +11,15 @@ import unittest
 from unittest.mock import patch
 
 class RunnerOwnershipTests(unittest.TestCase):
+    def test_each_isolated_case_must_pass_and_be_counted_once(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'instrumentation_count')
+        namespace = {'re': __import__('re')}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_results', 'exec'), namespace)
+        count = namespace['instrumentation_count']
+        self.assertEqual(count('OK (1 test)\nOK (1 test)',2,2),2)
+        for text in ['OK (1 test)', 'OK (2 tests)', 'OK (1 test)\nFAILURES!!!', 'OK (2 tests)\nOK (0 tests)', 'OK (1 test)\nOK (1 test)\nProcess crashed']:
+            with self.subTest(text=text), self.assertRaises(RuntimeError):count(text,2,2)
     def test_a_device_timeout_does_not_skip_other_cleanup_or_failure_evidence(self):
         tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
         function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'finish_cleanup')
