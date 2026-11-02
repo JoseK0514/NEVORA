@@ -207,9 +207,22 @@ final class NevoraBackendUITests: XCTestCase {
     private func retain(_ name: String) {
         let attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
     }
+    private func openSchedule(owner: Bool) {
+        let schedule = app.webViews.links["Schedule"].firstMatch
+        XCTAssertTrue(schedule.waitForExistence(timeout: 20))
+        retain("Home before Schedule touch")
+        // XCTest cannot compute a WK fixed-link activation point on this runtime.
+        // Send a real pointer event at the live accessibility frame instead.
+        XCTAssertFalse(schedule.frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(schedule.frame))
+        schedule.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let destination = owner ? app.webViews.buttons["More schedule actions"] : app.webViews.links["Next week"]
+        XCTAssertTrue(destination.waitForExistence(timeout: 20), "Role-specific Schedule content")
+        retain("Role-specific Schedule after native touch")
+    }
     func testEmployeeActionRevocationOutageAndLogout() throws {
         login("QA-NATIVE-A"); expect("Welcome back, QA NATIVE")
-        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); expect("Your work"); link("Availability").tap(); expect("Your usual week")
+        openSchedule(owner: false); link("More, ").tap(); expect("Your work"); link("Availability").tap(); expect("Your usual week")
         app.webViews.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Monday,")).firstMatch.tap()
         let available = app.webViews.switches["Available on Monday"]
         XCTAssertTrue(available.waitForExistence(timeout: 20)); available.tap(); app.webViews.buttons["Done"].tap()
@@ -224,7 +237,7 @@ final class NevoraBackendUITests: XCTestCase {
     }
     func testOwnerActionAndPersistentSession() throws {
         login("QAOWNER"); expect("Welcome back, Fictional")
-        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); link("Settings").tap(); link("Company profile").tap()
+        openSchedule(owner: true); link("More, ").tap(); link("Settings").tap(); link("Company profile").tap()
         let name = app.webViews.textFields["Business name"]
         XCTAssertTrue(name.waitForExistence(timeout: 20)); XCTAssertEqual(name.value as? String, "QA")
         name.tap(); name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2) + "Fictional iOS Company")
