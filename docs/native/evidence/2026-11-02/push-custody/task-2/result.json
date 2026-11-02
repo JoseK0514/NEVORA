@@ -1,7 +1,7 @@
 {
   "task": 2,
   "base": "f8b0ef85f1c60ea16899ddaf0732f1fc1393371c",
-  "state": "local implementation verified; formal task-done pending",
+  "state": "Task2 complete; local SQL/HTTP only",
   "checks": {
     "realSql": {
       "files": 5,
@@ -66,6 +66,15 @@
     "task-2-dns-red.log": "e02dc6c003b3e76c0f17c810fb7b683a68dd86364649db5063be4ee38b6e21e8",
     "task-2-final-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "task-2-final-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "task-2-final-focused.log": "50d5cc0cb75c8b2af47fd4c3b7e2c40cec120ca4c94baec00ad4e211ee7efa79"
+    "task-2-final-focused.log": "50d5cc0cb75c8b2af47fd4c3b7e2c40cec120ca4c94baec00ad4e211ee7efa79",
+    "task-2-formal-completion.log": "f9f9d5b7e2bc7e959bd398be2461372815dca2e2ea609cabd21ba04fec3e7d79",
+    "task-2-final-check.py": "3725b82cdfec6a93118c1bf9232cd6aa42f019b1d628c98393a4e42f30938e0a"
+  },
+  "implementationCommit": "be88fc870e556e5260711cbed297b3bf900f652d",
+  "formalGate": {
+    "passed": true,
+    "focusedTests": 634,
+    "sqlTests": 186,
+    "sqlSeconds": 75.45
   }
 }
