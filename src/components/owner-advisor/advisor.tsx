@@ -1,4 +1,5 @@
 "use client";
+import { LegalControls } from "./legal-panel";
 import { useEffect, useRef, useState } from "react";
 import { PageBand } from "@/components/kit/kit";
 import type { AdvisorSource } from "@/lib/owner-advisor/contracts";
@@ -150,6 +151,7 @@ export function AdvisorScreen({
               )}
               <Sources sources={current.briefing.sources} />
             </section>
+            <LegalControls disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
             <WorkflowControls date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)} disabled={disabled} inspect={tool => actions.inspect?.(tool)} />
             {coverage && <CoverageActionPanel view={coverage.view} actions={coverage.actions} />}
             <div className="oa-columns">

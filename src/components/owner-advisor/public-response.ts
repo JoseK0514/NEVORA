@@ -1,3 +1,4 @@
+import { parseLegalResearch } from "@/lib/owner-advisor/legal-research";
 import { parseMemory } from "@/lib/owner-advisor/memory";
 import {
   record,
@@ -141,6 +142,7 @@ export function parseAnswer(value: unknown): AnswerResponse {
   stamp(value);
   sources(value.answer.sources, ADVISOR_MAX_ANSWER_SOURCES);
   const a = value.answer;
+  if (a.legalResearch !== undefined) parseLegalResearch(a.legalResearch);
   if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
   if (a.decision !== undefined) {
     const d = a.decision;

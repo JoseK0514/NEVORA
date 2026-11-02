@@ -1,3 +1,4 @@
+import { parseLegalArgs } from "./legal-research";
 import { parsePeriod } from "@/lib/timecards/project";
 import { parseTaskFocus, type TaskFocus, NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
 import { MemoryError, parseMemoryCommand } from "./memory";
@@ -27,7 +28,7 @@ export type AdvisorCommand =
   | import("./memory").MemoryCommand
   | import("./notebook").NotebookCommand
   | { op: "ask_task"; requestId: string; taskId: string; expectedNotebookRevision: number; message: string }
-  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" }> }
+  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" | "legal_research" }> }
   | ({ op: "ask_decision"; requestId: string; message: string } & DecisionContext)
   | { op: "ask"; requestId: string; message: string }
   | { op: "review_briefing"; requestId: string; issueId: string; fingerprint: string; expectedRevision: number; disposition: import("./briefing-contracts").AttentionDisposition }
@@ -82,7 +83,7 @@ export function parseCommand(v: unknown): AdvisorCommand {
   if (v.op === "ask_task" && Object.keys(v).sort().join(",") === "expectedNotebookRevision,message,op,requestId,taskId" && typeof v.taskId === "string" && notebookId(v.taskId.toLowerCase()) && notebookRevision(v.expectedNotebookRevision) && typeof v.message === "string" && v.message.trim().length > 0 && v.message.length <= 2000) return { op: "ask_task", requestId: v.requestId.toLowerCase(), taskId: v.taskId.toLowerCase(), expectedNotebookRevision: v.expectedNotebookRevision, message: v.message };
   if (v.op === "inspect" && Object.keys(v).sort().join(",") === "op,requestId,tool" && record(v.tool) && Object.keys(v.tool).sort().join(",") === "args,name") {
     const tool = parseTool(v.tool.name, JSON.stringify(v.tool.args));
-    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals" || tool.name === "coverage_plan") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
+    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals" || tool.name === "coverage_plan" || tool.name === "legal_research") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
     throw new AdvisorError("invalid");
   }
   if (
@@ -123,6 +124,7 @@ export function parseCommand(v: unknown): AdvisorCommand {
   throw new AdvisorError("invalid");
 }
 export type ToolCall =
+  | { name: "legal_research"; args: import("./legal-research").LegalArgs }
   | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
   | { name: "coverage_proposals"; args: { date: string } }
   | { name: "coverage_plan"; args: { date: string } }
@@ -147,6 +149,7 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
     throw new AdvisorError("invalid");
   }
   if (!record(v)) throw new AdvisorError("invalid");
+  if (name === "legal_research") { try { return { name, args: parseLegalArgs(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "attendance_payroll_review" && Object.keys(v).sort().join(",") === "endDate,language,startDate" && typeof v.startDate === "string" && typeof v.endDate === "string" && /^20/.test(v.startDate) && /^20/.test(v.endDate) && (v.language === "en" || v.language === "es")) {
     try { return { name, args: { ...parsePeriod(v.startDate, v.endDate), language: v.language } }; }
     catch { throw new AdvisorError("invalid"); }

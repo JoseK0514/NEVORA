@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SelectField } from "@/components/select-field";
 import type { AdvisorAnswer, AdvisorCommand } from "@/lib/owner-advisor/contracts";
 import { issueLabel } from "@/lib/owner-advisor/workflow-contracts";
+import { LegalResults } from "./legal-panel";
 import { CoveragePlanResults } from "./coverage-plans";
 type Inspection = Extract<AdvisorCommand, { op: "inspect" }>["tool"];
 export function WorkflowControls({ date, disabled, inspect }: { date: string; disabled: boolean; inspect: (tool: Inspection) => void }) {
@@ -33,6 +34,7 @@ export function WorkflowControls({ date, disabled, inspect }: { date: string; di
 export function WorkflowResults({ answer, reviewCoverage, lastSavedAt }: { answer: AdvisorAnswer; lastSavedAt?: string | null; reviewCoverage?: (plans: NonNullable<AdvisorAnswer["coveragePlans"]>, index: number) => void }) {
   const p = answer.periodReview, es = p?.language === "es";
   return <>
+    {answer.legalResearch && <LegalResults research={answer.legalResearch} />}
     {answer.coveragePlans && <CoveragePlanResults plans={answer.coveragePlans} lastSavedAt={lastSavedAt} review={reviewCoverage ? index => reviewCoverage(answer.coveragePlans!, index) : undefined} />}
     {answer.proposals && <section aria-label="Coverage proposals">
       <h3>Coverage proposals</h3>
