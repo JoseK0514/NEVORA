@@ -39,3 +39,5 @@ Score future real samples separately on grounding, useful novelty, warranted dis
 ## Executed acceptance
 
 See the [acceptance handoff](../../handoffs/2026-11-01-owner-ai-partner-acceptance.md) and [execution snapshot](execution.json) for exact tested sources, artifact hashes, the corrected case mappings, remaining Chromium capture observation, and release gates. A passing scripted or application check is never a model-quality certification.
+
+Whole-branch fix source `f0a500f6988e1f91600565d55729e868f3c4cbd9` enforces action scope independently of metrics and prevents expired memory edits from renewing immutable age. Its focused/default/SQL evidence is separate from earlier scripted/browser samples; see `final-fix-d2126def-20261101` under the durable evidence root. Important visual gate V1 remains held pending manual unlock and paired headed Chromium/OS-owned-window evidence. No speculative CSS change or visual waiver was made.

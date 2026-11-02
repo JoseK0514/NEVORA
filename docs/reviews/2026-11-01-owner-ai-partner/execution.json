@@ -1,7 +1,7 @@
 {
-  "testedSource": "ffd6e074324e8f6c3603890cbfec08a1b74bd58e",
+  "testedSource": "f0a500f6988e1f91600565d55729e868f3c4cbd9",
   "baseSource": "143ae13019346af100e1161c0109fc6b9c2b4123",
-  "state": "local acceptance evidence ready for final review;not integrated/deployed",
+  "state": "backend fixes locally verified; scoped re-review pending; Important V1 headed OS evidence blocked; not integrated/deployed",
   "documentationOnlyDescendant": true,
   "evidenceRoot": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence",
   "sddArchiveDestination": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/sdd-archive",
@@ -69,6 +69,34 @@
       "result": "both exit0",
       "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-ffd6e074-final-checks-20261101/commands.json",
       "sha256": "13e686aefe014f57bc5cfdff9a0e1188dc87e9bd7d474834350c1301f5d2df13"
+    },
+    {
+      "check": "final-fix commands/source",
+      "testedSource": "f0a500f6988e1f91600565d55729e868f3c4cbd9",
+      "result": "67focused;types/lint0;147SQL initial patch;9SQL final source;RED evidence preserved",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/final-fix-d2126def-20261101/checks-and-source.json",
+      "sha256": "86292bed0610dc08bd55fe34b7adb83afbbd02fcff16bf14c397a4839536abe7"
+    },
+    {
+      "check": "final-fix memory SQL",
+      "testedSource": "f0a500f6988e1f91600565d55729e868f3c4cbd9",
+      "result": "9passed at f0a500f6",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/final-fix-d2126def-20261101/sql-final-memory.log",
+      "sha256": "1ef9eb12fd1e92cadc87a6793aa505cc255a8dc9ac0249251b11c38090bda6f8"
+    },
+    {
+      "check": "final-fix default",
+      "testedSource": "f0a500f6988e1f91600565d55729e868f3c4cbd9",
+      "result": "10710passed/801skipped/55pending/0failed; success true; ordinary712passedfiles/27skipped; exit0",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/final-fix-d2126def-20261101/default.json",
+      "sha256": "35994334989fa22ad4035ba25ac14717ebe15e30fba5c2d1b27e0e68f05bc5c1"
+    },
+    {
+      "check": "final-fix default command",
+      "testedSource": "f0a500f6988e1f91600565d55729e868f3c4cbd9",
+      "result": "exit0;381.56s wall time;sourcef0a500f6",
+      "path": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/final-fix-d2126def-20261101/default-command.json",
+      "sha256": "2a8022e29d61059bff3cbde3401289dc559c668bf66ad6843f5968fc92870c54"
     }
   ],
   "defaultAssertionStates": {
@@ -113,5 +141,23 @@
   "migration": "0046_owner_advisor_memory.sql applied only in disposable local verification",
   "rollback": "Disable advisor flag/application rollback while retaining additive memory storage, forgetting triggers and scrubbed receipts;no destructive downmigration or production rollback performed",
   "nextAction": "Controller reviews final supplement, performs mandatory whole-branch review and archives ignored workspace;do not integrate until source inventory is reconciled.",
-  "finalVisualSupplement": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-final-visual-supplement-20261101.json"
+  "finalVisualSupplement": "/Users/josek0514/.codex/nevora-ai-owner-partner-20261101/evidence/task5-final-visual-supplement-20261101.json",
+  "priorTestedSource": "ffd6e074324e8f6c3603890cbfec08a1b74bd58e",
+  "finalFix": {
+    "base": "d2126def5592889c2cb2c0e4ad95ce3ef9efa762",
+    "findings": {
+      "wholeBranchI1": "implemented; scoped review pending",
+      "wholeBranchI2": "implemented; scoped review pending",
+      "V1": "open: Mac locked, headed owned OS evidence not executed",
+      "M1": "nonblocking legal-validator auditability debt retained"
+    },
+    "productionChanged": [
+      "src/lib/owner-advisor/decision.ts",
+      "src/lib/owner-advisor/decision-metrics.ts",
+      "src/lib/owner-advisor/memory.ts"
+    ],
+    "default": "10710passed/801skipped/55pending/0failed; success true; ordinary712passedfiles/27skipped; exit0",
+    "fullOwnedSql": "147passed initial fix before cross-kind guards; final memorySQL9passed at testedSource",
+    "unchangedEarlierEvidence": "Old ffd/4f/f4d browser/scripted/guard results retain original source; historical1390-file equivalence is not claimed across new backend edits."
+  }
 }
