@@ -75,7 +75,8 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
  * hairline above and the safe area below. No grey band: the sheet is white to its bottom edge. */
 :is(#c-root, html) .c-page .tof-grab { display: none; }
 @media (max-width: 767px) {
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
+  /* Every role that opens the sheet (a Lead's v5 shell has no data-nv-corp), or its tab bar sits over Send. */
+  html:is(:root, [data-theme]) body .app-shell:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
   /* A phone turned sideways (coarse pointer, 500px tall or less) gets corp-shell's landscape tab bar through an id-weighted
    * rule; the sheet still hides it there, so its links aren't left under the sheet and in the Tab order. */
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop]:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
