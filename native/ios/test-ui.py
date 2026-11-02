@@ -5,11 +5,14 @@ import fcntl
 import hashlib
 import json
 import os
+import sys
 import plistlib
 import subprocess
 import tempfile
 import uuid
 from urllib.parse import urlsplit
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from owned_artifacts import owned_artifacts
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--simulator', required=True, help='UUID of a disposable test simulator')
@@ -60,7 +63,7 @@ root = Path(__file__).resolve().parent
 evidence = Path(tempfile.mkdtemp(prefix='nevora-native-ui-', dir=args.evidence_root if backend else None))
 env = {key: value for key, value in os.environ.items() if key in ['PATH','HOME','TMPDIR','LANG','NEVORA_OWNED_PROCESS_OWNER']}
 def source_hash():
-    files = [root / 'Package.swift', root / 'NEVORA.xcodeproj/project.pbxproj', root / 'generate-project.py', root / 'test-ui.py', root / 'Fixtures/server.mjs', root.parent.parent / 'src/lib/native-shell/security.ts']
+    files = [root / 'Package.swift', root / 'NEVORA.xcodeproj/project.pbxproj', root / 'generate-project.py', root / 'test-ui.py', root / 'Fixtures/server.mjs', root.parent / 'owned_artifacts.py', root.parent.parent / 'src/lib/native-shell/security.ts']
     for pattern in ['App/*.swift','Sources/**/*.swift','Tests/**/*.swift','UITests/*.swift','Configuration/*.plist']:
         files.extend(root.glob(pattern))
     digest = hashlib.sha256()
@@ -83,12 +86,16 @@ try:
         addresses = json.loads(fixture.stdout.readline())
     report['origin'] = addresses['origin']
     destination = f'platform=iOS Simulator,id={args.simulator}'
-    with (evidence / 'build.log').open('w') as log:
-        subprocess.run(['xcodebuild', '-project', str(root / 'NEVORA.xcodeproj'), '-scheme', 'NEVORA',
-                        '-configuration', 'Debug', '-destination', destination,
-                        '-derivedDataPath', str(evidence / 'DerivedData'),
-                        'CODE_SIGNING_ALLOWED=NO', 'build-for-testing'], env=env, check=True, stdout=log, stderr=subprocess.STDOUT, timeout=300)
-    products = evidence / 'DerivedData/Build/Products'
+    if backend:
+        build_root = owned_artifacts(Path(args.evidence_root), 'ios', args.expected_sha, args.backend_owner) / 'DerivedData'
+    else:
+        build_root = evidence / 'DerivedData'
+        with (evidence / 'build.log').open('w') as log:
+            subprocess.run(['xcodebuild', '-project', str(root / 'NEVORA.xcodeproj'), '-scheme', 'NEVORA',
+                            '-configuration', 'Debug', '-destination', destination,
+                            '-derivedDataPath', str(build_root),
+                            'CODE_SIGNING_ALLOWED=NO', 'build-for-testing'], env=env, check=True, stdout=log, stderr=subprocess.STDOUT, timeout=300)
+    products = build_root / 'Build/Products'
     inputs = list(products.glob('*.xctestrun'))
     if len(inputs) != 1:
         raise RuntimeError('Expected exactly one generated XCTest configuration')
@@ -112,6 +119,7 @@ try:
                                  *[f'-only-testing:{test}' for test in (args.only_testing or ['NevoraUITests/NevoraBackendUITests' if backend else 'NevoraUITests/NevoraUITests'])]],
                                 env=env, stdout=log, stderr=subprocess.STDOUT, timeout=600)
     assert_source(); assert source_hash() == before, 'Native/fixture source changed during verification'
+    if backend: owned_artifacts(Path(args.evidence_root), 'ios', args.expected_sha, args.backend_owner)
     if result.returncode == 0:
         summary = json.loads(subprocess.check_output(['xcrun','xcresulttool','get','test-results','summary','--path',str(evidence/'tests.xcresult'),'--compact'],env=env,text=True,timeout=20))
         (evidence/'summary.json').write_text(json.dumps(summary,indent=2))

@@ -13,6 +13,8 @@ import tempfile
 import time
 from urllib.parse import urlsplit
 import uuid
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from owned_artifacts import owned_artifacts
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--serial', required=True)
@@ -81,7 +83,7 @@ def device(*command, **options):
 def source_hash():
     files = sorted(set(list((root / 'app/src').rglob('*')) + list(root.glob('*.gradle'))
         + list(root.glob('*.properties')) + list(root.glob('*.py')) + list((root / 'gradle/wrapper').glob('*'))
-        + [root / 'app/build.gradle', root / 'gradlew', root.parent / 'ios/Fixtures/server.mjs', root.parent.parent / 'src/lib/native-shell/security.ts']))
+        + [root / 'app/build.gradle', root / 'gradlew', root.parent / 'owned_artifacts.py', root.parent / 'ios/Fixtures/server.mjs', root.parent.parent / 'src/lib/native-shell/security.ts']))
     digest = hashlib.sha256()
     for path in files:
         if path.is_file():
@@ -125,13 +127,17 @@ try:
         device('reverse', f'tcp:{url.port}', f'tcp:{url.port}')
     report['origin'] = addresses['origin']
     if not backend: report['fixtureOrigin'] = addresses['origin']
-    with (evidence / 'build.log').open('w') as output:
-        built = subprocess.run([str(root / 'gradlew'), '--no-daemon', '--project-cache-dir', str(evidence / 'gradle-cache'),
-            f'-PnevoraBuildDirectory={evidence / "app-build"}', ':app:assembleDebug', ':app:assembleDebugAndroidTest'],
-            cwd=root, env=env, stdout=output, stderr=subprocess.STDOUT, timeout=300)
-        if built.returncode:
-            raise RuntimeError('Android build failed; see build.log')
-    for apk in [evidence / 'app-build/outputs/apk/debug/app-debug.apk', evidence / 'app-build/outputs/apk/androidTest/debug/app-debug-androidTest.apk']:
+    if backend:
+        build_root = owned_artifacts(Path(args.evidence_root), 'android', args.expected_sha, args.backend_owner)
+    else:
+        build_root = evidence / 'app-build'
+        with (evidence / 'build.log').open('w') as output:
+            built = subprocess.run([str(root / 'gradlew'), '--no-daemon', '--project-cache-dir', str(evidence / 'gradle-cache'),
+                f'-PnevoraBuildDirectory={build_root}', ':app:assembleDebug', ':app:assembleDebugAndroidTest'],
+                cwd=root, env=env, stdout=output, stderr=subprocess.STDOUT, timeout=300)
+            if built.returncode:
+                raise RuntimeError('Android build failed; see build.log')
+    for apk in [build_root / 'outputs/apk/debug/app-debug.apk', build_root / 'outputs/apk/androidTest/debug/app-debug-androidTest.apk']:
         device('install', '-r', '-t', str(apk), timeout=60)
     selected_class = 'com.velani.nevora.development.BackendInstrumentedTest' if backend else args.only_testing or 'com.velani.nevora.development.ShellInstrumentedTest'
     settings = ['-e', 'backendOrigin', addresses['origin'], '-e', 'backendControlOrigin', addresses['controlOrigin']] if backend else ['-e', 'fixtureOrigin', addresses['origin'], '-e', 'unavailableOrigin', addresses['unavailableOrigin']]
@@ -176,6 +182,7 @@ try:
         (evidence / 'owner-cold-start.png').write_bytes(screenshot.stdout)
     assert source_hash() == before, 'Native/fixture source changed during verification'
     if backend:
+        owned_artifacts(Path(args.evidence_root), 'android', args.expected_sha, args.backend_owner)
         assert run(['git', '-C', str(root.parent.parent), 'rev-parse', 'HEAD']).stdout.strip() == args.expected_sha
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
     report['passed'] = True

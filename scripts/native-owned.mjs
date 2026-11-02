@@ -8,6 +8,7 @@ import {createServer} from 'node:net';
 import {Client} from 'pg';
 import {pathToFileURL} from 'node:url';
 import {captureSource,assertSourceUnchanged,safeEnvironment,superviseOwnedChild,installTerminationHandlers} from './phase-e-owned.mjs';
+import {prepareNativeBuild} from './native-build.mjs';
 export const captureNativeSource=captureSource;
 export const assertNativeSource=assertSourceUnchanged;
 export const NATIVE_CONTRACT_CHECKS=Object.freeze(['missing-session','denied-selectors','denied-origin','denied-cross-site','employee-native-session','native-renderer-policy','employee-schedule','employee-authorized-action','owner-native-session','owner-authorized-action','actual-invitation-activation-and-login','employee-owner-route-denied','manager-native-unsupported-web-preserved','lead-native-unsupported-web-preserved','expired-session','revoked-session','sanitized-database-outage-and-recovery']);
@@ -113,6 +114,11 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
   let postgres,exited,lease,logFd;
   const pgEnv={...env,NEVORA_NATIVE_OWNER:marker};
   try{
+    report.nativeBuilds=[];
+    if(!selection.ownershipOnly)for(const platform of ['android','ios'])if(selection.platform===platform||selection.platform==='all'){
+      assertNativeCleanup({root,source,marker});
+      report.nativeBuilds.push(await prepareNativeBuild({source,root,ownerId:marker,checkpoint:custody.checkpoint,platform,env,signal:controller.signal}));
+    }
     const init=spawnSync(join(bin,'initdb'),['-D',data,'-U','nevora_native','--auth-local=trust','--auth-host=trust','--encoding=UTF8','--no-locale'],{env:pgEnv,encoding:'utf8',timeout:45000});
     writeFileSync(join(root,'initdb.log'),init.stdout+init.stderr,{mode:0o600});
     if(init.error||init.status!==0)throw Error('Owned PostgreSQL initialization failed; see initdb.log');
