@@ -313,10 +313,10 @@ it('shows own published statements, linked corrections and protected PDFs with t
    }finally{await landscape.close();}
    if(engine==='chromium'){
     stage='role-separation';await q("UPDATE employees SET role='MANAGER' WHERE id=$1",[manager]);const managerContext=await activeBrowser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'});
-    try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/my-pay');await m.getByRole('heading',{name:'My pay',exact:true}).waitFor();await expect.poll(()=>m.locator('.q-page').innerText()).not.toContain('Loading…');expect(await m.locator('.em-pay').count()).toBe(0);expect(await m.locator('.c-pay').count()).toBe(0);
+    try{const m=await managerContext.newPage();await m.goto(app.url+'/login');await login(m,manager);await m.goto(app.url+'/app/my-pay');await m.getByRole('heading',{name:'My pay',exact:true}).waitFor();/* Nov 1 upscale (review M4): Owner and Manager My pay is now the kit page .c-mypay (no longer a Quiet .q-page). */await expect.poll(()=>m.locator('.c-page.c-mypay').innerText()).not.toContain('Loading…');expect(await m.locator('.em-pay').count()).toBe(0);expect(await m.locator('.c-pay').count()).toBe(0);
      const shotFile=engine+'-manager-390.png';await m.screenshot({path:evidence+'/'+shotFile,style:'nextjs-portal {visibility:hidden;}'});captures.push(shotFile);}
     finally{await managerContext.close();}
-    record('Manager at phone width keeps the incumbent Quiet My pay');
+    record('Manager at phone width keeps the Owner and Manager My pay, not the Employee Pay view');
    }
    await context.close();await browser!.close();browser=undefined;failed=undefined;
   }

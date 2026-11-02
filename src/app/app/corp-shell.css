@@ -672,6 +672,13 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav > .c-nav__back > svg, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav > a.q-nav__l > svg { display: inline-block !important; vertical-align: middle !important; margin: -3px 2px 0 0 !important; }
 }
 
+/* M3 below 360px: the back link is its 44px chevron only (V3), so a header with nothing on its right reserves 68px a side
+ * (16px edge + 44px chevron + 8px) instead of 104px, and titles such as "Profile and settings" are not cut at 320px. */
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav:not(:has(> .c-nav__right > *)) > .c-nav__title,
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav:not(:has(> .q-nav__r > *)) > .q-nav__t { max-width: calc(100% - 136px) !important; }
+}
+
 /* S1 (desktop) and M10 (phone): the ⌘K finder. Group headings are their own presentational rows (13/18 500 grey, 28px);
  * options are 40px with radius 8, inset 8px from the palette edge; the current one is tinted #E6F1EF with ink text; the
  * typed letters are set in 600. */
