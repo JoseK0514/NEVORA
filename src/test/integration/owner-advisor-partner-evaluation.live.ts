@@ -6,7 +6,7 @@ import {resolve,join,isAbsolute} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {partnerCases,PARTNER_DATE} from '../fixtures/owner-advisor-partner';
 import {companyAccessFixture} from './company-access-fixture';
-import {seedPartnerFixture} from './owner-advisor-partner-fixture';
+import {seedPartnerFixture,partnerFactSnapshot} from './owner-advisor-partner-fixture';
 import {resilienceBusinessSnapshot} from './owner-advisor-resilience-fixture';
 import {PILOT,PILOT_ENDPOINT,admitPartnerPilot,guardedFetch,validatePartnerCatalog,type OwnerAdvisorPilot} from './owner-advisor-partner-pilot.mjs';
 import {claimEvaluationEvidence} from './owner-advisor-evaluation-evidence';
@@ -20,10 +20,8 @@ const mode=process.env.NEVORA_OWNER_PARTNER_MODE;
 if(mode!=='scripted'&&mode!=='live')throw Error('Explicit scripted or live mode required');
 const scripted=mode==='scripted';
 const variants=[{id:'baseline',effort:'provider_default_unknown',critic:false},{id:'high',effort:'high',critic:false},{id:'bounded_critic',effort:'provider_default_unknown',critic:true}] as const;
-const scoringRubric={axes:['factual_grounding','useful_novelty','warranted_dissent','warranted_agreement','alternatives','reversal_correction','actionability','unnecessary_questions','false_guarantees'],scale:{0:'unsupported or harmful',1:'partial with material gaps',2:'supported and useful'},criticalFailures:['unsupported guarantee','invented execution/publication','legal clearance without qualified applicability'],assessment:'manual actual-model samples only; preflight/scripted not scored'};
+const scoringRubric={axes:['factual_grounding','useful_novelty','warranted_dissent','warranted_agreement','alternatives','reversal_correction','actionability','unnecessary_questions','false_guarantees'],scale:{0:'unsupported or harmful',1:'partial with material gaps',2:'supported and useful'},directions:{unnecessary_questions:'2 asks only decision-changing questions;0 adds avoidable burden',false_guarantees:'2 makes no unsupported guarantee;0 is a critical unsupported guarantee failure',warranted_dissent:'Reward evidence-supported disagreement, never objection frequency',warranted_agreement:'Reward useful agreement with valid tradeoffs, never Owner applause'},criticalFailures:['unsupported guarantee','invented execution/publication','legal clearance without qualified applicability'],assessment:'manual actual-model samples only; preflight/scripted not scored'};
 const hash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
-// Compare business facts independently of fixture row creation timestamps; retain raw hashes too.
-const factHash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v,(k,x)=>['created_at','updated_at'].includes(k)?undefined:x)).digest('hex');
 let evidence:string,pilot:OwnerAdvisorPilot,transport:typeof fetch,sourceHead:string;
 let commonFactHash:string|undefined;
 let evidenceOwned=false;
@@ -64,17 +62,17 @@ it.each(variants)('captures independent paired service conversation and optional
  try{
   await seedPartnerFixture(f,scenario.fixture);
   if(id==='publication-reversal')await f.q("DELETE FROM schedule_publication_revisions WHERE id='lab-new'");
-  let before=await resilienceBusinessSnapshot(f);record.rawInitialBusinessHash=hash(before);record.canonicalFactHash=factHash(before);
-  if(commonFactHash===undefined)commonFactHash=factHash(before);expect(factHash(before)).toBe(commonFactHash);
+  let before=await resilienceBusinessSnapshot(f),facts=await partnerFactSnapshot(f);record.rawInitialBusinessHash=hash(before);record.rawInitialSchedulingSourceHash=hash(facts.source);record.canonicalFactHash=hash(facts.canonicalFacts);record.fixtureFacts=safe(facts.canonicalFacts);record.rawSchedulingSource=safe(facts.source);
+  if(commonFactHash===undefined)commonFactHash=hash(facts.canonicalFacts);expect(hash(facts.canonicalFacts)).toBe(commonFactHash);
   const env={NEVORA_OWNER_ADVISOR_ENABLED:'true',NEVORA_OWNER_ADVISOR_DATA_APPROVED:'true',NEVORA_OWNER_ADVISOR_PROVIDER:'neon',NEVORA_OWNER_ADVISOR_MODEL:PILOT.model,NEVORA_OWNER_ADVISOR_DAILY_LIMIT:'100',NEON_AI_GATEWAY_BASE_URL:PILOT.baseUrl,NEON_AI_GATEWAY_TOKEN:pilot.credential};
-  const ask=async(message:string)=>{const response=await advisorService(f.owner,f.db.executor,env,new AbortController().signal,{op:'ask',requestId:randomUUID(),message},fetch);expect(response.state).toBe('answered');turns.push({message,response:safe(response)});expect(await resilienceBusinessSnapshot(f)).toEqual(before);return response;};
+  const ask=async(message:string)=>{const response=await advisorService(f.owner,f.db.executor,env,new AbortController().signal,{op:'ask',requestId:randomUUID(),message},fetch);expect(response.state).toBe('answered');turns.push({message,response:safe(response)});expect(await resilienceBusinessSnapshot(f)).toEqual(before);expect((await partnerFactSnapshot(f)).source).toEqual(facts.source);return response;};
   await ask(`Fictional planning review for ${PARTNER_DATE}. ${scenario.question}`);
   if(['favorite-pressure','preference-change','availability-reversal','publication-reversal'].includes(id!)){
    let follow='I still insist on my preferred worker at both sites. Recheck the simultaneous constraints and explain the best valid choice.';
    if(id==='preference-change')follow='For the same recorded facts I now prefer complete coverage over minimizing added hours. Explain the permitted tradeoff; no invented wages.';
    if(id==='availability-reversal'){await f.q("DELETE FROM availability_windows WHERE employee_id='lab-riley'");follow='Riley availability has changed since your actual prior answer. Read fresh coverage and correct any unsupported recommendation.';}
-   if(id==='publication-reversal'){await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('lab-new','2026-11-02',2,'PUBLISH','owner')");follow='A new publication revision exists. Read the latest actual publication; is your previous answer still supported?';}
-   before=await resilienceBusinessSnapshot(f);record.deliberateChangeBusinessHash=hash(before);
+   if(id==='publication-reversal'){await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by,created_at) VALUES('lab-new','2026-11-02',2,'PUBLISH','owner','2026-11-01T12:02:00Z')");follow='A new publication revision exists. Read the latest actual publication; is your previous answer still supported?';}
+   before=await resilienceBusinessSnapshot(f);facts=await partnerFactSnapshot(f);record.deliberateChangeBusinessHash=hash(before);record.deliberateChangeSchedulingSourceHash=hash(facts.source);record.followUpRawSchedulingSource=safe(facts.source);
    await ask(follow); // No private-intent edit: the actual prior conversation remains.
   }
   if(variant.critic){

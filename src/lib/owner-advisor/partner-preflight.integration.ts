@@ -52,3 +52,25 @@ it('one unclosed October2 entry is one carry-in record across later dates, never
  expect(first.data).toMatchObject({denominators:{effectiveEntryRecords:1,openEntryRecords:1,carryInEntryRecords:0}});
  expect(next.data).toMatchObject({denominators:{effectiveEntryRecords:1,openEntryRecords:1,carryInEntryRecords:1},suggestions:[expect.objectContaining({kind:'open_entries',observedRecords:1})]});
 });
+
+it('paired facts include real availability changes omitted by legacy business-only snapshots',async()=>{
+ const {partnerFactSnapshot}=await import('@/test/integration/owner-advisor-partner-fixture');
+ await seedPartnerFixture(f,'joint');const first=await partnerFactSnapshot(f);
+ await f.q("DELETE FROM availability_windows WHERE employee_id='lab-riley'");
+ const next=await partnerFactSnapshot(f);expect(next.canonicalFacts).not.toEqual(first.canonicalFacts);expect(next.source).not.toEqual(first.source);
+});
+it('independent no-gap fixtures compare the same canonical facts despite separately minted shift episodes',async()=>{
+ const {partnerFactSnapshot}=await import('@/test/integration/owner-advisor-partner-fixture');
+ await seedPartnerFixture(f,'covered');const first=await partnerFactSnapshot(f);
+ await f.db.dispose();f=await companyAccessFixture();await seedPartnerFixture(f,'covered');const next=await partnerFactSnapshot(f);
+ expect(next.canonicalFacts).toEqual(first.canonicalFacts);expect(next.source).not.toEqual(first.source);
+});
+it('paired facts include private Owner context and preserve publication snapshot terms',async()=>{
+ const {partnerFactSnapshot}=await import('@/test/integration/owner-advisor-partner-fixture');
+ const {advisorService}=await import('./service.server');const {randomUUID}=await import('node:crypto');
+ await seedPartnerFixture(f,'stale');const first=await partnerFactSnapshot(f);
+ await advisorService(f.owner,f.db.executor,{NEVORA_OWNER_ADVISOR_ENABLED:'true'},new AbortController().signal,{op:'save_priorities',requestId:randomUUID(),expectedRevision:0,priorities:'Current explicit Owner objective'});
+ const intent=await partnerFactSnapshot(f);expect(intent.canonicalFacts).not.toEqual(first.canonicalFacts);expect(intent.source).toEqual(first.source);
+ await f.q("DELETE FROM schedule_publication_revisions WHERE id='lab-new'");
+ expect((await partnerFactSnapshot(f)).canonicalFacts).not.toEqual(intent.canonicalFacts);
+});
