@@ -8,9 +8,18 @@ import io
 import runpy
 import tempfile
 import unittest
+import subprocess
 from unittest.mock import patch
 
 class RunnerOwnershipTests(unittest.TestCase):
+    def test_tool_failure_retains_stdout_diagnostic(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'run')
+        namespace = {'Path': Path, 'subprocess': subprocess, 'env': {}}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_tool', 'exec'), namespace)
+        with patch('subprocess.run', return_value=subprocess.CompletedProcess(['adb'], 1, 'ERROR: fictional hierarchy not ready', '')):
+            with self.assertRaisesRegex(RuntimeError, 'fictional hierarchy not ready'):
+                namespace['run'](['adb'])
     def test_each_isolated_case_must_pass_and_be_counted_once(self):
         tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
         function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'instrumentation_count')

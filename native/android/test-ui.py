@@ -74,7 +74,7 @@ env['ANDROID_HOME'] = str(sdk)
 def run(command, timeout=45, check=True):
     result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=timeout)
     if check and result.returncode:
-        raise RuntimeError(f'{Path(str(command[0])).name} failed: {result.stderr[-1500:]}')
+        raise RuntimeError(f'{Path(str(command[0])).name} failed: {(result.stdout + result.stderr)[-2000:]}')
     return result
 
 def device(*command, **options):
@@ -188,6 +188,15 @@ try:
                 if time.monotonic() >= deadline:
                     raise RuntimeError('Owner session did not survive a real process restart')
                 time.sleep(0.2)
+        except Exception:
+            # Preserve the actual visible state without turning a diagnostic
+            # retry into acceptance or masking the original observation error.
+            try:
+                image = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'screencap', '-p'], env=env, capture_output=True, timeout=5, check=True)
+                (evidence / 'cold-start-failure.png').write_bytes(image.stdout)
+            except Exception:
+                pass
+            raise
         finally:
             device('shell', 'rm', '-f', xml_path, check=False)
         screenshot = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'screencap', '-p'], env=env, capture_output=True, timeout=15, check=True)
