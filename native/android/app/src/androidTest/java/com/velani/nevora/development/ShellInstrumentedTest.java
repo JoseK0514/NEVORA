@@ -55,10 +55,16 @@ public class ShellInstrumentedTest {
     }
     private UiObject2 text(String value, boolean exact) {
         return UiDeviceExt.onElementOrNull(device, 20000L, 100L, node -> {
-            CharSequence content = node.getText();
-            return node.isVisibleToUser() && content != null
-                && (exact ? content.toString().equals(value) : content.toString().contains(value));
+            return matchesTarget(node, value, exact);
         });
+    }
+    private static boolean matchesTarget(android.view.accessibility.AccessibilityNodeInfo node, String value, boolean exact) {
+        CharSequence content = node.getText();
+        if (!node.isVisibleToUser()) return false;
+        if (!exact) return content != null && content.toString().contains(value);
+        CharSequence name = node.getContentDescription();
+        return content != null && content.toString().equals(value)
+            || name != null && name.toString().equals(value);
     }
     private void retainFailure(String value) {
             java.util.concurrent.CountDownLatch observed = new java.util.concurrent.CountDownLatch(1);
@@ -172,6 +178,12 @@ public class ShellInstrumentedTest {
         launch("http://127.attacker.example"); expectText("NEVORA is not configured");
     }
     @Test public void b_nativeMarkerIsPresentationOnly() {
+        android.view.accessibility.AccessibilityNodeInfo link = android.view.accessibility.AccessibilityNodeInfo.obtain();
+        link.setVisibleToUser(true); link.setContentDescription("Renderer control");
+        assertTrue("A visible exact accessible link name must be a pointer target even without a text child", matchesTarget(link, "Renderer control", true));
+        assertFalse("Do not accept partial link names", matchesTarget(link, "Renderer", true));
+        link.setVisibleToUser(false);
+        assertFalse("Do not accept hidden link names", matchesTarget(link, "Renderer control", true));
         launch(origin); expectText("Native Android v1");
     }
     @Test public void c_employeeHistoryRecreationAndPostLogout() {

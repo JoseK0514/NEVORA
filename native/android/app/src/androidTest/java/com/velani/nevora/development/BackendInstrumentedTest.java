@@ -101,6 +101,13 @@ public class BackendInstrumentedTest {
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
         tap(By.desc("Schedule"));expectPath("/app/schedule");
         tap(By.descStartsWith("More,"));expectPath("/app/more");expectText("Your work");tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
+        tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));
+        device.pressBack();expectPath("/app/availability");expectText("Your usual week");
+        expectText("Monday, Not available");
+        assertFalse("Back closes the editor rather than leaving its dialog open",device.hasObject(By.text("Available on Monday")));
+        retain("employee_back_retained_draft");
+        device.pressBack();expectPath("/app/more");expectText("Your work");
+        tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
         tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));tap(By.text("Done"));
         tap(By.text("Save"));expectText("Usual hours saved");command("verify-employee");retain("employee_saved");
         scenario.moveToState(Lifecycle.State.CREATED);command("revoke");scenario.moveToState(Lifecycle.State.RESUMED);expectText("Employee ID");

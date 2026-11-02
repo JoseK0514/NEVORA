@@ -172,7 +172,7 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
       report.checks=results.checks;
     }
     assertNativeSource(source,custody);report.status='passed';
-  }catch(error){report.error=error.message;}
+  }catch(error){report.error=error.message;if(error.nativeBuildOwnershipClosed===false)report.nativeBuildOwnershipClosed=false;}
   finally{
     try{
       assertNativeCleanup({root,source,marker});
@@ -185,7 +185,9 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
           }});
       }
       if(postgres?.pid&&postgres.exitCode===null&&postgres.signalCode===null)throw Error('Live owned PostgreSQL prevents cleanup');
-      rmSync(data,{recursive:true,force:true});report.ownershipClosed=true;report.closedAt=new Date().toISOString();
+      rmSync(data,{recursive:true,force:true});
+      if(report.nativeBuildOwnershipClosed===false)throw Error('Native SDK ownership remains unproved; retain prebuild lifetime receipt for audit');
+      report.ownershipClosed=true;report.closedAt=new Date().toISOString();
       assertNativeSource(source,custody);report.sourceVerified=true;
     }catch(error){report.status='failed';report.cleanupError=error.message;}
     if(logFd!==undefined)closeSync(logFd);removeSignals();
