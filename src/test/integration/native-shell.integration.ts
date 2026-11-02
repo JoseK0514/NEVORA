@@ -14,7 +14,7 @@ type Browser = {newContext(options?: {viewport: {width: number; height: number};
 export type NativeCheck = {name: string; status: 'passed'};
 export async function verifyNativeBackend(app: App, browser: Browser, checks: NativeCheck[]) {
   const contexts: BrowserContext[] = [];
-  const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query({text, values});
+  const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query<Record<string,unknown>>({text, values});
   async function check(name: string, task: () => Promise<void>) {
     await task(); checks.push({name, status: 'passed'}); console.log('PASS', name);
   }

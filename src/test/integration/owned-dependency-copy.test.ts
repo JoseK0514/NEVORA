@@ -1,5 +1,5 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {chmodSync,mkdirSync,mkdtempSync,readFileSync,readlinkSync,rmSync,statSync,symlinkSync,writeFileSync} from 'node:fs';
+import {chmodSync,lstatSync,mkdirSync,mkdtempSync,readFileSync,readlinkSync,rmSync,statSync,symlinkSync,writeFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 vi.mock('node:child_process',async original=>({...await original<typeof import('node:child_process')>(),execFileSync:()=>{throw Error('Dependency copy must not fork a helper');}}));
@@ -22,4 +22,17 @@ it('copies independent nested dependency bytes, executable modes and verbatim re
 it('refuses missing dependencies rather than producing an empty successful mirror',()=>{
  const directory=mkdtempSync(join(tmpdir(),'nevora-dependency-copy-'));root=directory;
  expect(()=>copyOwnedDependencies(join(directory,'missing'),join(directory,'mirror'))).toThrow();
+});
+it('materializes a linked dependency root inside the mirror, keeping nested executable links relative',()=>{
+ root=mkdtempSync(join(tmpdir(),'nevora-dependency-copy-'));
+ const source=join(root,'source'),mirror=join(root,'mirror'),external=join(root,'external');
+ mkdirSync(source);mkdirSync(mirror);mkdirSync(join(external,'.bin'),{recursive:true});
+ mkdirSync(join(external,'next'));writeFileSync(join(external,'next','package.json'),'{"name":"next"}');
+ symlinkSync('../next/package.json',join(external,'.bin','next'));
+ symlinkSync(external,join(source,'node_modules'));
+ copyOwnedDependencies(source,mirror);
+ expect(lstatSync(join(mirror,'node_modules')).isSymbolicLink()).toBe(false);
+ expect(readlinkSync(join(mirror,'node_modules','.bin','next'))).toBe('../next/package.json');
+ writeFileSync(join(external,'next','package.json'),'changed');
+ expect(readFileSync(join(mirror,'node_modules','next','package.json'),'utf8')).toBe('{"name":"next"}');
 });
