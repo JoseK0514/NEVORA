@@ -10,6 +10,9 @@
 :is(#c-root, html) .c-ehome #home-shift .c-card__foot { justify-content: space-between; gap: 12px; }
 :is(#c-root, html) .c-ehome .c-ehome__clockin { min-width: 0; color: var(--c-grey, #6B7075); font-size: 13px; line-height: 18px; text-align: left; }
 :is(#c-root, html) .c-ehome #home-shift .c-card__foot .c-link { flex: none; }
+/* "Shift details" is the card's one keyboard way in, so its pressed state stays a solid, readable colour: it deepens to
+ * the hover teal (#084F4B) instead of the kit's .55 dim, which would drop the teal below 4.5:1 on white. */
+:is(#c-root, html) .c-ehome #home-shift .c-card__foot .c-link:active { opacity: 1; color: var(--c-teal-hover, #084F4B); }
 :is(#c-root, html) .c-ehome .c-ehome__caret { width: 12px; height: 12px; }
 /* The first-week guide sits on Home as one more white card: a 48px row that opens to its links. */
 :is(#c-root, html) body .c-ehome .ma-onboarding { width: auto; max-width: none; margin: 0; padding: 0; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; }
