@@ -1,0 +1,153 @@
+name: Native prototype
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [development]
+    paths:
+      - native/**
+      - tools/ci-browser-runtime/**
+      - .github/workflows/native-spike.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-prototype-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  EXPECTED_SHA: ${{ github.sha }}
+  CI: 'true'
+
+jobs:
+  android:
+    if: github.ref == 'refs/heads/development'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: native
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            native/package-lock.json
+            tools/ci-browser-runtime/package-lock.json
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+      - name: Record candidate and runner
+        run: node ci/record-build.mjs android
+      - name: Enable emulator acceleration
+        run: |
+          test -e /dev/kvm
+          sudo chown "$USER" /dev/kvm
+          test -r /dev/kvm && test -w /dev/kvm
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          npm ci --prefix ../tools/ci-browser-runtime
+          sdkmanager 'platforms;android-36' 'build-tools;35.0.0' 'build-tools;36.0.0'
+      - name: Check types and navigation policies
+        run: |
+          npm run typecheck
+          node --test tests/config.test.mjs tests/fixture-navigation.test.mjs android/tests/back-policy.test.mjs | tee artifacts/policy-tests.log
+      - name: Build debug APK
+        run: npm run android:debug 2>&1 | tee artifacts/android-build.log
+      - name: Verify APK signature and identity
+        run: |
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose android/app/build/outputs/apk/debug/app-debug.apk | tee artifacts/android-signature.log
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging android/app/build/outputs/apk/debug/app-debug.apk > artifacts/android-package.txt
+          sha256sum android/app/build/outputs/apk/debug/app-debug.apk > artifacts/android-apk.sha256
+      - name: Run native fixture on accelerated emulator
+        uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
+        env:
+          NEVORA_ANDROID_SERIAL: emulator-5554
+          NEVORA_PLAYWRIGHT_MODULE: ${{ github.workspace }}/tools/ci-browser-runtime/node_modules/playwright/index.mjs
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          avd-name: nevora-native-ci
+          emulator-port: 5554
+          emulator-boot-timeout: 300
+          disable-linux-hw-accel: false
+          disable-animations: true
+          working-directory: native
+          script: |
+            adb -s emulator-5554 install -r android/app/build/outputs/apk/debug/app-debug.apk
+            node tests/android-device.mjs
+      - name: Preserve Android evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-android-${{ github.sha }}
+          path: |
+            native/artifacts/*.json
+            native/artifacts/*.log
+            native/artifacts/*.txt
+            native/artifacts/*.sha256
+            native/artifacts/android-device/
+            native/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn
+          retention-days: 7
+
+  ios:
+    if: github.ref == 'refs/heads/development'
+    runs-on: macos-26
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: native
+        shell: bash
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: native/package-lock.json
+      - name: Record candidate and runner
+        run: |
+          node ci/record-build.mjs ios
+          xcodebuild -version | tee artifacts/xcode-version.log
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Compile unsigned simulator app
+        run: npm run ios:simulator 2>&1 | tee artifacts/ios-build.log
+      - name: Launch packaged fixture in simulator
+        run: node ci/ios-simulator-smoke.mjs
+      - name: Preserve simulator app permissions
+        if: always()
+        run: |
+          if test -d artifacts/ios-derived/Build/Products/Debug-iphonesimulator/App.app; then
+            tar -czf artifacts/ios-simulator-app.tar.gz -C artifacts/ios-derived/Build/Products/Debug-iphonesimulator App.app
+            shasum -a 256 artifacts/ios-simulator-app.tar.gz > artifacts/ios-simulator-app.sha256
+          fi
+      - name: Preserve iOS evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-ios-${{ github.sha }}
+          path: |
+            native/artifacts/*.json
+            native/artifacts/*.log
+            native/artifacts/*.sha256
+            native/artifacts/ios-simulator-app.tar.gz
+            native/artifacts/ios-simulator/
+          if-no-files-found: warn
+          retention-days: 7
