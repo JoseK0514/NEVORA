@@ -43,7 +43,13 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
     if (open && !node.open) {
       node.removeAttribute('data-closing');
       if (modal) { node.removeAttribute('data-inspector'); node.showModal(); node.focus({preventScroll: true}); document.documentElement.setAttribute('data-q-sheet', ''); }
-      else { node.setAttribute('data-inspector', ''); node.show(); }
+      else {
+        // show() runs the dialog focusing steps (Chromium and WebKit both move focus to the panel's first control). A
+        // non-modal inspector leaves focus where it was, e.g. on the person's row, so give it back when show() took it.
+        const before = document.activeElement;
+        node.setAttribute('data-inspector', ''); node.show();
+        if (before instanceof HTMLElement && before !== document.body && before.isConnected && !node.contains(before) && document.activeElement !== before) before.focus({preventScroll: true});
+      }
     }
     if (!open && node.open) node.close();
     return () => { if (!document.querySelector('dialog.q-sheet[open]:not([data-inspector])')) document.documentElement.removeAttribute('data-q-sheet'); };
