@@ -20,6 +20,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--serial', required=True)
 parser.add_argument('--only-testing')
 parser.add_argument('--mode', choices=['transport', 'owned-backend'], default='transport')
+parser.add_argument('--accessibility-mode', choices=['platform-default', 'renderer-complete'], default='platform-default', help='Transport-only explicit QA renderer mode; real backend requires platform-default')
 parser.add_argument('--backend-origin')
 parser.add_argument('--backend-control-origin')
 parser.add_argument('--backend-owner')
@@ -34,6 +35,8 @@ if args.only_testing and not re.fullmatch(r'com\.velani\.nevora\.development\.Sh
 backend = args.mode == 'owned-backend'
 backend_values = [args.backend_origin, args.backend_control_origin, args.backend_owner, args.expected_sha, args.evidence_root]
 if backend:
+    if args.accessibility_mode != 'platform-default':
+        parser.error('Real-backend qualification requires platform-default accessibility')
     if args.only_testing or not all(backend_values) or not re.fullmatch('[a-f0-9]{32}', args.backend_owner) or not re.fullmatch('[a-f0-9]{40}', args.expected_sha):
         parser.error('Owned backend requires the full invocation receipt')
     for value in [args.backend_origin, args.backend_control_origin]:
@@ -123,6 +126,33 @@ def instrumentation_remaining(deadline):
         raise TimeoutError('Total instrumentation budget exhausted')
     return remaining
 
+def webview_context(mode, provider, flag):
+    if mode == 'platform-default':
+        if flag is not None:
+            raise ValueError('Undeclared WebView runtime override')
+    elif mode == 'renderer-complete':
+        if not isinstance(flag, str) or not re.fullmatch(r'nevora_qa_[a-f0-9]{32} --force-renderer-accessibility=complete\n', flag):
+            raise ValueError('Explicit renderer mode requires the exact owned QA flag')
+    else:
+        raise ValueError('Unknown accessibility mode')
+    match = re.search(r'Current WebView package \(name, version\): \(([A-Za-z0-9_.]+), ([0-9.]+)\)', provider)
+    if not match:
+        raise ValueError('Cannot verify WebView provider')
+    return {'package': match[1], 'version': match[2], 'accessibilityMode': mode,
+            'runtimeFlagsSha256': hashlib.sha256(flag.encode()).hexdigest() if flag is not None else None}
+
+def observe_webview_context(mode):
+    path = '/data/local/tmp/webview-command-line'
+    exists = device('shell', 'test', '-e', path, timeout=5, check=False)
+    if exists.returncode not in [0, 1]:
+        raise RuntimeError('Cannot verify WebView runtime overrides')
+    flag = None
+    if exists.returncode == 0:
+        raw = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'cat', path], env=env, capture_output=True, timeout=5, check=True)
+        flag = raw.stdout.decode('utf-8', errors='strict')
+    provider = device('shell', 'dumpsys', 'webviewupdate', timeout=5).stdout
+    return webview_context(mode, provider, flag)
+
 fixture = None
 ports = []
 report = {'evidence': str(evidence), 'serial': args.serial, 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'ownerId': args.backend_owner}
@@ -133,6 +163,8 @@ try:
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
     assert device('get-state', timeout=5).stdout.strip() == 'device', 'Selected emulator unavailable'
     assert device('shell', 'getprop', 'ro.kernel.qemu', timeout=5).stdout.strip() == '1', 'Not an emulator'
+    context = observe_webview_context(args.accessibility_mode)
+    report['webView'] = context
     before = source_hash()
     report['sourceHash'] = before
     if backend:
@@ -224,6 +256,7 @@ try:
         owned_artifacts(Path(args.evidence_root), 'android', args.expected_sha, args.backend_owner)
         assert run(['git', '-C', str(root.parent.parent), 'rev-parse', 'HEAD']).stdout.strip() == args.expected_sha
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
+    assert observe_webview_context(args.accessibility_mode) == context, 'WebView runtime context changed during verification'
     report['passed'] = True
 finally:
     original_error = sys.exc_info()[1]

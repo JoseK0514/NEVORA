@@ -12,6 +12,21 @@ import subprocess
 from unittest.mock import patch
 
 class RunnerOwnershipTests(unittest.TestCase):
+    def test_accessibility_mode_is_explicit_and_unknown_overrides_fail_closed(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'webview_context')
+        namespace = {'re': __import__('re'), 'hashlib': hashlib}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'webview_context', 'exec'), namespace)
+        context = namespace['webview_context']
+        provider = 'Current WebView package (name, version): (com.google.android.webview, 133.0.6943.137)'
+        clean = context('platform-default', provider, None)
+        self.assertEqual(clean['accessibilityMode'], 'platform-default')
+        self.assertIsNone(clean['runtimeFlagsSha256'])
+        owned = 'nevora_qa_' + 'a' * 32 + ' --force-renderer-accessibility=complete\n'
+        self.assertEqual(context('renderer-complete', provider, owned)['runtimeFlagsSha256'], hashlib.sha256(owned.encode()).hexdigest())
+        for mode, flag in [('platform-default', owned), ('platform-default', ''), ('renderer-complete', None), ('renderer-complete', '_ --ignore-certificate-errors\n'), ('renderer-complete', owned + '--disable-web-security'), ('unknown', None)]:
+            with self.subTest(mode=mode, flag=flag), self.assertRaises(ValueError): context(mode, provider, flag)
+        with self.assertRaises(ValueError): context('platform-default', 'unknown provider', None)
     def test_isolation_cannot_reset_the_total_instrumentation_budget(self):
         tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
         function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'instrumentation_remaining')

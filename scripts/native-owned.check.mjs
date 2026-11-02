@@ -68,10 +68,12 @@ test('a large count or fixture run cannot stand in for named full-backend checks
   assert.throws(()=>assertNativeResults(report,expected));
   assert.throws(()=>assertNativeResults({...report,ownerId:'c'.repeat(32)},expected));
   assert.throws(()=>assertNativeResults({...report,ownershipClosed:false},expected));
-  const valid={...report,checks:[...NATIVE_CONTRACT_CHECKS,'android-full-backend'].map(name=>({name,status:'passed'}))};
+  const valid={...report,devices:[{serial:'emulator-5558',webView:{accessibilityMode:'platform-default',runtimeFlagsSha256:null}}],checks:[...NATIVE_CONTRACT_CHECKS,'android-full-backend'].map(name=>({name,status:'passed'}))};
   assert.doesNotThrow(()=>assertNativeResults(valid,expected));
   assert.throws(()=>assertNativeResults({...valid,checks:valid.checks.map((value,index)=>index?value:{...value,status:'failed'})},expected));
   assert.throws(()=>assertNativeResults({...valid,checks:valid.checks.map(value=>value.name==='android-full-backend'?{...value,name:'android-transport-fixture'}:value)},expected));
+  assert.throws(()=>assertNativeResults({...valid,devices:[{serial:'emulator-5558',webView:{accessibilityMode:'renderer-complete',runtimeFlagsSha256:'c'.repeat(64)}}]},expected));
+  assert.throws(()=>assertNativeResults({...valid,devices:[]},expected));
 });
 test('ownership-only concurrency verification cannot be labeled as a device run', () => {
   assert.throws(()=>parseNativeArguments(['--mode','owned-local','--expected-sha',sha,'--ownership-only','--platform','android','--android-serial','emulator-5558']));

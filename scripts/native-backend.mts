@@ -42,7 +42,8 @@ async function runDevice(platform: 'ios' | 'android') {
   const result = JSON.parse(await readFile(join(root!,entries[0],'result.json'),'utf8'));
   assert.equal(result.passed,true); assert.equal(result.fixtureOnly,false); assert.equal(result.checkpoint,custody.checkpoint);
   assert.equal(result.ownerId,ownerId); assert.equal(result.origin,app.url); assert.equal(result.instrumentationTests,3);
-  if (platform === 'android') { assert.equal(result.serial,process.env.NEVORA_NATIVE_ANDROID_SERIAL); assert.equal(result.coldProcessRestart,true); assert.equal(result.isolatedTestProcesses,true); }
+  if (platform === 'android') { assert.equal(result.serial,process.env.NEVORA_NATIVE_ANDROID_SERIAL); assert.equal(result.coldProcessRestart,true); assert.equal(result.isolatedTestProcesses,true);
+    assert.equal(result.webView?.accessibilityMode,'platform-default'); assert.equal(result.webView?.runtimeFlagsSha256,null); }
   else assert.equal(result.simulator,process.env.NEVORA_NATIVE_IOS_SIMULATOR);
   report.devices.push(result); report.checks.push({name: platform + '-full-backend',status: 'passed'});
 }

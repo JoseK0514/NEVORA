@@ -20,6 +20,13 @@ export function assertNativeResults(results,expected) {
   assert(Array.isArray(results.checks));assert.equal(results.checks.length,names.length);
   assert(results.checks.every(check=>check.status==='passed'));
   assert.deepEqual(results.checks.map(check=>check.name).sort(),names.sort(),'Missing, duplicated or unexpected native backend checks');
+  if (['android','all'].includes(expected.platform)) {
+    assert(Array.isArray(results.devices));
+    const android=results.devices.filter(device=>typeof device.serial==='string');
+    assert.equal(android.length,1);
+    assert.equal(android[0].webView?.accessibilityMode,'platform-default');
+    assert.equal(android[0].webView?.runtimeFlagsSha256,null);
+  }
 }
 export function parseNativeArguments(args){
   const flags=new Map([['--mode','mode'],['--expected-sha','expectedSha'],['--platform','platform'],['--android-serial','androidSerial'],['--ios-simulator','iosSimulator']]);
