@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import {stopNativePostgres} from './native-owned.mjs';
 import assert from 'node:assert/strict';
 import {mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync, realpathSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -47,6 +48,19 @@ test('a port/PID alone cannot authorize stopping a process', () => {
   for (const [key,value] of [['pid',2222],['port',5556],['data','/private/someone-else'],['started',123457],['fingerprint','f'.repeat(64)],['marker','0'.repeat(32)]])
     assert.throws(() => assertNativeProcess(expected,{...expected,[key]:value}));
   assert.throws(() => assertNativeProcess(expected,null));
+});
+test('a stalled disposable shutdown is bounded and reproves ownership before immediate shutdown', async () => {
+  const lease={pid:1234,port:5555,data:'/private/owned/data',started:123456,fingerprint:'d'.repeat(64),marker:'e'.repeat(32)};
+  const events=[];
+  await stopNativePostgres({lease,observe:()=>{events.push('process');return {...lease};},verifyRoot:()=>events.push('root'),
+    send:signal=>events.push(signal),waitForExit:async ms=>{events.push(ms);return ms===5000;}});
+  assert.deepEqual(events,['root','process','SIGINT',15000,'root','process','SIGQUIT',5000]);
+});
+test('a changed process can never receive the immediate-shutdown fallback', async () => {
+  const lease={pid:1234,port:5555,data:'/private/owned/data',started:123456,fingerprint:'d'.repeat(64),marker:'e'.repeat(32)};
+  let observation=0;const signals=[];
+  await assert.rejects(()=>stopNativePostgres({lease,observe:()=>({...lease,pid:++observation===1?1234:5678}),verifyRoot:()=>{},send:signal=>signals.push(signal),waitForExit:async()=>false}));
+  assert.deepEqual(signals,['SIGINT']);
 });
 test('mixed current-source bytes or a different SHA cannot produce acceptance', () => {
   const source=mkdtempSync(join(tmpdir(),'native-source-test-'));

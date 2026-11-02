@@ -52,6 +52,14 @@ export function assertNativeProcess(expected,observed){
     ||!isAbsolute(expected.data)||!Number.isSafeInteger(expected.started)||expected.started<1||!/^[a-f0-9]{64}$/.test(expected.fingerprint)||!/^[a-f0-9]{32}$/.test(expected.marker))throw Error('Invalid owned PostgreSQL process receipt');
   for(const key of ['pid','port','data','started','fingerprint','marker'])assert.equal(observed[key],expected[key],'Owned PostgreSQL identity changed: '+key);
 }
+export async function stopNativePostgres({lease,observe,verifyRoot,send,waitForExit}) {
+  verifyRoot();assertNativeProcess(lease,observe());send('SIGINT');
+  if(await waitForExit(15000))return;
+  // Only our disposable cluster: an I/O panic can stall fast shutdown in WAL
+  // recovery. Reprove the complete lease before PostgreSQL immediate shutdown.
+  verifyRoot();assertNativeProcess(lease,observe());send('SIGQUIT');
+  if(!await waitForExit(5000))throw Error('Owned PostgreSQL shutdown timed out; data retained');
+}
 const pause=ms=>new Promise(ready=>setTimeout(ready,ms));
 const digest=value=>createHash('sha256').update(value).digest('hex');
 async function freePort(){
@@ -146,8 +154,10 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
       if(postgres?.pid&&postgres.exitCode===null&&postgres.signalCode===null){
         if(!lease)lease=observePostgres(postgres,data,port,marker);
         assertNativeProcess(lease,observePostgres(postgres,data,port,marker));
-        postgres.kill('SIGINT');
-        let timer;try{await Promise.race([exited,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Owned PostgreSQL shutdown timed out; data retained')),15000);})]);}finally{clearTimeout(timer);}
+        await stopNativePostgres({lease,observe:()=>observePostgres(postgres,data,port,marker),verifyRoot:()=>assertNativeCleanup({root,source,marker}),
+          send:signal=>postgres.kill(signal),waitForExit:async milliseconds=>{
+            let timer;try{return await Promise.race([exited.then(()=>true),new Promise(ready=>{timer=setTimeout(()=>ready(false),milliseconds);})]);}finally{clearTimeout(timer);}
+          }});
       }
       if(postgres?.pid&&postgres.exitCode===null&&postgres.signalCode===null)throw Error('Live owned PostgreSQL prevents cleanup');
       rmSync(data,{recursive:true,force:true});report.ownershipClosed=true;report.closedAt=new Date().toISOString();
