@@ -1,0 +1,12 @@
+<resources>
+    <style name="Theme.Nevora.Base" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/nevora_action</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="Theme.Nevora" parent="Theme.Nevora.Base" />
+    <color name="nevora_action">#0B6E69</color>
+    <color name="nevora_surface">#F7F6F3</color>
+    <color name="nevora_on_surface">#161C1B</color>
+</resources>

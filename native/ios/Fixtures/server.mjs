@@ -4,6 +4,7 @@ import {createServer} from 'node:http';
 import {randomUUID} from 'node:crypto';
 
 const sessions = new Map();
+let outage = false;
 const page = (body, context) => '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + body + `<p>${context}</p></body></html>`;
 const server = createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store, private');
@@ -16,6 +17,13 @@ const server = createServer(async (request, response) => {
   if (request.url === '/__test/revoke-all' && request.method === 'POST') {
     sessions.clear(); response.writeHead(204); response.end(); return;
   }
+  if (['/__test/outage-on', '/__test/outage-off'].includes(request.url) && request.method === 'POST') {
+    outage = request.url.endsWith('-on'); response.writeHead(204); response.end(); return;
+  }
+  if (outage) {
+    response.writeHead(503, {'Content-Type': 'application/json'});
+    response.end(JSON.stringify({protocolVersion: 1, state: 'unavailable'})); return;
+  }
   if (request.url === '/api/mobile/v1/session') {
     response.writeHead(authenticated ? 200 : 401, {'Content-Type': 'application/json'});
     response.end(JSON.stringify({protocolVersion: 1, state: authenticated ? 'authenticated' : 'unauthenticated'}));
@@ -25,8 +33,8 @@ const server = createServer(async (request, response) => {
     let body = ''; for await (const chunk of request) { body += chunk; if (body.length > 8192) { response.writeHead(413); response.end(); return; } }
     const fields = new URLSearchParams(body);
     const employee = fields.get('employeeId');
-    if (!['FICTIONAL', 'FICTIONAL-OWNER'].includes(employee) || fields.get('password') !== 'fictional-test-password') { response.writeHead(401); response.end('Invalid'); return; }
-    const token = randomUUID(); sessions.set(token, employee === 'FICTIONAL-OWNER' ? 'OWNER' : 'EMPLOYEE');
+    if (!['FICTIONAL', 'FICTIONAL-OWNER', 'FICTIONAL-MANAGER'].includes(employee) || fields.get('password') !== 'fictional-test-password') { response.writeHead(401); response.end('Invalid'); return; }
+    const token = randomUUID(); sessions.set(token, employee === 'FICTIONAL-OWNER' ? 'OWNER' : employee === 'FICTIONAL-MANAGER' ? 'MANAGER' : 'EMPLOYEE');
     response.writeHead(303, {'Location': '/app', 'Set-Cookie': `fuel_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`});
     response.end(); return;
   }
@@ -39,9 +47,12 @@ const server = createServer(async (request, response) => {
     response.end(page('<h1>Fictional sign in</h1><form method="post" action="/login"><label>Employee ID<input name="employeeId" autocapitalize="off" autocorrect="off"></label><label>Password<input type="password" name="password"></label><button>Sign in</button></form>', context)); return;
   }
   if (!authenticated) { response.writeHead(303, {'Location': '/login'}); response.end(); return; }
+  if (role === 'MANAGER' && context !== 'Web fixture') {
+    response.end(page('<h1>Use NEVORA in your web browser</h1><p>This version supports Employee and Owner accounts.</p><form method="post" action="/logout"><button>Sign out</button></form>', context)); return;
+  }
   response.end(page(request.url === '/app/schedule'
     ? '<h1>Fictional Schedule</h1><p>Monday 9:00–17:00</p><a href="/app">Home</a>'
-    : `<h1>${role === 'OWNER' ? 'Fictional Owner Home' : 'Fictional Home'}</h1><a href="/app/schedule">My Schedule</a><form method="post" action="/logout"><button>Sign out</button></form>`, context));
+    : `<h1>${role === 'OWNER' ? 'Fictional Owner Home' : role === 'MANAGER' ? 'Fictional Manager Home' : 'Fictional Home'}</h1><a href="/app/schedule">My Schedule</a><form method="post" action="/logout"><button>Sign out</button></form>`, context));
 });
 const unavailable = createServer((_request, response) => {
   response.writeHead(503, {'Content-Type': 'application/json'});

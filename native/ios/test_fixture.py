@@ -54,6 +54,33 @@ class FixtureIsolationTests(unittest.TestCase):
             self.client.open(self.origin + '/api/mobile/v1/session', timeout=5)
         self.assertEqual(revoked.exception.code, 401)
 
+    def test_native_unsupported_role_does_not_remove_web_access(self):
+        try:
+            with self.login('FICTIONAL-MANAGER') as response:
+                self.assertIn('Fictional Manager Home', response.read().decode())
+        except urllib.error.HTTPError as error:
+            self.fail(f'Fictional Manager must retain web access, got {error.code}')
+        request = urllib.request.Request(self.origin + '/app', headers={'User-Agent': 'NEVORA-Native/Android/1'})
+        with self.client.open(request, timeout=5) as response:
+            body = response.read().decode()
+            self.assertIn('Employee and Owner accounts', body)
+            self.assertNotIn('Fictional Manager Home', body)
+        with self.client.open(self.origin + '/api/mobile/v1/session', timeout=5) as response:
+            self.assertEqual(json.load(response)['state'], 'authenticated')
+
+    def test_outage_recovery_does_not_silently_revoke_session(self):
+        self.login('FICTIONAL').close()
+        with self.client.open(self.origin + '/__test/outage-on', data=b'', timeout=5) as response:
+            self.assertEqual(response.status, 204)
+        for path in ['/api/mobile/v1/session', '/app']:
+            with self.assertRaises(urllib.error.HTTPError) as unavailable:
+                self.client.open(self.origin + path, timeout=5)
+            self.assertEqual(unavailable.exception.code, 503)
+        with self.client.open(self.origin + '/__test/outage-off', data=b'', timeout=5) as response:
+            self.assertEqual(response.status, 204)
+        with self.client.open(self.origin + '/api/mobile/v1/session', timeout=5) as response:
+            self.assertEqual(json.load(response)['state'], 'authenticated')
+
     def test_concurrent_invocations_keep_ports_and_sessions_separate(self):
         processes = []
         try:
