@@ -1,0 +1,35 @@
+[
+  {
+    "url": "https://nodejs.org/download/release/v24.19.0/docs/api/http2.json",
+    "bytes": 334080,
+    "terms": {
+      "maxHeaderListPairs": true,
+      "maxHeaderListSize": true,
+      "enablePush": true
+    }
+  },
+  {
+    "url": "https://nodejs.org/download/release/v24.19.0/docs/api/https.json",
+    "bytes": 50981,
+    "terms": {
+      "rejectUnauthorized": true,
+      "minVersion": false,
+      "maxHeaderSize": false
+    }
+  },
+  {
+    "url": "https://nodejs.org/download/release/v24.19.0/docs/api/http.json",
+    "bytes": 310862,
+    "terms": {
+      "maxHeaderSize": true
+    }
+  },
+  {
+    "url": "https://nodejs.org/download/release/v24.19.0/docs/api/tls.json",
+    "bytes": 189164,
+    "terms": {
+      "minVersion": true,
+      "rejectUnauthorized": true
+    }
+  }
+]

@@ -1,0 +1,154 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/providers/oauth.test.ts [2m([22m[2m12 tests[22m[2m | [22m[31m12 failed[39m[2m)[22m[32m 10[2mms[22m[39m
+[31m   [31m×[31m mints a real RS256 scoped JWT only to the fixed OAuth endpoint and caches the short-lived token[39m[32m 4[2mms[22m[39m
+[31m   [31m×[31m rejects missing or malformed service-account configuration before IO[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects missing or malformed service-account configuration before IO[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects missing or malformed service-account configuration before IO[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects missing or malformed service-account configuration before IO[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed successful OAuth responses without caching them[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed successful OAuth responses without caching them[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed successful OAuth responses without caching them[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed successful OAuth responses without caching them[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed successful OAuth responses without caching them[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies auth failures separately from unavailable providers without echoing diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m bounds a stalled token exchange and refuses to cache its late result[39m[32m 0[2mms[22m[39m
+ [31m❯[39m src/lib/native-push/providers/config.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 4[2mms[22m[39m
+[31m   [31m×[31m keeps delivery disabled without explicit registration/delivery/test/account gates[39m[32m 3[2mms[22m[39m
+[31m   [31m×[31m parses only the scoped server provider configuration without enabling a connection[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m fails each provider closed on a wrong key algorithm or malformed private settings[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m does not accept a partly invalid test allowlist or expose any implicit all-account fallback[39m[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 16 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/config.test.ts[2m > [22mkeeps delivery disabled without explicit registration/delivery/test/account gates
+[31m[1mAssertionError[22m: expected {} to have property "readNativeProviderConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/config.test.ts:[2m3:87[22m[39m
+    [90m  1|[39m import {expect, it} from 'vitest';
+    [90m  2|[39m import {generateKeyPairSync} from 'node:crypto';
+    [90m  3|[39m async function api() {const m = await import('./config').catch(() => (…
+    [90m   |[39m                                                                                       [31m^[39m
+    [90m  4|[39m const ec = generateKeyPairSync('ec', {namedCurve: 'prime256v1'}), rsa …
+    [90m  5|[39m const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', N…
+[90m [2m❯[22m src/lib/native-push/providers/config.test.ts:[2m11:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/config.test.ts[2m > [22mparses only the scoped server provider configuration without enabling a connection
+[31m[1mAssertionError[22m: expected {} to have property "readNativeProviderConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/config.test.ts:[2m3:87[22m[39m
+    [90m  1|[39m import {expect, it} from 'vitest';
+    [90m  2|[39m import {generateKeyPairSync} from 'node:crypto';
+    [90m  3|[39m async function api() {const m = await import('./config').catch(() => (…
+    [90m   |[39m                                                                                       [31m^[39m
+    [90m  4|[39m const ec = generateKeyPairSync('ec', {namedCurve: 'prime256v1'}), rsa …
+    [90m  5|[39m const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', N…
+[90m [2m❯[22m src/lib/native-push/providers/config.test.ts:[2m17:16[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/config.test.ts[2m > [22mfails each provider closed on a wrong key algorithm or malformed private settings
+[31m[1mAssertionError[22m: expected {} to have property "readNativeProviderConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/config.test.ts:[2m3:87[22m[39m
+    [90m  1|[39m import {expect, it} from 'vitest';
+    [90m  2|[39m import {generateKeyPairSync} from 'node:crypto';
+    [90m  3|[39m async function api() {const m = await import('./config').catch(() => (…
+    [90m   |[39m                                                                                       [31m^[39m
+    [90m  4|[39m const ec = generateKeyPairSync('ec', {namedCurve: 'prime256v1'}), rsa …
+    [90m  5|[39m const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', N…
+[90m [2m❯[22m src/lib/native-push/providers/config.test.ts:[2m23:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/config.test.ts[2m > [22mdoes not accept a partly invalid test allowlist or expose any implicit all-account fallback
+[31m[1mAssertionError[22m: expected {} to have property "readNativeProviderConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/config.test.ts:[2m3:87[22m[39m
+    [90m  1|[39m import {expect, it} from 'vitest';
+    [90m  2|[39m import {generateKeyPairSync} from 'node:crypto';
+    [90m  3|[39m async function api() {const m = await import('./config').catch(() => (…
+    [90m   |[39m                                                                                       [31m^[39m
+    [90m  4|[39m const ec = generateKeyPairSync('ec', {namedCurve: 'prime256v1'}), rsa …
+    [90m  5|[39m const configured = () => ({NATIVE_PUSH_REGISTRATION_ENABLED: 'true', N…
+[90m [2m❯[22m src/lib/native-push/providers/config.test.ts:[2m28:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mmints a real RS256 scoped JWT only to the fixed OAuth endpoint and caches the short-lived token
+[31m[1mAssertionError[22m: expected {} to have property "createGoogleAccessTokenSupplier"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/oauth.test.ts:[2m7:86[22m[39m
+    [90m  5|[39m vi.mock('node:https', () => ({request: forbidden}));
+    [90m  6|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  7|[39m async function api() {const m = await import('./oauth').catch(() => ({…
+    [90m   |[39m                                                                                      [31m^[39m
+    [90m  8|[39m const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
+    [90m  9|[39m const now = new Date('2030-01-01T12:00:00.000Z');
+[90m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m13:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects missing or malformed service-account configuration before IO
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects missing or malformed service-account configuration before IO
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects missing or malformed service-account configuration before IO
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects missing or malformed service-account configuration before IO
+[31m[1mAssertionError[22m: expected {} to have property "createGoogleAccessTokenSupplier"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/oauth.test.ts:[2m7:86[22m[39m
+    [90m  5|[39m vi.mock('node:https', () => ({request: forbidden}));
+    [90m  6|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  7|[39m async function api() {const m = await import('./oauth').catch(() => ({…
+    [90m   |[39m                                                                                      [31m^[39m
+    [90m  8|[39m const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
+    [90m  9|[39m const now = new Date('2030-01-01T12:00:00.000Z');
+[90m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m30:44[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects malformed successful OAuth responses without caching them
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects malformed successful OAuth responses without caching them
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects malformed successful OAuth responses without caching them
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects malformed successful OAuth responses without caching them
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mrejects malformed successful OAuth responses without caching them
+[31m[1mAssertionError[22m: expected {} to have property "createGoogleAccessTokenSupplier"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/oauth.test.ts:[2m7:86[22m[39m
+    [90m  5|[39m vi.mock('node:https', () => ({request: forbidden}));
+    [90m  6|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  7|[39m async function api() {const m = await import('./oauth').catch(() => ({…
+    [90m   |[39m                                                                                      [31m^[39m
+    [90m  8|[39m const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
+    [90m  9|[39m const now = new Date('2030-01-01T12:00:00.000Z');
+[90m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m41:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mclassifies auth failures separately from unavailable providers without echoing diagnostics
+[31m[1mAssertionError[22m: expected {} to have property "createGoogleAccessTokenSupplier"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/oauth.test.ts:[2m7:86[22m[39m
+    [90m  5|[39m vi.mock('node:https', () => ({request: forbidden}));
+    [90m  6|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  7|[39m async function api() {const m = await import('./oauth').catch(() => ({…
+    [90m   |[39m                                                                                      [31m^[39m
+    [90m  8|[39m const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
+    [90m  9|[39m const now = new Date('2030-01-01T12:00:00.000Z');
+[90m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m46:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mbounds a stalled token exchange and refuses to cache its late result
+[31m[1mAssertionError[22m: expected {} to have property "createGoogleAccessTokenSupplier"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/oauth.test.ts:[2m7:86[22m[39m
+    [90m  5|[39m vi.mock('node:https', () => ({request: forbidden}));
+    [90m  6|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  7|[39m async function api() {const m = await import('./oauth').catch(() => ({…
+    [90m   |[39m                                                                                      [31m^[39m
+    [90m  8|[39m const pair = generateKeyPairSync('rsa', {modulusLength: 2048});
+    [90m  9|[39m const now = new Date('2030-01-01T12:00:00.000Z');
+[90m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m51:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[90m (16)[39m
+[2m   Start at [22m 05:49:11
+[2m   Duration [22m 189ms[2m (import 65%, transform 16%, tests 16%, worker 3%)[22m
+

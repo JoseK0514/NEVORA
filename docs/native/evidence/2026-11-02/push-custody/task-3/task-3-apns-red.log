@@ -1,0 +1,129 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/providers/apns.test.ts [2m([22m[2m16 tests[22m[2m | [22m[31m16 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+[31m   [31m×[31m sends only generic data to the exact sandbox topic with a real ES256 JOSE provider signature[39m[32m 4[2mms[22m[39m
+[31m   [31m×[31m keeps production provider/origin/app binding separate and rejects mismatched records before IO[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m reuses the provider JWT and refreshes at fifty minutes without saving any private key[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 410 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 400 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 400 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 403 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 429 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 429 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 503 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 500 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 302 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies APNs 410 without reflecting diagnostics[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m honors a bounded HTTP-date Retry-After and refuses an unrepresentable retry window[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m fails closed on missing/bad configuration, invalid TTL, stale payload generation and private fields[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m redacts unknown transport failures and bounds an injected transport that ignores cancellation[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 16 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22msends only generic data to the exact sandbox topic with a real ES256 JOSE provider signature
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m17:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mkeeps production provider/origin/app binding separate and rejects mismatched records before IO
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m31:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mreuses the provider JWT and refreshes at fifty minutes without saving any private key
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m41:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 410 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 400 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 400 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 403 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 429 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 429 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 503 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 500 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 302 without reflecting diagnostics
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mclassifies APNs 410 without reflecting diagnostics
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m58:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mhonors a bounded HTTP-date Retry-After and refuses an unrepresentable retry window
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m61:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mfails closed on missing/bad configuration, invalid TTL, stale payload generation and private fields
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m66:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/apns.test.ts[2m > [22mredacts unknown transport failures and bounds an injected transport that ignores cancellation
+[31m[1mAssertionError[22m: expected {} to have property "createApnsSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/apns.test.ts:[2m5:65[22m[39m
+    [90m  3|[39m import type {NativeTransportResponse} from './transport';
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./apns').catch(() => ({})); expect(m).toHave…
+    [90m   |[39m                                                                 [31m^[39m
+    [90m  6|[39m   return m as typeof import('./apns');
+    [90m  7|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/apns.test.ts:[2m75:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[90m (16)[39m
+[2m   Start at [22m 05:44:53
+[2m   Duration [22m 80ms[2m (tests 38%, transform 36%, import 21%, worker 5%)[22m
+

@@ -1,0 +1,176 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/providers/transport.test.ts [2m([22m[2m23 tests[22m[2m | [22m[31m23 failed[39m[2m)[22m[32m 13[2mms[22m[39m
+[31m   [31m×[31m http2: uses the fixed TLS POST target and bounded successful response[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m http2: abort before IO creates no connection[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m http2: abort during body processing destroys owned IO without waiting for close[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m http2: times out a stalled header/body stream with one total deadline[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m http2: rejects oversized declared/streamed bodies and oversized response headers[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m http2: passes a redirect response to classification without following its Location[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m http2: reports premature closure with a stable redacted error[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: uses the fixed TLS POST target and bounded successful response[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: abort before IO creates no connection[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: abort during body processing destroys owned IO without waiting for close[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: times out a stalled header/body stream with one total deadline[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: rejects oversized declared/streamed bodies and oversized response headers[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: passes a redirect response to classification without following its Location[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m https: reports premature closure with a stable redacted error[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://foreign.example/3/device/a1b2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: http://api.push.apple.com/3/device/a1b2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com:443/3/device/a1b2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/a1b2?x=1[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/a1b2#x[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/A1B2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://fcm.googleapis.com/v1/projects/fictional-test/messages:send/extra[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a noncanonical or foreign endpoint before IO: https://oauth2.googleapis.com/other[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m admits only the exact OAuth endpoint and rejects credential/header/body injection before IO[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 23 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: uses the fixed TLS POST target and bounded successful response
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: uses the fixed TLS POST target and bounded successful response
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m38:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: abort before IO creates no connection
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: abort before IO creates no connection
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m50:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: abort during body processing destroys owned IO without waiting for close
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: abort during body processing destroys owned IO without waiting for close
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m55:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: times out a stalled header/body stream with one total deadline
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: times out a stalled header/body stream with one total deadline
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m64:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: rejects oversized declared/streamed bodies and oversized response headers
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: rejects oversized declared/streamed bodies and oversized response headers
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m71:38[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: passes a redirect response to classification without following its Location
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: passes a redirect response to classification without following its Location
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m80:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttp2: reports premature closure with a stable redacted error
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mhttps: reports premature closure with a stable redacted error
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m86:36[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://foreign.example/3/device/a1b2
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: http://api.push.apple.com/3/device/a1b2
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com:443/3/device/a1b2
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/a1b2?x=1
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/a1b2#x
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://api.push.apple.com/3/device/A1B2
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://fcm.googleapis.com/v1/projects/fictional-test/messages:send/extra
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22mrejects a noncanonical or foreign endpoint before IO: https://oauth2.googleapis.com/other
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m95:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/transport.test.ts[2m > [22madmits only the exact OAuth endpoint and rejects credential/header/body injection before IO
+[31m[1mAssertionError[22m: expected {} to have property "createNodeNativeTransport"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/transport.test.ts:[2m8:13[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./transport').catch(() => ({}));
+    [90m  8|[39m   expect(m).toHaveProperty('createNodeNativeTransport');
+    [90m   |[39m             [31m^[39m
+    [90m  9|[39m   return m as typeof import('./transport');
+    [90m 10|[39m }
+[90m [2m❯[22m transport src/lib/native-push/providers/transport.test.ts:[2m31:13[22m[39m
+[90m [2m❯[22m src/lib/native-push/providers/transport.test.ts:[2m100:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m23 failed[39m[22m[90m (23)[39m
+[2m   Start at [22m 05:40:05
+[2m   Duration [22m 89ms[2m (transform 41%, tests 39%, import 16%, worker 4%)[22m
+
