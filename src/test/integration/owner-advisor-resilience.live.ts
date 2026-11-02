@@ -1,7 +1,7 @@
 /** Explicit fictional-only paid evaluation. Normal tests never discover this file. */
 import { beforeAll, beforeEach, afterAll, afterEach, expect, it, vi } from "vitest";
 import { execFileSync } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, rename } from "node:fs/promises";
 import { resolve, join, isAbsolute } from "node:path";
 import { randomUUID } from "node:crypto";
 import { resilienceScenarios } from "../fixtures/owner-advisor-resilience";
@@ -11,6 +11,7 @@ import { guardedFetch, assertPilotLedger, PILOT, type OwnerAdvisorPilot } from "
 import { advisorService } from "../../lib/owner-advisor/service.server";
 import { AdvisorStore } from "../../lib/owner-advisor/store.server";
 import { admitOwner } from "../../lib/owner-advisor/authority.server";
+import { claimEvaluationEvidence } from "./owner-advisor-evaluation-evidence";
 
 const dryRun = process.env.NEVORA_OWNER_ADVISOR_RESILIENCE_DRY_RUN === "true";
 const selection = process.env.NEVORA_OWNER_ADVISOR_RESILIENCE_CASES?.split(",").filter(Boolean);
@@ -26,7 +27,9 @@ function safeCapture(value: unknown): unknown {
 async function persist() {
   if (!evidence) return;
   const finalAttempts = dryRun ? null : JSON.parse(await readFile(ledgerPath, "utf8")).attempts;
-  await writeFile(join(evidence, "results.json"), JSON.stringify({ sourceHead: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), fictionalOnly: true, dryRun, model: PILOT.model, apiStyle: "responses", initialAttempts, finalAttempts, results }, null, 2));
+  const pending = join(evidence, "results.pending.json");
+  await writeFile(pending, JSON.stringify({ sourceHead: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), fictionalOnly: true, dryRun, model: PILOT.model, apiStyle: "responses", initialAttempts, finalAttempts, results }, null, 2), { flag: "wx", mode: 0o600 });
+  await rename(pending, join(evidence, "results.json"));
 }
 async function captureBody(response: Response, signal?: AbortSignal | null) {
   if (!response.body) throw Error("Provider response has no body");
@@ -53,7 +56,7 @@ beforeAll(async () => {
   if (!requestedEvidence || !isAbsolute(requestedEvidence)) throw Error("Explicit absolute external evidence path required");
   evidence = resolve(requestedEvidence);
   if (evidence === process.cwd() || evidence.startsWith(process.cwd() + "/")) throw Error("Evidence must remain outside checkout");
-  await mkdir(evidence, { recursive: true });
+  await claimEvaluationEvidence(evidence, execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(), dryRun);
   vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
   if (dryRun) {
     pilot = { ...PILOT, credential: "fictional-dry-run-not-a-provider-key", ledgerPath };
