@@ -1,11 +1,10 @@
 import 'server-only';
 import type {RecoveryDelivery} from './recovery.server';
 import {validatedMailTransport} from './mail-transport.server';
+import {passwordChangedEmail,recoveryEmail} from './account-email-copy';
 // Erased in production; avoid top-level await in CLI imports.
 const developmentCapture:typeof import('../dev/capture-gate.cjs')|null=process.env.NODE_ENV!=='production'?require('../dev/capture-gate.cjs'):null;
 import {localRequest} from '../dev/local-only';
-/** Sent after any password reset, including one a Manager or Owner started for the person. */
-export const PASSWORD_CHANGED_NOTICE=(origin:string)=>`The password for your NEVORA account was just changed, and every device was signed out.\n\nIf you did this, there's nothing else to do. If you didn't, contact your Owner right away and sign in at ${origin}/login to check your account.`;
 /** Select local capture when explicitly requested, otherwise the configured SMTP
  * transport. An invalid requested capture or nonlocal capture request returns
  * null instead of falling through to live delivery. Recovery bearers are placed
@@ -31,8 +30,10 @@ export function recoveryDelivery(env:Record<string,string|undefined>=process.env
  const mail=validatedMailTransport(env);
  if(!mail)return null;
  return {async send(email,proof) {
-  await mail.sendRegistered(email,'NEVORA access recovery',`A password reset was requested for your NEVORA account. This single-use link expires in 15 minutes.\n\n${mail.origin}/reset-access#proof=${proof}\n\nIf you did not request this, keep your existing password and contact your manager. If you cannot use your registered recovery channel, ask a manager for assisted recovery.`);
+  const message=recoveryEmail(`${mail.origin}/reset-access#proof=${proof}`);
+  await mail.sendRegistered(email,message.subject,message.text);
  },async notifyReset(email){
-  await mail.sendRegistered(email,'Your NEVORA password was changed',PASSWORD_CHANGED_NOTICE(mail.origin));
+  const message=passwordChangedEmail(mail.origin);
+  await mail.sendRegistered(email,message.subject,message.text);
  }};
 }
