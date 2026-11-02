@@ -5,7 +5,7 @@ import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
-import {admitLoginAttempt} from '../../lib/auth/login-limits.server';
+import {admitLoginAttempt,LOGIN_LIMITS,releaseLoginAddress} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {acknowledgeScheduleWeek} from '../../lib/data/acknowledgements';
@@ -57,6 +57,17 @@ it('fictional browser-cell Owners retain independent real sign-in budgets withou
  for(let attempt=0;attempt<10;attempt++)expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(true);
  expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(false);
  expect(await admitLoginAttempt(second,'198.51.100.23',db.executor)).toBe(true);
+});
+it('a shared store address counts only failed sign-ins, while failures from it still reach the limit',async()=>{
+ const address='198.51.100.77',shift=Array.from({length:LOGIN_LIMITS.perAddress+20},(_,i)=>`SHIFT-${i}`);
+ // A whole shift signing in correctly over one network: each success hands its address slot back.
+ for(const id of shift){expect(await admitLoginAttempt(id,address,db.executor)).toBe(true);await releaseLoginAddress(address,db.executor);}
+ // Failures are never released, so guessing from the same address still stops at the limit.
+ for(let i=0;i<LOGIN_LIMITS.perAddress;i++)expect(await admitLoginAttempt(`GUESS-${i}`,address,db.executor)).toBe(true);
+ expect(await admitLoginAttempt('GUESS-LAST',address,db.executor)).toBe(false);
+ // A refund never goes below zero, and an unknown address is a no-op.
+ await releaseLoginAddress('198.51.100.78',db.executor);await releaseLoginAddress(null,db.executor);
+ expect(await admitLoginAttempt('OTHER','198.51.100.78',db.executor)).toBe(true);
 });
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});

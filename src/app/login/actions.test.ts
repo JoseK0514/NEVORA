@@ -1,8 +1,8 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-const state = vi.hoisted(() => ({ allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), forwarded: null as string | null }));
+const state = vi.hoisted(() => ({ allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null }));
 vi.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
 vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}) }));
-vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLoginAttempt: state.admit }));
+vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLoginAttempt: state.admit, releaseLoginAddress: state.release }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
 vi.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
@@ -114,4 +114,14 @@ it('unknown_and_inactive_ids_still_pay_for_a_password_check', async () => {
  state.verify.mockClear(); state.credential.mockResolvedValue({ id: 'EMPLOYEE', active: false, password_hash: 'real-but-inactive' });
  await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
  expect(state.verify).toHaveBeenCalledWith('test-password', 'fictional-dummy-hash'); expect(state.create).not.toHaveBeenCalled();
+});
+it('a proven password hands its slot back to the shared network address; a wrong one never does', async () => {
+  state.forwarded = '198.51.100.9';
+  await expect(login(form())).rejects.toThrow('redirect:/app');
+  expect(state.release).toHaveBeenCalledWith('198.51.100.9');
+  state.release.mockClear(); state.verify.mockResolvedValue(false);
+  await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
+  expect(state.release).not.toHaveBeenCalled();
+  state.verify.mockResolvedValue(true); state.release.mockRejectedValueOnce(new Error('storage failure'));
+  await expect(login(form())).rejects.toThrow('redirect:/app');
 });

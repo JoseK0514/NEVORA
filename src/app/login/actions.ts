@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { findEmployeeCredential } from "@/lib/data/employees";
 import { dummyPasswordHash, verifyPassword } from "@/lib/auth/password";
-import { admitLoginAttempt, clientAddress } from "@/lib/auth/login-limits.server";
+import { admitLoginAttempt, clientAddress, releaseLoginAddress } from "@/lib/auth/login-limits.server";
 import { createSession, destroySession } from "@/lib/auth/session";
 import { safeReturnTo } from "@/lib/notifications/destinations";
 import { prepareInstallationForLogin } from "@/lib/notifications/logout";
@@ -44,6 +44,9 @@ export async function login(formData: FormData) {
   if (!employee || !employee.active || !passwordMatches) {
     redirect(`/login?error=invalid${returnQuery}`);
   }
+
+  // The password is proven, so this attempt no longer counts against the shared network address (best effort).
+  try { await releaseLoginAddress(address); } catch { /* the attempt stays counted */ }
 
   // An account with an open deletion request stays signed out. Checked only after the password matches,
   // so the message never reveals anything about an account to someone who doesn't control it.
