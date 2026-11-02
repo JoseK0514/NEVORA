@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import type {createOwnedNextApp} from './owned-next-app';
 import {TEST_PASSWORD} from './owned-app-fixture';
 
@@ -7,16 +9,25 @@ type App = Awaited<ReturnType<typeof createOwnedNextApp>>;
 type Response = {status(): number; ok(): boolean; headers(): Record<string,string>; json(): Promise<unknown>};
 type Locator = {fill(value: string): Promise<void>; click(): Promise<void>; waitFor(): Promise<void>; count(): Promise<number>; innerText(): Promise<string>};
 type Page = {goto(url: string): Promise<Response | null>; setDefaultTimeout(ms: number): void; waitForURL(predicate: (url: URL) => boolean): Promise<void>;
-  locator(selector: string): Locator; getByLabel(label: string, options?: {exact: boolean}): Locator; getByRole(role: string, options: {name: string; exact?: boolean}): Locator; getByText(text: string, options: {exact: boolean}): Locator};
+  locator(selector: string): Locator; getByLabel(label: string, options?: {exact: boolean}): Locator; getByRole(role: string, options: {name: string | RegExp; exact?: boolean}): Locator; getByText(text: string, options: {exact: boolean}): Locator;
+  screenshot(options: {path: string; fullPage: boolean}): Promise<Buffer>};
 type BrowserContext = {request: {get(url: string, options?: {headers: Record<string,string>}): Promise<Response>}; newPage(): Promise<Page>; close(): Promise<void>;
   route(pattern: string, handler: (route: {request(): {url(): string}; continue(): Promise<void>; abort(): Promise<void>}) => Promise<void>): Promise<void>};
 type Browser = {newContext(options?: {viewport: {width: number; height: number}; serviceWorkers: string; userAgent?: string}): Promise<BrowserContext>};
 export type NativeCheck = {name: string; status: 'passed'};
 export async function verifyNativeBackend(app: App, browser: Browser, checks: NativeCheck[]) {
   const contexts: BrowserContext[] = [];
+  let active: Page | undefined;
   const q = (text: string, values: readonly unknown[] = []) => app.database.executor.query<Record<string,unknown>>({text, values});
   async function check(name: string, task: () => Promise<void>) {
-    await task(); checks.push({name, status: 'passed'}); console.log('PASS', name);
+    try { await task(); checks.push({name, status: 'passed'}); console.log('PASS', name); }
+    catch (error) {
+      if (active) {
+        await writeFile(join(app.root, 'failure-' + name + '.txt'), await active.locator('body').innerText()).catch(() => {});
+        await active.screenshot({path: join(app.root, 'failure-' + name + '.png'), fullPage: true}).catch(() => {});
+      }
+      throw error;
+    }
   }
   async function session(context: BrowserContext, status: number, state: string, path = '/api/mobile/v1/session', headers: Record<string,string> = {}) {
     const response = await context.request.get(app.url + path, {headers});
@@ -34,11 +45,14 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
     contexts.push(context);
     // A test guard blocks accidental provider/network traffic, not app authority.
     await context.route('**/*', route => new URL(route.request().url()).origin === app.url ? route.continue() : route.abort());
-    const page = await context.newPage(); page.setDefaultTimeout(20000);
+    const page = await context.newPage(); active = page; page.setDefaultTimeout(20000);
     await page.goto(app.url + '/login');
     await page.getByLabel('Employee ID', {exact: true}).fill(id);
     await page.getByLabel('Password', {exact: true}).fill(TEST_PASSWORD);
     await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', {name: 'Sign in', exact: true}).click()]);
+    // URL commitment precedes the streamed private page. Wait for its real UI.
+    if (native && ['QA-NATIVE-B', 'QA-NATIVE-C'].includes(id)) await page.getByRole('heading', {name: 'Use NEVORA in your web browser'}).waitFor();
+    else await page.locator(id === 'QAOWNER' ? '.c-home' : id === 'QA-NATIVE-B' ? '.premium-home' : '.c-ehome').waitFor();
     return {context, page};
   }
   try {
@@ -64,6 +78,16 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
     await check('employee-schedule', async () => {
       const response = await employee.page.goto(app.url + '/app/schedule'); assert(response?.ok());
       assert.match(await employee.page.locator('body').innerText(), /Schedule|schedule/);
+    });
+    await check('employee-authorized-action', async () => {
+      active = employee.page;
+      await employee.page.goto(app.url + '/app/availability');
+      await employee.page.getByRole('button', {name: /^Monday,/}).click();
+      await employee.page.getByRole('switch', {name: 'Monday availability', exact: true}).click();
+      await employee.page.getByRole('button', {name: 'Done', exact: true}).click();
+      await Promise.all([employee.page.waitForURL(url => url.searchParams.get('saved') === '1'), employee.page.getByRole('button', {name: 'Save', exact: true}).click()]);
+      const rows = await q("SELECT day_of_week FROM availability_windows WHERE employee_id='QA-NATIVE-A' ORDER BY day_of_week");
+      assert.deepEqual(rows.map(row => row.day_of_week), [0, 2, 3, 4, 5, 6]);
     });
     const owner = await login('QAOWNER');
     await check('owner-native-session', async () => {
