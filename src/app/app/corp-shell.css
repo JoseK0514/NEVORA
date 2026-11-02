@@ -352,7 +352,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-account-avata
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page[data-q-sheet]:not(.q-sheet) > :not(.q-nav) { max-width: 752px; }
   /* Quiet pages can opt into the 720px column too (the class page builders add to single-column pages). */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow > :not(.q-nav) { max-width: 752px; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, 100%); max-width: 100%; box-sizing: border-box; justify-content: flex-end; }
+  /* The bar sits 24px in from the page edge (the back-link rule above), so it is 48px narrower than the page: on the
+   * tablet shell the page can be under 768px wide, and a full-width bar pushed 24px past the screen edge. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, calc(100% - 48px)); max-width: calc(100% - 48px); box-sizing: border-box; justify-content: flex-end; }
 }
 
 /* P8: headers that stay and tell you where you are. Quiet pushed bars stick like the kit's; the hairline under a header
