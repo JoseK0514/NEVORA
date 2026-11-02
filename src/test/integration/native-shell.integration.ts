@@ -55,7 +55,7 @@ export async function verifyNativeBackend(app: App, browser: Browser, checks: Na
     await Promise.all([page.waitForURL(url => url.pathname === '/app'), page.getByRole('button', {name: 'Sign in', exact: true}).click()]);
     // URL commitment precedes the streamed private page. Wait for its real UI.
     if (native && ['QA-NATIVE-B', 'QA-NATIVE-C'].includes(id)) await page.getByRole('heading', {name: 'Use NEVORA in your web browser'}).waitFor();
-    else await page.locator(id === 'QAOWNER' ? '.c-home' : id === 'QA-NATIVE-B' ? '.premium-home' : '.c-ehome').waitFor();
+    else await page.locator(['QAOWNER', 'QA-NATIVE-B'].includes(id) ? '.c-home' : id === 'QA-NATIVE-C' ? '.q-home [data-home-updated="true"]' : '.c-ehome').waitFor();
     return {context, page};
   }
   try {
