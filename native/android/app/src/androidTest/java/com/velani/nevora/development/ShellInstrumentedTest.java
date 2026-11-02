@@ -68,8 +68,10 @@ public class ShellInstrumentedTest {
                 android.view.accessibility.AccessibilityManager manager = (android.view.accessibility.AccessibilityManager) activity.getSystemService(android.content.Context.ACCESSIBILITY_SERVICE);
                 android.util.Log.i("NEVORA_QA_AX", "window=" + activity.hasWindowFocus() + " viewFocus=" + view.hasFocus()
                     + " shown=" + view.isShown() + " important=" + view.getImportantForAccessibility()
-                    + " accessibility=" + manager.isEnabled() + " touchExploration=" + manager.isTouchExplorationEnabled());
-                view.evaluateJavascript("JSON.stringify({focus:document.hasFocus(),visible:document.visibilityState==='visible',ready:document.readyState})", result -> {
+                    + " accessibility=" + manager.isEnabled() + " touchExploration=" + manager.isTouchExplorationEnabled()
+                    + " contentHeight=" + view.getContentHeight() + " width=" + view.getWidth() + " height=" + view.getHeight()
+                    + " importantComputed=" + view.isImportantForAccessibility());
+                view.evaluateJavascript("JSON.stringify({focus:document.hasFocus(),visible:document.visibilityState==='visible',ready:document.readyState,mime:document.contentType,titleLength:document.title.length})", result -> {
                     android.util.Log.i("NEVORA_QA_AX", "document=" + result); observed.countDown();
                 });
             });
@@ -83,6 +85,23 @@ public class ShellInstrumentedTest {
             device.takeScreenshot(new File(directory, name + ".png"));
             try { device.dumpWindowHierarchy(new File(directory, name + ".xml")); }
             catch (java.io.IOException error) { throw new AssertionError("Could not retain failure hierarchy", error); }
+            // Diagnostic only, after retaining the failure. Do not turn an
+            // initially failed assertion into acceptance after this cache read.
+            java.util.ArrayDeque<android.view.accessibility.AccessibilityNodeInfo> nodes = new java.util.ArrayDeque<>();
+            android.view.accessibility.AccessibilityNodeInfo root = InstrumentationRegistry.getInstrumentation().getUiAutomation().getRootInActiveWindow();
+            if (root != null) nodes.add(root);
+            long end = android.os.SystemClock.uptimeMillis() + 2000;
+            int visited = 0, changedChildren = 0; boolean found = false;
+            while (!nodes.isEmpty() && visited < 256 && android.os.SystemClock.uptimeMillis() < end) {
+                android.view.accessibility.AccessibilityNodeInfo node = nodes.remove(); visited++;
+                int before = node.getChildCount(); node.refresh(); changedChildren += node.getChildCount() - before;
+                if (node.isVisibleToUser() && node.getText() != null && node.getText().toString().contains(value)) found = true;
+                for (int i = 0; i < node.getChildCount(); i++) {
+                    android.view.accessibility.AccessibilityNodeInfo child = node.getChild(i);
+                    if (child != null) nodes.add(child);
+                }
+            }
+            android.util.Log.i("NEVORA_QA_AX", "freshRead found=" + found + " visited=" + visited + " changedChildren=" + changedChildren);
     }
     private void expectText(String value) {
         boolean visible = text(value, false) != null;
