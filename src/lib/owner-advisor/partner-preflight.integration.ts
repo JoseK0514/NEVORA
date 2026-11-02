@@ -74,3 +74,9 @@ it('paired facts include private Owner context and preserve publication snapshot
  await f.q("DELETE FROM schedule_publication_revisions WHERE id='lab-new'");
  expect((await partnerFactSnapshot(f)).canonicalFacts).not.toEqual(intent.canonicalFacts);
 });
+it('independent published fixtures preserve identical publication event dates and versions',async()=>{
+ const {partnerFactSnapshot}=await import('@/test/integration/owner-advisor-partner-fixture');
+ await seedPartnerFixture(f,'stale');const first=await partnerFactSnapshot(f);
+ await f.db.dispose();f=await companyAccessFixture();await seedPartnerFixture(f,'stale');const next=await partnerFactSnapshot(f);
+ expect(next.canonicalFacts).toEqual(first.canonicalFacts);expect(next.source).not.toEqual(first.source);
+});

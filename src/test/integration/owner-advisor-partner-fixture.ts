@@ -9,7 +9,8 @@ export async function seedPartnerFixture(f: ResilienceDatabase, fixture: string)
   // Pin meaningful submission/publication event versions in fictional seed data;
   // these are compared, never normalized away from the evidence.
   await f.q("UPDATE weekly_availability_submissions SET submitted_at='2026-11-01T12:00:00Z',updated_at='2026-11-01T12:00:00Z'");
-  await f.q("UPDATE schedule_publication_revisions SET created_at='2026-11-01T12:00:00Z'::timestamptz + revision_number * interval '1 minute'");
+  await f.q("UPDATE schedule_publication_revisions SET created_at='2026-11-01T12:00:00Z'::timestamptz + revision_number * interval '1 minute',calendar_modified_at='2026-11-01T12:00:00Z'::timestamptz + revision_number * interval '1 minute'");
+  if (fixture === 'stale') await f.q("UPDATE owner_advisor_requests SET created_at='2026-10-01T12:00:00Z' WHERE workspace_id='workspace-fuel' AND owner_id='owner' AND kind='ask'");
   return setup;
 }
 

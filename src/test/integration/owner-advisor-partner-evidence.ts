@@ -31,7 +31,7 @@ export const partnerChecks:Record<string,string[]>={
  'historical-denominator':['reads effective corrected boundaries and adjustment provenance','returns bounded retained records with actual full denominators'],
  'historical-rules':['keeps location matching separate, hashes facts not wall clock'],
  'empty-history':['opens with 28-day local historical evidence, no fabricated investigation'],
- 'paired-variants':['paired facts include real availability changes omitted by legacy business-only snapshots','paired facts include private Owner context and preserve publication snapshot terms','independent no-gap fixtures compare the same canonical facts','partner comparison layers never convert preflight or scripted transport into model assessment'],
+ 'paired-variants':['paired facts include real availability changes omitted by legacy business-only snapshots','paired facts include private Owner context and preserve publication snapshot terms','independent published fixtures preserve identical publication event dates and versions','independent no-gap fixtures compare the same canonical facts','partner comparison layers never convert preflight or scripted transport into model assessment'],
  'budget-custody':['partner startup guard rejects unapproved, exhausted, reused and altered identity without provider calls'],
 };
 type Assertion={fullName:string;status:string};

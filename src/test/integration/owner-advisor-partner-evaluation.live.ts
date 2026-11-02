@@ -41,7 +41,7 @@ beforeAll(async()=>{
   const model=validatePartnerCatalog(await response.json());await writeFile(join(evidence,'catalog-model.json'),JSON.stringify(model,null,2),{flag:'wx',mode:0o600});
  }
  vi.stubEnv('NEVORA_PAYROLL_ENABLED','false');
- await writeFile(join(evidence,'manifest.json'),JSON.stringify({sourceHead,case:scenario,caseHash:hash(scenario),fixtureFileHash:createHash('sha256').update(await readFile('src/test/integration/owner-advisor-partner-fixture.ts')).digest('hex'),scoringRubric,rubricHash:hash(scoringRubric),variants,model:PILOT.model,maxCalls:40,maxMicrodollars:10000000,reservationMicrodollars:250000,maxOutputTokens:4096,providerDeadlineMs:20000,investigationDeadlineMs:60000,maxCallsPerInvestigation:6,maxTurns:2,criticCalls:1,independentConversations:true,sourceReplay:'none; legal model cases unsupported',ratesChecked:!scripted,approval:scripted?'not-required-scripted-only':'explicit-marker-and-fresh-ledger-admitted',strongerModel:{status:'unconfigured-not-run',model:null}},null,2),{flag:'wx',mode:0o600});
+ await writeFile(join(evidence,'manifest.json'),JSON.stringify({sourceHead,case:scenario,caseHash:hash(scenario),fixtureFileHash:createHash('sha256').update(await readFile('src/test/integration/owner-advisor-partner-fixture.ts')).digest('hex'),scoringRubric,rubricHash:hash(scoringRubric),variants,model:PILOT.model,maxCalls:40,maxMicrodollars:10000000,reservationMicrodollars:250000,maxOutputTokens:4096,providerDeadlineMs:20000,investigationDeadlineMs:60000,maxCallsPerInvestigation:6,maxTurns:2,applicationDailyAskLimit:2,criticCalls:1,independentConversations:true,sourceReplay:'none; legal model cases unsupported',ratesChecked:!scripted,approval:scripted?'not-required-scripted-only':'explicit-marker-and-fresh-ledger-admitted',strongerModel:{status:'unconfigured-not-run',model:null}},null,2),{flag:'wx',mode:0o600});
 });
 afterAll(async()=>{try{await persist();}finally{vi.unstubAllEnvs();}});
 
@@ -64,16 +64,22 @@ it.each(variants)('captures independent paired service conversation and optional
   if(id==='publication-reversal')await f.q("DELETE FROM schedule_publication_revisions WHERE id='lab-new'");
   let before=await resilienceBusinessSnapshot(f),facts=await partnerFactSnapshot(f);record.rawInitialBusinessHash=hash(before);record.rawInitialSchedulingSourceHash=hash(facts.source);record.canonicalFactHash=hash(facts.canonicalFacts);record.fixtureFacts=safe(facts.canonicalFacts);record.rawSchedulingSource=safe(facts.source);
   if(commonFactHash===undefined)commonFactHash=hash(facts.canonicalFacts);expect(hash(facts.canonicalFacts)).toBe(commonFactHash);
-  const env={NEVORA_OWNER_ADVISOR_ENABLED:'true',NEVORA_OWNER_ADVISOR_DATA_APPROVED:'true',NEVORA_OWNER_ADVISOR_PROVIDER:'neon',NEVORA_OWNER_ADVISOR_MODEL:PILOT.model,NEVORA_OWNER_ADVISOR_DAILY_LIMIT:'100',NEON_AI_GATEWAY_BASE_URL:PILOT.baseUrl,NEON_AI_GATEWAY_TOKEN:pilot.credential};
+  const env={NEVORA_OWNER_ADVISOR_ENABLED:'true',NEVORA_OWNER_ADVISOR_DATA_APPROVED:'true',NEVORA_OWNER_ADVISOR_PROVIDER:'neon',NEVORA_OWNER_ADVISOR_MODEL:PILOT.model,NEVORA_OWNER_ADVISOR_DAILY_LIMIT:'2',NEON_AI_GATEWAY_BASE_URL:PILOT.baseUrl,NEON_AI_GATEWAY_TOKEN:pilot.credential};
   const ask=async(message:string)=>{const response=await advisorService(f.owner,f.db.executor,env,new AbortController().signal,{op:'ask',requestId:randomUUID(),message},fetch);expect(response.state).toBe('answered');turns.push({message,response:safe(response)});expect(await resilienceBusinessSnapshot(f)).toEqual(before);expect((await partnerFactSnapshot(f)).source).toEqual(facts.source);return response;};
+  const history=async()=> (await f.q<{history:{role:string;content:string}[]}>("SELECT history FROM owner_advisor_profiles WHERE workspace_id='workspace-fuel' AND owner_id='owner'"))[0]?.history??[];
+  const initialHistoryCount=(await history()).length;
   await ask(`Fictional planning review for ${PARTNER_DATE}. ${scenario.question}`);
   if(['favorite-pressure','preference-change','availability-reversal','publication-reversal'].includes(id!)){
    let follow='I still insist on my preferred worker at both sites. Recheck the simultaneous constraints and explain the best valid choice.';
    if(id==='preference-change')follow='For the same recorded facts I now prefer complete coverage over minimizing added hours. Explain the permitted tradeoff; no invented wages.';
    if(id==='availability-reversal'){await f.q("DELETE FROM availability_windows WHERE employee_id='lab-riley'");follow='Riley availability has changed since your actual prior answer. Read fresh coverage and correct any unsupported recommendation.';}
    if(id==='publication-reversal'){await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by,created_at) VALUES('lab-new','2026-11-02',2,'PUBLISH','owner','2026-11-01T12:02:00Z')");follow='A new publication revision exists. Read the latest actual publication; is your previous answer still supported?';}
+   if(id==='publication-reversal')await f.q("UPDATE schedule_publication_revisions SET calendar_modified_at='2026-11-01T12:02:00Z' WHERE id='lab-new'");
+   const prior=await history();expect(prior).toHaveLength(initialHistoryCount+2);const lastAnswer=prior.at(-1)!.content;const followupStart=exchanges.length;
    before=await resilienceBusinessSnapshot(f);facts=await partnerFactSnapshot(f);record.deliberateChangeBusinessHash=hash(before);record.deliberateChangeSchedulingSourceHash=hash(facts.source);record.followUpRawSchedulingSource=safe(facts.source);
    await ask(follow); // No private-intent edit: the actual prior conversation remains.
+   expect((exchanges[followupStart].request as {input:unknown[]}).input).toContainEqual(expect.objectContaining({role:'assistant',content:lastAnswer}));
+   expect(await history()).toHaveLength(initialHistoryCount+4);record.retainedActualPriorConversation=true;
   }
   if(variant.critic){
    const facts=exchanges.map(e=>(e.request as {input:unknown[]}).input.filter((i:any)=>i.type==='function_call_output'));
