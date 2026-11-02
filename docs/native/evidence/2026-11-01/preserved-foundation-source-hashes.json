@@ -1,0 +1,103 @@
+{
+  "sourceWorktree": "/Users/josek0514/.codex/worktrees/nevora-native-foundation-20261025/Fuel Scheduler",
+  "capturedAt": "2026-11-02T00:20:42.567Z",
+  "sourceHead": "46e202786863279302026ee03a0e225c359fa55c",
+  "files": [
+    {
+      "path": "docs/native/PAUSED-2026-10-25.md",
+      "sha256": "9976f0f9f6447a9ea8f7bcf65c655795f8195fcdcd8a444e2aa633b2ae5a8d2c"
+    },
+    {
+      "path": "docs/native/architecture.md",
+      "sha256": "2d78ed6d9955cbfe57973ada34c4f140625d5f12364b71b4593bebe640e3fa36"
+    },
+    {
+      "path": "docs/native/verification-2026-10-25.md",
+      "sha256": "b3fff032d6562fd0f0c467b61547e81cfc8674fd50a416ba9b358af69c7bdb8e"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-25-native-foundation.md",
+      "sha256": "f5e8c510e412cc7dc3673b7f9082355f8cfb1aedb37d87b2556be39bcd80ef3e"
+    },
+    {
+      "path": "native/ios/.gitignore",
+      "sha256": "b6a958f6e006b7ad3e6c081e13f661dab1a180ee0674e263a14f92a064cc87b6"
+    },
+    {
+      "path": "native/ios/App/AppDelegate.swift",
+      "sha256": "17436cb583a4215a1cefa67132dcc6f0155bf90bb1a62fa6f1ea8af201f8beba"
+    },
+    {
+      "path": "native/ios/App/PortalViewController.swift",
+      "sha256": "d4f468d8d8f96b2375d8296fd338065d747043e0256507d1b47f1b12107b36ce"
+    },
+    {
+      "path": "native/ios/App/SessionProbe.swift",
+      "sha256": "f025a7d77a77af0413986b56d0344712aa904d7f1be26a1e73b419c2237c5c2f"
+    },
+    {
+      "path": "native/ios/Configuration/Debug-Info.plist",
+      "sha256": "2a9828f34f08234064e490bb355e54e26d4ce6f8a5ea3fcf99a352cd577616ec"
+    },
+    {
+      "path": "native/ios/Configuration/Release-Info.plist",
+      "sha256": "4080ec7adfbde372480ad2b623073352c0c9c5d236be40d616afc7a3aaa71a09"
+    },
+    {
+      "path": "native/ios/Fixtures/server.mjs",
+      "sha256": "05c4900b1d00f804d01659801872f30fa8b414bdcc130f11f7fb30c9f13457f1"
+    },
+    {
+      "path": "native/ios/NEVORA.xcodeproj/project.pbxproj",
+      "sha256": "89767e09a6830c063bd867ad227d89f99c41e938c52d87dcbb4257bb0c40758f"
+    },
+    {
+      "path": "native/ios/NEVORA.xcodeproj/xcshareddata/xcschemes/NEVORA.xcscheme",
+      "sha256": "f64c3182191107cd69c1798dbb464094e5837e499fce348c3919eaa943ab556d"
+    },
+    {
+      "path": "native/ios/Package.swift",
+      "sha256": "ff33a09c9a43c31b787503084b82c323d5e0da987aa04cf569521be2f30d531a"
+    },
+    {
+      "path": "native/ios/README.md",
+      "sha256": "a44eb9f4042d7dd5b660d8dc7d46d8e4d3f1b8fbf987ff73c2dcdb9d54df691c"
+    },
+    {
+      "path": "native/ios/Sources/NevoraShellCore/BackendPolicy.swift",
+      "sha256": "c27daa112bc9995e00037203feadbd1a5371d4523b9fb811393eeedf427b2d8f"
+    },
+    {
+      "path": "native/ios/Sources/NevoraShellCore/SessionStatus.swift",
+      "sha256": "ad2bbc06e077532acfd60dcb757ff7c898b89c2cd3c0e4b7a68a7c349c2ca3f5"
+    },
+    {
+      "path": "native/ios/Tests/NevoraShellCoreTests/BackendPolicyTests.swift",
+      "sha256": "eeb514c211ebdedbd6f638121b6c991ad79fd27aac72bb1ea848f66fb2903c7a"
+    },
+    {
+      "path": "native/ios/UITests/NevoraUITests.swift",
+      "sha256": "c4d46947b3db9183eabbbeed2512229958a39b29ff1496cd02c84e4c044cdef1"
+    },
+    {
+      "path": "native/ios/generate-project.py",
+      "sha256": "9b75289f9a0d23f5f6a9f378a47b5eb2f64270add1a48ec7e1542ba907c1294a"
+    },
+    {
+      "path": "native/ios/test-ui.py",
+      "sha256": "0af36d7b88a6240706b0359b89ce7e06279f4a2e0b25f7f673246c304d3eb40a"
+    },
+    {
+      "path": "native/ios/test_fixture.py",
+      "sha256": "b16e531b049968271bf2082ee748b41b3fbaff9221c5f2b668b7ee98171e50a2"
+    },
+    {
+      "path": "src/app/api/mobile/v1/session/route.test.ts",
+      "sha256": "acf44458ca569e364d280d04ad1cdc93730da67b3b02f67d79ef0b1fb2319057"
+    },
+    {
+      "path": "src/app/api/mobile/v1/session/route.ts",
+      "sha256": "f3f17a903b8f4c3361dd67cfb6ab8b3b1059e1e26fedd523dbcf5985d8afb140"
+    }
+  ]
+}
