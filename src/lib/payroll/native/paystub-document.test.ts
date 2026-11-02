@@ -2,14 +2,14 @@ import { createHash } from "node:crypto";
 import { PDFArray, PDFDocument, PDFRawStream, StandardFonts, decodePDFRawStream } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import {
-  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_VERSION,
+  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V1,
   NativePaystubDocumentError, preflightNativePaystubGlyphs, renderNativeEmployeePaystub,
   type NativePaystubPresentation,
 } from "./paystub-document";
 
 function fixture(language: "en" | "es" = "en"): NativePaystubPresentation {
   return {
-    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION,
+    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: NATIVE_PAYSTUB_TEMPLATE_V1,
     sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", language,
     companyName: "Compañía Ejemplo — Servicios del Caribe", employeeName: "María José Núñez",
     employeeReference: "EMP-DEMO-014", period: { startDate: "2026-09-28", endDate: "2026-10-04" },

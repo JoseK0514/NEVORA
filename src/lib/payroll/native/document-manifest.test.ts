@@ -15,7 +15,7 @@ it('retains the exact approved document metadata alongside bytes and stores that
         payday: '2026-10-16',
         coverage: { complete: true, locationIds: ['L1'] },
         nativeDocument: {
-            templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V1',
+            templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V2',
             runRevision: 2,
             inputSha256: run.nativeCalculation!.employees[0].provenance.inputSha256,
             rulesSha256: run.nativeCalculation!.employees[0].provenance.rulesSha256,

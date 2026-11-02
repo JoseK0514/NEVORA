@@ -4,7 +4,7 @@
  * allow worker retries to converge when those statements are committed.
  */
 import { nativeEmployeePresentation } from "./native/document-mapping";
-import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_VERSION } from "./native/paystub-document";
+import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, type NativePaystubTemplateVersion } from "./native/paystub-document";
 import { hash } from "./store";
 import { createHash } from "node:crypto";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
@@ -29,7 +29,7 @@ export type PayrollDocumentMetadata = {
     payday: string;
     coverage?: PayrollRun["coverage"];
     nativeDocument?: {
-        templateVersion: typeof NATIVE_PAYSTUB_TEMPLATE_VERSION;
+        templateVersion: NativePaystubTemplateVersion;
         runRevision: number;
         inputSha256: string;
         rulesSha256: string;
@@ -196,7 +196,7 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
             const presentation = nativeEmployeePresentation(run, snapshot, row.employeeId);
             const rendered = await renderNativeEmployeePaystub(presentation, { progress });
             const approved = run.nativeCalculation.employees.find(e => e.employeeId === row.employeeId)!;
-            const metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
+            const metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: presentation.templateVersion, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
             const document = stored(run, "EMPLOYEE_STATEMENT", row.employeeId, Buffer.from(rendered.bytes), metadata);
             if (document.sha256 !== rendered.sha256)
                 throw new PayrollError("NATIVE_DOCUMENT_HASH_CONFLICT", 409);
