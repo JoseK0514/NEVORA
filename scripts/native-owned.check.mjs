@@ -1,5 +1,5 @@
 import {test} from 'node:test';
-import {stopNativePostgres} from './native-owned.mjs';
+import {stopNativePostgres,assertNativeResults,NATIVE_CONTRACT_CHECKS} from './native-owned.mjs';
 import assert from 'node:assert/strict';
 import {mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync, realpathSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -61,6 +61,20 @@ test('a changed process can never receive the immediate-shutdown fallback', asyn
   let observation=0;const signals=[];
   await assert.rejects(()=>stopNativePostgres({lease,observe:()=>({...lease,pid:++observation===1?1234:5678}),verifyRoot:()=>{},send:signal=>signals.push(signal),waitForExit:async()=>false}));
   assert.deepEqual(signals,['SIGINT']);
+});
+test('a large count or fixture run cannot stand in for named full-backend checks', () => {
+  const expected={ownerId:'a'.repeat(32),checkpoint:'b'.repeat(40),platform:'android'};
+  const report={...expected,status:'passed',ownershipClosed:true,checks:Array.from({length:30},(_,index)=>({name:'unrelated-'+index,status:'passed'}))};
+  assert.throws(()=>assertNativeResults(report,expected));
+  assert.throws(()=>assertNativeResults({...report,ownerId:'c'.repeat(32)},expected));
+  assert.throws(()=>assertNativeResults({...report,ownershipClosed:false},expected));
+  const valid={...report,checks:[...NATIVE_CONTRACT_CHECKS,'android-full-backend'].map(name=>({name,status:'passed'}))};
+  assert.doesNotThrow(()=>assertNativeResults(valid,expected));
+  assert.throws(()=>assertNativeResults({...valid,checks:valid.checks.map((value,index)=>index?value:{...value,status:'failed'})},expected));
+  assert.throws(()=>assertNativeResults({...valid,checks:valid.checks.map(value=>value.name==='android-full-backend'?{...value,name:'android-transport-fixture'}:value)},expected));
+});
+test('ownership-only concurrency verification cannot be labeled as a device run', () => {
+  assert.throws(()=>parseNativeArguments(['--mode','owned-local','--expected-sha',sha,'--ownership-only','--platform','android','--android-serial','emulator-5558']));
 });
 test('mixed current-source bytes or a different SHA cannot produce acceptance', () => {
   const source=mkdtempSync(join(tmpdir(),'native-source-test-'));

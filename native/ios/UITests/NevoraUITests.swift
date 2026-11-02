@@ -147,3 +147,89 @@ final class NevoraUITests: XCTestCase {
         XCTAssertEqual(app.webViews.count, 0)
     }
 }
+
+/** Requires the separately owned full Next/PostgreSQL runner. */
+final class NevoraBackendUITests: XCTestCase {
+    private var app: XCUIApplication!
+    private var origin = ""
+    private var controlOrigin = ""
+    private var owner = ""
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        let environment = ProcessInfo.processInfo.environment
+        origin = try XCTUnwrap(environment["NEVORA_NATIVE_BACKEND_ORIGIN"])
+        controlOrigin = try XCTUnwrap(environment["NEVORA_NATIVE_CONTROL_ORIGIN"])
+        owner = try XCTUnwrap(environment["NEVORA_NATIVE_TEST_OWNER"])
+        XCTAssertNotNil(owner.range(of: "^[a-f0-9]{32}$", options: .regularExpression))
+        for value in [origin, controlOrigin] {
+            let url = try XCTUnwrap(URLComponents(string: value))
+            XCTAssertEqual(url.scheme, "http"); XCTAssertEqual(url.host, "127.0.0.1"); XCTAssertNotNil(url.port)
+            XCTAssertEqual(url.path, ""); XCTAssertNil(url.user); XCTAssertNil(url.query); XCTAssertNil(url.fragment)
+        }
+        try command("reset")
+        app = XCUIApplication(); app.launchArguments = ["-nevora-debug-origin", origin]; app.launch()
+    }
+    override func tearDownWithError() throws {
+        defer { app?.terminate() }
+        if !controlOrigin.isEmpty { try command("outage-off") }
+    }
+    private func command(_ action: String) throws {
+        let finished = expectation(description: "Invocation-owned backend control")
+        var successful = false
+        var request = URLRequest(url: try XCTUnwrap(URL(string: controlOrigin + "/native-test")))
+        request.httpMethod = "POST"; request.timeoutInterval = 5
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(owner, forHTTPHeaderField: "x-nevora-native-test-owner")
+        request.httpBody = try JSONSerialization.data(withJSONObject: ["action": action])
+        URLSession.shared.dataTask(with: request) { _, response, error in
+            successful = error == nil && (response as? HTTPURLResponse)?.statusCode == 200; finished.fulfill()
+        }.resume()
+        wait(for: [finished], timeout: 7); XCTAssertTrue(successful, "Owned backend command: \(action)")
+    }
+    private func expect(_ text: String) {
+        XCTAssertTrue(app.webViews.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", text)).firstMatch.waitForExistence(timeout: 20), "Actual backend text: \(text)")
+    }
+    private func link(_ text: String) -> XCUIElement {
+        app.webViews.links.matching(NSPredicate(format: "label BEGINSWITH %@", text)).firstMatch
+    }
+    private func login(_ id: String) {
+        let signIn = app.webViews.buttons["Sign in"]
+        XCTAssertTrue(signIn.waitForExistence(timeout: 20))
+        app.webViews.textFields["Employee ID"].tap(); app.webViews.textFields["Employee ID"].typeText(id)
+        app.webViews.secureTextFields["Password"].tap(); app.webViews.secureTextFields["Password"].typeText("Fictional-Phase-A-only!")
+        signIn.tap()
+    }
+    private func logout() {
+        link("More, ").tap(); let signOut = app.webViews.buttons["Sign out"]
+        XCTAssertTrue(signOut.waitForExistence(timeout: 20)); signOut.tap()
+        XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20))
+    }
+    private func retain(_ name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot()); attachment.name = name; attachment.lifetime = .keepAlways; add(attachment)
+    }
+    func testEmployeeActionRevocationOutageAndLogout() throws {
+        login("QA-NATIVE-A"); expect("Welcome back, QA NATIVE")
+        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); link("Availability").tap(); expect("Your usual week")
+        app.webViews.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Monday,")).firstMatch.tap()
+        let available = app.webViews.switches["Available on Monday"]
+        XCTAssertTrue(available.waitForExistence(timeout: 20)); available.tap(); app.webViews.buttons["Done"].tap()
+        app.webViews.buttons["Save"].tap(); expect("Usual hours saved"); try command("verify-employee"); retain("Employee availability saved")
+        XCUIDevice.shared.press(.home); try command("revoke"); app.activate()
+        XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20))
+        login("QA-NATIVE-A"); expect("Welcome back, QA NATIVE")
+        XCUIDevice.shared.press(.home); try command("outage-on"); app.activate()
+        XCTAssertTrue(app.buttons["Try again"].waitForExistence(timeout: 20)); XCTAssertEqual(app.webViews.count, 0)
+        try command("outage-off"); app.buttons["Try again"].tap(); expect("Welcome back, QA NATIVE")
+        logout(); app.terminate(); app.launch(); XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Employee signed out after restart")
+    }
+    func testOwnerActionAndPersistentSession() throws {
+        login("QAOWNER"); expect("Fictional")
+        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); link("Settings").tap(); link("Company profile").tap()
+        let name = app.webViews.textFields["Business name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 20)); XCTAssertEqual(name.value as? String, "QA")
+        name.tap(); name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2) + "Fictional iOS Company")
+        app.webViews.buttons["Save"].tap(); expect("Company profile saved"); try command("verify-owner-ios"); retain("Owner company profile saved")
+        app.terminate(); app.launch(); expect("Fictional"); logout(); app.terminate(); app.launch()
+        XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Owner signed out after process restart")
+    }
+}

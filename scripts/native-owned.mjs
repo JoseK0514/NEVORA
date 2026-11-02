@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {resolve,isAbsolute,relative,basename,sep,join} from 'node:path';
-import {lstatSync,readFileSync,realpathSync,mkdtempSync,writeFileSync,existsSync,rmSync,openSync,closeSync} from 'node:fs';
+import {lstatSync,readFileSync,realpathSync,mkdtempSync,writeFileSync,existsSync,rmSync,openSync,closeSync,statfsSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {spawn,spawnSync} from 'node:child_process';
 import {createHash,randomBytes} from 'node:crypto';
@@ -10,6 +10,16 @@ import {pathToFileURL} from 'node:url';
 import {captureSource,assertSourceUnchanged,safeEnvironment,superviseOwnedChild,installTerminationHandlers} from './phase-e-owned.mjs';
 export const captureNativeSource=captureSource;
 export const assertNativeSource=assertSourceUnchanged;
+export const NATIVE_CONTRACT_CHECKS=Object.freeze(['missing-session','denied-selectors','denied-origin','denied-cross-site','employee-native-session','native-renderer-policy','employee-schedule','employee-authorized-action','owner-native-session','owner-authorized-action','actual-invitation-activation-and-login','employee-owner-route-denied','manager-native-unsupported-web-preserved','lead-native-unsupported-web-preserved','expired-session','revoked-session','sanitized-database-outage-and-recovery']);
+export function assertNativeResults(results,expected) {
+  assert(['contract','android','ios','all'].includes(expected.platform));
+  assert.equal(results.status,'passed');assert.equal(results.ownerId,expected.ownerId);assert.equal(results.checkpoint,expected.checkpoint);
+  assert.equal(results.platform,expected.platform);assert.equal(results.ownershipClosed,true);
+  const names=[...NATIVE_CONTRACT_CHECKS,...(['android','all'].includes(expected.platform)?['android-full-backend']:[]),...(['ios','all'].includes(expected.platform)?['ios-full-backend']:[])];
+  assert(Array.isArray(results.checks));assert.equal(results.checks.length,names.length);
+  assert(results.checks.every(check=>check.status==='passed'));
+  assert.deepEqual(results.checks.map(check=>check.name).sort(),names.sort(),'Missing, duplicated or unexpected native backend checks');
+}
 export function parseNativeArguments(args){
   const flags=new Map([['--mode','mode'],['--expected-sha','expectedSha'],['--platform','platform'],['--android-serial','androidSerial'],['--ios-simulator','iosSimulator']]);
   const result={ownershipOnly:false},seen=new Set();
@@ -24,6 +34,7 @@ export function parseNativeArguments(args){
   if(result.mode!=='owned-local'||!/^[a-f0-9]{40}$/.test(result.expectedSha??''))throw Error('Explicit owned-local mode and exact candidate SHA are required');
   result.platform??='contract';
   if(!['contract','android','ios','all'].includes(result.platform))throw Error('Unknown native platform');
+  if(result.ownershipOnly&&result.platform!=='contract')throw Error('Ownership-only verification cannot qualify a native device');
   if(['android','all'].includes(result.platform)){
     const match=/^emulator-(\d{4})$/.exec(result.androidSerial??'');
     if(!match||Number(match[1])<5554||Number(match[1])>5682||Number(match[1])%2)throw Error('Select an owned Android emulator explicitly');
@@ -93,11 +104,12 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
   const custody=captureNativeSource(source,selection.expectedSha),bin=env.NEVORA_TEST_PG_BIN;
   if(!bin||!['initdb','postgres'].every(name=>existsSync(join(bin,name))))throw Error('Select an installed local PostgreSQL bin with NEVORA_TEST_PG_BIN');
   if(!selection.ownershipOnly&&!existsSync(join(source,'scripts/native-backend.mts')))throw Error('Native backend harness missing');
+  if(!selection.ownershipOnly){const space=statfsSync(realpathSync(tmpdir()));if(space.bavail*space.bsize<4*1024**3)throw Error('At least 4 GiB free is required before allocating a full-backend test environment');}
   const root=realpathSync(mkdtempSync(join(tmpdir(),'nevora-native-owned-'))),data=join(root,'data'),marker=randomBytes(16).toString('hex');
   writeFileSync(join(root,'native-owner'),marker,{mode:0o600});
   writeFileSync(join(root,'source-custody.json'),JSON.stringify(custody,null,2),{mode:0o600});
   const port=await freePort(),controller=new AbortController(),removeSignals=installTerminationHandlers(signal=>controller.abort(Error('Native run interrupted: '+signal)));
-  const report={ownerId:marker,root,port,checkpoint:custody.checkpoint,platform:selection.platform,status:'failed',ownershipClosed:false};
+  const report={ownerId:marker,root,port,checkpoint:custody.checkpoint,platform:selection.platform,verification:selection.ownershipOnly?'ownership-only':'full-backend',status:'failed',ownershipClosed:false};
   let postgres,exited,lease,logFd;
   const pgEnv={...env,NEVORA_NATIVE_OWNER:marker};
   try{
@@ -139,11 +151,11 @@ export async function runNativeOwned(args=process.argv.slice(2),ambient=process.
         FUEL_TEST_DATABASE_URL:`postgresql://nevora_native@127.0.0.1:${port}/nevora_exchange_test_n_${marker.slice(0,12)}`,
         NEVORA_NATIVE_OWNED_ROOT:root,NEVORA_NATIVE_EXPECTED_SHA:custody.checkpoint,NEVORA_NATIVE_PLATFORM:selection.platform,
         ...(selection.androidSerial?{NEVORA_NATIVE_ANDROID_SERIAL:selection.androidSerial}:{}),...(selection.iosSimulator?{NEVORA_NATIVE_IOS_SIMULATOR:selection.iosSimulator}:{})};
-      const execution=await superviseOwnedChild({command:process.execPath,args:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/native-backend.mts'],cwd:source,env:childEnv,ownerId:marker,timeoutMs:900000,signal:controller.signal});
+      const execution=await superviseOwnedChild({command:process.execPath,args:['--import','./scripts/qa-server-context.mjs','--import','tsx','scripts/native-backend.mts'],cwd:source,env:childEnv,ownerId:marker,timeoutMs:selection.platform==='all'?1800000:900000,signal:controller.signal});
       report.execution=execution;
       if(execution.status!==0||execution.error)throw Error('Native backend verification failed');
       const results=JSON.parse(readFileSync(join(root,'backend-results.json'),'utf8'));
-      if(results.status!=='passed'||results.ownerId!==marker||results.checkpoint!==custody.checkpoint||results.ownershipClosed!==true||!Array.isArray(results.checks)||results.checks.length<10)throw Error('Native backend result/ownership mismatch');
+      assertNativeResults(results,{ownerId:marker,checkpoint:custody.checkpoint,platform:selection.platform});
       report.checks=results.checks;
     }
     assertNativeSource(source,custody);report.status='passed';
