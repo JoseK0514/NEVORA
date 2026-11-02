@@ -1,5 +1,6 @@
 // Frozen evaluation profile. Explicit provisioning only; this is not budget approval.
-import { readFileSync, readdirSync } from 'node:fs';
+import { constants,closeSync,fsyncSync,lstatSync,openSync,readFileSync,readdirSync,writeFileSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { isAbsolute, resolve, dirname } from 'node:path';
 import { createPilotGuard } from './owner-advisor-pilot-core.mts';
 export type { OwnerAdvisorPilot } from './owner-advisor-pilot-core.mts';
@@ -14,13 +15,25 @@ export const {validatePilot, initializePilot, assertPilotLedger, reservePilot, g
 export const PARTNER_APPROVAL = 'jose-approved-new-owner-partner-ten-dollars-20261101';
 export type PartnerAdmission = { approval?: string; ledgerPath: string; evidencePath: string; sourceHead: string; claimEvidence: (directory: string, source: string, dryRun: boolean) => Promise<void>; readCredential: () => Promise<string> };
 export async function admitPartnerPilot(options: PartnerAdmission) {
+  options = Object.freeze({...options});
   // Approval and fresh ledger/evidence admission precede any secret access.
   if (options.approval !== PARTNER_APPROVAL) throw Error('Fresh explicit Owner partner budget approval required');
   if (!/^[a-f0-9]{40}$/.test(options.sourceHead) || !isAbsolute(options.evidencePath) || resolve(options.evidencePath) !== options.evidencePath || options.evidencePath === process.cwd() || options.evidencePath.startsWith(process.cwd() + '/')) throw Error('Explicit external evidence and source identity required');
   const provisional = {...PILOT, ledgerPath:options.ledgerPath, credential:'ledger-validation-before-credential-access'};
-  assertPilotLedger(provisional);
-  if (JSON.parse(readFileSync(options.ledgerPath,'utf8')).attempts !== 0 || JSON.stringify(readdirSync(dirname(options.ledgerPath)).sort()) !== '["identity.json","ledger.json"]') throw Error('Fresh separately initialized ledger required; continuation is disabled');
+  const fresh = () => { assertPilotLedger(provisional);
+  if (JSON.parse(readFileSync(options.ledgerPath,'utf8')).attempts !== 0 || JSON.stringify(readdirSync(dirname(options.ledgerPath)).sort()) !== '["identity.json","ledger.json"]') throw Error('Fresh separately initialized ledger required; continuation is disabled'); };
+  fresh();
+  // Outside the frozen ledger directory: never change legacy reservation metadata.
+  // Claim is permanent for this run; failures/crash residue never auto-release or reset it.
+  const claimPath = dirname(options.ledgerPath) + '.run-ownership.json';
+  const claim = JSON.stringify({pilotId:PILOT.pilotId,ledgerPath:options.ledgerPath,evidencePath:options.evidencePath,sourceHead:options.sourceHead,runId:randomUUID()});
+  const fd = openSync(claimPath,constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);
+  try { writeFileSync(fd,claim);fsyncSync(fd); } finally { closeSync(fd); }
+  const parent = openSync(dirname(claimPath),constants.O_RDONLY);try {fsyncSync(parent);}finally{closeSync(parent);}
   await options.claimEvidence(options.evidencePath,options.sourceHead,false);
+  const ownership = lstatSync(claimPath);
+  if (!ownership.isFile() || ownership.isSymbolicLink() || ownership.nlink!==1 || ownership.uid!==process.getuid?.() || (ownership.mode&0o077)!==0 || readFileSync(claimPath,'utf8')!==claim) throw Error('Run ownership changed before credential admission');
+  fresh();
   const pilot = {...provisional,credential:await options.readCredential()};
   validatePilot(pilot);
   assertPilotLedger(pilot);

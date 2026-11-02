@@ -78,7 +78,8 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
     phase='actual legal inspection';
     expect(await page.getByRole('button',{name:'Inspect legal sources',exact:true}).isDisabled()).toBe(true);
     await page.getByLabel('Jurisdiction',{exact:true}).selectOption('PR_US');await page.getByRole('button',{name:'Inspect legal sources',exact:true}).click();
-    await page.getByRole('region',{name:'Legal source status',exact:true}).waitFor();
+    // Three server sources each have an8-second bound; this wait covers that declared contract.
+    await page.getByRole('region',{name:'Legal source status',exact:true}).waitFor({timeout:30000});
     await page.getByRole('heading',{name:'Applicability unverified · Puerto Rico',exact:true}).waitFor();
     const legal=page.getByRole('region',{name:'Legal source status',exact:true});expect(await legal.locator('article').count()).toBe(3);
     await writeFile(resolve(evidence,`${engine}-actual-legal-text.txt`),await legal.innerText());

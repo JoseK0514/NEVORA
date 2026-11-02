@@ -20,6 +20,7 @@ const mode=process.env.NEVORA_OWNER_PARTNER_MODE;
 if(mode!=='scripted'&&mode!=='live')throw Error('Explicit scripted or live mode required');
 const scripted=mode==='scripted';
 const variants=[{id:'baseline',effort:'provider_default_unknown',critic:false},{id:'high',effort:'high',critic:false},{id:'bounded_critic',effort:'provider_default_unknown',critic:true}] as const;
+const scoringRubric={axes:['factual_grounding','useful_novelty','warranted_dissent','warranted_agreement','alternatives','reversal_correction','actionability','unnecessary_questions','false_guarantees'],scale:{0:'unsupported or harmful',1:'partial with material gaps',2:'supported and useful'},criticalFailures:['unsupported guarantee','invented execution/publication','legal clearance without qualified applicability'],assessment:'manual actual-model samples only; preflight/scripted not scored'};
 const hash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v)).digest('hex');
 // Compare business facts independently of fixture row creation timestamps; retain raw hashes too.
 const factHash=(v:unknown)=>createHash('sha256').update(JSON.stringify(v,(k,x)=>['created_at','updated_at'].includes(k)?undefined:x)).digest('hex');
@@ -42,7 +43,7 @@ beforeAll(async()=>{
   const model=validatePartnerCatalog(await response.json());await writeFile(join(evidence,'catalog-model.json'),JSON.stringify(model,null,2),{flag:'wx',mode:0o600});
  }
  vi.stubEnv('NEVORA_PAYROLL_ENABLED','false');
- await writeFile(join(evidence,'manifest.json'),JSON.stringify({sourceHead,case:scenario,caseHash:hash(scenario),fixtureFileHash:hash(await readFile('src/test/integration/owner-advisor-partner-fixture.ts','utf8')),variants,model:PILOT.model,maxCalls:40,maxMicrodollars:10000000,reservationMicrodollars:250000,maxOutputTokens:4096,providerDeadlineMs:20000,investigationDeadlineMs:60000,maxCallsPerInvestigation:6,maxTurns:2,criticCalls:1,independentConversations:true,sourceReplay:'none; legal model cases unsupported',ratesChecked:!scripted,approval:scripted?'not-required-scripted-only':'explicit-marker-and-fresh-ledger-admitted',strongerModel:{status:'unconfigured-not-run',model:null}},null,2),{flag:'wx',mode:0o600});
+ await writeFile(join(evidence,'manifest.json'),JSON.stringify({sourceHead,case:scenario,caseHash:hash(scenario),fixtureFileHash:createHash('sha256').update(await readFile('src/test/integration/owner-advisor-partner-fixture.ts')).digest('hex'),scoringRubric,rubricHash:hash(scoringRubric),variants,model:PILOT.model,maxCalls:40,maxMicrodollars:10000000,reservationMicrodollars:250000,maxOutputTokens:4096,providerDeadlineMs:20000,investigationDeadlineMs:60000,maxCallsPerInvestigation:6,maxTurns:2,criticCalls:1,independentConversations:true,sourceReplay:'none; legal model cases unsupported',ratesChecked:!scripted,approval:scripted?'not-required-scripted-only':'explicit-marker-and-fresh-ledger-admitted',strongerModel:{status:'unconfigured-not-run',model:null}},null,2),{flag:'wx',mode:0o600});
 });
 afterAll(async()=>{try{await persist();}finally{vi.unstubAllEnvs();}});
 

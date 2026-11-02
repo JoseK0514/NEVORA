@@ -37,7 +37,8 @@ test('startup denies absent approval, used/altered ledgers and reused evidence b
     initializePilot(p);
     await assert.rejects(admitPartnerPilot({...options,approval:undefined}));
     assert.equal(credentials,0); assert.equal(claims,0);
-    await assert.rejects(admitPartnerPilot({...options,claimEvidence:async()=>{throw Error('occupied evidence');}}));
+    const occupied={...p,ledgerPath:join(root,'occupied-budget','ledger.json')};initializePilot(occupied);
+    await assert.rejects(admitPartnerPilot({...options,ledgerPath:occupied.ledgerPath,claimEvidence:async()=>{throw Error('occupied evidence');}}));
     assert.equal(credentials,0);
     const admitted=await admitPartnerPilot(options); assert.equal(admitted.pilotId,'owner-advisor-partner-20261101'); assert.equal(credentials,1);
     const state=JSON.parse(readFileSync(p.ledgerPath,'utf8'));
@@ -71,4 +72,24 @@ test('frozen legacy adapters preserve reasoning-content differences and both rej
    assert.equal(calls,allowsContent?1:0);
   }finally{rmSync(root,{recursive:true,force:true});}
  }
+});
+
+test('only one run can own a fresh ledger even with different evidence paths; crash residue fails closed',async()=>{
+ const {admitPartnerPilot,PARTNER_APPROVAL}=await import('./owner-advisor-partner-pilot.mts');
+ const root=realpathSync(mkdtempSync(join(tmpdir(),'partner-owner-'))),p={...PILOT,credential:'fictional',ledgerPath:join(root,'budget','ledger.json')};
+ let credentials=0;
+ try{
+  initializePilot(p);
+  const options={approval:PARTNER_APPROVAL,ledgerPath:p.ledgerPath,sourceHead:'b'.repeat(40),claimEvidence:async()=>{},readCredential:async()=>{credentials++;return 'fictional';}};
+  const results=await Promise.allSettled([admitPartnerPilot({...options,evidencePath:join(root,'one')}),admitPartnerPilot({...options,evidencePath:join(root,'two')})]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+  assert.equal(credentials,1);
+  await assert.rejects(admitPartnerPilot({...options,evidencePath:join(root,'three')}));assert.equal(credentials,1);
+ }finally{rmSync(root,{recursive:true,force:true});}
+});
+test('ledger changes during evidence claim are rejected before credential access',async()=>{
+ const {admitPartnerPilot,PARTNER_APPROVAL,reservePilot}=await import('./owner-advisor-partner-pilot.mts');
+ const root=realpathSync(mkdtempSync(join(tmpdir(),'partner-claim-race-'))),p={...PILOT,credential:'fictional',ledgerPath:join(root,'budget','ledger.json')};let credentials=0;
+ try{initializePilot(p);await assert.rejects(admitPartnerPilot({approval:PARTNER_APPROVAL,ledgerPath:p.ledgerPath,evidencePath:join(root,'evidence'),sourceHead:'c'.repeat(40),claimEvidence:async()=>{reservePilot(p);},readCredential:async()=>{credentials++;return 'fictional';}}));assert.equal(credentials,0);}
+ finally{rmSync(root,{recursive:true,force:true});}
 });
