@@ -124,7 +124,7 @@ try:
         summary = json.loads(subprocess.check_output(['xcrun','xcresulttool','get','test-results','summary','--path',str(evidence/'tests.xcresult'),'--compact'],env=env,text=True,timeout=20))
         (evidence/'summary.json').write_text(json.dumps(summary,indent=2))
         assert summary['failedTests'] == 0 and summary['skippedTests'] == 0 and summary['passedTests'] > 0
-        if backend: assert summary['passedTests'] == 2
+        if backend: assert summary['passedTests'] == 3
         report['instrumentationTests'] = summary['passedTests']
         report['passed'] = True
     raise SystemExit(result.returncode)

@@ -232,4 +232,12 @@ final class NevoraBackendUITests: XCTestCase {
         app.terminate(); app.launch(); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
         XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Owner signed out after process restart")
     }
+    func testActivatedAccountCanSignIn() throws {
+        XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20))
+        link("Activate account").tap(); expect("Set up your account."); link("Already activated? Sign in").tap()
+        // Activation used the real owned email/password browser flow first.
+        login("QA-NATIVE-JOIN"); expect("Welcome back, Fictional")
+        link("More, ").tap(); expect("Fictional Activation"); retain("Activated Employee in native app")
+        app.webViews.buttons["Sign out"].tap(); XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20))
+    }
 }

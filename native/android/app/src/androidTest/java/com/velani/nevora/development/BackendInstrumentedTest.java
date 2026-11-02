@@ -116,4 +116,13 @@ public class BackendInstrumentedTest {
         fill("workspace-name","Fictional Android Company");tap(By.text("Save"));expectText("Company profile saved");command("verify-owner-android");retain("owner_saved");
         scenario.recreate();expectPath("/app");assertBrowserFocus();expectText("Welcome back, Fictional");logout();login("QAOWNER");expectText("Welcome back, Fictional");retain("owner_persistent");
     }
+    @Test public void aa_activatedAccountCanSignIn() {
+        expectText("Employee ID");tap(By.text("Activate account"));expectPath("/activate");
+        expectText("Set up your account.");tap(By.desc("Already activated? Sign in"));
+        // The owned browser journey already completed the real email proof and
+        // password form. Enter the resulting account through ordinary native UI.
+        login("QA-NATIVE-JOIN");expectText("Welcome back, Fictional");
+        tap(By.descStartsWith("More,"));expectPath("/app/more");expectText("Fictional Activation");
+        retain("activated_employee");tap(By.text("Sign out"));expectText("Employee ID");
+    }
 }

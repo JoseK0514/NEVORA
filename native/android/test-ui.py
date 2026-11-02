@@ -147,7 +147,7 @@ try:
         device('install', '-r', '-t', str(apk), timeout=60)
     selected_class = 'com.velani.nevora.development.BackendInstrumentedTest' if backend else args.only_testing or 'com.velani.nevora.development.ShellInstrumentedTest'
     settings = ['-e', 'backendOrigin', addresses['origin'], '-e', 'backendControlOrigin', addresses['controlOrigin']] if backend else ['-e', 'fixtureOrigin', addresses['origin'], '-e', 'unavailableOrigin', addresses['unavailableOrigin']]
-    selections = [selected_class + '#' + name for name in ['a_employeeActionRevocationOutageAndLogout', 'b_ownerActionAndPersistentSession']] if backend else [selected_class]
+    selections = [selected_class + '#' + name for name in ['a_employeeActionRevocationOutageAndLogout', 'aa_activatedAccountCanSignIn', 'b_ownerActionAndPersistentSession']] if backend else [selected_class]
     outputs = []
     for index, selection in enumerate(selections):
         # Isolate instrumentation/Chromium accessibility state, keeping browser
@@ -170,7 +170,7 @@ try:
                 raise RuntimeError('Unexpected diagnostic artifact')
             data = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'run-as', 'com.velani.nevora.development', 'cat', f'{diagnostic_root}/{name}'], env=env, capture_output=True, timeout=15, check=True)
             (evidence / name).write_bytes(data.stdout)
-    report['instrumentationTests'] = instrumentation_count(text, len(selections), 2 if backend else 1 if args.only_testing else 9)
+    report['instrumentationTests'] = instrumentation_count(text, len(selections), 3 if backend else 1 if args.only_testing else 9)
     if not args.only_testing:
         device('shell', 'am', 'force-stop', 'com.velani.nevora.development')
         device('shell', 'am', 'start', '-W', '-n', 'com.velani.nevora.development/.PortalActivity', '--es', 'nevora.debug.origin', addresses['origin'])
