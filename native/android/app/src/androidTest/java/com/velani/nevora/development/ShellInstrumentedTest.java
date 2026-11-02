@@ -6,7 +6,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.Until;
+import androidx.test.uiautomator.UiDeviceExt;
+import androidx.test.uiautomator.UiObject2;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -52,14 +53,14 @@ public class ShellInstrumentedTest {
         if (backend != null) intent.putExtra("nevora.debug.origin", backend);
         scenario = ActivityScenario.launch(intent);
     }
-    private void expectText(String value) {
-        boolean visible = device.wait(current -> {
-            // Classic By/Until queries do not use the new 2.4 window APIs'
-            // cache invalidation. Observe a fresh tree after WebView recreation.
-            if (android.os.Build.VERSION.SDK_INT >= 34) InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();
-            return current.hasObject(By.textContains(value));
-        }, 20000L);
-        if (!visible) {
+    private UiObject2 text(String value, boolean exact) {
+        return UiDeviceExt.onElementOrNull(device, 20000L, 100L, node -> {
+            CharSequence content = node.getText();
+            return node.isVisibleToUser() && content != null
+                && (exact ? content.toString().equals(value) : content.toString().contains(value));
+        });
+    }
+    private void retainFailure(String value) {
             String key = InstrumentationRegistry.getArguments().getString("nativeEvidenceKey");
             assertNotNull(key); assertTrue(key.matches("[a-f0-9]{32}"));
             File directory = new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir(), "nevora-native-tests-" + key);
@@ -68,17 +69,26 @@ public class ShellInstrumentedTest {
             device.takeScreenshot(new File(directory, name + ".png"));
             try { device.dumpWindowHierarchy(new File(directory, name + ".xml")); }
             catch (java.io.IOException error) { throw new AssertionError("Could not retain failure hierarchy", error); }
-        }
+    }
+    private void expectText(String value) {
+        boolean visible = text(value, false) != null;
+        if (!visible) retainFailure(value);
         assertTrue("Expected visible text: " + value, visible);
+    }
+    private void tapText(String value) {
+        UiObject2 target = text(value, true);
+        if (target == null) retainFailure(value);
+        assertNotNull("Exact visible pointer target: " + value, target);
+        target.click();
     }
     private void signIn(String id) {
         expectText("Fictional sign in");
         onWebView().withElement(findElement(Locator.NAME, "employeeId")).perform(webKeys(id));
         onWebView().withElement(findElement(Locator.NAME, "password")).perform(webKeys("fictional-test-password"));
-        device.findObject(By.text("Sign in")).click();
+        tapText("Sign in");
     }
     private void signOut() {
-        device.findObject(By.text("Sign out")).click();
+        tapText("Sign out");
         expectText("Fictional sign in");
     }
     private static WebView browser(View view) {
@@ -109,11 +119,11 @@ public class ShellInstrumentedTest {
     }
     @Test public void g_redirectedSubresourcesAreContainedByRendererPolicy() throws Exception {
         launch(origin); signIn("FICTIONAL"); expectText("Fictional Home");
-        device.findObject(By.text("Renderer control")).click(); expectText("Containment complete");
+        tapText("Renderer control"); expectText("Containment complete");
         org.json.JSONObject unprotected = rendererResult();
         assertTrue("Positive control must reach the foreign server through a redirect", unprotected.getInt("foreign") > 0);
-        device.findObject(By.text("Home")).click(); expectText("Fictional Home");
-        device.findObject(By.text("Renderer protected")).click(); expectText("Containment complete");
+        tapText("Home"); expectText("Fictional Home");
+        tapText("Renderer protected"); expectText("Containment complete");
         org.json.JSONObject protectedPage = rendererResult();
         assertTrue(protectedPage.getInt("redirects") >= 2); assertTrue(protectedPage.getInt("sameOrigin") > 0);
         assertEquals("Native renderer must block redirected foreign subresources", 0, protectedPage.getInt("foreign"));
@@ -129,7 +139,7 @@ public class ShellInstrumentedTest {
     }
     @Test public void c_employeeHistoryRecreationAndPostLogout() {
         launch(origin); signIn("FICTIONAL"); expectText("Fictional Home");
-        device.findObject(By.text("My Schedule")).click();
+        tapText("My Schedule");
         expectText("Fictional Schedule");
         scenario.onActivity(activity -> {
             WebView view = browser(activity.getWindow().getDecorView());
@@ -161,7 +171,7 @@ public class ShellInstrumentedTest {
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);
             expectText("Try again"); assertFalse(device.hasObject(By.text("Fictional Home")));
         } finally { control("/__test/outage-off"); }
-        device.findObject(By.text("Try again")).click(); expectText("Fictional Home"); signOut();
+        tapText("Try again"); expectText("Fictional Home"); signOut();
     }
     @Test public void g_unsupportedRoleExplainsWebAccess() {
         launch(origin); signIn("FICTIONAL-MANAGER"); expectText("Employee and Owner accounts");
