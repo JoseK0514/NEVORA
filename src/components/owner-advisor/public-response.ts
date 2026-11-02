@@ -1,3 +1,4 @@
+import { parseOperationalInsights } from "@/lib/owner-advisor/operational-insights";
 import { parseLegalResearch } from "@/lib/owner-advisor/legal-research";
 import { parseMemory } from "@/lib/owner-advisor/memory";
 import {
@@ -53,6 +54,7 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
   );
   stamp(value);
   profile(value.profile);
+  if (value.operationalInsights !== undefined) parseOperationalInsights(value.operationalInsights);
   if (value.memory !== undefined) {
     const m = value.memory;
     requireValue(record(m) && (m.state === "ready" || m.state === "unavailable"));

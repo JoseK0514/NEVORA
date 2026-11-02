@@ -1,3 +1,6 @@
+import { readOperationalInsights } from "./operational-insights.server";
+import { addDays } from "@/lib/date-utils";
+import { memoryDay } from "./memory";
 import "server-only";
 import type { SqlExecutor } from "@/lib/notifications/types";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
@@ -24,6 +27,7 @@ export async function advisorService(
   signal: AbortSignal,
   value?: unknown,
   testTransport?: Transport,
+  snapshotOptions: { view?: "lease" } = {},
 ) {
   const rawExecutor = ex;
   signal = AbortSignal.any([signal, AbortSignal.timeout(60000)]);
@@ -71,8 +75,11 @@ export async function advisorService(
     const savedMemory = await memory.read();
     const state = await store.read(),
       briefing = await tools.briefing(attention.today);
+    const endDate = attention.today.state === "ready" ? attention.today.today : memoryDay(new Date().toISOString(), admission.workspace.timeZone);
+    const operationalInsights = snapshotOptions.view === "lease" ? undefined : await readOperationalInsights(store, { startDate: addDays(endDate, -27), endDate }, signal);
     return {
       state: "ready",
+      ...(operationalInsights ? { operationalInsights } : {}),
       connection: config ? "available" : "unavailable",
       ...state,
       briefing,

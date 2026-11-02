@@ -1,3 +1,5 @@
+import { INSIGHT_LIMITATIONS, INSIGHT_SOURCE_LIMIT } from "./operational-insights";
+import { readOperationalInsights } from "./operational-insights.server";
 import "server-only";
 import { readLegalResearch } from "./legal-research.server";
 import { readToday } from "@/lib/data/today.server";
@@ -74,6 +76,10 @@ export class AdvisorTools {
   async run(call: ToolCall): Promise<ToolResult> {
     const { proof, original, ex } = this.store;
     await checkOwner(proof, original, ex);
+    if (call.name === "operational_insights") {
+      const data = await readOperationalInsights(this.store, call.args, this.signal);
+      return { data: { ...data, limitations: INSIGHT_LIMITATIONS, retainedRecordLimitPerSource: INSIGHT_SOURCE_LIMIT }, observedAt: data.observedAt, partial: data.partial, sources: [{ label: "Recorded operational history", href: `/app/timecards?start=${data.startDate}&end=${data.endDate}`, observedAt: data.observedAt }] };
+    }
     if (call.name === "legal_research") return readLegalResearch(this.store, call.args, this.signal);
     if (call.name === "company_briefing") return this.briefing();
     if (call.name === "coverage_plan") return readCoveragePlans(this.store, call.args.date, this.signal);

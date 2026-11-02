@@ -115,9 +115,9 @@ export function createAdvisorController(
       retire("Current access expired. Refresh to continue.");
       if (!paused) void refresh();
     }, remaining);
-    poll = setTimeout(() => void refresh(), remaining * 0.6);
+    poll = setTimeout(() => void refresh(-Infinity, true), remaining * 0.6);
   }
-  async function refresh(minObserved = -Infinity) {
+  async function refresh(minObserved = -Infinity, leaseOnly = false) {
     if (stopped || paused || read) return false;
     const epoch = generation,
       version = contentVersion,
@@ -127,7 +127,7 @@ export function createAdvisorController(
     const timeout = setTimeout(() => controller.abort(), 10000);
     publish({ loading: !v.snapshot });
     try {
-      const response = await request("/api/owner/advisor", {
+      const response = await request(leaseOnly ? "/api/owner/advisor?view=lease" : "/api/owner/advisor", {
         cache: "no-store",
         credentials: "same-origin",
         redirect: "error",
@@ -161,7 +161,10 @@ export function createAdvisorController(
       const refreshAutomatic = currentTask && automaticQuestion !== null && v.question === automaticQuestion;
       if (refreshAutomatic) automaticQuestion = currentTask.objective;
       publish({
-        snapshot: result,
+        // Lease responses omit history only. Preserve the earlier aggregate's
+        // own timestamp/version after the usual generation and authority fences.
+        snapshot: leaseOnly && result.operationalInsights === undefined && v.snapshot?.operationalInsights
+          ? { ...result, operationalInsights: v.snapshot.operationalInsights } : result,
         ...(v.snapshot && (v.snapshot.profile.revision !== result.profile.revision ||
           JSON.stringify(v.snapshot.notebook) !== JSON.stringify(result.notebook) ||
           JSON.stringify(v.snapshot.memory) !== JSON.stringify(result.memory)) ? { answer: null } : {}),

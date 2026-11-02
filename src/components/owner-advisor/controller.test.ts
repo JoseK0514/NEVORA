@@ -355,3 +355,34 @@ it("submits validated explicit scope/objective, refreshes answer and retires dec
   expect(state?.answer?.decision?.objective).toBe("Keep coverage");
   c.pause(); expect(state?.decisionObjective).toBe(""); expect(state?.decisionFocus).toEqual({ kind: "general" }); c.stop();
 });
+it("retires historical insights with the snapshot on pause and ignores late private history", async () => {
+  vi.useFakeTimers();
+  const { deriveOperationalInsights } = await import("@/lib/owner-advisor/operational-insights");
+  const operationalInsights = deriveOperationalInsights({ shifts: [], entries: [], cards: [], totals: { publishedShiftRecords: 0, effectiveEntryRecords: 0, timecardPeriodRecords: 0 } }, { startDate: "2026-10-05", endDate: "2026-11-01" }, "2026-11-01T12:00:00Z", "America/Puerto_Rico", "a".repeat(64));
+  let state: AdvisorView | undefined, finish: ((value: Response) => void) | undefined;
+  const methods: string[] = [];
+  const c = createAdvisorController(v => { state = v; }, async (_url, init) => { methods.push(init?.method ?? "GET"); if (methods.length === 2) return new Promise(resolve => { finish = resolve; }); return Response.json({ ...snap(), operationalInsights }); });
+  c.start(); await vi.advanceTimersByTimeAsync(0);
+  expect(state?.snapshot?.operationalInsights).toEqual(operationalInsights);
+  const refresh = c.refresh(); await vi.advanceTimersByTimeAsync(0);
+  c.pause(); expect(state?.snapshot).toBeNull();
+  finish?.(Response.json({ ...snap(), operationalInsights })); await refresh;
+  expect(state?.snapshot).toBeNull(); expect(methods).toEqual(["GET", "GET"]); c.stop();
+});
+it("renews authority without rescanning history, preserves its original observation and replaces it on full refresh", async () => {
+  vi.useFakeTimers();
+  const { deriveOperationalInsights } = await import("@/lib/owner-advisor/operational-insights");
+  const insights = deriveOperationalInsights({ shifts: [], entries: [], cards: [], totals: { publishedShiftRecords: 0, effectiveEntryRecords: 0, timecardPeriodRecords: 0 } }, { startDate: "2026-10-05", endDate: "2026-11-01" }, "2026-11-01T12:00:00Z", "America/Puerto_Rico", "a".repeat(64));
+  let state: AdvisorView | undefined; const urls: string[] = [];
+  const c = createAdvisorController(v => { state = v; }, async (url) => {
+    urls.push(String(url));
+    return Response.json({ ...snap(), ...(urls.length === 1 ? { operationalInsights: insights } : String(url).endsWith("?view=lease") ? {} : { operationalInsights: { ...insights, state: "unavailable", sourceVersion: null, denominators: null, omissions: null, partial: true } }) });
+  });
+  c.start(); await vi.advanceTimersByTimeAsync(0);
+  await vi.advanceTimersByTimeAsync(9000);
+  expect(urls).toEqual(["/api/owner/advisor", "/api/owner/advisor?view=lease"]);
+  expect(state?.snapshot?.operationalInsights).toEqual(insights);
+  await c.refresh();
+  expect(urls.at(-1)).toBe("/api/owner/advisor"); expect(state?.snapshot?.operationalInsights?.state).toBe("unavailable");
+  c.pause(); expect(state?.snapshot).toBeNull(); c.stop();
+});

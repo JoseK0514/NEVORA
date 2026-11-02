@@ -48,6 +48,7 @@ it("bounds inference projection without silently dropping an active constraint",
     expect(c.intents).toHaveLength(12);
     expect(JSON.stringify(c).length).toBeLessThanOrEqual(32768);
     expect(c.omittedDecisions).toBeGreaterThan(0);
+    expect(c.decisions.length + c.omittedDecisions).toBe(20);
 });
 it("uses the investigated date for scoped applicability while purging by current workspace day", () => {
     const m = applyMemoryCommand(emptyMemory(), command({ ...intent, effectiveDate: "2026-11-02", expiryDate: "2026-11-02", focus: { kind: "coverage", date: "2026-11-02" } }), now);
@@ -61,4 +62,31 @@ it("preserves the server coverage observation timestamp and exact progress witho
     const progress = { state: "current" as const, observedAt: "2026-11-01T12:00:00.123456+00:00", timeZone: "America/Puerto_Rico", assignmentsPresent: 1, assignmentsTotal: 1, publishedAssignments: 0, coverage: { requiredMinutes: 60, coveredMinutes: 60, requiredObligationMinutes: 0, fulfilledObligationMinutes: 0, remainingBlocks: 0 }, scopeComplete: true };
     const next = applyMemoryCommand(m, command({ kind: "check_outcome", decisionId: id, reviewId: id }, 1), now, progress);
     expect(next.decisions[0].outcome).toEqual({ kind: "coverage_checked", reviewId: id, progress });
+    expect(ownerMemoryContext(next, now, { kind: "coverage", date: "2026-11-02" }).decisions[0]).toMatchObject({ contextKind: "historical_example", scopeMatch: "comparable", outcome: { kind: "coverage_checked", reviewId: id, progress } });
+});
+it("uses comparable past choices across dates as historical examples, exact scope first, without widening intent", () => {
+    let m = applyMemoryCommand(emptyMemory(), command({ ...intent, focus: { kind: "coverage", date: "2026-11-01" } }), now);
+    const save = (decisionId: string, focus: unknown) => { m = applyMemoryCommand(m, command({ kind: "save_decision", decisionId, summary: "Coverage choice", course: "Keep draft", reason: "Known availability", focus, decisionDate: "2026-11-01", expiryDate: "2026-11-30" }, m.revision), now); };
+    save("50000000-0000-4000-8000-000000000001", { kind: "coverage", date: "2026-11-01" });
+    m = applyMemoryCommand(m, command({ kind: "report_outcome", decisionId: m.decisions[0].id, text: "Owner says it helped" }, m.revision), now);
+    save("50000000-0000-4000-8000-000000000002", { kind: "coverage", date: "2026-11-02" });
+    save("50000000-0000-4000-8000-000000000003", { kind: "period", startDate: "2026-11-01", endDate: "2026-11-02" });
+    save("50000000-0000-4000-8000-000000000004", { kind: "general" });
+    const c = ownerMemoryContext(m, now, { kind: "coverage", date: "2026-11-02" });
+    expect(c.intents).toEqual([]);
+    expect(c.decisions.map(d => d.id)).toEqual([m.decisions[1].id, m.decisions[0].id, m.decisions[3].id]);
+    expect(c.decisions[1]).toMatchObject({ contextKind: "historical_example", scopeMatch: "comparable", outcome: { kind: "owner_reported" } });
+    expect(JSON.stringify(c)).not.toContain("evidenceId");
+    expect(ownerMemoryContext(m, now).decisions).toHaveLength(4);
+    expect(ownerMemoryContext(m, now, { kind: "period", startDate: "2026-11-03", endDate: "2026-11-04" }).decisions).toHaveLength(2);
+    expect(ownerMemoryContext(m, "2026-12-01T12:00:00.000Z").decisions).toEqual([]);
+    m = applyMemoryCommand(m, command({ kind: "delete_decision", decisionId: m.decisions[0].id }, m.revision), now);
+    expect(ownerMemoryContext(m, now).decisions).toHaveLength(3);
+});
+it("projects the exact intersection of an intent window and requested period, while retaining exact focus matching", () => {
+    const m = applyMemoryCommand(emptyMemory(), command({ ...intent, expiryDate: "2026-11-07" }), now);
+    expect(ownerMemoryContext(m, now, { kind: "period", startDate: "2026-11-01", endDate: "2026-11-14" }).intents[0]).toMatchObject({ applicableStartDate: "2026-11-01", applicableEndDate: "2026-11-07" });
+    expect(ownerMemoryContext(m, now, { kind: "period", startDate: "2026-11-08", endDate: "2026-11-14" }).intents).toEqual([]);
+    const scoped = applyMemoryCommand(emptyMemory(), command({ ...intent, focus: { kind: "period", startDate: "2026-11-01", endDate: "2026-11-07" } }), now);
+    expect(ownerMemoryContext(scoped, now, { kind: "period", startDate: "2026-11-01", endDate: "2026-11-14" }).intents).toEqual([]);
 });

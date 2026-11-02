@@ -10,6 +10,7 @@ import {
 } from "./controller";
 import "./advisor.css";
 import { bindAdvisorLifecycle } from "./lifecycle";
+import { OperationalInsightsPanel } from "./operational-insights-panel";
 import { AttentionSection } from "./attention";
 import { WorkflowControls, WorkflowResults } from "./workflows";
 import { SelectField } from "@/components/select-field";
@@ -101,6 +102,7 @@ export function AdvisorScreen({
           </section>
         ) : (
           <>
+            {current.operationalInsights && <OperationalInsightsPanel insights={current.operationalInsights} disabled={disabled} refresh={actions.refresh} />}
             {current.attention && <AttentionSection briefing={current.attention} disabled={disabled} saving={view.busy === "review"} review={(id, disposition) => actions.reviewItem?.(id, disposition)} refresh={actions.refresh} />}
             <section className="oa-section" aria-labelledby="oa-briefing">
               <div className="oa-heading">

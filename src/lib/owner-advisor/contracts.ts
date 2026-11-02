@@ -1,3 +1,4 @@
+import { parseInsightRange } from "./operational-insights";
 import { parseLegalArgs } from "./legal-research";
 import { parsePeriod } from "@/lib/timecards/project";
 import { parseTaskFocus, type TaskFocus, NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
@@ -16,6 +17,7 @@ export type AdvisorSnapshot = {
   profile: AdvisorProfile;
   history: AdvisorMessage[];
   briefing: BriefingResult;
+  operationalInsights?: import("./operational-insights").OperationalInsights;
   attention?: import("./briefing-contracts").AttentionBriefing;
   memory?: import("./memory").MemoryRead;
   notebook?: import("./notebook").NotebookRead;
@@ -124,6 +126,7 @@ export function parseCommand(v: unknown): AdvisorCommand {
   throw new AdvisorError("invalid");
 }
 export type ToolCall =
+  | { name: "operational_insights"; args: import("./operational-insights").InsightRange }
   | { name: "legal_research"; args: import("./legal-research").LegalArgs }
   | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
   | { name: "coverage_proposals"; args: { date: string } }
@@ -149,6 +152,7 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
     throw new AdvisorError("invalid");
   }
   if (!record(v)) throw new AdvisorError("invalid");
+  if (name === "operational_insights") { try { return { name, args: parseInsightRange(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "legal_research") { try { return { name, args: parseLegalArgs(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "attendance_payroll_review" && Object.keys(v).sort().join(",") === "endDate,language,startDate" && typeof v.startDate === "string" && typeof v.endDate === "string" && /^20/.test(v.startDate) && /^20/.test(v.endDate) && (v.language === "en" || v.language === "es")) {
     try { return { name, args: { ...parsePeriod(v.startDate, v.endDate), language: v.language } }; }

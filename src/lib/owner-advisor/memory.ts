@@ -264,9 +264,14 @@ export function ownerMemoryContext(memory: OwnerMemory, now: string, scope: Task
     const active = purgeMemory(memory, now, timeZone), today = memoryDay(now, timeZone);
     const start = scope.kind === "coverage" ? scope.date : scope.kind === "period" ? scope.startDate : today;
     const end = scope.kind === "period" ? scope.endDate : start;
-    const intents = active.intents.filter(i => i.effectiveDate <= start && i.expiryDate >= end && relevant(i.focus, scope));
-    const candidates = active.decisions.filter(d => d.decisionDate <= today && relevant(d.focus, scope)).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id));
-    const context = { revision: memory.revision, intents, decisions: [] as MemoryDecision[], omittedDecisions: candidates.length };
+    const intents = active.intents.filter(i => i.effectiveDate <= end && i.expiryDate >= start && relevant(i.focus, scope)).map(i => ({
+        ...i, applicableStartDate: i.effectiveDate > start ? i.effectiveDate : start, applicableEndDate: i.expiryDate < end ? i.expiryDate : end,
+    }));
+    const exact = (saved: TaskFocus) => saved.kind === scope.kind && relevant(saved, scope);
+    const candidates = active.decisions.filter(d => d.decisionDate <= today && (scope.kind === "general" || d.focus.kind === "general" || d.focus.kind === scope.kind))
+        .sort((a, b) => Number(exact(b.focus)) - Number(exact(a.focus)) || b.updatedAt.localeCompare(a.updatedAt) || a.id.localeCompare(b.id))
+        .map(d => ({ ...d, contextKind: "historical_example" as const, scopeMatch: exact(d.focus) ? "exact" as const : "comparable" as const }));
+    const context = { revision: memory.revision, intents, decisions: [] as typeof candidates, omittedDecisions: candidates.length };
     // Preserve every applicable explicit constraint. Only historical decisions are
     // omitted, visibly, to leave the existing provider body budget unchanged.
     for (const d of candidates) {
