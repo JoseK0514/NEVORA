@@ -62,6 +62,9 @@ public class ShellInstrumentedTest {
     }
     private void retainFailure(String value) {
             java.util.concurrent.CountDownLatch observed = new java.util.concurrent.CountDownLatch(1);
+            android.accessibilityservice.AccessibilityServiceInfo service = InstrumentationRegistry.getInstrumentation().getUiAutomation().getServiceInfo();
+            android.util.Log.i("NEVORA_QA_AX", "serviceTool=" + (android.os.Build.VERSION.SDK_INT >= 31 && service != null && service.isAccessibilityTool())
+                + " serviceFlags=" + (service == null ? -1 : service.flags) + " feedback=" + (service == null ? -1 : service.feedbackType));
             scenario.onActivity(activity -> {
                 WebView view = browser(activity.getWindow().getDecorView());
                 if (view == null) { observed.countDown(); return; }
@@ -70,7 +73,8 @@ public class ShellInstrumentedTest {
                     + " shown=" + view.isShown() + " important=" + view.getImportantForAccessibility()
                     + " accessibility=" + manager.isEnabled() + " touchExploration=" + manager.isTouchExplorationEnabled()
                     + " contentHeight=" + view.getContentHeight() + " width=" + view.getWidth() + " height=" + view.getHeight()
-                    + " importantComputed=" + view.isImportantForAccessibility());
+                    + " importantComputed=" + view.isImportantForAccessibility()
+                    + " sensitive=" + (android.os.Build.VERSION.SDK_INT >= 34 && view.isAccessibilityDataSensitive()));
                 view.evaluateJavascript("JSON.stringify({focus:document.hasFocus(),visible:document.visibilityState==='visible',ready:document.readyState,mime:document.contentType,titleLength:document.title.length})", result -> {
                     android.util.Log.i("NEVORA_QA_AX", "document=" + result); observed.countDown();
                 });

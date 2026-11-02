@@ -156,6 +156,7 @@ def observe_webview_context(mode):
 fixture = None
 ports = []
 report = {'evidence': str(evidence), 'serial': args.serial, 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'ownerId': args.backend_owner}
+report['qualification'] = 'diagnostic-runtime-override' if args.accessibility_mode != 'platform-default' else 'full-backend' if backend else 'transport'
 try:
     if backend:
         assert not evidence.is_relative_to(root.parent.parent), 'Evidence cannot be inside source'

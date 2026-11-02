@@ -46,9 +46,10 @@ On the owned API36 image's WebView133, the raw static transport pages intermitte
 lost accessibility descendants while their native window/document stayed focused,
 visible and loaded. The same binary's nine fixture cases and process-restart check
 passed with Chromium's renderer accessibility enabled; the default-mode control
-failed again. These mode-qualified transport results establish navigation/CSP
-behavior in that environment. Default physical-device accessibility remains a
-release gate. The real Next/PostgreSQL acceptance uses default settings.
+failed again. A repeat with the explicit mode also failed one accessibility check,
+so that mode is diagnostic and does not close the transport qualification gate.
+The accessibility cause remains unresolved. Default physical-device accessibility
+remains a release gate. The real Next/PostgreSQL acceptance uses default settings.
 
 Chromium documents [on-demand accessibility and renderer modes](https://chromium.googlesource.com/chromium/src/+/HEAD/ui/accessibility/accessibility_switches.cc)
 and [debug-emulator command-line flags](https://chromium.googlesource.com/chromium/src/+/0f46ff87434118e9bcb51e7cb1393f100c8d3fd9/android_webview/docs/commandline-flags.md).
