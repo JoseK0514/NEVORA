@@ -100,7 +100,7 @@ public class BackendInstrumentedTest {
     @Test public void a_employeeActionRevocationOutageAndLogout() throws Exception {
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
         tap(By.desc("Schedule"));expectPath("/app/schedule");
-        tap(By.descStartsWith("More,"));expectPath("/app/more");tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
+        tap(By.descStartsWith("More,"));expectPath("/app/more");expectText("Your work");tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
         tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));tap(By.text("Done"));
         tap(By.text("Save"));expectText("Usual hours saved");command("verify-employee");retain("employee_saved");
         scenario.moveToState(Lifecycle.State.CREATED);command("revoke");scenario.moveToState(Lifecycle.State.RESUMED);expectText("Employee ID");
@@ -110,10 +110,10 @@ public class BackendInstrumentedTest {
         logout();scenario.recreate();expectText("Employee ID");retain("employee_signed_out");
     }
     @Test public void b_ownerActionAndPersistentSession() throws Exception {
-        login("QAOWNER");expectText("Fictional");tap(By.desc("Schedule"));expectPath("/app/schedule");
+        login("QAOWNER");expectText("Welcome back, Fictional");tap(By.desc("Schedule"));expectPath("/app/schedule");
         tap(By.descStartsWith("More,"));expectPath("/app/more");tap(By.descStartsWith("Settings"));expectPath("/app/settings");
         tap(By.descStartsWith("Company profile"));expectPath("/app/settings/workspace");expectText("Business name");
         fill("workspace-name","Fictional Android Company");tap(By.text("Save"));expectText("Company profile saved");command("verify-owner-android");retain("owner_saved");
-        scenario.recreate();expectPath("/app");assertBrowserFocus();expectText("Fictional");logout();login("QAOWNER");expectText("Fictional");retain("owner_persistent");
+        scenario.recreate();expectPath("/app");assertBrowserFocus();expectText("Welcome back, Fictional");logout();login("QAOWNER");expectText("Welcome back, Fictional");retain("owner_persistent");
     }
 }

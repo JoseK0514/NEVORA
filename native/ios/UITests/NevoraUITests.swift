@@ -209,7 +209,7 @@ final class NevoraBackendUITests: XCTestCase {
     }
     func testEmployeeActionRevocationOutageAndLogout() throws {
         login("QA-NATIVE-A"); expect("Welcome back, QA NATIVE")
-        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); link("Availability").tap(); expect("Your usual week")
+        app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); expect("Your work"); link("Availability").tap(); expect("Your usual week")
         app.webViews.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Monday,")).firstMatch.tap()
         let available = app.webViews.switches["Available on Monday"]
         XCTAssertTrue(available.waitForExistence(timeout: 20)); available.tap(); app.webViews.buttons["Done"].tap()
@@ -223,13 +223,13 @@ final class NevoraBackendUITests: XCTestCase {
         logout(); app.terminate(); app.launch(); XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Employee signed out after restart")
     }
     func testOwnerActionAndPersistentSession() throws {
-        login("QAOWNER"); expect("Fictional")
+        login("QAOWNER"); expect("Welcome back, Fictional")
         app.webViews.links["Schedule"].firstMatch.tap(); link("More, ").tap(); link("Settings").tap(); link("Company profile").tap()
         let name = app.webViews.textFields["Business name"]
         XCTAssertTrue(name.waitForExistence(timeout: 20)); XCTAssertEqual(name.value as? String, "QA")
         name.tap(); name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2) + "Fictional iOS Company")
         app.webViews.buttons["Save"].tap(); expect("Company profile saved"); try command("verify-owner-ios"); retain("Owner company profile saved")
-        app.terminate(); app.launch(); expect("Fictional"); logout(); app.terminate(); app.launch()
+        app.terminate(); app.launch(); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
         XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Owner signed out after process restart")
     }
 }
