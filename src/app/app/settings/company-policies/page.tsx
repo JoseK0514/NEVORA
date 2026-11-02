@@ -17,6 +17,7 @@ export default async function CompanyPoliciesPage() {
   if(data)return <CompanyPolicyEditor history={data[0]} timeZone={data[1].timeZone} locations={data[2]}/>;
   return (
     <SettingsFrame title="Company policies" back={{ href: "/app/settings", label: "Settings" }}>
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- a retry after a failed server read reloads the whole document so every read runs again, with or without JavaScript */}
       <section className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">Policies unavailable</h2><p className="q-empty">Current policies could not be read. Editing is paused; try again to verify your current Owner access and policy history.</p><div className="q-emptyblock__action"><a className="q-btn q-btn--sec" href="/app/settings/company-policies">Retry read</a></div></section>
     </SettingsFrame>
   );

@@ -352,7 +352,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-account-avata
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page[data-q-sheet]:not(.q-sheet) > :not(.q-nav) { max-width: 752px; }
   /* Quiet pages can opt into the 720px column too (the class page builders add to single-column pages). */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow > :not(.q-nav) { max-width: 752px; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, 100%); max-width: 100%; box-sizing: border-box; justify-content: flex-end; }
+  /* The bar sits 24px in from the page edge (the back-link rule above), so it is 48px narrower than the page: on the
+   * tablet shell the page can be under 768px wide, and a full-width bar pushed 24px past the screen edge. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, calc(100% - 48px)); max-width: calc(100% - 48px); box-sizing: border-box; justify-content: flex-end; }
 }
 
 /* P8: headers that stay and tell you where you are. Quiet pushed bars stick like the kit's; the hairline under a header
@@ -534,6 +536,8 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
 /* M1: the collapsed sidebar is a 72px rail. Only the expand control at the top (the wordmark hides, never cropped and never
  * replaced by a made-up mark), the workspace as its 32px initials avatar, 40×40 entries on one centre line with 20px icons
  * and a 40×40 radius-8 current tint, a 16px count at an entry's top-right, and a hairline between groups.
+ * The expand control has no fill, so it takes a full 44×44 touch target in the same place (negative margins keep the
+ * rail's spacing): the tablet rail is a touch screen.
  * M2: desktop (1280px and up) shows the rail when chosen (data-sidebar-desktop); tablets (768–1279px) open with it unless
  * the person chose the full list there (data-sidebar-tablet). The two blocks below are the same rules; keep them in step. */
 @media (min-width: 1280px) {
@@ -543,8 +547,8 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-heading { display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: center !important; gap: 0 !important;
     width: 40px !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar :is(.sidebar-brand, .company-logo-chip, .sidebar-platform-footer, .sidebar-profile, .sidebar-signout-form) { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 40px !important; height: 40px !important;
-    min-width: 40px !important; min-height: 40px !important; margin: 6px 0 0 !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;
+    min-width: 44px !important; min-height: 44px !important; margin: 4px -2px -2px !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
     background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; transform: none !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .cm-org { order: 0 !important; flex: none !important; align-self: center !important; position: static !important; display: grid !important; place-items: center !important; gap: 0 !important;
     width: 40px !important; height: 40px !important; min-height: 40px !important; margin: 18px 0 0 !important; padding: 0 !important; overflow: visible !important; transform: none !important; }
@@ -574,8 +578,8 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-heading { display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: center !important; gap: 0 !important;
     width: 40px !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar :is(.sidebar-brand, .company-logo-chip, .sidebar-platform-footer, .sidebar-profile, .sidebar-signout-form) { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 40px !important; height: 40px !important;
-    min-width: 40px !important; min-height: 40px !important; margin: 6px 0 0 !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;
+    min-width: 44px !important; min-height: 44px !important; margin: 4px -2px -2px !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
     background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; transform: none !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .cm-org { order: 0 !important; flex: none !important; align-self: center !important; position: static !important; display: grid !important; place-items: center !important; gap: 0 !important;
     width: 40px !important; height: 40px !important; min-height: 40px !important; margin: 18px 0 0 !important; padding: 0 !important; overflow: visible !important; transform: none !important; }
