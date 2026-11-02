@@ -33,6 +33,14 @@ refuses any WebView command-line override. A transport fixture may explicitly
 select `--accessibility-mode renderer-complete`; this reads an already installed,
 nonce-owned QA flag and never creates or overwrites one. Unknown or changing
 flags fail closed. Keep the flag's ownership/removal receipt beside that result.
+The exact transport-only file content is
+`nevora_qa_<32 lowercase hex ownership characters> --force-renderer-accessibility=complete`
+followed by one newline. Before writing it, prove the selected emulator's AVD name
+matches the invocation-owned receipt and require the file to be absent. In `finally`,
+compare its bytes to that invocation's content before removing it; preserve and
+report an ownership mismatch. Never overwrite an existing flag file. Then invoke
+`native/android/test-ui.py --serial SERIAL --accessibility-mode renderer-complete`.
+The receipt records the source SHA, emulator/AVD, nonce, result path and removal.
 
 On the owned API36 image's WebView133, the raw static transport pages intermittently
 lost accessibility descendants while their native window/document stayed focused,
