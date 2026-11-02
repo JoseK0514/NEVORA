@@ -46,7 +46,7 @@ Not run here: WebKit, Firefox, `test:mobile-access:owned` (needs all three engin
 
 Apply `0042_company_invitation_lifetime.sql` (after 0032) before deploying this code. Without it, every invitation fails the old 15-minute check. Older code keeps working on a database that has 0042. See `DEPLOY-RUNBOOK.md` step 4. Production, migrations on any shared database and deployment remain subject to Jose's separate authorization.
 
-Before announcing the sole-Owner path, Support ops still needs a monitored mailbox, an identity-verification runbook and the reply-time target staffed.
+Before announcing the sole-Owner path, Support ops still needs an identity-verification runbook and the reply-time target staffed. The mailbox is support@thevelani.com (confirmed by Jose on November 2, 2026); it's already `SUPPORT_EMAIL` in `src/lib/legal/policies.ts`, so no code change was needed.
 
 ## Follow-up: mobile Access form card (closer to Gusto)
 
