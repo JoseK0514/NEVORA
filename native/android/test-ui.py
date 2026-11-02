@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import selectors
 import subprocess
+import sys
 import tempfile
 import time
 from urllib.parse import urlsplit
@@ -87,6 +88,15 @@ def source_hash():
             digest.update(str(path.relative_to(root.parent.parent)).encode() + b'\0' + path.read_bytes())
     return digest.hexdigest()
 
+def finish_cleanup(actions):
+    failures = []
+    for name, action in actions:
+        try:
+            action()
+        except Exception as error:
+            failures.append(name + ': ' + type(error).__name__)
+    return failures
+
 fixture = None
 ports = []
 report = {'evidence': str(evidence), 'serial': args.serial, 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'ownerId': args.backend_owner}
@@ -95,8 +105,8 @@ try:
         assert not evidence.is_relative_to(root.parent.parent), 'Evidence cannot be inside source'
         assert run(['git', '-C', str(root.parent.parent), 'rev-parse', 'HEAD']).stdout.strip() == args.expected_sha
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
-    assert device('get-state').stdout.strip() == 'device', 'Selected emulator unavailable'
-    assert device('shell', 'getprop', 'ro.kernel.qemu').stdout.strip() == '1', 'Not an emulator'
+    assert device('get-state', timeout=5).stdout.strip() == 'device', 'Selected emulator unavailable'
+    assert device('shell', 'getprop', 'ro.kernel.qemu', timeout=5).stdout.strip() == '1', 'Not an emulator'
     before = source_hash()
     report['sourceHash'] = before
     if backend:
@@ -170,15 +180,20 @@ try:
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
     report['passed'] = True
 finally:
-    device('shell', 'am', 'force-stop', 'com.velani.nevora.development', check=False)
-    for port in ports:
-        device('reverse', '--remove', f'tcp:{port}', check=False)
-    if fixture:
-        fixture.terminate()
-        try:
-            fixture.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            fixture.kill(); fixture.wait()
-        fixture.stdout.close()
+    original_error = sys.exc_info()[1]
+    if original_error: report['error'] = type(original_error).__name__
+    def stop_fixture():
+        if fixture:
+            fixture.terminate()
+            try:
+                fixture.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                fixture.kill(); fixture.wait(timeout=5)
+            fixture.stdout.close()
+    errors = finish_cleanup([('force-stop', lambda: device('shell', 'am', 'force-stop', 'com.velani.nevora.development', timeout=5)),
+        *[('reverse-' + str(port), lambda port=port: device('reverse', '--remove', f'tcp:{port}', timeout=5)) for port in ports],
+        ('fixture', stop_fixture)])
+    if errors: report['passed'] = False; report['cleanupErrors'] = errors
     (evidence / 'result.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
+    if errors and not original_error: raise RuntimeError('Native cleanup failed; see result.json')

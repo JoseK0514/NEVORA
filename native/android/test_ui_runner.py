@@ -11,6 +11,18 @@ import unittest
 from unittest.mock import patch
 
 class RunnerOwnershipTests(unittest.TestCase):
+    def test_a_device_timeout_does_not_skip_other_cleanup_or_failure_evidence(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'finish_cleanup')
+        namespace = {}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_cleanup', 'exec'), namespace)
+        attempted = []
+        def timeout():
+            attempted.append('device')
+            raise TimeoutError('fictional unavailable emulator')
+        failures = namespace['finish_cleanup']([('force-stop', timeout), ('fixture', lambda: attempted.append('fixture'))])
+        self.assertEqual(attempted, ['device','fixture'])
+        self.assertEqual(failures, ['force-stop: TimeoutError'])
     def invoke(self, serial):
         with patch('sys.argv', ['test-ui.py', '--serial', serial]), \
              patch('subprocess.Popen', side_effect=AssertionError('Spawned a tool before ownership')):
