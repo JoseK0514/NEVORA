@@ -105,5 +105,7 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
 }
 @keyframes tof-sheet-in { from { transform: translateY(100%); } }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .c-page.tof-frame--sheet { animation: tof-sheet-in-fade 160ms ease-out; } }
-@keyframes tof-sheet-in-fade { from { opacity: 0; } }
+/* Reduced motion: the sheet is in place at once and only its dim fades in. Fading the sheet itself left its text and Send
+ * translucent for 160ms, so their contrast can't be read while it runs. */
+@keyframes tof-sheet-in-fade { from { box-shadow: 0 -8px 24px rgb(0 0 0 / 0), 0 0 0 100vmax rgb(26 28 30 / 0); } }
 :is(#c-root, html) .c-page .tof-foot { display: flex; flex-direction: column; }
