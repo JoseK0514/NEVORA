@@ -1,0 +1,10 @@
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 5.507
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord

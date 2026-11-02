@@ -44,6 +44,16 @@ class FixtureIsolationTests(unittest.TestCase):
         with self.client.open(request, timeout=5) as response:
             self.assertIn('Native iOS v1', response.read().decode())
 
+    def test_private_snapshot_marker_is_owner_only(self):
+        with self.client.open(self.origin + '/login', timeout=5) as response:
+            self.assertNotIn('Fictional private snapshot marker', response.read().decode())
+        with self.login('FICTIONAL') as response:
+            self.assertNotIn('Fictional private snapshot marker', response.read().decode())
+        with self.login('FICTIONAL-OWNER') as response:
+            body = response.read().decode()
+            self.assertIn('aria-label="Fictional private snapshot marker"', body)
+            self.assertIn('background:#e000a7', body)
+
     def test_signout_requires_post_and_get_does_not_revoke(self):
         self.login('FICTIONAL').close()
         with self.assertRaises(urllib.error.HTTPError) as denied:

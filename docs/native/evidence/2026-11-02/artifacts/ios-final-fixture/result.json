@@ -1,0 +1,11 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-bsi1fbmb",
+  "passed": true,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "simulator": "6E2DA181-CD13-4815-A2B1-8AF1CBC15AC2",
+  "ownerId": null,
+  "sourceHash": "63322e19f225fbbea8b0740af1b0ce063ff4ca5300437f6e1f5b4840ba044b45",
+  "origin": "http://127.0.0.1:63581",
+  "instrumentationTests": 7
+}

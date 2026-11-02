@@ -1,23 +1,38 @@
 # Native Employee and Owner execution checkpoint
 
-Status: **design approved**. Jose explicitly answered "Approve design and proceed" to the reviewed Employee/Owner iOS/Android shared-interface design. Implementation is authorized within that design; external account/device/distribution gates remain. No repeated approval is needed for the same bounded implementation steps.
+Updated November2, 2026. **Implementation in progress; native release blocked.**
+Jose approved the [shared-interface design](../superpowers/specs/2026-11-01-native-employee-owner-design.md) with "Approve design and proceed." The scope remains Employee and Owner on iOS and Android. Account/device/provider/hosted/distribution gates are separate.
 
-Task1 implemented: versioned state-only session endpoint, exact native presentation markers and Employee/Owner qualification. Focused 60 tests, TypeScript and changed-source ESLint passed; see evidence/2026-11-01/session-contract.md. No deployment. Next: reconcile/verify iOS foundation, then Android and actual-backend verification; stages B/C remain required.
+## Current implementation
 
-Task2 implemented and locally verified: 13 Swift tests, four fixture tests, two runner ownership tests, deterministic generation, Debug/unsigned Release builds and six final iOS simulator UI tests passed. See evidence/2026-11-01/ios-foundation.md. Original source preserved. Next: Android counterpart, actual-backend integration; broader default suite still in progress (one unchanged tenancy timeout observed so far).
+[PlanA](../superpowers/plans/2026-11-01-native-foundation-plan.md) Tasks1-3 are implemented: state-only session compatibility, native role presentation, direct WKWebView/Android WebView containers, constrained origins/navigation, browser-owned cookies, lifecycle invalidation and fail-closed release configuration. Earlier baseline evidence is under [November1](evidence/2026-11-01/).
 
-Task3 implemented and locally verified: six JVM tests, three runner tests, six shared fixture tests, eight final Android instrumentation tests plus real Owner process restart, Debug/unsigned Release/lint passed. See evidence/2026-11-01/android-foundation.md. Next: Task4 actual-backend and redirected-resource containment; full default suite retry, whole-foundation review; capabilities/release stages remain required. Wider run:10642passed/4timeouts/801skipped; both affected files then passed115/115 serially, no threshold changes. iOS test simulator was deleted after evidence retention to free only our own disposable data; new Android emulator remains available for Task4, owned metadata in the local ledger directory.
+Task4 remains in progress. Disposable full Next/PostgreSQL runners and actual Employee/Owner journeys exist. Earlier iOS/Android runs each passed 17 backend checks plus 3 native journeys; Android also verified a real process restart. These are historical results, not certification of current uncommitted bytes.
 
-User intent: carry out iOS/Android native-readiness implementation. First release: Employee and Owner. Jose delegated the architecture recommendation; Codex recommends shared current UI in direct platform containers, continuing the October25 WKWebView foundation and adding Android. No separate UI rewrite.
+The single fresh [whole-foundation review](evidence/2026-11-02/whole-foundation-review.md) reported 4 Important findings. Modal Back, cancellation ownership and exact accessible-name targeting have committed corrections. Older-Android secure-window and newly reproduced Recents focus-loss corrections are uncommitted. [Correction evidence](evidence/2026-11-02/foundation-corrections.md) retains RED/GREEN/reversal proofs, failures, withdrawn screenshot interpretations and unresolved limits. No independent audit closure is claimed.
 
-Source: detached origin/development1e6f35ab9731234fc765aa18ee817cb196459e2e. Original staged/unstaged/untracked nativefoundation and older POC remain untouched. Foundation custody hashes: evidence/2026-11-01/preserved-foundation-source-hashes.json.
+## Latest verification
 
-Design: ../superpowers/specs/2026-11-01-native-employee-owner-design.md. Fresh builder check: evidence/2026-11-01/builder-check.md; no important open planning questions.
+- Default Android 16/WebView 133: all 9 fixture cases and actual Owner process restart passed. Default Android 12L/WebView 120:7/9 passed; missing accessibility nodes remain intermittent. A registered-consumer comparison also failed at the same missing Sign out target. No mode/provider workaround is retained.
+- Actual older-Android Recents/session revocation passed its focused regression; reversing only the focus fix restored the old private Owner page. The test proves the actual application task, rendered private marker and capture controls.
+- Final Android JVM 6/6, Debug/unsigned Release and lint passed: 92 tasks, 0 lint errors, 7 recorded warnings. Release manifest/DEX checks passed; no HOME query, debug origin or diagnostic service is present. The APK remains unsigned.
+- Python runner/HTTP fixture 17/17 and Node ownership/build guards 13/13 passed.
+- Current full repository Vitest passed 10,653 tests in 700 files (403.51s, maxWorkers1), with 801 existing skips in 27 files and no failures. Database/provider credentials were stripped.
 
-Toolchain discovery: Xcode27.0/build27A266a; iOS26.5/27.0 simulators. Android SDK at /Users/josek0514/Library/Android/sdk; adb37.0.1; AVD Nevora_Pixel_7_API_36. Signing/provider/account/device states not certified. No native build/test was run in this discovery.
+Current iOS full fixture passed all 7 cases (bsi1fbmb), with an independently checked identifier tree. Current typecheck and full ESLint passed. Final production build and fresh full-backend qualification remain pending a clean committed candidate. The production helper rejected the uncommitted candidate before creating resources; its failed attempt is retained. Earlier Swift and unsigned iOS Release results apply to unchanged native app sources; they were not rerun here. A focused iOS fixture pass is not proof of its entire 7-case matrix; the review's Minor reporting limitation is deferred and remains explicit.
 
-Development source check exited1: unclassified AI-owner, claude/employee-mobile-phase2-20261027, codex/release1-db-rehearsal-20261101; active6>ceiling3. Preserve these sources and do not raise ceiling/delete heads. Local work remains isolated; this integration gate is open.
+## Source and release boundaries
 
-PlanA: ../superpowers/plans/2026-11-01-native-foundation-plan.md, shared foundation for both platforms. StageB capabilities and StageC external readiness remain required parts of the same approved task and receive executable dependent plans after upstream contracts are verified. Do not report the whole native request complete after PlanA.
+Worktree is detached at f4687c2ef0cb48d456a80689bb4dee91d09149a2, based on development 1e6f35ab9731234fc765aa18ee817cb196459e2e. Current corrections/evidence are uncommitted. No merge, push, native deployment, signing or upload occurred.
 
-Next: implement PlanA inline through superpowers:executing-plans with TDD and a fresh final reviewer. Ruling: Jose's explicit "approve design and proceed" supplies execution authority; the plan elaborates the approved design and does not create a duplicate scope-approval gate. Implementation method is a routine executor choice. External signing/provider/physical-device/internal upload gates are separate and should be made concrete before requesting missing account inputs.
+Original iOS checkout remains at 46e202786863279302026ee03a0e225c359fa55c; [all 24 custody hashes rechecked unchanged](evidence/2026-11-02/preserved-source-recheck.json). The original primary checkout, source mirror and both production Neon projects remain outside native verification. Test data/providers are fictional/local.
+
+Development-source inventory remains red: 6 active remote branches versus the permitted 3, including unclassified sources. Preserve them; no deletion, new named branch, merge or push can bypass that gate.
+
+## Next work and pending input
+
+The debugging skill's repeated-round escalation requested a priority choice: continue independent capabilities while retaining the Android release blocker (recommended), or concentrate on Android investigation first. No answer has been received at this checkpoint. The native Recents fix and all passing checks remain preserved; no further diagnostic run is active. Cleanup and necessary foundation verification continue; no supported-OS reduction, test waiver or release acceptance is inferred.
+
+StageB notifications, constrained bridge, links, document handling and complete role journeys are required and have not been implemented. [Interface/API research](evidence/2026-11-02/capability-interface-research.md) is preparation for their executable plan, not a completed capability. StageC hosted/device integration and store-readiness preparation also remain required. Signing, physical passkeys/accessibility, real enrollment/sends and distribution need their actual external inputs and controlled-test authority.
+
+Legal publisher/Apple Developer/Google Play account status and available physical devices were requested separately and remain unverified. Never request passwords or signing keys in chat. Do not report the overall native task complete after the foundation or turn unavailable account/device gates into assumed success.

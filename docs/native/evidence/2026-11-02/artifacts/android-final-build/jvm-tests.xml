@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.velani.nevora.development.ShellCoreTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-11-02T05:53:32.465Z" hostname="Mac.lan" time="0.007">
+  <properties/>
+  <testcase name="debugCleartextIsOnlyExplicitOwnedLoopbackOrEmulator" classname="com.velani.nevora.development.ShellCoreTest" time="0.002"/>
+  <testcase name="exactOriginIncludesDefaultPortsButNotCredentialsOrAliases" classname="com.velani.nevora.development.ShellCoreTest" time="0.0"/>
+  <testcase name="ticketsCannotSurviveBackgroundOrAnotherActivation" classname="com.velani.nevora.development.ShellCoreTest" time="0.0"/>
+  <testcase name="foreignNavigationRequiresDeliberateMainframeHttpsGet" classname="com.velani.nevora.development.ShellCoreTest" time="0.0"/>
+  <testcase name="onlyMatchingVersionAndStatusAreCompatible" classname="com.velani.nevora.development.ShellCoreTest" time="0.003"/>
+  <testcase name="releaseRejectsUnconfiguredAmbiguousAndLocalOrigins" classname="com.velani.nevora.development.ShellCoreTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

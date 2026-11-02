@@ -1,0 +1,25 @@
+
+com.velani.nevora.development.ShellInstrumentedTest:
+Error in e_backgroundRevocationRetiresPrivateDocument(com.velani.nevora.development.ShellInstrumentedTest):
+java.lang.AssertionError: Expected visible text: Fictional sign in
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.velani.nevora.development.ShellInstrumentedTest.expectText(ShellInstrumentedTest.java:261)
+	at com.velani.nevora.development.ShellInstrumentedTest.e_backgroundRevocationRetiresPrivateDocument(ShellInstrumentedTest.java:384)
+
+
+Time: 25.179
+There was 1 failure:
+1) e_backgroundRevocationRetiresPrivateDocument(com.velani.nevora.development.ShellInstrumentedTest)
+java.lang.AssertionError: Expected visible text: Fictional sign in
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.velani.nevora.development.ShellInstrumentedTest.expectText(ShellInstrumentedTest.java:261)
+	at com.velani.nevora.development.ShellInstrumentedTest.e_backgroundRevocationRetiresPrivateDocument(ShellInstrumentedTest.java:384)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord

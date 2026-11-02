@@ -157,6 +157,7 @@ fixture = None
 ports = []
 report = {'evidence': str(evidence), 'serial': args.serial, 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'ownerId': args.backend_owner}
 report['qualification'] = 'diagnostic-runtime-override' if args.accessibility_mode != 'platform-default' else 'full-backend' if backend else 'transport'
+report['rendererObserver'] = False
 try:
     if backend:
         assert not evidence.is_relative_to(root.parent.parent), 'Evidence cannot be inside source'
@@ -194,6 +195,14 @@ try:
                 cwd=root, env=env, stdout=output, stderr=subprocess.STDOUT, timeout=300)
             if built.returncode:
                 raise RuntimeError('Android build failed; see build.log')
+    # Retire only this runner's test APK/helper tasks. The target app and its
+    # persistent browser cookies remain installed throughout every run.
+    installed_test = device('shell', 'pm', 'path', 'com.velani.nevora.development.test', check=False)
+    if installed_test.returncode == 0 and installed_test.stdout.strip():
+        removed_test = device('uninstall', 'com.velani.nevora.development.test', timeout=60)
+        if 'Success' not in removed_test.stdout.splitlines(): raise RuntimeError('Instrumentation APK retirement was not confirmed')
+    elif installed_test.returncode not in [0, 1]:
+        raise RuntimeError('Cannot verify instrumentation APK state')
     for apk in [build_root / 'outputs/apk/debug/app-debug.apk', build_root / 'outputs/apk/androidTest/debug/app-debug-androidTest.apk']:
         device('install', '-r', '-t', str(apk), timeout=60)
     settings = ['-e', 'backendOrigin', addresses['origin'], '-e', 'backendControlOrigin', addresses['controlOrigin']] if backend else ['-e', 'fixtureOrigin', addresses['origin'], '-e', 'unavailableOrigin', addresses['unavailableOrigin']]

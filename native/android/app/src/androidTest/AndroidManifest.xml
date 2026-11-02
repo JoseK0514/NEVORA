@@ -1,0 +1,7 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Lifecycle helpers must not become the task whose thumbnail we inspect. -->
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity" android:excludeFromRecents="true" />
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity" android:excludeFromRecents="true" />
+    </application>
+</manifest>

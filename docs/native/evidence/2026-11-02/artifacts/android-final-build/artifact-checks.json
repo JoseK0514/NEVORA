@@ -1,0 +1,23 @@
+{
+  "jvmTests": 6,
+  "jvmFailures": 0,
+  "lintErrorCount": 0,
+  "lintWarnings": [
+    "UnusedAttribute",
+    "AndroidGradlePluginVersion",
+    "SetJavaScriptEnabled",
+    "DataExtractionRules",
+    "ObsoleteSdkInt",
+    "MissingApplicationIcon",
+    "SetTextI18n"
+  ],
+  "releaseUnsigned": true,
+  "releaseSha256": "cc8fc488419ef545497d5b7496c6781077624a6bae02f48a319b17aa9d44400f",
+  "releaseBytes": 1679388,
+  "manifestSafety": true,
+  "debugArtifactAbsent": true,
+  "permissions": [
+    "android.permission.INTERNET",
+    "com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ]
+}

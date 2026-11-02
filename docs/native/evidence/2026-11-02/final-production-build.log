@@ -1,0 +1,46 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Phase E verification requires a clean worktree
++ actual - expected
+
++ 'M docs/native/execution-2026-11-01.md\n' +
++   ' M native/android/app/src/androidTest/java/com/velani/nevora/development/ShellInstrumentedTest.java\n' +
++   ' M native/android/app/src/debug/AndroidManifest.xml\n' +
++   ' M native/android/app/src/main/java/com/velani/nevora/development/PortalActivity.java\n' +
++   ' M native/android/test-ui.py\n' +
++   ' M native/ios/Fixtures/server.mjs\n' +
++   ' M native/ios/test_fixture.py\n' +
++   ' M scripts/native-backend.mts\n' +
++   ' M scripts/native-owned.check.mjs\n' +
++   ' M scripts/native-owned.mjs\n' +
++   '?? docs/native/evidence/2026-11-02/\n' +
++   '?? native/android/app/src/androidTest/AndroidManifest.xml'
+- ''
+
+    at captureSource (file:///Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101/scripts/phase-e-owned.mjs:427:10)
+    at file:///Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101/.superpowers/sdd/2026-11-01-native-foundation-plan/production-build.mjs:8:15
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'M docs/native/execution-2026-11-01.md\n' +
+    ' M native/android/app/src/androidTest/java/com/velani/nevora/development/ShellInstrumentedTest.java\n' +
+    ' M native/android/app/src/debug/AndroidManifest.xml\n' +
+    ' M native/android/app/src/main/java/com/velani/nevora/development/PortalActivity.java\n' +
+    ' M native/android/test-ui.py\n' +
+    ' M native/ios/Fixtures/server.mjs\n' +
+    ' M native/ios/test_fixture.py\n' +
+    ' M scripts/native-backend.mts\n' +
+    ' M scripts/native-owned.check.mjs\n' +
+    ' M scripts/native-owned.mjs\n' +
+    '?? docs/native/evidence/2026-11-02/\n' +
+    '?? native/android/app/src/androidTest/AndroidManifest.xml',
+  expected: '',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

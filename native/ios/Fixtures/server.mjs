@@ -87,7 +87,7 @@ const server = createServer(async (request, response) => {
   }
   response.end(page(request.url === '/app/schedule'
     ? '<h1>Fictional Schedule</h1><p>Monday 9:00–17:00</p><a href="/app">Home</a>'
-    : `<h1>${role === 'OWNER' ? 'Fictional Owner Home' : role === 'MANAGER' ? 'Fictional Manager Home' : 'Fictional Home'}</h1><a href="/app/schedule">My Schedule</a><p><a href="/app/renderer-control">Renderer control</a></p><p><a href="/app/renderer-protected">Renderer protected</a></p><form method="post" action="/logout"><button>Sign out</button></form>`, context));
+    : `<h1>${role === 'OWNER' ? 'Fictional Owner Home' : role === 'MANAGER' ? 'Fictional Manager Home' : 'Fictional Home'}</h1>${role === 'OWNER' ? '<div role="img" aria-label="Fictional private snapshot marker" style="position:fixed;left:45vw;top:45vh;width:10vw;height:10vh;background:#e000a7"></div>' : ''}<a href="/app/schedule">My Schedule</a><p><a href="/app/renderer-control">Renderer control</a></p><p><a href="/app/renderer-protected">Renderer protected</a></p><form method="post" action="/logout"><button>Sign out</button></form>`, context));
 });
 const unavailable = createServer((_request, response) => {
   response.writeHead(503, {'Content-Type': 'application/json'});

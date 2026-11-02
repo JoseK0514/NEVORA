@@ -1,0 +1,1 @@
+{"passed": true, "exitCode": 0, "owner": "04b0b3d4254046c0ba492930ab382e0f", "tasks": [":app:testDebugUnitTest", ":app:assembleDebug", ":app:assembleRelease", ":app:lint"]}

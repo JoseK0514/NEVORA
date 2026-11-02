@@ -24,6 +24,8 @@ export function assertNativeResults(results,expected) {
     assert(Array.isArray(results.devices));
     const android=results.devices.filter(device=>typeof device.serial==='string');
     assert.equal(android.length,1);
+    assert.equal(android[0].qualification,'full-backend');
+    assert.equal(android[0].rendererObserver,false);
     assert.equal(android[0].webView?.accessibilityMode,'platform-default');
     assert.equal(android[0].webView?.runtimeFlagsSha256,null);
   }
