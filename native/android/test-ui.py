@@ -105,6 +105,24 @@ def instrumentation_count(text, expected_runs, expected_tests):
         raise RuntimeError('Instrumentation did not pass the complete selected matrix')
     return sum(completed)
 
+def instrumentation_selections(backend, only_testing):
+    if only_testing and '#' in only_testing:
+        return [only_testing]
+    selected_class = 'com.velani.nevora.development.BackendInstrumentedTest' if backend else 'com.velani.nevora.development.ShellInstrumentedTest'
+    names = ['a_employeeActionRevocationOutageAndLogout', 'aa_activatedAccountCanSignIn', 'b_ownerActionAndPersistentSession'] if backend else [
+        'a_unconfiguredAndInvalidOriginsFailClosed', 'b_nativeMarkerIsPresentationOnly',
+        'c_employeeHistoryRecreationAndPostLogout', 'd_ownerIsDistinctAndSurvivesRecreation',
+        'e_backgroundRevocationRetiresPrivateDocument', 'f_outageAndRetryNeverRevealStalePrivateContent',
+        'g_redirectedSubresourcesAreContainedByRendererPolicy', 'g_unsupportedRoleExplainsWebAccess',
+        'z_ownerSessionForExternalProcessRestartCheck']
+    return [selected_class + '#' + name for name in names]
+
+def instrumentation_remaining(deadline):
+    remaining = min(480, deadline - time.monotonic())
+    if remaining <= 0:
+        raise TimeoutError('Total instrumentation budget exhausted')
+    return remaining
+
 fixture = None
 ports = []
 report = {'evidence': str(evidence), 'serial': args.serial, 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'ownerId': args.backend_owner}
@@ -145,22 +163,22 @@ try:
                 raise RuntimeError('Android build failed; see build.log')
     for apk in [build_root / 'outputs/apk/debug/app-debug.apk', build_root / 'outputs/apk/androidTest/debug/app-debug-androidTest.apk']:
         device('install', '-r', '-t', str(apk), timeout=60)
-    selected_class = 'com.velani.nevora.development.BackendInstrumentedTest' if backend else args.only_testing or 'com.velani.nevora.development.ShellInstrumentedTest'
     settings = ['-e', 'backendOrigin', addresses['origin'], '-e', 'backendControlOrigin', addresses['controlOrigin']] if backend else ['-e', 'fixtureOrigin', addresses['origin'], '-e', 'unavailableOrigin', addresses['unavailableOrigin']]
-    selections = [selected_class + '#' + name for name in ['a_employeeActionRevocationOutageAndLogout', 'aa_activatedAccountCanSignIn', 'b_ownerActionAndPersistentSession']] if backend else [selected_class]
+    selections = instrumentation_selections(backend, args.only_testing)
     outputs = []
+    instrumentation_deadline = time.monotonic() + 480
     for index, selection in enumerate(selections):
         # Isolate instrumentation/Chromium accessibility state, keeping browser
         # cookie storage intact so persistence remains part of each scenario.
-        if backend: device('shell', 'am', 'force-stop', 'com.velani.nevora.development', timeout=5)
+        if len(selections) > 1: device('shell', 'am', 'force-stop', 'com.velani.nevora.development', timeout=5)
         result = device('shell', 'am', 'instrument', '-w', '-e', 'class', selection,
             *settings, '-e', 'nativeEvidenceKey', invocation,
-            'com.velani.nevora.development.test/androidx.test.runner.AndroidJUnitRunner', timeout=480)
+            'com.velani.nevora.development.test/androidx.test.runner.AndroidJUnitRunner', timeout=instrumentation_remaining(instrumentation_deadline))
         output = result.stdout + result.stderr
         (evidence / f'instrumentation-{index}.log').write_text(output)
         outputs.append(output)
     text = '\n'.join(outputs)
-    report['isolatedTestProcesses'] = backend
+    report['isolatedTestProcesses'] = len(selections) > 1
     (evidence / 'instrumentation.log').write_text(text)
     diagnostic_root = f'cache/nevora-native-tests-{invocation}'
     diagnostics = device('shell', 'run-as', 'com.velani.nevora.development', 'ls', diagnostic_root, check=False)
@@ -170,7 +188,7 @@ try:
                 raise RuntimeError('Unexpected diagnostic artifact')
             data = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'run-as', 'com.velani.nevora.development', 'cat', f'{diagnostic_root}/{name}'], env=env, capture_output=True, timeout=15, check=True)
             (evidence / name).write_bytes(data.stdout)
-    report['instrumentationTests'] = instrumentation_count(text, len(selections), 3 if backend else 1 if args.only_testing else 9)
+    report['instrumentationTests'] = instrumentation_count(text, len(selections), 3 if backend else 1 if args.only_testing and '#' in args.only_testing else 9)
     if not args.only_testing:
         device('shell', 'am', 'force-stop', 'com.velani.nevora.development')
         device('shell', 'am', 'start', '-W', '-n', 'com.velani.nevora.development/.PortalActivity', '--es', 'nevora.debug.origin', addresses['origin'])

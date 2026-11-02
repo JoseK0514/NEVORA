@@ -12,6 +12,30 @@ import subprocess
 from unittest.mock import patch
 
 class RunnerOwnershipTests(unittest.TestCase):
+    def test_isolation_cannot_reset_the_total_instrumentation_budget(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'instrumentation_remaining')
+        clock = __import__('types').SimpleNamespace(monotonic=lambda: 450)
+        namespace = {'time': clock}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_budget', 'exec'), namespace)
+        self.assertEqual(namespace['instrumentation_remaining'](480), 30)
+        clock.monotonic = lambda: 481
+        with self.assertRaises(TimeoutError): namespace['instrumentation_remaining'](480)
+    def test_all_transport_cases_are_isolated_without_omitting_restart_setup(self):
+        tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
+        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'instrumentation_selections')
+        namespace = {}
+        exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_selections', 'exec'), namespace)
+        select = namespace['instrumentation_selections']
+        selections = select(False, None)
+        self.assertEqual(len(selections), 9)
+        self.assertEqual(len(set(selections)), 9)
+        self.assertTrue(selections[-1].endswith('#z_ownerSessionForExternalProcessRestartCheck'))
+        self.assertTrue(all('#' in name for name in selections))
+        self.assertEqual(select(False, 'com.velani.nevora.development.ShellInstrumentedTest'), selections)
+        focused = 'com.velani.nevora.development.ShellInstrumentedTest#g_redirectedSubresourcesAreContainedByRendererPolicy'
+        self.assertEqual(select(False, focused), [focused])
+        self.assertEqual(len(select(True, None)), 3)
     def test_tool_failure_retains_stdout_diagnostic(self):
         tree = ast.parse((Path(__file__).parent / 'test-ui.py').read_text())
         function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == 'run')
