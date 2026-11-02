@@ -94,6 +94,8 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
     await answerMode.focus();await page.keyboard.press('r');await page.keyboard.press('Tab');
     await expect.poll(()=>answerMode.inputValue()).toBe('decision');
     await captureMode('before-axe-keyboard-decision');
+    // Native WebKit typeahead retains the previous prefix across blur; separate the two user gestures.
+    await page.waitForTimeout(1200);
     await answerMode.focus();await page.keyboard.press('f');await page.keyboard.press('Tab');
     await expect.poll(()=>answerMode.inputValue()).toBe('factual');
     await captureMode('before-axe');
