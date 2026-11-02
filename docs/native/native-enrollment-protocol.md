@@ -94,3 +94,59 @@ helpers alone establish these durable properties.
 APNs/FCM credentials, real enrollment and delivery remain disabled until the
 separate account/device/controlled-test steps. Protocol tests use ephemeral
 in-memory keys and fictional tokens; golden files contain only public tuples.
+
+
+## HTTP and configuration
+
+All three `/api/mobile/v1/notifications/{status,challenge,complete}` endpoints
+use POST, reject query/path selectors and return private no-store JSON. Bodies
+are flat, closed JSON objects: at most16KiB of actual UTF8 bytes and a two-second
+total read deadline. Duplicate decoded keys, invalid UTF8, unknown fields and
+nested values are rejected. Errors never reflect SQL, input or provider material.
+
+- Status: `keyFingerprint`. Actual browser session and exact configured Origin
+  required. Returns only `active {generation}` or `off` for that session's device.
+- Enrollment challenge: `operation:"enroll"`, `platform`, `spki`, `operationId`,
+  `expectedGeneration` (null initially). Exact browser Origin and actual active
+  Employee/Owner proof required. Server selects origin/environment/app/provider
+  and derives the public fingerprint; account/session selectors are forbidden.
+- Rotation/detach challenge: `operation:"rotate"|"detach"`, `keyFingerprint`,
+  `operationId`, `expectedGeneration`. Cookie-free native request; no browser
+  session read. Stored ownership remains fixed. Issuance alone grants no access;
+  completion still requires the installation's signature and current generation.
+- Completion: `challengeId`, `nonce`, `token` (null for detach), `signature`.
+  Cookie-free native request. The server reads its own immutable challenge and
+  private account/session context. Foreign Origin and cross-site requests fail.
+
+Public operation IDs are canonical UUIDv4 and give identical issuance retries
+within the challenge lifetime. Each key is limited to five challenges per minute,
+each actor to20, serialized under native advisory locks. Expired challenges and
+receipts are reaped in bounded cleanup batches after a day; active receipts are
+only usable during the original120-second signed lifetime. Old generations never
+reactivate after rebind, rotation or detach. A new browser-authorized status read
+resolves uncertainty after that lifetime. Cross-key token takeover is refused;
+reinstall/recovery UX remains a dependent platform integration requirement.
+
+`readNativeRegistrationConfig` returns unavailable unless every setting is
+explicit: `NATIVE_PUSH_REGISTRATION_ENABLED=true`, `NATIVE_PUSH_ENVIRONMENT`,
+`NATIVE_PUSH_ORIGIN`, `NATIVE_PUSH_IOS_APP_ID`, `NATIVE_PUSH_IOS_PROVIDER`,
+`NATIVE_PUSH_ANDROID_APP_ID`, and canonical base64url32-byte
+`NATIVE_PUSH_TOKEN_ENCRYPTION_KEY`. Never paste the protection key into this
+file/chat. Test uses `apns-sandbox`; production uses `apns-production` and requires
+an actual production process with no preview/development Vercel selector.
+Release configuration accepts only canonical non-local HTTPS DNS origins.
+Owned loopback runtime qualification remains separate; this config introduces no
+development bypass. No APNs/FCM credentials or delivery flags are read here.
+
+Cleanup removes encrypted material and cancels pending/leased native deliveries
+on session deletion, inactive/unsupported employee or inactive workspace. Natural
+cookie expiry alone follows the existing notification policy: it prevents fresh
+enrollment/rotation but is not a logout event for durable delivery. Delivery still
+requires the stored session row and all current business checks. Native dispatch
+and bounded cleanup scheduling are not activated by registration code alone.
+
+Local real-SQL command (allowlisted test-only environment):
+`node scripts/payroll-postgres.mjs vitest.native-push-regressions.config.mts`.
+Set only `NEVORA_TEST_PG_BIN` to an installed local PG binary directory; never
+supply an existing application/test database. The launcher creates a new loopback
+cluster and the adapters independently own/dispose each fictional database.

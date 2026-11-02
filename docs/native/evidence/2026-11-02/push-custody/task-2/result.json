@@ -1,0 +1,71 @@
+{
+  "task": 2,
+  "base": "f8b0ef85f1c60ea16899ddaf0732f1fc1393371c",
+  "state": "local implementation verified; formal task-done pending",
+  "checks": {
+    "realSql": {
+      "files": 5,
+      "tests": 186,
+      "passed": true,
+      "seconds": 75.89
+    },
+    "focused": {
+      "files": 31,
+      "tests": 634,
+      "passed": true
+    },
+    "typecheck": true,
+    "changedSourceLint": true
+  },
+  "environment": "allowlisted local test environment; newly owned loopback PG17 and fictional accounts only",
+  "productionMigrated": false,
+  "runtimeEnabled": false,
+  "realProviderRequests": 0,
+  "wholeNativeReleaseReady": false,
+  "openGates": [
+    "Foundation Task4",
+    "older Android accessibility",
+    "Task3 providers",
+    "Task4 native dispatch/current runtime acceptance",
+    "dependent platform capabilities",
+    "source inventory",
+    "accounts/signing/physical/store"
+  ],
+  "sourceSha256": {
+    "db/migrations/0046_native_push.sql": "f756400f98452cce779b964e4718b408ecc49e2ca0722e18f34750d6fdc37147",
+    "src/app/api/mobile/v1/notifications/challenge/route.ts": "fbabafa75bfe5ec063a69ab22596b12842945fa39db7d8aa835fe3a86b3b7689",
+    "src/app/api/mobile/v1/notifications/complete/route.ts": "1f4cccd6e44418f7d1a791fb31efdd96207a1ba416907c636be13bd329dd0e8a",
+    "src/app/api/mobile/v1/notifications/route-contract.test.ts": "25833e911214889b25f776377075031c7716ce03f8c85288d57800ca4a39fbb6",
+    "src/app/api/mobile/v1/notifications/status/route.ts": "6f96b4c9551ae7629634a9bd581ea8c25931aa6740489ae0c62ea63e8872c50d",
+    "src/lib/data/native-installations.ts": "0a84b32b54151b5d9e3a17ccc4312d77842f1c34d0e55bc991f5b926d851edb7",
+    "src/lib/native-push/config.test.ts": "fd615ba5aa5ebe9d6156cc3eb09a33a921b89b5384512c72b2efd7d5407ff865",
+    "src/lib/native-push/config.ts": "7228c5f1613d9a86d11e13372b12fb18902406356adf20770f7f920d1ab76b66",
+    "src/lib/native-push/enrollment.ts": "dec86b0242782ac65a862412ba8e7215203daadc4da4821b62e90255b677e901",
+    "src/lib/native-push/http.test.ts": "053651a01d508183b49080106fa50b38a81fb2246630984d277f27f4e9c01f1a",
+    "src/lib/native-push/http.ts": "1ba345a32eb9793a0844fb2b16a8adbd8a32575f11c9c3af93ffa324d13a2182",
+    "src/test/integration/native-push-fixture-url.ts": "bc1bcc39d9504f79ae557dde1ad279888129547df827dfefd2be09c1fcdb6f1f",
+    "src/test/integration/native-push.integration.ts": "e954ba7380aa0a374c779285aee5544eb877fae57c6487ccc0b7b25eb843c240",
+    "src/test/native-push-regression-config.test.ts": "b821ab867abeef2fb3f3b231cb03c9ce0c4ae18a5348a9e5e36ccd0f79524120",
+    "vitest.native-push-integration.config.mts": "5adc7df66a233a1fb2095c5a185a59b0ce3c6ae9fe50a23b157491897109e7df",
+    "vitest.native-push-regressions.config.mts": "f5ae6059f409694e244f0efc1dd3aac13bd4eedb335a80ce3ad627ae95dbd37c",
+    "db/migrations/order.ts": "f1ac8a143347b21ca06210577bc037aa90864be7571a4bfa7e9b1c20db06d0f1",
+    "docs/native/native-enrollment-protocol.md": "f12c7d5f05d84b00c404217f2b1b2baa9c451af11254a93cac891ae517d66b16",
+    "docs/product/specs/codex-joint/DEPLOY-RUNBOOK.md": "2d2a3c3d1d61dd5a672c5fe2817d888b1e34c7dd3e6a1631223ac014093d4ada",
+    "src/lib/data/management-session.ts": "e7c0f1a1c90a2e5d26d9040b09d19143b77c30238689f7b22de626ed691570b6",
+    "src/test/integration/local-postgres.ts": "b1b6eb9cf1303a6375e08dc5349672970d9d1c4a356b445f265565eb9438d658",
+    "src/test/migration-order.test.ts": "d68dfcaa722375047a31ec368f47d7df0ef426834077383f1a374b93fe64bcf4"
+  },
+  "artifactSha256": {
+    "task-2-postgres-red.log": "60e4a62787521ac645761c79afea62e9caa08ecba26f2b735be20e4826f4bcdf",
+    "task-2-postgres-first.log": "12ac304801ead7fe2d938be0b99fb4965822a2666057249ba99a8b6de79088d8",
+    "task-2-http-config-red.log": "e0ec7243f4bde4b55f8e380c9f059e839e9cdb4bb93f7f37bfc3262afe0b11d5",
+    "task-2-http-config-first.log": "0f9f7bb3e48194bef5737d7a049c19ca155f29bf2337b4aebdbc1f69f7b34d65",
+    "task-2-expanded-red.log": "71b5b7f696fdef43f82de7abc5b1e7c5b032f8f83efc65ed7f979c331f04d5f3",
+    "task-2-postgres-green.log": "4fb5c05d4f594eabed30f6b1fad9fa327a5f0e67fa581611e36ab56f592b8b6f",
+    "task-2-postgres-regressions.log": "f41954de7b0add5e749380995cb9e29465d27bc79bc44f0d54806550fadaa2e5",
+    "task-2-dns-red.log": "e02dc6c003b3e76c0f17c810fb7b683a68dd86364649db5063be4ee38b6e21e8",
+    "task-2-final-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "task-2-final-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "task-2-final-focused.log": "50d5cc0cb75c8b2af47fd4c3b7e2c40cec120ca4c94baec00ad4e211ee7efa79"
+  }
+}

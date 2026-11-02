@@ -1,0 +1,55 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/test/integration/native-push.integration.ts [2m([22m[2m24 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3843[2mms[22m[39m
+   [32m✓[39m persists only encrypted native material and returns only owned registration state[32m 41[2mms[22m[39m
+   [32m✓[39m refuses Manager registration and authority revoked after challenge issuance[32m 25[2mms[22m[39m
+   [32m✓[39m rejects a substituted token, nonce or key without consuming a valid challenge[32m 23[2mms[22m[39m
+   [32m✓[39m returns one durable generation for concurrent identical completion and retries[32m 22[2mms[22m[39m
+   [32m✓[39m recovers an uncertain committed completion from its durable receipt[32m 23[2mms[22m[39m
+   [32m✓[39m rotates tokens and fences old receipts and generation claims[32m 19[2mms[22m[39m
+   [32m✓[39m allows the same physical key to rebind only through fresh account authority and generation[32m 21[2mms[22m[39m
+   [32m✓[39m refuses cross-key token takeover by a different authenticated account[32m 27[2mms[22m[39m
+   [32m✓[39m can detach a revoked registration using its key without recreating a session[32m 27[2mms[22m[39m
+   [32m✓[39m cleans revoked ownership and never keeps a plaintext token after cleanup[32m 13[2mms[22m[39m
+   [32m✓[39m reuses an identical issuance operation but rejects a different account using that operation[32m 13[2mms[22m[39m
+   [32m✓[39m bounds challenge issuance while allowing a retry of an already issued operation[32m 31[2mms[22m[39m
+   [32m✓[39m rejects a correctly signed expired challenge[32m 17[2mms[22m[39m
+   [32m✓[39m rejects a correctly signed future challenge[32m 8[2mms[22m[39m
+   [32m✓[39m refuses a second signed token on a completed challenge without disturbing the first result[32m 18[2mms[22m[39m
+   [32m✓[39m allows only one competing account rebind from a generation[32m 27[2mms[22m[39m
+   [32m✓[39m rechecks an employee role changed after the challenge was read but before the transaction[32m 11[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1574[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1565[2mms[22m[39m
+   [32m✓[39m rechecks neither expiry after a real blocked enrollment INSERT[32m 28[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during rotate without deleting the notification[32m 18[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during detach without deleting the notification[32m 16[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during cleanup without deleting the notification[32m 15[2mms[22m[39m
+[31m   [31m×[31m purges old challenges in bounded batches even when there are no revoked installations[39m[32m 14[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mpurges old challenges in bounded batches even when there are no revoked installations
+[31m[1mAssertionError[22m: expected '3' to be '1' // Object.is equality[39m
+
+Expected: [32m"1"[39m
+Received: [31m"3"[39m
+
+[36m [2m❯[22m src/test/integration/native-push.integration.ts:[2m288:98[22m[39m
+    [90m286|[39m   await query("UPDATE native_push_challenges SET issued_at=clock_times…
+    [90m287|[39m   expect(await repository.cleanupRevoked(2)).toBe(0);
+    [90m288|[39m   expect((await query<{count: string}>('SELECT count(*) FROM native_pu…
+    [90m   |[39m                                                                                                  [31m^[39m
+    [90m289|[39m });
+    [90m290|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m23 passed[39m[22m[90m (24)[39m
+[2m   Start at [22m 05:27:50
+[2m   Duration [22m 3.94s[2m (tests 99%, import 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

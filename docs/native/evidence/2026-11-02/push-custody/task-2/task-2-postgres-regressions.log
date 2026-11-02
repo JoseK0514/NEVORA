@@ -1,0 +1,64 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m [30m[45m existing-web-push [49m[39m src/test/integration/notifications.integration.ts [2m([22m[2m77 tests[22m[2m)[22m[33m 45837[2mms[22m[39m
+   [32m✓[39m actual enrollment, materialization and leases [2m(31)[22m
+     [33m[2m✓[22m[39m transaction_abort_rolls_back_and_ambiguous_commit_preserves_durable_identity[33m 316[2mms[22m[39m
+   [32m✓[39m deadline writers and persistent grouping [2m(13)[22m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 8 PR (current-day)[33m 324[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 8 PR (Sunday-boundary)[33m 325[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 12 PR (current-day)[33m 326[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 12 PR (Sunday-boundary)[33m 327[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 17 PR (current-day)[33m 325[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 17 PR (Sunday-boundary)[33m 324[2mms[22m[39m
+   [32m✓[39m real SQL worker recovery with a no-network sender [2m(7)[22m
+     [33m[2m✓[22m[39m stalled_sender_is_aborted_at_real_deadline_and_retry_retains_original_expiry[33m 8225[2mms[22m[39m
+     [33m[2m✓[22m[39m SQL_budget_abort_cancels_real_blocked_statement_without_assuming_commit_rollback[33m 19269[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/foundation.integration.ts [2m([22m[2m69 tests[22m[2m)[22m[33m 15602[2mms[22m[39m
+   [33m[2m✓[22m[39m position publication atomicity preserves create edit clear history and rejects stale capabilities[33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 1 active locations and real scheduling[33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 3 active locations and real scheduling[33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 5 active locations and real scheduling[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 20 active locations and real scheduling[33m 363[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 generic fixture replacement preserves the upgraded schema catalog[33m 455[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/native-push.integration.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 3801[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1573[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1566[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/phase-b-management-session.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1680[2mms[22m[39m
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/table: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"table","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/table: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"table","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/unique-key: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"unique-key","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/unique-key: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"unique-key","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/table: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"table","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/table: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"table","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/unique-key: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"unique-key","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/unique-key: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"unique-key","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/phase-b-late-write-session.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 8210[2mms[22m[39m
+   [33m[2m✓[22m[39m position/table: rejects expired authority after a real INSERT lock wait[33m 1823[2mms[22m[39m
+   [33m[2m✓[22m[39m position/unique-key: rejects expired authority after a real INSERT lock wait[33m 1816[2mms[22m[39m
+   [33m[2m✓[22m[39m location/table: rejects expired authority after a real INSERT lock wait[33m 1824[2mms[22m[39m
+   [33m[2m✓[22m[39m location/unique-key: rejects expired authority after a real INSERT lock wait[33m 1821[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m186 passed[39m[22m[90m (186)[39m
+[2m   Start at [22m 05:31:07
+[2m   Duration [22m 75.89s[2m (tests 99%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.
