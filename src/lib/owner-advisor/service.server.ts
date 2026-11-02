@@ -8,6 +8,8 @@ import { readConfig } from "./config.server";
 import { AdvisorError, parseCommand, type AdvisorSnapshot } from "./contracts";
 import { investigate, type Transport } from "./loop.server";
 import { readOwnerAttention } from "./briefing.server";
+import { AdvisorMemory } from "./memory.server";
+import { ownerMemoryContext } from "./memory";
 import { AdvisorNotebook } from "./notebook.server";
 import { NotebookError, notebookContext } from "./notebook";
 import { coverageAction } from "./coverage-actions.server";
@@ -43,6 +45,7 @@ export async function advisorService(
   const store = new AdvisorStore(proof, admission, ex),
     tools = new AdvisorTools(store, signal),
     notebook = new AdvisorNotebook(store),
+    memory = new AdvisorMemory(store, signal, env),
     config = readConfig(env);
   const check = async () => {
     signal.throwIfAborted();
@@ -65,6 +68,7 @@ export async function advisorService(
   };
   if (value === undefined) {
     const attention = await readOwnerAttention(store);
+    const savedMemory = await memory.read();
     const state = await store.read(),
       briefing = await tools.briefing(attention.today);
     return {
@@ -74,6 +78,7 @@ export async function advisorService(
       briefing,
       attention: attention.briefing,
       notebook: await notebook.read(),
+      memory: savedMemory,
       ...(await observation()),
     } satisfies AdvisorSnapshot;
   }
@@ -107,6 +112,10 @@ export async function advisorService(
     const profile = await store.save(command);
     return { state: "saved" as const, profile, ...(await observation()) };
   }
+  if (command.op === "memory") {
+    const result = await memory.save(command);
+    return { state: "memory_saved" as const, revision: result.revision, ...(await observation()) };
+  }
   if (command.op === "notebook") {
     const result = await notebook.save(command);
     return { state: "notebook_saved" as const, revision: result.revision, ...(await observation()) };
@@ -114,6 +123,9 @@ export async function advisorService(
   if (command.op !== "ask" && command.op !== "ask_task") throw new AdvisorError("invalid");
   if (!config) throw new AdvisorError("unavailable");
   await check();
+  // Purge expired context before replay admission, so an expired value cannot
+  // survive through an otherwise idempotent completed answer.
+  const savedMemory = await memory.read();
   const receipt = await store.reserve(
     command.requestId,
     commandHash(command),
@@ -130,6 +142,7 @@ export async function advisorService(
     const saved = await notebook.read();
     if (command.op === "ask_task" && (saved.state !== "ready" || saved.notebook.revision !== command.expectedNotebookRevision)) throw new AdvisorError(saved.state === "ready" ? "conflict" : "unavailable");
     const savedContext = saved.state === "ready" ? notebookContext(saved.notebook, command.op === "ask_task" ? command.taskId : undefined) : undefined;
+    const memoryContext = savedMemory.state === "ready" ? ownerMemoryContext(savedMemory.memory, await memory.clock(), savedContext?.selectedTask?.focus, admission.workspace.timeZone) : undefined;
     const answer = await investigate(
       config,
       state.history,
@@ -140,12 +153,14 @@ export async function advisorService(
         tool: (call) => tools.run(call),
         signal,
         ...(savedContext ? { savedContext } : {}),
+        ...(memoryContext ? { memoryContext } : {}),
         ...(testTransport ? { fetch: testTransport } : {}),
       },
     );
-    answer.context = { notebookRevision: savedContext?.revision ?? null, taskId: command.op === "ask_task" ? command.taskId : null };
+    answer.context = { profileRevision: state.profile.revision, memoryRevision: memoryContext?.revision ?? null, notebookRevision: savedContext?.revision ?? null, taskId: command.op === "ask_task" ? command.taskId : null };
     await check();
-    await store.complete(command.requestId, command.message, answer, savedContext?.revision);
+    await memory.read(); // Expiry during inference also invalidates settlement.
+    await store.complete(command.requestId, command.message, answer, savedContext?.revision, memoryContext?.revision, state.profile.revision);
     return { state: "answered" as const, answer, ...(await observation()) };
   } catch (error) {
     const cleanupSignal = AbortSignal.timeout(1000);

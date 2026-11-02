@@ -1,12 +1,13 @@
 import { parsePeriod } from "@/lib/timecards/project";
 import { NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
+import { MemoryError, parseMemoryCommand } from "./memory";
 import { parseCoverageAction } from "./coverage-actions";
 export const ADVISOR_MAX_TOOL_CALLS = 8;
 export const ADVISOR_MAX_ANSWER_SOURCES = 1 + (ADVISOR_MAX_TOOL_CALLS - 1) * 2;
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
 export type AdvisorSource = { label: string; href: string; observedAt: string };
 export type AdvisorProfile = { priorities: string; revision: number };
-export type AdvisorAnswer = { text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; taskId: string | null } } & import("./workflow-contracts").WorkflowEvidence;
+export type AdvisorAnswer = { text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; memoryRevision?: number | null; profileRevision?: number; taskId: string | null } } & import("./workflow-contracts").WorkflowEvidence;
 export type AdvisorSnapshot = {
   state: "ready";
   connection: "available" | "unavailable";
@@ -14,6 +15,7 @@ export type AdvisorSnapshot = {
   history: AdvisorMessage[];
   briefing: BriefingResult;
   attention?: import("./briefing-contracts").AttentionBriefing;
+  memory?: import("./memory").MemoryRead;
   notebook?: import("./notebook").NotebookRead;
   authority: string;
   observedAt: string;
@@ -21,6 +23,7 @@ export type AdvisorSnapshot = {
 };
 export type AdvisorCommand =
   | import("./coverage-actions").CoverageActionCommand
+  | import("./memory").MemoryCommand
   | import("./notebook").NotebookCommand
   | { op: "ask_task"; requestId: string; taskId: string; expectedNotebookRevision: number; message: string }
   | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" }> }
@@ -62,6 +65,9 @@ export function parseCommand(v: unknown): AdvisorCommand {
     throw new AdvisorError("invalid");
   if (["prepare_coverage_draft", "apply_coverage_draft", "check_coverage_draft"].includes(String(v.op))) {
     try { return parseCoverageAction(v); } catch { throw new AdvisorError("invalid"); }
+  }
+  if (v.op === "memory") {
+    try { return parseMemoryCommand(v); } catch (error) { if (error instanceof MemoryError) throw new AdvisorError(error.code); throw error; }
   }
   if (v.op === "notebook") {
     try { return parseNotebookCommand(v); }

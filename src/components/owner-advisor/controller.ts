@@ -1,10 +1,11 @@
+import { parseMemoryCommand, type MemoryEdit } from "@/lib/owner-advisor/memory";
 import {
   record,
   type AdvisorAnswer,
   type AdvisorCommand,
   type AdvisorSnapshot,
 } from "@/lib/owner-advisor/contracts";
-import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed, parseNotebookSaved } from "./public-response";
+import { parseAnswer, parseSaved, parseSnapshot, parseBriefingReviewed, parseNotebookSaved, parseMemorySaved } from "./public-response";
 import type { AttentionDisposition } from "@/lib/owner-advisor/briefing-contracts";
 import { parseNotebookCommand, type NotebookEdit } from "@/lib/owner-advisor/notebook";
 export type AdvisorView = {
@@ -14,7 +15,7 @@ export type AdvisorView = {
   priorities: string;
   focusedTaskId: string | null;
   dirty: boolean;
-  busy: "ask" | "save" | "review" | "inspect" | "notebook" | null;
+  busy: "ask" | "save" | "review" | "inspect" | "notebook" | "memory" | null;
   loading: boolean;
   message: string;
   uncertain: boolean;
@@ -155,6 +156,9 @@ export function createAdvisorController(
       if (refreshAutomatic) automaticQuestion = currentTask.objective;
       publish({
         snapshot: result,
+        ...(v.snapshot && (v.snapshot.profile.revision !== result.profile.revision ||
+          JSON.stringify(v.snapshot.notebook) !== JSON.stringify(result.notebook) ||
+          JSON.stringify(v.snapshot.memory) !== JSON.stringify(result.memory)) ? { answer: null } : {}),
         loading: false,
         uncertain: false,
         ...(refreshAutomatic ? { question: currentTask.objective } : {}),
@@ -190,7 +194,7 @@ export function createAdvisorController(
     const epoch = generation,
       controller = new AbortController();
     operation = controller;
-    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" || command.op === "ask_task" ? "ask" : command.op === "review_briefing" ? "review" : command.op === "notebook" ? "notebook" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
+    publish({ busy: command.op === "inspect" ? "inspect" : command.op === "ask" || command.op === "ask_task" ? "ask" : command.op === "review_briefing" ? "review" : command.op === "notebook" ? "notebook" : command.op === "memory" ? "memory" : "save", message: "", ...(command.op === "inspect" ? { answer: null } : {}) });
     const timeout = setTimeout(() => controller.abort(), 60000);
     try {
       const response = await request("/api/owner/advisor", {
@@ -217,8 +221,11 @@ export function createAdvisorController(
           record(body) && typeof body.code === "string" ? body.code : "";
         publish({
           message:
-            (command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again."
-              : (command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? "Saved goals or tasks changed. Your draft is preserved. Review the current saved context before continuing."
+            (command.op === "memory" && code === "invalid" ? "Check the memory fields, scope and expiry. Choose an expiry within the dates shown in the form."
+              : command.op === "memory" && code === "unavailable" ? "Owner memory is unavailable. Refresh before trying again."
+              : command.op === "memory" && code === "limit" ? "Memory reached its size or record limit. Shorten the edit or remove a record you no longer need."
+              : command.op === "review_briefing" && code === "conflict" ? "The issue or your briefing choice changed. Review the refreshed briefing before choosing again."
+              : (command.op === "memory" || command.op === "notebook" || command.op === "ask_task" || command.op === "ask") && code === "conflict" ? "Saved priorities, goals, tasks or memory changed. Your draft is preserved. Review the current saved context before continuing."
                 : command.op === "notebook" && code === "unavailable" ? "Saved goals and tasks are unavailable. Refresh before trying again."
                   : command.op === "notebook" && code === "limit" ? "Saved context reached its limit. Shorten the edit or remove an item you no longer need."
                     : errors[code]) ??
@@ -235,7 +242,7 @@ export function createAdvisorController(
         return;
       }
       const result =
-        command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : parseSaved(body);
+        command.op === "ask" || command.op === "ask_task" || command.op === "inspect" ? parseAnswer(body) : command.op === "review_briefing" ? parseBriefingReviewed(body) : command.op === "notebook" ? parseNotebookSaved(body) : command.op === "memory" ? parseMemorySaved(body) : parseSaved(body);
       controller.signal.throwIfAborted();
       if (result.authority !== authority) {
         retire("Your access changed. Refresh to continue.");
@@ -250,13 +257,27 @@ export function createAdvisorController(
       controller.signal.throwIfAborted();
       if (!authorized) throw Error("Fresh access required");
       if (result.state === "saved") draftRevision = result.profile.revision;
-      if (result.state === "notebook_saved") {
+      if (result.state === "memory_saved") {
+        const saved = v.snapshot?.memory;
+        if (saved?.state !== "ready" || saved.memory.revision < result.revision) throw Error("Fresh memory required");
+        publish({ answer: null, message: saved.memory.revision === result.revision ? "Owner memory updated." : "Your memory was saved, then changed again. Review the current records." });
+      }
+      else if (result.state === "notebook_saved") {
         const saved = v.snapshot?.notebook;
         if (saved?.state !== "ready" || saved.notebook.revision < result.revision) throw Error("Fresh notebook required");
         publish({ message: saved.notebook.revision === result.revision ? "Saved goals and tasks updated." : "Your edit was saved, then the saved context changed again. Review the current goals and tasks." });
       }
       else if (result.state === "briefing_reviewed") publish({ message: "Briefing choice saved. Current records were checked again." });
       else if (result.state === "answered") {
+        const context = result.answer.context;
+        const currentMemory = v.snapshot?.memory;
+        const currentNotebook = v.snapshot?.notebook;
+        if (context && (context.profileRevision !== undefined && context.profileRevision !== v.snapshot?.profile.revision ||
+            context.memoryRevision != null && (currentMemory?.state !== "ready" || context.memoryRevision !== currentMemory.memory.revision) ||
+            context.notebookRevision != null && (currentNotebook?.state !== "ready" || context.notebookRevision !== currentNotebook.notebook.revision))) {
+          publish({ answer: null, message: "Saved context changed. Investigate again using the current records." });
+          return false;
+        }
         automaticQuestion = null;
         publish({
           answer: result.answer,
@@ -347,6 +368,10 @@ export function createAdvisorController(
       const replaceAutomatic = !v.question.trim() || automaticQuestion !== null && v.question === automaticQuestion;
       automaticQuestion = task && replaceAutomatic ? task.objective : null;
       publish({ focusedTaskId: taskId, ...(replaceAutomatic ? { question: task?.objective ?? "" } : {}), message: task ? "Task selected. Your next question will use its saved objective and notes with current company evidence." : "General investigation selected." });
+    },
+    async changeMemory(edit: MemoryEdit) {
+      try { return (await submit(parseMemoryCommand({ op: "memory", requestId: crypto.randomUUID(), ...edit }))) === true; }
+      catch { publish({ message: "Check the memory fields, scope and expiry before saving." }); return false; }
     },
     async changeNotebook(edit: NotebookEdit) {
       try {

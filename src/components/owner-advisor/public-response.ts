@@ -1,3 +1,4 @@
+import { parseMemory } from "@/lib/owner-advisor/memory";
 import {
   record,
   ADVISOR_MAX_ANSWER_SOURCES,
@@ -51,6 +52,12 @@ export function parseSnapshot(value: unknown): AdvisorSnapshot {
   );
   stamp(value);
   profile(value.profile);
+  if (value.memory !== undefined) {
+    const m = value.memory;
+    requireValue(record(m) && (m.state === "ready" || m.state === "unavailable"));
+    requireValue(Object.keys(m).sort().join(",") === (m.state === "ready" ? "memory,state" : "state"));
+    if (m.state === "ready") parseMemory(m.memory);
+  }
   if (value.notebook !== undefined) {
     const n = value.notebook;
     requireValue(record(n) && (n.state === "ready" || n.state === "unavailable"));
@@ -137,7 +144,9 @@ export function parseAnswer(value: unknown): AnswerResponse {
   if (a.coveragePlans !== undefined) parseCoveragePlans(a.coveragePlans);
   if (a.context !== undefined) {
     const c = a.context;
-    requireValue(record(c) && Object.keys(c).sort().join(",") === "notebookRevision,taskId" &&
+    requireValue(record(c) && Object.keys(c).every(k => ["notebookRevision", "memoryRevision", "profileRevision", "taskId"].includes(k)) &&
+      (c.memoryRevision === undefined || c.memoryRevision === null || notebookRevision(c.memoryRevision)) &&
+      (c.profileRevision === undefined || notebookRevision(c.profileRevision)) &&
       (c.notebookRevision === null || notebookRevision(c.notebookRevision)) &&
       (c.taskId === null || notebookId(c.taskId) && c.notebookRevision !== null));
   }
@@ -188,4 +197,10 @@ export function parseNotebookSaved(value: unknown): {
   requireValue(record(value) && value.state === "notebook_saved" && notebookRevision(value.revision) && value.revision > 0);
   stamp(value);
   return value as ReturnType<typeof parseNotebookSaved>;
+}
+
+export function parseMemorySaved(value: unknown) {
+  requireValue(record(value) && value.state === "memory_saved" && notebookRevision(value.revision));
+  stamp(value);
+  return value as { state: "memory_saved"; revision: number; authority: string; observedAt: string; validForMs: number };
 }

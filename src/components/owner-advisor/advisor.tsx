@@ -12,6 +12,8 @@ import { bindAdvisorLifecycle } from "./lifecycle";
 import { AttentionSection } from "./attention";
 import { WorkflowControls, WorkflowResults } from "./workflows";
 import { SelectField } from "@/components/select-field";
+import { MemoryPanel } from "./memory-panel";
+import type { MemoryEdit } from "@/lib/owner-advisor/memory";
 import { NotebookPanel } from "./notebook-panel";
 import { CoverageActionPanel } from "./coverage-actions";
 import { comparisonPredatesSave } from "./coverage-plans";
@@ -57,6 +59,7 @@ export function AdvisorScreen({
     reviewItem?: (id: string, disposition: AttentionDisposition) => void;
     inspect?: (tool: Extract<import("@/lib/owner-advisor/contracts").AdvisorCommand, { op: "inspect" }>["tool"]) => void;
     reviewCoverage?: (plans: import("@/lib/owner-advisor/coverage-plan-contracts").CoveragePlans, index: number) => void;
+    changeMemory?: (edit: MemoryEdit) => Promise<boolean>;
     changeNotebook?: (edit: NotebookEdit) => Promise<boolean>;
     selectTask?: (id: string | null) => void;
   };
@@ -289,7 +292,8 @@ export function AdvisorScreen({
                     {view.busy === "save" ? "Saving…" : "Save priorities"}
                   </button>
                 </form>
-                {saved && actions.changeNotebook ? <NotebookPanel
+                {current.memory?.state === "ready" && actions.changeMemory ? <MemoryPanel memory={current.memory.memory} date={current.attention?.date ?? current.briefing.data?.date ?? ""} disabled={disabled || !(current.attention?.date ?? current.briefing.data?.date)} change={actions.changeMemory} savedDraft={coverage?.view.result} /> : <p className="oa-muted">Owner memory is unavailable. Refresh before saving preferences or decisions.</p>}
+              {saved && actions.changeNotebook ? <NotebookPanel
                   notebook={saved}
                   date={current.briefing.data?.date ?? current.observedAt.slice(0, 10)}
                   disabled={disabled}
@@ -360,6 +364,7 @@ export function OwnerAdvisor() {
         reviewCoverage: (plans, index) => { comparisonTrigger.current = document.activeElement as HTMLElement; void coverageRef.current?.prepare(plans, index); },
         inspect: tool => void ref.current?.inspect(tool),
         selectTask: id => ref.current?.selectTask(id),
+        changeMemory: edit => ref.current?.changeMemory(edit) ?? Promise.resolve(false),
         changeNotebook: edit => ref.current?.changeNotebook(edit) ?? Promise.resolve(false),
       }}
     />

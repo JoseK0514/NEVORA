@@ -43,6 +43,7 @@ export const CURRENT_MIGRATIONS = [
   '0043_schedule_pending_edits.sql',
   '0044_owner_advisor_notebook.sql',
   '0045_owner_coverage_actions.sql',
+  '0046_owner_advisor_memory.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every
