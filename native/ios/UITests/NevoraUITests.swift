@@ -171,6 +171,7 @@ final class NevoraBackendUITests: XCTestCase {
     }
     override func tearDownWithError() throws {
         defer { app?.terminate() }
+        if app != nil { retain("Backend journey at teardown") }
         if !controlOrigin.isEmpty { try command("outage-off") }
     }
     private func command(_ action: String) throws {
@@ -223,7 +224,9 @@ final class NevoraBackendUITests: XCTestCase {
     func testEmployeeActionRevocationOutageAndLogout() throws {
         login("QA-NATIVE-A"); expect("Welcome back, QA NATIVE")
         openSchedule(owner: false); link("More, ").tap(); expect("Your work"); link("Availability").tap(); expect("Your usual week")
-        app.webViews.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Monday,")).firstMatch.tap()
+        // WebKit exposes this aria-haspopup row as Other on iOS 26.5.
+        let monday = app.webViews.otherElements.matching(NSPredicate(format: "label BEGINSWITH %@", "Monday,")).firstMatch
+        XCTAssertTrue(monday.waitForExistence(timeout: 20)); monday.tap()
         let available = app.webViews.switches["Available on Monday"]
         XCTAssertTrue(available.waitForExistence(timeout: 20)); available.tap(); app.webViews.buttons["Done"].tap()
         app.webViews.buttons["Save"].tap(); expect("Usual hours saved"); try command("verify-employee"); retain("Employee availability saved")
@@ -241,6 +244,7 @@ final class NevoraBackendUITests: XCTestCase {
         let name = app.webViews.textFields["Business name"]
         XCTAssertTrue(name.waitForExistence(timeout: 20)); XCTAssertEqual(name.value as? String, "QA")
         name.tap(); name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: 2) + "Fictional iOS Company")
+        XCTAssertEqual(name.value as? String, "Fictional iOS Company")
         app.webViews.buttons["Save"].tap(); expect("Company profile saved"); try command("verify-owner-ios"); retain("Owner company profile saved")
         app.terminate(); app.launch(); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
         XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Owner signed out after process restart")
