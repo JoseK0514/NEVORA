@@ -41,3 +41,8 @@ Legal publisher/Apple Developer/Google Play account status and available physica
 ### November2 native registration checkpoint
 
 Task2 of the native-push custody plan is complete locally at be88fc87: additive0046, current-session/generation/receipt repository, bounded closed HTTP endpoints and explicit disabled-by-default config. Formal gate passed634 focused checks and186 real PostgreSQL regressions. Evidence: `docs/native/evidence/2026-11-02/push-custody/task-2/result.json`. No runtime/provider activation, production migration, signing, push, merge or deployment. Task3 APNs/FCM fake-provider transport implementation follows. Foundation Task4, older Android accessibility and all source/account/device/store gates remain open.
+
+
+### November2 provider checkpoint
+
+Task3 is complete locally at eb9bf4de: bounded fixed-endpoint APNs/FCM adapters, dedicated server OAuth and disabled-by-default provider configuration. Formal gate32files/668tests passed; typecheck and lint passed. Fake IO blocks all default provider network entry points. Evidence: `docs/native/evidence/2026-11-02/push-custody/task-3/result.json`. Task4 still must implement durable native dispatch and the final authority gate after credential waits. This does not qualify device delivery, native capability integration, signing or release.

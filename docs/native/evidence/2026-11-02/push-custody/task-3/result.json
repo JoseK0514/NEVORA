@@ -1,7 +1,7 @@
 {
   "task": 3,
   "base": "ae9631f9c4f33533232e9cd26555ef71e3eea741",
-  "state": "provider module checks passed; formal task-done pending",
+  "state": "Task3 complete; provider modules only",
   "checks": {
     "focused": {
       "files": 32,
@@ -43,6 +43,14 @@
     "task-3-final-focused.log": "8078769b9b323d9706a02e3528bf8f1ab7732d86dd4802f432390b8ea7e6bc01",
     "task-3-final-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "task-3-final-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "task-3-node-docs.json": "8bea521d251eb18c632b01edd93fcfcc7e0fb966b88a05ede29a5155a01912e1"
+    "task-3-node-docs.json": "8bea521d251eb18c632b01edd93fcfcc7e0fb966b88a05ede29a5155a01912e1",
+    "task-3-formal-completion.log": "6b6df092ee44f65e91967797ea5aa0584f13f7e6988c976cb71a5ceca39219ac"
+  },
+  "implementationCommit": "eb9bf4deaa67149ec76db8729b394678f28f9c13",
+  "formalGate": {
+    "passed": true,
+    "files": 32,
+    "tests": 668,
+    "seconds": 5.61
   }
 }
