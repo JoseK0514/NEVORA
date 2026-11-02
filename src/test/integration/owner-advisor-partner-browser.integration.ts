@@ -77,7 +77,7 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
     checks.push(`${engine}: actual decision/reason/outcome submissions retain Owner-reported status`);
     phase='actual legal inspection';
     expect(await page.getByRole('button',{name:'Inspect legal sources',exact:true}).isDisabled()).toBe(true);
-    await page.getByLabel('Jurisdiction',{exact:true}).selectOption('PR_US');await page.getByRole('button',{name:'Inspect legal sources',exact:true}).click();
+    await page.getByLabel('Jurisdiction',{exact:true}).selectOption('PR_US');await page.getByLabel('Research topic',{exact:true}).selectOption('working_time');await page.getByRole('button',{name:'Inspect legal sources',exact:true}).click();
     // Three server sources each have an8-second bound; this wait covers that declared contract.
     await page.getByRole('region',{name:'Legal source status',exact:true}).waitFor({timeout:30000});
     await page.getByRole('heading',{name:'Applicability unverified · Puerto Rico',exact:true}).waitFor();
