@@ -118,7 +118,10 @@ public class BackendInstrumentedTest {
     }
     @Test public void aa_activatedAccountCanSignIn() {
         expectText("Employee ID");tap(By.text("Activate account"));expectPath("/activate");
-        expectText("Set up your account.");tap(By.desc("Already activated? Sign in"));
+        expectText("Set up your account.");
+        // The heading also exists while checking. Wait for the completed
+        // missing-invitation state so its inserted action cannot move the link.
+        expectText("Get invitation help");tap(By.desc("Already activated? Sign in"));expectPath("/login");
         // The owned browser journey already completed the real email proof and
         // password form. Enter the resulting account through ordinary native UI.
         login("QA-NATIVE-JOIN");expectText("Welcome back, Fictional");
