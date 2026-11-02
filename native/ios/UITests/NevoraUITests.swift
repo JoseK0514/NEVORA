@@ -167,7 +167,7 @@ final class NevoraBackendUITests: XCTestCase {
             XCTAssertEqual(url.path, ""); XCTAssertNil(url.user); XCTAssertNil(url.query); XCTAssertNil(url.fragment)
         }
         try command("reset")
-        app = XCUIApplication(); app.launchArguments = ["-nevora-debug-origin", origin]; app.launch()
+        app = XCUIApplication(); app.launchArguments = ["-nevora-debug-origin", origin, "-nevora-debug-focus-report"]; app.launch()
     }
     override func tearDownWithError() throws {
         defer { app?.terminate() }
@@ -249,7 +249,7 @@ final class NevoraBackendUITests: XCTestCase {
         name.typeText("Fictional iOS Company")
         XCTAssertEqual(name.value as? String, "Fictional iOS Company")
         app.webViews.buttons["Save"].tap(); expect("Company profile saved"); try command("verify-owner-ios"); retain("Owner company profile saved")
-        app.terminate(); app.launch(); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
+        app.terminate(); app.launch(); XCTAssertEqual(app.state, .runningForeground); expect("Welcome back, Fictional"); logout(); app.terminate(); app.launch()
         XCTAssertTrue(app.webViews.buttons["Sign in"].waitForExistence(timeout: 20)); retain("Owner signed out after process restart")
     }
     func testActivatedAccountCanSignIn() throws {

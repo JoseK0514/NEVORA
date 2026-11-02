@@ -136,6 +136,22 @@ final class PortalViewController: UIViewController, WKNavigationDelegate, WKUIDe
         deadline?.cancel()
         cover.isHidden = true
         webView.isHidden = false
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-nevora-debug-focus-report") {
+            let observe = { [weak self, weak webView] in
+                guard let self, let webView, webView === self.webView, self.lifecycle.accepts(ticket) else { return }
+                // Fixed, read-only test diagnostic. No bridge or page-provided code.
+                webView.evaluateJavaScript("({focus:document.hasFocus(),visible:document.visibilityState==='visible',online:navigator.onLine})") { value, _ in
+                    guard let state = value as? [String: Bool] else { return }
+                    NSLog("NEVORA_NATIVE_FOCUS window=%d first=%d focus=%d visible=%d online=%d",
+                          webView.window?.isKeyWindow == true ? 1 : 0, webView.isFirstResponder ? 1 : 0,
+                          state["focus"] == true ? 1 : 0, state["visible"] == true ? 1 : 0, state["online"] == true ? 1 : 0)
+                }
+            }
+            observe()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: observe)
+        }
+        #endif
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(webView, error: error) }
