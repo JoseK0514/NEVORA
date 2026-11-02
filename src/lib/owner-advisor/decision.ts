@@ -1,4 +1,4 @@
-import { parseDecisionMetrics, renderDecisionMetric, decisionMetricNames, type DecisionMetric } from "./decision-metrics";
+import { matchesDecisionScope, parseDecisionMetrics, renderDecisionMetric, decisionMetricNames, type DecisionMetric } from "./decision-metrics";
 import type { DecisionContext } from "./contracts";
 import { record, type ToolCall, type ToolResult } from "./contracts";
 import type { WorkflowEvidence } from "./workflow-contracts";
@@ -64,6 +64,23 @@ export function decisionEvidenceSummary(evidence: readonly DecisionEvidence[]) {
   return evidence.filter(e => current(e, evidence)).map(e => ({ id: e.id, tool: e.call.name, args: e.call.args, observedAt: e.result.observedAt, partial: partial(e) }));
 }
 
+/** Selected workflow cards are actionable; observation-only comparisons remain contextual. */
+function selectedCardsMatchScope(e: DecisionEvidence, focus?: DecisionContext["focus"]): boolean {
+  const period = e.result.periodReview;
+  if (period) {
+    if (e.call.name !== "attendance_payroll_review" || period.startDate !== e.call.args.startDate ||
+      period.endDate !== e.call.args.endDate || period.language !== e.call.args.language ||
+      !matchesDecisionScope(period.startDate) || !matchesDecisionScope(period.endDate) || period.startDate > period.endDate) return false;
+    if (focus?.kind === "coverage" && (period.startDate !== focus.date || period.endDate !== focus.date)) return false;
+    if (focus?.kind === "period" && (period.startDate !== focus.startDate || period.endDate !== focus.endDate)) return false;
+  }
+  if (e.result.proposals) {
+    if (e.call.name !== "coverage_proposals" || !matchesDecisionScope(e.call.args.date, focus)) return false;
+    const date = e.call.args.date;
+    if (e.result.proposals.some(p => p.date !== date)) return false;
+  }
+  return true;
+}
 /** Checks references/structure and canonical-plan identity, not whether arbitrary
  * model-authored prose is true. No business writer or authorization is produced.
  * The concise record renders into the existing public text/sources contract. */
@@ -92,13 +109,15 @@ export function reviewDecision(args: unknown, evidence: readonly DecisionEvidenc
       if (option.coverage !== null) issues.push("INVALID_COVERAGE_REFERENCE");
       continue;
     }
-    const ref = option.coverage, plan = ref ? byId.get(ref.evidenceId)?.result.coveragePlans : undefined;
-    if (!ref || !option.evidenceIds.includes(ref.evidenceId) || plan?.state !== "ready" ||
+    const ref = option.coverage, read = ref ? byId.get(ref.evidenceId) : undefined, plan = read?.result.coveragePlans;
+    if (!ref || !option.evidenceIds.includes(ref.evidenceId) || read?.call.name !== "coverage_plan" || plan?.state !== "ready" ||
+      plan.date !== read.call.args.date || !matchesDecisionScope(plan.date, context?.focus) ||
       !plan.alternatives[ref.alternativeIndex] || plan.alternatives[ref.alternativeIndex].status === "INVALID") issues.push("INVALID_COVERAGE_REFERENCE");
   }
-  if (issues.length) return { state: "revise", issues: [...new Set(issues)] };
   const selected = d.options.find(o => o.id === d.recommendation.optionId);
-  const selectedReads = selected?.evidenceIds.map(id => byId.get(id)!) ?? [];
+  const selectedReads = selected?.evidenceIds.flatMap(id => byId.has(id) ? [byId.get(id)!] : []) ?? [];
+  if (selectedReads.some(e => !selectedCardsMatchScope(e, context?.focus))) issues.push("INVALID_OPTION_REFERENCE");
+  if (issues.length) return { state: "revise", issues: [...new Set(issues)] };
   const distinct = <T,>(values: T[]) => [...new Map(values.map(v => [JSON.stringify(v), v])).values()];
   const periods = distinct(selectedReads.flatMap(e => e.result.periodReview ? [e.result.periodReview] : []));
   const proposals = distinct(selectedReads.flatMap(e => e.result.proposals ? [e.result.proposals] : []));

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { randomUUID } from "node:crypto";
 import { companyAccessFixture } from "@/test/integration/company-access-fixture";
 import { parseMemoryCommand } from "./memory";
@@ -93,4 +93,30 @@ it("keeps explicit memory beyond twelve recent messages and binds reads to origi
     const foreign = new AdvisorMemory(new AdvisorStore(f.owner, { ...admission, workspace: { ...admission.workspace, id: "foreign-workspace" } }, f.db.executor));
     await expect(foreign.read()).rejects.toThrow();
     await expect(foreign.save(parseMemoryCommand(save(1)))).rejects.toThrow();
+});
+
+it.each(["intent", "decision"] as const)("rejects %s renewal when server read/apply clocks straddle expiry, then purges through SQL", async kind => {
+    const { AdvisorStore } = await import("./store.server"), { admitOwner } = await import("./authority.server"), { AdvisorMemory } = await import("./memory.server");
+    await f.q("UPDATE workspaces SET time_zone='America/Puerto_Rico' WHERE singleton=true");
+    const memory = new AdvisorMemory(new AdvisorStore(f.owner, await admitOwner(f.owner, f.db.executor), f.db.executor));
+    const created = "2026-11-01T00:00:00.000Z", before = "2027-10-31T23:59:59.999Z", after = "2027-11-01T00:00:00.001Z";
+    const clock = vi.spyOn(memory, "clock").mockResolvedValue(created);
+    const change = kind === "intent" ? { ...save().change, effectiveDate: "2026-11-01", expiryDate: "2027-10-31" } : { kind: "save_decision", decisionId: id, summary: "Original decision", course: "Review", reason: "Owner choice", focus: { kind: "general" }, decisionDate: "2026-11-01", expiryDate: "2027-10-31" };
+    const cmd = (revision: number, value = change) => parseMemoryCommand({ op: "memory", requestId: randomUUID(), expectedRevision: revision, change: value });
+    await memory.save(cmd(0));
+    clock.mockReset().mockResolvedValueOnce(before).mockResolvedValueOnce(after);
+    const edit = cmd(1);
+    await expect(memory.save(edit)).rejects.toThrow("conflict");
+    expect(clock).toHaveBeenCalledTimes(2);
+    expect(await f.q("SELECT request_id FROM owner_advisor_requests WHERE request_id=$1", [edit.requestId])).toEqual([]);
+    const key = kind === "intent" ? "intents" : "decisions";
+    const [stored] = await f.q<{ intents: { createdAt: string }[]; decisions: { createdAt: string }[]; revision: number }>("SELECT revision,intents,decisions FROM owner_advisor_memories");
+    expect(stored.revision).toBe(1); expect(stored[key][0].createdAt).toBe(created);
+    clock.mockResolvedValue(after);
+    expect(await memory.read()).toMatchObject({ state: "ready", memory: { revision: 2, intents: [], decisions: [] } });
+    await expect(memory.save(edit)).rejects.toThrow("conflict");
+    const fresh = { ...change, [kind === "intent" ? "intentId" : "decisionId"]: randomUUID() };
+    expect(await memory.save(cmd(2, fresh))).toEqual({ revision: 3 });
+    expect((await f.q<{ result: unknown }>("SELECT result FROM owner_advisor_requests WHERE kind='memory' ORDER BY created_at DESC"))).toEqual(expect.arrayContaining([{ result: { revision: 3 } }]));
+    clock.mockRestore();
 });

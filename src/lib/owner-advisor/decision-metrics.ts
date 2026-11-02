@@ -10,7 +10,7 @@ export function parseDecisionMetrics(value: unknown): DecisionMetric[] | null {
     (m.alternativeIndex === undefined || m.alternativeIndex === null || Number.isInteger(m.alternativeIndex) && Number(m.alternativeIndex) >= 0 && Number(m.alternativeIndex) <= 1))) return null;
   return value.map(m => m.alternativeIndex === null ? { evidenceId: m.evidenceId, metric: m.metric } : m) as DecisionMetric[];
 }
-function matchesScope(date: string, focus?: TaskFocus): boolean {
+export function matchesDecisionScope(date: string, focus?: TaskFocus): boolean {
   return /^20\d\d-\d\d-\d\d$/.test(date) && Number.isFinite(Date.parse(date)) && new Date(date).toISOString().slice(0, 10) === date &&
     (!focus || focus.kind === "general" || (focus.kind === "coverage" ? date === focus.date : date >= focus.startDate && date <= focus.endDate));
 }
@@ -21,14 +21,14 @@ export function renderDecisionMetric(m: DecisionMetric, e: DecisionEvidence, lan
   if (m.metric.startsWith("briefing_")) {
     if (e.call.name !== "company_briefing" || m.alternativeIndex !== undefined || !record(e.result.data) || !record(e.result.data.counts) || typeof e.result.data.date !== "string") return null;
     const data = e.result.data;
-    if (!matchesScope(String(data.date), focus)) return null;
+    if (!matchesDecisionScope(String(data.date), focus)) return null;
     const fields = { briefing_scheduled: ["scheduled", "Scheduled shifts", "Turnos programados"], briefing_clocked_in: ["clockedIn", "Clocked in", "Entradas registradas"], briefing_late: ["late", "Late", "Tardanzas"], briefing_not_clocked_in: ["notClockedIn", "Not clocked in", "Sin entrada registrada"] } as const;
     const field = fields[m.metric as keyof typeof fields];
     if (!field) return null;
     value = (data.counts as Record<string, unknown>)[field[0]]; label = field[es ? 2 : 1]; scope = String(data.date);
   } else {
     const p = e.result.coveragePlans;
-    if (e.call.name !== "coverage_plan" || p?.state !== "ready" || p.date !== e.call.args.date || !matchesScope(p.date, focus)) return null;
+    if (e.call.name !== "coverage_plan" || p?.state !== "ready" || p.date !== e.call.args.date || !matchesDecisionScope(p.date, focus)) return null;
     const a = m.alternativeIndex === undefined ? undefined : p.alternatives[m.alternativeIndex];
     if (m.alternativeIndex !== undefined && (!a || a.status === "INVALID")) return null;
     scope = `${p.date}; ${m.alternativeIndex === undefined ? (es ? "base" : "baseline") : `${es ? "alternativa" : "alternative"} ${m.alternativeIndex + 1}`}`;

@@ -1,6 +1,9 @@
 import { expect, it } from "vitest";
 import { parseCommand, type ToolCall, type ToolResult } from "./contracts";
 import { investigate } from "./loop.server";
+import { ownerCoveragePlan } from "@/test/fixtures/owner-coverage-plan";
+import type { DecisionEvidence } from "./decision";
+import type { TaskFocus } from "./notebook";
 import { reviewDecision } from "./decision";
 import { ownerDecision, decisionReply } from "@/test/fixtures/owner-decision";
 const config = { endpoint: "https://provider.invalid/responses", model: "fictional", key: "fixture", dailyLimit: 3 };
@@ -64,4 +67,66 @@ it("reads explicit period instead of stale task focus and enforces two reviews a
   requests = 0;
   await expect(investigate(config, [], "", "Review", { ...deps(), decisionContext: period, fetch: async () => { requests++; return Response.json({ output: [{ type: "function_call", name: "company_briefing", arguments: "{}", call_id: String(requests) }] }); } })).rejects.toThrow("limit");
   expect(requests).toBe(6);
+});
+
+// Same ledger, distinct dates: mandatory scoped reads do not authorize another action date.
+const scopedRead = (date: string, id = "E2"): DecisionEvidence => {
+  const plan = ownerCoveragePlan(); plan.date = date;
+  for (const a of plan.alternatives) for (const assignment of a.assignments) assignment.date = date;
+  return { id, call: { name: "coverage_plan", args: { date } }, result: { ...result, coveragePlans: plan } };
+};
+const actionDecision = (canonical = true) => ({ ...reviewed(), metrics: [],
+  observations: [{ statement: "Compare recorded context.", evidenceIds: ["E3"] }],
+  options: [{ ...ownerDecision().options[0], evidenceIds: ["E3"], feasibility: canonical ? "canonical_coverage" : "unverified", coverage: canonical ? { evidenceId: "E3", alternativeIndex: 0 } : null }],
+});
+const scopeReview = (selected: DecisionEvidence, focus?: TaskFocus, canonical = true) => reviewDecision(JSON.stringify(actionDecision(canonical)), [scopedRead("2026-11-01"), selected], focus ? { objective: "Respect explicit scope", focus } : undefined);
+it("rejects wrong-date canonical options with empty metrics despite the mandatory in-scope read", () => {
+  const other = scopedRead("2026-11-02", "E3");
+  expect(scopeReview(other, decisionContext.focus)).toMatchObject({ state: "revise", issues: ["INVALID_COVERAGE_REFERENCE"] });
+  expect(scopeReview(other, { kind: "period", startDate: "2026-11-03", endDate: "2026-11-04" }).state).toBe("revise");
+  for (const focus of [undefined, { kind: "general" } as const, { kind: "period", startDate: "2026-11-01", endDate: "2026-11-02" } as const]) expect(scopeReview(other, focus)).toMatchObject({ state: "accepted", evidence: { coveragePlans: { date: "2026-11-02" } } });
+  expect(scopeReview(scopedRead("2026-11-01", "E3"), decisionContext.focus).state).toBe("accepted");
+  const d = actionDecision(); d.options.push({ ...d.options[0], id: "unused" }); d.options[0] = { ...d.options[0], evidenceIds: ["E2"], coverage: { evidenceId: "E2", alternativeIndex: 0 } };
+  expect(reviewDecision(JSON.stringify(d), [scopedRead("2026-11-01"), other], decisionContext).state).toBe("revise");
+});
+it("checks canonical tool and call/result date identity even without explicit focus", () => {
+  const e = scopedRead("2026-11-02", "E3");
+  for (const call of [{ name: "company_briefing", args: {} }, { name: "coverage_plan", args: { date: "2026-11-01" } }] as ToolCall[]) expect(scopeReview({ ...e, call }).state).toBe("revise");
+});
+const adjacentRead = (kind: "period" | "proposals", startDate: string, endDate = startDate): DecisionEvidence => kind === "period" ? {
+  id: "E3", call: { name: "attendance_payroll_review", args: { startDate, endDate, language: "en" } }, result: { ...result, periodReview: { startDate, endDate, language: "en", observedAt: result.observedAt, readiness: "unverified", partial: false, attendance: { state: "ready", total: 0, employees: [] }, payroll: { state: "ready", runs: [] } } },
+} : { id: "E3", call: { name: "coverage_proposals", args: { date: startDate } }, result: { ...result, proposals: [{ employeeName: "Fictional", locationId: "north", locationName: "North", date: startDate, startTime: "08:00", endTime: "12:00", positionName: null, isDesignatedLead: false, scheduledHours: 0, targetHours: null, publication: "DRAFT", review: "fictional" }] } };
+it.each(["period", "proposals"] as const)("enforces selected %s card scope and identity while preserving contextual comparisons", kind => {
+  const other = adjacentRead(kind, "2026-11-02");
+  expect(scopeReview(other, decisionContext.focus, false)).toMatchObject({ state: "revise", issues: ["INVALID_OPTION_REFERENCE"] });
+  expect(scopeReview(adjacentRead(kind, "2026-11-01"), decisionContext.focus, false).state).toBe("accepted");
+  expect(scopeReview(other, undefined, false).state).toBe("accepted");
+  expect(scopeReview(other, { kind: "general" }, false).state).toBe("accepted");
+  expect(scopeReview({ ...other, call: { name: "company_briefing", args: {} } }, undefined, false).state).toBe("revise");
+  const mismatch = adjacentRead(kind, "2026-11-01"); mismatch.result = other.result;
+  expect(scopeReview(mismatch, undefined, false).state).toBe("revise");
+  const d = actionDecision(false); d.options[0].evidenceIds = ["E2"];
+  expect(reviewDecision(JSON.stringify(d), [scopedRead("2026-11-01"), other], decisionContext).state).toBe("accepted");
+});
+it("requires exact period-card boundaries and single-day coverage cards, retaining general ambiguity", () => {
+  const periodFocus = { kind: "period" as const, startDate: "2026-11-01", endDate: "2026-11-03" };
+  expect(scopeReview(adjacentRead("period", "2026-11-01", "2026-11-03"), periodFocus, false).state).toBe("accepted");
+  for (const e of [adjacentRead("period", "2026-11-02", "2026-11-03"), adjacentRead("period", "2026-11-01", "2026-11-02")]) expect(scopeReview(e, periodFocus, false).state).toBe("revise");
+  expect(scopeReview(adjacentRead("period", "2026-11-01", "2026-11-02"), decisionContext.focus, false).state).toBe("revise");
+  for (const date of ["2026-11-01", "2026-11-03"]) expect(scopeReview(adjacentRead("proposals", date), periodFocus, false).state).toBe("accepted");
+  expect(scopeReview(adjacentRead("proposals", "2026-11-04"), periodFocus, false).state).toBe("revise");
+  const first = { ...adjacentRead("period", "2026-11-01"), id: "E2" }, other = adjacentRead("period", "2026-11-02"), d = actionDecision(false); d.options[0].evidenceIds = ["E2", "E3"];
+  const comparison = reviewDecision(JSON.stringify(d), [first, other], { objective: "Compare", focus: { kind: "general" } });
+  expect(comparison).toMatchObject({ state: "accepted", evidence: {} });
+  if (comparison.state === "accepted") expect(comparison.text).toContain("Multiple periods were compared");
+});
+
+it("validates every proposal date and period language against the selected tool call", () => {
+  const period = adjacentRead("period", "2026-11-01"); period.result.periodReview!.language = "es";
+  expect(scopeReview(period, undefined, false).state).toBe("revise");
+  const proposals = adjacentRead("proposals", "2026-11-01"); proposals.result.proposals!.push({ ...proposals.result.proposals![0], date: "2026-11-02" });
+  expect(scopeReview(proposals, undefined, false).state).toBe("revise");
+  const empty = adjacentRead("proposals", "2026-11-02"); empty.result.proposals = [];
+  expect(scopeReview(empty, decisionContext.focus, false).state).toBe("revise");
+  expect(scopeReview(empty, { kind: "general" }, false)).toMatchObject({ state: "accepted", evidence: { proposals: [] } });
 });

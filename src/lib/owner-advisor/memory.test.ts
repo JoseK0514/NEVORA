@@ -90,3 +90,25 @@ it("projects the exact intersection of an intent window and requested period, wh
     const scoped = applyMemoryCommand(emptyMemory(), command({ ...intent, focus: { kind: "period", startDate: "2026-11-01", endDate: "2026-11-07" } }), now);
     expect(ownerMemoryContext(scoped, now, { kind: "period", startDate: "2026-11-01", endDate: "2026-11-14" }).intents).toEqual([]);
 });
+
+it.each(["intent", "decision"] as const)("rejects a %s edit crossing immutable retention and permits a separate new identity", kind => {
+    const created = "2026-11-01T00:00:00.000Z", before = "2027-10-31T23:59:59.999Z", after = "2027-11-01T00:00:00.001Z", zone = "America/Puerto_Rico";
+    const change = kind === "intent" ? { ...intent, expiryDate: "2027-10-31" } : { kind: "save_decision", decisionId: id, summary: "Original decision", course: "Review", reason: "Owner choice", focus: { kind: "general" }, decisionDate: "2026-11-01", expiryDate: "2027-10-31" };
+    const make = (c: unknown, revision: number) => parseMemoryCommand({ op: "memory", requestId: revision ? "30000000-0000-4000-8000-000000000002" : "30000000-0000-4000-8000-000000000001", expectedRevision: revision, change: c });
+    const initial = applyMemoryCommand(emptyMemory(), make(change, 0), created, undefined, zone), key = kind === "intent" ? "intents" : "decisions";
+    const current = purgeMemory(initial, before, zone);
+    expect(current[key]).toHaveLength(1);
+    expect(applyMemoryCommand(current, make(change, 1), before, undefined, zone)[key][0].createdAt).toBe(created);
+    expect(() => applyMemoryCommand(current, make(change, 1), after, undefined, zone)).toThrow("conflict");
+    expect(purgeMemory(initial, after, zone)[key]).toEqual([]);
+    const fresh = { ...change, [kind === "intent" ? "intentId" : "decisionId"]: "40000000-0000-4000-8000-000000000001" };
+    const next = applyMemoryCommand(current, make(fresh, 1), after, undefined, zone);
+    expect(next[key]).toHaveLength(1); expect(next[key][0].createdAt).toBe(after); expect(next[key][0].id).not.toBe(id);
+});
+it.each(["intent", "decision"] as const)("does not recycle an expired %s identity into the other record kind during an edit window", kind => {
+    const created = "2026-11-01T00:00:00.000Z", after = "2027-11-01T00:00:00.001Z";
+    const decision = { kind: "save_decision", decisionId: id, summary: "Decision", course: "Review", reason: "Owner", focus: { kind: "general" }, decisionDate: "2026-11-01", expiryDate: "2027-10-31" };
+    const preference = { ...intent, expiryDate: "2027-10-31" };
+    const initial = applyMemoryCommand(emptyMemory(), command(kind === "intent" ? preference : decision), created);
+    expect(() => applyMemoryCommand(initial, command(kind === "intent" ? decision : preference, 1), after, undefined, "America/Puerto_Rico")).toThrow("conflict");
+});

@@ -220,7 +220,9 @@ export function applyMemoryCommand(current: OwnerMemory, command: MemoryCommand,
     next.revision++;
     const c = command.change;
     if (c.kind === "save_intent") {
-        const old = next.intents.find(i => i.id === c.intentId);
+        const old = current.intents.find(i => i.id === c.intentId);
+        // An edit may cross expiry after the guarded server read. Never renew its age.
+        if (current.decisions.some(d => d.id === c.intentId) || old && !retained(old, now, timeZone)) throw new MemoryError("conflict");
         if (!old && next.intents.length >= 12)
             throw new MemoryError("limit");
         const item: MemoryIntent = { id: c.intentId, kind: c.kindOfIntent, text: c.text, focus: c.focus, effectiveDate: c.effectiveDate, expiryDate: c.expiryDate, source: "explicit_owner", createdAt: old?.createdAt ?? now, updatedAt: now };
@@ -232,7 +234,8 @@ export function applyMemoryCommand(current: OwnerMemory, command: MemoryCommand,
         next.intents = next.intents.filter(i => i.id !== c.intentId);
     }
     else if (c.kind === "save_decision") {
-        const old = next.decisions.find(d => d.id === c.decisionId);
+        const old = current.decisions.find(d => d.id === c.decisionId);
+        if (current.intents.some(i => i.id === c.decisionId) || old && !retained(old, now, timeZone)) throw new MemoryError("conflict");
         if (!old && next.decisions.length >= 20)
             throw new MemoryError("limit");
         const item: MemoryDecision = { id: c.decisionId, summary: c.summary, course: c.course, reason: c.reason, focus: c.focus, decisionDate: c.decisionDate, expiryDate: c.expiryDate, source: "explicit_owner", createdAt: old?.createdAt ?? now, updatedAt: now, outcome: null };
