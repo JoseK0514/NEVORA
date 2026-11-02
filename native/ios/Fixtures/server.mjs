@@ -20,7 +20,9 @@ const script = document.createElement('script'); const scriptDone = new Promise(
 Promise.allSettled([imageDone,scriptDone,fetch('/__test/redirect/connect')]).then(async () => {
  await fetch('/__test/same-ok'); await fetch('/__test/renderer-complete'); document.getElementById('renderer-status').textContent='Containment complete';
 });</script>`;
-const page = (body, context) => '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + body + `<p>${context}</p></body></html>`;
+// Match the real app's inherited form font; browser-default small inputs cause
+// iOS focus zoom and a different keyboard/viewport journey from the actual UI.
+const page = (body, context) => '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>button,input,select,textarea{font:inherit}</style></head><body>' + body + `<p>${context}</p></body></html>`;
 const server = createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store, private');
   const cookie = request.headers.cookie?.match(/(?:^|;\s*)fuel_session=([^;]+)/)?.[1];
