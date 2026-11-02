@@ -2,7 +2,7 @@ import { beforeEach, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({ allowed: vi.fn(async () => true), create: vi.fn(), destroy: vi.fn(), prepare: vi.fn(), credential: vi.fn(), activation: vi.fn(), verify: vi.fn(), activate: vi.fn(), deletion: vi.fn(), admit: vi.fn(), release: vi.fn(), forwarded: null as string | null }));
 vi.mock('@/lib/auth/login-limits', () => ({ passwordLoginAllowed: state.allowed }));
 vi.mock('next/headers', () => ({ headers: async () => new Headers(state.forwarded ? { 'x-forwarded-for': state.forwarded } : {}) }));
-vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLoginAttempt: state.admit, releaseLoginAddress: state.release }));
+vi.mock('@/lib/auth/login-limits.server', async () => ({ ...(await import('../../lib/auth/login-limits.server')), admitLogin: async (id: string, address: string | null) => ({ admitted: await state.admit(id, address), addressBucket: 1977 }), releaseLoginAddress: state.release }));
 vi.mock('next/navigation', () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));
 vi.mock('@/lib/auth/session', () => ({ createSession: state.create, destroySession: state.destroy }));
 vi.mock('@/lib/data/employees', () => ({ findEmployeeCredential: state.credential, getEmployeeActivationState: state.activation, activateEmployeeCredential: state.activate }));
@@ -118,7 +118,8 @@ it('unknown_and_inactive_ids_still_pay_for_a_password_check', async () => {
 it('a proven password hands its slot back to the shared network address; a wrong one never does', async () => {
   state.forwarded = '198.51.100.9';
   await expect(login(form())).rejects.toThrow('redirect:/app');
-  expect(state.release).toHaveBeenCalledWith('198.51.100.9');
+  // The refund names the window the attempt was admitted in, never the current one.
+  expect(state.release).toHaveBeenCalledWith('198.51.100.9', { admitted: true, addressBucket: 1977 });
   state.release.mockClear(); state.verify.mockResolvedValue(false);
   await expect(login(form())).rejects.toThrow('redirect:/login?error=invalid');
   expect(state.release).not.toHaveBeenCalled();

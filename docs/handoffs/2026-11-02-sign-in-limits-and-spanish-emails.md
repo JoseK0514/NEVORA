@@ -5,6 +5,11 @@ Jose approved the open engineering items from the Access review. Everything here
 ## Sign-in limits
 
 - **One store network can no longer lock out a shift.** Each sign-in still counts against the client address before the password is checked, so parallel guesses can't slip through. Once the password is proven, `releaseLoginAddress` gives that slot back, so the address budget (60 per 15 minutes) counts only failures. The per-Employee-ID budget (10 per 15 minutes) still counts every attempt. A failed refund leaves the attempt counted. Account deletion's password check is unchanged.
+- **Review fixes (November 2 cloud review of PR #38).**
+  - `admitLogin` now returns the 15-minute window the address attempt was counted in. `releaseLoginAddress` refunds that window only, so a sign-in that crosses a boundary can't erase the new window's failures.
+  - The refund locks the row (`SELECT … FOR UPDATE`) before it deletes or decrements, so concurrent successful refunds apply one after another and leave no phantom attempt.
+  - `admitLoginAttempt` stays as a boolean wrapper for account deletion, which never refunds.
+  - Both cases have `phase-e-home.integration.ts` regressions. With the old refund code, both fail.
 - **One person can no longer block passkey sign-in for everyone.** The platform-wide cap in `consumeAuthLimit` was 300 attempts per 15 minutes across all companies. It is now `AUTH_GLOBAL_CAP` = 20,000, which still bounds how many rows one bucket can create.
 - Tests:
   - `phase-e-home.integration.ts`: 80 successful sign-ins from one address, then failures stop at 60, and refunds never go below zero (44 of 44 passed).

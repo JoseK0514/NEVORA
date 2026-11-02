@@ -568,10 +568,15 @@ async function renderStatementV2(p: NativePaystubPresentation, options: NativePa
     page.drawText(value, { x: o.align === "right" ? x - w : o.align === "center" ? x - w / 2 : x, y: baseline, size, font: o.strong ? bold : regular, color: o.color ?? V2.ink });
   };
   const lines = (value: string, size: number, max: number, strong = false) => wrap(value, strong ? bold : regular, size, max);
+  /** Capitals for the spaced employer line, one character at a time: a character whose capital the pinned font can't
+   * draw (such as "µ", whose capital is Greek "Μ") stays as written, so the line shows only text the glyph check
+   * already accepted. */
+  const boldGlyphs = new Set(bold.getCharacterSet());
+  const capitals = (value: string) => [...value].map(ch => { const up = ch.toUpperCase(); return [...up].every(c => boldGlyphs.has(c.codePointAt(0)!)) ? up : ch; }).join("");
   /** Small spaced capitals for the employer line; wraps on words, and splits a word only when it is longer than a line. */
   const spaced = (value: string, x: number, baseline: number, size: number, max: number, color: Color, track = 1.1) => {
     const span = (part: string) => [...part].reduce((v, ch) => v + bold.widthOfTextAtSize(ch, size) + track, -track);
-    const words = value.toUpperCase().split(" ").flatMap(word => {
+    const words = capitals(value).split(" ").flatMap(word => {
       if (span(word) <= max) return [word];
       const pieces: string[] = []; let piece = "";
       for (const ch of word) { if (piece && span(piece + ch) > max) { pieces.push(piece); piece = ""; } piece += ch; }

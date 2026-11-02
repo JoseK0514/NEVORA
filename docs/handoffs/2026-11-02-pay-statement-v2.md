@@ -25,6 +25,10 @@ Hardening beyond the mock, invisible on normal statements:
 - Taxes and deductions sit side by side only when both fit on one page with single-line rows. Otherwise they stack.
 - If the footer stamp would need more than two lines, it drops the run reference, which still appears in full under References.
 
+## Review fix (November 2 cloud review of PR #38)
+
+The spaced capital employer line uppercased the name after the glyph check, so a name the check accepts could fail to render. For example, "µ Services" becomes Greek "Μ", which WinAnsi can't encode. The line now uppercases one character at a time and keeps any character whose capital the font can't draw. It shows only text the check already accepted and never replaces source text. A regression renders every printable character the check accepts. Normal statements are byte-identical to before.
+
 ## Verification
 
 - New `paystub-document-v2.test.ts` has 12 tests, all passing:

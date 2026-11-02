@@ -3,7 +3,7 @@ import { PDFArray, PDFDocument, PDFRawStream, StandardFonts, decodePDFRawStream 
 import { describe, expect, it } from "vitest";
 import {
   NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V2, NATIVE_PAYSTUB_TEMPLATE_VERSION,
-  renderNativeEmployeePaystub, type NativePaystubPresentation,
+  preflightNativePaystubGlyphs, renderNativeEmployeePaystub, type NativePaystubPresentation,
 } from "./paystub-document";
 
 // Template v2 ("You take home" first, plain-language sections). Fictional data only.
@@ -219,6 +219,24 @@ describe("native pay statement template v2", () => {
     await expect(renderNativeEmployeePaystub(longStatement(), { signal: controller.signal, progress: async () => { if (++calls === 3) controller.abort(reason); } })).rejects.toBe(reason);
     const failure = new Error("Lease lost"); calls = 0;
     await expect(renderNativeEmployeePaystub(longStatement(), { progress: async () => { if (++calls === 5) throw failure; } })).rejects.toBe(failure);
+  });
+
+  it("renders every employer name the glyph check accepts, keeping a character whose capital the font can't draw", async () => {
+    const input = fixture(); input.companyName = "µ Services ÿ ß";
+    await expect(preflightNativePaystubGlyphs(input)).resolves.toBeUndefined();
+    const pdf = await readPdf((await renderNativeEmployeePaystub(input)).bytes);
+    // "µ" stays as written (its capital is Greek "Μ", outside WinAnsi); "ÿ" and "ß" have WinAnsi capitals.
+    expect(pdf.compact).toContain("µSERVICESŸSS");
+    await expectCleanGeometry(pdf.pages);
+    // Every printable character the check accepts renders on the spaced capital line, in body and continued headers.
+    const accepted = (await Promise.all(Array.from({ length: 224 }, (_, i) => String.fromCodePoint(32 + i)).map(async ch => {
+      const probe = fixture(); probe.companyName = `A${ch}Z`;
+      return preflightNativePaystubGlyphs(probe).then(() => ch, () => null);
+    }))).filter((ch): ch is string => ch !== null && ch !== " ");
+    expect(accepted.length).toBeGreaterThan(180);
+    const every = longStatement(); every.companyName = accepted.join("").slice(0, 240);
+    const rendered = await renderNativeEmployeePaystub(every);
+    expect(rendered.pageCount).toBeGreaterThan(1);
   });
 
   it("rejects glyphs the statement font can't draw", async () => {
