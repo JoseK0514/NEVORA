@@ -22,7 +22,13 @@ Promise.allSettled([imageDone,scriptDone,fetch('/__test/redirect/connect')]).the
 });</script>`;
 // Match the real app's inherited form font; browser-default small inputs cause
 // iOS focus zoom and a different keyboard/viewport journey from the actual UI.
-const page = (body, context) => '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>button,input,select,textarea{font:inherit}</style></head><body>' + body + `<p>${context}</p></body></html>`;
+const page = (body, context) => {
+  // Distinct from visible case-sensitive assertions, so a title cannot replace
+  // observing the actual document body. Real NEVORA routes also have titles.
+  const heading = (body.match(/<h1>([^<]+)<\/h1>/)?.[1] ?? 'transport').toLowerCase();
+  const title = heading.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  return `<!doctype html><html><head><title>Native fixture: ${title}</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>button,input,select,textarea{font:inherit}</style></head><body>` + body + `<p>${context}</p></body></html>`;
+};
 const server = createServer(async (request, response) => {
   response.setHeader('Cache-Control', 'no-store, private');
   const cookie = request.headers.cookie?.match(/(?:^|;\s*)fuel_session=([^;]+)/)?.[1];

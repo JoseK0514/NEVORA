@@ -2,6 +2,7 @@
 from pathlib import Path
 import http.cookiejar
 import json
+import re
 import subprocess
 import unittest
 import urllib.error
@@ -26,6 +27,15 @@ class FixtureIsolationTests(unittest.TestCase):
     def login(self, employee_id):
         body = urllib.parse.urlencode({'employeeId': employee_id, 'password': 'fictional-test-password'}).encode()
         return self.client.open(self.origin + '/login', data=body, timeout=5)
+
+    def test_documents_have_an_accessibility_name_distinct_from_visible_assertions(self):
+        for response in [self.client.open(self.origin + '/login', timeout=5), self.login('FICTIONAL')]:
+            with response:
+                body = response.read().decode()
+            title = re.search(r'<title>([^<]+)</title>', body)
+            self.assertIsNotNone(title, 'Native fixture documents require an explicit accessibility name')
+            self.assertTrue(title.group(1).strip())
+            self.assertNotIn('Fictional', title.group(1), 'A document name cannot satisfy the visible-content assertion')
 
     def test_owner_has_distinct_synthetic_home_and_native_context(self):
         with self.login('FICTIONAL-OWNER') as response:
