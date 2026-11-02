@@ -1,0 +1,23 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-11-02-native-push-custody-plan.md
+
+Owner: root, inline execution in existing detached worktree. BASE f4687c2ef0cb48d456a80689bb4dee91d09149a2. Existing uncommitted foundation corrections/evidence belong to the continuing task and are preserved; no other writer edits this checkout.
+
+Ruling: continue the approved independent server capability scope after Jose asks "Whats next". This is the builder's reversible work-order choice, not Jose accepting Android risk or selecting an unstated policy exception. Foundation Task4, source inventory and older-Android accessibility release gates remain open. No merge/push/provider or production access.
+
+Ruling: split server push custody from platform capability/release plans; the approved design covers all of them. This plan supplies the secure server interfaces later native code consumes. Cost if wrong: later platform constraints may require a versioned protocol adjustment; no external deployment is authorized.
+
+Pre-flight: Task1 produces exact NativeChallenge/NativeMaterialBinding/canonical proof functions for Task2 DB and HTTP consumers; Task2 must verify stored challenge/current session/generation transactionally, never treat Task1 signature as authorization. Task3 consumes only decrypted native material and existing ProviderResult. Task4 consumes Task2 leases and Task3 sender while reusing existing business state/policy. Existing Web Push is separate and preserved.
+
+Task1: in progress. Protocol/API and key choices verified against official Node24 docs plus local runtime (EC prime256v1, DER SPKI91bytes). No new dependency. Existing SDK/provider/DB credentials are never used in these pure tests.
+
+Task1 protocol50tests RED missing parseNativeChallenge ->50GREEN; real P-256 keys/signatures over independent literal tuple, no IO. Material26tests RED missing sealNativeToken ->GREEN with shared binding validator and distinct HKDF/AES256GCM purpose. Existing Web Push installation suite included. Metadata parser is closed/detached and disallows accessors/proxies; native proof verification explicitly does not perform DB/session/one-use authorization. No route/provider/feature enabled yet.
+
+Task1 public golden vector RED1failure/53pass ->54protocolGREEN; two independent public tuples contain no raw provider token/private key. Material26 +WebPush6 =86focusedPASS. Typecheck noEmit/incrementalfalse and changed-source ESLint PASS. Added valid paired-substitution cases so cryptographic rejection is not merely invalid-schema rejection. No native account/bridge/runtime registration enabled. Full repository suite now runs alone before Task1 completion; do not mark complete yet.
+
+Task2 discovery (no schema/runtime edits yet): reuse managementSessionStatements with explicit EMPLOYEE/OWNER roles after workspace/employee/native-input locks, matching existing employee-lifecycle lock order. SqlExecutor is a noninteractive ordered batch, not callback transactions. workspaces.ts provides workspaceReadGuard snapshot/fresh statement. Existing local-postgres adapter uses isolated prefixed owned databases. Avoid generated/held tenancy credential code. Current token proof crypto alone cannot cover replay or authorize maintenance.
+Interop note for dependent platform plan: Swift compact JSON serialization must disable slash escaping to match Node signed bytes; native golden vectors must execute on both actual platform cores before calling interop verified. Current vectors are Node-verified only.
+
+Checkpoint evidence ruling: raw immutable XML/log captures retain CRLF/trailing tool whitespace under SHA256 custody; source-only git diff --check excludes those exact generated artifacts/logs, while every indexed staged artifact is rehashed. Do not normalize/delete recorded evidence or suppress source whitespace errors. Initial unscoped check failed on raw capture whitespace; no product/test change was made. *.log is ignored globally, so explicitly stage only the reviewed fictional evidence paths, never broad ignored files.
+
+Task1 full default suite PASS:702files/10733tests,27files/801existing skips,511.33s; maxWorkers1 and allowlisted environment, no own SDK workload. Foundation corrections saved separately as025c172c8ae50eefedfd00e9c48d2adfe480feb1, which does not close Task4 or release gates. Next checkpoint contains only this plan/protocol/material/public-vector work plus its evidence and current handoff.
+Dependent native lifecycle note: OS permission/share dialogs remove window focus and retire the web document. Future bridge must drop stale replies and revalidate/rebind a fresh page; it must not silently carry old-account consent across logout/account change. This does not justify weakening the focus privacy barrier.

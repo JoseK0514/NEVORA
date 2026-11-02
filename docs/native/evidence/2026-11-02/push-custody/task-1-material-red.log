@@ -1,0 +1,173 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/material.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m26 failed[39m[2m)[22m[32m 14[2mms[22m[39m
+[31m   [31m×[31m protects actual token bytes with randomized authenticated encryption[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m interoperates with the literal v1 HKDF, AAD and IV/tag/ciphertext contract[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 0[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 1[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 3[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 4[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a token replayed under different binding metadata 5[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects tampering at envelope byte 0[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects tampering at envelope byte 12[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects tampering at envelope byte 28[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a different key and Web Push ciphertext even with the same root protection key[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 0[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 1[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 3[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 4[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or oversized protected material 5[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical base64 encodings and invalid key sizes[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 0[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 1[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 3[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 4[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses malformed material binding before encrypting 5[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m does not invoke a binding accessor or disclose invalid token input in errors[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 26 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mprotects actual token bytes with randomized authenticated encryption
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m21:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22minteroperates with the literal v1 HKDF, AAD and IV/tag/ciphertext contract
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m30:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 0
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 1
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 2
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 3
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 4
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a token replayed under different binding metadata 5
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m45:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects tampering at envelope byte 0
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects tampering at envelope byte 12
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects tampering at envelope byte 28
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m50:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects a different key and Web Push ciphertext even with the same root protection key
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m56:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 0
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 1
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 2
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 3
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 4
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects malformed or oversized protected material 5
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m63:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrejects noncanonical base64 encodings and invalid key sizes
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m68:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 0
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 1
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 2
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 3
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 4
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mrefuses malformed material binding before encrypting 5
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m81:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/26]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/material.test.ts[2m > [22mdoes not invoke a binding accessor or disclose invalid token input in errors
+[31m[1mAssertionError[22m: expected {} to have property "sealNativeToken"[39m
+[36m [2m❯[22m api src/lib/native-push/material.test.ts:[2m9:18[22m[39m
+    [90m  7|[39m async function api() {
+    [90m  8|[39m   const result = await import('./material').catch(() => ({}));
+    [90m  9|[39m   expect(result).toHaveProperty('sealNativeToken');
+    [90m   |[39m                  [31m^[39m
+    [90m 10|[39m   return result as typeof import('./material');
+    [90m 11|[39m }
+[90m [2m❯[22m src/lib/native-push/material.test.ts:[2m86:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/26]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m26 failed[39m[22m[90m (26)[39m
+[2m   Start at [22m 04:26:47
+[2m   Duration [22m 140ms[2m (import 40%, transform 38%, tests 19%, worker 2%)[22m
+

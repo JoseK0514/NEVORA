@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "purpose": "Public serialization fixtures only; fingerprints are fictional, not registration authority. No private keys or provider tokens.",
+  "vectors": [
+    {
+      "label": "ios-enrollment",
+      "challenge": {
+        "version": 1,
+        "operation": "enroll",
+        "challengeId": "22222222-2222-4222-8222-222222222222",
+        "nonce": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "origin": "https://nevora.example",
+        "environment": "test",
+        "platform": "ios",
+        "appId": "com.velani.nevora.development",
+        "provider": "apns-sandbox",
+        "keyFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expectedGeneration": null,
+        "issuedAt": "2026-11-02T12:00:00.000Z",
+        "expiresAt": "2026-11-02T12:02:00.000Z"
+      },
+      "utf8": "NEVORA_NATIVE_REGISTRATION_V1\n[1,\"enroll\",\"22222222-2222-4222-8222-222222222222\",\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"https://nevora.example\",\"test\",\"ios\",\"com.velani.nevora.development\",\"apns-sandbox\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",null,\"2026-11-02T12:00:00.000Z\",\"2026-11-02T12:02:00.000Z\",\"85337816d263d362acb23a4255a636191075c2a90c47f2ee6db3362f7df11203\"]",
+      "sha256": "2bdccae8dcf58ad89ba61fe371002d126fd3f228717d10e16149e6e70128ebf5"
+    },
+    {
+      "label": "android-detach",
+      "challenge": {
+        "version": 1,
+        "operation": "detach",
+        "challengeId": "22222222-2222-4222-8222-222222222222",
+        "nonce": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "origin": "https://nevora.example",
+        "environment": "test",
+        "platform": "android",
+        "appId": "com.velani.nevora.development",
+        "provider": "fcm",
+        "keyFingerprint": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "expectedGeneration": "11111111-1111-4111-8111-111111111111",
+        "issuedAt": "2026-11-02T12:00:00.000Z",
+        "expiresAt": "2026-11-02T12:02:00.000Z"
+      },
+      "utf8": "NEVORA_NATIVE_REGISTRATION_V1\n[1,\"detach\",\"22222222-2222-4222-8222-222222222222\",\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"https://nevora.example\",\"test\",\"android\",\"com.velani.nevora.development\",\"fcm\",\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"11111111-1111-4111-8111-111111111111\",\"2026-11-02T12:00:00.000Z\",\"2026-11-02T12:02:00.000Z\",null]",
+      "sha256": "5954ecfcfdfdecf001b8b84f2e20eff5c0d7bdefd04b90fa908593997b651b61"
+    }
+  ]
+}

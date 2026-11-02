@@ -1,0 +1,89 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/protocol.test.ts [2m([22m[2m54 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 16[2mms[22m[39m
+   [32m✓[39m verifies a native signature over the independently specified wire bytes[32m 6[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed operation[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed challengeId[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed nonce[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed origin[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed environment[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed platform[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed appId[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed provider[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed keyFingerprint[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed expectedGeneration[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed issuedAt[32m 0[2mms[22m[39m
+   [32m✓[39m rejects substitution of signed expiresAt[32m 0[2mms[22m[39m
+   [32m✓[39m binds the actual token bytes and key, rejecting other signatures and protocols[32m 1[2mms[22m[39m
+   [32m✓[39m rejects cryptographic substitutions even when changed metadata remains syntactically valid 0[32m 0[2mms[22m[39m
+   [32m✓[39m rejects cryptographic substitutions even when changed metadata remains syntactically valid 1[32m 0[2mms[22m[39m
+   [32m✓[39m rejects cryptographic substitutions even when changed metadata remains syntactically valid 2[32m 0[2mms[22m[39m
+   [32m✓[39m rejects a proof outside its exact lifetime: 2026-11-02T11:59:59.999Z[32m 0[2mms[22m[39m
+   [32m✓[39m rejects a proof outside its exact lifetime: 2026-11-02T12:02:00.000Z[32m 0[2mms[22m[39m
+   [32m✓[39m rejects a proof outside its exact lifetime: 2026-11-02T12:03:00.000Z[32m 0[2mms[22m[39m
+   [32m✓[39m rejects a proof outside its exact lifetime: invalid[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 0[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 1[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 2[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 3[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 4[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 5[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 6[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 7[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 8[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 9[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 10[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 11[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 12[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 13[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed or expanded registration metadata 14[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://nevora.example/[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://user@nevora.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://nevora.example?x=1[32m 1[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://nevora.example/#x[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://NEVORA.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin https://nevora.example:443[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin http://attacker.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin http://127.attacker.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects noncanonical or unsafe signed origin javascript:alert(1)[32m 0[2mms[22m[39m
+   [32m✓[39m can serialize explicitly selected development origin http://127.0.0.1:12345 without granting it authority[32m 0[2mms[22m[39m
+   [32m✓[39m can serialize explicitly selected development origin http://localhost:12345 without granting it authority[32m 0[2mms[22m[39m
+   [32m✓[39m can serialize explicitly selected development origin http://10.0.2.2:12345 without granting it authority[32m 0[2mms[22m[39m
+   [32m✓[39m can serialize explicitly selected development origin http://[::1]:12345 without granting it authority[32m 0[2mms[22m[39m
+   [32m✓[39m rejects accessors without invoking them and inherited/hidden schema fields[32m 0[2mms[22m[39m
+   [32m✓[39m rejects non-P256 keys, alternate encodings, trailing DER and malformed public material[32m 1[2mms[22m[39m
+   [32m✓[39m keeps token formats bounded and exact, with no token in errors[32m 0[2mms[22m[39m
+   [32m✓[39m signs detach without material and requires a current generation for maintenance[32m 0[2mms[22m[39m
+[31m   [31m×[31m matches the independent public byte/digest vectors consumed by native implementations[39m[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mmatches the independent public byte/digest vectors consumed by native implementations
+[31m[1mAssertionError[22m: expected null to match object { version: 1, vectors: Any<Array> }[39m
+
+[32m- Expected:[39m
+{
+  "vectors": Any<Array>,
+  "version": 1,
+}
+
+[31m+ Received:[39m
+null
+
+[36m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m146:16[22m[39m
+    [90m144|[39m   let wire: {version: number; vectors: {challenge: unknown; utf8: stri…
+    [90m145|[39m   try { wire = JSON.parse(readFileSync('native/contracts/registration-…
+    [90m146|[39m   expect(wire).toMatchObject({version: 1, vectors: expect.any(Array)});
+    [90m   |[39m                [31m^[39m
+    [90m147|[39m   expect(wire!.vectors).toHaveLength(2);
+    [90m148|[39m   for (const [index, vector] of wire!.vectors.entries()) {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m53 passed[39m[22m[90m (54)[39m
+[2m   Start at [22m 04:29:20
+[2m   Duration [22m 105ms[2m (tests 39%, transform 33%, import 24%, worker 4%)[22m
+

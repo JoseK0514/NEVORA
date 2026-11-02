@@ -1,0 +1,12 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/lib/native-push/protocol.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/installation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/material.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m86 passed[39m[22m[90m (86)[39m
+[2m   Start at [22m 04:29:51
+[2m   Duration [22m 372ms[2m (tests 66%, import 26%, transform 4%, worker 4%)[22m
+

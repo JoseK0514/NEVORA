@@ -1,0 +1,26 @@
+{
+  "status": "local-primitives-verified",
+  "foundationCheckpoint": "025c172c8ae50eefedfd00e9c48d2adfe480feb1",
+  "focusedPassed": 86,
+  "fullSuite": {
+    "passedFiles": 702,
+    "passedTests": 10733,
+    "skippedFiles": 27,
+    "existingSkippedTests": 801,
+    "durationSeconds": 511.33
+  },
+  "typecheck": true,
+  "changedSourceLint": true,
+  "routesEnabled": false,
+  "providerCalls": false,
+  "databaseChanges": false,
+  "nativeInteropExecuted": false,
+  "sourceHashes": {
+    "src/lib/native-push/protocol.test.ts": "83c7f915bbb9ad260ddf24710c3f3fedb77c5539a8720312f3af2c4330aeaed0",
+    "src/lib/native-push/material.test.ts": "e15980f02d412aedcbb596f8227572ecc208ad806ef495e206e8957a1b83e3f4",
+    "src/lib/native-push/types.ts": "ae8d964ba6448c07495031ef76ef2dd3975f7692b755e80efe82e628b0f86fa4",
+    "src/lib/native-push/protocol.ts": "8682f1a0854b62822fcac4845c3030fc00aba6349504ef66c0a6f3e0866ad8b1",
+    "src/lib/native-push/material.ts": "1514ad347df9b309c3a97b82b6734be4173da5535870f0ce5365c4457e549e91",
+    "native/contracts/registration-v1.json": "d36869764dbea958a7328f0737aa2c4317f4ff95470a6a07b4fd9f9db92caca0"
+  }
+}
