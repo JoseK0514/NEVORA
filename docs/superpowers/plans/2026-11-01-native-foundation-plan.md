@@ -39,7 +39,7 @@
 - scripts/native-owned.mjs and src/test/integration/native-shell.integration.ts: explicit disposable full-backend and source custody verification.
 - docs/native: current runbook, evidence manifests and remaining native readiness gates.
 
-## Task1: Session compatibility and native role presentation
+### Task 1: Session compatibility and native role presentation
 
 **Files:** Create context module/tests, versioned route/tests and unsupported-role component. Modify app layout narrowly after authenticated session exists.
 
@@ -52,7 +52,7 @@
 - [ ] Run focused tests, typecheck and current relevant layout/role regression tests. Required independent cases: unauthenticated, expired/revoked, outage, native employee/owner, native unsupported role, ordinary web Manager/Lead. No auth operation is trusted because of UA.
 - [ ] Commit this bounded contract.
 
-## Task2: Reconcile and verify iOS foundation
+### Task 2: Reconcile and verify iOS foundation
 
 **Files:** Adopt only native/ios source/project/fixtures/tests from preserved custody manifest; existing no-page-entrance-motion test fix only if still needed on current base. Add current native marker and role journeys to fixtures.
 
@@ -66,7 +66,7 @@
 - [ ] Run swift test --package-path native/ios, python3 native/ios/test_fixture.py; deterministic project regeneration/diff check; Debug and unsigned Release simulator builds. Run fixture UI tests on one owned simulator only, record unavailable GUI/lock states honestly.
 - [ ] Verify no cookie getter/native token extraction or developer-origin Release override exists. Commit evidence and source separately from historical reports.
 
-## Task3: Android counterpart with matching contracts
+### Task 3: Android counterpart with matching contracts
 
 **Files:** Create native/android/{settings.gradle,build.gradle,gradle.properties,gradle/wrapper/*,gradlew,app/build.gradle}; app/src/main/AndroidManifest.xml; Java package com.velani.nevora.development classes BackendPolicy, ShellLifecycle, SessionStatus, PortalActivity; unit/instrumentation tests and minimal protected app resources.
 
@@ -80,7 +80,7 @@
 - [ ] Run unit tests, assembleDebug and unsigned Release compilation. Run instrumentation against the owned emulator and invocation-owned fixture for login, both roles, foreground/restart/logout, loss/retry, bad origin and unsupported role. Record all missing device-specific evidence.
 - [ ] Commit runnable Android source/runbook and evidence.
 
-## Task4: Actual backend integration and complete foundation verification
+### Task 4: Actual backend integration and complete foundation verification
 
 **Files:** Create scripts/native-owned.mjs, src/test/integration/native-shell.integration.ts, suitable native integration config and fixture-role journey extensions. Use existing owned PostgreSQL/Next app helpers rather than inventing a production fallback.
 

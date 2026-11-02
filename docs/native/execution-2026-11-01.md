@@ -2,6 +2,8 @@
 
 Status: **design approved**. Jose explicitly answered "Approve design and proceed" to the reviewed Employee/Owner iOS/Android shared-interface design. Implementation is authorized within that design; external account/device/distribution gates remain. No repeated approval is needed for the same bounded implementation steps.
 
+Task1 implemented: versioned state-only session endpoint, exact native presentation markers and Employee/Owner qualification. Focused 60 tests, TypeScript and changed-source ESLint passed; see evidence/2026-11-01/session-contract.md. No deployment. Next: reconcile/verify iOS foundation, then Android and actual-backend verification; stages B/C remain required.
+
 User intent: carry out iOS/Android native-readiness implementation. First release: Employee and Owner. Jose delegated the architecture recommendation; Codex recommends shared current UI in direct platform containers, continuing the October25 WKWebView foundation and adding Android. No separate UI rewrite.
 
 Source: detached origin/development1e6f35ab9731234fc765aa18ee817cb196459e2e. Original staged/unstaged/untracked nativefoundation and older POC remain untouched. Foundation custody hashes: evidence/2026-11-01/preserved-foundation-source-hashes.json.

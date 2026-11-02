@@ -34,7 +34,7 @@ import "@/components/employee-mobile/planning.css";
 import "@/components/employee-mobile/hours.css";
 import "@/components/employee-mobile/messages.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
-import {cookies} from "next/headers";
+import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
 import type { Metadata, Viewport } from "next";
@@ -49,6 +49,8 @@ import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
 import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
+import {nativeContext, nativeRoleSupported} from '@/lib/native-shell/context';
+import {UnsupportedNativeRole} from '@/components/native-shell/unsupported-role';
 
 export const metadata: Metadata = {
   // Review fix (23/24 of 50): one title per page, so tab changes are announced and tabs are tellable apart.
@@ -74,6 +76,11 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const session = await requireSession();
+  // Presentation qualification only. Every protected reader/command retains its
+  // existing server authorization; this marker never grants account privileges.
+  if (nativeContext((await headers()).get('user-agent')) && !nativeRoleSupported(session.role)) {
+    return <UnsupportedNativeRole />;
+  }
   const workspace = await getWorkspace();
   const proof = await requireSessionMutationProof();
   const [operationalAuthority,payrollCapabilities]=await Promise.all([readOperationalAuthority(proof),payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined)]);
