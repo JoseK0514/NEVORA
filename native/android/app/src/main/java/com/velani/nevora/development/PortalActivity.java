@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowInsets;
 import android.webkit.CookieManager;
@@ -43,11 +44,13 @@ public final class PortalActivity extends ComponentActivity {
     private Button retry;
     private WebView web;
     private SessionProbe probe;
-    private Runnable deadline;
+    private Runnable deadline, backAction;
+    private long pageGeneration;
+    private boolean handlingBack;
     private final OnBackPressedCallback back = new OnBackPressedCallback(false) {
         @Override public void handleOnBackPressed() {
-            if (web != null && web.canGoBack()) web.goBack();
-            else { setEnabled(false); getOnBackPressedDispatcher().onBackPressed(); }
+            if (backAction != null) backAction.run();
+            else exitOrHistory(null);
         }
     };
 
@@ -90,7 +93,7 @@ public final class PortalActivity extends ComponentActivity {
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
     private void showCover(String message, boolean canRetry) {
-        back.setEnabled(false);
+        back.setEnabled(false); backAction = null; handlingBack = false;
         if (web != null) web.setVisibility(View.GONE);
         status.setText(message); retry.setVisibility(canRetry ? View.VISIBLE : View.GONE);
         cover.setVisibility(View.VISIBLE); cover.bringToFront();
@@ -124,6 +127,29 @@ public final class PortalActivity extends ComponentActivity {
     }
     private boolean current(WebView view, long ticket) { return view == web && lifecycle.accepts(ticket); }
 
+    private void exitOrHistory(WebView view) {
+        if (view != null && view.canGoBack()) view.goBack();
+        else { back.setEnabled(false); getOnBackPressedDispatcher().onBackPressed(); }
+    }
+    private void requestBack(WebView view, long ticket) {
+        if (handlingBack || !current(view, ticket) || view.getVisibility() != View.VISIBLE) return;
+        String document = view.getUrl(); long page = pageGeneration;
+        if (!policy.contains(uri(document))) return;
+        handlingBack = true;
+        // Fixed read-only modal observation. No page-selected code, native
+        // capability, credential, URL, or file operation is exposed to scripts.
+        view.evaluateJavascript("Boolean(document.querySelector('dialog[open]'))", result -> {
+            handlingBack = false;
+            if (!current(view, ticket) || page != pageGeneration || !java.util.Objects.equals(document, view.getUrl())) return;
+            if ("true".equals(result)) {
+                // Use the browser's real dialog cancel path so React retains
+                // its draft and existing animation/focus behavior.
+                view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ESCAPE));
+                view.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ESCAPE));
+            } else if ("false".equals(result)) exitOrHistory(view);
+        });
+    }
+
     private void load(long ticket) {
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         web = new WebView(this);
@@ -155,7 +181,7 @@ public final class PortalActivity extends ComponentActivity {
                 return null;
             }
             @Override public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                if (current(view, ticket) && !policy.contains(uri(url))) unavailable(ticket);
+                if (current(view, ticket)) { pageGeneration++; if (!policy.contains(uri(url))) unavailable(ticket); }
             }
             @Override public void onPageFinished(WebView view, String url) {
                 if (!current(view, ticket) || !policy.contains(uri(url))) return;
@@ -164,10 +190,10 @@ public final class PortalActivity extends ComponentActivity {
                 // private readers correctly stay paused while its document
                 // lacks focus, even when the Activity window is foreground.
                 view.requestFocus();
-                back.setEnabled(view.canGoBack());
+                backAction = () -> requestBack(view, ticket); back.setEnabled(true);
             }
             @Override public void doUpdateVisitedHistory(WebView view, String url, boolean reload) {
-                if (current(view, ticket)) back.setEnabled(view.canGoBack());
+                if (current(view, ticket)) { pageGeneration++; back.setEnabled(view.getVisibility() == View.VISIBLE); }
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame() && current(view, ticket)) unavailable(ticket);
