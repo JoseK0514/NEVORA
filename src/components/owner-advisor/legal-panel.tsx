@@ -28,7 +28,8 @@ export function LegalResults({ research }: { research: LegalResearch }) {
       <p>Source: {s.id} · {s.jurisdiction} · Version: {s.version}</p>
       <p>Document status: {s.sourceStatus}. Reported subject status: {s.subjectStatus}. Review: {s.reviewState}.</p>
       <p>Fetched: <time dateTime={s.fetchedAt}>{s.fetchedAt}</time> · Effective interval: unknown.</p>
-      {s.retrieval === "unavailable" ? <p role="status">Source unavailable ({s.failure?.replaceAll("_", " ")}). No text or verified hash is available. Retry inspection or open the official source.</p> : <p>Text: {s.textAvailability === "metadata_only" ? "PDF unread — metadata only" : s.truncated ? "Truncated extract" : "Lossy HTML extract"}. Retrieval alone is not verification.</p>}
+      {s.projection && <p>Selected scope: 541.600 and published 541.601 amendments · May 15, 2026 publication. {s.projection.state === "complete_selected_passages" ? "Complete selected passages; other provisions and later developments are not supplied." : "Topic text unavailable; status and byte identity only."}</p>}
+      {s.retrieval === "unavailable" ? <p role="status">Source unavailable ({s.failure?.replaceAll("_", " ")}). No text or verified hash is available. Retry inspection or open the official source.</p> : <p>Text: {s.textAvailability === "status_only" ? "Topic text unavailable — status only" : s.textAvailability === "metadata_only" ? "PDF unread — metadata only" : s.projection ? "Complete selected passages" : s.truncated ? "Truncated extract" : "Lossy HTML extract"}. Retrieval alone is not verification.</p>}
       <ul>{s.limitations.map((l, i) => <li key={i}>{l}</li>)}</ul>
       <details><summary>Inspect source identity and extract</summary>
         <p className="oa-plain">SHA-256: {s.hash ?? "unavailable"}</p>

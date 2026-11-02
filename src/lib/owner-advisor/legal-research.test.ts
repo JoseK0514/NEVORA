@@ -86,3 +86,33 @@ it("times out a stalled response body and cancels its reader", async () => {
   await vi.advanceTimersByTimeAsync(8000);
   expect(await promise).toMatchObject({ retrieval: "unavailable", failure: "timeout", hash: null }); expect(cancelled).toBe(true);
 });
+
+it("selects complete GPO operative amendment passages after a long historical preamble", async () => {
+  const { gpoAmendmentFixture } = await import("@/test/fixtures/legal-gpo");
+  const body = gpoAmendmentFixture();
+  const result = await fetchLegalSource("us-gpo-2026-09839", signal(), async () => html(body));
+  expect(result.text).toContain("Puerto Rico, by employers other than the Federal Government.");
+  expect(result.text).toContain("The exception does not apply to fictional excluded professions.");
+  expect(result.text).toContain("except that a bonus provision shall not apply; exclusions include fringe benefits.");
+  expect(result.text).toContain("if the employer fails to pay, the employee does not qualify.");
+  expect(result.text).not.toContain("Historical threshold");
+  expect(result.text).not.toContain("Sec. 541.602 Salary basis.");
+  expect(result).toMatchObject({ hash: createHash("sha256").update(body).digest("hex"), reviewState: "unreviewed", effectiveFrom: null, projection: { kind: "gpo_amendment_sections", publicationDate: "2026-05-15", sections: ["541.600", "541.601"], state: "complete_selected_passages", failure: null } });
+});
+it.each(["missing_start", "missing_middle", "missing_end", "duplicate", "oversized"])("returns GPO status only, never historical prefix, for %s selected-section boundaries", async problem => {
+  const { gpoAmendmentFixture } = await import("@/test/fixtures/legal-gpo");
+  let body = gpoAmendmentFixture();
+  if (problem === "missing_start") body = body.replace("8. Revise", "8. Removed");
+  if (problem === "missing_middle") body = body.replace("9. Amend", "9. Removed");
+  if (problem === "missing_end") body = body.replace("10. Amend", "10. Removed");
+  if (problem === "duplicate") body += gpoAmendmentFixture("");
+  if (problem === "oversized") body = body.replace("(e) Fictional", `(e) ${"Long paragraph. ".repeat(1000)}Fictional`);
+  const result = await fetchLegalSource("us-gpo-2026-09839", signal(), async () => html(body));
+  expect(result).toMatchObject({ retrieval: "available", hash: createHash("sha256").update(body).digest("hex"), textAvailability: "status_only", text: null, projection: { state: "status_only", failure: problem === "oversized" ? "section_limit" : "boundaries_missing" } });
+});
+it("rejects GPO selected-completeness claims attached to a historical prefix or missing passage markers", async () => {
+  const { gpoAmendmentFixture } = await import("@/test/fixtures/legal-gpo");
+  const card = await fetchLegalSource("us-gpo-2026-09839", signal(), async () => html(gpoAmendmentFixture()));
+  const research = { jurisdiction: "US_FEDERAL", topic: "overtime_classification", observedAt: card.fetchedAt, readiness: "unverified", financialClearance: false, sources: [card], missingFacts: card.missingFacts };
+  for (const text of ["Historical threshold", card.text!.replace("Sec. 541.600 Amount of salary required.", "Heading absent"), card.text!.replace("(e)", "(missing)"), card.text!.replace(/\* \* \* \* \*$/, "")]) expect(() => parseLegalResearch({ ...research, sources: [{ ...card, text }] })).toThrow();
+});

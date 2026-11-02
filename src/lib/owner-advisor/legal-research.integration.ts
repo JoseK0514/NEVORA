@@ -36,3 +36,14 @@ it("does not fetch after a retired Owner session or cancelled signal", async () 
   await expect(readLegalResearch(s, args, new AbortController().signal, async () => { count++; return new Response(); })).rejects.toThrow();
   expect(count).toBe(0);
 });
+it("retains complete dated GPO selections alongside two bounded federal extracts within the total projection limit", async () => {
+  const { gpoAmendmentFixture } = await import("@/test/fixtures/legal-gpo");
+  const result = await readLegalResearch(await store(), { jurisdiction: "US_FEDERAL", topic: "overtime_classification" }, new AbortController().signal, async url => new Response(url.includes("govinfo.gov") ? gpoAmendmentFixture().replace("Fictional academic exception paragraph.", "Detailed exception context. ".repeat(150)) : `<p>${"Federal context. ".repeat(400)}</p>`, { headers: { "Content-Type": "text/html" } }));
+  expect(result.legalResearch!.sources).toHaveLength(3);
+  const gpo = result.legalResearch!.sources.find(s => s.id === "us-gpo-2026-09839")!;
+  expect(gpo.text!.length).toBeGreaterThan(4000);
+  expect(gpo.projection).toMatchObject({ state: "complete_selected_passages", sections: ["541.600", "541.601"] });
+  expect(gpo.text).toContain("if the employer fails to pay, the employee does not qualify.");
+  expect(JSON.stringify(result.legalResearch).length).toBeLessThanOrEqual(24000);
+  expect(result.legalResearch!.readiness).toBe("unverified"); expect(result.legalResearch!.financialClearance).toBe(false);
+});

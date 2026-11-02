@@ -2,7 +2,7 @@ import { LEGAL_SOURCES, legalSourceIds, type LegalJurisdiction, type LegalTopic,
 export type LegalArgs = { jurisdiction: LegalJurisdiction; topic: LegalTopic };
 export type QualifiedLegalReview = { sourceId: string; sourceVersion: string; hash: string; interpretationVersion: string; jurisdiction: LegalJurisdiction; topic: LegalTopic; reviewer: string; qualification: string; reviewedAt: string; expiresAt: string; effectiveFrom: string; effectiveThrough: string; testVectors: string[]; requirements: { fact: string; value: string }[] };
 export type LegalFact = { fact: string; value: string; confirmed: boolean; evidence: string };
-export type LegalApplicabilityInput = LegalArgs & { sourceId: string; sourceVersion: string; sourceStatus: LegalStatus; retrieval: "available" | "unavailable"; textAvailability: "extracted" | "metadata_only" | "unavailable"; hash: string | null; interpretationVersion: string; asOf: string; facts: LegalFact[] };
+export type LegalApplicabilityInput = LegalArgs & { sourceId: string; sourceVersion: string; sourceStatus: LegalStatus; retrieval: "available" | "unavailable"; textAvailability: "extracted" | "metadata_only" | "unavailable" | "status_only"; hash: string | null; interpretationVersion: string; asOf: string; facts: LegalFact[] };
 export function legalApplicability(input: LegalApplicabilityInput, reviews: readonly QualifiedLegalReview[]) {
   const review = reviews.find(r => r.sourceId === input.sourceId && r.sourceVersion === input.sourceVersion && r.hash === input.hash && r.interpretationVersion === input.interpretationVersion && r.jurisdiction === input.jurisdiction && r.topic === input.topic);
   const requirements = review?.requirements ?? (LEGAL_SOURCES.find(s => s.id === input.sourceId)?.requiredFacts ?? []).map(fact => ({ fact, value: "" }));
@@ -14,10 +14,21 @@ export function legalApplicability(input: LegalApplicabilityInput, reviews: read
     review.reviewedAt <= input.asOf && input.asOf <= review.expiresAt && review.effectiveFrom <= input.asOf && input.asOf <= review.effectiveThrough && !missingFacts.length;
   return { state: matches ? "reviewed_match" as const : "unverified" as const, financialClearance: false as const, missingFacts, reviewer: review?.reviewer ?? null };
 }
+/** Grammar check for the fixed publication's selected passages. This validates
+ * projection structure, not source authenticity or legal interpretation. */
+export function isCompleteGpoSelection(text: string): boolean {
+  const markers = ["8. Revise Sec. 541.600 to read as follows:", "Sec. 541.600 Amount of salary required.", "0 9. Amend Sec. 541.601 by revising paragraphs (a) and (b)(1) and (b)(2) to read as follows:", "Sec. 541.601 Highly compensated employees."];
+  const at = markers.map(m => text.indexOf(m));
+  if (at[0] !== 0 || markers.some((m, i) => at[i] < 0 || text.indexOf(m, at[i] + m.length) !== -1 || i > 0 && at[i] <= at[i - 1]) || !text.endsWith("* * * * *") || text.length > 8000) return false;
+  const salary = text.slice(at[1], at[2]), highly = text.slice(at[3]);
+  const paragraphs = ["(a)", "(b)", "(c)", "(d)", "(e)"].map(m => salary.indexOf(m));
+  return paragraphs.every((p, i) => p >= 0 && (i === 0 || p > paragraphs[i - 1])) && highly.includes("(a)(1)") && highly.includes("(b)(1)") && highly.split("(2)").length === 3;
+}
+export type LegalProjection = { kind: "gpo_amendment_sections"; publicationDate: "2026-05-15"; sections: ["541.600", "541.601"]; state: "complete_selected_passages" | "status_only"; failure: "boundaries_missing" | "section_limit" | null };
 export type LegalSourceResult = {
   id: string; url: string; label: string; jurisdiction: LegalJurisdiction; version: string; sourceStatus: LegalStatus; subjectStatus: LegalStatus;
   fetchedAt: string; hash: string | null; retrieval: "available" | "unavailable"; failure: "timeout" | "byte_limit" | "transport_or_type" | null;
-  textAvailability: "extracted" | "metadata_only" | "unavailable"; text: string | null; truncated: boolean;
+  textAvailability: "extracted" | "metadata_only" | "unavailable" | "status_only"; text: string | null; truncated: boolean; projection: LegalProjection | null;
   effectiveFrom: string | null; effectiveThrough: string | null; reviewState: "unreviewed" | "hash_changed"; reviewer: string | null; limitations: string[]; missingFacts: string[];
 };
 export type LegalResearch = LegalArgs & { observedAt: string; readiness: "unverified"; financialClearance: false; sources: LegalSourceResult[]; missingFacts: string[] };
@@ -39,12 +50,27 @@ export function parseLegalResearch(value: unknown): LegalResearch {
   const allowed = legalSourceIds(args.jurisdiction, args.topic);
   if (new Set(value.sources.map(s => record(s) ? s.id : null)).size !== value.sources.length) return fail();
   for (const s of value.sources) {
-    if (!record(s) || Object.keys(s).sort().join(",") !== "effectiveFrom,effectiveThrough,failure,fetchedAt,hash,id,jurisdiction,label,limitations,missingFacts,retrieval,reviewState,reviewer,sourceStatus,subjectStatus,text,textAvailability,truncated,url,version") return fail();
+    if (!record(s) || Object.keys(s).sort().join(",") !== "effectiveFrom,effectiveThrough,failure,fetchedAt,hash,id,jurisdiction,label,limitations,missingFacts,projection,retrieval,reviewState,reviewer,sourceStatus,subjectStatus,text,textAvailability,truncated,url,version") return fail();
     const registered = LEGAL_SOURCES.find(r => r.id === s.id);
     if (!registered || !allowed.includes(registered.id) || s.url !== registered.url || s.label !== registered.label || s.jurisdiction !== registered.jurisdiction || s.version !== registered.version || s.sourceStatus !== registered.status || s.subjectStatus !== registered.subjectStatus ||
       !stamp(s.fetchedAt) || !(s.hash === null || typeof s.hash === "string" && /^[a-f0-9]{64}$/.test(s.hash)) || !["available", "unavailable"].includes(String(s.retrieval)) || ![null, "timeout", "byte_limit", "transport_or_type"].includes(s.failure as null) ||
-      !["extracted", "metadata_only", "unavailable"].includes(String(s.textAvailability)) || !(s.text === null || typeof s.text === "string" && s.text.length <= 4000) || typeof s.truncated !== "boolean" || s.effectiveFrom !== null || s.effectiveThrough !== null || !["unreviewed", "hash_changed"].includes(String(s.reviewState)) || s.reviewer !== null || !strings(s.limitations, 8) || !strings(s.missingFacts, 20) || JSON.stringify(s.missingFacts) !== JSON.stringify(registered.requiredFacts)) return fail();
-    if (s.retrieval === "unavailable" ? s.hash !== null || s.text !== null || s.textAvailability !== "unavailable" || s.failure === null : s.hash === null || s.failure !== null || (registered.format === "pdf" ? s.textAvailability !== "metadata_only" || s.text !== null : s.textAvailability !== "extracted" || typeof s.text !== "string")) return fail();
+      !["extracted", "metadata_only", "unavailable", "status_only"].includes(String(s.textAvailability)) || !(s.text === null || typeof s.text === "string" && s.text.length <= (s.id === "us-gpo-2026-09839" ? 8000 : 4000)) || typeof s.truncated !== "boolean" || s.effectiveFrom !== null || s.effectiveThrough !== null || !["unreviewed", "hash_changed"].includes(String(s.reviewState)) || s.reviewer !== null || !strings(s.limitations, 8) || !strings(s.missingFacts, 20) || JSON.stringify(s.missingFacts) !== JSON.stringify(registered.requiredFacts)) return fail();
+    const gpoAvailable = s.id === "us-gpo-2026-09839" && s.retrieval === "available";
+    if (gpoAvailable) {
+      const p = s.projection;
+      if (!record(p) || Object.keys(p).sort().join(",") !== "failure,kind,publicationDate,sections,state" || p.kind !== "gpo_amendment_sections" || p.publicationDate !== "2026-05-15" || JSON.stringify(p.sections) !== '["541.600","541.601"]' || s.truncated !== false) return fail();
+      if (p.state === "complete_selected_passages") {
+        if (p.failure !== null || s.textAvailability !== "extracted" || typeof s.text !== "string" || !isCompleteGpoSelection(s.text)) return fail();
+      } else if (p.state === "status_only") {
+        if (!["boundaries_missing", "section_limit"].includes(String(p.failure)) || s.textAvailability !== "status_only" || s.text !== null) return fail();
+      } else return fail();
+    } else if (s.projection !== null) return fail();
+    if (s.retrieval === "unavailable") {
+      if (s.hash !== null || s.text !== null || s.textAvailability !== "unavailable" || s.failure === null) return fail();
+    } else {
+      if (s.hash === null || s.failure !== null) return fail();
+      if (!gpoAvailable && (registered.format === "pdf" ? s.textAvailability !== "metadata_only" || s.text !== null : s.textAvailability !== "extracted" || typeof s.text !== "string")) return fail();
+    }
   }
   if (JSON.stringify(value.missingFacts) !== JSON.stringify([...new Set(value.sources.flatMap(s => s.missingFacts))])) return fail();
   return value as LegalResearch;
