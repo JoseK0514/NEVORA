@@ -91,10 +91,10 @@ it('accepts real memory edits, conflicts and retirement; inspects legal/insights
      await mode.locator('..').screenshot({path:resolve(evidence,`${engine}-${label}-mode-control.png`)});
     };
     const answerMode=page.getByLabel('Answer mode',{exact:true});
-    await answerMode.focus();await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+    await answerMode.focus();await page.keyboard.press('r');await page.keyboard.press('Tab');
     await expect.poll(()=>answerMode.inputValue()).toBe('decision');
     await captureMode('before-axe-keyboard-decision');
-    await answerMode.focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
+    await answerMode.focus();await page.keyboard.press('f');await page.keyboard.press('Tab');
     await expect.poll(()=>answerMode.inputValue()).toBe('factual');
     await captureMode('before-axe');
     phase='layout and axe';await page.evaluate(axe);
