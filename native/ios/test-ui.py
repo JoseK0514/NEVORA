@@ -17,6 +17,7 @@ from owned_artifacts import owned_artifacts
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--simulator', required=True, help='UUID of a disposable test simulator')
 parser.add_argument('--only-testing', action='append', default=[], help='Explicit XCTest identifier to run (repeatable)')
+parser.add_argument('--fixture', choices=['foundation', 'documents'], default='foundation')
 parser.add_argument('--mode', choices=['transport', 'owned-backend'], default='transport')
 parser.add_argument('--backend-origin')
 parser.add_argument('--backend-control-origin')
@@ -24,6 +25,11 @@ parser.add_argument('--backend-owner')
 parser.add_argument('--expected-sha')
 parser.add_argument('--evidence-root')
 args = parser.parse_args()
+document_test = 'NevoraUITests/NevoraDocumentUITests'
+if args.fixture == 'documents' and (args.mode != 'transport' or args.only_testing != [document_test]):
+    parser.error('Document fixtures require transport mode and the explicit document-only test class')
+if args.fixture != 'documents' and any(document_test in test for test in args.only_testing):
+    parser.error('Document-only tests require the document fixture')
 try:
     args.simulator = str(uuid.UUID(args.simulator)).upper()
 except ValueError:
@@ -63,7 +69,7 @@ root = Path(__file__).resolve().parent
 evidence = Path(tempfile.mkdtemp(prefix='nevora-native-ui-', dir=args.evidence_root if backend else None))
 env = {key: value for key, value in os.environ.items() if key in ['PATH','HOME','TMPDIR','LANG','NEVORA_OWNED_PROCESS_OWNER']}
 def source_hash():
-    files = [root / 'Package.swift', root / 'NEVORA.xcodeproj/project.pbxproj', root / 'generate-project.py', root / 'test-ui.py', root / 'Fixtures/server.mjs', root.parent / 'owned_artifacts.py', root.parent.parent / 'src/lib/native-shell/security.ts']
+    files = [root / 'Package.swift', root / 'NEVORA.xcodeproj/project.pbxproj', root / 'generate-project.py', root / 'test-ui.py', root / 'Fixtures/server.mjs', root / 'Fixtures/documents.mjs', root.parent / 'owned_artifacts.py', root.parent.parent / 'src/lib/native-shell/security.ts']
     for pattern in ['App/*.swift','Sources/**/*.swift','Tests/**/*.swift','UITests/*.swift','Configuration/*.plist']:
         files.extend(root.glob(pattern))
     digest = hashlib.sha256()
@@ -76,13 +82,14 @@ def assert_source():
         assert subprocess.check_output(['git','-C',str(root.parent.parent),'rev-parse','HEAD'],env=env,text=True).strip() == args.expected_sha
         assert not subprocess.check_output(['git','-C',str(root.parent.parent),'status','--porcelain=v1'],env=env,text=True).strip()
 fixture = None
-report = {'evidence': str(evidence), 'passed': False, 'fixtureOnly': not backend, 'checkpoint': args.expected_sha, 'simulator': args.simulator, 'ownerId': args.backend_owner}
+report = {'evidence': str(evidence), 'passed': False, 'fixtureOnly': not backend, 'fixture': None if backend else args.fixture, 'qualification': 'full-backend' if backend else 'document-transport' if args.fixture == 'documents' else 'transport', 'checkpoint': args.expected_sha, 'simulator': args.simulator, 'ownerId': args.backend_owner}
 try:
     assert_source(); before = source_hash(); report['sourceHash'] = before
     if backend:
         addresses = {'origin': args.backend_origin}
     else:
-        fixture = subprocess.Popen(['node', str(root / 'Fixtures/server.mjs')], env=env, stdout=subprocess.PIPE, text=True)
+        fixture = subprocess.Popen(['node', str(root / ('Fixtures/documents.mjs' if args.fixture == 'documents' else 'Fixtures/server.mjs')),
+            *(['--owned-local'] if args.fixture == 'documents' else [])], env=env, stdout=subprocess.PIPE, text=True)
         addresses = json.loads(fixture.stdout.readline())
     report['origin'] = addresses['origin']
     destination = f'platform=iOS Simulator,id={args.simulator}'
@@ -109,7 +116,7 @@ try:
     targets[0].setdefault('EnvironmentVariables', {}).update({
         'NEVORA_NATIVE_BACKEND_ORIGIN': addresses['origin'], 'NEVORA_NATIVE_CONTROL_ORIGIN': args.backend_control_origin,
         'NEVORA_NATIVE_TEST_OWNER': args.backend_owner} if backend else {
-        'NEVORA_NATIVE_FIXTURE_ORIGIN': addresses['origin'], 'NEVORA_NATIVE_UNAVAILABLE_ORIGIN': addresses['unavailableOrigin']})
+        'NEVORA_NATIVE_FIXTURE_ORIGIN': addresses['origin'], **({'NEVORA_NATIVE_UNAVAILABLE_ORIGIN': addresses['unavailableOrigin']} if args.fixture == 'foundation' else {})})
     owned_plan = products / 'InvocationOwned.xctestrun'
     owned_plan.write_bytes(plistlib.dumps(plan))
     with (evidence / 'tests.log').open('w') as log:
@@ -125,6 +132,7 @@ try:
         (evidence/'summary.json').write_text(json.dumps(summary,indent=2))
         assert summary['failedTests'] == 0 and summary['skippedTests'] == 0 and summary['passedTests'] > 0
         if backend: assert summary['passedTests'] == 3
+        if args.fixture == 'documents': assert summary['passedTests'] == 1
         report['instrumentationTests'] = summary['passedTests']
         report['passed'] = True
     raise SystemExit(result.returncode)

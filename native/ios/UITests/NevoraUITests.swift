@@ -1,5 +1,61 @@
 import XCTest
 
+/// Selected separately with the owned document-delegate fixture. This proves
+/// native confirmation and browser handoff, not backend authorization/downloads.
+final class NevoraDocumentUITests: XCTestCase {
+    @MainActor func testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff() async throws {
+        continueAfterFailure = false
+        let origin = try XCTUnwrap(ProcessInfo.processInfo.environment["NEVORA_NATIVE_FIXTURE_ORIGIN"])
+        let parts = try XCTUnwrap(URLComponents(string: origin))
+        XCTAssertEqual(parts.scheme, "http")
+        XCTAssertEqual(parts.host, "127.0.0.1")
+        XCTAssertNotNil(parts.port)
+        XCTAssertTrue(parts.path.isEmpty)
+        XCTAssertNil(parts.user)
+        XCTAssertNil(parts.query)
+        let app = XCUIApplication()
+        app.launchArguments = ["-nevora-debug-origin", origin]
+        app.launch()
+        defer { app.terminate() }
+        XCTAssertTrue(app.webViews.staticTexts["Fictional exports"].waitForExistence(timeout: 20))
+        app.webViews.links["Download fictional CSV"].tap()
+        let review = app.alerts["Download in your browser"]
+        XCTAssertTrue(review.waitForExistence(timeout: 5))
+        XCTAssertTrue(review.buttons["Continue in browser"].exists)
+        XCTAssertEqual(app.state, .runningForeground)
+        let confirmation = XCTAttachment(screenshot: app.screenshot())
+        confirmation.name = "Fictional document native confirmation"
+        confirmation.lifetime = .keepAlways
+        add(confirmation)
+        review.buttons["Cancel"].tap()
+        XCTAssertFalse(review.exists)
+        XCTAssertTrue(app.webViews.buttons["Download fictional blob"].exists)
+        app.webViews.buttons["Download fictional blob"].tap()
+        XCTAssertTrue(review.waitForExistence(timeout: 5))
+        review.buttons["Continue in browser"].tap()
+        let browser = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        XCTAssertTrue(browser.wait(for: .runningForeground, timeout: 10))
+        XCTAssertTrue(browser.webViews.staticTexts["Fictional exports"].waitForExistence(timeout: 10))
+        let handoff = XCTAttachment(screenshot: browser.screenshot())
+        handoff.name = "Deliberate browser handoff"
+        handoff.lifetime = .keepAlways
+        add(handoff)
+        var request = URLRequest(url: try XCTUnwrap(URL(string: origin + "/__qa/result")))
+        request.timeoutInterval = 3
+        request.httpShouldHandleCookies = false
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpCookieStorage = nil
+        configuration.httpShouldSetCookies = false
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel() }
+        let (data, _) = try await session.data(for: request)
+        let observed = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(observed["apiRequests"] as? Int, 0)
+        XCTAssertGreaterThan(try XCTUnwrap(observed["browserRequests"] as? Int), 0)
+        XCTAssertEqual(observed["browserHadAppCookie"] as? Bool, false)
+    }
+}
+
 final class NevoraUITests: XCTestCase {
     func testRedirectedSubresourcesRequireRendererContainment() throws {
         let origin = try XCTUnwrap(ProcessInfo.processInfo.environment["NEVORA_NATIVE_FIXTURE_ORIGIN"])
