@@ -27,9 +27,17 @@ export function validateNativeSend(input: NativePushInput, scope: NativeProvider
     closed(input.payload, ['notificationId', 'generation']);
     if (typeof input.payload.notificationId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(input.payload.notificationId)
       || input.payload.generation !== material.generation || !Number.isInteger(input.ttlSeconds) || input.ttlSeconds < 1 || input.ttlSeconds > 7 * 86400
-      || (input.urgency !== 'normal' && input.urgency !== 'high')) throw new NativeProviderFailure('failed', 'invalid_payload');
-    return {installation: {...material, token}, payload: {notificationId: input.payload.notificationId, generation: material.generation}, ttlSeconds: input.ttlSeconds, urgency: input.urgency};
+      || (input.urgency !== 'normal' && input.urgency !== 'high') || typeof input.beforeHandoff !== 'function') throw new NativeProviderFailure('failed', 'invalid_payload');
+    return {installation: {...material, token}, payload: {notificationId: input.payload.notificationId, generation: material.generation}, ttlSeconds: input.ttlSeconds, urgency: input.urgency, beforeHandoff: input.beforeHandoff};
   } catch (error) {if (error instanceof NativeProviderFailure) throw error; throw new NativeProviderFailure('failed', 'invalid_payload');}
+}
+export async function nativeHandoff(value: ReturnType<typeof validateNativeSend>, signal: AbortSignal): Promise<number | null> {
+  signal.throwIfAborted();
+  const ttl = await value.beforeHandoff(signal);
+  signal.throwIfAborted();
+  if (ttl === null) return null;
+  if (!Number.isInteger(ttl) || ttl < 1 || ttl > 7 * 86400) throw new NativeProviderFailure('failed', 'invalid_payload');
+  return Math.min(ttl, value.ttlSeconds);
 }
 export function validateNativeResponse(value: NativeTransportResponse): NativeTransportResponse {
   if (!Number.isInteger(value.statusCode) || value.statusCode < 200 || value.statusCode > 599 || !Buffer.isBuffer(value.body) || value.body.length > 8192

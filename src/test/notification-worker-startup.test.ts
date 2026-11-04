@@ -4,6 +4,13 @@ import {tmpdir} from 'node:os';
 import {mkdtempSync,writeFileSync,readFileSync,rmSync} from 'node:fs';
 import {join} from 'node:path';
 const environment=()=>({PATH:process.env.PATH??'',TMPDIR:tmpdir(),NODE_ENV:'test' as const});
+it('native dispatch is independently disabled by default without database or provider access',()=>{
+ const r=spawnSync('npm',['run','notifications:worker','--','native-dispatch'],{cwd:process.cwd(),env:environment(),encoding:'utf8',timeout:8000});
+ expect(r.status).toBe(0);expect(r.error).toBeUndefined();
+ const last=r.stdout.trim().split('\n').at(-1)!;
+ expect(JSON.parse(last)).toEqual({claimed:0,accepted:0,retried:0,failed:0,expired:0,cancelled:0,noSubscription:0,disabled:true});
+ expect(r.stderr).not.toContain('Notification worker could not complete');
+});
 it.each([false,true])('the actual npm worker command retains its exact bounded error with package-manager diagnostic %s',notice=>{
  const root=mkdtempSync(join(tmpdir(),'nevora-worker-cli-'));
  try{

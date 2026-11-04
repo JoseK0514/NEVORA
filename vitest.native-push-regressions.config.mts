@@ -4,7 +4,7 @@ import {nativeRegressionTarget} from './src/test/integration/native-push-fixture
 const resolution = {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)), 'server-only': fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js', import.meta.url))}};
 const groups = [
   {name: 'native-foundation', prefix: 'nevora_foundation_test_' as const, include: [
-    'src/test/integration/native-push.integration.ts', 'src/test/integration/foundation.integration.ts',
+    'src/test/integration/native-push.integration.ts', 'src/test/integration/native-deliveries.integration.ts', 'src/test/integration/foundation.integration.ts',
     'src/test/integration/phase-b-management-session.integration.ts', 'src/test/integration/phase-b-late-write-session.integration.ts',
   ]},
   {name: 'existing-web-push', prefix: 'fuel_phase3_test_' as const, include: ['src/test/integration/notifications.integration.ts']},

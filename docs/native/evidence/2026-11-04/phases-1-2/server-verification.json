@@ -1,0 +1,82 @@
+{
+  "base": "80891a6175d034ddae1b28af0edb0f49d2f7ffb0",
+  "scope": "Native push custody Task4 server implementation; not whole Phase2 or native release",
+  "checks": {
+    "focused": {
+      "exitCode": 0,
+      "passed": 228,
+      "log": "review-correction-green.log",
+      "sha256": "0807f2fdaf331d64b90819d1505b2a5d22a472dd4999d6359aecef368f205c2e"
+    },
+    "sql": {
+      "exitCode": 0,
+      "passed": 206,
+      "log": "review-sql-correction.log",
+      "sha256": "7c8489d58f71de984fbbe5fdfaae029b57baa1c1b5343509e1514d5462bde9dc"
+    },
+    "default": {
+      "exitCode": 0,
+      "passed": 10883,
+      "log": "full-unit-corrected.log",
+      "sha256": "ff72a169ed8a07f32724909dd43020fabd1665faf5c593f3ad8e8a3db8d87cc9"
+    },
+    "typecheck": {
+      "exitCode": 0,
+      "passed": null,
+      "log": "typecheck-corrected.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "lint": {
+      "exitCode": 0,
+      "passed": null,
+      "log": "push-lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "nodeGuards": {
+      "exitCode": 0,
+      "passed": 13,
+      "log": "node-guards.log",
+      "sha256": "6a021d2274cdf4c2b8ff1373a07f8337997ae051ed22be56bf15af0b2eba787b"
+    },
+    "ownedConcurrency": {
+      "exitCode": 0,
+      "passed": 1,
+      "log": "node-concurrency.log",
+      "sha256": "2bd066f802dda3e25f1fb399016b52129967f8bb74394bade99fdcc52404fa38"
+    }
+  },
+  "sourceSha256": {
+    "src/lib/data/native-deliveries.ts": "9455344546c40d25845dda536964b42da30af19e7055f785793e6bc80878cea5",
+    "src/lib/native-push/worker.ts": "dc87cb31b10c71df466f6a6245cc8b8fdc59ee13c684a4a68a38996cd028b357",
+    "src/lib/native-push/runtime.ts": "e81c09f9676b01a7b94def38c47218adccbbc5929759caddfb339eb3c6328808",
+    "src/lib/native-push/worker.test.ts": "3cc63debcd9767b6b6769b261232689ddc0762a09fa376e5d7d7ff170bc5963d",
+    "src/test/integration/native-deliveries.integration.ts": "6d1ad489320d5df4081c15707748154c611989f0d14344694ab8ea44a3cbb1e8",
+    "src/test/notification-worker-startup.test.ts": "a4fb6c1d58dff30fa9dcb4e1066af8b42c4edc2729570660ae39abdf4dc24bce",
+    "scripts/fuel-notification-worker.ts": "568e08085dbc01ad34fd0fb805a8784c3a92dc50e486b51c65483d551afc32bb",
+    "vitest.native-push-integration.config.mts": "9086bf9d2e695cc69e07c70af41f05ba673496a5b28fbca78fce062ae837483e",
+    "vitest.native-push-regressions.config.mts": "5df4ad73ed9cd9ea5d5d5d3706b2d044052814c9bff8a9949404b552c48189bd",
+    "src/lib/native-push/providers/fcm.test.ts": "7fb23ca459081923c9da205e1925bd961a35f3a5c083de2e35161ea686d27516",
+    "src/lib/native-push/providers/oauth.ts": "3c7c3a1ba7ef541a7337d270b8401c5b623c6bdc349c9cc63bb2a3df19671bc4",
+    "src/lib/native-push/providers/fcm.ts": "9c17982f243845e6bc09c9612c141ce086c6f76a515769d172e6530949a0019c",
+    "src/lib/native-push/providers/apns.ts": "81dff375d57f366bd1306b209d1adc1ead303c6d8d41dcb9a92d26f1028acfeb",
+    "src/lib/native-push/providers/common.ts": "499f4c21d77b89d1b2e33b8d457075e7758a665dcab9ce3f059d13986391c9bb",
+    "src/lib/native-push/providers/types.ts": "0f992de7b65543ec2d31eaf8a1e4d5863c80ff14388edd7b7a81b8c2c75b6b51",
+    "src/lib/native-push/providers/oauth.test.ts": "984e4ae6f283ffe37f5af9ab2c0216e2a70e72a133e8e30ebe1362c712eb2d73",
+    "src/lib/native-push/providers/apns.test.ts": "6e558f2a90cb82de9e266af7f4525b9f02571be95506df866037dfd9f265a653",
+    "src/lib/native-push/providers/transport.test.ts": "d941a48090d1fc932ad40da7bafd8bbaccb9bca1e2b88e1990864771add0ad33",
+    "src/lib/native-push/providers/transport.ts": "f701d7d1e3c4d35c104d12fd5a6649390afd056d6b978bbed439abb623153935",
+    "src/lib/native-push/providers/config.ts": "a8e677a3266e02581c10b47d567f7bffb42ab17d2820ae9bf3d349e678ade029",
+    "src/lib/native-push/providers/config.test.ts": "1d2ecf07f79ad5d0b61b3caa3eeda3e818371a6c31fcb955a0208396c82aca0b"
+  },
+  "realProviderRequests": 0,
+  "productionChanged": false,
+  "wholeNativeReleaseReady": false,
+  "review": "native-dispatch-review.md",
+  "open": [
+    "Android default-mode accessibility reliability",
+    "platform capability channel/enrollment/documents/links integration",
+    "fresh current native role/backend candidate",
+    "source inventory and development integration",
+    "hosted/physical/account/signing/distribution"
+  ]
+}

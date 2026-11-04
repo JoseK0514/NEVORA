@@ -13,7 +13,7 @@ const now = new Date('2030-01-01T12:00:00.000Z'), generation = '00000000-0000-40
 const config = {origin: 'https://nevora.example', environment: 'test' as const, appId: 'com.velani.nevora.development', provider: 'apns-sandbox' as const,
   teamId: 'FAKETEAM01', keyId: 'FAKEKEY001', privateKey: pair.privateKey, clock: () => new Date(now)};
 const input = () => ({installation: {origin: config.origin, environment: 'test' as const, platform: 'ios' as const, provider: 'apns-sandbox' as const, appId: config.appId, keyFingerprint: '0'.repeat(64), generation, token: 'a1b2'},
-  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal});
+  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal, beforeHandoff: async (): Promise<number | null> => 60});
 const response = (statusCode = 200, body: unknown = null, retryAfter?: string): NativeTransportResponse => ({statusCode, body: body === null ? Buffer.alloc(0) : Buffer.from(JSON.stringify(body)), ...(retryAfter ? {retryAfter} : {})});
 afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
 it('sends only generic data to the exact sandbox topic with a real ES256 JOSE provider signature', async () => {
@@ -84,4 +84,13 @@ it('redacts unknown transport failures and bounds an injected transport that ign
   vi.useFakeTimers(); const sender = m.createApnsSender(config, async () => await new Promise<never>(() => {}));
   const pending = sender.send(input()); await vi.advanceTimersByTimeAsync(8001);
   expect(await pending).toEqual({kind: 'retry', errorClass: 'transport_timeout'});
+});
+it('requires the attempt gate before APNs IO and uses its shorter current TTL', async () => {
+  const m = await api(), requests: Parameters<import('./transport').NativeTransport>[0][] = [];
+  const sender = m.createApnsSender(config, async request => {requests.push(request); return response();});
+  const beforeHandoff = vi.fn(async () => 10), value = {...input(), beforeHandoff};
+  expect(await sender.send(value)).toEqual({kind: 'accepted'});
+  expect(beforeHandoff).toHaveBeenCalledOnce(); expect(requests[0].headers['apns-expiration']).toBe(String(now.getTime() / 1000 + 10));
+  expect(await sender.send({...value, beforeHandoff: async () => null})).toEqual({kind: 'not_sent'});
+  expect(requests).toHaveLength(1);
 });

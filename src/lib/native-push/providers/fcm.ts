@@ -2,7 +2,7 @@ import 'server-only';
 import {parseNativeMaterialBinding} from '../protocol';
 import type {NativeProviderResult, NativeProviderScope, NativePushSender} from './types';
 import {createNodeNativeTransport, type NativeTransport, type NativeTransportResponse} from './transport';
-import {boundedNativeSend, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
+import {boundedNativeSend, nativeHandoff, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
 
 export type FcmConfig = NativeProviderScope & {projectId: string; accessToken(signal: AbortSignal): Promise<string>; clock?(): Date};
 export const FCM_NOTIFICATION_CHANNEL = 'nevora_notifications';
@@ -41,11 +41,12 @@ export function createFcmSender(config: FcmConfig | null, transport: NativeTrans
     const token = await ready.accessToken(signal);
     signal.throwIfAborted();
     if (typeof token !== 'string' || token.length > 4096 || !/^[A-Za-z0-9._~+/-]+={0,2}$/.test(token)) return {kind: 'failed', errorClass: 'provider_configuration'};
+    const ttl = await nativeHandoff(value, signal); if (ttl === null) return {kind: 'not_sent'};
     const response = await transport({endpoint: `https://fcm.googleapis.com/v1/projects/${ready.projectId}/messages:send`,
       headers: {'content-type': 'application/json', authorization: 'Bearer ' + token},
       body: Buffer.from(JSON.stringify({message: {token: value.installation.token, notification: {title: 'NEVORA', body: 'Open NEVORA.'},
         data: {nevoraProtocol: '1', ...value.payload}, android: {restricted_package_name: ready.appId, priority: value.urgency === 'high' ? 'HIGH' : 'NORMAL',
-          ttl: `${value.ttlSeconds}s`, notification: {channel_id: FCM_NOTIFICATION_CHANNEL, visibility: 'PRIVATE'}}}}))}, signal);
+          ttl: `${ttl}s`, notification: {channel_id: FCM_NOTIFICATION_CHANNEL, visibility: 'PRIVATE'}}}}))}, signal);
     const now = ready.clock?.() ?? new Date();
     if (!Number.isFinite(now.getTime())) return {kind: 'failed', errorClass: 'provider_configuration'};
     return outcome(response, ready.projectId, now);
