@@ -1,0 +1,9 @@
+{
+  "ownedWorktree": "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101",
+  "originalSymlink": "/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101/node_modules",
+  "resolvedDependencies": "/Users/josek0514/.codex/worktrees/nevora-release1-db-frozen-20261101/node_modules",
+  "backup": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/node_modules-original-link",
+  "action": "copy identical installed dependencies inside own worktree for Turbopack root isolation",
+  "started": 1793827099.8110971,
+  "completed": 1793827108.158182
+}

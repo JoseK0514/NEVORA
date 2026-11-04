@@ -1,0 +1,13 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-3_3myl_i",
+  "passed": true,
+  "fixtureOnly": true,
+  "fixture": "documents",
+  "qualification": "document-transport",
+  "checkpoint": null,
+  "simulator": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+  "ownerId": null,
+  "sourceHash": "a9067fc3b06df6026aec6d144cb11eaacb7df96b37cb2e9d3d50e08070465a6e",
+  "origin": "http://127.0.0.1:51635",
+  "instrumentationTests": 1
+}

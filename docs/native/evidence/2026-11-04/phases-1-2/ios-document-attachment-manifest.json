@@ -1,0 +1,26 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+        "deviceName" : "NEVORA Phases12 owned 20261104",
+        "exportedFileName" : "37A701B2-87EA-4940-897B-7C110FA88A6B.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Deliberate browser handoff_0_68A593C0-BA66-475D-94E8-3D38AEE8D93A.png",
+        "timestamp" : 1793829422.561
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+        "deviceName" : "NEVORA Phases12 owned 20261104",
+        "exportedFileName" : "E4A93B0C-0BD0-4971-A2D6-79365482D2F3.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Fictional document native confirmation_0_0CAA909D-BD26-42FE-A759-D5160CF7E37C.png",
+        "timestamp" : 1793829418.462
+      }
+    ],
+    "testIdentifier" : "NevoraDocumentUITests/testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff()",
+    "testIdentifierURL" : "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraDocumentUITests/testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff"
+  }
+]

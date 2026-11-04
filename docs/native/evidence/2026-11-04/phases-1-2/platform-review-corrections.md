@@ -10,7 +10,7 @@ The single fresh platform review returned BLOCK. Its original report is preserve
 | H4: committed response lost | Deliberate current-account reconciliation, captured server revision, fresh installation-key signature, atomic generation fence | PostgreSQL211 tests incl. commit-then-drop enrollment/rotation/detach; explicit UI recovery |
 | H5: multiple Android consumers overwrite replies | Shared per-document dispatcher, bounded IDs, individual lifetime cleanup | Two runtime/controller regressions; two live real-component browser controls |
 | M1: native IO seam not actual transport | Test real URLSession delegates via URLProtocol and HttpURLConnection via injected connection, fixed endpoints and owned deadlines | Swift5 transport cases and Java transport cases, cancellation/slow-close RED/GREEN |
-| M2: unused document validator | Remove speculative file validator; test production-used exact-origin portal destination fallback | Actual route audit; Swift/JVM route tests; Owner export path and Employee/Owner document contexts corrected |
+| M2: unused document validator | Remove speculative file validator; test production-used exact-origin portal destination fallback | Actual route audit; Swift/JVM route tests; Owner export/Employee/Owner contexts corrected; iOS native review/cancel/blob/Safari/cookie-control1/1PASS; Android manual review/cancel/blob/Chrome handoff and browser-resolution regressionRED→GREEN |
 
 Native-only token rotation now survives page retirement with the same account/session/revision binding; stale callbacks compare against current active native receipt. Enrollment and user detach remain page-bound. Late rotation cannot clear a newer token or overwrite a tombstone. This costs up to two bounded eight-second native requests; server authorization and generation checks remain mandatory.
 
@@ -25,3 +25,7 @@ The low-priority compressed Java/Swift coordinator formatting remains deferred. 
 - The default-off native dispatch worker is distinct from existing Web Push and is not started against any provider/account here.
 
 Phase1's intermittent missing Android accessibility nodes remain open. Passing repetitions alone cannot establish a correction. The separate legacy cold-start CLI crash is corrected by a fresh instrumentation assertion, not acceptance of nonzero CLI output.
+
+- Document handoff needs narrow Android browser-role visibility. Actual application-UID lookup failed before `<queries>` and passed after; no QUERY_ALL_PACKAGES permission. Cost: visibility of apps matching the browser role for deliberate reauthentication. Android first-run browser setup remains untouched.
+
+Final local acceptance:18namedrealNext/PostgreSQLchecks perplatform at0231524b,three nativeUIcases each,Androidcoldrestart,productionNextcompilewithunchangedfrontendinputs,19Pythonand13Nodeguards. InitialcombinedsupervisorobservationfailureandTurbopacksymlinkbuildfailurearepreservedbesidescorrectedresults. Theseareexecutorresults,nore-revieworindependentsecurityapproval.

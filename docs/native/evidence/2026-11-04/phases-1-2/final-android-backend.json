@@ -1,0 +1,105 @@
+{
+  "ownerId": "8b6e07bacba5cc0b0fef5b56a89c7902",
+  "checkpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+  "platform": "android",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    },
+    {
+      "name": "android-full-backend",
+      "status": "passed"
+    }
+  ],
+  "devices": [
+    {
+      "evidence": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-eXKIHJ/nevora-native-android-8mwwjrd8",
+      "serial": "emulator-5562",
+      "passed": true,
+      "fixtureOnly": false,
+      "checkpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+      "ownerId": "8b6e07bacba5cc0b0fef5b56a89c7902",
+      "qualification": "full-backend",
+      "rendererObserver": false,
+      "webView": {
+        "package": "com.google.android.webview",
+        "version": "133.0.6943.137",
+        "accessibilityMode": "platform-default",
+        "runtimeFlagsSha256": null
+      },
+      "sourceHash": "8086bb8e5de2de18c1470b26198d343b4a70a890bb25973b23ddc48621d53301",
+      "origin": "http://127.0.0.1:52456",
+      "isolatedTestProcesses": true,
+      "instrumentationTests": 3,
+      "coldInstrumentationTests": 1,
+      "coldProcessRestart": true
+    }
+  ],
+  "ownershipClosed": true
+}

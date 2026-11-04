@@ -1,5 +1,6 @@
 {
-  "scope": "Fictional local verification; raw failures retained; no provider/device/signing claim",
+  "scope": "Local fictional verification; failed gates retained; no release/provider/device approval",
+  "applicationCheckpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
   "files": {
     "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-laid-out-visual-hypothesis.java": {
       "bytes": 20010,
@@ -25,9 +26,65 @@
       "bytes": 15228,
       "sha256": "49a5a8de62a55e928d6c1693e9bdb41bfc4db1223f3c4c387ba1a7d4132c6ed1"
     },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-blob-confirm.png": {
+      "bytes": 66529,
+      "sha256": "d503c4e95e4377c011f1b0362baa815fb19cfe89c473fbcd79defdd28cfe2d9d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-blob-confirm.xml": {
+      "bytes": 6329,
+      "sha256": "99334189ce938af887d54f932896b102f4d50c0bf5f9a6032c2c137a15583b83"
+    },
     "docs/native/evidence/2026-11-04/phases-1-2/android-completion-green.log": {
       "bytes": 5374,
       "sha256": "2ed99413767c4b798347003f44d7547855005895e53acf2b25a5eec13b041c0f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser-activity.json": {
+      "bytes": 483,
+      "sha256": "d6106593f7223099738953e567d07ebad1718fcb9c46a3e00f1b3aa003738771"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser-result.json": {
+      "bytes": 123,
+      "sha256": "9df000f1e777120c8a8f196b34995600a79f08303862e7e7a1f53cb50fe4a365"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser.png": {
+      "bytes": 88191,
+      "sha256": "b6d939d8e3cb4cbfa660e27d3a03d383a5014a01b052f26e0dc9465d0cf01742"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-cancel-result.json": {
+      "bytes": 123,
+      "sha256": "a8b478174b7cbaf3beae22b154e596547193396f93213e4598a99f861290eb6a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-cancel.png": {
+      "bytes": 70023,
+      "sha256": "d3c2c2b029f7fabcf25b55ceac8987725f21c444bd561dee72655b9aa4e44fee"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-confirm.png": {
+      "bytes": 67073,
+      "sha256": "875ffe7080dfb9e34a97b0b25ea1d97ce84a18cb1bae320f43555d7c2bd031c9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-confirm.xml": {
+      "bytes": 6329,
+      "sha256": "99334189ce938af887d54f932896b102f4d50c0bf5f9a6032c2c137a15583b83"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser-activity.json": {
+      "bytes": 667,
+      "sha256": "0f327dfe46c57b92b311a2763a191148082cb9b16abaf3a5bdb5f8120f250f8e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser-result.json": {
+      "bytes": 123,
+      "sha256": "686a01cbe9856d161199b44317b529f21a5a8aeaad483be43bef10c133f1a0fe"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser.png": {
+      "bytes": 79870,
+      "sha256": "0fc842b791e07b3067e68133c07d5f01d284eada4d5005f73d9ea669394eaf3e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-initial.png": {
+      "bytes": 69260,
+      "sha256": "13f73012de5ae92e6fc13cb62d3d18d25698921ae49fc34cdb94c319c72dd4bd"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-initial.xml": {
+      "bytes": 1941,
+      "sha256": "2abe8f272fffa13959c847347bfe6b50c8da2550114f4fa3bc6ab14ff23af692"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/android-platform-checks.log": {
       "bytes": 8339,
@@ -313,6 +370,14 @@
       "bytes": 6475,
       "sha256": "682aa5ec49c9b7de191379710aa50cf50b903343f0d3d1f56c9de5c851a5acef"
     },
+    "docs/native/evidence/2026-11-04/phases-1-2/combined-backend-observation-failure.json": {
+      "bytes": 12087,
+      "sha256": "189ed4cdfd36ded78a818a99d3f12800bb7750a96984a515323bbc63dd317f67"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/combined-backend-observation-failure.log": {
+      "bytes": 751,
+      "sha256": "f81cad48d686905903a45e81ccf83da8aed254c1f66ada53b7d440df6fa6503a"
+    },
     "docs/native/evidence/2026-11-04/phases-1-2/completion-jvm-red.log": {
       "bytes": 3202,
       "sha256": "fee826738aa4822f894b68c2b0d2eb3b0d0ee5fee54ebbb6dff8855517d13542"
@@ -324,6 +389,30 @@
     "docs/native/evidence/2026-11-04/phases-1-2/completion-swift-red.log": {
       "bytes": 2289,
       "sha256": "56498855dd52723735061ce1f06ac3f8fc4d21cd1640f580f8d0f72dc3f99958"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/dependency-copy-owner.json": {
+      "bytes": 680,
+      "sha256": "af86eeb1c754ea6c66f5a48b0b8138cfd74553c8e52e490ace08ae93ae1ee926"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-green-build.log": {
+      "bytes": 7904,
+      "sha256": "8df0b5923ef9ce99952d3a5c41e436a76afb105c6527f0fb05ac68b58ffb0f72"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-green.log": {
+      "bytes": 92,
+      "sha256": "4d59a8d92887a28960841fe4e697248231d9f0e83b226d8bab14116c303ad950"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-red-build.log": {
+      "bytes": 4939,
+      "sha256": "31ef1f748e89f48428798d9a14205ed36d5f3dc173f844724d53aff94f50ab58"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-red.log": {
+      "bytes": 1169,
+      "sha256": "0d614308ebc749d38ce56eae57062777b27a7dc2591d5e4e0c1a1de6b788cd14"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-fixture-eslint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/document-policy-java-green.log": {
       "bytes": 8380,
@@ -340,6 +429,58 @@
     "docs/native/evidence/2026-11-04/phases-1-2/document-policy-swift-red.log": {
       "bytes": 13966,
       "sha256": "3e715346e3d4417cd10dac18473ed1a0bb8ce18c14d9d5afa07e574625ff6cbc"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-runner-python-guards.log": {
+      "bytes": 6476,
+      "sha256": "1e63a0eb58e057dc91a5097cd2a5d70ca9614607eecc4011b905492d36097216"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-backend.json": {
+      "bytes": 2541,
+      "sha256": "d750f688f21d0c9d897381ed1b9791a53aea45a505459d3ef3d280874ee3f75d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-backend.log": {
+      "bytes": 706,
+      "sha256": "9d8c6ae67ef78eb5cb1709c84e0f6d0d80b2fab4e314f42169e075d1d3a3af5b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-cold-start-instrumentation.log": {
+      "bytes": 86,
+      "sha256": "b8d2d2a50a99b459514200d51ed6487fa462cdf681dc6075ada563eee87a9e26"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-cold_start.xml": {
+      "bytes": 37754,
+      "sha256": "ca02de62866a964791c3f45b1b02d8c5b473ef3c042617b90a8503b1aca137c0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-instrumentation.log": {
+      "bytes": 259,
+      "sha256": "8c8f80b78ebccee513ec4bd44dabbbe4adbb1bb3ed10716d6cdb338f6aa82c62"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-result.json": {
+      "bytes": 800,
+      "sha256": "3846184a7a97e9fff6b04b2701363d3f320bf38d555d3ba378fd3ce08d3e8ed5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend-identifiers.json": {
+      "bytes": 2678,
+      "sha256": "cd794382a0f31c5b3360512b790f17a657c4af14fbdf001da0127b29d0377977"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend-tests.log": {
+      "bytes": 36970,
+      "sha256": "0a0040f7176fc20e054e6d4de104c918e9bc825f77f5611a47f696312e6be320"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend.json": {
+      "bytes": 2238,
+      "sha256": "069560deca2a873f5402f2bf622dcc0678c99d1db6743516bae848914bd111e8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend.log": {
+      "bytes": 706,
+      "sha256": "0cc3db4948947e56875c34075af79671283a6e2963c1a268e633fe09055d7404"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-result.json": {
+      "bytes": 9108,
+      "sha256": "cdc910a215e24f40a11df064fbef3c0187c04b245e6a0a83c3f945169123b4e7"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-verification.json": {
+      "bytes": 1335,
+      "sha256": "073d0488b8523430057680414d91c6c48d2b5850309ffa215399b14c2c30553a"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/full-unit-corrected.log": {
       "bytes": 122611,
@@ -364,6 +505,38 @@
     "docs/native/evidence/2026-11-04/phases-1-2/ios-capabilities-build.log": {
       "bytes": 165811,
       "sha256": "a9d6e5ea23497c851f6938dc3e330badd2b2255e3af531b19a853a866b35260c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-37A701B2-87EA-4940-897B-7C110FA88A6B.png": {
+      "bytes": 159685,
+      "sha256": "22716eb20b84c4cef3150e54aa28638e9519a5f25132ed79835c3748c38972a2"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-E4A93B0C-0BD0-4971-A2D6-79365482D2F3.png": {
+      "bytes": 185511,
+      "sha256": "1de3af60972d32c275eaf22151eef89a5d6dba367e6b897b66ebc943db7e5545"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-attachment-manifest.json": {
+      "bytes": 1223,
+      "sha256": "addf19c541bfa50de916dcfdeca0fac0578796ef133d2e53d6c88e7a8dab4dd5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-identifiers.json": {
+      "bytes": 1712,
+      "sha256": "5c34f44a9800cfc8a3d378cfbefdb060203d64d0a7674d1a34232bd739cd6bbe"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-owned-runner.log": {
+      "bytes": 426,
+      "sha256": "47d88633d186f459f76ef080d023ac8b41e36dea65997b2cb6c58ebbfb5bee1c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-result.json": {
+      "bytes": 450,
+      "sha256": "992032a2df26388b248e17a23af62e2698590e5eec133be3aa5c1c80ed2f0762"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-summary.json": {
+      "bytes": 969,
+      "sha256": "927b007c36b300ec051bfba6afc7ef8572d4f94f8699e2f0ebbe6f3b9b87795a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-tests.log": {
+      "bytes": 7098,
+      "sha256": "114d4103dd97214e3d0bff20abf437e6d476292b45773d59c448b5f0b4a10e91"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-debug.log": {
       "bytes": 203636,
@@ -449,6 +622,18 @@
       "bytes": 7032,
       "sha256": "7e2565295daa1d93b14af06e25d742e44f20002193894ba9ac2434d57a422590"
     },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build-local-deps.log": {
+      "bytes": 6488,
+      "sha256": "2fea1c617c11c01f2332ab91b7e3c2c54700d0e839d7fac13b95424c7a70567b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build-receipt.json.gz": {
+      "bytes": 773975,
+      "sha256": "d4f0010eccf673c9efab974b5175602f271f6613d25deeb5c1c20307e8ebad38"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build.log": {
+      "bytes": 1946,
+      "sha256": "bb0a025c0ffa11e94a13a384a5bd0bfa2801541b5bb1ca7fd09fea4efdf7362f"
+    },
     "docs/native/evidence/2026-11-04/phases-1-2/node-concurrency.log": {
       "bytes": 222,
       "sha256": "2bd066f802dda3e25f1fb399016b52129967f8bb74394bade99fdcc52404fa38"
@@ -506,8 +691,8 @@
       "sha256": "d863d4e1cddb7173ad982ed222ec4b75f5bfdb77e85fef691109998da623e9a7"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/platform-review-corrections.md": {
-      "bytes": 3907,
-      "sha256": "e338d1f64eadf03ce5ec2c8b4ade42ac86271c9db579d8b0875ef95df5054c3f"
+      "bytes": 4728,
+      "sha256": "46d62cb0c9543f9acb5927100ebdf6b6cc2eaf07fc838485c852840b2f013286"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/platform-typecheck.log": {
       "bytes": 0,
@@ -534,8 +719,8 @@
       "sha256": "7b88cdb516f6640bddce6671ab35ad772dba482195dadbbd0a81cf536f0ef65c"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/progress.md": {
-      "bytes": 16587,
-      "sha256": "bf184c9cafd01b0d9c94b6ab02b96808bd844f923caca5869482eee3a75290c7"
+      "bytes": 18816,
+      "sha256": "d0e90ec058593b79c3625d13691b1232c6ea029154c14165edd902e54d78775c"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/push-lint.log": {
       "bytes": 0,
@@ -598,8 +783,8 @@
       "sha256": "7c8489d58f71de984fbbe5fdfaae029b57baa1c1b5343509e1514d5462bde9dc"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/runtime-owner.json": {
-      "bytes": 511,
-      "sha256": "cc538d54cfeebc075e92039bf29ce160db3b200e3f4c1a7d60ac352d79da5b2f"
+      "bytes": 533,
+      "sha256": "c6896d9c34cceb476ad3c718a004d37c051098e89163bca0241a0ea80a234738"
     },
     "docs/native/evidence/2026-11-04/phases-1-2/server-verification.json": {
       "bytes": 4370,

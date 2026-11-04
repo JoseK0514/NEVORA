@@ -1,0 +1,319 @@
+{
+  "ownerId": "265910630e4a0b487ca4d69cca473757",
+  "root": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-9SPzxM",
+  "port": 51740,
+  "checkpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+  "platform": "ios",
+  "verification": "full-backend",
+  "status": "passed",
+  "ownershipClosed": true,
+  "nativeBuilds": [
+    {
+      "platform": "ios",
+      "checkpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+      "artifacts": 38
+    }
+  ],
+  "postgres": {
+    "pid": 33774,
+    "data": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-9SPzxM/data",
+    "port": 51740,
+    "started": 1793829800,
+    "fingerprint": "d291aded628c3fa2426399027f54ba231562d0c6878d6762d8669be77d863ec6",
+    "marker": "265910630e4a0b487ca4d69cca473757"
+  },
+  "startedAt": "2026-11-04T22:03:20.283Z",
+  "execution": {
+    "status": 0,
+    "signal": null,
+    "timedOut": false,
+    "resources": [
+      {
+        "pid": 34192,
+        "ppid": 33799,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:03:30 2026",
+        "commandHash": "44eb40f4daf2199e84fb28ef5388eca0dd67e0f5169288fbb53113e78b90276e",
+        "lastObservedPpid": 33799,
+        "kind": "next",
+        "stopped": true
+      },
+      {
+        "pid": 34414,
+        "ppid": 33799,
+        "pgid": 33799,
+        "started": "Wed Nov 4 18:03:32 2026",
+        "commandHash": "8951f3eede953af65af2dc99d2e16b7d1cf1ecae16ed000508199a6b3f7a522a",
+        "lastObservedPpid": 33799,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 34494,
+        "ppid": 33799,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:33 2026",
+        "commandHash": "043fdf976160cf2b2ecdaa7f0c27534b0fbd1b42494d0dd9c5f8cde87a9eaf82",
+        "lastObservedPpid": 33799,
+        "kind": "browser-chromium",
+        "stopped": true
+      },
+      {
+        "pid": 34531,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:33 2026",
+        "commandHash": "e4261f064d3c4a0a4030d65399cc84ca9ea9652e20b4bae1cdf9d5d9311dd3ed",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 34533,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:33 2026",
+        "commandHash": "ac426c72baae43a0a34a1849ba8a1ef59cb4487e2e8ef0e1a889a46f17499f27",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 34653,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:33 2026",
+        "commandHash": "0d3db54e4a54da6c82163e591f9421ec321434c3d23434107af97f56280e6d80",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 35326,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:03:36 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 36386,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:03:39 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 36489,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:40 2026",
+        "commandHash": "0fd56b9be55e547965217400968c48f4c9157eacb4bb36f85499a26e1fa8acb7",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 37326,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:03:42 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 37415,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:03:42 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 37480,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:43 2026",
+        "commandHash": "7865e227a04a0dd83213e4edf8f735640a2f3e85a14a1e67c1ab61d514dcd5cf",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 37724,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:43 2026",
+        "commandHash": "6c6bb3df207ddf1771b1642e3da0fb5505c6569a82c745fadfefc2ac1a64f2e0",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 38154,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:45 2026",
+        "commandHash": "015d1f3add6c4d5054efd0aedbd9bc3e8f93111543015b33639557ba3b6901e7",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 38291,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:45 2026",
+        "commandHash": "4ff6f7fda9b591dfb9fb938dab39778e6718302098c0e708da776b02b7901705",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 38566,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:46 2026",
+        "commandHash": "7d4c1d097c74b8528a160c32659bb2198cf53871589ba7d4176c2e58999efc49",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 38739,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:46 2026",
+        "commandHash": "dd8287d2c750e27a065bc61d8f293a647a4355cfff573c0012bdbf5bccd1b72f",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 39020,
+        "ppid": 34494,
+        "pgid": 34494,
+        "started": "Wed Nov 4 18:03:47 2026",
+        "commandHash": "1d4547ab28510eb24d4f02af92dcfc57385263fc4b102cb6df041f7fd4eec334",
+        "lastObservedPpid": 34494,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 39265,
+        "ppid": 33799,
+        "pgid": 33799,
+        "started": "Wed Nov 4 18:03:47 2026",
+        "commandHash": "b4330ad9db8f7258911a7bea266734a8e0ef89a03bd9c1218de27de0f3b66d26",
+        "lastObservedPpid": 33799,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 56265,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:04:29 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 58600,
+        "ppid": 34205,
+        "pgid": 34192,
+        "started": "Wed Nov 4 18:04:35 2026",
+        "commandHash": "ae7ddeb10419b96ab9754241efa002f7c1c9ddb0a8231c9e6f0ea98bb7094aed",
+        "lastObservedPpid": 34205,
+        "kind": "owned-descendant",
+        "stopped": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    },
+    {
+      "name": "ios-full-backend",
+      "status": "passed"
+    }
+  ],
+  "closedAt": "2026-11-04T22:05:48.068Z",
+  "sourceVerified": true
+}

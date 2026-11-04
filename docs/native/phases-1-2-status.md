@@ -1,0 +1,32 @@
+# Native phases 1–2 handoff — November 4, 2026
+
+Phase2 implementation and local verification are complete. Phase1 remains OPEN: Android12/WebView120 and Android16/WebView133 intermittently omit accessibility controls after recreation. The stronger regression remains failing. Neither a passing retry nor visual pointer operation closes that gate. The native program is not ready for release.
+
+Application/test checkpoint: `0231524bc7ea` (use the full SHA in `evidence/2026-11-04/phases-1-2/final-verification.json`). Local detached worktree: `/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101`. Subsequent handoff commit changes documentation/evidence only. Earlier implementation commits: `9a46ccf7` dispatch, `59bcdf9f` platform capabilities, `5c816e8f` Android document browser visibility. No merge, push, hosted deployment, production signing or release.
+
+| Verification | Result and scope |
+| --- | --- |
+| Default repository unit suite | 10,897 passed; 801 existing skips in 27 files |
+| Real PostgreSQL regressions | 211 passed in 6 files; disposable owned data |
+| Real local backend | 18 named checks passed independently on iOS and Android; three native Employee/Owner/activation UI cases each; Android cold restart also passed |
+| Native policies/proof/IO | Swift 29 and JVM 23 passed; actual URLSession/URLConnection timeout, redirect, cookie, size and cancellation tests |
+| Platform checks | AndroidDebug/test/unsignedRelease/lint and iOSDebug/unsignedRelease builds passed; TypeScript/ESLint passed |
+| Permissions/channel | Actual Android36 grant/deny and WebView listener/frame/replay/retirement checks passed, push disabled |
+| Documents | iOS native review/cancel/blob/Safari/page/cookie-control1/1passed; Android browser query RED→GREEN and actual manual review/cancel/blob/Chrome handoff passed functionally |
+| Harness protection | Python 19 and Node 13 passed; document-only fixture cannot qualify backend/foundation |
+| Production compilation | Next build passed with 4070 artifacts and unchanged source; frontend inputs unchanged through 0231524b |
+| Foundation | Final iOS seven-case fixture passed on unchanged app code. Android default matrix remains FAILED, including the new ten-recreation regression |
+
+Native changes include durable default-off notification dispatch, constrained origin/main-frame/lifecycle messaging, installation-key proof, explicit enrollment/reconciliation, permission/token/receipt handling, generic taps, protected incoming links and deliberate browser document reauthentication. Browser Web Push stays separate. Association and entitlement files are templates with placeholders. Native file preview/share is not implemented; browser sign-in and document reselection are the approved fallback.
+
+Local tests do not establish real APNs/FCM enrollment/delivery, hardware key protection, minimum-version/physical-device behavior, hosted HTTPS associations/passkeys, publisher identity, or store readiness. Those remain Phase3/4 gates. Android Chrome first-run setup was not completed, so Android browser-page/cookie isolation is unqualified; iOS exercised those controls with fictional data. Real backend fixtures use the approved local SQL transport, not a production Neon connection.
+
+The single fresh platform review returned BLOCK; H1–H5 and its document/transport findings were corrected in one executor pass. No second reviewer approval is implied. Remaining low-priority deferrals: compressed coordinator formatting, and the ordinary iOS fixture runner still accepting a positive count instead of requiring exactly seven. This run independently retained all seven actual case identifiers. Full provider/device runtime assurance is not a waived minor. All rulings and costs are in [review corrections](evidence/2026-11-04/phases-1-2/platform-review-corrections.md).
+
+Failed Android matrices, unsuccessful hypotheses, the combined backend `ANCESTRY_UNAVAILABLE` interruption and the initial dependency-symlink production build failure remain retained. The exact OS observation error was not recorded; no ownership check was relaxed. The final independent platform runs closed their owned resources with source verified. Owned emulators/simulator are stopped; reproduction data and the active-plan workspace remain. All ten inherited pending source files in the original checkout are unchanged. Dependencies were copied into this worktree at the same versions for Turbopack; the original symlink is retained outside source.
+
+Source inventory remains red (six origin heads versus the permitted three, plus a separate remote ref); no branch was deleted or integrated to bypass it. The recorded development comparison was08d713d4: sharedsrc/db/package/lock matched the native base; its separate Capacitor feasibility spike was not adopted.
+
+Next required input: review the current WebView/AndroidX stack first (recommended), or plan a different Android rendering foundation. The [decision packet](android-foundation-decision.md) contains reproduction evidence and privacy constraints. The Systematic Debugging skill requires “Discuss with your human partner before attempting more fixes” after three failed attempts. Jose has been asked; no answer is inferred from elapsed time.
+
+[Final verification](evidence/2026-11-04/phases-1-2/final-verification.json) · [Complete artifact index](evidence/2026-11-04/phases-1-2/platform-artifacts.json) · [Document QA](documents-qa.md) · [Detailed ledger](evidence/2026-11-04/phases-1-2/progress.md)
