@@ -1,6 +1,7 @@
 import 'server-only';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
 import {validatedMailTransport,validRegisteredEmail} from '../mail-transport.server';
+import {invitationEmail} from '../account-email-copy';
 class InvitationDeliveryError extends Error {
  constructor(readonly deliveryState:'FAILED'|'UNKNOWN') {super('Invitation email outcome unavailable.');}
 }
@@ -12,7 +13,8 @@ export function invitationDelivery(env:Record<string,string|undefined>=process.e
  return {async send({registeredEmail,proof,expiresAt}) {
   if(!validRegisteredEmail(registeredEmail)||!/^[A-Za-z0-9_-]{43}$/.test(proof)||Buffer.from(proof,'base64url').toString('base64url')!==proof||!Number.isFinite(Date.parse(expiresAt)))throw new InvitationDeliveryError('FAILED');
   try {
-   const result=await mail.sendRegistered(registeredEmail,'Activate your NEVORA account',`Your Owner invited you to activate your NEVORA account. This single-use link expires in 7 days.\n\n${mail.origin}/activate#proof=${proof}\n\nChoose your password, then sign in normally. If you did not expect this invitation, contact your Owner.`);
+   const email=invitationEmail(`${mail.origin}/activate#proof=${proof}`);
+   const result=await mail.sendRegistered(registeredEmail,email.subject,email.text);
    const accepted=result.accepted;
    if(accepted?.length!==1||accepted[0]?.toLowerCase()!==registeredEmail.toLowerCase())throw new InvitationDeliveryError('UNKNOWN');
    return {providerAccepted:true};

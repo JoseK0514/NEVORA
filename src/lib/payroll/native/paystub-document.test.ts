@@ -2,14 +2,14 @@ import { createHash } from "node:crypto";
 import { PDFArray, PDFDocument, PDFRawStream, StandardFonts, decodePDFRawStream } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import {
-  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_VERSION,
+  NATIVE_PAYSTUB_PRESENTATION_VERSION, NATIVE_PAYSTUB_TEMPLATE_V1,
   NativePaystubDocumentError, preflightNativePaystubGlyphs, renderNativeEmployeePaystub,
   type NativePaystubPresentation,
 } from "./paystub-document";
 
 function fixture(language: "en" | "es" = "en"): NativePaystubPresentation {
   return {
-    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION,
+    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: NATIVE_PAYSTUB_TEMPLATE_V1,
     sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", language,
     companyName: "Compañía Ejemplo — Servicios del Caribe", employeeName: "María José Núñez",
     employeeReference: "EMP-DEMO-014", period: { startDate: "2026-09-28", endDate: "2026-10-04" },
@@ -113,6 +113,9 @@ describe("native paystub input boundary", () => {
 });
 
 type PdfText = { text: string; x: number; y: number; size: number; bold: boolean };
+// WinAnsi bytes 0x80-0x9F, decoded explicitly: Node builds with small ICU decode "windows-1252" as Latin-1.
+const WIN_ANSI_HIGH = "€\u0081‚ƒ„…†‡ˆ‰Š‹Œ\u008DŽ\u008F\u0090‘’“”•–—˜™š›œ\u009DžŸ";
+const winAnsi = (bytes: Buffer) => [...bytes].map(b => b >= 0x80 && b <= 0x9f ? WIN_ANSI_HIGH[b - 0x80] : String.fromCharCode(b)).join("");
 /** Read real decoded PDF text operators; expectations never use renderer helpers. */
 async function readPdf(bytes: Uint8Array) {
   const doc = await PDFDocument.load(bytes, { updateMetadata: false });
@@ -125,7 +128,7 @@ async function readPdf(bytes: Uint8Array) {
       const tf = /\/([^\s]+)\s+([\d.]+)\s+Tf/.exec(match[1])!;
       const tm = /1 0 0 1 ([\d.-]+) ([\d.-]+) Tm/.exec(match[1])!;
       const hex = /<([0-9A-Fa-f]*)>\s*Tj/.exec(match[1])!;
-      return { text: new TextDecoder("windows-1252").decode(Buffer.from(hex[1], "hex")), x: Number(tm[1]), y: Number(tm[2]), size: Number(tf[2]), bold: tf[1].startsWith("Helvetica-Bold") };
+      return { text: winAnsi(Buffer.from(hex[1], "hex")), x: Number(tm[1]), y: Number(tm[2]), size: Number(tf[2]), bold: tf[1].startsWith("Helvetica-Bold") };
     }));
   }
   return { doc, pages, text: pages.flat().map(line => line.text).join(" ") };

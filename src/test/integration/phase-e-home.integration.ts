@@ -1,11 +1,11 @@
 import {beforeEach,afterEach,expect,it} from 'vitest';
-import {randomUUID} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {previewCommunicationAudience,executeCommunicationCommand,communicationAuthority,readCommunication,recordCommunicationRead} from '../../lib/communications/service.server';
 import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
 import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
-import {admitLoginAttempt} from '../../lib/auth/login-limits.server';
+import {admitLogin,admitLoginAttempt,LOGIN_LIMITS,releaseLoginAddress} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
 import {acknowledgeScheduleWeek} from '../../lib/data/acknowledgements';
@@ -57,6 +57,36 @@ it('fictional browser-cell Owners retain independent real sign-in budgets withou
  for(let attempt=0;attempt<10;attempt++)expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(true);
  expect(await admitLoginAttempt(first,'198.51.100.23',db.executor)).toBe(false);
  expect(await admitLoginAttempt(second,'198.51.100.23',db.executor)).toBe(true);
+});
+it('a shared store address counts only failed sign-ins, while failures from it still reach the limit',async()=>{
+ const address='198.51.100.77',shift=Array.from({length:LOGIN_LIMITS.perAddress+20},(_,i)=>`SHIFT-${i}`);
+ // A whole shift signing in correctly over one network: each success hands its address slot back.
+ for(const id of shift){const admission=await admitLogin(id,address,db.executor);expect(admission.admitted).toBe(true);expect(admission.addressBucket).toEqual(expect.any(Number));await releaseLoginAddress(address,admission,db.executor);}
+ // Failures are never released, so guessing from the same address still stops at the limit.
+ for(let i=0;i<LOGIN_LIMITS.perAddress;i++)expect(await admitLoginAttempt(`GUESS-${i}`,address,db.executor)).toBe(true);
+ expect(await admitLoginAttempt('GUESS-LAST',address,db.executor)).toBe(false);
+ // A refund never goes below zero, and an unknown address or window is a no-op.
+ const other=await admitLogin('OTHER','198.51.100.78',db.executor);
+ await releaseLoginAddress('198.51.100.78',other,db.executor);await releaseLoginAddress('198.51.100.78',other,db.executor);
+ await releaseLoginAddress(null,other,db.executor);await releaseLoginAddress('198.51.100.78',{addressBucket:null},db.executor);
+ expect(await admitLoginAttempt('OTHER','198.51.100.78',db.executor)).toBe(true);
+});
+it('a success refunds the window it was admitted in, so crossing a 15-minute boundary never erases newer failures',async()=>{
+ const address='198.51.100.79',key=createHash('sha256').update(`NEVORA login limit address v1:${address}`).digest('hex');
+ const success=await admitLogin('CROSS-OK',address,db.executor);expect(success.admitted).toBe(true);
+ // The password check finishes after the boundary: that attempt now sits in the previous window.
+ expect(await q('UPDATE password_recovery_limits SET bucket=bucket-1 WHERE scope=$1 RETURNING attempts',[key])).toEqual([{attempts:1}]);
+ const previous={addressBucket:success.addressBucket!-1};
+ const failures=5;for(let i=0;i<failures;i++)expect(await admitLoginAttempt(`CROSS-BAD-${i}`,address,db.executor)).toBe(true);
+ await releaseLoginAddress(address,previous,db.executor);
+ expect(await q('SELECT bucket::text AS bucket,attempts FROM password_recovery_limits WHERE scope=$1 ORDER BY bucket',[key])).toEqual([{bucket:String(success.addressBucket),attempts:failures}]);
+});
+it('concurrent successful refunds from one address apply one after another and leave no phantom attempt',async()=>{
+ const address='198.51.100.80',key=createHash('sha256').update(`NEVORA login limit address v1:${address}`).digest('hex');
+ const admissions=await Promise.all(Array.from({length:12},(_,i)=>admitLogin(`PAIR-${i}`,address,db.executor)));
+ expect(admissions.every(a=>a.admitted)).toBe(true);
+ await Promise.all(admissions.map(a=>releaseLoginAddress(address,a,db.executor)));
+ expect(await q('SELECT attempts FROM password_recovery_limits WHERE scope=$1',[key])).toEqual([]);
 });
 it('actual six-source PARTIAL Home retains distant published Next Shift and current-week publication notice',async()=>{
  const r=await home();expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{authority:homeAuthority(proof),publicationState:'partial',nextShift:{shiftId:fixture.sourceId},sources:{schedule:{state:'partial'},acknowledgements:{state:'complete'},exchanges:{state:'complete'},timeOff:{state:'complete'},ownTime:{state:'complete'},communications:{state:'complete'}}}});

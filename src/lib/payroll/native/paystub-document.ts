@@ -1,8 +1,15 @@
 import { createHash } from "node:crypto";
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
+import { NATIVE_PAYSTUB_WORDMARK_PNG_BASE64 } from "./paystub-wordmark";
 
 export const NATIVE_PAYSTUB_PRESENTATION_VERSION = "NEVORA_NATIVE_PAYSTUB_PRESENTATION_V1";
-export const NATIVE_PAYSTUB_TEMPLATE_VERSION = "NEVORA_NATIVE_PAYSTUB_PDF_V1";
+export const NATIVE_PAYSTUB_TEMPLATE_V1 = "NEVORA_NATIVE_PAYSTUB_PDF_V1" as const;
+export const NATIVE_PAYSTUB_TEMPLATE_V2 = "NEVORA_NATIVE_PAYSTUB_PDF_V2" as const;
+export type NativePaystubTemplateVersion = typeof NATIVE_PAYSTUB_TEMPLATE_V1 | typeof NATIVE_PAYSTUB_TEMPLATE_V2;
+export const isNativePaystubTemplateVersion = (value: unknown): value is NativePaystubTemplateVersion => value === NATIVE_PAYSTUB_TEMPLATE_V1 || value === NATIVE_PAYSTUB_TEMPLATE_V2;
+/** The template newly prepared runs record. A run always renders with the template it recorded, so statements
+ * issued under v1 keep their exact bytes and fingerprints. */
+export const NATIVE_PAYSTUB_TEMPLATE_VERSION = NATIVE_PAYSTUB_TEMPLATE_V2;
 export type NativePaystubRatio = { numerator: string; denominator: string };
 export type NativePaystubMoney = { currentMinor: string; ytdMinor: string };
 export type NativePaystubEarning = {
@@ -19,7 +26,7 @@ export type NativePaystubEarning = {
 export type NativePaystubDeduction = { label: string; amount: NativePaystubMoney };
 export type NativePaystubPresentation = {
   version: typeof NATIVE_PAYSTUB_PRESENTATION_VERSION;
-  templateVersion: typeof NATIVE_PAYSTUB_TEMPLATE_VERSION;
+  templateVersion: NativePaystubTemplateVersion;
   sourceAuthority: "NATIVE_RECORDED_TIME";
   currency: "USD";
   language: "en" | "es";
@@ -61,7 +68,7 @@ export type NativePaystubPdf = {
   bytes: Uint8Array;
   sha256: string;
   pageCount: number;
-  templateVersion: typeof NATIVE_PAYSTUB_TEMPLATE_VERSION;
+  templateVersion: NativePaystubTemplateVersion;
 };
 export class NativePaystubDocumentError extends Error {
   constructor(readonly code: "INVALID_PRESENTATION" | "UNSUPPORTED_DOCUMENT_GLYPH", readonly paths: readonly string[]) { super(code); this.name = "NativePaystubDocumentError"; }
@@ -115,7 +122,7 @@ function deductions(value: unknown, path: string): NativePaystubDeduction[] {
 function presentation(value: unknown): NativePaystubPresentation {
   const p = record(value, "presentation");
   requireValue(p.version === NATIVE_PAYSTUB_PRESENTATION_VERSION, "version");
-  requireValue(p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_VERSION, "templateVersion");
+  requireValue(p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V1 || p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2, "templateVersion");
   requireValue(p.sourceAuthority === "NATIVE_RECORDED_TIME", "sourceAuthority");
   requireValue(p.currency === "USD", "currency");
   requireValue(p.language === "en" || p.language === "es", "language");
@@ -132,7 +139,7 @@ function presentation(value: unknown): NativePaystubPresentation {
   requireValue(correction.kind === "ORIGINAL" || correction.kind === "REPLACEMENT", "correction.kind");
   const totals = record(p.totals, "totals");
   const parsed: NativePaystubPresentation = {
-    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION,
+    version: NATIVE_PAYSTUB_PRESENTATION_VERSION, templateVersion: p.templateVersion as NativePaystubTemplateVersion,
     sourceAuthority: "NATIVE_RECORDED_TIME", currency: "USD", language: p.language,
     companyName: text(p.companyName, "companyName"), employeeName: text(p.employeeName, "employeeName"),
     employeeReference: text(p.employeeReference, "employeeReference"),
@@ -295,10 +302,16 @@ const INK = rgb(17 / 255, 24 / 255, 39 / 255), MUTED = rgb(75 / 255, 85 / 255, 9
 const ACCENT = rgb(237 / 255, 114 / 255, 76 / 255), BORDER = rgb(209 / 255, 213 / 255, 219 / 255);
 const SURFACE = rgb(250 / 255, 250 / 255, 250 / 255), TABLE_HEAD = rgb(229 / 255, 231 / 255, 235 / 255);
 
-/** Role-independent rendering of one immutable, approved employee presentation. */
+/** Role-independent rendering of one immutable, approved employee presentation, with the template it recorded. */
 export async function renderNativeEmployeePaystub(input: NativePaystubPresentation, options: NativePaystubRenderOptions = {}): Promise<NativePaystubPdf> {
   options.signal?.throwIfAborted();
-  const p = presentation(input), t = WORDS[p.language];
+  const p = presentation(input);
+  return p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2 ? renderStatementV2(p, options) : renderStatementV1(p, options);
+}
+
+/** Template v1 (October 2026). Kept byte for byte: statements issued with it must re-render identically. */
+async function renderStatementV1(p: NativePaystubPresentation, options: NativePaystubRenderOptions): Promise<NativePaystubPdf> {
+  const t = WORDS[p.language];
   const checkpoint = async () => {
     options.signal?.throwIfAborted();
     await options.progress?.();
@@ -311,7 +324,7 @@ export async function renderNativeEmployeePaystub(input: NativePaystubPresentati
   const approved = new Date(p.approvedAt);
   pdf.setCreationDate(approved); pdf.setModificationDate(approved);
   pdf.setProducer("NEVORA"); pdf.setCreator("NEVORA"); pdf.setTitle(t.title);
-  pdf.setSubject(`${p.sourceAuthority} / ${NATIVE_PAYSTUB_TEMPLATE_VERSION}`);
+  pdf.setSubject(`${p.sourceAuthority} / ${NATIVE_PAYSTUB_TEMPLATE_V1}`);
   let page: PDFPage, y = TOP;
   const draw = (value: string, x: number, baseline: number, size = 9, strong = false, muted = false) => {
     page.drawText(value, { x, y: baseline, size, font: strong ? bold : regular, color: muted ? MUTED : INK });
@@ -453,5 +466,317 @@ export async function renderNativeEmployeePaystub(input: NativePaystubPresentati
   await checkpoint();
   const bytes = await pdf.save({ useObjectStreams: false, addDefaultPage: false });
   await checkpoint();
-  return { bytes, sha256: createHash("sha256").update(bytes).digest("hex"), pageCount: pages.length, templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION };
+  return { bytes, sha256: createHash("sha256").update(bytes).digest("hex"), pageCount: pages.length, templateVersion: NATIVE_PAYSTUB_TEMPLATE_V1 };
+}
+
+/* Template v2 (approved November 2, 2026): an elegant, plain-language statement. The take-home amount leads,
+ * then one strip reads "You earned - Taxes - Other deductions = Take home", then each section in plain words.
+ * Same pinned Helvetica fonts and glyph check as v1; presentation arithmetic stays exact and never rounds. */
+const WORDS_V2 = {
+  en: {
+    title: "Pay statement", original: "Original", replacement: "Corrected replacement", employeeId: "Employee ID",
+    home: "You take home", earned: "You earned", taxes: "Taxes", other: "Other deductions", takeHome: "Take home",
+    earnings: "What you earned", earningsHelp: "Your hours and pay for this period.",
+    taxesTitle: "Taxes withheld", taxesHelp: "Taken from your pay and sent to the government for you.",
+    deductionsTitle: "Other deductions", deductionsHelp: "Amounts you authorized to be taken from your pay.",
+    employerTitle: "Paid by your employer", employerHelp: "Your employer pays these on top of your wages. They don't come out of your pay.",
+    thisYear: "This year", thisPeriod: "This period", paidOn: "Paid on", forWork: "For work", hours: "Hours", rate: "Rate", amount: "Amount",
+    total: "Total", none: "None this period", base: "Base", premium: "overtime premium", continued: "continued",
+    references: "References", run: "Payroll run", revision: "revision", recorded: "Source: approved recorded time",
+    root: "Original run", replaces: "Replaces run", reason: "Correction", approved: "Approved",
+    disclaimer: "This statement documents approved payroll. It doesn't confirm payment.", page: "Page", of: "of",
+    prepared: "Prepared with", template: "Template v2", h: "h", min: "min", s: "s",
+    months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  },
+  es: {
+    title: "Comprobante de nómina", original: "Original", replacement: "Reemplazo corregido", employeeId: "ID de empleado",
+    home: "Recibes", earned: "Ganaste", taxes: "Impuestos", other: "Otras deducciones", takeHome: "Recibes",
+    earnings: "Lo que ganaste", earningsHelp: "Tus horas y tu pago en este período.",
+    taxesTitle: "Impuestos retenidos", taxesHelp: "Se descuentan de tu pago y se envían al gobierno por ti.",
+    deductionsTitle: "Otras deducciones", deductionsHelp: "Cantidades que autorizaste descontar de tu pago.",
+    employerTitle: "Pagado por tu patrono", employerHelp: "Tu patrono los paga además de tu salario. No salen de tu pago.",
+    thisYear: "Este año", thisPeriod: "Este período", paidOn: "Pagado el", forWork: "Trabajo del", hours: "Horas", rate: "Tarifa", amount: "Importe",
+    total: "Total", none: "Ninguna en este período", base: "Base", premium: "prima por horas extra", continued: "continuación",
+    references: "Referencias", run: "Nómina", revision: "revisión", recorded: "Origen: tiempo registrado aprobado",
+    root: "Nómina original", replaces: "Reemplaza nómina", reason: "Corrección", approved: "Aprobado",
+    disclaimer: "Este comprobante documenta la nómina aprobada. No confirma el pago.", page: "Página", of: "de",
+    prepared: "Preparado con", template: "Plantilla v2", h: "h", min: "min", s: "s",
+    months: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
+  },
+} as const;
+type WordsV2 = (typeof WORDS_V2)["en" | "es"];
+
+const hexV2 = (h: string) => rgb(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255);
+const V2 = {
+  ink: hexV2("#172622"), muted: hexV2("#5F6D68"), soft: hexV2("#8A958F"), teal: hexV2("#0B6E69"), wash: hexV2("#EAF4F1"),
+  line: hexV2("#E3E9E6"), sheet: hexV2("#F7F6F3"), amber: hexV2("#8A5A00"), amberWash: hexV2("#FBF1DC"),
+  net: hexV2("#0B6E69"), tax: hexV2("#D4A24C"), deduction: hexV2("#9CBDB8"),
+};
+const V2_MARGIN = 44, V2_WIDTH = PAGE_WIDTH - V2_MARGIN * 2, V2_BOTTOM = 62;
+type Color = ReturnType<typeof rgb>;
+type CellRow = { cells: string[]; sub?: string };
+type Column = { label: string; width: number; right?: boolean };
+
+/** "$1,234.56"; a negative amount keeps its sign. Approved cent strings only, never rounded. */
+function dollars(value: string): string {
+  const n = BigInt(value), absolute = n < BigInt(0) ? -n : n;
+  return `${n < BigInt(0) ? "-" : ""}$${(absolute / BigInt(100)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${(absolute % BigInt(100)).toString().padStart(2, "0")}`;
+}
+const dollarRate = (r: NativePaystubRatio) => `$${exact(BigInt(r.numerator), BigInt(r.denominator) * BigInt(100), 2)}`;
+/** Decimal hours when exact ("40", "2.5"); otherwise exact hours, minutes and seconds ("1 h 40 min"); a fraction only
+ * when the time isn't a whole number of seconds. */
+function workedHours(nanoseconds: string, t: WordsV2): string {
+  const ns = BigInt(nanoseconds), hour = BigInt("3600000000000"), decimal = exact(ns, hour);
+  if (!decimal.includes("/")) return decimal;
+  const second = BigInt(1000000000);
+  if (ns % second !== BigInt(0)) return decimal;
+  const total = ns / second, h = total / BigInt(3600), m = (total % BigInt(3600)) / BigInt(60), sec = total % BigInt(60);
+  return [h ? `${h} ${t.h}` : "", m ? `${m} ${t.min}` : "", sec ? `${sec} ${t.s}` : ""].filter(Boolean).join(" ");
+}
+function calendarDate(iso: string, t: WordsV2, en: boolean, year = true): string {
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  return en ? `${t.months[m - 1]} ${d}${year ? `, ${y}` : ""}` : `${d} ${t.months[m - 1]}${year ? ` ${y}` : ""}`;
+}
+const dateRange = (start: string, end: string, t: WordsV2, en: boolean) => `${calendarDate(start, t, en, start.slice(0, 4) !== end.slice(0, 4))} – ${calendarDate(end, t, en)}`;
+function approvalStamp(approvedAt: string, t: WordsV2, en: boolean): string {
+  const utc = new Date(approvedAt).toISOString();
+  return `${calendarDate(utc, t, en)}, ${utc.slice(11, 16)} UTC`;
+}
+
+async function renderStatementV2(p: NativePaystubPresentation, options: NativePaystubRenderOptions): Promise<NativePaystubPdf> {
+  const t = WORDS_V2[p.language], en = p.language === "en";
+  const checkpoint = async () => {
+    options.signal?.throwIfAborted();
+    await options.progress?.();
+    options.signal?.throwIfAborted();
+  };
+  await checkpoint();
+  const pdf = await PDFDocument.create();
+  const regular = await pdf.embedFont(StandardFonts.Helvetica), bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  checkGlyphs(p, regular, bold);
+  const mark: PDFImage = await pdf.embedPng(Buffer.from(NATIVE_PAYSTUB_WORDMARK_PNG_BASE64, "base64"));
+  const approved = new Date(p.approvedAt);
+  pdf.setCreationDate(approved); pdf.setModificationDate(approved);
+  pdf.setProducer("NEVORA"); pdf.setCreator("NEVORA"); pdf.setTitle(t.title);
+  pdf.setSubject(`${p.sourceAuthority} / ${NATIVE_PAYSTUB_TEMPLATE_V2}`);
+  const M = V2_MARGIN, CW = V2_WIDTH;
+  let page!: PDFPage, y = 0;
+  const pages: PDFPage[] = [];
+  const width = (value: string, size: number, strong = false) => advance(value, strong ? bold : regular, size);
+  const text = (value: string, x: number, baseline: number, size: number, o: { strong?: boolean; color?: Color; align?: "left" | "right" | "center" } = {}) => {
+    const w = width(value, size, o.strong);
+    page.drawText(value, { x: o.align === "right" ? x - w : o.align === "center" ? x - w / 2 : x, y: baseline, size, font: o.strong ? bold : regular, color: o.color ?? V2.ink });
+  };
+  const lines = (value: string, size: number, max: number, strong = false) => wrap(value, strong ? bold : regular, size, max);
+  /** Capitals for the spaced employer line, one character at a time: a character whose capital the pinned font can't
+   * draw (such as "µ", whose capital is Greek "Μ") stays as written, so the line shows only text the glyph check
+   * already accepted. */
+  const boldGlyphs = new Set(bold.getCharacterSet());
+  const capitals = (value: string) => [...value].map(ch => { const up = ch.toUpperCase(); return [...up].every(c => boldGlyphs.has(c.codePointAt(0)!)) ? up : ch; }).join("");
+  /** Small spaced capitals for the employer line; wraps on words, and splits a word only when it is longer than a line. */
+  const spaced = (value: string, x: number, baseline: number, size: number, max: number, color: Color, track = 1.1) => {
+    const span = (part: string) => [...part].reduce((v, ch) => v + bold.widthOfTextAtSize(ch, size) + track, -track);
+    const words = capitals(value).split(" ").flatMap(word => {
+      if (span(word) <= max) return [word];
+      const pieces: string[] = []; let piece = "";
+      for (const ch of word) { if (piece && span(piece + ch) > max) { pieces.push(piece); piece = ""; } piece += ch; }
+      return [...pieces, piece];
+    });
+    const rows: string[] = []; let current = "";
+    for (const word of words) { const next = current ? `${current} ${word}` : word; if (current && span(next) > max) { rows.push(current); current = word; } else current = next; }
+    rows.push(current);
+    rows.forEach((row, i) => {
+      let cx = x;
+      for (const ch of row) { page.drawText(ch, { x: cx, y: baseline - i * (size + 4), size, font: bold, color }); cx += bold.widthOfTextAtSize(ch, size) + track; }
+    });
+    return rows.length;
+  };
+  const rule = (at: number, x1 = M, x2 = PAGE_WIDTH - M) => page.drawLine({ start: { x: x1, y: at }, end: { x: x2, y: at }, thickness: 0.6, color: V2.line });
+  const rounded = (x: number, yBottom: number, w: number, h: number, color: Color, r: number) => {
+    const path = `M ${r} 0 H ${w - r} A ${r} ${r} 0 0 1 ${w} ${r} V ${h - r} A ${r} ${r} 0 0 1 ${w - r} ${h} H ${r} A ${r} ${r} 0 0 1 0 ${h - r} V ${r} A ${r} ${r} 0 0 1 ${r} 0 Z`;
+    page.drawSvgPath(path, { x, y: yBottom + h, color, scale: 1 });
+  };
+  const addPage = async (first = false) => {
+    await checkpoint();
+    page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]); pages.push(page); y = PAGE_HEIGHT - M;
+    if (first) return;
+    const right = `${p.employeeName} · ${dateRange(p.period.startDate, p.period.endDate, t, en)}`;
+    const rightLines = lines(right, 8, CW * 0.55);
+    rightLines.forEach((l, i) => text(l, PAGE_WIDTH - M, y - 8 - i * 11, 8, { color: V2.muted, align: "right" }));
+    const used = spaced(p.companyName, M, y - 8, 7.5, CW * 0.4, V2.teal, 0.9);
+    y -= 18 + (Math.max(used, rightLines.length) - 1) * 11.5; rule(y); y -= 20;
+  };
+  const ensure = async (height: number) => { if (y - height < V2_BOTTOM) { await addPage(); return true; } return false; };
+
+  /** A plain-language section: title, one-line explanation, light column labels, rows on hairlines, bold total. */
+  const section = async (title: string, help: string, cols: Column[], rows: CellRow[], total: string[] | undefined, x = M, w = CW) => {
+    await checkpoint();
+    const size = 9, rowH = 20, helpLines = lines(help, 7.5, w);
+    const cellLines = (cells: string[], strong = false) => cells.map((c, j) => c ? lines(c, strong ? size + 0.5 : size, cols[j].width - (j === 0 ? 8 : 6), strong) : []);
+    const wrapped = rows.map(r => ({ cells: cellLines(r.cells), sub: r.sub ? lines(r.sub, 7.5, cols[0].width + cols.slice(1).reduce((v, c) => v + c.width, 0) * 0.5) : [] }));
+    const tall = (cells: string[][]) => Math.max(1, ...cells.map(c => c.length));
+    const height = (r: typeof wrapped[number]) => rowH + (tall(r.cells) - 1) * 12 + r.sub.length * 11;
+    const totalLines = total ? cellLines(total, true) : undefined, totalH = totalLines ? rowH + 2 + (tall(totalLines) - 1) * 12 : 0;
+    const head = (continued: boolean) => {
+      text(`${title}${continued ? ` (${t.continued})` : ""}`, x, y - 11, 11.5, { strong: true }); y -= 17;
+      if (!continued) for (const l of helpLines) { text(l, x, y - 8, 7.5, { color: V2.muted }); y -= 10; }
+      y -= 8;
+      let cx = x; for (const c of cols) { if (c.label) text(c.label, c.right ? cx + c.width : cx + (cx === x ? 0 : 6), y - 10, 7, { color: V2.soft, align: c.right ? "right" : "left" }); cx += c.width; }
+      y -= 14; rule(y, x, x + w);
+    };
+    await ensure(17 + helpLines.length * 10 + 22 + (wrapped.length ? height(wrapped[0]) : 0) + (wrapped.length === 1 ? totalH : 0));
+    head(false);
+    for (const [i, r] of wrapped.entries()) {
+      if (i % 16 === 0 && i > 0) await checkpoint();
+      const h = height(r), last = i === wrapped.length - 1;
+      if (y - h - (last ? totalH : 0) < V2_BOTTOM) { await addPage(); head(true); }
+      let cx = x;
+      for (const [j, cell] of r.cells.entries()) {
+        const c = cols[j], at = j === 0 ? cx : c.right ? cx + c.width : cx + 6;
+        cell.forEach((l, k) => text(l, at, y - 14 - k * 12, size, { align: j > 0 && c.right ? "right" : "left", color: l === "—" ? V2.soft : V2.ink }));
+        cx += c.width;
+      }
+      r.sub.forEach((l, j) => text(l, x, y - 25 - (tall(r.cells) - 1) * 12 - j * 11, 7.5, { color: V2.muted }));
+      y -= h; rule(y, x, x + w);
+    }
+    if (totalLines) {
+      let cx = x;
+      for (const [j, cell] of totalLines.entries()) {
+        const c = cols[j];
+        cell.forEach((l, k) => text(l, c.right ? cx + c.width : cx, y - 15 - k * 12, size + 0.5, { strong: true, align: c.right ? "right" : "left" }));
+        cx += c.width;
+      }
+      y -= totalH;
+    }
+    y -= 12;
+  };
+  /** The exact height of a section whose every row and total fits on one line, or undefined when one wraps. */
+  const singleLineHeight = (help: string, cols: Column[], rows: CellRow[], total: string[], w: number) => {
+    const fits = (cells: string[], strong = false) => cells.every((c, j) => !c || width(c, strong ? 9.5 : 9, strong) <= cols[j].width - (j === 0 ? 8 : 6));
+    if (!rows.every(r => !r.sub && fits(r.cells)) || !fits(total, true)) return undefined;
+    return 17 + lines(help, 7.5, w).length * 10 + 8 + 14 + rows.length * 20 + 22 + 12;
+  };
+  /** Shrinks a one-line figure to fit its space, down to a readable floor. */
+  const fit = (value: string, size: number, max: number, floor: number) => Math.max(floor, Math.min(size, size * max / width(value, size, true)));
+
+  await addPage(true);
+  // Masthead: the employer as a quiet spaced line, the document title large, and the statement kind as a label.
+  const kind = p.correction.kind === "REPLACEMENT" ? t.replacement : t.original, replacement = p.correction.kind === "REPLACEMENT";
+  const chipWidth = width(kind, 7.5, true) + 16;
+  rounded(PAGE_WIDTH - M - chipWidth, y - 13, chipWidth, 17, replacement ? V2.amberWash : V2.wash, 8.5);
+  text(kind, PAGE_WIDTH - M - chipWidth / 2, y - 7.5, 7.5, { strong: true, color: replacement ? V2.amber : V2.teal, align: "center" });
+  const employerRows = spaced(p.companyName, M, y - 8, 8, CW - chipWidth - 24, V2.teal);
+  y -= (employerRows - 1) * 12;
+  for (const l of lines(t.title, 22, CW, true)) { text(l, M, y - 34, 22, { strong: true }); y -= 26; }
+  y -= 20;
+  // Who and when: wraps instead of colliding when a name or period is long.
+  const when = `${t.forWork} ${dateRange(p.period.startDate, p.period.endDate, t, en)}  ·  ${t.paidOn} ${calendarDate(p.payDate, t, en)}`;
+  const whenWidth = Math.min(width(when, 9), CW * 0.55);
+  const whoLines = lines(`${p.employeeName}  ·  ${t.employeeId} ${p.employeeReference}`, 9, CW - whenWidth - 20), whenLines = lines(when, 9, whenWidth);
+  whoLines.forEach((l, i) => text(l, M, y - 8 - i * 12, 9, { color: V2.muted }));
+  whenLines.forEach((l, i) => text(l, PAGE_WIDTH - M, y - 8 - i * 12, 9, { color: V2.muted, align: "right" }));
+  y -= 22 + (Math.max(whoLines.length, whenLines.length) - 1) * 12;
+  // The answer first: what the person takes home.
+  text(t.home, M, y - 10, 10, { strong: true, color: V2.teal });
+  const hero = dollars(p.totals.net.currentMinor);
+  text(hero, M, y - 50, fit(hero, 44, CW, 8), { strong: true });
+  text(`${t.thisYear}: ${dollars(p.totals.net.ytdMinor)}`, M, y - 66, 8.5, { color: V2.muted });
+  y -= 80;
+  // The story in one strip: earned - taxes - other deductions = take home.
+  const steps: [string, string, string, boolean][] = [
+    [t.earned, dollars(p.totals.gross.currentMinor), "", false], [t.taxes, dollars(p.totals.taxes.currentMinor), "–", false],
+    [t.other, dollars(p.totals.authorizedDeductions.currentMinor), "–", false], [t.takeHome, dollars(p.totals.net.currentMinor), "=", true],
+  ];
+  const stepWidth = CW / 4, stripHeight = 54;
+  rounded(M, y - stripHeight, CW, stripHeight, V2.sheet, 10);
+  for (const [i, [label, value, op, last]] of steps.entries()) {
+    const x = M + i * stepWidth + 18;
+    if (op) text(op, M + i * stepWidth - 4, y - 34, 14, { color: V2.soft, align: "center" });
+    text(lines(label, 8, stepWidth - 22, last)[0], x, y - 19, 8, { strong: last, color: last ? V2.teal : V2.muted });
+    const room = stepWidth - 26, valueSize = fit(value, value.length > 12 ? 11 : 14, room, 8);
+    lines(value, valueSize, room, true).slice(0, 2).forEach((l, j) => text(l, x, y - 38 - j * 9, valueSize, { strong: true, color: last ? V2.teal : V2.ink }));
+  }
+  y -= stripHeight + 10;
+  // The same split as a thin line, drawn only when every part is a non-negative share of positive gross pay.
+  const gross = BigInt(p.totals.gross.currentMinor);
+  const parts: [bigint, Color][] = [[BigInt(p.totals.net.currentMinor), V2.net], [BigInt(p.totals.taxes.currentMinor), V2.tax], [BigInt(p.totals.authorizedDeductions.currentMinor), V2.deduction]];
+  if (gross > BigInt(0) && parts.every(([v]) => v >= BigInt(0))) {
+    const live = parts.filter(([v]) => v > BigInt(0)), usable = CW - 2 * (live.length - 1);
+    let bx = M;
+    for (const [i, [v, c]] of live.entries()) {
+      const w = usable * Number(v) / Number(gross);
+      page.drawRectangle({ x: bx, y: y - 4, width: Math.max(w, 1.5), height: 4, color: c });
+      bx += w + (i < live.length - 1 ? 2 : 0);
+    }
+  }
+  y -= 26;
+
+  const amountColumns = (w: number): Column[] => [{ label: "", width: w * 0.46 }, { label: t.thisPeriod, width: w * 0.26, right: true }, { label: t.thisYear, width: w * 0.28, right: true }];
+  const lineRows = (rows: readonly NativePaystubDeduction[]): CellRow[] => rows.length ? rows.map(l => ({ cells: [l.label, dollars(l.amount.currentMinor), dollars(l.amount.ytdMinor)] })) : [{ cells: [t.none, "", ""] }];
+  await section(t.earnings, t.earningsHelp,
+    [{ label: "", width: CW * 0.52 }, { label: t.hours, width: CW * 0.14, right: true }, { label: t.rate, width: CW * 0.16, right: true }, { label: t.amount, width: CW * 0.18, right: true }],
+    p.earnings.length ? p.earnings.map(e => {
+      if (!e.work) return { cells: [e.label, "—", "—", dollars(e.amountMinor)] };
+      const premium = BigInt(e.work.premiumRateMinorPerHour.numerator) !== BigInt(0);
+      return { cells: [e.label, workedHours(e.work.nanoseconds, t), dollarRate(e.work.paidRateMinorPerHour), dollars(e.amountMinor)],
+        sub: premium ? `${t.base} ${dollarRate(e.work.baseRateMinorPerHour)} + ${dollarRate(e.work.premiumRateMinorPerHour)} ${t.premium}` : undefined };
+    }) : [{ cells: [t.none, "", "", ""] }],
+    [t.total, "", "", dollars(p.totals.gross.currentMinor)]);
+  // Taxes and other deductions sit side by side when both are short and every row fits on one line; otherwise they stack.
+  const half = (CW - 32) / 2;
+  const taxTotal = [t.total, dollars(p.totals.taxes.currentMinor), dollars(p.totals.taxes.ytdMinor)];
+  const deductionTotal = [t.total, dollars(p.totals.authorizedDeductions.currentMinor), dollars(p.totals.authorizedDeductions.ytdMinor)];
+  const pairHeights = p.taxes.length <= 12 && p.authorizedDeductions.length <= 12
+    ? [singleLineHeight(t.taxesHelp, amountColumns(half), lineRows(p.taxes), taxTotal, half), singleLineHeight(t.deductionsHelp, amountColumns(half), lineRows(p.authorizedDeductions), deductionTotal, half)]
+    : [undefined];
+  if (pairHeights.every(h => h !== undefined)) {
+    await ensure(Math.max(...pairHeights));
+    const top = y;
+    await section(t.taxesTitle, t.taxesHelp, amountColumns(half), lineRows(p.taxes), taxTotal, M, half);
+    const afterTaxes = y; y = top;
+    await section(t.deductionsTitle, t.deductionsHelp, amountColumns(half), lineRows(p.authorizedDeductions), deductionTotal, M + half + 32, half);
+    y = Math.min(y, afterTaxes);
+  } else {
+    await section(t.taxesTitle, t.taxesHelp, amountColumns(CW), lineRows(p.taxes), taxTotal);
+    await section(t.deductionsTitle, t.deductionsHelp, amountColumns(CW), lineRows(p.authorizedDeductions), deductionTotal);
+  }
+  if (p.employerContributions)
+    await section(t.employerTitle, t.employerHelp, amountColumns(CW), lineRows(p.employerContributions.lines), [t.total, dollars(p.employerContributions.total.currentMinor), dollars(p.employerContributions.total.ytdMinor)]);
+
+  // References in two columns; long values wrap inside their column.
+  await checkpoint();
+  const references = [`${t.run}: ${p.runReference}, ${t.revision} ${p.runRevision}`, t.recorded,
+    ...(p.correction.kind === "REPLACEMENT" ? [`${t.root}: ${p.correction.originalRunReference}`, `${t.replaces}: ${p.correction.replacesRunReference}`, ...(p.correction.reasonLabel !== undefined ? [`${t.reason}: ${p.correction.reasonLabel}`] : [])] : []),
+    ...p.sourceReferences.map(r => `${r.label}: ${r.value}`)].map(r => lines(r, 7.5, CW / 2 - 12));
+  const pairs: string[][][] = [];
+  for (let i = 0; i < references.length; i += 2) pairs.push(references.slice(i, i + 2));
+  const pairHeight = (pair: string[][]) => Math.max(...pair.map(r => r.length)) * 10 + 2;
+  await ensure(18 + pairHeight(pairs[0]));
+  text(t.references, M, y - 9, 8.5, { strong: true, color: V2.muted }); y -= 18;
+  for (const [i, pair] of pairs.entries()) {
+    if (i % 16 === 0 && i > 0) await checkpoint();
+    if (y - pairHeight(pair) < V2_BOTTOM) await addPage();
+    pair.forEach((ref, col) => ref.forEach((l, j) => text(l, M + col * (CW / 2), y - 8 - j * 10, 7.5, { color: V2.muted })));
+    y -= pairHeight(pair);
+  }
+
+  // Footer on every page.
+  const stampFull = `${t.approved} ${approvalStamp(p.approvedAt, t, en)} · ${t.run} ${p.runReference} · ${t.template}`;
+  const stampShort = `${t.approved} ${approvalStamp(p.approvedAt, t, en)} · ${t.template}`;
+  for (const [i, current] of pages.entries()) {
+    page = current;
+    rule(52);
+    text(t.disclaimer, M, 38, 7.5, { color: V2.muted });
+    text(`${t.page} ${i + 1} ${t.of} ${pages.length}`, PAGE_WIDTH - M, 38, 7.5, { color: V2.muted, align: "right" });
+    const markWidth = 52, markHeight = markWidth * mark.height / mark.width;
+    page.drawImage(mark, { x: PAGE_WIDTH - M - markWidth, y: 24, width: markWidth, height: markHeight });
+    const preparedX = PAGE_WIDTH - M - markWidth - 4;
+    text(t.prepared, preparedX, 26, 7, { color: V2.soft, align: "right" });
+    const stampRoom = preparedX - width(t.prepared, 7) - 16 - M, full = lines(stampFull, 7, stampRoom);
+    (full.length <= 2 ? full : lines(stampShort, 7, stampRoom)).forEach((l, j) => text(l, M, 26 - j * 9, 7, { color: V2.soft }));
+  }
+  await checkpoint();
+  const bytes = await pdf.save({ useObjectStreams: false, addDefaultPage: false });
+  await checkpoint();
+  return { bytes, sha256: createHash("sha256").update(bytes).digest("hex"), pageCount: pages.length, templateVersion: NATIVE_PAYSTUB_TEMPLATE_V2 };
 }

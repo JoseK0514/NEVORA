@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
+import {addDays,weekStartFor} from '../src/lib/date-utils.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime,d2NavigationCancellation} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
@@ -125,9 +126,15 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
   observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
-  await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   // Corporate Time (Release 1): the day's row opens its punches; "Request a correction" opens Fix my time for that entry.
-  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
+  // Time lists only this week (Monday to Sunday) and a recorded entry belongs to the day it starts. The overnight fixture
+  // starts two days ago, so on a Monday or Tuesday its row is in last week's Past timecards, not on Time.
+  const entryDate=Temporal.Instant.from(raw.start).toZonedDateTimeISO('America/Puerto_Rico').toPlainDate().toString();
+  const thisWeek=weekStartFor(Temporal.Now.plainDateISO('America/Puerto_Rico').toString());
+  const entryWeek=weekStartFor(entryDate),fromCards=entryWeek<thisWeek;
+  observations.entryPath={entryDate,thisWeek,view:fromCards?'cards':'records'};
+  await ep.goto(app.url+(fromCards?`/app/my-time?view=cards&start=${entryWeek}&end=${addDays(entryWeek,6)}`:'/app/my-time'),{waitUntil:'networkidle'});
+  const entryRow=fromCards?hoursPage(ep,'cards').locator('a.c-row#hours-card-entry-'+entryId):hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
   await entryRow.focus();await entryRow.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
   const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
