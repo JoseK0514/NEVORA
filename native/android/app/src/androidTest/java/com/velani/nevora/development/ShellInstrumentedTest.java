@@ -174,9 +174,33 @@ public class ShellInstrumentedTest {
     }
     private void tapText(String value) {
         UiObject2 target = text(value, true);
-        if (target == null) retainFailure(value);
+        if (target == null) {
+            retainFailure(value);
+            if (value.equals("Sign out")) diagnoseMissingSignOut();
+        }
         assertNotNull("Exact visible pointer target: " + value, target);
         target.click();
+    }
+    private void diagnoseMissingSignOut() {
+        // Failure-only fictional-fixture discriminator. The original target
+        // remains null and the assertion above still fails even if an event
+        // changes the tree. A diagnostic reread is never counted as a pass.
+        java.util.concurrent.CountDownLatch observed=new java.util.concurrent.CountDownLatch(1);
+        scenario.onActivity(activity->{
+            WebView view=browser(activity.getWindow().getDecorView());
+            if(view==null){observed.countDown();return;}
+            view.evaluateJavascript("JSON.stringify((()=>{const b=[...document.querySelectorAll('button')].find(e=>e.textContent==='Sign out');const r=b?.getBoundingClientRect();return {exists:!!b,disabled:b?.disabled,focus:document.hasFocus(),visible:document.visibilityState==='visible',width:r?.width,height:r?.height,top:r?.top,left:r?.left}})())",result->{
+                android.util.Log.i("NEVORA_QA_AX_EVENT","before="+result);
+                view.sendAccessibilityEvent(android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+                observed.countDown();
+            });
+        });
+        try {
+            boolean completed=observed.await(5,java.util.concurrent.TimeUnit.SECONDS);
+            UiObject2 after=UiDeviceExt.onElementOrNull(device,3000L,100L,node->matchesTarget(node,"Sign out",true));
+            android.util.Log.i("NEVORA_QA_AX_EVENT","eventCompleted="+completed+" targetAfterEvent="+(after!=null));
+            device.dumpWindowHierarchy(new File(evidenceDirectory(),"Sign_out_after_content_event.xml"));
+        }catch(Exception error){android.util.Log.i("NEVORA_QA_AX_EVENT","diagnostic="+error.getClass().getSimpleName());}
     }
     private void signIn(String id) {
         expectText("Fictional sign in");
@@ -294,6 +318,17 @@ public class ShellInstrumentedTest {
     @Test public void g_unsupportedRoleExplainsWebAccess() {
         launch(origin); signIn("FICTIONAL-MANAGER"); expectText("Employee and Owner accounts");
         assertFalse(device.hasObject(By.text("Fictional Manager Home"))); signOut();
+    }
+    @Test public void h_repeatedEmployeeRecreationKeepsAccessibleSignOut() {
+        launch(origin);signIn("FICTIONAL");expectText("Fictional Home");
+        for(int cycle=0;cycle<10;cycle++) {
+            scenario.recreate();expectText("Fictional Home");
+            UiObject2 target=text("Sign out",true);
+            if(target==null){retainFailure("Sign out");diagnoseMissingSignOut();}
+            assertNotNull("Exact visible Sign out after recreation cycle "+cycle,target);
+            android.util.Log.i("NEVORA_QA_AX_EVENT","recreationCycle="+cycle+" target=true");
+        }
+        signOut();
     }
     @Test public void z_ownerSessionForExternalProcessRestartCheck() {
         launch(origin); signIn("FICTIONAL-OWNER"); expectText("Fictional Owner Home");

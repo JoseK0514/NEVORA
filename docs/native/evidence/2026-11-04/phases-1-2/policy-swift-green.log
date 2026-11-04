@@ -1,0 +1,56 @@
+Building for debugging...
+[1 / 3]
+[2 / 6] NevoraShellCore
+[3 / 7] NevoraShellCore
+[8 / 12] NevoraShellCore
+[10 / 13] NevoraShellCore
+[11 / 13] NevoraShellCoreTests-product
+[13 / 15] NevoraShellCoreTests-product
+[15 / 16] NevoraShellCoreTests-product
+Build complete! (2.59 sec)
+Test Suite 'All tests' started at 2026-11-04 14:17:02.554.
+Test Suite 'NevoraShellCoreTests.xctest' started at 2026-11-04 14:17:02.556.
+Test Suite 'BackendPolicyTests' started at 2026-11-04 14:17:02.557.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testBackgroundAndNewerResumeInvalidateInFlightResults]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testBackgroundAndNewerResumeInvalidateInFlightResults]' passed (0.003 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCanonicalHostAndDefaultPortsDoNotBroadenOrigin]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCanonicalHostAndDefaultPortsDoNotBroadenOrigin]' passed (0.002 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCompatibilityProbeNeverExtractsOrSendsWebViewCredentials]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCompatibilityProbeNeverExtractsOrSendsWebViewCredentials]' passed (0.001 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugCleartextIsLimitedToExplicitLoopback]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugCleartextIsLimitedToExplicitLoopback]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugDoesNotMistakeDNSPrefixForLoopback]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugDoesNotMistakeDNSPrefixForLoopback]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testExternalNavigationRequiresDeliberateHTTPSGetInMainFrame]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testExternalNavigationRequiresDeliberateHTTPSGetInMainFrame]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testForeignWindowOrSubframeCannotPostOrRedirect]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testForeignWindowOrSubframeCannotPostOrRedirect]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testMoreReleaseLoopbackAndNumericAliasesAreRejected]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testMoreReleaseLoopbackAndNumericAliasesAreRejected]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testNewActivationAndRepeatedSuspensionInvalidateOlderTickets]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testNewActivationAndRepeatedSuspensionInvalidateOlderTickets]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOnlyExactOriginRemainsInWebView]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOnlyExactOriginRemainsInWebView]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOversizedOrMismatchedProtocolCannotBecomeSuccessful]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOversizedOrMismatchedProtocolCannotBecomeSuccessful]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testProtocolErrorsAndOutagesNeverBecomeAuthenticatedOrLoggedOut]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testProtocolErrorsAndOutagesNeverBecomeAuthenticatedOrLoggedOut]' passed (0.001 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testReleaseRefusesInsecureAmbiguousOrUnconfiguredOrigins]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testReleaseRefusesInsecureAmbiguousOrUnconfiguredOrigins]' passed (0.000 seconds).
+Test Suite 'BackendPolicyTests' passed at 2026-11-04 14:17:02.566.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.008 (0.009) seconds
+Test Suite 'CapabilityPolicyTests' started at 2026-11-04 14:17:02.566.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentMetadataHasIndependentOriginTypeAndSizeBounds]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentMetadataHasIndependentOriginTypeAndSizeBounds]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' passed (0.001 seconds).
+Test Suite 'CapabilityPolicyTests' passed at 2026-11-04 14:17:02.567.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'NevoraShellCoreTests.xctest' passed at 2026-11-04 14:17:02.567.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.009 (0.010) seconds
+Test Suite 'All tests' passed at 2026-11-04 14:17:02.567.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.009 (0.013) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

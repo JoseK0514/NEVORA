@@ -1,0 +1,2 @@
+native/capability-ui/main.tsx(20,2): error TS2352: Conversion of type 'Window & typeof globalThis' to type 'Window & { nevoraCapabilities: Port; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'nevoraCapabilities' is missing in type 'Window & typeof globalThis' but required in type '{ nevoraCapabilities: Port; }'.

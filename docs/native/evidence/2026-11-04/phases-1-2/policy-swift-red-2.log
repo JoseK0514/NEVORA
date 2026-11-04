@@ -1,0 +1,28 @@
+Building for debugging...
+[1 / 21]
+[2 / 13] NevoraShellCoreTests-product
+[5 / 16] NevoraShellCoreTests-product
+[10 / 14] NevoraShellCoreTests-product
+Build complete! (2.77 sec)
+Test Suite 'Selected tests' started at 2026-11-04 14:15:02.819.
+Test Suite 'NevoraShellCoreTests.xctest' started at 2026-11-04 14:15:02.821.
+Test Suite 'CapabilityPolicyTests' started at 2026-11-04 14:15:02.821.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentMetadataHasIndependentOriginTypeAndSizeBounds]' started.
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:17: error: -[NevoraShellCoreTests.CapabilityPolicyTests testDocumentMetadataHasIndependentOriginTypeAndSizeBounds] : XCTAssertTrue failed
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentMetadataHasIndependentOriginTypeAndSizeBounds]' failed (0.114 seconds).
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' started.
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /app
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /app/schedule?week=2030-01-07
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /activate?token=fictional
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /reset-access?token=fictional
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /forgot-access
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Tests/NevoraShellCoreTests/CapabilityPolicyTests.swift:8: error: -[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes] : XCTAssertNotNil failed - /login
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' failed (0.001 seconds).
+Test Suite 'CapabilityPolicyTests' failed at 2026-11-04 14:15:02.936.
+	 Executed 2 tests, with 7 failures (0 unexpected) in 0.114 (0.115) seconds
+Test Suite 'NevoraShellCoreTests.xctest' failed at 2026-11-04 14:15:02.936.
+	 Executed 2 tests, with 7 failures (0 unexpected) in 0.114 (0.115) seconds
+Test Suite 'Selected tests' failed at 2026-11-04 14:15:02.936.
+	 Executed 2 tests, with 7 failures (0 unexpected) in 0.114 (0.116) seconds
+Note: Some test targets reported failures:
+  - NevoraShellCoreTests (XCTest)

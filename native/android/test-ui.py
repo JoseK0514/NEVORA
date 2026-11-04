@@ -83,6 +83,16 @@ def run(command, timeout=45, check=True):
 def device(*command, **options):
     return run([str(adb), '-s', args.serial, *command], **options)
 
+def collect_diagnostics():
+    diagnostic_root = f'cache/nevora-native-tests-{invocation}'
+    diagnostics = device('shell', 'run-as', 'com.velani.nevora.development', 'ls', diagnostic_root, check=False)
+    if diagnostics.returncode == 0:
+        for name in diagnostics.stdout.splitlines():
+            if not re.fullmatch(r'[A-Za-z0-9_]+\.(?:png|xml)', name):
+                raise RuntimeError('Unexpected diagnostic artifact')
+            data = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'run-as', 'com.velani.nevora.development', 'cat', f'{diagnostic_root}/{name}'], env=env, capture_output=True, timeout=15, check=True)
+            (evidence / name).write_bytes(data.stdout)
+
 def source_hash():
     files = sorted(set(list((root / 'app/src').rglob('*')) + list(root.glob('*.gradle'))
         + list(root.glob('*.properties')) + list(root.glob('*.py')) + list((root / 'gradle/wrapper').glob('*'))
@@ -117,6 +127,7 @@ def instrumentation_selections(backend, only_testing):
         'c_employeeHistoryRecreationAndPostLogout', 'd_ownerIsDistinctAndSurvivesRecreation',
         'e_backgroundRevocationRetiresPrivateDocument', 'f_outageAndRetryNeverRevealStalePrivateContent',
         'g_redirectedSubresourcesAreContainedByRendererPolicy', 'g_unsupportedRoleExplainsWebAccess',
+        'h_repeatedEmployeeRecreationKeepsAccessibleSignOut',
         'z_ownerSessionForExternalProcessRestartCheck']
     return [selected_class + '#' + name for name in names]
 
@@ -222,51 +233,36 @@ try:
     text = '\n'.join(outputs)
     report['isolatedTestProcesses'] = len(selections) > 1
     (evidence / 'instrumentation.log').write_text(text)
-    diagnostic_root = f'cache/nevora-native-tests-{invocation}'
-    diagnostics = device('shell', 'run-as', 'com.velani.nevora.development', 'ls', diagnostic_root, check=False)
-    if diagnostics.returncode == 0:
-        for name in diagnostics.stdout.splitlines():
-            if not re.fullmatch(r'[A-Za-z0-9_]+\.(?:png|xml)', name):
-                raise RuntimeError('Unexpected diagnostic artifact')
-            data = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'run-as', 'com.velani.nevora.development', 'cat', f'{diagnostic_root}/{name}'], env=env, capture_output=True, timeout=15, check=True)
-            (evidence / name).write_bytes(data.stdout)
-    report['instrumentationTests'] = instrumentation_count(text, len(selections), 3 if backend else 1 if args.only_testing and '#' in args.only_testing else 9)
+    collect_diagnostics()
+    matrix_error = None
+    try:
+        report['instrumentationTests'] = instrumentation_count(text, len(selections), len(selections))
+    except RuntimeError as error:
+        # Complete the independent cold restart observation as well, while
+        # preserving the original failed matrix as an overall failure.
+        matrix_error = error
     if not args.only_testing:
         device('shell', 'am', 'force-stop', 'com.velani.nevora.development')
-        device('shell', 'am', 'start', '-W', '-n', 'com.velani.nevora.development/.PortalActivity', '--es', 'nevora.debug.origin', addresses['origin'])
-        xml_path = f'/data/local/tmp/nevora-native-{invocation}.xml'
-        try:
-            deadline = time.monotonic() + 25
-            while True:
-                device('shell', 'uiautomator', 'dump', xml_path, timeout=15)
-                hierarchy = device('exec-out', 'cat', xml_path).stdout
-                expected_home = ('Welcome back, Fictional' in hierarchy and 'Team' in hierarchy and 'Schedule' in hierarchy) if backend else 'Fictional Owner Home' in hierarchy
-                if expected_home:
-                    (evidence / 'cold-start.xml').write_text(hierarchy)
-                    report['coldProcessRestart'] = True
-                    break
-                if time.monotonic() >= deadline:
-                    raise RuntimeError('Owner session did not survive a real process restart')
-                time.sleep(0.2)
-        except Exception:
-            # Preserve the actual visible state without turning a diagnostic
-            # retry into acceptance or masking the original observation error.
-            try:
-                image = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'screencap', '-p'], env=env, capture_output=True, timeout=5, check=True)
-                (evidence / 'cold-start-failure.png').write_bytes(image.stdout)
-            except Exception:
-                pass
-            raise
-        finally:
-            device('shell', 'rm', '-f', xml_path, check=False)
-        screenshot = subprocess.run([str(adb), '-s', args.serial, 'exec-out', 'screencap', '-p'], env=env, capture_output=True, timeout=15, check=True)
-        (evidence / 'owner-cold-start.png').write_bytes(screenshot.stdout)
+        # The legacy `uiautomator dump` CLI can crash its Binder thread after
+        # writing XML. Never accept that nonzero exit or a stale output file.
+        # Assert the same Owner UI in a fresh instrumentation process instead.
+        cold = device('shell', 'am', 'instrument', '-w', '-e', 'class',
+            'com.velani.nevora.development.ColdStartInstrumentedTest',
+            *settings, '-e', 'nativeEvidenceKey', invocation,
+            'com.velani.nevora.development.test/androidx.test.runner.AndroidJUnitRunner', timeout=60)
+        cold_output = cold.stdout + cold.stderr
+        (evidence / 'cold-start-instrumentation.log').write_text(cold_output)
+        collect_diagnostics()
+        report['coldInstrumentationTests'] = instrumentation_count(cold_output, 1, 1)
+        report['coldProcessRestart'] = True
     assert source_hash() == before, 'Native/fixture source changed during verification'
     if backend:
         owned_artifacts(Path(args.evidence_root), 'android', args.expected_sha, args.backend_owner)
         assert run(['git', '-C', str(root.parent.parent), 'rev-parse', 'HEAD']).stdout.strip() == args.expected_sha
         assert not run(['git', '-C', str(root.parent.parent), 'status', '--porcelain=v1']).stdout.strip()
     assert observe_webview_context(args.accessibility_mode) == context, 'WebView runtime context changed during verification'
+    if matrix_error is not None:
+        raise matrix_error
     report['passed'] = True
 finally:
     original_error = sys.exc_info()[1]

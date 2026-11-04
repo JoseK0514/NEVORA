@@ -12,13 +12,23 @@ android {
         versionName '0.1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         buildConfigField 'String', 'BACKEND_ORIGIN', JsonOutput.toJson(providers.gradleProperty('nevoraBackendOrigin').getOrElse(''))
+        buildConfigField 'boolean', 'NATIVE_PUSH_ENABLED', providers.gradleProperty('nevoraNativePushEnabled').getOrElse('false') == 'true' ? 'true' : 'false'
+        ['Environment', 'FirebaseProject', 'FirebaseApp', 'FirebaseApiKey', 'FirebaseSender'].each { key ->
+            buildConfigField 'String', 'NATIVE_' + key.replaceAll(/([a-z])([A-Z])/, '$1_$2').toUpperCase(), JsonOutput.toJson(providers.gradleProperty('nevoraNative' + key).getOrElse(''))
+        }
+        def linkOrigin = providers.gradleProperty('nevoraBackendOrigin').getOrElse('')
+        def linkHost = linkOrigin.startsWith('https://') ? new URI(linkOrigin).host : null
+        manifestPlaceholders.nevoraAppLinkHost = linkHost ?: 'unconfigured.invalid'
     }
     buildFeatures { buildConfig true }
+    testOptions { unitTests.all { systemProperty 'nevora.registrationVectors', rootProject.file('../contracts/registration-v1.json').absolutePath } }
     buildTypes { release { minifyEnabled false; signingConfig null } }
     compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
 dependencies {
     implementation 'androidx.activity:activity:1.11.0'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'com.google.firebase:firebase-messaging:26.0.1'
     testImplementation 'junit:junit:4.13.2'
     // Android's platform JSONObject at runtime; a real implementation for JVM tests.
     testImplementation 'org.json:json:20260814'

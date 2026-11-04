@@ -6,6 +6,7 @@ import {EmployeeAccountFrame} from './profile';
 import {CorpPill} from '../corp/corp';
 import {useEmployeeDevice} from './device-owner';
 import './account-corp.css';
+import {NativeDeviceSettings} from '../native-shell/device-settings';
 
 type Props={snapshot:DeviceSnapshot|null;paused:boolean;enabled:boolean;canInstall:boolean;confirm:boolean;onEnable():void;onRefresh():void;onPostpone():void;onInstall():void;onReview():void;onKeep():void;onTurnOff():void;onTest():void;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLDivElement|null>;turnOffRef?:RefObject<HTMLButtonElement|null>;installMessage?:string};
 /** Board E-NotificationSettings, honest version: NEVORA can turn alerts on or off for this browser only. Per-topic
@@ -46,7 +47,10 @@ export function EmployeeDeviceAlertsView({confirmationRef,feedbackRef,turnOffRef
  </div>;
 }
 
-export function EmployeeDeviceAlertsPage({enabled}:{enabled:boolean}){
+export function EmployeeDeviceAlertsPage({enabled,nativeApp=false}:{enabled:boolean;nativeApp?:boolean}){
+ return nativeApp?<EmployeeAccountFrame title="Alerts" back={{href:'/app/notifications',label:'Notifications'}}>{enabled?<NativeDeviceSettings/>:<p className="c-note">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p>}</EmployeeAccountFrame>:<BrowserDeviceAlertsPage enabled={enabled}/>;
+}
+function BrowserDeviceAlertsPage({enabled}:{enabled:boolean}){
  const owner=useEmployeeDevice(),[review,setReview]=useState<{generation:string|undefined}|null>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null),lastMessage=useRef('');
  const snapshot=owner?.snapshot??null,paused=owner?.paused??false;
  const currentReview=!!review&&!paused&&!owner?.ending&&!snapshot?.accessChanged&&snapshot?.server.ownershipGeneration===review.generation;

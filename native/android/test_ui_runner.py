@@ -43,8 +43,9 @@ class RunnerOwnershipTests(unittest.TestCase):
         exec(compile(ast.Module(body=[function], type_ignores=[]), 'runner_selections', 'exec'), namespace)
         select = namespace['instrumentation_selections']
         selections = select(False, None)
-        self.assertEqual(len(selections), 9)
-        self.assertEqual(len(set(selections)), 9)
+        self.assertEqual(len(selections), 10)
+        self.assertEqual(len(set(selections)), 10)
+        self.assertIn('com.velani.nevora.development.ShellInstrumentedTest#h_repeatedEmployeeRecreationKeepsAccessibleSignOut', selections)
         self.assertTrue(selections[-1].endswith('#z_ownerSessionForExternalProcessRestartCheck'))
         self.assertTrue(all('#' in name for name in selections))
         self.assertEqual(select(False, 'com.velani.nevora.development.ShellInstrumentedTest'), selections)

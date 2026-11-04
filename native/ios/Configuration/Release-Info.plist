@@ -22,6 +22,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NEVORABackendOrigin</key>
 	<string>$(NEVORA_BACKEND_ORIGIN)</string>
+	<key>NEVORANativePushEnabled</key>
+	<string>$(NEVORA_NATIVE_PUSH_ENABLED)</string>
+	<key>NEVORANativePushEnvironment</key>
+	<string>$(NEVORA_NATIVE_PUSH_ENVIRONMENT)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

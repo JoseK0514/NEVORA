@@ -157,6 +157,53 @@ it('can detach a revoked registration using its key without recreating a session
   expect(rows).toHaveLength(1); expect(rows[0]).toEqual({status: 'detached', encrypted_material: null});
   expect((await query<{count: string}>('SELECT count(*) FROM employee_sessions WHERE token_hash=$1', [proof().sessionTokenHash]))[0].count).toBe('0');
 });
+it('retains detached revision for off-to-on and explicitly reconciles lost receipts across accounts',async()=>{
+ const repository=await repo(),active=await enrolled(repository);
+ const detach=await repository.issueMaintenance({keyFingerprint:fingerprint,operation:'detach',expectedGeneration:active.generation,operationId:randomUUID()});
+ if(detach.state!=='challenge')throw Error('Expected detach challenge');
+ const off=await repository.complete(completeInput(detach.challenge,null));if(off.state!=='complete')throw Error('Expected detached receipt');
+ expect(off.generation).not.toBe(active.generation);
+ expect((await repository.complete(completeInput(await issued(repository,'E',off.generation)))).state).toBe('active');
+ // A different signed-in account cannot use stale ordinary enrollment. A
+ // deliberate reconciliation captures the actual revision once, then needs
+ // this same private key and current account authority at completion.
+ expect(await repository.issueEnrollment({proof:proof('O'),binding,spki,operationId:randomUUID(),expectedGeneration:null})).toEqual({state:'conflict'});
+ const reply=await repository.issueEnrollment({proof:proof('O'),binding,spki,operationId:randomUUID(),expectedGeneration:null,reconcile:true});
+ expect(reply.state).toBe('challenge');if(reply.state!=='challenge')throw Error('Expected reconciliation');
+ expect(reply.challenge.expectedGeneration).not.toBeNull();
+ const other=generateKeyPairSync('ec',{namedCurve:'prime256v1'});
+ expect(await repository.complete({...completeInput(reply.challenge),signature:sign('sha256',nativeProofBytes(reply.challenge,'a1b2'),other.privateKey).toString('base64url')})).toEqual({state:'denied'});
+ const rebound=await repository.complete(completeInput(reply.challenge));expect(rebound.state).toBe('active');
+ expect(await repository.status({proof:proof(),keyFingerprint:fingerprint})).toEqual({state:'off'});
+ if(rebound.state==='active')expect(await repository.status({proof:proof('O'),keyFingerprint:fingerprint})).toEqual(rebound);
+});
+it('reconciliation cannot retarget a concurrent revision or survive account revocation',async()=>{
+ const repository=await repo(),active=await enrolled(repository);
+ const input={proof:proof('O'),binding,spki,operationId:randomUUID(),expectedGeneration:null,reconcile:true};
+ const pending=await repository.issueEnrollment(input);if(pending.state!=='challenge')throw Error('Expected reconciliation');
+ const rotate=await repository.issueMaintenance({keyFingerprint:fingerprint,operation:'rotate',expectedGeneration:active.generation,operationId:randomUUID()});if(rotate.state!=='challenge')throw Error('Expected rotation');
+ expect((await repository.complete(completeInput(rotate.challenge,'a1b3'))).state).toBe('active');
+ expect(await repository.complete(completeInput(pending.challenge))).toEqual({state:'conflict'});
+ const next=await repository.issueEnrollment({...input,operationId:randomUUID()});if(next.state!=='challenge')throw Error('Expected fresh reconciliation');
+ await query('DELETE FROM employee_sessions WHERE token_hash=$1',[proof('O').sessionTokenHash]);
+ expect(await repository.complete(completeInput(next.challenge))).toEqual({state:'denied'});
+});
+it.each(['enroll','rotate','detach'] as const)('explicitly recovers a lost %s commit acknowledgement for a different current account',async operation=>{
+ const repository=await repo();
+ let challenge:NativeChallenge;
+ if(operation==='enroll')challenge=await issued(repository);
+ else {
+  const active=await enrolled(repository),reply=await repository.issueMaintenance({keyFingerprint:fingerprint,operation,expectedGeneration:active.generation,operationId:randomUUID()});
+  if(reply.state!=='challenge')throw Error('Expected maintenance');challenge=reply.challenge;
+ }
+ const dropped:SqlExecutor={...db,transaction:async(statements,signal)=>{await db.transaction(statements,signal);throw Error('fictional lost response after commit');}};
+ await expect((await repo(dropped)).complete(completeInput(challenge,operation==='detach'?null:'a1b2'))).rejects.toThrow('fictional lost response');
+ const request={proof:proof('O'),binding,spki,operationId:randomUUID(),expectedGeneration:null,reconcile:true};
+ const recovery=await repository.issueEnrollment(request);if(recovery.state!=='challenge')throw Error('Expected explicit recovery');
+ expect(await repository.issueEnrollment(request)).toEqual(recovery);
+ const result=await repository.complete(completeInput(recovery.challenge,'a1b3'));expect(result.state).toBe('active');
+ if(result.state==='active')expect(await repository.status({proof:proof('O'),keyFingerprint:fingerprint})).toEqual(result);
+});
 
 it('cleans revoked ownership and never keeps a plaintext token after cleanup', async () => {
   const repository = await repo(); await enrolled(repository);

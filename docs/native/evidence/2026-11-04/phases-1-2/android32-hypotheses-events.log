@@ -1,0 +1,20 @@
+--------- beginning of main
+11-04 16:53:37.642  6209  6226 I NEVORA_QA_AX_EVENT: recreationCycle=0 target=true
+11-04 16:53:38.929  6209  6226 I NEVORA_QA_AX_EVENT: recreationCycle=1 target=true
+11-04 16:53:59.865  6209  6209 I NEVORA_QA_AX_EVENT: before="{\"exists\":true,\"disabled\":false,\"focus\":true,\"visible\":true,\"width\":74.17262268066406,\"height\":24.4761905670166,\"top\":184.58334350585938,\"left\":8}"
+11-04 16:54:02.899  6209  6226 I NEVORA_QA_AX_EVENT: eventCompleted=true targetAfterEvent=false
+11-04 16:55:51.124  6759  6759 I NEVORA_QA_AX_EVENT: before="{\"exists\":true,\"disabled\":false,\"focus\":true,\"visible\":true,\"width\":74.17262268066406,\"height\":24.4761905670166,\"top\":184.58334350585938,\"left\":8}"
+11-04 16:55:54.196  6759  6780 I NEVORA_QA_AX_EVENT: eventCompleted=true targetAfterEvent=false
+11-04 16:58:01.612  7127  7127 I NEVORA_QA_AX_EVENT: before="{\"exists\":true,\"disabled\":false,\"focus\":true,\"visible\":true,\"width\":74.17262268066406,\"height\":24.4761905670166,\"top\":184.58334350585938,\"left\":8}"
+11-04 16:58:04.673  7127  7144 I NEVORA_QA_AX_EVENT: eventCompleted=true targetAfterEvent=false
+11-04 16:59:11.567  7453  7471 I NEVORA_QA_AX_EVENT: recreationCycle=0 target=true
+11-04 16:59:32.343  7453  7453 I NEVORA_QA_AX_EVENT: before="{\"exists\":true,\"disabled\":false,\"focus\":true,\"visible\":true,\"width\":74.17262268066406,\"height\":24.4761905670166,\"top\":184.58334350585938,\"left\":8}"
+11-04 16:59:35.414  7453  7471 I NEVORA_QA_AX_EVENT: eventCompleted=true targetAfterEvent=false
+11-04 17:01:22.692  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=0 target=true
+11-04 17:01:23.847  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=1 target=true
+11-04 17:01:25.022  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=2 target=true
+11-04 17:01:26.206  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=3 target=true
+11-04 17:01:27.361  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=4 target=true
+11-04 17:01:28.600  7857  7874 I NEVORA_QA_AX_EVENT: recreationCycle=5 target=true
+11-04 17:01:49.513  7857  7857 I NEVORA_QA_AX_EVENT: before="{\"exists\":true,\"disabled\":false,\"focus\":true,\"visible\":true,\"width\":74.17262268066406,\"height\":24.4761905670166,\"top\":184.58334350585938,\"left\":8}"
+11-04 17:01:52.603  7857  7874 I NEVORA_QA_AX_EVENT: eventCompleted=true targetAfterEvent=false

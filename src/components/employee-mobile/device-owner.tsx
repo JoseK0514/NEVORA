@@ -6,6 +6,7 @@ import {isPopoverOpen} from '../kit/popover-open';
 import {useEmployeeMobile} from './use-mobile';
 import {usePathname} from 'next/navigation';
 import type {UserRole} from '../../lib/domain';
+import {NativeDeviceSettings} from '../native-shell/device-settings';
 
 type InstallEvent=Event&{prompt():Promise<void>;userChoice:Promise<{outcome:'accepted'|'dismissed'}>};
 type Owner={snapshot:DeviceSnapshot|null;paused:boolean;ending:boolean;canInstall:boolean;installMessage:string;install():void;refresh():void;enable():void;turnOff(expectedGeneration?:string|null):void;test():void;postpone():void;reopen():void};
@@ -44,7 +45,7 @@ export function EmployeeDeviceProvider({authority,enabled,children}:{authority?:
 }
 
 /** Incumbent desktop presentation, sharing the same current-device controller. */
-export function EmployeeDevicePopover({role}:{role:UserRole}){
+export function EmployeeDevicePopover({role,nativeApp=false}:{role:UserRole;nativeApp?:boolean}){
  const owner=useEmployeeDevice(),mobile=useEmployeeMobile(),pathname=usePathname(),surface=useRef<HTMLDivElement>(null),opener=useRef<HTMLElement|null>(null),offered=useRef(false),[instructions,setInstructions]=useState(false);
  useEffect(()=>{if(mobile||pathname==='/app/profile/device-alerts'||offered.current||!owner?.snapshot||!['ready','install'].includes(owner.snapshot.state))return;offered.current=true;if(document.activeElement===document.body)surface.current?.showPopover();},[mobile,owner?.snapshot,pathname]);
  useEffect(()=>{
@@ -58,9 +59,9 @@ export function EmployeeDevicePopover({role}:{role:UserRole}){
  },[owner,mobile]);
  if(mobile)return null;
  const snapshot=owner?.snapshot;
- return <div ref={surface} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby="portal-device-title" data-role={role}>
+ return <div ref={surface} id="portal-device-settings" className="portal-device-settings" popover="auto" aria-labelledby={nativeApp?undefined:"portal-device-title"} aria-label={nativeApp?"Device settings":undefined} data-role={role}>
   <div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close" popoverTarget="portal-device-settings" popoverTargetAction="hide" aria-label="Close device settings">×</button></div>
-  {snapshot&&!owner?.paused&&!owner?.ending?<DeviceSetupContent state={snapshot.state} standalone={snapshot.standalone} ios={snapshot.capabilities.requiresStandalone} installPrompt={owner?.canInstall??false} testAllowed={snapshot.server.testAllowed} instructions={instructions} message={snapshot.message??owner?.installMessage}
+  {nativeApp?<NativeDeviceSettings/>:snapshot&&!owner?.paused&&!owner?.ending?<DeviceSetupContent state={snapshot.state} standalone={snapshot.standalone} ios={snapshot.capabilities.requiresStandalone} installPrompt={owner?.canInstall??false} testAllowed={snapshot.server.testAllowed} instructions={instructions} message={snapshot.message??owner?.installMessage}
    onEnable={()=>owner?.enable()} onDismiss={()=>{owner?.postpone();surface.current?.hidePopover();}} onInstructions={()=>setInstructions(true)} onInstall={()=>owner?.install()} onTurnOff={()=>owner?.turnOff()} onTest={()=>owner?.test()} onRetry={()=>owner?.refresh()}/>:<p role="status">{owner?.ending?'Signing out…':owner?.paused?'Device settings paused. Return to this window to check again.':'Checking this device…'}</p>}
  </div>;
 }

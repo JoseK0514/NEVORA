@@ -1,0 +1,12 @@
+{
+  "src/lib/data/native-deliveries.ts": "9455344546c40d25845dda536964b42da30af19e7055f785793e6bc80878cea5",
+  "src/test/integration/native-deliveries.integration.ts": "1eda318ca68134774c45a576c32532581f35f5998e316156042d97249b25339d",
+  "src/lib/native-push/providers/apns.test.ts": "6e558f2a90cb82de9e266af7f4525b9f02571be95506df866037dfd9f265a653",
+  "src/lib/native-push/providers/apns.ts": "81dff375d57f366bd1306b209d1adc1ead303c6d8d41dcb9a92d26f1028acfeb",
+  "src/lib/native-push/providers/common.ts": "499f4c21d77b89d1b2e33b8d457075e7758a665dcab9ce3f059d13986391c9bb",
+  "src/lib/native-push/providers/fcm.test.ts": "7fb23ca459081923c9da205e1925bd961a35f3a5c083de2e35161ea686d27516",
+  "src/lib/native-push/providers/fcm.ts": "9c17982f243845e6bc09c9612c141ce086c6f76a515769d172e6530949a0019c",
+  "src/lib/native-push/providers/types.ts": "0f992de7b65543ec2d31eaf8a1e4d5863c80ff14388edd7b7a81b8c2c75b6b51",
+  "vitest.native-push-integration.config.mts": "9086bf9d2e695cc69e07c70af41f05ba673496a5b28fbca78fce062ae837483e",
+  "vitest.native-push-regressions.config.mts": "5df4ad73ed9cd9ea5d5d5d3706b2d044052814c9bff8a9949404b552c48189bd"
+}

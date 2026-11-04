@@ -1,0 +1,96 @@
+Building for debugging...
+[1 / 10]
+[2 / 11] NevoraShellCore
+[4 / 13] NevoraShellCore
+[8 / 14] NevoraShellCore
+[10 / 15] NevoraShellCore
+[11 / 14] NevoraShellCoreTests-product
+[13 / 16] NevoraShellCoreTests-product
+[19 / 21] NevoraShellCoreTests-product
+Build complete! (2.44 sec)
+Test Suite 'All tests' started at 2026-11-04 16:34:50.631.
+Test Suite 'NevoraShellCoreTests.xctest' started at 2026-11-04 16:34:50.633.
+Test Suite 'BackendPolicyTests' started at 2026-11-04 16:34:50.633.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testBackgroundAndNewerResumeInvalidateInFlightResults]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testBackgroundAndNewerResumeInvalidateInFlightResults]' passed (0.001 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCanonicalHostAndDefaultPortsDoNotBroadenOrigin]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCanonicalHostAndDefaultPortsDoNotBroadenOrigin]' passed (0.001 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCompatibilityProbeNeverExtractsOrSendsWebViewCredentials]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testCompatibilityProbeNeverExtractsOrSendsWebViewCredentials]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugCleartextIsLimitedToExplicitLoopback]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugCleartextIsLimitedToExplicitLoopback]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugDoesNotMistakeDNSPrefixForLoopback]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testDebugDoesNotMistakeDNSPrefixForLoopback]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testExternalNavigationRequiresDeliberateHTTPSGetInMainFrame]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testExternalNavigationRequiresDeliberateHTTPSGetInMainFrame]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testForeignWindowOrSubframeCannotPostOrRedirect]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testForeignWindowOrSubframeCannotPostOrRedirect]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testMoreReleaseLoopbackAndNumericAliasesAreRejected]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testMoreReleaseLoopbackAndNumericAliasesAreRejected]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testNewActivationAndRepeatedSuspensionInvalidateOlderTickets]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testNewActivationAndRepeatedSuspensionInvalidateOlderTickets]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOnlyExactOriginRemainsInWebView]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOnlyExactOriginRemainsInWebView]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOversizedOrMismatchedProtocolCannotBecomeSuccessful]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testOversizedOrMismatchedProtocolCannotBecomeSuccessful]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testProtocolErrorsAndOutagesNeverBecomeAuthenticatedOrLoggedOut]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testProtocolErrorsAndOutagesNeverBecomeAuthenticatedOrLoggedOut]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testReleaseRefusesInsecureAmbiguousOrUnconfiguredOrigins]' started.
+Test Case '-[NevoraShellCoreTests.BackendPolicyTests testReleaseRefusesInsecureAmbiguousOrUnconfiguredOrigins]' passed (0.000 seconds).
+Test Suite 'BackendPolicyTests' passed at 2026-11-04 16:34:50.637.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+Test Suite 'CapabilityPolicyTests' started at 2026-11-04 16:34:50.637.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testCapabilityAdmissionRejectsFrameOriginReplayAndRetiredDocuments]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testCapabilityAdmissionRejectsFrameOriginReplayAndRetiredDocuments]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentFallbackUsesOnlyKnownPortalDestinations]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testDocumentFallbackUsesOnlyKnownPortalDestinations]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testMessagesRejectAmbiguousJSONAndFenceTurnOffGeneration]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testMessagesRejectAmbiguousJSONAndFenceTurnOffGeneration]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' started.
+Test Case '-[NevoraShellCoreTests.CapabilityPolicyTests testPendingLinksKeepOnlyApprovedExactOriginRoutes]' passed (0.000 seconds).
+Test Suite 'CapabilityPolicyTests' passed at 2026-11-04 16:34:50.638.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'NativeCompletionTests' started at 2026-11-04 16:34:50.638.
+Test Case '-[NevoraShellCoreTests.NativeCompletionTests testCompletionUsesFixedEndpointWithoutBrowserCookies]' started.
+Test Case '-[NevoraShellCoreTests.NativeCompletionTests testCompletionUsesFixedEndpointWithoutBrowserCookies]' passed (0.005 seconds).
+Test Case '-[NevoraShellCoreTests.NativeCompletionTests testOnlyBoundedMatchingStatusRepliesBecomePublicState]' started.
+Test Case '-[NevoraShellCoreTests.NativeCompletionTests testOnlyBoundedMatchingStatusRepliesBecomePublicState]' passed (0.000 seconds).
+Test Suite 'NativeCompletionTests' passed at 2026-11-04 16:34:50.643.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'NativeReceiptTests' started at 2026-11-04 16:34:50.643.
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testDetachedRevisionIsKeptWithoutBecomingAnActiveEnrollment]' started.
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testDetachedRevisionIsKeptWithoutBecomingAnActiveEnrollment]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testLateRotationCannotOverwriteAChangedOrDetachedReceipt]' started.
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testLateRotationCannotOverwriteAChangedOrDetachedReceipt]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testUnchangedTokensDoNotRotateAndNewerTokenCannotBeAcknowledgedByOldCompletion]' started.
+Test Case '-[NevoraShellCoreTests.NativeReceiptTests testUnchangedTokensDoNotRotateAndNewerTokenCannotBeAcknowledgedByOldCompletion]' passed (0.000 seconds).
+Test Suite 'NativeReceiptTests' passed at 2026-11-04 16:34:50.643.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'NativeRegistrationTests' started at 2026-11-04 16:34:50.643.
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testForeignScopeOrExpiredChallengesCannotBeSigned]' started.
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testForeignScopeOrExpiredChallengesCannotBeSigned]' passed (0.002 seconds).
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testPublicGoldenVectorsUseExactlyTheServerSignedBytes]' started.
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testPublicGoldenVectorsUseExactlyTheServerSignedBytes]' passed (0.002 seconds).
+Test Suite 'NativeRegistrationTests' passed at 2026-11-04 16:34:50.647.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.004 (0.004) seconds
+Test Suite 'NativeTransportTests' started at 2026-11-04 16:34:50.647.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testActualTotalDeadlineTerminatesStalledIO]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testActualTotalDeadlineTerminatesStalledIO]' passed (0.055 seconds).
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testActualTransportKeepsCookiesOutAndReturnsExactlyOnce]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testActualTransportKeepsCookiesOutAndReturnsExactlyOnce]' passed (0.001 seconds).
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testInvalidEndpointAndCookieBearingRequestNeverStartsIO]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testInvalidEndpointAndCookieBearingRequestNeverStartsIO]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testRedirectCannotReachForeignEndpoint]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testRedirectCannotReachForeignEndpoint]' passed (0.000 seconds).
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testStreamedOversizeAndCancellationTerminateWithoutLateSuccess]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testStreamedOversizeAndCancellationTerminateWithoutLateSuccess]' passed (0.000 seconds).
+Test Suite 'NativeTransportTests' passed at 2026-11-04 16:34:50.704.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.057 (0.057) seconds
+Test Suite 'NevoraShellCoreTests.xctest' passed at 2026-11-04 16:34:50.704.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 0.070 (0.071) seconds
+Test Suite 'All tests' passed at 2026-11-04 16:34:50.704.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 0.070 (0.073) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

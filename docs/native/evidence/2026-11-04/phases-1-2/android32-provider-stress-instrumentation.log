@@ -1,0 +1,25 @@
+
+com.velani.nevora.development.ShellInstrumentedTest:
+Error in h_repeatedEmployeeRecreationKeepsAccessibleSignOut(com.velani.nevora.development.ShellInstrumentedTest):
+java.lang.AssertionError: Exact visible Sign out after recreation cycle 0
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.h_repeatedEmployeeRecreationKeepsAccessibleSignOut(ShellInstrumentedTest.java:328)
+
+
+Time: 28.414
+There was 1 failure:
+1) h_repeatedEmployeeRecreationKeepsAccessibleSignOut(com.velani.nevora.development.ShellInstrumentedTest)
+java.lang.AssertionError: Exact visible Sign out after recreation cycle 0
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.h_repeatedEmployeeRecreationKeepsAccessibleSignOut(ShellInstrumentedTest.java:328)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord

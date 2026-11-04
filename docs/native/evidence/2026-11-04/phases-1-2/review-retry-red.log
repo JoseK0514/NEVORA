@@ -1,0 +1,68 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/worker.test.ts [2m([22m[2m24 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 20[2mms[22m[39m
+   [32m✓[39m dispatches generic opaque metadata and records provider acceptance separately from delivery[32m 7[2mms[22m[39m
+   [32m✓[39m refuses disabled before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m refuses allowlist before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m refuses wrong-environment before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m prevents revoked registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents role registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents resolved registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents generation registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents material registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks revoked after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks resolved after waiting for provider credentials[32m 1[2mms[22m[39m
+   [32m✓[39m rechecks generation after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks quiet after waiting for provider credentials[32m 1[2mms[22m[39m
+   [32m✓[39m rechecks expiry after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m defers normal work during quiet hours without spending another attempt[32m 0[2mms[22m[39m
+   [32m✓[39m allows current urgent work during quiet hours but never after source expiry[32m 0[2mms[22m[39m
+   [32m✓[39m retains replacement generation after a delayed provider rejection[32m 0[2mms[22m[39m
+   [32m✓[39m persists bounded retries and the fifth attempt fails terminally[32m 1[2mms[22m[39m
+[31m   [31m×[31m never retries before a validated native provider delay of 7200 seconds[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m never retries before a validated native provider delay of 2147483647 seconds[39m[32m 1[2mms[22m[39m
+   [32m✓[39m defers a quiet boundary crossed milliseconds into credential preparation while the lease and budget stay valid[32m 0[2mms[22m[39m
+   [32m✓[39m defers transient authority failures and releases unattempted storage failures[32m 0[2mms[22m[39m
+   [32m✓[39m does not release an ambiguously committed provider acceptance[32m 0[2mms[22m[39m
+   [32m✓[39m bounds a hung transport and aborts every attempted request[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mnever retries before a validated native provider delay of 7200 seconds
+[31m[1mAssertionError[22m: expected 1893517201370 to be greater than or equal to 1893520800000[39m
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m122:62[22m[39m
+    [90m120|[39m   if (seconds === 7200) {
+    [90m121|[39m     expect(report.retried).toBe(1);
+    [90m122|[39m     expect(Date.parse(f.completed[0].result.nextAttemptAt!)).toBeGreat…
+    [90m   |[39m                                                              [31m^[39m
+    [90m123|[39m   } else {expect(report.expired).toBe(1); expect(report.retried).toBe(…
+    [90m124|[39m });
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mnever retries before a validated native provider delay of 2147483647 seconds
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m123:34[22m[39m
+    [90m121|[39m     expect(report.retried).toBe(1);
+    [90m122|[39m     expect(Date.parse(f.completed[0].result.nextAttemptAt!)).toBeGreat…
+    [90m123|[39m   } else {expect(report.expired).toBe(1); expect(report.retried).toBe(…
+    [90m   |[39m                                  [31m^[39m
+    [90m124|[39m });
+    [90m125|[39m it('defers a quiet boundary crossed milliseconds into credential prepa…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m22 passed[39m[22m[90m (24)[39m
+[2m   Start at [22m 14:16:08
+[2m   Duration [22m 122ms[2m (import 34%, transform 32%, tests 31%, worker 2%)[22m
+

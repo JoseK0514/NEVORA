@@ -1,0 +1,23 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/test/integration/native-deliveries.integration.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 5351[2mms[22m[39m
+   [33m[2m✓[22m[39m supports independent native and Web Push deliveries for the same event[33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves the canonical notification policy for natural cookie expiry but refuses a revoked role[33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m does not replay a provider-accepted event after token generation rotates[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m retargets an unsent event after rotation while keeping its original consent boundary[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches an actual EMPLOYEE source through encrypted registration, SQL leases and a fake APNs transport[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches an actual OWNER source through encrypted registration, SQL leases and a fake APNs transport[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m stops real leased work when the source or browser session is revoked during provider preparation[33m 343[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers an outage via a fresh durable lease without duplicating native or Web Push acceptance[33m 321[2mms[22m[39m
+ [32m✓[39m src/test/integration/native-push.integration.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 3890[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1577[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1575[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m42 passed[39m[22m[90m (42)[39m
+[2m   Start at [22m 14:09:03
+[2m   Duration [22m 9.51s[2m (tests 98%, import 1%, transform 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

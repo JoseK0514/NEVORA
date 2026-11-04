@@ -110,7 +110,8 @@ export function createNativeRegistrationHandlers(deps: Deps) {
         if (origin !== config.origin || (site !== null && site !== 'same-origin')) return reject(403);
         if (action === 'status') fields(body, ['keyFingerprint']);
         else fields(body, ['operation', 'platform', 'spki', 'operationId', 'expectedGeneration']);
-        if (action === 'challenge' && (body.operation !== 'enroll' || (body.platform !== 'ios' && body.platform !== 'android'))) return reject();
+        if (action === 'challenge' && ((!['enroll','reconcile'].includes(body.operation ?? '')) || (body.platform !== 'ios' && body.platform !== 'android')
+          || body.operation === 'reconcile' && body.expectedGeneration !== null)) return reject();
         const proof = await deps.session();
         if (!proof || !['EMPLOYEE', 'OWNER'].includes(proof.employee.role)) return reject(403);
         if (action === 'status') result = await deps.repository().status({proof, keyFingerprint: text(body.keyFingerprint, fingerprint, 64)});
@@ -120,6 +121,7 @@ export function createNativeRegistrationHandlers(deps: Deps) {
           try { key = parseNativePublicKey(body.spki); } catch { return reject(); }
           if (body.expectedGeneration !== null) text(body.expectedGeneration, uuid, 36);
           result = await deps.repository().issueEnrollment({proof, spki: key.spki, operationId: text(body.operationId, uuid, 36), expectedGeneration: body.expectedGeneration,
+            ...(body.operation === 'reconcile' ? {reconcile: true} : {}),
             binding: {origin: config.origin, environment: config.environment, platform, ...config.applications[platform], keyFingerprint: key.keyFingerprint}});
         }
       }

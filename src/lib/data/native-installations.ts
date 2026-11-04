@@ -123,16 +123,21 @@ export function sqlNativeInstallationRepository(options: Options) {
       return {state: 'challenge', challenge: stored};
     } catch (error) {const result = failure(error); if (result) return result; throw error;}
   }
-  async function issueEnrollment(input: {proof: SessionMutationProof; binding: NativeBinding; spki: string; operationId: string; expectedGeneration: string | null}): Promise<ChallengeReply> {
+  async function issueEnrollment(input: {proof: SessionMutationProof; binding: NativeBinding; spki: string; operationId: string; expectedGeneration: string | null; reconcile?: boolean}): Promise<ChallengeReply> {
     try {
       assertManagementProof(input.proof, input.proof?.employee?.id);
       const binding = parseNativeMaterialBinding({...input.binding, generation: randomUUID()});
       const publicKey = parseNativePublicKey(input.spki);
-      if (!configured(binding) || binding.keyFingerprint !== publicKey.keyFingerprint || !uuid.test(input.operationId) || !expectedGeneration(input.expectedGeneration)) return {state: 'denied'};
+      if (!configured(binding) || binding.keyFingerprint !== publicKey.keyFingerprint || !uuid.test(input.operationId) || !expectedGeneration(input.expectedGeneration)
+        || input.reconcile && input.expectedGeneration !== null) return {state: 'denied'};
       const w = await workspace(); if (!w) return {state: 'unavailable'};
+      const previous = await installation(binding.keyFingerprint);
+      // Explicit authenticated recovery captures one revision before issuance.
+      // The existing locked issue/complete guards still compare that revision;
+      // a concurrent change conflicts and is never silently retargeted.
       return await issue({workspace: w, actor: input.proof.employee.id, hash: input.proof.sessionTokenHash,
-        binding: input.binding, spki: publicKey.spki, operationId: input.operationId, operation: 'enroll', expectedGeneration: input.expectedGeneration,
-        previous: await installation(binding.keyFingerprint)});
+        binding: input.binding, spki: publicKey.spki, operationId: input.operationId, operation: 'enroll',
+        expectedGeneration: input.reconcile ? previous?.generation ?? null : input.expectedGeneration, previous});
     } catch (error) {const result = failure(error); if (result) return result; throw error;}
   }
   async function issueMaintenance(input: {keyFingerprint: string; operation: 'rotate' | 'detach'; expectedGeneration: string; operationId: string}): Promise<ChallengeReply> {

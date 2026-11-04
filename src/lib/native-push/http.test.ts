@@ -33,6 +33,13 @@ async function setup() {
   return {repository, session, factory, make, handlers: await make()};
 }
 afterEach(() => vi.useRealTimers());
+it('requires current browser authority for explicit receipt reconciliation without redefining ordinary enrollment',async()=>{
+ const f=await setup(),body={...enrollment(),operation:'reconcile'};
+ expect((await f.handlers.challenge(request('challenge',body))).status).toBe(200);
+ expect(f.repository.issueEnrollment).toHaveBeenCalledWith(expect.objectContaining({proof,reconcile:true,expectedGeneration:null}));
+ expect((await f.handlers.challenge(request('challenge',{...body,expectedGeneration:generation}))).status).toBe(400);
+ f.session.mockResolvedValueOnce(null);expect((await f.handlers.challenge(request('challenge',body))).status).toBe(403);
+});
 it('uses the actual browser proof and configured binding without accepting account or environment selectors', async () => {
   const f = await setup(), body = enrollment();
   const response = await f.handlers.challenge(request('challenge', body));

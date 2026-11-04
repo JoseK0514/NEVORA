@@ -1,0 +1,26 @@
+Building for debugging...
+[Planning deferred tasks]
+[7 / 28]
+[8 / 29] NevoraShellCore
+[10 / 31] NevoraShellCore
+[18 / 27] NevoraShellCoreTests-product
+[23 / 32] NevoraShellCoreTests-product
+[27 / 31] NevoraShellCoreTests-product
+[29 / 31] NevoraShellCoreTests-product
+Build complete! (2.96 sec)
+Test Suite 'Selected tests' started at 2026-11-04 14:24:59.272.
+Test Suite 'NevoraShellCoreTests.xctest' started at 2026-11-04 14:24:59.274.
+Test Suite 'NativeRegistrationTests' started at 2026-11-04 14:24:59.274.
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testForeignScopeOrExpiredChallengesCannotBeSigned]' started.
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testForeignScopeOrExpiredChallengesCannotBeSigned]' passed (0.007 seconds).
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testPublicGoldenVectorsUseExactlyTheServerSignedBytes]' started.
+/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/ios/Sources/NevoraShellCore/NativeRegistration.swift:10: error: -[NevoraShellCoreTests.NativeRegistrationTests testPublicGoldenVectorsUseExactlyTheServerSignedBytes] : failed: caught error: "invalid"
+Test Case '-[NevoraShellCoreTests.NativeRegistrationTests testPublicGoldenVectorsUseExactlyTheServerSignedBytes]' failed (0.116 seconds).
+Test Suite 'NativeRegistrationTests' failed at 2026-11-04 14:24:59.398.
+	 Executed 2 tests, with 1 failure (1 unexpected) in 0.123 (0.124) seconds
+Test Suite 'NevoraShellCoreTests.xctest' failed at 2026-11-04 14:24:59.398.
+	 Executed 2 tests, with 1 failure (1 unexpected) in 0.123 (0.124) seconds
+Test Suite 'Selected tests' failed at 2026-11-04 14:24:59.398.
+	 Executed 2 tests, with 1 failure (1 unexpected) in 0.123 (0.126) seconds
+Note: Some test targets reported failures:
+  - NevoraShellCoreTests (XCTest)

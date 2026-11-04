@@ -150,3 +150,7 @@ Local real-SQL command (allowlisted test-only environment):
 Set only `NEVORA_TEST_PG_BIN` to an installed local PG binary directory; never
 supply an existing application/test database. The launcher creates a new loopback
 cluster and the adapters independently own/dispose each fictional database.
+
+## Explicit recovery after lost native completion
+
+The browser challenge boundary also accepts operation `reconcile`, with the same closed fields as enrollment and `expectedGeneration:null`. This is reached only after deliberate Review app setup confirmation. The current real browser session authorizes issuance. The repository captures the installation's current generation once; the resulting wire challenge is ordinary `enroll` with that exact expected generation, current account/session and operation ID. Native validates scope and signs with the installation key; completion still compares the captured revision atomically. Concurrent rotation/rebinding conflicts and is never retargeted. Ordinary `enroll` null semantics remain unchanged. Status still reveals only the current session's active binding; no cross-account generation lookup was added. Preserve active and detached/tombstone completion receipts natively. This recovers lost enrollment, rotation and detach acknowledgments through fresh proof rather than treating browser metadata as active enrollment. Tests use fictional accounts and actual PostgreSQL commit-then-drop responses.

@@ -1,0 +1,5 @@
+(node:20812) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-9zwblzj7", "passed": true, "fixtureOnly": true, "checkpoint": null, "simulator": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30", "ownerId": null, "sourceHash": "59170a41d763fdea43edcb4fccc60b2e6c6afb34f3e664f1545bdd79d5c8c5f2", "origin": "http://127.0.0.1:64882", "instrumentationTests": 7}

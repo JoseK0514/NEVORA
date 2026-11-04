@@ -22,8 +22,7 @@ def configurations(settings):
         values.append(add('XCBuildConfiguration', name=name, buildSettings=config))
     return add('XCConfigurationList', buildConfigurations=values, defaultConfigurationIsVisible=0, defaultConfigurationName='Release')
 
-source_paths = ['App/AppDelegate.swift', 'App/PortalViewController.swift', 'App/SessionProbe.swift',
-                'Sources/NevoraShellCore/BackendPolicy.swift', 'Sources/NevoraShellCore/SessionStatus.swift']
+source_paths = [str(path.relative_to(root)) for directory in ['App', 'Sources/NevoraShellCore'] for path in sorted((root / directory).glob('*.swift'))]
 references = [add('PBXFileReference', lastKnownFileType='sourcecode.swift', path=path, sourceTree='SOURCE_ROOT') for path in source_paths]
 ui_reference = add('PBXFileReference', lastKnownFileType='sourcecode.swift', path='UITests/NevoraUITests.swift', sourceTree='SOURCE_ROOT')
 app_product = add('PBXFileReference', explicitFileType='wrapper.application', path='NEVORA.app', sourceTree='BUILT_PRODUCTS_DIR')
@@ -34,7 +33,7 @@ group = add('PBXGroup', children=references + [ui_reference, products], sourceTr
 common = dict(SWIFT_VERSION='5.0', IPHONEOS_DEPLOYMENT_TARGET='16.0', SDKROOT='iphoneos',
               TARGETED_DEVICE_FAMILY='1,2', CODE_SIGN_STYLE='Automatic',
               CURRENT_PROJECT_VERSION='1', MARKETING_VERSION='0.1.0',
-              NEVORA_BACKEND_ORIGIN='', ENABLE_USER_SCRIPT_SANDBOXING='YES')
+              NEVORA_BACKEND_ORIGIN='', NEVORA_NATIVE_PUSH_ENABLED='false', NEVORA_NATIVE_PUSH_ENVIRONMENT='', ENABLE_USER_SCRIPT_SANDBOXING='YES')
 app_settings = dict(common, PRODUCT_NAME='NEVORA', PRODUCT_MODULE_NAME='Nevora',
                     PRODUCT_BUNDLE_IDENTIFIER='com.velani.nevora.development', GENERATE_INFOPLIST_FILE='NO',
                     LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks')
@@ -96,7 +95,7 @@ for name in ['Debug', 'Release']:
             'CFBundleIdentifier': '$(PRODUCT_BUNDLE_IDENTIFIER)', 'CFBundleInfoDictionaryVersion': '6.0',
             'CFBundleName': 'NEVORA', 'CFBundleDisplayName': 'NEVORA', 'CFBundlePackageType': 'APPL',
             'CFBundleShortVersionString': '$(MARKETING_VERSION)', 'CFBundleVersion': '$(CURRENT_PROJECT_VERSION)',
-            'NEVORABackendOrigin': '$(NEVORA_BACKEND_ORIGIN)', 'UILaunchScreen': {},
+            'NEVORABackendOrigin': '$(NEVORA_BACKEND_ORIGIN)', 'NEVORANativePushEnabled': '$(NEVORA_NATIVE_PUSH_ENABLED)', 'NEVORANativePushEnvironment': '$(NEVORA_NATIVE_PUSH_ENVIRONMENT)', 'UILaunchScreen': {},
             'UIApplicationSceneManifest': {'UIApplicationSupportsMultipleScenes': False,
                 'UISceneConfigurations': {'UIWindowSceneSessionRoleApplication': [{'UISceneConfigurationName': 'Default Configuration', 'UISceneDelegateClassName': '$(PRODUCT_MODULE_NAME).SceneDelegate'}]}},
             'UISupportedInterfaceOrientations': ['UIInterfaceOrientationPortrait', 'UIInterfaceOrientationLandscapeLeft', 'UIInterfaceOrientationLandscapeRight']}

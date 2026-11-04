@@ -48,6 +48,7 @@ import { payrollFeatureEnabled, readPayrollCapabilities } from '@/lib/payroll/se
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { wordPreset } from "@/lib/workspace-presentation/words";
 import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
+import {readNativeRegistrationConfig} from '@/lib/native-push/config';
 import { PasskeyOffer } from "@/components/passkeys/passkey-offer";
 import {nativeContext, nativeRoleSupported} from '@/lib/native-shell/context';
 import {UnsupportedNativeRole} from '@/components/native-shell/unsupported-role';
@@ -76,6 +77,7 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
   // Wave C ST-11: fetch Inter with the page, so the first visit doesn't paint in a fallback font and then rewrap.
   preload("/fonts/typeface/inter/variable.woff2", { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
   const session = await requireSession();
+  const nativeApp=nativeContext((await headers()).get('user-agent'));
   // Presentation qualification only. Every protected reader/command retains its
   // existing server authorization; this marker never grants account privileges.
   if (nativeContext((await headers()).get('user-agent')) && !nativeRoleSupported(session.role)) {
@@ -96,7 +98,8 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       notificationAuthority={employeeViewAuthority(proof,"notifications")}
       messagesAuthority={["EMPLOYEE","LEAD"].includes(session.role)?employeeViewAuthority(proof,"communications"):undefined}
       communicationAuthority={["EMPLOYEE","LEAD"].includes(session.role)?communicationAuthority(proof):undefined}
-      notificationsEnabled={readNotificationConfig(process.env).featureEnabled}
+      notificationsEnabled={nativeApp?!!readNativeRegistrationConfig(process.env):readNotificationConfig(process.env).featureEnabled}
+      nativeApp={nativeApp}
       payrollCapabilities={payrollCapabilities}
       brand={{ style: brand.style, logoUrl: brand.logoUrl }}
       presentation={{ ownerAdvisorEnabled: process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true", modules: brand.modules, words: wordPreset(brand.words).en }}

@@ -38,6 +38,10 @@ public final class PortalActivity extends ComponentActivity {
     private final ShellLifecycle lifecycle = new ShellLifecycle();
     private final Handler main = new Handler(Looper.getMainLooper());
     private BackendPolicy policy;
+    private NativeCapabilitiesHandler capabilities;
+    private URI pendingLink;
+    // Only a canonical portal path; never document identifiers or URL queries.
+    private String documentPage;
     private FrameLayout root;
     private LinearLayout cover;
     private TextView status;
@@ -86,6 +90,7 @@ public final class PortalActivity extends ComponentActivity {
         String origin = BuildConfig.BACKEND_ORIGIN;
         if (BuildConfig.DEBUG && getIntent().hasExtra("nevora.debug.origin")) origin = getIntent().getStringExtra("nevora.debug.origin");
         try { policy = new BackendPolicy(origin, BuildConfig.DEBUG); } catch (IllegalArgumentException ignored) { policy = null; }
+        if(policy!=null) {capabilities=new NativeCapabilitiesHandler(this,policy);acceptIntent(getIntent());}
         showCover(policy == null ? "NEVORA is not configured" : "Connecting to NEVORA", false);
         getOnBackPressedDispatcher().addCallback(this, back);
     }
@@ -108,6 +113,16 @@ public final class PortalActivity extends ComponentActivity {
     }
     @Override protected void onPause() { resumed = false; needsFocusValidation = true; suspend(); super.onPause(); }
     @Override protected void onDestroy() { resumed = false; suspend(); super.onDestroy(); }
+    @Override protected void onNewIntent(Intent intent) {super.onNewIntent(intent);acceptIntent(intent);if(resumed&&hasWindowFocus())activate();}
+    @Override public void onRequestPermissionsResult(int code,String[] permissions,int[] results) {super.onRequestPermissionsResult(code,permissions,results);if(code==NativeCapabilitiesHandler.PERMISSION_REQUEST&&capabilities!=null)capabilities.permissionResult(results);}
+    private void acceptIntent(Intent intent) {
+        if(policy==null)return;
+        URI link=uri(intent.getDataString());
+        if(NativeCapabilities.link(link,policy)!=null)pendingLink=link;
+        String id=intent.getStringExtra("notificationId"),generation=intent.getStringExtra("generation");
+        if("1".equals(intent.getStringExtra("nevoraProtocol"))&&id!=null&&id.matches("[A-Za-z0-9_-]{1,128}")&&capabilities!=null&&capabilities.acceptsTap(generation))
+            pendingLink=policy.url("/app/notifications/open?notificationId="+id);
+    }
 
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
     private void showCover(String message, boolean canRetry) {
@@ -120,6 +135,8 @@ public final class PortalActivity extends ComponentActivity {
         if (web != null) { WebView old = web; web = null; old.stopLoading(); root.removeView(old); old.destroy(); }
     }
     private void suspend() {
+        documentPage=null;
+        if(capabilities!=null)capabilities.suspend();
         lifecycle.suspend(); if (probe != null) probe.cancel(); probe = null;
         if (deadline != null) main.removeCallbacks(deadline);
         if (cover != null) showCover("NEVORA", false);
@@ -128,6 +145,7 @@ public final class PortalActivity extends ComponentActivity {
     private void activate() {
         if (policy == null) return;
         suspend(); long ticket = lifecycle.activate();
+        capabilities.refreshTokenIfAllowed();
         showCover("Connecting to NEVORA", false);
         deadline = () -> unavailable(ticket); main.postDelayed(deadline, 8000);
         probe = new SessionProbe();
@@ -185,10 +203,17 @@ public final class PortalActivity extends ComponentActivity {
         settings.setSupportMultipleWindows(true); settings.setJavaScriptCanOpenWindowsAutomatically(false);
         settings.setUserAgentString(settings.getUserAgentString() + " NEVORA-Native/Android/1");
         CookieManager cookies = CookieManager.getInstance(); cookies.setAcceptCookie(true); cookies.setAcceptThirdPartyCookies(current, false);
+        capabilities.bind(current);
         current.setWebViewClient(new WebViewClient() {
             @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 if (!current(view, ticket)) return true;
                 URI target = uri(request.getUrl().toString());
+                rememberDocumentPage(uri(view.getUrl()));
+                if(request.isForMainFrame()&&"GET".equals(request.getMethod())) {
+                    String destination=target!=null&&policy.contains(target)&&target.getRawPath().startsWith("/api/")?NativeCapabilities.documentBrowserPage(target.getRawPath(),documentPage):null;
+                    if(destination==null&&target!=null&&"blob".equals(target.getScheme()))destination=documentPage;
+                    if(destination!=null){offerDocumentBrowser(destination);return true;}
+                }
                 BackendPolicy.Navigation navigation = policy.navigation(target, request.getMethod(), request.hasGesture() && !request.isRedirect(), request.isForMainFrame());
                 if (navigation == BackendPolicy.Navigation.INTERNAL) return false;
                 if (navigation == BackendPolicy.Navigation.EXTERNAL) openBrowser(target);
@@ -199,19 +224,26 @@ public final class PortalActivity extends ComponentActivity {
                 return null;
             }
             @Override public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                if (current(view, ticket)) { pageGeneration++; if (!policy.contains(uri(url))) unavailable(ticket); }
+                if (current(view, ticket)) { capabilities.suspend();pageGeneration++; if (!policy.contains(uri(url))) unavailable(ticket); }
             }
             @Override public void onPageFinished(WebView view, String url) {
                 if (!current(view, ticket) || !policy.contains(uri(url))) return;
+                rememberDocumentPage(uri(url));
                 main.removeCallbacks(deadline); cover.setVisibility(View.GONE); view.setVisibility(View.VISIBLE);
                 // A recreated browser must regain real view focus. Shared
                 // private readers correctly stay paused while its document
                 // lacks focus, even when the Activity window is foreground.
                 view.requestFocus();
+                if(pendingLink!=null) {
+                    URI target=pendingLink;pendingLink=null;
+                    if(!target.equals(uri(url))&&NativeCapabilities.link(target,policy)!=null){view.loadUrl(target.toString());return;}
+                }
+                capabilities.ready(uri(url));
+                view.evaluateJavascript("window.dispatchEvent(new Event('nevora:native-ready'))",null);
                 backAction = () -> requestBack(view, ticket); back.setEnabled(true);
             }
             @Override public void doUpdateVisitedHistory(WebView view, String url, boolean reload) {
-                if (current(view, ticket)) { pageGeneration++; back.setEnabled(view.getVisibility() == View.VISIBLE); }
+                if (current(view, ticket)) { rememberDocumentPage(uri(url));pageGeneration++; back.setEnabled(view.getVisibility() == View.VISIBLE); }
             }
             @Override public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 if (request.isForMainFrame() && current(view, ticket)) unavailable(ticket);
@@ -232,25 +264,45 @@ public final class PortalActivity extends ComponentActivity {
                 WebView.HitTestResult hit = view.getHitTestResult();
                 if (hit == null || hit.getType() != WebView.HitTestResult.SRC_ANCHOR_TYPE && hit.getType() != WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) return false;
                 URI target = uri(hit.getExtra());
+                rememberDocumentPage(uri(view.getUrl()));
+                String document=target!=null&&policy.contains(target)&&target.getRawPath().startsWith("/api/")?NativeCapabilities.documentBrowserPage(target.getRawPath(),documentPage):null;
+                if(document!=null){offerDocumentBrowser(document);return false;}
                 BackendPolicy.Navigation navigation = policy.navigation(target, "GET", true, true);
                 if (navigation == BackendPolicy.Navigation.INTERNAL) view.loadUrl(target.toString());
                 else if (navigation == BackendPolicy.Navigation.EXTERNAL) openBrowser(target);
                 return false;
             }
         });
-        // A download never gets a cookie-export/native networking fallback.
-        // Authenticated documents are integrated in the approved capability stage.
-        current.setDownloadListener((url, userAgent, contentDisposition, mimeType, length) -> unavailable(ticket));
+        current.setDownloadListener((url, userAgent, contentDisposition, mimeType, length) -> {
+            if(!current(current,ticket))return;
+            rememberDocumentPage(uri(current.getUrl()));
+            URI target=uri(url);String page=target!=null&&policy.contains(target)?NativeCapabilities.documentBrowserPage(target.getRawPath(),documentPage):null;
+            if(page==null&&url!=null&&url.startsWith("blob:"))page=documentPage;
+            if(page!=null)offerDocumentBrowser(page);
+        });
         root.addView(current, 0, new FrameLayout.LayoutParams(-1, -1));
         deadline = () -> unavailable(ticket); main.postDelayed(deadline, 20000);
         current.loadUrl(policy.url("/app").toString());
     }
     private static URI uri(String value) { try { return value == null ? null : URI.create(value); } catch (IllegalArgumentException ignored) { return null; } }
+    private void rememberDocumentPage(URI url) {
+        if(url!=null&&policy.contains(url)&&(url.getRawPath().equals("/app")||url.getRawPath().startsWith("/app/")))documentPage=NativeCapabilities.documentBrowserPage(url.getRawPath());
+        else if(url!=null&&policy.contains(url)&&url.getRawPath().equals("/login"))documentPage=null;
+    }
     private static WebResourceResponse blocked() {
         return new WebResourceResponse("text/plain", "UTF-8", 403, "Blocked", Collections.emptyMap(), new ByteArrayInputStream(new byte[0]));
     }
     private void openBrowser(URI target) {
-        try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(target.toString())).addCategory(Intent.CATEGORY_BROWSABLE)); }
-        catch (ActivityNotFoundException ignored) { /* The current app document remains available. */ }
+        try {
+            // Resolve the browser role separately so our own associated link
+            // cannot intercept the deliberate reauthentication fallback.
+            android.content.pm.ResolveInfo browser=getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_BROWSER),android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+            if(browser==null||browser.activityInfo==null||getPackageName().equals(browser.activityInfo.packageName))throw new ActivityNotFoundException();
+            startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(target.toString())).addCategory(Intent.CATEGORY_BROWSABLE).setPackage(browser.activityInfo.packageName));
+        }catch(ActivityNotFoundException ignored){android.widget.Toast.makeText(this,"No browser is available on this device.",android.widget.Toast.LENGTH_LONG).show();}
+    }
+    private void offerDocumentBrowser(String path) {
+        new android.app.AlertDialog.Builder(this).setTitle("Download in your browser").setMessage("Sign in to NEVORA in your browser to download or share documents.")
+            .setNegativeButton("Cancel",null).setPositiveButton("Continue in browser",(dialog,which)->openBrowser(policy.url(path))).show();
     }
 }

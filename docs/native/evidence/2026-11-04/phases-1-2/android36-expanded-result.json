@@ -1,0 +1,23 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-wecq853s",
+  "serial": "emulator-5562",
+  "passed": false,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "ownerId": null,
+  "qualification": "transport",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.google.android.webview",
+    "version": "133.0.6943.137",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "3b66169f1474e2eab484c0a864e755bb31d763d0359455c1481df4678772a817",
+  "origin": "http://127.0.0.1:63777",
+  "fixtureOrigin": "http://127.0.0.1:63777",
+  "isolatedTestProcesses": true,
+  "coldInstrumentationTests": 1,
+  "coldProcessRestart": true,
+  "error": "RuntimeError"
+}

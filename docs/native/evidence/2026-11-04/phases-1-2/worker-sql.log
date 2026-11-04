@@ -1,0 +1,74 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/test/integration/native-deliveries.integration.ts [2m([22m[2m18 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 5064[2mms[22m[39m
+   [32m✓[39m materializes native work once even after Web Push found no subscription, preserving web state[32m 269[2mms[22m[39m
+   [32m✓[39m supports independent native and Web Push deliveries for the same event[32m 272[2mms[22m[39m
+   [33m[2m✓[22m[39m does not backfill pre-consent events or fan out a Web Push self-test to native devices[33m 403[2mms[22m[39m
+   [32m✓[39m claims each delivery only once across two concurrent workers[32m 243[2mms[22m[39m
+   [32m✓[39m recovers an expired lease and refuses the stale worker completion[32m 246[2mms[22m[39m
+   [32m✓[39m restores unspent attempt budget on release and quiet-hour deferral[32m 270[2mms[22m[39m
+   [32m✓[39m never lets an old generation finish or invalidate a replacement registration[32m 260[2mms[22m[39m
+   [32m✓[39m preserves a token registered after an older APNs invalidation timestamp[32m 257[2mms[22m[39m
+   [32m✓[39m invalidates only a current leased registration, removes material and cancels its other work[32m 270[2mms[22m[39m
+   [32m✓[39m preserves the canonical notification policy for natural cookie expiry but refuses a revoked role[32m 265[2mms[22m[39m
+   [32m✓[39m refuses revoked-session claims and cleanup cancels their queued delivery[32m 263[2mms[22m[39m
+   [32m✓[39m does not replay a provider-accepted event after token generation rotates[32m 263[2mms[22m[39m
+   [32m✓[39m retargets an unsent event after rotation while keeping its original consent boundary[32m 262[2mms[22m[39m
+   [32m✓[39m enforces the existing five-attempt ceiling without leaving a processing lease[32m 256[2mms[22m[39m
+   [32m✓[39m dispatches an actual EMPLOYEE source through encrypted registration, SQL leases and a fake APNs transport[32m 298[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches an actual OWNER source through encrypted registration, SQL leases and a fake APNs transport[33m 310[2mms[22m[39m
+[31m   [31m×[31m stops real leased work when the source or browser session is revoked during provider preparation[39m[33m 312[2mms[22m[39m
+[31m   [31m×[31m recovers an outage via a fresh durable lease without duplicating native or Web Push acceptance[39m[33m 314[2mms[22m[39m
+ [32m✓[39m src/test/integration/native-push.integration.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 3930[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1581[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1580[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-deliveries.integration.ts[2m > [22mstops real leased work when the source or browser session is revoked during provider preparation
+[31m[1mAssertionError[22m: expected 1 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m src/test/integration/native-deliveries.integration.ts:[2m193:27[22m[39m
+    [90m191|[39m   f.deps.sender = {send: async input => {await query('DELETE FROM empl…
+    [90m192|[39m   const report = await runNativeWorker({deps: f.deps, mode: 'all'});
+    [90m193|[39m   expect(report.accepted).toBe(0); expect(f.requests).toEqual([]);
+    [90m   |[39m                           [31m^[39m
+    [90m194|[39m   expect(await query('SELECT status FROM native_push_deliveries')).toE…
+    [90m195|[39m });
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-deliveries.integration.ts[2m > [22mrecovers an outage via a fresh durable lease without duplicating native or Web Push acceptance
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/test/integration/native-deliveries.integration.ts:[2m199:72[22m[39m
+    [90m197|[39m   await enroll(); const f = await dispatchFixture(); const real = f.de…
+    [90m198|[39m   f.deps.sender = {send: async input => {await input.beforeHandoff(inp…
+    [90m199|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'all'})).retried)…
+    [90m   |[39m                                                                        [31m^[39m
+    [90m200|[39m   await query("UPDATE native_push_deliveries SET next_attempt_at=clock…
+    [90m201|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'retry'})).accept…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m40 passed[39m[22m[90m (42)[39m
+[2m   Start at [22m 14:07:35
+[2m   Duration [22m 9.40s[2m (tests 97%, transform 2%, import 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

@@ -1,0 +1,11 @@
+/* Preserve the corporate kit's 44px actions when its flexible button row
+   becomes a vertical group, including narrow screens and larger text. */
+.native-device-card .c-btns--stack > .c-btn {
+  flex: none;
+  width: 100%;
+  min-height: 44px;
+  height: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  white-space: normal;
+}
