@@ -1,0 +1,50 @@
+✔ accepts included sources, incorporated development advance and own PR branch (1.35775ms)
+✔ rejects changed, missing and unclassified source heads (0.095458ms)
+✔ rejects omitted merged sources and unincorporated development changes (0.052875ms)
+✔ does not hide new work pushed to the assembly branch after integration (0.066625ms)
+✔ recognizes the approved Claude/Codex collaboration branch without bypassing ancestry (0.114667ms)
+✔ rejects invalid hashes, duplicate sources and relaxed main disposition (0.111291ms)
+✔ parses only exact branch heads and rejects duplicate or malformed output (0.13775ms)
+✔ retired heads require the exact recoverable archive tag, even before deletion (0.184625ms)
+✔ retirement never hides new commits pushed to the source branch (0.064708ms)
+✔ cannot retire main or development, or substitute unrelated archive refs (0.118959ms)
+✔ enforces the approved remote branch ceiling without hiding extra heads (0.138ms)
+✔ parses exact lightweight archive tags without accepting malformed or duplicate refs (0.122375ms)
+✖ published three-branch policy retains exact source archives and rejects a recreated fourth branch (1.846458ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 12
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44.404375
+
+✖ failing tests:
+
+test at scripts/development-source-inventory.check.mjs:105:1
+✖ published three-branch policy retains exact source archives and rejects a recreated fourth branch (1.846458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'claude-codex-collab-nevora',
+  +   'claude/youthful-mendel-9mg8hu',
+      'development',
+      'main'
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/scripts/development-source-inventory.check.mjs:109:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'claude-codex-collab-nevora', 'claude/youthful-mendel-9mg8hu', 'development', 'main' ],
+    expected: [ 'development', 'main' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
