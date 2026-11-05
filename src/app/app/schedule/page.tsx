@@ -328,12 +328,13 @@ export default async function SchedulePage({
   const changesText = changes ? ` · ${changes} ${changes === 1 ? "change" : "changes"}` : "";
   // Owner premium R3: the week's state is plain 13/500 text, not a pill: grey for the settled states, amber while
   // something is held or still a draft (the Publish button beside it is the action).
+  // The roster places this beside its week arrows (corp.status), a list position, so it carries a stable key.
   const weekState = !counts || !inView.length ? null
-    : changes && !counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</span>
-    : counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</span>
-    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate">Published</span>
-    : counts.published ? <span className="c-meta c-sched-weekstate">{`${counts.published} of ${inView.length} published`}</span>
-    : <span className="c-meta c-sched-weekstate">Not started</span>;
+    : changes && !counts.drafts ? <span key="week-state" className="c-meta c-sched-weekstate" data-tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</span>
+    : counts.drafts ? <span key="week-state" className="c-meta c-sched-weekstate" data-tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</span>
+    : counts.published === inView.length ? <span key="week-state" className="c-meta c-sched-weekstate">Published</span>
+    : counts.published ? <span key="week-state" className="c-meta c-sched-weekstate">{`${counts.published} of ${inView.length} published`}</span>
+    : <span key="week-state" className="c-meta c-sched-weekstate">Not started</span>;
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
   const todayShort = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));
   const locationName = selectedLocation === "all" ? "All locations" : locations.find(location => location.id === selectedLocation)?.shortName ?? "";
