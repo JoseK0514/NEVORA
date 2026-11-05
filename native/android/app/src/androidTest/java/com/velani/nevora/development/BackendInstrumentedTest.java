@@ -73,6 +73,10 @@ public class BackendInstrumentedTest {
         boolean found=device.wait(current->{AtomicBoolean result=new AtomicBoolean();scenario.onActivity(activity->{WebView view=browser(activity.getWindow().getDecorView());result.set(view!=null&&view.getUrl()!=null&&path.equals(URI.create(view.getUrl()).getPath()));});return result.get();},20000L);
         if(!found)retain("missing_path"+path.replace('/','_'));assertTrue("Actual protected path: "+path,found);
     }
+    private void expectDescription(String label) {
+        boolean found=device.wait(current->{if(android.os.Build.VERSION.SDK_INT>=34)InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();return current.hasObject(By.desc(label));},20000L);
+        if(!found)retain("missing_description");assertTrue("Expected accessible backend label: "+label,found);
+    }
     private void retain(String name) {
         File directory=new File(InstrumentationRegistry.getInstrumentation().getTargetContext().getCacheDir(),"nevora-native-tests-"+owner);
         assertTrue(directory.isDirectory()||directory.mkdirs());device.takeScreenshot(new File(directory,name+".png"));
@@ -101,14 +105,14 @@ public class BackendInstrumentedTest {
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
         tap(By.desc("Schedule"));expectPath("/app/schedule");
         tap(By.descStartsWith("More,"));expectPath("/app/more");expectText("Your work");tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
-        tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));
+        tap(By.descStartsWith("Monday,").clazz("android.widget.Button"));tap(By.text("Available on Monday"));
         device.pressBack();expectPath("/app/availability");expectText("Your usual week");
-        expectText("Monday, Not available");
+        expectDescription("Monday, Not available");
         assertFalse("Back closes the editor rather than leaving its dialog open",device.hasObject(By.text("Available on Monday")));
         retain("employee_back_retained_draft");
         device.pressBack();expectPath("/app/more");expectText("Your work");
         tap(By.text("Availability"));expectPath("/app/availability");expectText("Your usual week");
-        tap(By.textStartsWith("Monday,"));tap(By.text("Available on Monday"));tap(By.text("Done"));
+        tap(By.descStartsWith("Monday,").clazz("android.widget.Button"));tap(By.text("Available on Monday"));tap(By.text("Done"));
         tap(By.text("Save"));expectText("Usual hours saved");command("verify-employee");retain("employee_saved");
         scenario.moveToState(Lifecycle.State.CREATED);command("revoke");scenario.moveToState(Lifecycle.State.RESUMED);expectText("Employee ID");
         login("QA-NATIVE-A");expectText("Welcome back, QA NATIVE");
