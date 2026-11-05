@@ -1,6 +1,6 @@
 # Android foundation decision packet
 
-Phase1 local executor verification passed under Jose's approved Android10+/WebView149+ baseline (November4). The runtime gate and native update/browser fallback are implemented; the fresh extension review is pending. No architecture change, renderer override or accessibility waiver has been accepted.
+Phase1 local executor verification passed under Jose's approved Android10+/WebView149+ baseline (November4). The runtime gate and native update/browser fallback are implemented; the fresh extension review approved it with no functional/security blockers. No architecture change, renderer override or accessibility waiver has been accepted.
 
 ## Established evidence
 
@@ -25,7 +25,7 @@ The [review evidence](evidence/2026-11-04/webview-stack-review/README.md) record
 
 The [approved compatibility proposal](android-runtime-compatibility-proposal.md) and [execution plan](../superpowers/plans/2026-11-04-android-runtime-baseline-plan.md) define the bounded correction: minSdk29, strict WebView149+ admission, native update/browser fallback before private content, and the original supported-runtime matrix plus real old-provider coverage. SDK evidence is not retail GooglePlay, physical-device, hosted or store certification. No independent release finding is self-closed.
 
-The Systematic Debugging human discussion has occurred; the earlier unanswered-direction question is resolved. No further product decision is currently pending for this bounded scope. Implementation, source/provider custody and final executor checks are complete. Current-candidate Google149 passed10+cold1 on API32 and37.2; owned Android backend passed18checks with3native journeys+cold1. Actual old/missing-provider and fontScale2/landscape/keyboard regressions passed. See the [implementation evidence](evidence/2026-11-04/runtime-baseline/README.md). Close the fresh extension review before final handoff.
+The Systematic Debugging human discussion has occurred; the earlier unanswered-direction question is resolved. No further product decision is currently pending for this bounded scope. Implementation, source/provider custody and final executor checks are complete. Current-candidate Google149 passed10+cold1 on API32 and37.2; owned Android backend passed18checks with3native journeys+cold1. Actual old/missing-provider and fontScale2/landscape/keyboard regressions passed. See the [implementation evidence](evidence/2026-11-04/runtime-baseline/README.md). The fresh extension review is archived with APPROVE/WATCH, no blockers; module extraction is a nonblocking maintainability follow-up.
 
 ## Primary references
 

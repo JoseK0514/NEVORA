@@ -1,6 +1,6 @@
 # Android runtime compatibility proposal
 
-Status: approved by Jose on November 4, 2026: ‘Adopt the modern runtime baseline (Recommended)’. Implemented at ad9f38fa, with backend test-label corrections through 79f2d9cb. Local executor verification passed; the extension review is pending. See `evidence/2026-11-04/runtime-baseline/README.md`.
+Status: approved by Jose on November 4, 2026: ‘Adopt the modern runtime baseline (Recommended)’. Implemented at ad9f38fa, with backend test-label corrections through 79f2d9cb. Local executor verification passed; the fresh extension review approved the change with no functional/security blockers. See `evidence/2026-11-04/runtime-baseline/README.md`.
 
 ## Recommended v1 baseline
 
@@ -30,4 +30,4 @@ The SDK provider is a first-party SDK artifact with verified signature integrity
 
 Keep the release gate open and plan a different maintained rendering foundation, including accessibility, session/lifecycle, privacy and constrained capability acceptance. A different wrapper around Android WebView would still use its installed engine. Do not retain private documents or accept a renderer flag/accessibility waiver to rescue older providers.
 
-Owner: Codex/root. Executor checks passed:26JVM tests/builds/lint, actual old/missing provider and large-text/keyboard cases, default149 matrices10+cold1 on API32/37.2, and18owned-backend checks with3native journeys+cold1 at79f2d9cb. The original foundation matrix is unchanged; the backend test now uses the actual declared accessible labels for Monday controls, with exact state and server mutation assertions retained. Next gate: fresh extension review, then Phase3 external qualification. Prior unchanged iOS/server evidence is retained by exact source comparison.
+Owner: Codex/root. Executor checks passed:26JVM tests/builds/lint, actual old/missing provider and large-text/keyboard cases, default149 matrices10+cold1 on API32/37.2, and18owned-backend checks with3native journeys+cold1 at79f2d9cb. The original foundation matrix is unchanged; the backend test now uses the actual declared accessible labels for Monday controls, with exact state and server mutation assertions retained. Next gate: Phase3 external qualification. Prior unchanged iOS/server evidence is retained by exact source comparison.
