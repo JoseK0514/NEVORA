@@ -1,0 +1,167 @@
+[
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/result.json",
+    "bytes": 11337,
+    "sha256": "a50642425d3ee34c964284c691ad11a7250b10aa79678d33e4264439b39495c6"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/backend-results.json",
+    "bytes": 2539,
+    "sha256": "e67fe5fd3e31cc3d96327baaa22fe4279141ee7cde517bc5d3635d9ada8d62bf"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/android-build-receipt.json",
+    "bytes": 505,
+    "sha256": "986ccca109d43176220f8f0666978a760ce18cee045534ade585c527a5287a6b"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/ownership.json",
+    "bytes": 853,
+    "sha256": "f0142d14d1bf574d6ac8a1ad2db493d2efa858375f14d3bddeb2f5926997e015"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/initdb.log",
+    "bytes": 1107,
+    "sha256": "994c331f2b47e0e1b9850b33a39c08f271ca0cb6377f7284729ba5e3a91dc455"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/postgres.log",
+    "bytes": 4415,
+    "sha256": "e6a54a771de744c197cb98e503ec0b02d7920509b0cb0fed7cdc9593e27983ab"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/android-prebuild.log",
+    "bytes": 5018,
+    "sha256": "36cdc77e9d9530fecc39fa8abecb12dab11e019629aa98bf9884de379cd3a88d"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/android-driver.log",
+    "bytes": 746,
+    "sha256": "42425b9a751d1a4bfa0bd3fd6eb5a9af59720ede8ce9cadc43436d3815e333b3"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/result.json",
+    "bytes": 798,
+    "sha256": "f290c99546e57f3e41191ebeafeba1a60289d21aeba613f7970f9269e4467841"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/cold-start-instrumentation.log",
+    "bytes": 87,
+    "sha256": "76bde31c85a6ceb1611e0c8cbc2f27daf41615144d1147aea279f29a2132bccd"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/instrumentation-2.log",
+    "bytes": 86,
+    "sha256": "4e841c857ff618561cad855281534ed5158b70e2e3c01030a6ae038c28d29ef5"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/instrumentation-1.log",
+    "bytes": 86,
+    "sha256": "033d45b350d9d5694af9b04f6c0cd8bf76d6588f47978e9f930dbe8a55ab7022"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/instrumentation-0.log",
+    "bytes": 86,
+    "sha256": "8829e0086cbbb33c1894fd6d013871242468bed5d45dfcf8e2954b4888e5b95c"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/nevora-native-android-zc3s1c6h/instrumentation.log",
+    "bytes": 260,
+    "sha256": "c0bfef3ad3d2f849e348a09ddca677a008fde28465c3490dd3991bf37d6e4554"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55/source-custody.json",
+    "bytes": 2398450,
+    "sha256": "51b796364fda55e842122fee9fee25427ed1659c7d1765a6b9c923eceef59cb2"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/result.json",
+    "bytes": 10299,
+    "sha256": "f3dfdd9a0d362084ed3fbe1db8ec52b0e2092e1238535c87cd209e9684d30e5e"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/backend-results.json",
+    "bytes": 2238,
+    "sha256": "9bca386fb13ed959245a06fed03546e775798e89f9b4fbd0cac54b6e8d34550f"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/ios-build-receipt.json",
+    "bytes": 9033,
+    "sha256": "22c1a41b84717d1d3590823c6e62ca4480f73f852de12340366adbabb047e097"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/ownership.json",
+    "bytes": 845,
+    "sha256": "ca150d5264a615a793eb3dce324456508f0ddc62252b7cddf016c4816b2a1595"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/initdb.log",
+    "bytes": 1107,
+    "sha256": "db1bf234fbd903f93555a53a95459ebfe986ce0ce795a1383702ab4831655291"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/postgres.log",
+    "bytes": 4869,
+    "sha256": "cc7c34ea7b00f51e0df9bb7f11ef2e1258ff5360ddbd89c8a0733c982feda3fd"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/ios-prebuild.log",
+    "bytes": 248422,
+    "sha256": "10763a7eedddbee47478d34a7014611810fade8fa4516ca1ab99fabdfa19d156"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/ios-driver.log",
+    "bytes": 517,
+    "sha256": "cd6eb5711cfc021683e4cca5258239b7af83e2ee2536768a8eb89b824f1b6bfc"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/nevora-native-ui-z9ttv3gk/result.json",
+    "bytes": 541,
+    "sha256": "35da40377a78fa383affe92825e43a279ebc2d49b6914ddeaf39037d8cc6a094"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/nevora-native-ui-z9ttv3gk/tests.log",
+    "bytes": 39451,
+    "sha256": "b63df70f62020c2a3f11e664adaad8738b8061d53d5baae0161adeee3e77625b"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/nevora-native-ui-z9ttv3gk/summary.json",
+    "bytes": 967,
+    "sha256": "ff417a7b602c38cb1cfdd94724ee297a2e634fc4b2d593a309d8f363abc4dd18"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/source-custody.json",
+    "bytes": 2398450,
+    "sha256": "51b796364fda55e842122fee9fee25427ed1659c7d1765a6b9c923eceef59cb2"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-owner.json",
+    "bytes": 1278,
+    "sha256": "367c29bc8f8a8539318eb8d1b9a17b9c4d4634cd0a4ecdad5dc75a142f21c3a0"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/ios-owner.json",
+    "bytes": 953,
+    "sha256": "b66a1a4df03a9b25ac8e38f42194481e622a16065e6eee3699755ef53138624a"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-webview-before.txt",
+    "bytes": 849,
+    "sha256": "5fc8475ad66379a4844c4c2fe9f5547fa4ff1cb37f4605d4b7a37194d46f6b44"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-webview-after.txt",
+    "bytes": 849,
+    "sha256": "5fc8475ad66379a4844c4c2fe9f5547fa4ff1cb37f4605d4b7a37194d46f6b44"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-harness.log",
+    "bytes": 706,
+    "sha256": "ec7f5fdf130b044932a9fc589a5eae8ceb88c4540b05f05e4838b947dc94e008"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/ios-harness.log",
+    "bytes": 706,
+    "sha256": "949e050a781cec38d76deeacc467480a5b2a25d431517074c20bd8d9e01dd0b7"
+  }
+]

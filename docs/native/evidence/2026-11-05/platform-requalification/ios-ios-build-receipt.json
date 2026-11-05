@@ -1,0 +1,159 @@
+{
+  "ownerId": "070fe2c2861cbabc991fc17f328cd686",
+  "checkpoint": "69887718683b3fa2e12133b97c880b0e98c6ca9e",
+  "platform": "ios",
+  "artifacts": [
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app/Info.plist",
+      "sha256": "6fbdc5ce18e8ed9c4ba750bbe7b26a9f3c6c5939dc26fecedfe9ac8e519d5490"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app/NEVORA",
+      "sha256": "5a84ab90c528e61028ee86ce2f7f46393ad5f54ee100c5dc32adb745142fe555"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app/NEVORA.debug.dylib",
+      "sha256": "146f4ede393fafb933ab93eaef2b12cda1798657015569437316c2242dd22263"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app/PkgInfo",
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app/__preview.dylib",
+      "sha256": "af7218e544fdcf214c11d090ffe7699a7437b5c1e85551a72f86d54d5f20358e"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Info.plist",
+      "sha256": "31c9656243be8fa5a6155eae8cd104272794105ca26b3e7ec374b6b98f0fedab"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/DWARF/NEVORA",
+      "sha256": "d4f2877269681b98271f4074722b54bca3d063cc237b0568e4b3a4d46c0cd578"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/DWARF/NEVORA.debug.dylib",
+      "sha256": "0b371a8a3c9119fa4eab7e508693278abd905844fb40942644824bba17cf5484"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/Relocations/aarch64/NEVORA.debug.dylib.yml",
+      "sha256": "cb707ef944a718fa18a1a2b2f21a5daa6834d23885f08325b28dd6fff50660f1"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/Relocations/aarch64/NEVORA.yml",
+      "sha256": "0403fa6ced9216aa4f5be2cdd92a795401bcd7cc74736e42c42c5aaccf0eabe5"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/Relocations/x86_64/NEVORA.debug.dylib.yml",
+      "sha256": "9653eff615c4ad7689ead8086f836e3c289e8df879567a33e83011a131785b5d"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NEVORA.app.dSYM/Contents/Resources/Relocations/x86_64/NEVORA.yml",
+      "sha256": "37de753700ed521d034899983e25019225a218dc3ef2d490e7502dd80a4eca9e"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo",
+      "sha256": "ee69549bd4975fca17f95018c829b0ca3ca72faa101894655ef48590985bce66"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo",
+      "sha256": "10b64cb5f29bace8f68a811d2c269362711c85a71b5703f5914ad0ba9bed1bf5"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/arm64-apple-ios-simulator.abi.json",
+      "sha256": "4277ac6b49f8511196028a5ac20f5b1b1dfa754c24615d34068089f0b1739728"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/arm64-apple-ios-simulator.swiftdoc",
+      "sha256": "dbb3ea361233bd8c92046bef30007a77c51353fbf9effd0a3d42370a3b5ddf4d"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/arm64-apple-ios-simulator.swiftmodule",
+      "sha256": "1248cb06f54055c8f15d2079c183b63992e734f2a355052e3af9afba417f96fe"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/x86_64-apple-ios-simulator.abi.json",
+      "sha256": "4277ac6b49f8511196028a5ac20f5b1b1dfa754c24615d34068089f0b1739728"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/x86_64-apple-ios-simulator.swiftdoc",
+      "sha256": "1374c9f4dccc69e8fdd2cb07a5d2a084147baa8a9ff54b206ba5b8e870eef3fa"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/Nevora.swiftmodule/x86_64-apple-ios-simulator.swiftmodule",
+      "sha256": "9638cd1e882f3c7c59eabf1df3bb214b5c7ad6fa3c804d5a5adcbe81efaf2a2a"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/Info.plist",
+      "sha256": "6a7315338a53bb8a6dc4da64616af0bdce9b1cc02adc1570f22539c91070b603"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/NevoraUITests-Runner",
+      "sha256": "d776d95c3da519cf802b9e58794802128cd158160db68471c703005522b37337"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PkgInfo",
+      "sha256": "82502191c9484b04d685374f9879a0066069c49b8acae7a04b01d38d07e8eca0"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest/Info.plist",
+      "sha256": "66777b56bd53b427e2f5d162c0125db75e8f84c6458395829fa272809d7f11e6"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest/NevoraUITests",
+      "sha256": "7ec545bfffef72a99f0a33c8c6b5c60292b0fce2e5247bff2340b64f4362fcf1"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest.dSYM/Contents/Info.plist",
+      "sha256": "efe164229f2855a577291091f92a36ad507802872291319d5ba5dec383984ba0"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest.dSYM/Contents/Resources/DWARF/NevoraUITests",
+      "sha256": "7d6d8d6ecf736576e7b4de52168f8dd4b5f3fd13731ef97d4aaedc96d82eb7ca"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest.dSYM/Contents/Resources/Relocations/aarch64/NevoraUITests.yml",
+      "sha256": "4490394743fd5e0130be8244ef9a7d24b925735e8b2b50880fda7383ff6ad415"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests-Runner.app/PlugIns/NevoraUITests.xctest.dSYM/Contents/Resources/Relocations/x86_64/NevoraUITests.yml",
+      "sha256": "29e8b02d3680cf1a3d3cc5786a40b12ee36aa29a554c69edd3a186254d3b2519"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/Project/arm64-apple-ios-simulator.swiftsourceinfo",
+      "sha256": "6937ed5705c67eb7fcb8f101cde6bef8be1c02d68b6b1b9682a0f078f3ec13c1"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/Project/x86_64-apple-ios-simulator.swiftsourceinfo",
+      "sha256": "7fd637fd449ee1322efe23966a697ffadf9c4fd1e4287e6b6ee3f56e06b5b6c9"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/arm64-apple-ios-simulator.abi.json",
+      "sha256": "4277ac6b49f8511196028a5ac20f5b1b1dfa754c24615d34068089f0b1739728"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/arm64-apple-ios-simulator.swiftdoc",
+      "sha256": "dbad27d4293b088bb8051616895d585f5942ce4d8ef69738c0364859578d2197"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/arm64-apple-ios-simulator.swiftmodule",
+      "sha256": "8ffd58e3bd588a53d6d69a07753a11e3101dff7eb46517bd766bc5903d405e22"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/x86_64-apple-ios-simulator.abi.json",
+      "sha256": "4277ac6b49f8511196028a5ac20f5b1b1dfa754c24615d34068089f0b1739728"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/x86_64-apple-ios-simulator.swiftdoc",
+      "sha256": "84a2dc529e304f9bd7b3d9203a3e0e90a1401f403383407203fe69ae3e47e0d7"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/Debug-iphonesimulator/NevoraUITests.swiftmodule/x86_64-apple-ios-simulator.swiftmodule",
+      "sha256": "4f631988bb6f034fe32b3791cdea60b1a3b8a68edd43c3dcbc9f3c3b24917324"
+    },
+    {
+      "path": "ios-prebuilt/DerivedData/Build/Products/NEVORA_iphonesimulator27.0-arm64-x86_64.xctestrun",
+      "sha256": "3df644106c10f7776a926554a6d22da351985744370d75054b5f2235f0140221"
+    }
+  ]
+}

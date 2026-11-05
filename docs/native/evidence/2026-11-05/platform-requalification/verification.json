@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "69887718683b3fa2e12133b97c880b0e98c6ca9e",
+  "status": "passed-owned-local",
+  "platforms": {
+    "android": {
+      "backendChecks": 18,
+      "nativeUiTests": 3,
+      "sourceVerified": true,
+      "ownershipClosed": true,
+      "root": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-RatX55",
+      "coldRestart": true
+    },
+    "ios": {
+      "backendChecks": 18,
+      "nativeUiTests": 3,
+      "sourceVerified": true,
+      "ownershipClosed": true,
+      "root": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd",
+      "coldRestart": null
+    }
+  },
+  "ownedAvdStoppedAndRemoved": true,
+  "ownedIosSimulatorStoppedAndRemoved": true,
+  "preExistingAvdsAndSimulatorsPreserved": true,
+  "ambientDatabaseOrProviderCredentialsUsed": false,
+  "paidHostingOnHold": true,
+  "cloudCreated": false,
+  "hostedVerified": false,
+  "physicalDeviceVerified": false,
+  "signedRelease": false,
+  "sourceGate": "FAIL: 4 active remote heads > 3; new unapproved Claude head preserved",
+  "inventorySnapshotUnitTests": {
+    "passed": 12,
+    "preExistingFailure": 1
+  }
+}

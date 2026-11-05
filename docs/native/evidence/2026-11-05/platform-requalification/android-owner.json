@@ -1,0 +1,31 @@
+{
+  "ownerNonce": "a3bdd18777a9",
+  "source": "69887718683b3fa2e12133b97c880b0e98c6ca9e",
+  "name": "NevoraSync20261105_a3bdd18777a9",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-avds",
+  "userHome": "/Users/josek0514/.codex/native-runtime/nevora-native-requalification-20261105-69887718/android-user",
+  "image": "system-images;android-37.2;google_apis_ps16k;arm64-v8a",
+  "metadataSha256": "50e83edfe9b2b3942e098e530f45662c204d95c976d39bbde73a20db3cc80abe",
+  "pid": 28081,
+  "port": 5570,
+  "serial": "emulator-5570",
+  "started": 1793921723.9312818,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraSync20261105_a3bdd18777a9",
+    "-port",
+    "5570",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-window",
+    "-no-audio"
+  ],
+  "processIdentity": "Thu Nov  5 19:35:23 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd NevoraSync20261105_a3bdd18777a9 -port 5570 -no-snapshot -no-boot-anim -no-window -no-audio",
+  "stopped": true,
+  "actualAvdName": "NevoraSync20261105_a3bdd18777a9",
+  "booted": true,
+  "serialAbsent": true,
+  "stoppedAt": 1793921914.494236,
+  "disposableAvdRemoved": true
+}
