@@ -1373,3 +1373,22 @@ desktop, Employees and Leads keep their current rules. Server reads, actions, li
 - **Honest figures.** Nothing estimated: This week shows scheduled hours, shifts per day and people from the dashboard's
   reads; Payroll shows the open payroll's own people, gross and net only once it holds amounts. Home's hero shows the date
   (Home has no location filter); the mock's labor estimate and location switcher wait for a decision and real data.
+
+### Direction B on every other Owner and Manager phone page (Jose, Nov 5, 2026: "do all 3 passes, everything like the mocks")
+
+Every other phone page (More, Notifications, Updates, Profile, Help, Insights, Settings and each settings page, Scheduling
+rules, Week templates, Add shift, Build and publish, Activity, Who's working, Hours this week, Time corrections, Time
+exports, Payroll's pages, Add employee, a person's page, account recovery, Clocker recovery, Done and older, Time off
+requests, Shift requests, Availability and Delete account) takes the same look from `src/app/app/owner-b-pages.css`, a
+phone-only layer (max-width 767px, under `data-nv-b`) over the corporate and Quiet kits, so markup and behavior are the
+pages' own:
+
+- **Back bars become the hero.** "‹ Back" is a 40px frosted circle with its label in white; the page title is 28/34 700
+  white under it, left aligned; the bar's action (Edit, Save, New update) is a white pill. A Quiet page's large title and a
+  segmented control right under it join the hero; the control is frosted glass with a white thumb.
+- **Forms are sheets with a compact band:** Cancel (white) · title (17/22 white, centred) · Save as a white pill; the form
+  below is one lifted white card.
+- **Cards and lists** are white with 22px corners and layered shadows (no hairline borders); the teal runs 44px under the
+  hero only when a card or list comes next, so a form's first label or a plain line never lands on teal.
+- **Rows** use 15.5px titles and 13.5px lines with 18px sides; pills are 22px chips; primary buttons are teal pills with a
+  soft shadow, secondary ones grey pills; fields have 14px corners.

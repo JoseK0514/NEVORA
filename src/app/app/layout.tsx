@@ -35,6 +35,8 @@ import "@/components/employee-mobile/hours.css";
 import "@/components/employee-mobile/messages.css";
 // Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone header and tab bar over the teal hero. Loaded last.
 import "./owner-b-shell.css";
+// Direction B on every other Owner and Manager phone page (the corporate and Quiet kits). Loaded last.
+import "./owner-b-pages.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";
