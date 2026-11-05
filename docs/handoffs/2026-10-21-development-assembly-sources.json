@@ -483,25 +483,34 @@
       "branch": "AI-owner",
       "sha": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
       "disposition": "included",
-      "reason": "Exact head is an ancestor of fetched development e9c3a66d; no unique commit is imported. Existing remote head is preserved. Its retirement is not authorized by this bounded native update."
+      "reason": "Included through development; no unique application code imported. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/AI-owner"
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "1456688ace235eeef42864a926b1f08012d87c1f",
+      "sha": "875ceda86ab97f2f46fa3370eb5d0af744daf5a8",
       "disposition": "held",
-      "reason": "Three Owner Direction B UI commits after e9c3a66d are outside the requested development synchronization and remain held, without acceptance or rejection of that separate work. Preserve this active collaboration line; no overlay or merge is performed."
+      "reason": "Four Owner Direction B UI commits beyond development e9c3a66d remain held outside native development synchronization. Preserve active collaboration line and draft PR37; no overlay, merge or release acceptance."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
       "sha": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
       "disposition": "included",
-      "reason": "Exact head is an ancestor of fetched development e9c3a66d; Employee changes arrive through development. Existing worktrees and remote head are preserved."
+      "reason": "Included through development; no unique application code imported. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/claude/employee-mobile-phase2-20261027"
     },
     {
       "branch": "codex/release1-db-rehearsal-20261101",
       "sha": "fb7da7628455434e221e131d81ae417b407162c6",
       "disposition": "reference",
-      "reason": "The one unique commit fb7da762 contains database-rehearsal documentation/evidence only. It is outside native test-data custody and is not imported or executed. Preserve the remote head and its worktree."
+      "reason": "Database-rehearsal evidence remains reference only; not imported or executed. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/codex/release1-db-rehearsal-20261101"
+    },
+    {
+      "branch": "claude/youthful-mendel-9mg8hu",
+      "sha": "28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+      "disposition": "held",
+      "reason": "New remote head appeared during the authorized three-branch retirement. Contains held collaboration Owner Direction B history plus one schedule week-state label commit (28c98b79, one file). Neither importing nor retiring this new branch is authorized; preserve pending source-owner reconciliation. Three-branch ceiling remains unchanged."
     }
   ],
   "maximumActiveBranches": 3

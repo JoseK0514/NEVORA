@@ -1,0 +1,9 @@
+{
+  "command": "npm run check:development-sources",
+  "exitCode": 1,
+  "failures": [
+    "Remote branch ceiling exceeded: 4 > 3"
+  ],
+  "limitUnchanged": 3,
+  "otherDrift": false
+}

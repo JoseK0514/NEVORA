@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "archive: exact transaction accepted",
+    "archive: changed old head refused",
+    "archive: missing update refused",
+    "archive: duplicate update refused",
+    "archive: unexpected main update refused",
+    "archive: different remote refused",
+    "retire: exact transaction accepted",
+    "retire: changed old head refused",
+    "retire: missing update refused",
+    "retire: duplicate update refused",
+    "retire: unexpected main update refused",
+    "retire: different remote refused"
+  ],
+  "passed": true,
+  "providerMutation": false
+}

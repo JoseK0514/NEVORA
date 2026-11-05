@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "state": "prepared-not-provisioned",
+  "state": "prepared-hosting-on-hold",
   "sourceCommit": "17102418b80fc5ebcae2fe4890eb1dd8252ac8d3",
   "purpose": "NEVORA Employee/Owner native staging with fictional data only",
   "hosting": {
@@ -23,7 +23,8 @@
     "protection": "Protect generated deployments; one explicitly approved canonical-domain exception for the native probe/login and future public association metadata. Server sessions/authorization remain mandatory for all private data.",
     "publicDomainApprovalRecorded": false,
     "firstDeploymentPolicy": "Inspect Vercel first-deployment behavior before any application deploy. If a new-project Production bootstrap is required, it must be a separate inert artifact with no application code, database or secrets. Obtain explicit approval for that bootstrap. Never place staging secrets in Production to work around it.",
-    "nodeVersionReadbackRequiredBeforeBuild": true
+    "nodeVersionReadbackRequiredBeforeBuild": true,
+    "holdRequestedByJose": "2026-11-05"
   },
   "database": {
     "provider": "neon",
@@ -121,8 +122,8 @@
     "invoiceGuarantee": false
   },
   "gates": {
-    "sourceInventory": "FAIL: six active remote heads versus three; archive/retirement approval required",
-    "paidHosting": "Await Jose decision and owner checkout completion",
+    "sourceInventory": "FAIL: four active remote heads versus three. Three approved branches archived/retired; newly appeared claude/youthful-mendel-9mg8hu preserved pending reconciliation.",
+    "paidHosting": "ON HOLD at Jose request November 5; no subscription, paid provisioning or hosted deployment authorized.",
     "firstDeploymentTarget": "Await exact new-project bootstrap approval or verified equivalent provider path",
     "canonicalDomainExposure": "Await explicit approval before adding exception",
     "cloudCreated": false,
