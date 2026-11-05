@@ -1,0 +1,9 @@
+{
+  "exitCode": 1,
+  "refs": {
+    "HEAD": "675d2666b44213ae5a34cbf4dcd84fe229abddb4",
+    "origin/development": "e9c3a66da330959738100884f87cb76fd2af8296",
+    "origin/claude-codex-collab-nevora": "1456688ace235eeef42864a926b1f08012d87c1f"
+  },
+  "output": "\n> fuel-scheduler@0.1.0 check:development-sources\n> node scripts/development-source-inventory.mjs\n\nRemote development has changes absent from this checkout\nUnclassified branch: AI-owner\nRemote assembly has changes absent from this checkout\nUnclassified branch: claude/employee-mobile-phase2-20261027\nUnclassified branch: codex/release1-db-rehearsal-20261101\nRemote branch ceiling exceeded: 6 > 3\n"
+}
