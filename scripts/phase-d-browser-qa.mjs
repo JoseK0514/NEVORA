@@ -163,7 +163,9 @@ try{
     }
     const screen=join(evidence,`${engine}-timecards-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);
     await periodCard.waitFor();await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));await ep.getByRole('status').filter({hasText:'Your time records are paused.'}).waitFor();assert.equal(await periodCard.count(),0);assert.equal(await ep.locator('.c-hours').getByText(/^8\s*h$/).count(),0);checked(engine+': offline clears private period data');
-    await employee.setOffline(false);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await pastCards();
+    // The hours read restarts on 'online' only when navigator.onLine already says so; WebKit can still report offline just
+    // after the context reconnects, which left the page paused. Announce the reconnection once the page itself is online.
+    await employee.setOffline(false);await ep.waitForFunction(()=>navigator.onLine);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await pastCards();
     // The ready Past timecards page has no manual refresh (its only Try again belongs to the unavailable state), so the
     // failed read is the page's own scheduled renewal (at most 30 s away) while the period totals are on screen.
     const cardsRead=u=>new URL(u).pathname==='/api/employee/hours/cards/2026-09-21_2026-09-27';
