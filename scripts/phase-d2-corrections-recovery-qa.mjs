@@ -135,6 +135,10 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.setViewportSize({width,height:width<=430?844:1000});await geometry(page,'.manager-corrections','manager uncertain decision',engine,width);
      const shot=join(evidence,`${engine}-manager-recovery-${width}.png`);await page.screenshot({path:shot,fullPage:true});report.screenshots.push(shot);
     }
+    // Retry is disabled whenever the queue is not ready (manager-time-corrections: mode!=='ready'), for example while
+    // its snapshot renews; the seven screenshots above take over 10 s in WebKit and can overlap that. Press it only
+    // once it is enabled again, as UX-04 requires.
+    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='Retry same decision'&&!button.disabled));
     await retry.focus();await page.keyboard.press('Enter');
     await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
