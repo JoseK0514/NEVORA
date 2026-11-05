@@ -111,6 +111,13 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
+  // Nov 1 upscale: a page that replaces its loading placeholder fades in over 150ms (corp.css c-arrive, opacity only).
+  // Measure once every finite animation on the corrections and their ancestors has finished, in settled colours.
+  await mp.locator('.manager-corrections').evaluate(root=>new Promise((done,fail)=>{
+   const deadline=Date.now()+5000,nodes=[...root.querySelectorAll('*'),root];for(let node=root.parentElement;node;node=node.parentElement)nodes.push(node);
+   const settled=()=>nodes.every(el=>el.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished')));
+   const poll=()=>settled()?done():Date.now()>deadline?fail(new Error('Correction animations did not settle within 5 s')):requestAnimationFrame(poll);poll();
+  }));
   const contrast=await mp.locator('.manager-corrections').evaluate(root=>{
    const rgb=value=>value.match(/[\d.]+/g).map(Number);
    const luminance=colour=>rgb(colour).slice(0,3).map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
@@ -121,7 +128,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
     return {foreground,background,opacity,ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)};
    });
   });
-  assert(contrast.length>0);assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5));observations.contrast=contrast;
+  observations.contrast=contrast;assert(contrast.length>0);
+  assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5),'Correction text must be opaque at 4.5:1 or more: '+JSON.stringify(contrast.filter(pair=>!(pair.opacity===1&&pair.ratio>=4.5))));
 
   observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
