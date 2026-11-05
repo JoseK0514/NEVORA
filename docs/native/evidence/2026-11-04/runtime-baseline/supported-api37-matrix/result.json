@@ -1,0 +1,23 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-w2tf1nti",
+  "serial": "emulator-5564",
+  "passed": true,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "ownerId": null,
+  "qualification": "transport",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.google.android.webview",
+    "version": "149.0.7827.5",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "2f09ca70285d3fa0e3df6d5973078e7cd4d8a9ea0e94dfb0a3f93be7fc79bc6c",
+  "origin": "http://127.0.0.1:50070",
+  "fixtureOrigin": "http://127.0.0.1:50070",
+  "isolatedTestProcesses": true,
+  "instrumentationTests": 10,
+  "coldInstrumentationTests": 1,
+  "coldProcessRestart": true
+}

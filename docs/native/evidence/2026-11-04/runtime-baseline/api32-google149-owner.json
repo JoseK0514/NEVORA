@@ -1,0 +1,12 @@
+{
+  "avd": "NevoraPhase12_API32",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/android-avds",
+  "serial": "emulator-5560",
+  "pid": null,
+  "stopped": true,
+  "log": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/api32-google149-emulator.log",
+  "started": 1793840109.174876,
+  "lastPid": 37286,
+  "serialAbsent": true,
+  "stoppedAt": 1793844376.930666
+}

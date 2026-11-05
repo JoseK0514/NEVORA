@@ -1,12 +1,12 @@
 # Android runtime compatibility proposal
 
-Status: approved by Jose on November 4, 2026: ‘Adopt the modern runtime baseline (Recommended)’. Implementation and verification are in progress; no floor is claimed implemented until its checks pass.
+Status: approved by Jose on November 4, 2026: ‘Adopt the modern runtime baseline (Recommended)’. Implemented at ad9f38fa, with backend test-label corrections through 79f2d9cb. Local executor verification passed; the extension review is pending. See `evidence/2026-11-04/runtime-baseline/README.md`.
 
 ## Recommended v1 baseline
 
 Keep the approved shared-interface Android WebView architecture. Require Android 10 / API29 or later and Chromium-based Android System WebView major149 or later. This is the tested baseline, not a claim that149 was the first fixed engine. Older WebViews receive a native update explanation and a deliberate browser fallback before any private document is loaded. Android8/9 are excluded from the native v1 target; existing web/kiosk behavior remains unchanged.
 
-The current Android build minimum is26. Changing it to29 and admitting only supported engines is a material compatibility decision. CPO's rule is explicit: “Do not silently convert a technical workaround into product policy.” No exception or approval is inferred from passing tests.
+The prior Android build minimum was26; the implemented minimum is29. Raising it and admitting only supported engines was a material compatibility decision. CPO's rule is explicit: “Do not silently convert a technical workaround into product policy.” No exception or approval is inferred from passing tests.
 
 ## Evidence supporting this proposal
 
@@ -19,7 +19,7 @@ All comparisons used the unchanged original native/fixture source, hash `8086bb8
 
 The SDK provider is a first-party SDK artifact with verified signature integrity and matching SDK signer across images. This is local SDK verification, not evidence of retail Google Play signing, physical-device behavior, hosted deployment or store readiness.
 
-## Bounded implementation if approved
+## Approved implementation
 
 1. Set Android minSdk29 and add a small, strict engine-version policy. Unknown/malformed/older providers cannot enter the private web surface.
 2. Show a native update explanation and browser fallback. Retain exact-origin routing, browser-owned cookies, account/role authority, window-focus retirement, protected snapshots and fresh protected foreground navigation.
@@ -30,4 +30,4 @@ The SDK provider is a first-party SDK artifact with verified signature integrity
 
 Keep the release gate open and plan a different maintained rendering foundation, including accessibility, session/lifecycle, privacy and constrained capability acceptance. A different wrapper around Android WebView would still use its installed engine. Do not retain private documents or accept a renderer flag/accessibility waiver to rescue older providers.
 
-Owner: Codex/root. Next gate: implement the approved scope and complete executor verification. Phase2 implementation and prior local evidence remain unchanged.
+Owner: Codex/root. Executor checks passed:26JVM tests/builds/lint, actual old/missing provider and large-text/keyboard cases, default149 matrices10+cold1 on API32/37.2, and18owned-backend checks with3native journeys+cold1 at79f2d9cb. The original foundation matrix is unchanged; the backend test now uses the actual declared accessible labels for Monday controls, with exact state and server mutation assertions retained. Next gate: fresh extension review, then Phase3 external qualification. Prior unchanged iOS/server evidence is retained by exact source comparison.

@@ -1,0 +1,79 @@
+{
+  "ownerId": "0f05967c6b17b6b0d2acf4e3602e72a4",
+  "checkpoint": "ad9f38fa0becc47aa37e4b7c45f8dba78cc72856",
+  "platform": "android",
+  "status": "failed",
+  "checks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    }
+  ],
+  "devices": [],
+  "ownershipClosed": true,
+  "error": "Error: android full-backend SDK checks failed; see driver log\n    at ChildProcess.<anonymous> (/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/scripts/native-backend.mts:37:91)\n    at Object.onceWrapper (node:events:631:26)\n    at ChildProcess.emit (node:events:509:28)\n    at ChildProcess._handle.onexit (node:internal/child_process:295:12)"
+}

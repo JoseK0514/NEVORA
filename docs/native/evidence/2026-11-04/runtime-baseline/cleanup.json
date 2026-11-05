@@ -1,0 +1,13 @@
+{
+  "ownedAndroidSerialsAbsent": [
+    "emulator-5560",
+    "emulator-5562",
+    "emulator-5564"
+  ],
+  "ownedIosSimulatorShutdown": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+  "api32OriginalProviderBytesAndSelectionAndEnableStateRestored": true,
+  "api32OriginalFontSettingAbsenceRestored": true,
+  "api37FactoryProviderUnchanged": true,
+  "ownedBackendClosedAndSourceVerified": true,
+  "reproductionDataAndSdkInstallationRetained": true
+}

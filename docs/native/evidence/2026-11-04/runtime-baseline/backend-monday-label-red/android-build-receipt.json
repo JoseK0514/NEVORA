@@ -1,0 +1,15 @@
+{
+  "ownerId": "0f05967c6b17b6b0d2acf4e3602e72a4",
+  "checkpoint": "ad9f38fa0becc47aa37e4b7c45f8dba78cc72856",
+  "platform": "android",
+  "artifacts": [
+    {
+      "path": "android-prebuilt/outputs/apk/debug/app-debug.apk",
+      "sha256": "0210b19d3ac44de5240ebf24c86a30310fe753e49043c02a4c88c8ee7be03523"
+    },
+    {
+      "path": "android-prebuilt/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "sha256": "a22b81ca921020ff913f4cdcb7efbfb1c0aa032e54b978900caa354c96e52b26"
+    }
+  ]
+}

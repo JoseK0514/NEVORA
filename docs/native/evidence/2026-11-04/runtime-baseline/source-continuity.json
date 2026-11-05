@@ -1,0 +1,34 @@
+{
+  "priorCheckpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+  "candidate": "79f2d9cbf746009add1be757858664cda0873780",
+  "unchangedPaths": [
+    "native/ios",
+    "src",
+    "db",
+    "scripts",
+    "package.json",
+    "package-lock.json",
+    "native/fixture.mjs",
+    "native/android/test-ui.py"
+  ],
+  "changedPaths": [],
+  "originalTenPendingFilesPreserved": true,
+  "paths": {
+    "src/lib/data/native-deliveries.ts": true,
+    "src/test/integration/native-deliveries.integration.ts": true,
+    "src/lib/native-push/providers/apns.test.ts": true,
+    "src/lib/native-push/providers/apns.ts": true,
+    "src/lib/native-push/providers/common.ts": true,
+    "src/lib/native-push/providers/fcm.test.ts": true,
+    "src/lib/native-push/providers/fcm.ts": true,
+    "src/lib/native-push/providers/types.ts": true,
+    "vitest.native-push-integration.config.mts": true,
+    "vitest.native-push-regressions.config.mts": true
+  },
+  "fixtureApi32Checkpoint": "ad9f38fa0becc47aa37e4b7c45f8dba78cc72856",
+  "applicationAndFoundationCasesUnchangedSinceApi32Fixture": true,
+  "applicationAndFoundationChangedPaths": [],
+  "testOnlyDeltaSinceApi32Fixture": [
+    "native/android/app/src/androidTest/java/com/velani/nevora/development/BackendInstrumentedTest.java"
+  ]
+}
