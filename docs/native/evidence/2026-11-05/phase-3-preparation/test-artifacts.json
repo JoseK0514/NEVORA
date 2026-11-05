@@ -23,5 +23,10 @@
     "artifact": "review-fixes-green.log.gz",
     "rawSha256": "58e1cdda8ef05790dc426074aa3f3fe37a54ba5dc4d8304a617d7473f2465c0f",
     "rawBytes": 2953
+  },
+  {
+    "artifact": "task-1-final-tests.log.gz",
+    "rawSha256": "2f13ee7c1a53b212748b7e33e83db6ffc5f1a936b9ae07a874841c0784bbb02f",
+    "rawBytes": 2945
   }
 ]
