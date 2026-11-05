@@ -1,11 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,readFileSync,writeFileSync,existsSync,mkdirSync,symlinkSync,rmSync,realpathSync,statSync} from 'node:fs';
-import {join} from 'node:path';
+import {join,dirname,basename} from 'node:path';
 import {tmpdir} from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {createHash} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
 import {associationDocuments,prepareAssociations} from './prepare.mjs';
 
 const certificate=Array.from({length:32},(_,i)=>i.toString(16).padStart(2,'0')).join(':').toUpperCase();
@@ -38,6 +38,10 @@ test('rejects placeholders and malformed app identifiers',()=>{
 test('rejects missing, duplicate, wildcard, malformed and oversized certificate lists',()=>{
  for(const androidCertificateSha256Fingerprints of [[],[certificate,certificate.toLowerCase()],['*'],['AA:BB'],[certificate.replaceAll(':','')],Array(5).fill(certificate),null,'not-an-array'])assert.throws(()=>associationDocuments({...configuration(),androidCertificateSha256Fingerprints}),invalid);
 });
+test('rejects sparse certificate arrays before creating an invalid prepared bundle',t=>{
+ const output=join(temporary(t),'bundle'),input={...configuration(),androidCertificateSha256Fingerprints:Array(1)};
+ assert.throws(()=>prepareAssociations(input,output),invalid);assert.equal(existsSync(output),false);
+});
 test('invalid configuration creates no output directory',t=>{
  const output=join(temporary(t),'bundle');assert.throws(()=>prepareAssociations({...configuration(),privateKey:'fictional-do-not-echo'},output),invalid);assert.equal(existsSync(output),false);
 });
@@ -57,8 +61,15 @@ test('refuses relative destinations and source-tree output',()=>{
  assert.throws(()=>prepareAssociations(configuration(),'relative-output'));
  const output=fileURLToPath(new URL('./should-not-be-created',import.meta.url));assert.throws(()=>prepareAssociations(configuration(),output));assert.equal(existsSync(output),false);
 });
+test('refuses a case-alias of source on a case-insensitive filesystem',t=>{
+ const source=realpathSync(fileURLToPath(new URL('../../',import.meta.url))),alias=join(dirname(source),basename(source).toUpperCase());
+ if(!existsSync(alias)){t.skip('Filesystem has no differently cased source alias');return;}
+ const actual=statSync(source),alternate=statSync(alias);assert.equal(actual.dev,alternate.dev);assert.equal(actual.ino,alternate.ino);
+ const name='nevora-association-regression-'+randomUUID(),output=join(alias,name),owned=join(source,name);assert.equal(existsSync(owned),false);
+ try{assert.throws(()=>prepareAssociations(configuration(),output),/outside source/);assert.equal(existsSync(owned),false);}finally{rmSync(owned,{recursive:true,force:true});}
+});
 const cli=fileURLToPath(new URL('./prepare.mjs',import.meta.url));
-function run(args){return spawnSync(process.execPath,[cli,...args],{encoding:'utf8',timeout:5000,env:Object.fromEntries(['HOME','PATH','TMPDIR','LANG','LC_ALL'].filter(k=>process.env[k]!==undefined).map(k=>[k,process.env[k]]))});}
+function run(args,preload){return spawnSync(process.execPath,[...(preload?['--import',preload]:[]),cli,...args],{encoding:'utf8',timeout:5000,env:Object.fromEntries(['HOME','PATH','TMPDIR','LANG','LC_ALL'].filter(k=>process.env[k]!==undefined).map(k=>[k,process.env[k]]))});}
 test('CLI prepares an explicitly selected public configuration',t=>{
  const parent=temporary(t),config=join(parent,'public.json'),output=join(parent,'bundle');writeFileSync(config,JSON.stringify(configuration()));const result=run(['--config',config,'--output',output]);assert.equal(result.status,0,result.stderr);assert.equal(existsSync(join(output,'.well-known/assetlinks.json')),true);assert.equal(JSON.parse(result.stdout).status,'prepared');
 });
@@ -69,4 +80,27 @@ test('CLI rejects unknown, duplicate and missing arguments',t=>{
 test('CLI rejects oversized, malformed and secret-bearing inputs without reflecting them',t=>{
  const parent=temporary(t),config=join(parent,'public.json'),output=join(parent,'bundle');
  for(const contents of ['x'.repeat(8193),'{',JSON.stringify({...configuration(),privateKey:'fictional-do-not-echo'})]){writeFileSync(config,contents);const result=run(['--config',config,'--output',output]);assert.equal(result.status,1);assert.equal(result.stdout,'');assert.equal(result.stderr.includes('fictional-do-not-echo'),false);assert.equal(existsSync(output),false);}
+});
+// Interpose at the filesystem metadata boundary, then mutate a real owned file.
+// The assertions consume the real CLI's bytes/output; no production test hook.
+function changingInput(parent,config,operation){
+ const preload=join(parent,'change-input.mjs');
+ writeFileSync(preload,`import fs from 'node:fs';import {syncBuiltinESMExports} from 'node:module';
+const target=${JSON.stringify(config)};let changed=false,input;
+const open=fs.openSync;fs.openSync=function(path,...args){const fd=open.call(this,path,...args);if(path===target)input=fd;return fd;};
+for(const name of ['lstatSync','fstatSync']){const original=fs[name];fs[name]=function(...args){const result=original.apply(this,args);if(!changed&&((name==='lstatSync'&&args[0]===target)||(name==='fstatSync'&&args[0]===input))){changed=true;${operation}}return result;};}
+syncBuiltinESMExports();`);
+ return preload;
+}
+test('CLI bounds the actual read when a regular file grows after its metadata check',t=>{
+ const parent=temporary(t),config=join(parent,'public.json'),output=join(parent,'bundle');writeFileSync(config,JSON.stringify(configuration()));
+ const preload=changingInput(parent,config,"fs.appendFileSync(target,' '.repeat(65536));");
+ const result=run(['--config',config,'--output',output],preload);assert.equal(result.status,1);assert.equal(existsSync(output),false);
+});
+test('CLI reads the opened regular file if its pathname is replaced by a symlink',t=>{
+ const parent=temporary(t),config=join(parent,'public.json'),replacement=join(parent,'replacement.json'),output=join(parent,'bundle');writeFileSync(config,JSON.stringify(configuration()));writeFileSync(replacement,JSON.stringify({...configuration(),origin:'https://different.example.com'}));
+ const preload=changingInput(parent,config,`fs.unlinkSync(target);fs.symlinkSync(${JSON.stringify(replacement)},target);`);
+ const result=run(['--config',config,'--output',output],preload);
+ if(result.status===0)assert.equal(JSON.parse(readFileSync(join(output,'preparation.json'))).origin,'https://native-staging.example.com');
+ else{assert.equal(result.status,1);assert.equal(existsSync(output),false);}
 });

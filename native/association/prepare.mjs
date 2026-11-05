@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {isIP} from 'node:net';
-import {lstatSync,mkdirSync,readFileSync,realpathSync,writeFileSync} from 'node:fs';
-import {basename,dirname,isAbsolute,join,relative,resolve,sep} from 'node:path';
+import {constants,openSync,fstatSync,readSync,closeSync,mkdirSync,realpathSync,statSync,writeFileSync} from 'node:fs';
+import {basename,dirname,isAbsolute,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const fields=['origin','iosApplicationIdentifier','androidPackageName','androidCertificateSha256Fingerprints'];
@@ -20,8 +20,13 @@ function validated(config){
     if(typeof ios!=='string'||ios.length>211||!whole(/^[A-Z0-9]{10}\.[A-Za-z][A-Za-z0-9-]*(?:\.[A-Za-z][A-Za-z0-9-]*){1,9}$/u,ios))throw invalid();
     if(typeof android!=='string'||android.length>200||!whole(/^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*){1,9}$/u,android))throw invalid();
     const fingerprints=config.androidCertificateSha256Fingerprints;
-    if(!Array.isArray(fingerprints)||fingerprints.length<1||fingerprints.length>4||!fingerprints.every(value=>whole(/^(?:[a-fA-F0-9]{2}:){31}[a-fA-F0-9]{2}$/u,value)))throw invalid();
-    const canonical=fingerprints.map(value=>value.toUpperCase());
+    if(!Array.isArray(fingerprints)||fingerprints.length<1||fingerprints.length>4)throw invalid();
+    const canonical=[];
+    for(let index=0;index<fingerprints.length;index++){
+        const value=fingerprints[index];
+        if(!Object.hasOwn(fingerprints,index)||!whole(/^(?:[a-fA-F0-9]{2}:){31}[a-fA-F0-9]{2}$/u,value))throw invalid();
+        canonical.push(value.toUpperCase());
+    }
     if(new Set(canonical).size!==canonical.length)throw invalid();
     return {...config,androidCertificateSha256Fingerprints:canonical};
 }
@@ -42,8 +47,13 @@ export function prepareAssociations(config,output){
     if(typeof output!=='string'||!isAbsolute(output)||resolve(output)!==output)throw Error('Select a new absolute external output directory');
     const directory=join(realpathSync(dirname(output)),basename(output));
     const source=realpathSync(fileURLToPath(new URL('../../',import.meta.url)));
-    const distance=relative(source,directory);
-    if(!(distance==='..'||distance.startsWith('..'+sep)||isAbsolute(distance)))throw Error('Association output must be outside source');
+    const sourceIdentity=statSync(source);
+    // Directory identity also detects alternate casing on case-insensitive disks.
+    for(let ancestor=dirname(directory);;ancestor=dirname(ancestor)){
+        const identity=statSync(ancestor);
+        if(identity.dev===sourceIdentity.dev&&identity.ino===sourceIdentity.ino)throw Error('Association output must be outside source');
+        if(dirname(ancestor)===ancestor)break;
+    }
     mkdirSync(directory,{mode:0o700});
     mkdirSync(join(directory,'.well-known'),{mode:0o700});
     const artifacts=[];
@@ -58,6 +68,24 @@ export function prepareAssociations(config,output){
     return manifest;
 }
 
+function readConfiguration(path){
+    if(!Number.isInteger(constants.O_NOFOLLOW)||!Number.isInteger(constants.O_NONBLOCK))throw invalid();
+    const descriptor=openSync(path,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
+    try{
+        const stat=fstatSync(descriptor);
+        if(!stat.isFile()||stat.size>8192)throw invalid();
+        const bytes=Buffer.alloc(8193);
+        let length=0;
+        while(length<bytes.length){
+            const count=readSync(descriptor,bytes,length,bytes.length-length,null);
+            if(count===0)break;
+            length+=count;
+        }
+        if(length>8192)throw invalid();
+        return JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes.subarray(0,length)));
+    }finally{closeSync(descriptor);}
+}
+
 function main(args){
     if(args.length!==4)throw Error('Explicit config and output required');
     const selected=new Map();
@@ -67,9 +95,7 @@ function main(args){
         selected.set(flag,value);
     }
     if(selected.size!==2)throw Error('Missing arguments');
-    const config=selected.get('--config'),stat=lstatSync(config);
-    if(!stat.isFile()||stat.isSymbolicLink()||stat.size>8192)throw invalid();
-    return prepareAssociations(JSON.parse(readFileSync(config,'utf8')),selected.get('--output'));
+    return prepareAssociations(readConfiguration(selected.get('--config')),selected.get('--output'));
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===resolve(process.argv[1])){
     try{console.log(JSON.stringify(main(process.argv.slice(2))));}

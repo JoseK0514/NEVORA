@@ -13,5 +13,15 @@
     "artifact": "task-1-suite.log.gz",
     "rawSha256": "5362f5cb09b1c3e6897c0f101272a0e9aaef0c942eff2cbbb85a1a03915644e7",
     "rawBytes": 2585
+  },
+  {
+    "artifact": "review-fixes-red.log.gz",
+    "rawSha256": "2b16ae3cb6f88cd1b39c633feffa2488a6b2f9ce4f2e1b377ea063d7b803b5f6",
+    "rawBytes": 5592
+  },
+  {
+    "artifact": "review-fixes-green.log.gz",
+    "rawSha256": "58e1cdda8ef05790dc426074aa3f3fe37a54ba5dc4d8304a617d7473f2465c0f",
+    "rawBytes": 2953
   }
 ]
