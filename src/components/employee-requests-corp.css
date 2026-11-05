@@ -1,5 +1,7 @@
 /* Employee Requests and Open shifts on the corporate kit (Release 1, boards G-E-Requests and E-OpenShifts). */
 :is(#c-root, html) .c-ereq .c-ereq__body { display: contents; }
+/* QA D8: the body is display:contents, so the kit's .c-page--narrow > * cap (720px from 768px) has to reach its children. */
+@media (min-width: 768px) { :is(#c-root, html) .c-page.c-page--narrow.c-ereq > .c-ereq__body > :not(.c-nav):not(.c-nav--phone) { width: 100%; max-width: 720px; } }
 :is(#c-root, html) .c-ereq .c-title__row { min-height: 44px; }
 :is(#c-root, html) .c-ereq .c-ereq__empty { padding: 16px; color: var(--c-grey); font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-ereq .c-ereq__state { margin: 0; color: var(--c-ink2); font-size: 15px; line-height: 20px; }

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 
-const reads=new Set(['notification-read','home-read','recorded-time-read','requests-read','manager-today-read','action-center-read','clock-monitor-read']);
+const reads=new Set(['notification-read','home-read','recorded-time-read','requests-read','calendar-read','manager-today-read','action-center-read','clock-monitor-read']);
 export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin){
  let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0;
  const read=fn=>{try{return fn();}catch{return undefined;}};

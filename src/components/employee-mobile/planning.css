@@ -38,8 +38,8 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning-saved summary { min-height:var(--em-target); padding:var(--em-space-3) 0; cursor:pointer; font-weight:var(--em-weight-label); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning-saved dl > div { padding:var(--em-space-2) 0; }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning-saved dd { color:var(--em-muted); }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning :is(input,textarea,summary):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning label:has(> input:is([type="checkbox"],[type="radio"]):focus-visible) { outline:3px solid var(--em-focus); outline-offset:3px; border-radius:var(--em-small); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning :is(input,textarea,summary):focus-visible { outline:2px solid var(--em-focus); outline-offset:2px; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning label:has(> input:is([type="checkbox"],[type="radio"]):focus-visible) { outline:2px solid var(--em-focus); outline-offset:2px; border-radius:var(--em-small); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning :is(input,textarea,button):disabled { cursor:default; opacity:.62; }
 }
 @media (max-width:360px) { html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-planning-dates { grid-template-columns:minmax(0,1fr); } }

@@ -42,7 +42,7 @@ it('loads actual history and renders own changes behind authenticated access',as
 });
 it('filters revoked location history on both sides and hides unchanged shifts',async()=>{
  f.after=[...f.before];expect(await html()).not.toContain('What changed');
- f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toContain('Shift removed');expect(result).not.toContain('Location 110');
+ f.after=[{...f.before[0],locationId:'110'}];const result=await html();expect(result).toMatch(/Removed\s·/);expect(result).not.toContain('Location 110');
 });
 it('push feature off retains canonical review while protected access loss discloses no history',async()=>{
  f.enabled=false;expect(await html()).toContain('What changed');
@@ -199,7 +199,17 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  expect(output).toContain('aria-label="Plan West Office"');
  expect(output).toContain('href="/app/schedule?week=2026-10-05&amp;location=west&amp;plan=1#schedule-planning"');
  expect(output).toContain(`href="${repair.replaceAll('&','&amp;')}"`);
- expect(output).toContain('>Find cover</a>');
+ // Nov 1 upscale: the open shift's whole row opens Find cover (a chevron, no teal link in the list).
+ expect(output).toMatch(/<a class="c-row c-sched-row c-sched-row--open" href="[^"]*repair=x" aria-label="Find cover for the open shift/);
+ expect(output).not.toContain('>Find cover</a>');
+ // The subtitle is the date alone (no "· 2 locations"); the location control and "…" share the title row.
+ expect(output).not.toMatch(/· \d+ locations/);
+ expect(output).toMatch(/class="c-title__actions"><div class="nevora-action-menu"><button[^>]*class="c-select-btn c-sched-loc"/);
+ // Schedule options: two groups, one line per row, and no Go to this week (the week bar's Today link replaces it).
+ expect(output).toContain('id="schedule-options-week">This week</p>');
+ expect(output).toContain('id="schedule-options-settings">Settings</p>');
+ expect(output).not.toContain('Go to this week</strong>');
+ expect(output).not.toContain('What changed and when');
  expect(output).toContain('1 this week');
  // The planning panel (through Build and publish), copy week, templates and add shift stay reachable.
  expect(output).toContain('plan=1#schedule-planning');expect(output).toContain('Copy previous week');
@@ -208,7 +218,9 @@ it('Corporate: the week card names the week and its state, open shifts offer Fin
  vi.setSystemTime(new Date('2026-10-13T12:00:00Z'));
  const past=(await html()).replace(/ /g,' ');
  expect(past).toContain('<span class="c-meta">Not filled</span>');
- expect(past).not.toContain('>Find cover</a>');
+ expect(past).not.toContain('aria-label="Find cover for the open shift');
+ // Another week than this one: the week bar offers Today.
+ expect(past).toContain('class="c-sched-week__today" href="/app/schedule?week=2026-10-12"');
  vi.useRealTimers();
 });
 it('v3: a failed dashboard read leaves availability and open shifts out instead of showing zero',async()=>{

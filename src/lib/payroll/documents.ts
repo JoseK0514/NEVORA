@@ -4,7 +4,8 @@
  * allow worker retries to converge when those statements are committed.
  */
 import { nativeEmployeePresentation } from "./native/document-mapping";
-import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_VERSION } from "./native/paystub-document";
+import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_V2, type NativePaystubTemplateVersion } from "./native/paystub-document";
+import { renderNativeCompanySummary, NATIVE_COMPANY_SUMMARY_TEMPLATE_V1, type NativeCompanySummaryTemplateVersion } from "./native/company-summary-document";
 import { hash } from "./store";
 import { createHash } from "node:crypto";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from "pdf-lib";
@@ -29,14 +30,14 @@ export type PayrollDocumentMetadata = {
     payday: string;
     coverage?: PayrollRun["coverage"];
     nativeDocument?: {
-        templateVersion: typeof NATIVE_PAYSTUB_TEMPLATE_VERSION;
+        templateVersion: NativePaystubTemplateVersion;
         runRevision: number;
         inputSha256: string;
         rulesSha256: string;
         presentationSha256: string;
         sourceFingerprint: string;
     } | {
-        templateVersion: "NEVORA_NATIVE_COMPANY_SUMMARY_V1";
+        templateVersion: NativeCompanySummaryTemplateVersion;
         runRevision: number;
         calculationSha256: string;
         sourceFingerprint: string;
@@ -196,7 +197,7 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
             const presentation = nativeEmployeePresentation(run, snapshot, row.employeeId);
             const rendered = await renderNativeEmployeePaystub(presentation, { progress });
             const approved = run.nativeCalculation.employees.find(e => e.employeeId === row.employeeId)!;
-            const metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: NATIVE_PAYSTUB_TEMPLATE_VERSION, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
+            const metadata: PayrollDocumentMetadata = { period: run.period, payday: run.payday, coverage: snapshot.native.employeeCoverage[row.employeeId], nativeDocument: { templateVersion: presentation.templateVersion, runRevision: run.revision, inputSha256: approved.provenance.inputSha256, rulesSha256: approved.provenance.rulesSha256, presentationSha256: hash(presentation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } };
             const document = stored(run, "EMPLOYEE_STATEMENT", row.employeeId, Buffer.from(rendered.bytes), metadata);
             if (document.sha256 !== rendered.sha256)
                 throw new PayrollError("NATIVE_DOCUMENT_HASH_CONFLICT", 409);
@@ -226,6 +227,21 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
         result.push(stored(run, "EMPLOYEE_STATEMENT", row.employeeId, await pdf(lines, run.approvedAt)));
     }
     await progress?.();
+    // A native run that recorded pay statement template v2 gets the matching v2 summary; every other run keeps the
+    // plain summary byte for byte.
+    if (run.sourceAuthority === "NATIVE_RECORDED_TIME" && run.nativeCalculation?.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2) {
+        if (!snapshot.native || run.nativeCalculation.state !== "ready")
+            throw new PayrollError("NATIVE_DOCUMENT_SNAPSHOT_CONFLICT", 409);
+        const summary = await renderNativeCompanySummary({
+            language: snapshot.settings.preferences.language, companyName: snapshot.settings.preferences.companyName,
+            period: run.period, payDate: run.payday, approvedAt: run.approvedAt, runReference: run.id, runRevision: run.revision,
+            correction: run.correctionOf ? { kind: "REPLACEMENT", originalRunReference: snapshot.native.originalRunId, replacesRunReference: run.correctionOf } : { kind: "ORIGINAL" },
+            employees: run.rows.map((row) => ({ name: row.employeeName, reference: row.employeeId, grossMinor: row.grossMinor, netMinor: row.netMinor })),
+            totals: run.totals,
+        }, { progress });
+        result.push(stored(run, "COMPANY_SUMMARY", null, summary.bytes, { period: run.period, payday: run.payday, coverage: run.coverage, nativeDocument: { templateVersion: summary.templateVersion, runRevision: run.revision, calculationSha256: hash(run.nativeCalculation), sourceFingerprint: snapshot.native.facts.sourceFingerprint } }));
+        return result;
+    }
     const es = snapshot.settings.preferences.language === "es";
     result.push(stored(run, "COMPANY_SUMMARY", null, await pdf([
         ...base(es),
@@ -239,6 +255,6 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
         `${es ? "Deducciones del empleado" : "Employee deductions"}: ${money(run.totals.deductionsMinor)}`,
         `${es ? "Aportaciones patronales" : "Employer contributions"}: ${money(run.totals.employerContributionsMinor)}`,
         `${es ? "Neto" : "Net"}: ${money(run.totals.netMinor)}`,
-    ], run.approvedAt), run.sourceAuthority === "NATIVE_RECORDED_TIME" ? { period: run.period, payday: run.payday, coverage: run.coverage, nativeDocument: { templateVersion: "NEVORA_NATIVE_COMPANY_SUMMARY_V1", runRevision: run.revision, calculationSha256: hash(run.nativeCalculation), sourceFingerprint: snapshot.native!.facts.sourceFingerprint } } : undefined));
+    ], run.approvedAt), run.sourceAuthority === "NATIVE_RECORDED_TIME" ? { period: run.period, payday: run.payday, coverage: run.coverage, nativeDocument: { templateVersion: NATIVE_COMPANY_SUMMARY_TEMPLATE_V1, runRevision: run.revision, calculationSha256: hash(run.nativeCalculation), sourceFingerprint: snapshot.native!.facts.sourceFingerprint } } : undefined));
     return result;
 }

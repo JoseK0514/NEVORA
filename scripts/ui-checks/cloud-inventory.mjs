@@ -85,6 +85,9 @@ try {
       if(selfOnly.has(pattern)&&manager)reason='Employee/Lead self service';
       if(pattern==='/app/profile'&&manager&&!managementProfile)reason='This snapshot redirects management Profile to Home';
       if(pattern==='/app/payroll'&&person.role!=='OWNER')reason='This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant';
+      // Nov 1 upscale: app/app/[...missing] is the catch-all that renders the in-app 404 (HTTP 404) for unknown /app
+      // addresses, not a page of its own; its in-shell 404 is checked by the Employee profile journey.
+      if(pattern==='/app/[...missing]')reason='Unknown-address catch-all (in-app 404); checked in employee-mobile-profile.integration';
       if(reason){excluded.push({account,pattern,reason});continue;}
       let route=pattern.replace('[employeeId]','AUDIT-LONG').replace('[locationId]','loc-1').replace('[id]',publication.id);
       const shift=shifts.find(s=>s.employee_id===account);

@@ -35,10 +35,7 @@
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell svg { position: static !important; width: 22px !important; height: 22px !important; color: #1A1C1E !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-count {
-    position: absolute !important; top: 10px !important; right: 11px !important; left: auto !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important;
-    border: 0 !important; border-radius: 4px !important; background: #D92D20 !important; box-shadow: 0 0 0 2px #FFFFFF !important; color: transparent !important; font-size: 0 !important; line-height: 0 !important; overflow: hidden !important;
-  }
+  /* Upscale B2: unread is one teal count badge on every screen (the phone's red dot retired); see the shell-wide rule below. */
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-unavailable { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar { display: grid !important; place-items: center; width: 44px; height: 44px; border-radius: 22px; text-decoration: none; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar > span {
@@ -273,11 +270,12 @@ html:has(.app-shell[data-nv-corp]) { -webkit-tap-highlight-color: transparent; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-corp] .page-frame :is(input, select, textarea)[aria-invalid="true"],
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-corp] .page-frame :is(input, select, textarea)[aria-invalid="true"]:focus { outline: 0 !important; border-color: transparent !important; box-shadow: inset 0 0 0 2px #B42318 !important; }
 
-/* P4: pressed states on the shell. Tab-bar items, the bell, the avatar, Quiet back links and header actions dim to .55;
- * Quiet rows darken like kit rows. Long-press shows no link preview and selects no text on chrome. */
+/* P4: pressed states on the shell. The bell, the avatar, Quiet back links and header actions dim to .55 (upscale S1: tab-bar
+ * items no longer dim; the tab lights at once instead); Quiet rows darken like kit rows. Long-press shows no link preview
+ * and selects no text on chrome. */
 :is(#c-root, html) .app-shell[data-nv-corp] :is(.mobile-nav-link, .portal-notification-bell, .c-top-avatar, .q-nav__l, .q-nav__r, .nav-link, .sidebar-toggle, .command-finder-trigger) { -webkit-tap-highlight-color: transparent; }
-:is(#c-root, html) .app-shell[data-nv-corp] :is(.mobile-nav-link, .c-top-avatar, .q-nav__l, .q-nav__r) { transition: opacity 150ms ease-out; }
-:is(#c-root, html) .app-shell[data-nv-corp] :is(.mobile-nav-link, .c-top-avatar, .q-nav__l, .q-nav__r):active { opacity: .55; transition: none; }
+:is(#c-root, html) .app-shell[data-nv-corp] :is(.c-top-avatar, .q-nav__l, .q-nav__r) { transition: opacity 150ms ease-out; }
+:is(#c-root, html) .app-shell[data-nv-corp] :is(.c-top-avatar, .q-nav__l, .q-nav__r):active { opacity: .55; transition: none; }
 :is(#c-root, html) .app-shell[data-nv-corp] .mobile-header .portal-notification-bell:active { opacity: .55; background: none !important; }
 :is(#c-root, html) .app-shell[data-nv-corp] .q-page .q-list :is(a, button) { transition: background-color var(--c-dur-ui, 200ms) ease-out; }
 :is(#c-root, html) .app-shell[data-nv-corp] .q-page .q-list :is(a, button):active { background-color: #EDEEEF !important; transition: none; }
@@ -354,7 +352,9 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-account-avata
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page[data-q-sheet]:not(.q-sheet) > :not(.q-nav) { max-width: 752px; }
   /* Quiet pages can opt into the 720px column too (the class page builders add to single-column pages). */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow > :not(.q-nav) { max-width: 752px; }
-  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, 100%); max-width: 100%; box-sizing: border-box; justify-content: flex-end; }
+  /* The bar sits 24px in from the page edge (the back-link rule above), so it is 48px narrower than the page: on the
+   * tablet shell the page can be under 768px wide, and a full-width bar pushed 24px past the screen edge. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.c-page--narrow:has(> .q-hd) > .q-nav { right: auto; width: min(720px, calc(100% - 48px)); max-width: calc(100% - 48px); box-sizing: border-box; justify-content: flex-end; }
 }
 
 /* P8: headers that stay and tell you where you are. Quiet pushed bars stick like the kit's; the hairline under a header
@@ -499,3 +499,296 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
 
 /* Owner premium integration: the shared read frame's "Refresh current view" keeps a full 44px tap height at every width. */
 :is(#c-root, html) .app-shell[data-nv-corp] .scoped-unavailable__refresh { min-height: 44px; height: auto; }
+
+/* =====================================================================================================================
+ * Upscale, shell and navigation (Nov 1, 2026; "make it better, not redesign"). Findings: review-desktop M1, M2, M6, S1,
+ * S7, S9; review-mobile-owner S2, M3, M10, L1; review-mobile-employee S1, M8; review-ui B2. Prefix: two ids of weight plus
+ * the shell, so these win over the older layers and the earlier corporate rules above.
+ * =================================================================================================================== */
+
+/* B2: one desktop shell for both roles, on the Owner's values: a 232px sidebar with the workspace at its top, a 52px top
+ * bar, and the top bar's order Search · bell · avatar (the Employee "+" retired in the shell). */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] { grid-template-columns: 232px minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .sidebar { width: 232px !important; min-width: 0 !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header { box-sizing: border-box !important; height: 52px !important; min-height: 52px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header > :is(.brand.compact, .portal-workspace-name) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 8px !important; margin-left: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .mobile-header-actions > * { order: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-account-menu .nevora-action-menu-trigger { display: inline-flex !important; align-items: center !important; gap: 8px !important; min-height: 44px !important; height: 44px !important;
+    margin: 0 !important; padding: 0 8px 0 4px !important; border: 0 !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important;
+    transition: background-color var(--c-dur-press, 120ms) ease-out; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-account-menu .nevora-action-menu-trigger:hover { background: #F2F4F4 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-account-avatar { display: grid !important; place-items: center !important; flex: none !important; width: 32px !important; height: 32px !important; border-radius: 16px !important; }
+  /* The Employee sidebar gets the workspace row the Owner has (the same values as premium-clean-manager's .cm-org). */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp].employee-shell .sidebar-heading { flex-wrap: wrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp].employee-shell .cm-org { order: 9; flex: 1 0 100%; display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 36px; margin: 8px 0 4px; padding: 0 8px; overflow: hidden; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp].employee-shell .cm-org__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+/* B2: unread is one treatment on every screen: a 16px teal count at the bell's top-right (the phone's red dot retired). */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-notification-bell { position: relative !important; overflow: visible !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-header .portal-notification-count { position: absolute !important; top: calc(50% - 15px) !important; left: calc(50% + 2px) !important; right: auto !important; bottom: auto !important;
+  display: grid !important; place-items: center !important; box-sizing: border-box !important; min-width: 16px !important; width: auto !important; height: 16px !important; margin: 0 !important; padding: 0 4px !important;
+  border: 0 !important; border-radius: 8px !important; background: #0B6E69 !important; color: #FFFFFF !important; font: 600 11px/16px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important;
+  box-shadow: 0 0 0 2px #FFFFFF !important; overflow: visible !important; clip-path: none !important; transform: none !important; }
+
+/* M1: the collapsed sidebar is a 72px rail. Only the expand control at the top (the wordmark hides, never cropped and never
+ * replaced by a made-up mark), the workspace as its 32px initials avatar, 40×40 entries on one centre line with 20px icons
+ * and a 40×40 radius-8 current tint, a 16px count at an entry's top-right, and a hairline between groups.
+ * The expand control has no fill, so it takes a full 44×44 touch target in the same place (negative margins keep the
+ * rail's spacing): the tablet rail is a touch screen.
+ * M2: desktop (1280px and up) shows the rail when chosen (data-sidebar-desktop); tablets (768–1279px) open with it unless
+ * the person chose the full list there (data-sidebar-tablet). The two blocks below are the same rules; keep them in step. */
+@media (min-width: 1280px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] { grid-template-columns: 72px minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0 !important; box-sizing: border-box !important;
+    width: 72px !important; min-width: 72px !important; padding: 0 16px 16px !important; overflow: hidden !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-heading { display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: center !important; gap: 0 !important;
+    width: 40px !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar :is(.sidebar-brand, .company-logo-chip, .sidebar-platform-footer, .sidebar-profile, .sidebar-signout-form) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;
+    min-width: 44px !important; min-height: 44px !important; margin: 4px -2px -2px !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; transform: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .cm-org { order: 0 !important; flex: none !important; align-self: center !important; position: static !important; display: grid !important; place-items: center !important; gap: 0 !important;
+    width: 40px !important; height: 40px !important; min-height: 40px !important; margin: 18px 0 0 !important; padding: 0 !important; overflow: visible !important; transform: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .cm-org__name { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .cm-org__mark { margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-nav { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0 !important; width: 40px !important; margin: 12px 0 0 !important; padding: 0 !important;
+    overflow-x: hidden !important; scrollbar-width: none; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-nav-group { display: grid !important; justify-items: center !important; gap: 4px !important; width: 40px !important; margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-nav-group + .sidebar-nav-group { margin-top: 12px !important; padding-top: 13px !important; background: linear-gradient(#EDEEEF, #EDEEEF) top center / 24px 1px no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .sidebar-group-label { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link { position: relative !important; display: grid !important; place-items: center !important; gap: 0 !important; width: 40px !important; height: 40px !important; min-width: 40px !important;
+    min-height: 40px !important; margin: 0 !important; padding: 0 !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link:hover:not(.active) { background: #F2F4F4 !important; color: #1A1C1E !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar #desktop-primary-navigation .nav-link.active { background: #E6F1EF !important; color: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar #desktop-primary-navigation::before { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link .nav-label { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link .nav-icon { display: grid !important; place-items: center !important; width: 20px !important; height: 20px !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link .nav-icon svg { width: 20px !important; height: 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-desktop="rail"] .sidebar .nav-link .nav-count { position: absolute !important; top: 3px !important; right: 3px !important; left: auto !important; display: grid !important; place-items: center !important; box-sizing: border-box !important;
+    min-width: 16px !important; width: auto !important; height: 16px !important; margin: 0 !important; padding: 0 4px !important; border-radius: 8px !important; background: #0B6E69 !important; color: #FFFFFF !important;
+    font: 600 11px/16px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; box-shadow: 0 0 0 2px #FFFFFF !important; clip-path: none !important; transform: none !important; }
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] { grid-template-columns: 72px minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0 !important; box-sizing: border-box !important;
+    width: 72px !important; min-width: 72px !important; padding: 0 16px 16px !important; overflow: hidden !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-heading { display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; align-items: center !important; gap: 0 !important;
+    width: 40px !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar :is(.sidebar-brand, .company-logo-chip, .sidebar-platform-footer, .sidebar-profile, .sidebar-signout-form) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-toggle { order: -1 !important; position: static !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;
+    min-width: 44px !important; min-height: 44px !important; margin: 4px -2px -2px !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; transform: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .cm-org { order: 0 !important; flex: none !important; align-self: center !important; position: static !important; display: grid !important; place-items: center !important; gap: 0 !important;
+    width: 40px !important; height: 40px !important; min-height: 40px !important; margin: 18px 0 0 !important; padding: 0 !important; overflow: visible !important; transform: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .cm-org__name { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .cm-org__mark { margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-nav { display: flex !important; flex-direction: column !important; align-items: center !important; gap: 0 !important; width: 40px !important; margin: 12px 0 0 !important; padding: 0 !important;
+    overflow-x: hidden !important; scrollbar-width: none; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-nav-group { display: grid !important; justify-items: center !important; gap: 4px !important; width: 40px !important; margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-nav-group + .sidebar-nav-group { margin-top: 12px !important; padding-top: 13px !important; background: linear-gradient(#EDEEEF, #EDEEEF) top center / 24px 1px no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .sidebar-group-label { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link { position: relative !important; display: grid !important; place-items: center !important; gap: 0 !important; width: 40px !important; height: 40px !important; min-width: 40px !important;
+    min-height: 40px !important; margin: 0 !important; padding: 0 !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important; color: #4A4F54 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link:hover:not(.active) { background: #F2F4F4 !important; color: #1A1C1E !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar #desktop-primary-navigation .nav-link.active { background: #E6F1EF !important; color: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar #desktop-primary-navigation::before { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link .nav-label { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link .nav-icon { display: grid !important; place-items: center !important; width: 20px !important; height: 20px !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link .nav-icon svg { width: 20px !important; height: 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet="rail"] .sidebar .nav-link .nav-count { position: absolute !important; top: 3px !important; right: 3px !important; left: auto !important; display: grid !important; place-items: center !important; box-sizing: border-box !important;
+    min-width: 16px !important; width: auto !important; height: 16px !important; margin: 0 !important; padding: 0 4px !important; border-radius: 8px !important; background: #0B6E69 !important; color: #FFFFFF !important;
+    font: 600 11px/16px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; box-shadow: 0 0 0 2px #FFFFFF !important; clip-path: none !important; transform: none !important; }
+}
+
+/* M1: the width eases over 200ms on the kit curve, only when the person toggles it (data-sidebar-motion). On the way out,
+ * the wordmark and labels wait until the width has settled, so the logo is never seen cropped. Instant with reduced motion. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-motion] { transition: grid-template-columns var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-motion] .sidebar { transition: width var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)), min-width var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-motion="expand"] .sidebar :is(.sidebar-brand, .company-logo-chip, .cm-org__name, .nav-label, .nav-count, .sidebar-group-label, .sidebar-platform-footer) {
+    animation: c-rail-reveal 120ms ease-out var(--c-dur-ui, 200ms) both; }
+}
+@keyframes c-rail-reveal { from { opacity: 0; } to { opacity: 1; } }
+
+/* M1: the rail's tooltip (SidebarRailTooltip): 13/18 white on #1A1C1E, radius 6, 8px right of the rail, after 300ms. */
+.c-rail-tip { display: none; }
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .c-rail-tip { position: fixed; top: 0; left: 0; z-index: 2147482000; display: block; max-width: 240px; padding: 4px 8px; border-radius: 6px; background: #1A1C1E; color: #FFFFFF;
+    font: 400 13px/18px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transform: translateY(-50%);
+    opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 120ms ease-out, visibility 0s linear 120ms; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .c-rail-tip[data-open] { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 120ms ease-out; }
+}
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .c-rail-tip { transition: none !important; } }
+
+/* M2: on tablets the content uses the width the rail frees: 32px gutters (the frame's 8px plus the page's own 24px), no
+ * 992px cap (684px at 820, 888 at 1024, 1044 at 1180). Older pages keep the frame's own padding. */
+@media (min-width: 768px) and (max-width: 1279px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame:has(> :is(.c-page, .q-page), > * > :is(.c-page, .q-page)) { padding-left: 8px !important; padding-right: 8px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel, .q-page:not(.q-sheet)) { max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame > .section-tabs { max-width: none !important; }
+}
+/* M6: from 1280px the content frame is pinned to the sidebar instead of centred: 56px from it below 1600px (the frame's
+ * 32px plus the page's 24px) and 72px from 1600px up. The 992 and 720 widths stay; spare width becomes right margin, so
+ * every page, its loading placeholder included, starts on the same left edge. */
+@media (min-width: 1280px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel, .q-page:not(.q-sheet)), :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame > .section-tabs { margin-left: 0 !important; margin-right: auto !important; }
+}
+@media (min-width: 1600px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel, .q-page:not(.q-sheet)), :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame > .section-tabs { margin-left: 16px !important; }
+}
+
+/* S1 (Employee phone): the tab bar answers a tap by lighting the tab, never by dimming it. */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .mobile-nav .mobile-nav-link:active { opacity: 1 !important; }
+
+/* S2 (phone) and S9 (desktop): every tab page's title sits at one height. The title row is one line box (30px on a phone,
+ * 40px on tablets and desktop) and a taller trailing control overhangs it instead of pushing the title down. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__row { display: flex !important; align-items: center !important; min-height: 30px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__actions { margin-block: -7px !important; }
+  /* QA D15: a 44px button overhangs the 30px row by 7px, so the subtitle under it starts 11px down (4px clear of the
+   * button) instead of the usual 4px. Schedule lays its title out on its own grid and keeps its spacing. */
+  :is(#c-root, html) .c-page .c-title:not(.c-sched > .c-title):has(> .c-title__row .c-title__actions .c-btn) > .c-title__sub { margin-top: 11px; }
+}
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-title__row { display: flex !important; align-items: center !important; min-height: 40px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame :is(.c-title__actions, .c-nav__right) { margin-block: -2px !important; }
+}
+
+/* M3 (phone): a pushed page's header always centres its title on the screen (17/600, ellipsis), whatever the back link
+ * says; the back link is capped at 96px with an ellipsis. Kit headers (.c-nav) and Quiet bars (.q-nav) alike. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav > .c-nav__title,
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav > .q-nav__t {
+    position: absolute !important; left: 50% !important; bottom: 8px !important; top: auto !important; height: 44px !important; margin: 0 !important; transform: translateX(-50%) !important;
+    width: max-content !important; max-width: calc(100% - 208px) !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; text-align: center !important; line-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav { grid-template-rows: minmax(44px, auto) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav > .c-nav__right, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav > .q-nav__r { grid-column: 3 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav > .c-nav__back,
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav > a.q-nav__l {
+    display: block !important; max-width: 96px !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; line-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav > .c-nav__back > svg, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav > a.q-nav__l > svg { display: inline-block !important; vertical-align: middle !important; margin: -3px 2px 0 0 !important; }
+}
+
+/* M3 below 360px: the back link is its 44px chevron only (V3), so a header with nothing on its right reserves 68px a side
+ * (16px edge + 44px chevron + 8px) instead of 104px, and titles such as "Profile and settings" are not cut at 320px. */
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page > .c-nav:not(:has(> .c-nav__right > *)) > .c-nav__title,
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .q-page:not(.q-sheet) > .q-nav:not(:has(> .q-nav__r > *)) > .q-nav__t { max-width: calc(100% - 136px) !important; }
+}
+
+/* S1 (desktop) and M10 (phone): the ⌘K finder. Group headings are their own presentational rows (13/18 500 grey, 28px);
+ * options are 40px with radius 8, inset 8px from the palette edge; the current one is tinted #E6F1EF with ink text; the
+ * typed letters are set in 600. */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results { padding: 8px !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-group { display: flex !important; align-items: center !important; grid-column: auto !important; box-sizing: border-box !important; height: 28px !important; min-height: 28px !important;
+  margin: 0 !important; padding: 0 12px !important; border-radius: 0 !important; background: none !important; color: #6B7075 !important; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important;
+  text-transform: none !important; cursor: default !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option + li.command-finder-group { margin-top: 8px !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option { display: flex !important; align-items: center !important; gap: 12px !important; box-sizing: border-box !important; min-height: 40px !important; height: 40px !important;
+  margin: 0 !important; padding: 0 12px !important; border-radius: 8px !important; background: transparent; cursor: pointer; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option .command-finder-label { display: block !important; flex: 1 1 auto !important; min-width: 0 !important; min-height: 0 !important; overflow: hidden !important;
+  white-space: nowrap !important; text-overflow: ellipsis !important; color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option .command-finder-detail { flex: none !important; margin: 0 !important; color: #6B7075 !important; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-align: right !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] { background: #E6F1EF !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] .command-finder-label { color: #1A1C1E !important; font-weight: 400 !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-match { color: inherit; font-weight: 600; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  /* Phone: 16px gutters, a white 44px field with a 1px ring, 48px rows on hairlines, labels 13/600 with 24px above. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-search { padding: 8px 8px 8px 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-field, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-field:has(input:focus) { box-sizing: border-box !important; min-height: 44px !important; border: 0 !important; border-radius: 8px !important; background: #FFFFFF !important;
+    box-shadow: 0 0 0 1px #D5D8DA !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-search .command-finder-field input { min-height: 44px !important; background: transparent !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results { padding: 0 16px 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-group { height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 24px 0 8px !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option + li.command-finder-group { margin-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option { height: auto !important; min-height: 48px !important; padding: 0 !important; border-radius: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option + li.command-finder-option { box-shadow: inset 0 1px 0 #EDEEEF !important; }
+  /* The tint follows the arrow keys only; a tap needs none. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results:not([data-keyboard]) > li.command-finder-option[aria-selected="true"] { background: transparent !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results[data-keyboard] > li.command-finder-option[aria-selected="true"] { margin: 0 -8px !important; padding: 0 8px !important; border-radius: 8px !important; box-shadow: none !important; }
+}
+
+/* S7: the account menu is a 240px desktop menu (ActionMenu width), radius 12 with the kit's popover shadow: who is signed
+ * in (15/600, then "Owner · Isla Verde Cafés" at 13 grey), a divider, 36px rows at 15/400 with a #F2F4F4 hover, a
+ * divider, and Sign out last. It fades in over 140ms with a 4px drop (none with reduced motion). */
+@media (min-width: 761px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu.nevora-action-menu-popover { box-sizing: border-box !important; padding: 4px !important; border: 0 !important; border-radius: 12px !important; background: #FFFFFF !important;
+    box-shadow: var(--c-shadow-pop, 0 0 0 1px rgb(16 24 32 / 0.06), 0 8px 24px -4px rgb(16 24 32 / 0.14)) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu > .mobile-workforce-sheet-close { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .portal-account-head { display: grid; gap: 2px; min-width: 0; padding: 12px; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .portal-account-head__name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #1A1C1E; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .portal-account-head__detail { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #6B7075; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .nevora-action-menu-divider { display: block !important; height: 1px !important; margin: 4px -4px !important; padding: 0 !important; border: 0 !important; background: #EDEEEF !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .nevora-action-menu-item { display: flex !important; align-items: center !important; box-sizing: border-box !important; width: 100% !important; min-height: 36px !important; height: 36px !important;
+    margin: 0 !important; padding: 0 12px !important; border: 0 !important; border-radius: 8px !important; background: transparent !important; box-shadow: none !important;
+    color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-align: left !important; text-decoration: none !important; cursor: pointer;
+    transition: background-color var(--c-dur-press, 120ms) ease-out; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .nevora-action-menu-item:is(:hover, :focus-visible) { background: #F2F4F4 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu .nevora-action-menu-item:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu form { margin: 0 !important; padding: 0 !important; }
+}
+@media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] #portal-account-menu:popover-open { animation: c-account-in 140ms ease-out both; }
+}
+@keyframes c-account-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* L1 (Owner) and M8 (Employee): a phone turned sideways keeps the phone system. A coarse pointer on a screen 500px tall or
+ * less is a phone, whatever its width: the phone header (wordmark with WORKFORCE, bell, avatar) in a 44px row, a 49px tab
+ * bar with the labels beside the icons, titles at 22/28, and the page as a 640px column centred between the safe areas.
+ * The tablet shell (sidebar, desktop top bar) therefore applies from 768px wide only on screens taller than that. */
+@media (pointer: coarse) and (max-height: 500px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .sidebar, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .c-rail-tip { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop][data-corp-root] .mobile-header { display: flex !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header {
+    position: sticky !important; top: 0 !important; z-index: 30 !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important;
+    box-sizing: content-box !important; width: auto !important; height: 44px !important; min-height: 44px !important; margin: 0 !important;
+    padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)) !important;
+    border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header > .brand.compact { display: inline-flex !important; order: 0 !important; align-items: center !important; width: auto !important; min-width: 0 !important; max-width: none !important;
+    height: 44px !important; min-height: 44px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-lockup { display: inline-flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important;
+    width: auto !important; max-width: none !important; margin: 0 !important; color: #0E1A3A !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 14px !important; max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-module { display: block !important; margin: 0 -2.4px 0 0 !important; padding: 0 !important; color: #6B7075 !important; opacity: 1 !important;
+    font: 600 9px/12px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 2.4px !important; text-transform: uppercase !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 0 0 auto !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .portal-notification-bell { display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important;
+    margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important; background: none !important; box-shadow: none !important; color: #1A1C1E !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .portal-notification-bell svg { position: static !important; width: 22px !important; height: 22px !important; color: #1A1C1E !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .c-top-avatar { display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; border-radius: 22px !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .c-top-avatar > span { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; border-radius: 16px !important;
+    background: #EDEEEF !important; color: #4A4F54 !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 40 !important; display: grid !important;
+    grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; align-items: stretch !important; gap: 0 !important; box-sizing: content-box !important; height: 49px !important; min-height: 0 !important; margin: 0 !important;
+    padding: 0 max(16px, env(safe-area-inset-right, 0px)) var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)) !important;
+    border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 -1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 6px !important;
+    width: auto !important; min-width: 0 !important; max-width: none !important; height: 49px !important; min-height: 49px !important; margin: 0 !important; padding: 0 4px !important; border: 0 !important; border-radius: 0 !important;
+    background: none !important; box-shadow: none !important; color: #6B7075 !important; font: 500 11px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link svg { flex: none !important; width: 22px !important; height: 22px !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link span { display: block !important; margin: 0 !important; color: inherit !important; font: inherit !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link.active, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) { color: #0B6E69 !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) { color: #6B7075 !important; font-weight: 500 !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame { box-sizing: content-box !important; width: auto !important; max-width: 672px !important; margin: 0 auto !important;
+    padding: 0 max(0px, calc(env(safe-area-inset-right, 0px) - 16px)) calc(49px + 16px + var(--q-safe-bottom, env(safe-area-inset-bottom, 0px))) max(0px, calc(env(safe-area-inset-left, 0px) - 16px)) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame :is(.c-title h1, .c-skel__title, .q-hd h1, .nv-pageband h1, .nv-masthead__title) { font-size: 22px !important; line-height: 28px !important; letter-spacing: -.3px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-title__row { min-height: 28px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-title__actions { margin-block: -8px !important; }
+}
+/* Sideways phones 768px wide or more: the tablet frame's page rules step back to the phone's 16px insets, a 12px gap above
+ * a tab page's title, and the shell's header on pushed pages too (the page's own "‹ Section" link leads back). */
+@media (pointer: coarse) and (max-height: 500px) and (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header { display: flex !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel) { width: auto !important; max-width: none !important; margin: 0 !important; padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 24px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .q-page:not(.q-sheet) { width: auto !important; max-width: none !important; margin: 0 !important; padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 24px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop][data-corp-root] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel, .q-page:not(.q-sheet)) { padding-top: 12px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame > .section-tabs { max-width: none !important; margin: 0 !important; padding-left: 16px !important; padding-right: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav:not(.c-nav--phone) > .c-nav__title { font-size: 22px !important; line-height: 28px !important; letter-spacing: -.3px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav:not(.c-nav--phone) > .c-nav__back, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav--phone:has(> .c-nav__back) { left: 8px !important; }
+}

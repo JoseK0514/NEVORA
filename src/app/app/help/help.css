@@ -1,0 +1,13 @@
+/* In-app Help (Nov 1 upscale, kit consistency 9): kit cards and rows; a question opens its answer in place. */
+:is(#c-root, html) .c-help .c-help__q > summary { list-style: none; }
+:is(#c-root, html) .c-help .c-help__q > summary::-webkit-details-marker { display: none; }
+:is(#c-root, html) .c-help .c-help__q > summary > .c-chev { transition: transform var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)); }
+:is(#c-root, html) .c-help .c-help__q[open] > summary > .c-chev { transform: rotate(90deg); }
+:is(#c-root, html) .c-help .c-rows > li + li .c-help__q > summary { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-help .c-help__a { display: flex; flex-direction: column; gap: 8px; padding: 0 16px 16px; font-size: 15px; line-height: 22px; color: var(--c-ink2); }
+:is(#c-root, html) .c-help .c-help__a :is(p, ul) { margin: 0; }
+:is(#c-root, html) .c-help .c-help__a ul { padding-left: 20px; list-style: disc; }
+:is(#c-root, html) .c-help .c-help__a a { color: var(--c-teal); font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }
+:is(#c-root, html) .c-help .c-help__a strong { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-help .c-help__note { margin: 0; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-help .c-help__q > summary > .c-chev { transition: none; } }

@@ -102,6 +102,13 @@ describe("passkeys with real signed WebAuthn messages and owned PostgreSQL", () 
     const token = flow(), options = await service.loginOptions(token);
     await expect(service.login(token, device.authenticate(options.challenge, handle))).rejects.toMatchObject({ code: "rate_limited" });
   });
+  it("lets far more than 300 different people sign in within one 15-minute window", async () => {
+    // The platform-wide cap bounds stored rows; one person's attempts can no longer block everyone else.
+    for (let i = 0; i < 320; i++) expect(await consumeLoginAttempt(`crowd-${i}`, db.executor)).toBe(true);
+    for (let i = 0; i < 10; i++) await consumeLoginAttempt("crowd-0", db.executor);
+    expect(await consumeLoginAttempt("crowd-0", db.executor)).toBe(false);
+    expect(await consumeLoginAttempt("crowd-late", db.executor)).toBe(true);
+  });
   it("requires a current session to register or manage passkeys", async () => {
     await q("DELETE FROM employee_sessions WHERE token_hash=repeat('a',64)");
     await expect(service.registrationOptions(proof, flow())).rejects.toMatchObject({ code: "not_found" });

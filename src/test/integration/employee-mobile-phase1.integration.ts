@@ -68,8 +68,8 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
      const r=el.getBoundingClientRect();
      const privateTextPresent=/Main Office|, Alex/.test(el.textContent??'');
      const privateAttributePresent=[el,...el.querySelectorAll('*')].some(node=>[...node.attributes].some(attribute=>/Main Office/.test(attribute.value)));
-     // Corporate Home's private parts: the shift facts and its status pill, Upcoming shifts, Things to do and the read time.
-     const privateSectionCount=el.querySelectorAll('#home-shift .c-big,#home-shift .c-ehome__where,#home-shift .c-pill,#home-upcoming,#employee-home-todo,[data-home-updated],a[href*="shift="]').length;
+     // Corporate Home's private parts: the shift facts, its status pill and tablet line, Coming up (#home-upcoming), Things to do and the read time.
+     const privateSectionCount=el.querySelectorAll('#home-shift .c-big,#home-shift .c-ehome__where,#home-shift .c-pill,#home-shift .c-ehome__clockin,#home-upcoming,#employee-home-todo,[data-home-updated],a[href*="shift="]').length;
      return {visible:r.width>0&&r.height>0,hiddenByAncestor,privateTextPresent,privateAttributePresent,privateSectionCount};
     }));
     // Save booleans/counts only; a hidden framework-retained root cannot exempt private content.
@@ -78,7 +78,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
     expect(homeRoots.filter(row=>!row.visible).every(row=>row.hiddenByAncestor)).toBe(true);
     expect(homeRoots.every(row=>!row.privateTextPresent&&!row.privateAttributePresent&&row.privateSectionCount===0)).toBe(true);
     expect((await page.locator('.c-ehome').allTextContents()).join('\n')).not.toContain('Main Office');
-    expect(await page.getByRole('link',{name:'View shift',exact:true}).count()).toBe(0);
+    expect(await page.getByRole('link',{name:'Shift details',exact:true}).count()).toBe(0);
    };
 
    const clearance=async()=>{await page.waitForFunction(()=>{const shell=document.querySelector<HTMLElement>('[data-employee-mobile]'),nav=document.querySelector('.mobile-nav');return shell&&nav&&Math.abs(Number.parseFloat(shell.style.getPropertyValue('--em-nav-height'))-nav.getBoundingClientRect().height)<=1;});await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));const last=await page.locator('#main-content :is(a,button,summary):visible').last().boundingBox(),nav=await page.locator('.mobile-nav').boundingBox();expect(last&&nav&&last.y+last.height<=nav.y+1).toBe(true);await page.evaluate(()=>window.scrollTo(0,0));};
@@ -86,14 +86,15 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
    const shot=async(name:string)=>{const file=`${evidence}/${engine}-${name}.png`;await page.screenshot({path:file,fullPage:false,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
    // Release 1 corporate Employee pages (boards C-Employee, G-E-Schedule, E-More): Home's shift card, the Schedule week card
    // and its Confirmed pill. Clock-in is tablet-only, so Home has no phone clock panel; recorded time lives on the Time tab.
-   const homeShift=()=>page.locator('.c-ehome:visible #home-shift'),viewShift=()=>homeShift().getByRole('link',{name:'View shift',exact:true});
+   const homeShift=()=>page.locator('.c-ehome:visible #home-shift'),viewShift=()=>homeShift().locator('.c-card__foot').getByRole('link',{name:'Shift details',exact:true});
    const confirmedWeek=()=>page.locator('.c-esched:visible [aria-label="Week"] .c-pill').filter({hasText:/^Confirmed$/});
    const forwardKey=engine==='webkit'&&process.platform==='darwin'?'Alt+Tab':'Tab';
    await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill(actor);await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:'Sign in',exact:true}).click();await page.waitForURL(app.url+'/app');await ready();
    await page.getByRole('heading',{name:'Welcome back, Alex',exact:true,level:1}).waitFor();expect(await page.locator('[data-employee-mobile="true"]').count()).toBe(1);
    expect(await page.locator('.mobile-nav a').allTextContents()).toEqual(['Home','Schedule','Time','Requests']);
    expect(await page.getByRole('link',{name:'Add shift',exact:true}).count()).toBe(0);record('Real password/session Home uses the Employee-only tab bar (Home, Schedule, Time, Requests; Pay stays off without payroll)');
-   await viewShift().waitFor();expect((await homeShift().innerText()).replace(/\s+/g,' ')).toContain('On shift now');expect(await homeShift().innerText()).toContain('Clock in on the Main Office tablet.');
+   await viewShift().waitFor();expect((await homeShift().innerText()).replace(/\s+/g,' ')).toContain('On shift now');expect(await homeShift().locator('.c-card__foot .c-ehome__clockin').innerText()).toBe('Clock in on the Main Office tablet');
+   /* Upscale M7: the next shifts after the card are "Coming up" (same #home-upcoming card); the old label is gone. */expect(await page.getByText('Upcoming shifts',{exact:true}).count()).toBe(0);if(await page.locator('.c-ehome:visible #home-upcoming').count())expect(await page.locator('.c-ehome:visible #home-upcoming-label').innerText()).toBe('Coming up');
    expect(await page.locator('.c-ehome:visible').getByRole('button',{name:/clock (in|out)/i}).count()).toBe(0);expect(await page.locator('.c-ehome:visible').innerText()).not.toMatch(/clocked in|on the clock/i);
    record('A planned active shift points to the location tablet and neither claims nor offers a phone clock-in');await shot('home-390-light');
    await page.goto(app.url+'/app/more');await page.getByRole('heading',{name:'More',exact:true}).waitFor();await shot('more-root-header');
@@ -101,7 +102,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
    const pushed=async(back:string,href:string)=>{expect(await page.locator('.mobile-header .brand:visible').count()).toBe(0);expect(await page.locator('main .c-nav:visible').getByRole('link',{name:back,exact:true}).getAttribute('href')).toBe(href);expect(await page.locator('.mobile-nav').isVisible()).toBe(true);};
    await pushed('Home','/app');expect(await page.locator('[data-employee-mobile-chrome="root"]').count()).toBe(1);
    expect(await page.locator('.c-more').getByRole('link',{name:'Add shifts to your calendar',exact:true}).getAttribute('href')).toBe('/app/profile/calendar');
-   await page.goto(app.url+'/app/my-time');await page.locator('.c-hours[data-hours-state="ready"]').waitFor();expect((await page.locator('#hours-now').innerText()).replace(/\s+/g,' ')).toContain('Not clocked in');expect(await page.locator('#hours-now .c-pill').innerText()).toBe('Off the clock');
+   await page.goto(app.url+'/app/my-time');await page.locator('.c-hours[data-hours-state="ready"]').waitFor();expect((await page.locator('#hours-now').innerText()).replace(/\s+/g,' ')).toContain('Not clocked in');expect(await page.locator('#hours-now-label').innerText()).toBe('Right now');expect(await page.locator('#hours-now .c-pill').count()).toBe(0);expect(await page.locator('#hours-now .c-line2').innerText()).toMatch(/^Clock in on the (.+ tablet|tablet where you work)\.$/);
    record('Recorded time is read independently on Time; the planned active shift does not fabricate a clock-in');
    await page.goto(app.url+'/app/my-time?view=cards');await page.getByRole('heading',{name:'Past timecards',exact:true}).waitFor();await pushed('Time','/app/my-time');expect(await page.locator('[data-employee-mobile-chrome="root"]').count()).toBe(1);
    await page.goto(app.url+'/app/my-time?entry=missing-owned-entry');await page.getByRole('heading',{name:'Time entry',exact:true}).waitFor();await pushed('Time','/app/my-time#hours-entry-missing-owned-entry');expect(await page.locator('[data-employee-mobile-chrome="detail"]').count()).toBe(1);
@@ -126,22 +127,23 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
    for(const theme of ['light','dark'])for(const width of [320,390,430]){
     await page.emulateMedia({colorScheme:theme as 'light'|'dark'});await page.evaluate((choice:string)=>{localStorage.setItem('nv-theme',choice);(window as Window&{__nvApplyTheme?:()=>void}).__nvApplyTheme?.();},theme);expect(await page.locator('html').getAttribute('data-theme')).toBe(theme);await page.setViewportSize({width,height:844});
     for(const path of ['/app','/app/schedule?week='+f.week,'/app/more']){
-     await load(path);if(path==='/app'){await ready();await viewShift().waitFor();const measured=await viewShift().evaluate(measureRenderedContrast);expect(measured.ratio).toBeGreaterThanOrEqual(4.5);controlContrast.push({engine,theme,width,control:'View shift',ratio:measured.ratio});}
-     expect(await page.locator('.mobile-header .brand').isVisible()).toBe(path!=='/app/more');expect(await page.locator('.mobile-header .e5-new').isVisible()).toBe(false);
+     await load(path);if(path==='/app'){await ready();await viewShift().waitFor();const measured=await viewShift().evaluate(measureRenderedContrast);expect(measured.ratio).toBeGreaterThanOrEqual(4.5);controlContrast.push({engine,theme,width,control:'Shift details',ratio:measured.ratio});}
+     expect(await page.locator('.mobile-header .brand').isVisible()).toBe(path!=='/app/more');expect(await page.locator('.e5-new').count()).toBe(0);
      expect(await page.locator('[data-employee-mobile]').evaluate((el:HTMLElement)=>getComputedStyle(el).getPropertyValue('--em-canvas').trim().toLowerCase())).toBe('#f5f6f6');expect(await page.locator('.c-ehome:visible,.c-esched:visible,.c-more:visible').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor)).toBe('rgb(245, 246, 246)');expect(await page.locator('.c-ehome:visible,.c-esched:visible,.c-more:visible').evaluate((el:HTMLElement)=>getComputedStyle(el).color)).toBe('rgb(26, 28, 30)');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
      if(path==='/app/more'){expect(await page.locator('.page-frame').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor)).toMatch(/^rgb\(245, 246, 246\)$|^rgba\(0, 0, 0, 0\)$/);expect(await page.locator('.app-main').evaluate((el:HTMLElement)=>getComputedStyle(el).backgroundColor)).toBe('rgb(245, 246, 246)');await page.evaluate(()=>scrollTo(0,document.documentElement.scrollHeight));await shot('more-end-'+theme+'-'+width);await page.evaluate(()=>scrollTo(0,0));}
      if(path==='/app'){
-      // Board C-Employee: one white shift card with its 1px ring, the label and a status pill in its header, the time, where,
-      // one View shift link to the exact own shift and the tablet note.
+      // Board C-Employee (Nov 1 upscale S4): one white shift card with its 1px ring, the label and a status pill in its header, the
+      // time and where as the body link to the exact own shift (out of the tab order), and a footer with the tablet note and
+      // the one tabbable "Shift details" link to the same shift.
       await homeShift().scrollIntoViewIfNeeded();await shot('shift-card-'+theme+'-'+width);
-      const surface=await homeShift().evaluate((el:HTMLElement)=>({background:getComputedStyle(el).backgroundColor,ring:getComputedStyle(el).boxShadow,label:el.querySelector('#home-shift-label')?.textContent,pill:el.querySelectorAll('.c-card__aside .c-pill').length,where:el.querySelector('.c-ehome__where')?.textContent,views:[...el.querySelectorAll('a')].map(a=>a.getAttribute('href')),note:el.querySelector('.c-note')?.textContent}));
-      expect(surface.background).toBe('rgb(255, 255, 255)');expect(surface.ring).toMatch(/1px/);expect(surface.label).toBe('On shift now');expect(surface.pill).toBe(1);expect(surface.where).toBe('Customer Support · Main Office');expect(surface.views).toHaveLength(1);expect(surface.views[0]).toContain('shift=em-own-today');expect(surface.note).toBe('Clock in on the Main Office tablet.');
+      const surface=await homeShift().evaluate((el:HTMLElement)=>({background:getComputedStyle(el).backgroundColor,ring:getComputedStyle(el).boxShadow,label:el.querySelector('#home-shift-label')?.textContent,pill:el.querySelectorAll('.c-card__aside .c-pill').length,where:el.querySelector('.c-ehome__where')?.textContent,views:[...el.querySelectorAll('a')].map(a=>a.getAttribute('href')),tabbable:[...el.querySelectorAll('a')].filter(a=>a.getAttribute('tabindex')!=='-1').map(a=>a.textContent?.trim()),bodyLink:el.querySelector(':scope > a.c-card__body')?.getAttribute('tabindex'),note:el.querySelector('.c-card__foot .c-ehome__clockin')?.textContent}));
+      expect(surface.background).toBe('rgb(255, 255, 255)');expect(surface.ring).toMatch(/1px/);expect(surface.label).toBe('On shift now');expect(surface.pill).toBe(1);expect(surface.where).toBe('Customer Support · Main Office');expect(surface.views).toHaveLength(2);expect(surface.views.every((href:string|null)=>href===surface.views[0]&&!!href?.includes('shift=em-own-today'))).toBe(true);expect(surface.tabbable).toEqual(['Shift details']);expect(surface.bodyLink).toBe('-1');expect(surface.note).toBe('Clock in on the Main Office tablet');
      }
      // Seven 44px days need 308px; a 320px phone's week card has 280px, so there the days are checked to take their full
      // equal share (about 40px wide, 44px+ tall, no gaps) and the limit is recorded (reported to Jose; WCAG 2.5.8 is met).
      if(path.startsWith('/app/schedule')&&width<340){const strip=await page.locator('.c-esched:visible .c-esched__days').evaluate((nav:HTMLElement)=>{const style=getComputedStyle(nav),inner=nav.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight),cells=[...nav.querySelectorAll('a')].map(a=>a.getBoundingClientRect());return {inner,widths:cells.map(r=>r.width),heights:cells.map(r=>r.height),gaps:cells.slice(1).map((r,i)=>r.left-cells[i].right)};});stripLimits.push({engine,theme,width,...strip});expect(strip.widths).toHaveLength(7);expect(strip.widths.every((w:number)=>w>=strip.inner/7-.5&&w>=39.5)).toBe(true);expect(strip.heights.every((h:number)=>h>=43.5)).toBe(true);expect(strip.gaps.every((g:number)=>Math.abs(g)<=.5)).toBe(true);}
-     const bad=await page.locator('.mobile-nav a,.c-esched:visible .c-esched__arrows a,'+(width<340?'':'.c-esched:visible .c-esched__days a,')+'.c-esched:visible .c-title__actions a,.c-esched:visible .c-esched__confirm :is(a,button),#home-shift a,.c-more:visible :is(a,button)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));expect(bad).toEqual([]);
-     const contrastTargets=path==='/app'?'.c-ehome:visible #home-shift :is(.c-card__label,.c-pill,.c-big,.c-ehome__where,.c-btn,.c-note):visible':path==='/app/more'?'.c-more:visible .c-nav__title,.c-more:visible .c-card__label,.c-more:visible .c-row__title,.c-more:visible .c-row__detail':'.c-esched:visible .c-title__sub,.c-esched:visible .c-esched__range,.c-esched:visible .c-esched__days a b,.c-esched:visible .c-esched__days a small,.c-esched:visible #my-agenda .c-row__title,.c-esched:visible #my-agenda .c-row__detail > span:first-child';
+     const bad=await page.locator('.mobile-nav a,.c-esched:visible .c-esched__arrows a,'+(width<340?'':'.c-esched:visible .c-esched__days a,')+'.c-esched:visible .c-title__actions a,.c-esched:visible .c-esched__confirm :is(a,button),.c-esched:visible .c-card[aria-label="Open shifts"] a,#home-shift a,.c-more:visible :is(a,button)').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length&&(el.getBoundingClientRect().width<43.5||el.getBoundingClientRect().height<43.5)).map(el=>({text:el.textContent,width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height})));expect(bad).toEqual([]);
+     const contrastTargets=path==='/app'?'.c-ehome:visible #home-shift :is(.c-card__label,.c-pill,.c-big,.c-ehome__where,.c-ehome__clockin,.c-card__foot .c-link):visible':path==='/app/more'?'.c-more:visible .c-nav__title,.c-more:visible .c-card__label,.c-more:visible .c-row__title,.c-more:visible .c-row__detail':'.c-esched:visible .c-title__sub,.c-esched:visible .c-esched__range,.c-esched:visible .c-esched__days a b,.c-esched:visible .c-esched__days a small,.c-esched:visible #my-agenda .c-row__title,.c-esched:visible #my-agenda .c-row__detail > span:first-child';
      const targets=await page.locator(contrastTargets).all();expect(targets.length).toBeGreaterThan(3);for(const el of targets)expect((await el.evaluate(measureRenderedContrast)).ratio).toBeGreaterThanOrEqual(4.5);await clearance();
     }
    }
@@ -158,7 +160,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
    await page.waitForFunction(()=>getComputedStyle(document.documentElement).fontSize==='32px'&&document.documentElement.getAttribute('data-text-step')==='200');
    expect(await page.evaluate(()=>getComputedStyle(document.documentElement).fontSize)).toBe('32px');
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-   const clippedDayText=(await page.locator('.c-ehome:visible #home-shift > :is(.c-card__head,.c-card__body)').evaluateAll((parts:HTMLElement[])=>parts.map(el=>{
+   const clippedDayText=(await page.locator('.c-ehome:visible #home-shift > :is(.c-card__head,.c-card__body,.c-card__foot)').evaluateAll((parts:HTMLElement[])=>parts.map(el=>{
     const box=el.getBoundingClientRect(),style=getComputedStyle(el),left=box.left+parseFloat(style.borderLeftWidth)+parseFloat(style.paddingLeft),right=box.right-parseFloat(style.borderRightWidth)-parseFloat(style.paddingRight),walker=document.createTreeWalker(el,NodeFilter.SHOW_TEXT),overflow:{tag:string;left:number;right:number}[]=[];
     for(let node=walker.nextNode();node;node=walker.nextNode()){
      const parent=node.parentElement;if(!parent||!node.textContent?.trim()||parent.closest('.nv-sr,.q-sr,[aria-hidden="true"]')||!parent.getClientRects().length||getComputedStyle(parent).visibility==='hidden')continue;
@@ -168,7 +170,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
    }))).flat();
    expect(clippedDayText).toEqual([]);const timeLink=viewShift();await timeLink.focus();await timeLink.scrollIntoViewIfNeeded();
    expect(await timeLink.evaluate((el:HTMLElement)=>{const rect=el.getBoundingClientRect(),nav=document.querySelector('.mobile-nav')!.getBoundingClientRect();return rect.height>=44&&rect.width>=44&&rect.bottom<=nav.top+1;})).toBe(true);
-   await shot('home-320-dark-request-text200');record('Home at 320px with a verified 32px root (200%) keeps every visible shift-card text range inside its content edges and View shift clear of navigation');
+   await shot('home-320-dark-request-text200');record('Home at 320px with a verified 32px root (200%) keeps every visible shift-card text range inside its content edges and Shift details clear of navigation');
    // The corporate kit sets its type in px (the boards' sizes), so a larger root no longer scales the More title; the page
    // still has to reflow without clipping or overflow at the enlarged root.
    await load('/app/more');await page.evaluate(()=>{document.documentElement.style.fontSize='200%';window.dispatchEvent(new Event('resize'));});await page.waitForFunction(()=>getComputedStyle(document.documentElement).fontSize==='32px'&&document.documentElement.dataset.textStep==='200');expect(await page.getByRole('heading',{name:'More',exact:true}).evaluate((el:HTMLElement)=>el.scrollWidth<=el.clientWidth+1&&el.getBoundingClientRect().width>0)).toBe(true);
@@ -205,7 +207,7 @@ it('integrates the Release 1 Employee phone Home and Schedule with real own read
     await q("DELETE FROM time_off_requests WHERE id LIKE 'em-mobile-cap-%'");record('Real source-cap partial state discloses limits while retaining independently authorized shift');
 
     await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','QAOWNER',0,$2,repeat('a',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['marketplace','timeOff','updates']}})]);
-    await load('/app/schedule?week='+f.week);expect(await page.getByRole('link',{name:/Open shifts/}).count()).toBe(0);
+    await load('/app/schedule?week='+f.week);expect(await page.getByRole('link',{name:/open shifts/i}).count()).toBe(0);
     await page.goto(app.url+'/app/exchange?tab=available');await page.locator('[data-module-off="marketplace"]').waitFor();expect(await page.getByRole('link',{name:'Turn it on in Settings',exact:true}).count()).toBe(0);
     await shot('module-off');await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','QAOWNER',1,$2,repeat('b',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:[]}})]);
     record('Owner-saved module-off policy hides employee options and refuses a direct module route without management controls');

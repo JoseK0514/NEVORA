@@ -1,15 +1,22 @@
-import Link from 'next/link';
-import {SignatureNotFound} from '@/components/signature/system-state';
-import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
+import type { Metadata } from "next";
+import { CorpButtonLink, CorpCard, CorpPage, CorpTitle } from "@/components/corp/corp";
+import { RootChrome } from "@/components/root-chrome";
+
+export const metadata: Metadata = { title: "Page not found" };
+
+/** Nov 1 upscale (kit consistency 9): a signed-in 404 stays inside the app. The shell keeps its header, sidebar and tab
+ * bar; the page has the kit's title and one card with the way back (Home is the page's one primary action). Any unknown
+ * /app address reaches it through app/app/[...missing]; a page that calls notFound() reaches it too. */
 export default function NotFound() {
- return <>
-  <div className="sg-sys-generic nv-page premium-error" data-nv-page="">
-   <PageBand title="There’s no page here" summary="The link may be old, or the page may have moved."/>
-   <KitStack><Card><CardBody><div className="premium-error__body">
-    <p className="premium-error__text">Check the address, or head back to Home.</p>
-    <div className="premium-error__actions"><Link className="nv-btn" data-kind="primary" href="/app">Back to Home</Link></div>
-   </div></CardBody></Card></KitStack>
-  </div>
-  <div className="sg-sys-employee"><SignatureNotFound/></div>
- </>;
+  return <CorpPage className="c-page--narrow c-notfound" labelledBy="not-found-title">
+    {/* QA D16: on a phone the 404 keeps a tab page's header (wordmark, bell, avatar) like the other top-level pages. */}
+    <RootChrome />
+    <CorpTitle id="not-found-title" title="This page doesn’t exist" />
+    <CorpCard as="div">
+      <div className="c-error-card">
+        <span className="c-error-card__body">The link may be old, or the page may have moved.</span>
+        <span className="c-error-card__action"><CorpButtonLink href="/app" prefetch={false}>Go to Home</CorpButtonLink></span>
+      </div>
+    </CorpCard>
+  </CorpPage>;
 }

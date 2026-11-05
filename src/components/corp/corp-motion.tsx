@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { rememberTitle } from "./corp-client";
 
 /* Owner premium, round 2 (R12): indicators that slide instead of jumping. Presentation only; nothing is read or written
  * but layout and CSS custom properties.
@@ -10,7 +11,9 @@ import { useEffect } from "react";
  *  - Segmented controls (CorpSegments): the thumb is pure CSS (--n, --i); here it only remembers where the thumb was, so a
  *    control that a page change remounts still slides from the old segment instead of appearing in place.
  * Each indicator is measured after layout, at most once a frame, and only when the page changed (a mount, a current item,
- * a size). The first time a row is seen it is placed without motion; under reduced motion the CSS has no transition. */
+ * a size). The first time a row is seen it is placed without motion; under reduced motion the CSS has no transition.
+ * Nov 1 upscale (kit consistency 8): it also notes each page's title, so that page's loading placeholder can show the real
+ * title next time (CorpSkeleton). */
 
 type Geometry = { x: number; y: number; w: number; h: number };
 const TABS = ".c-tabs, [data-c-tabs], .c-pay-tabs, .c-tc-tabs, .app-shell[data-nv-clean] .page-frame > .section-tabs .section-tabs-track";
@@ -77,7 +80,7 @@ export function CorpMotion() {
     const lastItem = new WeakMap<Element, Element>();
     const lastAt = new WeakMap<Element, Geometry>();
     const resizing = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => schedule(true));
-    let frame = 0, resized = false, retry = 0, retries = 0;
+    let frame = 0, resized = false, retry = 0, retries = 0, lastTitle = "";
 
     function slideRow(container: HTMLElement, vertical: boolean, kind: string) {
       const item = vertical ? container.querySelector<HTMLElement>(".nav-link.active") : container.querySelector<HTMLElement>(CURRENT);
@@ -130,6 +133,10 @@ export function CorpMotion() {
       if (sidebar && ready(sidebar)) slideRow(sidebar, true, "sidebar");
       for (const control of document.querySelectorAll<HTMLElement>(SEGMENTS)) if (ready(control)) slideSegments(control);
       resized = false;
+      const title = document.querySelector<HTMLElement>("main .c-page[data-nv-page]:not(.c-skel) :is(.c-title h1, h1.c-nav__title)");
+      const text = title?.textContent?.trim();
+      const noted = `${window.location.pathname}\n${text}`;
+      if (text && noted !== lastTitle && ready(title!)) { lastTitle = noted; rememberTitle(window.location.pathname, text); }
       // Look again while a streamed part waits for hydration, for a few seconds at most (a page change starts over).
       if (waiting && !retry && retries < 40) retry = window.setTimeout(() => { retry = 0; retries += 1; schedule(); }, 150);
     }

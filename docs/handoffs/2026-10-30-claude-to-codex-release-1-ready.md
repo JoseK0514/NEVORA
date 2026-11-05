@@ -1,8 +1,8 @@
 # Claude → Codex: NEVORA Release 1 is ready for inspection, then deploy
 
-Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), 2026-11-01 for the Owner premium upgrade (§1b), 2026-11-01 for Codex's four-surface inspection fixes (§1c), and 2026-11-01 evening for Codex's reliability audit and fresh local inspection (§1d). Branch: `claude-codex-collab-nevora`.
+Date: 2026-10-30, corrected 2026-10-31 after the independent inspection (Phase 8), 2026-11-01 for the Owner premium upgrade (§1b), 2026-11-01 for Codex's four-surface inspection fixes (§1c), 2026-11-01 evening for Codex's reliability audit and fresh local inspection (§1d), and 2026-11-04 for the upscale, PR #38 and the backup wording (§1e). Branch: `claude-codex-collab-nevora`.
 
-**Frozen code candidate: `9553e7288d9b0791d0ceacfd234a25058cf8d7ac`** (Nov 1 evening, after Codex's reliability audit and fresh local inspection). The full local gate (§4) passed on this exact SHA, and exact-head CI on draft PR #37 passed 18 of 18 check runs on the first attempt (run 41352435657). Commits after it on `claude-codex-collab-nevora` (this handoff, its gate summary and the inspection documents) change only `docs/`; check with `git diff --quiet 9553e7288d9b0791d0ceacfd234a25058cf8d7ac HEAD -- . ':(exclude)docs'`, which must succeed. Deploy that SHA, or the branch head Claude names with this handoff when that check passes. `83397510`, `2c443138`, `cdb92cea` and `7b14776a` are superseded; do not deploy them. Any later change outside `docs/` makes a new candidate.
+**Frozen code candidate: `f5fa463b111e263c9b863b16b6c2bca502571a7b`** (Nov 4: the Nov 1 upscale, PR #38 and the approved backup wording on top of `9553e728`; see §1e). The full local gate (§4) passed on this exact SHA, and exact-head CI passed on both draft PR #37 and PR #38 (runs 41912774814 and 41913069693, all jobs green). **Deploy exactly that SHA** (`git checkout f5fa463b111e263c9b863b16b6c2bca502571a7b`), not the branch head. Jose chose on Nov 5 to release this tested candidate. The commits on `claude-codex-collab-nevora` between it and this handoff (`5515f695` through `c64c3c28`: the company payroll summary PDF v2, test-harness timing fixes and CI mirror and timeout changes) are **Release 1.1**; they were never gated with this release and are not in it. `9553e728`, `83397510`, `2c443138`, `cdb92cea` and `7b14776a` are superseded; do not deploy them.
 
 **Deploy from that SHA only. Do not deploy from `development`:** since Oct 30 it also carries Codex's Owner AI work (migrations `0044_owner_advisor_notebook`, `0045_owner_coverage_actions`), which is not in Release 1. Git deployment is disabled (`vercel.json`); use the explicit Vercel deployment workflow from the frozen SHA (runbook §7). Whether collab is first merged to `main` is Jose's call; the deployed artifact must be built from the frozen SHA either way.
 
@@ -158,6 +158,30 @@ fail the same check where useful): `docs/handoffs/2026-11-01-claude-to-codex-rel
 
 No route, data shape, migration, permission or business rule changed in §1d.
 
+## 1e. Upscale, PR #38 and backup wording (Nov 4, Jose's go)
+
+Jose chose (Nov 4) to put the Nov 1 upscale into Release 1 instead of holding it for 1.1. `f5fa463b` is:
+- **Upscale** (`de9c604d`, 30 commits on `9553e728`): calmer Owner and Employee pages on the same kit (one count, label, row
+  and hover style; no icon tiles or pills on Employee rows), a clean collapsed rail, tablet and wide-screen frames, phone
+  landscape, ⌘K and the avatar menu, a non-modal Timecards panel beside the table, Past timecards capped at 8 earlier
+  weeks on screen, an in-app 404 and in-app Help (More → Help opens `/app/help`, the same Support content, instead of the
+  public `/support`), plus its own QA and contrast fixes. Presentation only.
+- **PR #38** (merged clean from collab `8b6cb55d`): pay statement template v2 (take-home first, plain-language sections),
+  sign-in limits (a shared store network counts only failed sign-ins; review fixes refund the admitted window and lock
+  refunds), account emails in English and Spanish, the D2 check fix for Monday/Tuesday overnight fixtures (`dafc3798`) and
+  `validate`'s 30-minute limit.
+- **Backup wording** (`f5fa463b`, Jose approved Nov 4): `BACKUP_EXPIRY` now describes the production database you set up
+  on Nov 1: a seven-day restore history plus separately kept recovery snapshots that are limited to their purpose, never
+  used to restore an account after deletion, and deleted once no longer needed. `POLICY_VERSION` is `2026-11-04`; the
+  effective date stays October 20, 2026. **Please set a deletion date for the Nov 1 setup snapshot
+  (`snap-snowy-pine-b7ma4ogj`)** so the wording stays true, and tell Claude the date.
+
+No migration, `db/` file or environment read changed since `9553e728` (`git diff 9553e728 f5fa463b -- db` is empty, and no
+`process.env` read was added), so your clean-database rehearsal and §2–§3 still apply. Server-side changes to look at:
+`src/app/login/actions.ts`, `src/lib/auth/login-limits*.ts`, `src/lib/auth/account-email-copy.ts`,
+`src/lib/auth/invitations/delivery.server.ts`, `src/lib/auth/recovery-delivery.server.ts` and
+`src/lib/payroll/native/paystub-document.ts` (template v2).
+
 ## 2. Migrations
 
 - **Release 1 is the first production release of this line.** Codex's read-only preflight (Oct 31, `docs/handoffs/2026-10-31-codex-to-claude-release-1-preflight.md` in Codex's workspace) found production's catalog (Neon `rough-fire-63258908`, main branch, us-east-1) structurally identical to an owned local database built from `0001`–`0004`, with no migration ledger. Reconcile again at cutover, by **object presence, not filename prefix** (prefixes repeat, and other lines have used `0043`/`0044` for different files: check `SELECT to_regclass('public.schedule_pending_edits')` for this release's 0043).
@@ -189,11 +213,44 @@ As the runbook table, plus the values below. No env read was added since 9fe8968
 | Push, passkeys | as their own approvals say |
 | Company updates | nothing to set (see 1.4) |
 
-- **Region:** the privacy policy says servers are in Northern Virginia (`src/lib/legal/policies.ts:21`). Codex's preflight found production Neon main in us-east-1 (matches) and only a cancelled historical Vercel Production deployment in iad1; the final deployment's function region and `DATABASE_URL` binding are still to verify. Don't carry over the fictional Preview's pdx1/us-west-2 setting. Production env values are hidden from the connector and remain unverified against the table above.
+- **Region:** the privacy policy says servers are in Northern Virginia (`src/lib/legal/policies.ts:22`). Codex's preflight found production Neon main in us-east-1 (matches) and only a cancelled historical Vercel Production deployment in iad1; the final deployment's function region and `DATABASE_URL` binding are still to verify. Don't carry over the fictional Preview's pdx1/us-west-2 setting. Production env values are hidden from the connector and remain unverified against the table above.
 
 ## 4. Evidence on the release SHA (owned local Postgres, fictional data, `DATABASE_URL` unset)
 
-### Gate on the release candidate (Nov 1 evening)
+### Gate on the release candidate (Nov 4)
+
+The full gate ran in one ordered pass on `f5fa463b111e263c9b863b16b6c2bca502571a7b` (Nov 4, 13:09–15:55 AST), clean tree
+throughout, with the same 70 steps and checks as Nov 1 (rebuilt from the Nov 1 script after a reboot cleared it; nothing
+removed or loosened). 66 of 70 passed on the first pass. The four that failed were WebKit-only, under machine load
+(load average up to 56): the Profile file (carried by the profile, calendar and passkeys configs) once on a WebKit
+"access control checks" report for the bell's `/api/notifications` read as More → Help navigated, and twice on its
+calendar-read idle wait; hours once on the same WebKit report for `/api/employee/time-corrections`. Chromium and Firefox
+passed every time. Rerun alone on the same SHA with unchanged tests: profile 185/185, calendar 256/256, then hours 71/71
+and passkeys 295/295 (a first rerun of hours and passkeys failed once each on a different WebKit load report, Responses'
+"Load failed" and the same idle wait, and passed on the next run). Summary: `docs/handoffs/2026-11-04-release-1-gate-summary.txt`.
+
+Exact-head CI on `f5fa463b`: runs 41912774814 (PR #38) and 41913069693 (PR #37) both green on the second attempt (the first attempt of one failed Phase E Calendar, a WebKit timing flake; no change between attempts). Codex's clean-database rehearsal still applies: `git diff 83397510 f5fa463b -- db` is empty.
+
+| Step | Result |
+|---|---|
+| Typecheck, lint, audit (prod and all), advisor pilot, release build | pass |
+| CI-only checks: inspection custody (19), notifications/foundation config (6 + 8), release engineering (169) | pass |
+| Unit | 10,514 passed, 801 skipped |
+| Migrations; release Postgres; advisor integration | 11; 746 (284 + 46 + 176 + 163 + 77); 38 |
+| Clocker shards 1–4 | 147 + 132 + 151 + 142 = 572 |
+| Phase E startup and SQL | pass; 23 |
+| 22 owned database integration configs | all pass |
+| Advisor browser; attendance UI; Phase D browser; remediation; D2 corrections UI | pass; 48; 207 checks 0 errors; 6; 282 |
+| Home held response; Phase E Home, Communications, Calendar, Navigation, Attention | pass; 14 of 14 cells each |
+| Clocker iPad UI; breaks UI; punch UI | pass; 46; 90 |
+| Mobile Access; Owner Things to do | 3; 1 |
+| Employee phone configs | phase 1: 1; requests 39; planning 58; creation 48; responses 44; communications 178; hours 71; profile 185; calendar 256; pay 1; closure 1; deletion 15; device alerts 374; passkeys 295 |
+
+**Planned for 1.1:** WebKit reports a same-origin read cancelled by navigation as an uncaught "access control checks"
+page error; the Profile suite counts every page error as fatal, so it fails under load. Either the bell's snapshot read
+should settle silently when the page leaves, or the suite should classify exactly that event, as `448e7af1` did for D2.
+
+### Gate on the earlier candidate `9553e728` (Nov 1 evening): history
 
 The full gate ran in one ordered pass on `9553e7288d9b0791d0ceacfd234a25058cf8d7ac` (Nov 1, 15:05–17:25 AST), clean tree
 throughout: 70 of 70 steps. `B-phase-e-home` first exited 1 after all 14 cells passed, with "Owned resource cleanup could

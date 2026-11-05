@@ -60,7 +60,7 @@ export default async function RequestsPage({
   const listHref = view === "decided" ? "/app/requests?filter=decided" : "/app/requests";
 
   const proof = await requireSessionMutationProof();
-  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk">
+  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow">
     <CorpNav back={{ href: "/app/requests/hub", label: "Requests" }} title="Time off" phoneOnly />
     <CorpTitle title="Time off" wide />
     {status ? <CorpNote><span role="status">{status}</span></CorpNote> : null}

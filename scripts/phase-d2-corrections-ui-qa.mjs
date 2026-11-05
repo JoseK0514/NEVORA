@@ -155,8 +155,13 @@ try{
   assert.equal(await correctionForm.getByRole('radio',{checked:true}).count(),1,'The day being fixed is chosen under What to fix');
   for(const label of ['Day','Start','End','Note (required)'])await correctionForm.getByLabel(label,{exact:true}).waitFor();
   assert.equal((await fixValues(ep)).startTime,clockText(proposedStart),'Start defaults to the recorded time');
+  // Nov 1 upscale (S14 and the Fix my time copy): empty time fields say "Choose"; Send stays grey (aria-disabled, still
+  // pressable) until the fix is complete, then reads as ready.
+  for(const label of ['Start','End'])assert.equal(await correctionForm.getByLabel(label,{exact:true}).getAttribute('placeholder'),'Choose',label+' placeholder');
+  assert.equal(await sendFix(ep).getAttribute('aria-disabled'),'true','Send waits for a complete fix (the Note is still empty)');
   await correctionForm.getByLabel('End',{exact:true}).fill(clockText(proposedEnd));
   await correctionForm.getByLabel('Note (required)',{exact:true}).fill('Fictional D2 browser correction review.');
+  assert.equal(await sendFix(ep).getAttribute('aria-disabled'),null,'Send is ready once the fix is complete');
   checked(engine+': employee correction form expands with labeled controls');
 
   // The sheet is the same page at every width.

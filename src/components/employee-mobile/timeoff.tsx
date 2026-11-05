@@ -61,7 +61,8 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
        <PickField id="tof-start" name="startTime" type="time" label="Start" value={draft.startTime} {...fieldError('startTime')} onChange={v=>{setDraft(d=>({...d,startTime:v}));setError(null);}}/>
        <PickField id="tof-end" name="endTime" type="time" label="End" value={draft.endTime==='24:00'?'00:00':draft.endTime} {...fieldError('endTime')} onChange={v=>{setDraft(d=>({...d,endTime:v==='00:00'?'24:00':v}));setError(null);}}/>
       </div>
-      <p className="c-field__help">An end time of 12:00 AM means midnight at the end of this day.</p>
+      {/* Upscale S13: the midnight hint only when End is 12:00 AM. */}
+      {draft.endTime==='24:00'?<p className="c-field__help tof-midnight">An end time of 12:00 AM means midnight at the end of this day.</p>:null}
      </>:<div className="tof-row">
       <PickField id="tof-from" name="startDate" type="date" label="From" value={draft.startDate} {...fieldError('startDate')} onChange={v=>{setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate<v?v:d.endDate}));setError(null);}}/>
       <PickField id="tof-to" name="endDate" type="date" label="To" value={draft.endDate} min={draft.startDate||undefined} {...fieldError('endDate')} onChange={v=>{setDraft(d=>({...d,endDate:v}));setError(null);}}/>
@@ -71,7 +72,8 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     {error?<p id={errorId} className="c-error" role="alert">{error.message}</p>:null}
     <p className="c-note">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
     <PlanningFeedback operation={operation} onRetry={retry}/>
-    <button className="c-btn c-btn--full" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></form>
+    {/* Upscale M2: Send is pinned in the sheet's footer (hairline above, safe area below). */}
+    <div className="tof-foot"><button className="c-btn c-btn--full" type="submit" disabled={locked||!read.enabled}>{pending?'Sending…':'Send request'}</button></div></form>
    :isList?<>
     <nav className="c-seg" aria-label="Time-off requests"><Link href="/app/requests" aria-current={filter!=='decided'?'page':undefined}>Waiting</Link><Link href="/app/requests?filter=decided" aria-current={filter==='decided'?'page':undefined}>Decided</Link></nav>
     <section className="c-card" aria-label={filter==='decided'?'Decided requests':'Waiting requests'}>{shown.length?<ul className="c-rows">{shown.map(r=><TimeOffListRow key={r.id} id={'timeoff-'+r.id} request={r} href={'/app/requests?requestId='+encodeURIComponent(r.id)+(filter==='decided'?'&filter=decided':'')}/>)}</ul>

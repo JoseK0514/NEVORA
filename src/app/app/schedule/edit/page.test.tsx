@@ -38,15 +38,20 @@ it("retains the editable assignment, notes, lead, and shift identity and restric
   expect(html).toContain('value="support" selected=""');
   expect(html).toContain("Opening team</textarea>");
   // Board O-EditShift: Cancel · Edit shift · Save; the lead is a switch; the location is shown as it is (it can't change).
-  expect(html).toContain('>Cancel</a><h1 class="c-shift__title">Edit shift</h1><button type="submit" form="edit-shift-form"');
+  // Nov 1 upscale: the title carries the shift's day (its state when the read has it) as a subtitle, not a pill.
+  expect(html).toContain('>Cancel</a><span class="c-shift__titles"><h1 class="c-shift__title">Edit shift</h1><span class="c-shift__sub">Wed, Oct 14</span></span><button type="submit" form="edit-shift-form"');
+  expect(html).not.toContain("c-pill");
   expect(html).toMatch(/<input type="checkbox" role="switch" class="c-switch" name="isDesignatedLead" checked=""/);
   const location=html.match(/<input id="edit-shift-form-location"[^>]*>/)![0];
   expect(location).toContain('class="c-in c-shift__fixed"');expect(location).toContain('value="main"');expect(location).toMatch(/readonly=""/i);expect(location).not.toContain('name=');
   expect(html).not.toContain('name="locationId"');
-  // Delete is its own form after the edit form (never nested in it): a red-outline Delete shift that asks before deleting.
+  // Delete is its own form after the edit form (never nested in it): a red text row in its own card that asks before deleting.
   expect(html.match(/<form/g)).toHaveLength(2);
   expect(html.indexOf('>Delete shift</button>')).toBeGreaterThan(html.indexOf('Save changes'));
-  expect(html).toContain('class="c-btn c-btn--danger c-btn--full" aria-expanded="false">Delete shift</button>');
+  expect(html).toContain('class="c-shift__delete-row" aria-expanded="false">Delete shift</button>');
+  // The Lead role is on hold: the switch stays (the data is kept) and its line names Owners and Managers only.
+  expect(html).toContain("Owners and Managers can lead a shift");
+  expect(html).not.toContain("and Leads can lead");
   expect(html).toContain('/app/schedule?week=2026-10-12');
   // W2: Cancel returns to this shift's location, day and person.
   expect(html).toContain('href="/app/schedule?week=2026-10-12&amp;location=main&amp;day=2026-10-14#schedule-employee-AVERY"');
@@ -118,9 +123,11 @@ it('says a published shift with a held edit is Not published and what it was; a 
  const {default:Page}=await import('./page');
  const html=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})})).replace(/\u00a0/g,' ');
  expect(held.read).toHaveBeenCalledWith(expect.anything(),{weekStart:'2026-10-12'});
- expect(html).toContain('>Not published</span><span class="c-shift__was">Was 12:00 PM – 8:00 PM</span>');
+ // Nov 1 upscale: the state is the title's subtitle (amber text, no pill); what it was stays above the fields.
+ expect(html).toContain('<span class="c-shift__sub"><span data-tone="amber">Not published</span> · Wed, Oct 14</span>');
+ expect(html).toContain('<p class="c-shift__state"><span class="c-shift__was">Was 12:00 PM – 8:00 PM</span></p>');
  held.read.mockResolvedValue({state:'ready',data:{changedShiftIds:[],changes:[]}});
- expect(renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}))).toContain('c-pill--neutral">Published</span>');
+ expect(renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}))).toContain('<span class="c-shift__sub"><span>Published</span> · Wed, Oct 14</span>');
  held.read.mockResolvedValue({state:'unavailable',reason:'read_failed'});
  const failed=renderToStaticMarkup(await Page({searchParams:Promise.resolve({shiftId:'test-shift'})}));
  expect(failed).not.toContain('Not published');expect(failed).not.toContain('c-shift__state');

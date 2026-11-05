@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CorpAvatar, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 import './payroll-home-corp.css';
 import './payroll-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
@@ -19,7 +19,7 @@ import { DocumentRow } from './document-row';
 import { Feedback } from './payroll-feedback';
 import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { flagProblems, formKeys } from './form-keys';
-import { daysBetween, payDay, periodRange } from './payroll-format';
+import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
@@ -32,19 +32,14 @@ const FREQUENCY = { WEEKLY: 'Weekly', BIWEEKLY: 'Every two weeks', SEMIMONTHLY: 
 
 const quietRange = periodRange;
 const quietDay = payDay;
-/** Owner premium R7: one status for the open period, said once. The only deadline Payroll holds is the payday, so the
- * words never name an earlier "prepare by" date the app doesn't have. */
-function dueText(payday: string, today: string) {
-  const days = daysBetween(today, payday);
-  return days < 0 ? 'Payday has passed' : days === 0 ? 'Payday is today' : days === 1 ? 'Payday is tomorrow' : 'Prepare by payday';
-}
-const initials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() ?? '').join('');
 const firstName = (name: string) => name.split(/\s+/)[0] ?? name;
 function listNames(names: string[]) {
   if (names.length <= 1) return names.join('');
   return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+/** The day a payroll was approved ("Oct 12"), for its subtitle; approval never says paid (R7, copy 67). */
+const approvedDay = (iso: string) => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(iso));
 const reviewHref = (id: string) => `/app/payroll/review?run=${encodeURIComponent(id)}`;
 const periodText = (run: Pick<PayrollRun, 'period' | 'payday'>) => `${quietRange(run.period.startDate, run.period.endDate)} · Payday ${quietDay(run.payday)}`;
 /** Blocking items the Fix page lists: everything except the provider-amounts wait (that is the import step). */
@@ -52,10 +47,11 @@ const fixItems = (run: PayrollRun) => run.status === 'APPROVED' ? [] : payrollRe
 
 /** A pushed page's header: "‹ Back · Title" on a phone; on wider screens the kit shows the same back link on its own
  * line over the page title (Owner premium A7), so Payroll no longer draws a second one. */
-function Pushed({ back, title, id }: { back: { href: string; label: string }; title: string; id: string }) {
+function Pushed({ back, title, id, sub }: { back: { href: string; label: string }; title: string; id: string; sub?: ReactNode }) {
   return <>
     <CorpNav back={back} title={title} phoneOnly />
-    <CorpTitle id={id} title={title} wide />
+    <CorpTitle id={id} title={title} wide sub={sub} />
+    {sub ? <p className="c-phone-sub" aria-hidden="true">{sub}</p> : null}
   </>;
 }
 
@@ -122,7 +118,9 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
     {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
   </CorpPage>;
   return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">
-    <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title={run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll'} id="payroll-review-title" />
+    {/* Nov 1 upscale: the payroll's period, payday and status are the subtitle ("Oct 5 – 11 · Payday Tue, Oct 13 · Approved"). */}
+    <Pushed back={{ href: '/app/payroll', label: 'Payroll' }} title={run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll'} id="payroll-review-title"
+      sub={run && !state ? `${periodText(run)} · ${statusLabels[run.status]}${run.status === 'APPROVED' && run.approvedAt ? ` ${approvedDay(run.approvedAt)}` : ''}` : undefined} />
     <Feedback operation={operation} />
     {state ?? missingRun ?? (run && data && <RunReview key={`${run.id}:${run.revision}:${run.reviewToken}`} run={run} data={data} names={names} operation={operation} />)}
   </CorpPage>;
@@ -136,8 +134,8 @@ function overduePeriod(data: PayrollRunsResponse | null, today: string) {
 }
 
 /** Owner premium A6 (structure P2), round 2 R3: the pay periods with no payroll come first, as a white card whose title
- * is the screen's one red mark, a grey line naming the oldest period and its payday, and a neutral button that opens
- * that period on Prepare payroll (it never prepares anything by itself). Only what the page already read: the backlog
+ * is the screen's one red mark, a grey line naming the oldest period and its payday, and the page's one filled button
+ * (Nov 1 upscale, "Prepare Sep 21 – 27") that opens that period on Prepare payroll (it never prepares anything by itself). Only what the page already read: the backlog
  * count when it is known, the oldest period and its payday. Shown on Payroll only; Prepare payroll leads with the row. */
 function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldest: PayrollMissingPeriod; href: string }) {
   const count = data.backlog && !data.backlog.overflow ? data.backlog.missingCount : null;
@@ -148,11 +146,11 @@ function UnpaidNotice({ data, oldest, href }: { data: PayrollRunsResponse; oldes
       <h2 id="payroll-unpaid-title" className="c-pay__unpaid-title">{title}</h2>
       <p className="c-pay__unpaid-body">{count === 1 ? <>Its payday was <Num>{quietDay(oldest.payday)}</Num>.</> : <>Oldest is <Num>{range}</Num>. Its payday was <Num>{quietDay(oldest.payday)}</Num>.</>}</p>
     </div>
-    <CorpButtonLink href={href} kind="secondary" size="md" className="c-pay__unpaid-go">{unpaidAction(oldest)}</CorpButtonLink>
+    <CorpButtonLink href={href} size="md" className="c-pay__unpaid-go">{unpaidAction(oldest)}</CorpButtonLink>
   </section>;
 }
 const unpaidHash = (item: PayrollMissingPeriod) => `unpaid-${item.period.startDate}`;
-const unpaidAction = (item: PayrollMissingPeriod) => `Start with ${quietRange(item.period.startDate, item.period.endDate)}`;
+const unpaidAction = (item: PayrollMissingPeriod) => `Prepare ${quietRange(item.period.startDate, item.period.endDate)}`;
 
 /** Owner premium A2 (Codex priority 2): the Up next button is the next step the Owner can take now. Prepare before a
  * draft exists; Review issue(s) when something stops it; Review payroll once a draft is ready; details once approved. */
@@ -191,40 +189,36 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   const step = nextStep(open);
   const sub = [current?.frequency ? FREQUENCY[current.frequency] : null, open?.totals ? plural(open.totals.employeeCount, 'person', 'people') : null, company || null].filter(Boolean).join(' · ');
   // R7: each place once. Pay history is the Recent payrolls link; Time exports and Payroll settings are tabs on tablets
-  // and desktop and rows on phones (no title buttons).
+  // and desktop. Nov 1 upscale (three cards at most): on phones Time exports is the last row of Recent payrolls and
+  // Payroll settings is a "Settings" link on the title row.
   const isTab = (href: string) => !!tabs?.some(item => item.href === href);
-  const tools = [
-    { key: 'exports', phone: isTab('/app/payroll-export'), row: <CorpRow href={current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export'} bold title="Time exports" detail="Send hours to your payroll provider" chevron /> },
-    canEditSettings ? { key: 'settings', phone: isTab('/app/settings/payroll'), row: <CorpRow href="/app/settings/payroll" bold title="Payroll settings" detail="Pay schedule, reminders and pay statements" chevron /> } : null,
-    missing && !oldest ? { key: 'missing', phone: false, row: <CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /> } : null,
-  ].filter((item): item is NonNullable<typeof item> => !!item);
+  const exportsHref = current ? `/app/payroll-export?start=${current.period.startDate}&end=${current.period.endDate}` : '/app/payroll-export';
+  const exportsRow = <li className={isTab('/app/payroll-export') ? 'c-only-phone' : undefined}><CorpRow href={exportsHref} one title="Time exports" chevron /></li>;
+  const settings = canEditSettings ? <Link className={isTab('/app/settings/payroll') ? 'c-link c-link--l c-only-phone' : 'c-link c-link--l'} href="/app/settings/payroll" aria-label="Payroll settings">Settings</Link> : undefined;
+  const frequency = `${current?.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll');
+  // Up next is one row (Nov 1 upscale): the payroll, its period and payday; it opens the next step (Prepare, Review issues,
+  // Review payroll or the approved details). Once a draft exists, that step is the row's grey value ("Review issue").
+  const nextValue = open && open.status !== 'APPROVED' ? step.label : undefined;
   return <CorpPage className="c-payroll c-pay c-pay--home c-page--narrow" labelledBy="payroll-title">
-    <CorpTitle id="payroll-title" title="Payroll" sub={sub || undefined} />
+    <CorpTitle id="payroll-title" title="Payroll" sub={sub || undefined} actions={settings} />
     <PayrollTabs items={tabs} current="/app/payroll" />
     <Feedback operation={operation} />
     {state ?? <>
       {data && oldest ? <UnpaidNotice data={data} oldest={oldest} href={`/app/payroll/prepare#${unpaidHash(oldest)}`} /> : null}
       {current ? <PayGroup id="payroll-next" label="Up next">
-        <div className="c-payroll__next">
-          <b>{`${current.frequency ? FREQUENCY[current.frequency] : ''} payroll`.trim().replace(/^payroll$/, 'Payroll')}</b>
-          <span><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Payday '}<Num>{quietDay(current.payday)}</Num></span>
-        </div>
-        <div className="c-payroll__go">
-          {people.length ? <span className="c-pay__people">
-            <span className="c-avs c-pay__avs">{people.slice(0, 3).map((row, index) => <CorpAvatar key={row.employeeId} initials={initials(row.employeeName)} grey={index === 1} />)}</span>
-            {people.length > 3 ? <span>{`and ${people.length - 3} more`}</span> : null}
-          </span> : <span>{open ? statusLabels[open.status] : dueText(current.payday, today)}</span>}
-          <CorpButtonLink size="md" kind={step.quiet ? 'secondary' : undefined} href={step.href}>{step.label}</CorpButtonLink>
-        </div>
+        <CorpRows label="Up next">
+          <li className="c-payroll__upnext"><CorpRow href={step.href} bold title={frequency}
+            detail={<><Num>{quietRange(current.period.startDate, current.period.endDate)}</Num>{' · Payday '}<Num>{quietDay(current.payday)}</Num></>}
+            value={nextValue} valueTone="soft" chevron
+            label={`${frequency}, ${quietRange(current.period.startDate, current.period.endDate)}, payday ${quietDay(current.payday)}${people.length ? `, ${plural(people.length, 'person', 'people')}` : ''}. ${step.label}`} /></li>
+          {missing && !oldest ? <li><CorpRow href="/app/payroll/prepare" bold title="Periods with no payroll" detail="Prepare payroll for each one" value={missing.missingCount === null ? 'Check' : <Num>{String(missing.missingCount)}</Num>} chevron /></li> : null}
+        </CorpRows>
       </PayGroup> : <EmptyCard label="Pay schedule" title="No pay schedule yet" detail="Set your pay schedule to see the current period."
         action={canEditSettings ? { href: '/app/settings/payroll', label: 'Payroll settings' } : undefined} />}
       <PayGroup id="payroll-recent" label="Recent payrolls" aside={<Link className="c-link" href="/app/payroll/history">Pay history</Link>}>
-        {past.length ? <CorpRows label="Past periods">{past.slice(0, 3).map(item => <li key={item.id}><RunRow item={item} /></li>)}</CorpRows>
-          : <div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div>}
+        {past.length ? <CorpRows label="Past periods">{past.slice(0, 3).map(item => <li key={item.id}><RunRow item={item} /></li>)}{exportsRow}</CorpRows>
+          : <><div className="c-empty c-pay__empty"><b>No past payrolls yet</b><span>Approved payrolls appear here.</span></div><CorpRows label="Payroll tools">{exportsRow}</CorpRows></>}
       </PayGroup>
-      {tools.length ? <div className={tools.every(item => item.phone) ? 'c-only-phone' : undefined}><CorpCard as="div" ariaLabel="Payroll tools">
-        <CorpRows label="Payroll tools">{tools.map(item => <li key={item.key} className={item.phone ? 'c-only-phone' : undefined}>{item.row}</li>)}</CorpRows>
-      </CorpCard></div> : null}
     </>}
   </CorpPage>;
 }
@@ -278,11 +272,11 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
     {jobs.length ? <Jobs jobs={jobs} canApprove={capabilities.canApprove} locked={locked} operation={operation} /> : null}
     {(native && !approved && !fixes.length) || approved ? <CorpCard as="div" ariaLabel="More actions"><CorpRows label="More actions">
       {native && !approved && !fixes.length ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })} disabled={locked || !capabilities.canReview}
-        title="Recalculate draft" detail="A fresh revision from current recorded time" chevron={false} /></li> : null}
+        title="Recalculate draft" detail="A fresh revision from current recorded time" chevron /></li> : null}
       {approved ? <li><CorpRow onClick={locked || !capabilities.canReview ? undefined : () => setCorrectionOpen(value => !value)} disabled={locked || !capabilities.canReview}
-        title={correctionOpen ? 'Close correction' : 'Fix this payroll'} detail="Starts a correction you approve separately" chevron={false} /></li> : null}
+        title={correctionOpen ? 'Close correction' : 'Fix this payroll'} detail="Starts a correction you approve separately" chevron /></li> : null}
       {approved && !native && capabilities.canApprove ? <li><CorpRow onClick={locked ? undefined : () => void operation.submit({ action: 'PAYMENT_EXPORT', runId: run.id, expectedRevision: run.revision })} disabled={locked}
-        title="Prepare payment instructions" detail="A file only. NEVORA doesn’t send money." chevron={false} /></li> : null}
+        title="Prepare payment instructions" detail="A file only. NEVORA doesn’t send money." chevron /></li> : null}
     </CorpRows></CorpCard> : null}
     {(run.status === 'REVIEW_REQUIRED' || run.status === 'BLOCKED') ? (capabilities.canApprove ? <div className="c-pay__approve">
       {run.status === 'REVIEW_REQUIRED' ? <Check checked={reviewed} onChange={setReviewed} disabled={locked || operation.revisionConflict}>I reviewed revision {run.revision}, {native ? 'the recorded-time calculation' : 'the provider amounts'} and all employee details.</Check> : null}
@@ -292,19 +286,11 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
       <CorpButton full kind={fixes.length ? 'secondary' : undefined} disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve payroll</CorpButton>
       <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.'}</p>
     </div> : <p className="c-note c-note--center">An authorized payroll approver must approve this revision.</p>) : null}
-    {approved ? <ApprovedNote run={run} names={names} /> : null}
     {approved && unpublished ? (capabilities.canApprove ? <div className="c-pay__approve">
       <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>Share the approved pay statements with each employee.</Check>
       <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Share pay statements</CorpButton>
     </div> : <p className="c-note c-note--center">An authorized payroll approver must share the pay statements.</p>) : null}
   </>;
-}
-
-function ApprovedNote({ run, names }: { run: PayrollRun; names: Record<string, string> }) {
-  const when = run.approvedAt ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(run.approvedAt)) : null;
-  const who = run.approvedBy ? names[run.approvedBy] : undefined;
-  // R7 (copy 67): "Approved", when and by whom. The revision number is internal; approval never says paid.
-  return <p className="c-note c-note--center">{`Approved${when ? ` ${when}` : ''}${who ? ` · ${who}` : ''}`}</p>;
 }
 
 /** Approved documents (R9): one row each, name first. A statement is named only from this payroll's own rows or the team
@@ -473,8 +459,12 @@ function PreparePayroll({ current, data, today, operation }: { current: OpenPayP
       </div>
       <CorpBody tight>
         <p className="c-pay__detail">Adds up approved hours. Nothing is approved until you say so, and no money moves.</p>
-        {open ? <CorpButtonLink href={step.href} full size="md" kind={step.quiet || oldest ? 'secondary' : undefined} className="c-pay__gap">{step.label}</CorpButtonLink>
-          : <CorpButton full size="md" kind={oldest ? 'secondary' : undefined} className="c-pay__gap" disabled={locked} aria-label={`Prepare payroll for ${range}`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>Prepare payroll</CorpButton>}
+        {/* Nov 1 upscale: one filled button on the page. While an overdue period leads, this week's step is a teal text
+          * action (the same press, the same Prepare), so the open overdue row's Prepare payroll is the only filled one. */}
+        {open ? oldest ? <Link className="c-link c-link--l c-pay__gap c-pay__quiet-go" href={step.href}>{step.label}</Link>
+          : <CorpButtonLink href={step.href} full size="md" kind={step.quiet ? 'secondary' : undefined} className="c-pay__gap">{step.label}</CorpButtonLink>
+          : oldest ? <button type="button" className="c-link c-link--l c-pay__gap c-pay__quiet-go" disabled={locked} aria-label={`Prepare payroll for ${range}`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>Prepare payroll</button>
+          : <CorpButton full size="md" className="c-pay__gap" disabled={locked} aria-label={`Prepare payroll for ${range}`} onClick={() => void operation.submit({ action: 'PREPARE', period: current.period, payday: current.payday })}>Prepare payroll</CorpButton>}
       </CorpBody>
     </PayGroup> : null}
     <Backlog data={data} operation={operation} lead={oldest} />

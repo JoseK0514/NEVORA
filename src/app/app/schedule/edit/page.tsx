@@ -11,7 +11,7 @@ import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 import { redirect } from "next/navigation";
 import { DeleteShiftConfirm } from "./delete-shift-button";
 import { ActionForm } from "@/components/wave-a/action-form";
-import { CorpPage, CorpPill } from "@/components/corp/corp";
+import { CorpPage } from "@/components/corp/corp";
 import { ScheduleShiftForm } from "@/components/schedule-shift-form";
 import { formatDayLabel, formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
@@ -79,9 +79,13 @@ export default async function EditShiftPage({
   const heldChange = held?.changes.find(change => change.shiftId === shift.id && change.kind !== "REMOVED");
   const was = heldChange?.before && (heldChange.before.startTime !== heldChange.after?.startTime || heldChange.before.endTime !== heldChange.after?.endTime || heldChange.before.date !== heldChange.after?.date)
     ? `Was ${heldChange.before.date !== heldChange.after?.date ? `${formatDayLabel(heldChange.before.date).weekday} ` : ""}${formatTime(heldChange.before.startTime)} – ${formatTime(heldChange.before.endTime)}` : null;
-  const status = shift.scheduleStatus === "DRAFT" ? <p className="c-shift__state"><CorpPill tone="amber">Draft</CorpPill></p>
-    : held && held.changedShiftIds.includes(shift.id) ? <p className="c-shift__state"><CorpPill tone="amber">Not published</CorpPill>{was ? <span className="c-shift__was">{keepWhole(was)}</span> : null}</p>
-    : held ? <p className="c-shift__state"><CorpPill tone="neutral">Published</CorpPill></p> : null;
+  // Nov 1 upscale: the state and the day are the title's subtitle ("Published · Wed, Oct 14"); Draft and Not published in
+  // amber text (R3, no pill). A held time change keeps its "Was …" line above the fields.
+  const shortDay = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${shift.date}T12:00:00Z`));
+  const changedHeld = !!held && held.changedShiftIds.includes(shift.id);
+  const stateWord = shift.scheduleStatus === "DRAFT" ? "Draft" : changedHeld ? "Not published" : held ? "Published" : null;
+  const subtitle = <>{stateWord ? <><span data-tone={stateWord === "Published" ? undefined : "amber"}>{stateWord}</span>{" · "}</> : null}{shortDay}</>;
+  const status = changedHeld && was ? <p className="c-shift__state"><span className="c-shift__was">{keepWhole(was)}</span></p> : null;
   const errorBody = params.error ? (Object.hasOwn(ERROR_MESSAGES, params.error) ? ERROR_MESSAGES[params.error] : schedulingIssueMessage(params.error)) ?? "The shift could not be updated." : null;
 
   // Release 1 (board O-EditShift): Edit shift is the same sheet as Add shift, with the shift's state on top and Delete
@@ -92,7 +96,7 @@ export default async function EditShiftPage({
         fixedLocation={location?.shortName ?? shift.locationId} weekStart={shift.weekStart} date={shift.date}
         employeeId={shift.employeeId} positionId={shift.positionId ?? ""} startTime={shift.startTime} endTime={shift.endTime}
         isDesignatedLead={shift.isDesignatedLead} notes={shift.notes ?? ""} hidden={{ shiftId: shift.id }} cancelHref={returnUrl}
-        status={status} error={errorBody ? { title: "The shift wasn’t saved", body: errorBody } : undefined}
+        status={status} subtitle={subtitle} error={errorBody ? { title: "The shift wasn’t saved", body: errorBody } : undefined}
         footer={<ActionForm action={deleteShiftAction} className="c-shift__delete" failure={{ title: "The shift wasn’t deleted", body: "Check your connection and try again." }}>
           <input type="hidden" name="shiftId" value={shift.id} />
           <DeleteShiftConfirm warning={keepWhole(`${shift.employeeName} won’t be scheduled on ${day.weekday},\u00a0${day.day}. This can’t be undone.`)} />

@@ -66,8 +66,11 @@ export default async function DashboardPage({
   if (!manager) {
     const proof=await requireSessionMutationProof();
     // v5 Home's week at a glance: the same own published-schedule read the Schedule page uses (read only).
-    const review=await readEmployeeWeeklyReview(proof,currentWeek);
-    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:review.shifts.map(({date,startTime,endTime,locationId,positionName})=>({date,startTime,endTime,where:[positionName,review.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}))};
+    // Upscale M7: the following week too (same read), so "Coming up" can list the next shifts across the week boundary.
+    const followingWeek=addDays(currentWeek,7);
+    const [review,following]=await Promise.all([readEmployeeWeeklyReview(proof,currentWeek),readEmployeeWeeklyReview(proof,followingWeek)]);
+    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName})=>({id,date,startTime,endTime,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
+    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
     const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
     return <EmployeeDashboard intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'}/>;

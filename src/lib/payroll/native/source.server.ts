@@ -89,7 +89,7 @@ function deductionInputs(configuration: NativeConfigurationRevision | ReturnType
         return { ...d, deductedBeforeMinor: (BigInt(d.deductedBeforeMinor) + matching.reduce((total, r) => total + BigInt(r.amount), BigInt(0))).toString() };
     });
 }
-function blocked(run: PayrollRun, issues: string[]): PayrollRun { return { ...run, status: 'BLOCKED', sourceAuthority: 'NATIVE_RECORDED_TIME', rows: null, totals: null, coverage: { complete: false, locationIds: [] }, nativeCalculation: { version: 'NATIVE_RUN_V1', state: 'blocked', ruleRevision: 1, templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V1', employees: [] }, reviewToken: null, exceptions: [...new Set(issues)] }; }
+function blocked(run: PayrollRun, issues: string[]): PayrollRun { return { ...run, status: 'BLOCKED', sourceAuthority: 'NATIVE_RECORDED_TIME', rows: null, totals: null, coverage: { complete: false, locationIds: [] }, nativeCalculation: { version: 'NATIVE_RUN_V1', state: 'blocked', ruleRevision: 1, templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V2', employees: [] }, reviewToken: null, exceptions: [...new Set(issues)] }; }
 export type NativeCapture = {
     run: PayrollRun;
     snapshot: Snapshot | null;

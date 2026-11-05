@@ -22,14 +22,18 @@ describe('Employee Pay on the kit (G-E-Pay)',()=>{
   const html=render(),plain=text(html);
   expect(plain).toContain('Pay history');expect(plain).toContain('Recent pay');expect(plain).toContain('Thu, Jan 24');expect(plain).toContain('Jan 6 – 19');
   expect(plain).toContain('Correction');expect(plain).toContain('Replaced');
+  // Upscale S4: the states are grey text, never a (blue) pill.
+  expect(html).not.toContain('c-pill');expect(html).toContain('<span class="c-meta">Correction</span>');
   expect(html.indexOf(`pay-statement-${ids.correction}`)).toBeLessThan(html.indexOf(`pay-statement-${ids.original}`));
   expect(html).toContain(`href="/app/my-pay?paycheck=${ids.correction}"`);
   expect(plain).not.toMatch(/\$|deposit|paid|amount|net pay|Only your own published|Latest statement|Earlier statements/i);
  });
  it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
   const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));
-  expect(plain).toContain('Pay period Jan 20 – Feb 2');expect(plain).toContain('This pay period');expect(plain).toContain('Payday Thu, Feb 7');expect(plain).toContain('Payday in 3 days');
-  expect(plain).toContain('From your workplace’s pay schedule');expect(plain).not.toMatch(/paid|\$/i);
+  // Upscale S16: the period in the card head, the payday once as the date, then how far away it is; no pill or filler line.
+  expect(plain).toContain('This pay period · Jan 20 – Feb 2');expect(plain).toContain('Thu, Feb 7 Payday in 3 days');
+  expect(plain).not.toContain('Payday Thu, Feb 7');expect(plain).not.toContain('Pay period Jan 20');
+  expect(plain).not.toContain('From your workplace’s pay schedule');expect(plain).not.toMatch(/paid|\$/i);
   expect(text(render())).not.toContain('This pay period');
  });
  it.each([
@@ -64,14 +68,22 @@ describe('Pay history and Paycheck (E-PayHistory, E-Paycheck)',()=>{
   const plain=text(render({},'view=history'));
   expect(plain).toContain('Pay history');expect(plain).toContain('January');expect(plain).toContain('Thu, Jan 10');expect(plain).toContain('Dec 23 – Jan 5');
  });
- it('opens one statement with deliberate View and Download',()=>{
+ it('opens one statement with one PDF row, and the year only outside the current year',()=>{
   const html=render({},`paycheck=${ids.correction}`),plain=text(html);
   expect(plain).toContain('Paycheck');expect(plain).toContain('Pay period Jan 6 – 19');expect(plain).toContain('Thu, Jan 24, 2030');
   expect(plain).toContain('This corrects your earlier statement for the same period.');
-  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="View corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);
-  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" aria-label="Download corrected statement, payday Thursday, January 24, 2030"`);
+  // Upscale S8: one "Pay statement (PDF)" row that opens the document separately.
+  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="Pay statement (PDF), corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);
+  expect(plain.match(/Pay statement \(PDF\)/g)).toHaveLength(1);expect(plain).not.toMatch(/View PDF|Download PDF/);
   expect(html).not.toMatch(/ download[ =>]/);
   expect(plain).toContain('Downloaded files may contain personal pay information.');
+  // Without a viewer link the row goes to the route itself (its attachment header downloads it), in the same tab.
+  const plainFile=render({statements:[statement(ids.old,'2030-01-10','2029-12-23','2030-01-05',{viewUrl:undefined as unknown as string})]},`paycheck=${ids.old}`);
+  expect(plainFile).toContain(`href="/api/payroll/documents/${ids.old}" aria-label="Pay statement (PDF), statement, payday Thursday, January 10, 2030"`);
+  // A payday in the current year drops the year.
+  const year=String(new Date().getFullYear());
+  const current=render({statements:[statement(ids.old,`${year}-03-10`,`${year}-02-23`,`${year}-03-01`)]},`paycheck=${ids.old}`);
+  expect(text(current)).not.toContain(`, ${year}`);
  });
  it('points a replaced statement to its correction first',()=>{
   const html=render({},`paycheck=${ids.original}`);

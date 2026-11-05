@@ -78,7 +78,10 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
               await visit('/app/timecards#timecard-QAOWNER');
               await page.getByRole('dialog').waitFor();
               expect(await page.getByRole('dialog').textContent()).toContain('Fictional Owner');
+              // Nov 1 upscale (review M5): at 1440px the panel is a non-modal inspector; Escape still closes it.
+              expect(await page.getByRole('dialog').evaluate((element: HTMLElement) => element.matches(':modal'))).toBe(false);
               await page.keyboard.press('Escape');
+              await page.getByRole('dialog').waitFor({ state: 'hidden' });
               checks.push(engine + ': ' + actor + ' folded timecards keyboard focus and drawer link');
             }
             if (path === '/app/reports') {
@@ -99,6 +102,10 @@ it('verifies integrated Manager and Owner quick wins with real sessions and owne
           const search = page.getByRole('combobox', { name: 'Search pages, people and places' });
           await search.fill('add shift');
           await page.getByRole('option', { name: /Add shift/ }).waitFor();
+          // Upscale S1: group headings are presentational rows between the options, never inside one; the typed words are set in bold.
+          expect(await page.locator('[role="option"] .command-finder-group').count()).toBe(0);
+          expect(await page.locator('#command-finder-results > li.command-finder-group[role="presentation"][aria-hidden="true"]').count()).toBeGreaterThan(0);
+          expect(await page.getByRole('option', { name: /Add shift/ }).locator('b.command-finder-match').first().innerText()).toMatch(/^add shift$/i);
           await search.fill('approve time off');
           await page.getByRole('option', { name: /Review time-off requests/ }).waitFor();
           await page.keyboard.press('Escape');

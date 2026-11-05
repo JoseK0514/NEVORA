@@ -6,17 +6,18 @@
 export const SUPPORT_EMAIL = "support@thevelani.com";
 export const POLICY_OPERATOR = "VELANI LLC";
 /** Bump when the published wording changes; deletion requests record the version they were accepted under. */
-export const POLICY_VERSION = "2026-10-20";
+export const POLICY_VERSION = "2026-11-04";
 
-/* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry uses
- * the interim wording Jose approved; update it once every copy's lifetime is confirmed. Change the
- * effective date if the policies take effect on a later day. */
+/* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry
+ * follows the production database Codex set up on November 1, 2026: a seven-day restore history, independently
+ * read back, plus separately kept recovery snapshots. Change the effective date if the policies take effect on a
+ * later day. */
 export const POLICY_FACTS: Record<string, string | null> = {
   EFFECTIVE_DATE: "October 20, 2026",
   SUPPORT_RESPONSE_TIME: "We aim to respond to support and privacy inquiries within two business days. Business days are Monday through Friday, excluding public holidays observed in Puerto Rico. Requests that need investigation may take longer to resolve.",
   DELETION_COMPLETION_PERIOD: "30 calendar days after we receive the request",
   RETENTION_SCHEDULE: "attendance, approved timecards, payroll calculations, published pay statements and their corrections and approvals for three years from the record’s final entry, and records supporting employment taxes for at least four years after the tax is due or paid, whichever is later; security and access logs for up to 90 days; records of privacy requests for 24 months after the request is closed; and records under a legal hold or unresolved dispute until the hold is released and the applicable period has passed. The longest applicable period applies, and a deletion request doesn’t restart it.",
-  BACKUP_EXPIRY: "Our database keeps a restore history of six hours. We are verifying the maximum time any backup or exported copy is kept, and will update this policy once it is confirmed.",
+  BACKUP_EXPIRY: "Our database keeps a restore history of seven days, so changed or deleted information drops out of it after seven days. We may also keep separate recovery snapshots taken for a specific purpose, such as before a database upgrade. They are restricted to that purpose, are never used to restore your account after deletion, and are deleted once they are no longer needed for it.",
   PROCESSORS_AND_PURPOSES: "Vercel hosts the application and runs its servers; Neon stores the database; a transactional email provider delivers recovery codes and other account email; and your browser’s push service, run by its maker (such as Apple, Google or Mozilla), delivers the notifications you turn on.",
   HOSTING_TRANSFER_DETAILS: "Our database and application servers are in the United States, in Northern Virginia. Email delivery, push notification services and our providers’ logs and support may process information in other locations.",
   SALE_SHARING_AND_TRACKING_STATEMENT: "NEVORA does not display advertisements, sell personal information, or share personal information for cross-context behavioral advertising. We do not track users across other companies’ applications or websites for advertising purposes. We disclose information to your employer and our service providers as necessary to operate NEVORA and for the purposes described in this policy.",

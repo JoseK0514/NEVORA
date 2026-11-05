@@ -35,16 +35,19 @@ for(const engine of ['chromium','webkit']){
   assert.equal(result.observations[0].settled,false,'Prior ready snapshot must not release the fresh-generation wait');
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
   assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
-  // Corporate Employee: recorded time is on the Time tab, the same kit page at every width (Right now pill; no Refresh,
-  // aria-busy while a read is in flight).
-  await page.setContent('<main><div class="c-page c-hours" data-hours-view="records" data-hours-state="loading" aria-busy="true"><section class="c-card" id="hours-now"><div class="c-card__head"><h2 class="c-card__label">Right now</h2><div class="c-card__aside"><span class="c-pill">On the clock</span></div></div></section></div></main>');
+  // Corporate Employee: recorded time is on the Time tab, the same kit page at every width (no Refresh, aria-busy while a
+  // read is in flight). Clocked in, the "Current shift" card carries an "On the clock" pill; off the clock (Nov 1 upscale
+  // S9) the "Right now" card says "Not clocked in" once, with no pill.
+  await page.setContent('<main><div class="c-page c-page--narrow c-hours" data-hours-view="records" data-hours-state="loading" aria-busy="true"><section class="c-card" id="hours-now"><div class="c-card__head"><h2 class="c-card__label">Current shift</h2><div class="c-card__aside"><span class="c-pill">On the clock</span></div></div><div class="c-card__body"><b class="c-big">Clocked in at 9:00 AM</b></div></section></div></main>');
   let recordedSettled=false;result.recordedReadiness=[];
   const recordedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{recordedSettled=true;result.recordedResolved=value;});
   const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   await render();result.recordedReadiness.push({phase:'Time tab still loading',settled:recordedSettled});assert.equal(recordedSettled,false);
   await page.evaluate(()=>{const time=document.querySelector('.c-hours');time.setAttribute('data-hours-state','ready');time.setAttribute('aria-busy','false');});
   await render();result.recordedReadiness.push({phase:'Ready, but an older Clocked-in status',settled:recordedSettled});assert.equal(recordedSettled,false);
-  await page.evaluate(()=>{document.querySelector('.c-pill').textContent='Off the clock';document.querySelector('.c-hours').setAttribute('aria-busy','true');});
+  await page.evaluate(()=>{document.querySelector('.c-card__label').textContent='Right now';document.querySelector('.c-big').textContent='Not clocked in';});
+  await render();result.recordedReadiness.push({phase:'Ready with the off-the-clock heading, but the older pill still shown',settled:recordedSettled});assert.equal(recordedSettled,false);
+  await page.evaluate(()=>{document.querySelector('.c-card__aside').remove();document.querySelector('.c-hours').setAttribute('aria-busy','true');});
   await render();result.recordedReadiness.push({phase:'Recorded state arrived, a read still in flight',settled:recordedSettled});assert.equal(recordedSettled,false);
   await page.evaluate(()=>{document.querySelector('.c-hours').setAttribute('aria-busy','false');});
   await recordedWaiting;assert.deepEqual(result.recordedResolved,{state:'OFF_CLOCK',view:'time',settled:true});result.status='passed';

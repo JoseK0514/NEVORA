@@ -4,6 +4,7 @@ import {randomUUID} from 'node:crypto';
 import {join} from 'node:path';
 import {Temporal} from '@js-temporal/polyfill';
 import {hashPassword} from '../src/lib/auth/password.ts';
+import {addDays,weekStartFor} from '../src/lib/date-utils.ts';
 import {TEST_PASSWORD} from '../src/test/integration/owned-app-fixture.ts';
 import {safeD2Error,safeD2Text,unexpectedD2Runtime,d2NavigationCancellation} from './d2-runtime-failures.mjs';
 import {finishD2ForegroundRecovery,waitForD2RscQuiescence} from './d2-foreground-recovery.mjs';
@@ -110,7 +111,16 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   assert.equal(await mp.locator('.manager-correction-row').filter({hasText:name}).getByText('Current effective',{exact:true}).count(),2);
   await shots(mp,'.manager-corrections','multiple-supersessions');
-  const contrast=await mp.locator('.manager-corrections').evaluate(root=>{
+  // Nov 1 upscale: a page that replaces its loading placeholder fades in over 150ms (corp.css c-arrive, opacity only).
+  // Measure once every finite animation on the corrections and their ancestors has finished, in settled colours.
+  // In WebKit the comparison text was sometimes missing when measured right after the screenshots (an empty list, three
+  // times, while the review list renews in the background); measure again for up to 10 s, and name what is on screen.
+  const settle=()=>mp.locator('.manager-corrections').evaluate(root=>new Promise((done,fail)=>{
+   const deadline=Date.now()+5000,nodes=[...root.querySelectorAll('*'),root];for(let node=root.parentElement;node;node=node.parentElement)nodes.push(node);
+   const settled=()=>nodes.every(el=>el.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished')));
+   const poll=()=>settled()?done():Date.now()>deadline?fail(new Error('Correction animations did not settle within 5 s')):requestAnimationFrame(poll);poll();
+  }));
+  const measure=async()=>{await settle();return mp.locator('.manager-corrections').evaluate(root=>{
    const rgb=value=>value.match(/[\d.]+/g).map(Number);
    const luminance=colour=>rgb(colour).slice(0,3).map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
    return [...root.querySelectorAll('.correction-comparison :is(small,strong),.correction-context-zone,.correction-prior-decisions :is(p,strong,span)')].map(el=>{
@@ -119,15 +129,25 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
     const a=luminance(foreground),b=luminance(background);
     return {foreground,background,opacity,ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)};
    });
-  });
-  assert(contrast.length>0);assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5));observations.contrast=contrast;
+  });};
+  let contrast=await measure();
+  for(const deadline=Date.now()+10000;!contrast.length&&Date.now()<deadline;contrast=await measure())await mp.waitForTimeout(250);
+  observations.contrast=contrast;
+  assert(contrast.length>0,'Correction comparison text must be on screen to measure its contrast: '+JSON.stringify(await mp.locator('.manager-corrections').evaluate(root=>({rows:root.querySelectorAll('.manager-correction-row').length,comparisons:root.querySelectorAll('.correction-comparison').length,busy:root.getAttribute('aria-busy'),text:root.textContent.replace(/\s+/g,' ').trim().slice(0,160)}))));
+  assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5),'Correction text must be opaque at 4.5:1 or more: '+JSON.stringify(contrast.filter(pair=>!(pair.opacity===1&&pair.ratio>=4.5))));
 
   observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
   stage='employee-foreground';await ep.bringToFront();assert(await ep.evaluate(()=>document.hasFocus()),'Employee native keyboard page must be foreground');
   observations.keyboard.push({stage:'employee-after-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus())});
-  await ep.goto(app.url+'/app/my-time',{waitUntil:'networkidle'});
   // Corporate Time (Release 1): the day's row opens its punches; "Request a correction" opens Fix my time for that entry.
-  const entryRow=hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
+  // Time lists only this week (Monday to Sunday) and a recorded entry belongs to the day it starts. The overnight fixture
+  // starts two days ago, so on a Monday or Tuesday its row is in last week's Past timecards, not on Time.
+  const entryDate=Temporal.Instant.from(raw.start).toZonedDateTimeISO('America/Puerto_Rico').toPlainDate().toString();
+  const thisWeek=weekStartFor(Temporal.Now.plainDateISO('America/Puerto_Rico').toString());
+  const entryWeek=weekStartFor(entryDate),fromCards=entryWeek<thisWeek;
+  observations.entryPath={entryDate,thisWeek,view:fromCards?'cards':'records'};
+  await ep.goto(app.url+(fromCards?`/app/my-time?view=cards&start=${entryWeek}&end=${addDays(entryWeek,6)}`:'/app/my-time'),{waitUntil:'networkidle'});
+  const entryRow=fromCards?hoursPage(ep,'cards').locator('a.c-row#hours-card-entry-'+entryId):hoursPage(ep,'records').locator('a.c-row#hours-entry-'+entryId);
   await entryRow.focus();await entryRow.press('Enter');
   await ep.waitForURL(url=>url.searchParams.get('entry')===entryId);
   const trigger=ep.getByRole('link',{name:'Request a correction',exact:true});await trigger.waitFor();
@@ -187,7 +207,15 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.route('**/api/manager/time-corrections',delayRoute);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('Loading correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','loading');release();
-  await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();await mp.unroute('**/api/manager/time-corrections',delayRoute);
+  // The panel abandons a read after 10 s and retries 30 s later (private-snapshot-client). WebKit's seven loading
+  // screenshots can outlast that hold, so the held read may already be abandoned: then the queue must say so, and a
+  // fresh focus read must restore it.
+  const queued=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();
+  const delayedOutcome=await Promise.race([queued.waitFor().then(()=>'ready',()=>null),mp.getByText('Correction requests unavailable',{exact:true}).waitFor().then(()=>'abandoned',()=>null)]);
+  observations.delayedRead=delayedOutcome;
+  if(delayedOutcome==='abandoned'){await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await queued.waitFor();}
+  else assert.equal(delayedOutcome,'ready','The released read restores the correction queue');
+  await mp.unroute('**/api/manager/time-corrections',delayRoute);
   const unavailable=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'read_failed'})});
   stage='injected-503';phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
