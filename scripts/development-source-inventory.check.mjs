@@ -102,16 +102,41 @@ test('parses exact lightweight archive tags without accepting malformed or dupli
   assert.throws(()=>parseRemoteRefs(`${sha}\trefs/something/main\n`));
 });
 
-test('published three-branch policy retains exact source archives and rejects a recreated fourth branch',()=>{
-  const i=validateInventory(JSON.parse(readFileSync(new URL('../docs/handoffs/2026-10-21-development-assembly-sources.json',import.meta.url),'utf8')));
-  assert.equal(i.maximumActiveBranches,3);
-  assert.equal(i.assemblyBranch,'claude-codex-collab-nevora');
-  assert.deepEqual(i.sources.filter(source=>!source.archiveRef).map(source=>source.branch).sort(),['development','main']);
+test('published policy validates the three allowed heads and detects recreated or damaged archives',()=>{
+  const published=validateInventory(JSON.parse(readFileSync(new URL('../docs/handoffs/2026-10-21-development-assembly-sources.json',import.meta.url),'utf8')));
+  assert.equal(published.maximumActiveBranches,3);
+  assert.equal(published.assemblyBranch,'claude-codex-collab-nevora');
+  // A classified held source records work; it does not grant a fourth active slot.
+  // Model the allowed post-reconciliation state separately from today's live inventory.
+  const allowed=new Set(['main','development','claude-codex-collab-nevora']);
+  const i={...published,sources:published.sources.filter(source=>source.archiveRef||allowed.has(source.branch))};
+  assert.deepEqual(i.sources.filter(source=>!source.archiveRef).map(source=>source.branch).sort(),
+    ['claude-codex-collab-nevora','development','main']);
   const actual=new Map(i.sources.filter(source=>!source.archiveRef).map(source=>[source.branch,source.sha]));
-  actual.set(i.assemblyBranch,next);
   const archives=new Map(i.sources.filter(source=>source.archiveRef).map(source=>[source.archiveRef,source.sha]));
   assert.deepEqual(compareSources(i,actual,()=>true,archives),[]);
-  const retired=i.sources.find(source=>source.archiveRef);
-  actual.set(retired.branch,retired.sha);
-  assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 4 > 3']);
+  for(const name of ['AI-owner','claude/employee-mobile-phase2-20261027','codex/release1-db-rehearsal-20261101']) {
+    const retired=i.sources.find(source=>source.branch===name);
+    assert.ok(retired?.archiveRef,`Missing recoverable archive for ${name}`);
+    actual.set(name,retired.sha);
+    assert.deepEqual(compareSources(i,actual,()=>true,archives),['Remote branch ceiling exceeded: 4 > 3']);
+    actual.delete(name);
+    const damaged=new Map(archives);damaged.set(retired.archiveRef,next);
+    assert.deepEqual(compareSources(i,actual,()=>true,damaged),[`Archive changed: ${name}`]);
+    damaged.delete(retired.archiveRef);
+    assert.deepEqual(compareSources(i,actual,()=>true,damaged),[`Missing archive: ${name}`]);
+  }
+});
+
+test('classifying a fourth held head never makes the published three-branch gate green',()=>{
+  const i={schema:1,target:'development',assemblyBranch:'claude-codex-collab-nevora',maximumActiveBranches:3,sources:[
+    {branch:'main',sha,disposition:'protected',reason:'protected'},
+    {branch:'development',sha,disposition:'target',reason:'combined line'},
+    {branch:'claude-codex-collab-nevora',sha,disposition:'held',reason:'allowed collaboration'},
+    {branch:'held-review-work',sha:next,disposition:'held',reason:'recorded, not an extra policy slot'},
+  ]};
+  const actual=new Map(i.sources.map(source=>[source.branch,source.sha]));
+  assert.deepEqual(compareSources(i,actual,()=>true),['Remote branch ceiling exceeded: 4 > 3']);
+  actual.set('held-review-work','c'.repeat(40));
+  assert.deepEqual(compareSources(i,actual,()=>true),['Branch advanced: held-review-work','Remote branch ceiling exceeded: 4 > 3']);
 });
