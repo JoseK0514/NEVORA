@@ -47,7 +47,7 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
   return()=>cancelAnimationFrame(frame);
  },[router]);
  const security=passkeys||policies;
- return <CorpPage className="em-account" labelledBy="profile-title">
+ return <CorpPage className="em-account c-page--narrow" labelledBy="profile-title">
   <CorpNav phoneOnly back={{href:'/app/more',label:'More'}} title="Profile and settings" titleId="profile-title"/>
   <CorpTitle wide title="Profile and settings"/>
   <noscript><p className="c-note">Enable JavaScript to view your profile and account settings.</p></noscript>
@@ -66,7 +66,7 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
 
 /** A pushed account page (calendar, passkeys, alerts): the phone header and the desktop title, then its cards. */
 export function EmployeeAccountFrame({title,back,right,children,className}:{title:string;back:{href:string;label:string};right?:ReactNode;children:ReactNode;className?:string}){
- return <CorpPage className={className?`em-account ${className}`:'em-account'} labelledBy="account-page-title">
+ return <CorpPage className={className?`em-account c-page--narrow ${className}`:'em-account c-page--narrow'} labelledBy="account-page-title">
   <CorpNav phoneOnly back={back} title={title} titleId="account-page-title" right={right}/>
   <CorpTitle wide title={title} actions={right}/>
   {children}

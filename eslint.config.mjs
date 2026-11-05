@@ -5,7 +5,8 @@ export default defineConfig([
   ...nextVitals,
   // Published vendor files and declared comment-only normalization are guarded by release-lint-chain.
   // Changed helper/import seams and all application files remain linted.
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts",
+  // The separate Capacitor project has its own native-spike CI and dependencies.
+  globalIgnores([".next/**", "out/**", "build/**", "native/**", "next-env.d.ts",
     "tools/eslint-config-next/dist/parser.js",
     "tools/eslint-config-next/dist/typescript.js",
     "tools/eslint-config-next/dist/core-web-vitals.d.ts",

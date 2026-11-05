@@ -77,16 +77,16 @@ it('CR-2 bounds held notification opens and fences stale results across private 
    await page.route('**/api/employee/messages/open/*',async(route:any)=>{if(!first){await route.continue();return;}first=false;try{const response=await route.fetch();await gate;await route.fulfill({response});}finally{handled();}});
    fault(true);
    try{
-    await panel().locator('a.em-notif-row').first().click();await panel().getByText('Opening current details…',{exact:true}).waitFor();await expect.poll(()=>first).toBe(false);
+    const openingRow=panel().locator('a.em-notif-row').first();await openingRow.click();/* Upscale B7: the tapped row stays pressed with its own spinner; "Opening current details…" is a status for assistive tech only. */const opening=panel().locator('.nv-sr[role="status"]').filter({hasText:/^Opening current details…$/});await opening.waitFor({state:'attached'});expect(await panel().locator('.c-note').filter({hasText:'Opening current details…'}).count()).toBe(0);expect(await openingRow.getAttribute('aria-busy')).toBe('true');expect(await openingRow.locator('.em-notif-spin').count()).toBe(1);await expect.poll(()=>first).toBe(false);
     if(mode==='deadline'){
      await panel().getByText('This notice couldn’t be opened with your current access.',{exact:false}).waitFor();
-     expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
+     expect(await opening.count()).toBe(0);expect(await panel().locator('a.em-notif-row[aria-busy="true"]').count()).toBe(0);
      release();await done;expect(new URL(page.url()).pathname).toBe('/app/notifications');await shot('deadline');
     }else{
      if(mode==='pause'){await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await page.locator('.em-messages[data-messages-state="paused"]').waitFor();await page.evaluate(()=>window.dispatchEvent(new Event('focus')));}
      // Release 1 has no Refresh button: the fresh read comes from the window regaining focus.
      else await refresh(page);
-     await ready('notifications');expect(await panel().getByText('Opening current details…',{exact:true}).count()).toBe(0);
+     await ready('notifications');expect(await opening.count()).toBe(0);expect(await panel().locator('a.em-notif-row[aria-busy="true"]').count()).toBe(0);
      await panel().locator('a.em-notif-row').nth(1).click();await ready('detail');const target=page.url();
      release();await done;expect(page.url()).toBe(target);await shot(mode+'-new-open');
      await panel().getByRole('link',{name:'Notifications',exact:true}).click();await ready('notifications');

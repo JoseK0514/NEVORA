@@ -82,3 +82,31 @@
 :is(#c-root, html) body .app-shell .c-esched .c-esched__confirm--in .employee-weekly-confirmation .q-bs.q-bs--go:hover:not([aria-disabled="true"]) { background: #E6F1EF !important; background-clip: padding-box !important; }
 /* The open-shifts card's title may take two lines on a 320px phone rather than cut off its count. */
 :is(#c-root, html) .c-esched .c-esched__confirm .c-row__title--b { white-space: normal; }
+/* Upscale (Nov 1) S12: the week strip. Past days are quiet (no fill; grey numbers, darker where a shift was worked), shift
+ * days still ahead keep the tint, today is ringed, and the selected day (the chosen day, else today) is solid teal. */
+/* QA D9: past numbers pass AA on white: #6B7075/500 (not worked, 4.9:1) and #4A4F54/600 (worked, 8.1:1). */
+:is(#c-root, html) .c-esched .c-esched__days .is-past b { background: transparent; color: #6B7075; font-weight: 500; }
+:is(#c-root, html) .c-esched .c-esched__days .is-past.is-work b { color: #4A4F54; font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__days .is-today b { background: transparent; color: var(--c-teal); font-weight: 600; box-shadow: inset 0 0 0 1.5px var(--c-teal); }
+:is(#c-root, html) .c-esched .c-esched__days .is-today.is-work b { background: var(--c-tint); }
+/* QA D4: the selected day is white on teal whatever else it is (a past worked day's grey rule is more specific than .is-on). */
+:is(#c-root, html) .c-esched .c-esched__days :is(.is-on, .is-on.is-today, .is-on.is-past.is-work) b { background: var(--c-teal); color: #FFFFFF; font-weight: 600; box-shadow: none; }
+:is(#c-root, html) .c-esched .c-esched__days .is-on small { color: var(--c-ink); font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__days .is-today small { color: var(--c-teal); font-weight: 600; }
+:is(#c-root, html) .c-esched .c-esched__days b { transition: background-color var(--c-dur-ui, 120ms) ease-out, color var(--c-dur-ui, 120ms) ease-out; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-esched .c-esched__days b { transition: none; } }
+/* Upscale B12: one secondary button style. The week card's Confirm is the kit's neutral secondary (grey ring, ink text). */
+:is(#c-root, html) body .app-shell .c-esched .c-esched__confirm--in .employee-weekly-confirmation .q-bs.q-bs--go { box-shadow: inset 0 0 0 1px var(--c-field, #D5D8DA) !important; color: var(--c-ink) !important; font-weight: 500; }
+:is(#c-root, html) body .app-shell .c-esched .c-esched__confirm--in .employee-weekly-confirmation .q-bs.q-bs--go:hover:not([aria-disabled="true"]) { background: #F7F8F8 !important; background-clip: padding-box !important; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .q-bs { box-shadow: inset 0 0 0 1px var(--c-field, #D5D8DA); color: var(--c-ink); font-weight: 500; }
+:is(#c-root, html) .c-esched .c-esched__confirm--in .q-bs:hover:not([aria-disabled="true"]) { background: #F7F8F8; background-clip: padding-box; }
+/* Upscale S6: "What changed" is one row per change: "Added · Mon, Nov 2" (15/500), then the shift (13 grey). */
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change li { min-height: 56px; justify-content: center; padding: 8px 16px; }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change li strong { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); }
+:is(#c-root, html) body .c-esched .c-card .schedule-publication-change li > span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+/* Upscale M5: the empty state, left-aligned (title, one sentence, one next step). */
+:is(#c-root, html) .c-esched .c-esched__empty { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 16px; }
+:is(#c-root, html) .c-esched .c-esched__empty-title { margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-esched .c-esched__empty-body { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-esched .c-esched__empty .c-link { margin-top: -1px; margin-bottom: -13px; }
+:is(#c-root, html) .c-esched .c-esched__caret { width: 12px; height: 12px; }

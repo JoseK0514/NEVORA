@@ -28,3 +28,9 @@ it('shows one explanation for verified-empty swap choices',()=>{
  const html=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="swap" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
  expect(html.match(/No eligible shifts to swap with right now\./g)).toHaveLength(1);
 });
+it('names no one it cannot name: the can’t-work and cover rows are text only, with no icon tile (upscale S10)',()=>{
+ const callout=render();expect(callout).toContain('Your manager gets this right away');expect(callout).not.toMatch(/class="c-av/);
+ const snapshot={...read,mode:'cover' as const,check:{allowed:true,notice:null}};
+ const cover=renderToStaticMarkup(<CreationView state={{snapshot,paused:false,refreshing:false}} authority={read.authority} mode="cover" sourceId="own" draft={draft} operation={new EmployeeCreationOperation()} onDraft={()=>{}} onReview={()=>{}} onRefresh={()=>{}} onSubmit={()=>{}} onRetry={()=>{}}/>);
+ expect(cover).toContain('Your team at Main');expect(cover).not.toMatch(/class="c-av/);
+});

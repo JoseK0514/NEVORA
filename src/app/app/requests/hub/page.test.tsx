@@ -25,9 +25,10 @@ beforeEach(() => {
 it.each(["EMPLOYEE", "LEAD"])("retains the request destinations for %s", async (role) => {
   auth.role = role;
   const html = renderToStaticMarkup(await RequestsHubPage());
-  // Board G-E-Requests: New request starts time off; decided time off is a See all away; shift requests keep their row.
+  // Upscale S7: Request time off starts time off; decided time off is a See all away; shift requests keep their row.
   expect(html).toContain('href="/app/requests?tab=new"');
-  expect(html).toContain('>New request<');
+  expect(html).toContain('>Request time off<');expect(html).not.toContain('>New request<');
+  expect(html).toContain('Time off and shift changes you’ve sent');
   expect(html).toContain('href="/app/exchange"');
   expect(auth.proof).toHaveBeenCalledOnce();
 });
@@ -49,11 +50,11 @@ it("lists the person's own time off, waiting first, and never turns a failed rea
     { id: "a", status: "APPROVED", startDate: "2030-11-13", endDate: "2030-11-13", createdAt: "2030-10-17T12:00:00Z" },
   ];
   const html = renderToStaticMarkup(await RequestsHubPage());
-  expect(html).toContain("1 waiting for approval");
-  // Board G-E-Requests: Waiting, then Decided, each with its status pill; rows open the request's own page.
+  // Upscale S4: the state is said once, by the card ("Waiting for your manager"); decided rows say theirs in grey text.
   expect(html).toContain("requestId=w"); expect(html).toContain("requestId=a");
   expect(html.indexOf("requestId=w")).toBeLessThan(html.indexOf("requestId=a"));
-  expect(html).toContain(">Waiting<"); expect(html).toContain(">Approved<");
+  expect(html).toContain(">Waiting for your manager<"); expect(html).not.toContain(">Waiting<"); expect(html).toContain('c-meta">Approved<');
+  expect(html).not.toContain("waiting for approval"); expect(html).not.toContain("c-pill");
   expect(html).toContain("2 days");
   data.requests = new Error("read failed");
   const failed = renderToStaticMarkup(await RequestsHubPage());

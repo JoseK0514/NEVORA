@@ -179,7 +179,8 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label="Your details" style={{ marginTop: 24 }}>
       <li data-row="phone" style={rowStyle('phone')}><div className="q-row q-row--one"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span></div></li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
-        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`}><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--go">Add</span></Link>
+        // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link>
         : <div className="q-row q-row--one"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.email ? <Email address={snapshot.contact.email} /> : <span>None</span>)}</span></div>}</li>
       <li><div className="q-row q-row--one"><span className="q-rt"><b>Time zone</b></span><span className="q-rv q-rv--l">{identity.timeZone.replace(/ time$/, '')}</span></div></li>
     </ul>
@@ -197,7 +198,9 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
         <p className="q-sr" role="status">{announcement}</p>
       </details></li>
       {identity.deviceAlerts
-        ? <li><button type="button" className="q-row q-row--one" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this phone</b></span><span className="q-rv q-rv--go">Turn on</span></button></li>
+        // Nov 1 upscale: a row like its neighbours (label and chevron; the settings it opens say whether they're on), named
+        // for the device in hand: "this phone" on a phone, "this device" on tablets and desktop.
+        ? <li><button type="button" className="q-row q-row--one" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></button></li>
         : null}
       {accountCards}
     </ul>

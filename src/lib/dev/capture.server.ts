@@ -7,6 +7,7 @@ import type {PushSender} from '../notifications/provider';
 import type {PushRuntimeConfig} from '../notifications/types';
 import {localDevEnabled,loopbackOrigin,localRequest,type LocalCaptureContext} from './local-only';
 import {captureDirectory} from './capture-gate.cjs';
+import {passwordChangedEmail,recoveryEmail} from '../auth/account-email-copy';
 export {captureNotificationRuntime} from './capture-gate.cjs';
 async function record(directory:string,kind:'email'|'push',extension:string,value:Buffer|string) {
   const folder=join(directory,kind);
@@ -23,14 +24,12 @@ export function devRecoveryDelivery(env:Record<string,string|undefined>,headers?
   const transport=nodemailer.createTransport({streamTransport:true,buffer:true,newline:'unix',disableFileAccess:true,disableUrlAccess:true});
   return {async send(email,proof){
     if(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)||/[\r\n]/.test(proof))throw Error('Invalid local capture input');
-    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,subject:'NEVORA access recovery',
-      text:`A password reset was requested for your NEVORA account. This single-use link expires in 15 minutes.\n\n${origin}/reset-access#proof=${proof}\n\nIf you did not request this, keep your existing password and contact your manager. If you cannot use your registered recovery channel, ask a manager for assisted recovery.`,disableFileAccess:true,disableUrlAccess:true});
+    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...recoveryEmail(`${origin}/reset-access#proof=${proof}`),disableFileAccess:true,disableUrlAccess:true});
     if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
     await record(directory,'email','.eml',message.message);
   },async notifyReset(email){
     if(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email))throw Error('Invalid local capture input');
-    const {PASSWORD_CHANGED_NOTICE}=await import('../auth/recovery-delivery.server');
-    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,subject:'Your NEVORA password was changed',text:PASSWORD_CHANGED_NOTICE(origin)});
+    const message=await transport.sendMail({from:'NEVORA preview <preview@example.invalid>',to:email,...passwordChangedEmail(origin)});
     if(!Buffer.isBuffer(message.message))throw Error('Local email capture did not produce a buffered message');
     await record(directory,'email','.eml',message.message);
   }};

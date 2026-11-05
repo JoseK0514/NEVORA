@@ -11,7 +11,7 @@
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-options strong { color:var(--em-ink); font-weight:var(--em-weight-label); font-size:var(--em-size-body); line-height:var(--em-line-heading); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-options :is(span>span,small) { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-options input { appearance:auto; flex:none; width:22px; height:22px; margin:0; accent-color:var(--em-teal); cursor:pointer; }
- html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-options label:has(input:focus-visible) { outline:3px solid var(--em-focus); outline-offset:3px; border-radius:var(--em-small); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-options label:has(input:focus-visible) { outline:2px solid var(--em-focus); outline-offset:2px; border-radius:var(--em-small); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-note { display:flex; flex-direction:column; gap:var(--em-space-3); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-note label { color:var(--em-ink); font-size:var(--em-size-body); font-weight:var(--em-weight-label); }
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-creation-note label span { color:var(--em-muted); font-size:var(--em-size-support); font-weight:400; }

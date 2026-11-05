@@ -3,14 +3,16 @@ type MenuGeometryInput = {
   viewport: { width: number; height: number; offsetLeft?: number; offsetTop?: number };
   naturalHeight: number;
   align?: "start" | "end";
+  /** Overrides the 318px default (still clamped to the viewport). */
+  preferredWidth?: number;
 };
 
 const VIEWPORT_MARGIN = 12;
 const MENU_GAP = 8;
 const PREFERRED_WIDTH = 318;
 
-export function actionMenuGeometry({ trigger, viewport, naturalHeight, align = "end" }: MenuGeometryInput) {
-  const width = Math.max(0, Math.min(PREFERRED_WIDTH, viewport.width - VIEWPORT_MARGIN * 2));
+export function actionMenuGeometry({ trigger, viewport, naturalHeight, align = "end", preferredWidth = PREFERRED_WIDTH }: MenuGeometryInput) {
+  const width = Math.max(0, Math.min(preferredWidth, viewport.width - VIEWPORT_MARGIN * 2));
   const leftBound = (viewport.offsetLeft ?? 0) + Math.min(VIEWPORT_MARGIN, viewport.width / 2);
   const rightBound = (viewport.offsetLeft ?? 0) + viewport.width - Math.min(VIEWPORT_MARGIN, viewport.width / 2);
   const topBound = (viewport.offsetTop ?? 0) + Math.min(VIEWPORT_MARGIN, viewport.height / 2);

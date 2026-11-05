@@ -47,8 +47,8 @@ it('counts each state for assistive technology', () => {
   const html = render([device('active', 'ACTIVE'), device('pending', 'PENDING'), device('expired', 'EXPIRED'), device('revoked', 'REVOKED')]);
   expect(html).toContain('1 registered, 2 waiting for setup, 1 removed');
   expect(html).not.toContain('aria-pressed');
-  expect(html).toContain('Tablets (3)');
-  expect(html).toContain('Removed (1)');
+  expect(html).toContain('Tablets<span class="c-count c-num">3</span>');
+  expect(html).toContain('Removed<span class="c-count c-num">1</span>');
 });
 
 it('shows the selected state as rows that open their device options', () => {

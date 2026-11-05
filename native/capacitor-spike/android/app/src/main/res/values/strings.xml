@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">NEVORA Preview</string>
+    <string name="title_activity_main">NEVORA Preview</string>
+    <string name="package_name">com.nevora.spike</string>
+    <string name="custom_url_scheme">com.nevora.spike</string>
+</resources>

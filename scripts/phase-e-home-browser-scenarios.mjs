@@ -30,16 +30,21 @@ export async function waitForFreshHome(page, freshLocation){
 }
 
 // Corporate Employee: clock status lives on the Time tab, not on Home. Release 1 draws the same kit Time page at every
-// width (board G-E-Time): the Right now / Current shift card's pill carries the recorded status. The page has no Refresh;
+// width (board G-E-Time). Clocked in or on break, the "Current shift" card's pill carries the recorded status; off the
+// clock (Nov 1 upscale S9) the "Right now" card says it once, "Not clocked in", with no pill. The page has no Refresh;
 // it re-reads when the app returns to the front and marks itself aria-busy while a read is in flight.
 // Ready only when the released status matches and no read is in flight (not a still-loading or still-refreshing frame).
-const TIME_PILL={OFF_CLOCK:'Off the clock',CLOCKED_IN:'On the clock',ON_BREAK:'On break'};
+const TIME_STATUS={OFF_CLOCK:{label:'Right now',pill:null,big:'Not clocked in'},CLOCKED_IN:{label:'Current shift',pill:'On the clock',big:null},ON_BREAK:{label:'Current shift',pill:'On break',big:null}};
 export async function waitForRecordedTimeReady(page, expectedState){
- const ready=await page.waitForFunction(({expected,pill})=>{
+ const ready=await page.waitForFunction(({expected,status})=>{
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
   if(!time||time.getAttribute('data-hours-state')!=='ready'||time.getAttribute('aria-busy')!=='false')return false;
-  return time.querySelector('#hours-now .c-card__aside .c-pill')?.textContent===pill?{state:expected,view:'time',settled:true}:false;
- },{expected:expectedState,pill:TIME_PILL[expectedState]});
+  const card=time.querySelector('#hours-now');if(!card)return false;
+  const label=card.querySelector('.c-card__label')?.textContent??null,pill=card.querySelector('.c-card__aside .c-pill')?.textContent??null;
+  if(label!==status.label||pill!==status.pill)return false;
+  if(status.big!==null&&card.querySelector('.c-big')?.textContent!==status.big)return false;
+  return {state:expected,view:'time',settled:true};
+ },{expected:expectedState,status:TIME_STATUS[expectedState]});
  try{return await ready.jsonValue();}finally{await ready.dispose();}
 }
 
@@ -66,7 +71,9 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  page.on('request',request=>{if(new URL(request.url()).pathname==='/api/employee/home')binding=request.headers()['x-nevora-home'];});
  const shot=async name=>{const path=join(evidenceDirectory,`home-task11-${engine}-${width}-${name}.png`);await page.screenshot({path,fullPage:true});screenshots.push(path);};
  const next=()=>page.locator(HOME_SHIFT_CARD);
- const assignments=()=>next().getByRole('link',{name:'View shift',exact:true});
+ // Nov 1 upscale S4: the card body links to the shift out of the tab order; the footer's "Shift details" is the one
+ // keyboard way to the same shift, beside the tablet line.
+ const assignments=()=>next().locator('.c-card__foot').getByRole('link',{name:'Shift details',exact:true});
  // Corporate (board C-Employee): Things to do lists up to three rows; a "See all N" row opens Notifications.
  const todo=()=>page.locator('#employee-home-todo');
  // Board C-Employee: the card is named Things to do (its header, or aria-label when one row stands alone); the count
@@ -78,7 +85,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
  const clockedIn=()=>page.locator('main').getByText(/^(Clocked in|On the clock)$/);
- const offClock=()=>page.locator('main').getByText(/^(Off clock|Off the clock)$/);
+ const offClock=()=>page.locator('main #hours-now').getByText('Not clocked in',{exact:true});
  const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();
  const openTime=async expected=>{await navLink('/app/my-time').click();await page.waitForURL(u=>u.pathname==='/app/my-time');const time=await waitForRecordedTimeReady(page,expected);assert.equal(await next().count(),0,'Leaving Home unmounts its private shift card');return time;};
@@ -87,7 +94,14 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  // lifecycle sync Home uses), keeping the shown status while it reads.
  const timeReadPath=()=>'**/api/employee/hours/**';
  const refreshTime=()=>page.evaluate(()=>window.dispatchEvent(new Event('storage')));
- const actionHrefs=result=>{const rows=result.snapshot.attention.filter(item=>item.required||item.actionable),weeks=rows.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed'));return rows.filter(item=>!weeks.includes(item)||item===weeks[0]).map(item=>item.href);};
+ // Nov 1 upscale S3: one confirm row per week, nearest week first, in the places the canonical order gives week rows; a
+ // week whose last day has passed drops off Home (it stays confirmable on Schedule). The current week's seeded shift is
+ // still under way when Home is read, so a week ending today stays.
+ const confirmsWeek=item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed');
+ const homeToday=result=>new Intl.DateTimeFormat('en-CA',{timeZone:result.snapshot.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(result.snapshot.observedAt));
+ const weekLastDay=week=>new Date(Date.parse(week+'T12:00:00Z')+6*86400000).toISOString().slice(0,10);
+ const actionItems=result=>{const today=homeToday(result),kept=result.snapshot.attention.filter(item=>(item.required||item.actionable)&&!(confirmsWeek(item)&&weekLastDay(item.ref.id)<today)),weeks=kept.filter(confirmsWeek).sort((a,b)=>a.ref.id.localeCompare(b.ref.id));let next=0;return kept.map(item=>confirmsWeek(item)?weeks[next++]:item);};
+ const actionHrefs=result=>actionItems(result).map(item=>item.href);
  const recorded=()=>page.locator('aside[aria-label="Own recorded time"]');
  const nativeTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Tab':'Tab',nativeBackTab=process.platform==='darwin'&&engine==='webkit'?'Alt+Shift+Tab':'Shift+Tab';
  const ready=async()=>{await page.locator('[data-home-state="partial"],[data-home-state="ready"]').waitFor();await page.waitForLoadState('networkidle');};
@@ -185,7 +199,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  assert(!(await page.locator('.employee-home').innerText()).includes('PRIVATE HOME SENTINEL'));assert(await next().getByText('On shift now',{exact:true}).isVisible());assert.equal(await assignments().count(),1);
  const hierarchy=await page.locator(HOME_SHIFT_CARD+',#employee-home-todo').evaluateAll(es=>({tops:es.map(e=>e.getBoundingClientRect().top),nextBeforeActions:es.length===2&&!!(es[0].compareDocumentPosition(es[1])&Node.DOCUMENT_POSITION_FOLLOWING)}));assert.equal(hierarchy.tops.length,2);assert(hierarchy.nextBeforeActions);assert(hierarchy.tops[0]<=hierarchy.tops[1]);details.homeHierarchy=hierarchy;
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot('ready');
- // Corporate (board C-Employee): Things to do shows the first three rows (weeks to confirm share one row) in the
+ // Corporate (board C-Employee): Things to do shows the first three rows (one row per week to confirm) in the
  // canonical order, then "See all N", which opens Notifications. Informational updates are read in Notifications.
  details.homeDisclosures=[];
  {
@@ -197,9 +211,11 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  }
  for(const item of homeResponse.snapshot.attention.filter(item=>!item.required&&!item.actionable))assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0,'Informational updates are read in Notifications');
  assert.equal(await page.getByRole('button',{name:'Mark read',exact:true}).count(),0);assert.equal(await page.getByRole('button',{name:'Confirm schedule',exact:true}).count(),0);
- {const weeks=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='SCHEDULE'&&!item.label.startsWith('Schedule removed')&&(item.required||item.actionable));if(weeks.length&&actionHrefs(homeResponse).slice(0,3).includes(weeks[0].href))for(const item of weeks)assert.equal(await todo().locator(`time[datetime="${item.ref.id}"]`).count(),1);}
+ {const shown=actionItems(homeResponse).slice(0,3),monday=(date=>{const day=new Date(date+'T12:00:00Z');return new Date(day.getTime()-((day.getUTCDay()+6)%7)*86400000).toISOString().slice(0,10);})(homeToday(homeResponse));
+  for(const item of homeResponse.snapshot.attention.filter(item=>confirmsWeek(item)&&(item.required||item.actionable))){const row=todo().locator('li > a.c-row').filter({has:page.locator(`time[datetime="${item.ref.id}"]`)});assert.equal(await row.count(),shown.includes(item)?1:0,'Each shown week to confirm is its own row with its own dates');
+   if(shown.includes(item)){const title=item.ref.id===monday?'Confirm this week’s schedule':item.ref.id===new Date(Date.parse(monday+'T12:00:00Z')+7*86400000).toISOString().slice(0,10)?'Confirm next week’s schedule':'Confirm your schedule';assert.equal((await row.locator('.c-row__title').textContent()).trim(),title);}}}
  const leave=homeResponse.snapshot.attention.filter(item=>item.ref.kind==='TIME_OFF');assert.equal(new Set(leave.map(item=>item.label)).size,7);for(const item of leave)assert.equal(await page.locator('.employee-home').getByText(item.label,{exact:true}).count(),0);await shot('show-all');
- checks.push('H02 actual Things to do membership and order follow the canonical response (weeks share one row): the first three rows, then See all N to Notifications when more; weekly reviews carry their own week dates; informational updates stay in Notifications; no compact consent or Mark read');
+ checks.push('H02 actual Things to do membership and order follow the canonical response (one row per week, nearest first; ended weeks drop off): the first three rows, then See all N to Notifications when more; each weekly review row carries its own week dates and title; informational updates stay in Notifications; no compact consent or Mark read');
  // Re-anchored clock status: Home shows the shift under way; the actual recorded Clocked in is on the Time tab.
  details.timeClockedIn=await openTime('CLOCKED_IN');assert(await clockedIn().first().isVisible());await shot('time-clocked-in');await openHome();await next().getByText('On shift now',{exact:true}).waitFor();
  checks.push('H01 actual loading contains no private row/name/success; the shift under way leads (On shift now) with the persisted next shift in the canonical read; the actual recorded Clocked in shows on the Time tab while Home keeps no clock; six-source canonical communications complete and private notes absent');
@@ -322,7 +338,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  for(let i=0;i<55;i++){await page.keyboard.press(timeKey);if(await myTime.evaluate(e=>e===document.activeElement)){clockFocus=true;break;}}
  assert(clockFocus);assert(await myTime.evaluate(e=>e.matches(':focus-visible')));details.clockRecoveryFocus=await myTime.evaluate(e=>{const r=e.getBoundingClientRect();return {outlineStyle:getComputedStyle(e).outlineStyle,outlineWidth:getComputedStyle(e).outlineWidth,width:r.width,height:r.height};});assert.notEqual(details.clockRecoveryFocus.outlineStyle,'none');assert(parseFloat(details.clockRecoveryFocus.outlineWidth)>=2);if(timeKey===tab)assert(details.clockRecoveryFocus.height>=44&&details.clockRecoveryFocus.width>=44,'Phone Time tab is a 44px target');await link.focus();
  await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>{document.documentElement.style.fontSize='200%';});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.evaluate(()=>{document.documentElement.style.fontSize='';});await shot('focus');
- checks.push('H03 native keyboard reaches visible focus; actual 44px View shift link, measured normal/hover/pressed/focus contrast, visible keyboard route to the Time tab (clock status; 44px tab on phones), 200% text/reflow and reduced-motion state');
+ checks.push('H03 native keyboard reaches visible focus; actual 44px Shift details link (the card body link stays out of the tab order), measured normal/hover/pressed/focus contrast, visible keyboard route to the Time tab (clock status; 44px tab on phones), 200% text/reflow and reduced-motion state');
  stage='api';const api=await page.evaluate(async binding=>{const response=await fetch('/api/employee/home',{cache:'no-store',headers:{'X-Nevora-Home':binding}});return {status:response.status,cache:response.headers.get('cache-control'),vary:response.headers.get('vary'),body:await response.json()};},binding);
  assert.equal(api.status,200);assert.equal(api.cache,'no-store, private');assert(api.vary.split(',').map(value=>value.trim().toLowerCase()).includes('cookie'));assert(!JSON.stringify(api.body).match(/PRIVATE HOME SENTINEL|sessionTokenHash|managerNotes/));
  const rejected=await page.evaluate(async()=>{const r=await fetch('/api/employee/home?employeeId=other',{headers:{'X-Nevora-Home':'invalid'}});return r.status;});assert.equal(rejected,400);checks.push('H04 actual authenticated Home API is private/no-store; client identity selectors refused; no source-note/raw-proof disclosure');

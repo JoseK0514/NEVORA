@@ -356,25 +356,39 @@ export default async function SchedulePage({
     <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
       <CorpTitle id="schedule-title" title="Schedule"
         actions={<>
-          {/* Owner premium (visual-craft O/L): "Schedule options" is one list of rows, each a title and a detail line. The
-            availability deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
-          <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
-            <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong><span>What changed and when</span></Link>
-            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${currentWeek}${locationQuery}`} aria-current={weekStart === currentWeek ? "date" : undefined}><strong>Go to this week</strong><span>{compactWeekRange(currentWeek)}</span></Link>
-            <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}}><span>Copy {compactWeekRange(previousWeek)} into this week</span></ScheduleCopyForm>
-            <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><span>Save a week and reuse it</span></Link>
-            <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><span>Staffing and weekly hours</span></Link>
-            <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`}><strong>Availability deadline</strong><span>{deadlineText}</span></Link>
-            <PrintScheduleButton />
+          {/* Nov 1 upscale: the location control is a quiet select on the title row (desktop), or under the "…" on the
+            subtitle's line (phones, by CSS); the subtitle no longer repeats how many locations there are. */}
+          <ActionMenu id="schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`} align="end"
+            triggerClassName="c-select-btn c-sched-loc" triggerContent={<>{locationName}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></>}>
+            <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
+            {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
           </ActionMenu>
-          {publishAction}
+          <span className="c-sched-actions">
+            {/* Nov 1 upscale: "Schedule options" is two grouped lists, This week and Settings, one line per row. The week's
+              "Today" link (on the week card, only when you're off this week) replaces Go to this week. The availability
+              deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
+            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
+              <div className="c-menu-group" role="group" aria-labelledby="schedule-options-week">
+                <p className="c-menu-label" id="schedule-options-week">This week</p>
+                <div className="c-menu-card">
+                <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
+                <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <PrintScheduleButton />
+                </div>
+              </div>
+              <div className="c-menu-group" role="group" aria-labelledby="schedule-options-settings">
+                <p className="c-menu-label" id="schedule-options-settings">Settings</p>
+                <div className="c-menu-card">
+                <Link className="nevora-action-menu-item" href={`/app/schedule/settings?week=${weekStart}`}><strong>Scheduling rules</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item manager-issue-target" id="schedule-deadline" href={`/app/schedule/settings?week=${weekStart}&open=deadline#rules-deadline`} aria-label={`Availability deadline, ${deadlineText}`}><strong>Availability deadline</strong><span className="c-menu-value">{deadlineText}</span><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                </div>
+              </div>
+            </ActionMenu>
+            {publishAction}
+          </span>
         </>}
-        sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span>{` · ${selectedLocation === "all" ? `${locations.length} ${locations.length === 1 ? "location" : "locations"}` : locationName}`}</>}
-        subAside={<ActionMenu id="schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`} align="end"
-          triggerClassName="c-select-btn" triggerContent={<>{locationName}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></>}>
-          <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
-          {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
-        </ActionMenu>} />
+        sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />
       <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
       {params.published ? (
         <CorpCard as="div" ariaLabel="Published">
@@ -408,7 +422,8 @@ export default async function SchedulePage({
       {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
       <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
         absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
-        corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref, changedShiftIds }}
+        corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref, changedShiftIds,
+          todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locationQuery}`, observedAt: observedAt.toISOString() }}
         notices={<>
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {

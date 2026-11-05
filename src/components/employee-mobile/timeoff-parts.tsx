@@ -1,5 +1,4 @@
 import {CorpRow} from '../corp/corp';
-import {UserIcon} from '@phosphor-icons/react/dist/ssr/User';
 import {formatTime} from '@/lib/date-utils';
 import {keepWhole} from '@/lib/keep-whole';
 
@@ -25,33 +24,34 @@ export function timeOffLength(r:TimeOffView){
  const days=Math.round((utc(r.endDate).getTime()-utc(r.startDate).getTime())/86_400_000)+1;
  return days>1?days+' days':'All day';
 }
-const pills:Record<string,[string,string]>={PENDING:['amber','Waiting'],APPROVED:['teal','Approved'],DENIED:['red','Declined'],CANCELLED:['neutral','Withdrawn']};
+const words:Record<string,string>={PENDING:'Waiting',APPROVED:'Approved',DENIED:'Declined',CANCELLED:'Withdrawn'};
+/** Upscale S4: a request's state in grey text (no amber, blue or other pill). */
 export function TimeOffPill({status}:{status:string}){
- const [tone,word]=pills[status]??['neutral','Open to check'];
- return <span className={'c-pill c-pill--'+tone}>{word}</span>;
+ return <span className="c-meta">{words[status]??'Open to check'}</span>;
 }
 const inZone=(at:string,zone:string,options:Intl.DateTimeFormatOptions)=>{try{return new Intl.DateTimeFormat('en-US',{timeZone:zone,...options}).format(new Date(at));}catch{return '';}};
 /** "Mon, Oct 26" in the workspace's time zone. */
 export const sentDay=(at:string,zone:string)=>inZone(at,zone,{weekday:'short',month:'short',day:'numeric'});
 const initials=(name:string)=>name.split(/\s+/).filter(Boolean).slice(0,2).map(part=>part[0]!.toUpperCase()).join('');
 
-/** Who the request waits on, or who decided it and when. A pending request has no named approver in the read. */
+/** Who the request waits on, or who decided it and when (the one place the detail page says the state). A pending request has no named approver in the read. */
 function Decision({request,zone}:{request:TimeOffView;zone:string}){
  const when=request.reviewedAt?keepWhole(inZone(request.reviewedAt,zone,{month:'short',day:'numeric'})+' at '+inZone(request.reviewedAt,zone,{hour:'numeric',minute:'2-digit'})):null;
  const by=request.reviewer&&request.status!=='CANCELLED'?request.reviewer:null;
- const title=request.status==='PENDING'?'Waiting on your manager':request.status==='CANCELLED'?'You withdrew it':(request.status==='APPROVED'?'Approved':request.status==='DENIED'?'Declined':'Decided')+(by?' by '+by:'');
+ const title=request.status==='PENDING'?'Waiting for your manager':request.status==='CANCELLED'?'You withdrew it':(request.status==='APPROVED'?'Approved':request.status==='DENIED'?'Declined':'Decided')+(by?' by '+by:'');
  const detail=request.status==='PENDING'?'Your manager decides on this request':when;
+ // Upscale S10: initials when a name is known; otherwise the text row alone (no icon tile).
  return <div className={'c-row tof-who'+(detail?'':' c-row--one')}>
-  {by?<span className="c-av c-av--l" aria-hidden="true">{initials(by)}</span>:<span className="c-av c-av--grey c-av--l" aria-hidden="true"><UserIcon weight="bold"/></span>}
+  {by?<span className="c-av c-av--l" aria-hidden="true">{initials(by)}</span>:null}
   <span className="c-row__main"><span className="c-row__title">{keepWhole(title)}</span>{detail?<span className="c-row__detail"><span>{detail}</span></span>:null}</span>
  </div>;
 }
 
-/** The request card: when it was sent and its status, the dates and length (with the person's note), then the decision. */
+/** The request card: when it was sent, the dates and length (with the person's note), then the decision (its state, said once). */
 export function TimeOffRequestCard({request,zone,headingId}:{request:TimeOffView;zone:string;headingId?:string}){
  const sent=request.createdAt?sentDay(request.createdAt,zone):'';
  return <section className="c-card" aria-labelledby={headingId} data-employee-status={request.status}>
-  <div className="c-card__head"><span className="c-card__label">{sent?keepWhole('Sent '+sent):'Time-off request'}</span><TimeOffPill status={request.status}/></div>
+  <div className="c-card__head"><span className="c-card__label">{sent?keepWhole('Sent '+sent):'Time-off request'}</span></div>
   <div className="c-card__body">
    <h2 className="c-big" id={headingId}>{keepWhole(timeOffDates(request))}</h2>
    <span className="c-line2 tof-what">{keepWhole(timeOffLength(request))}{request.note?' · '+request.note:''}</span>
@@ -60,7 +60,7 @@ export function TimeOffRequestCard({request,zone,headingId}:{request:TimeOffView
  </section>;
 }
 
-/** One request in the list: dates, length, status pill and a chevron. */
+/** One request in the list: dates, length, its state in grey and a chevron. */
 export function TimeOffListRow({request,href,id}:{request:TimeOffView;href:string;id?:string}){
  return <li data-employee-status={request.status}><CorpRow id={id} href={href} title={keepWhole(timeOffDates(request))} detail={keepWhole(timeOffLength(request))} trail={<TimeOffPill status={request.status}/>} chevron/></li>;
 }

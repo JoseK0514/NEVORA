@@ -54,7 +54,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
   </a>;
   return <div className={`${employee ? 'app-shell employee-shell nevora-portal' : 'app-shell nevora-portal'} ui-preview-shell`}>
     <aside className="sidebar">
-      <div className="sidebar-heading"><a href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></a></div>
+      <div className="sidebar-heading"><Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></Link></div>
       <nav className="sidebar-nav" aria-label="Primary navigation">
         {(employee ? [{label: '', items: navigation}] : managementNavigationGroups(navigation)).map(group => <div className="sidebar-nav-group" key={group.label}>
           {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}{group.items.map(item => navLink(item))}
@@ -66,7 +66,7 @@ function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (mes
     <main className="app-main">
       <header className="mobile-header">
         <span className="portal-workspace-name">{homePreviewRecords.workspace.name}</span>
-        <a href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></a>
+        <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></Link>
         <div className="mobile-header-actions">
           {!employee ? <button type="button" className="command-finder-trigger" aria-label="Search" onClick={() => notice('Search is not connected in this sample.')}>
             <MagnifyingGlassIcon size={18} aria-hidden="true"/><span>Search</span>
@@ -127,7 +127,7 @@ export function HomePreview() {
             actions: <ActionCenterSurface snapshot={role === 'OWNER' ? ownerTasks.snapshot : previewActionCenter} setupListed={role === 'OWNER' ? ownerTasks.removed : 0}
             connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
             category={category} onCategoryChange={setCategory} expanded={expanded} onExpand={() => setExpanded(true)} onRefresh={refresh}/>,
-          activity: <div className="manager-monitor-block"><ClockMonitorCard state={{monitor: previewMonitor, paused: false, refreshing: false}} onRefresh={refresh}/><a className="manager-attendance-link" href="/app?view=attendance"><NavIcon name="clock" size={18}/>Review attendance</a></div>}}/>}
+          activity: <div className="manager-monitor-block"><ClockMonitorCard state={{monitor: previewMonitor, paused: false, refreshing: false}} onRefresh={refresh}/><Link className="manager-attendance-link" href="/app?view=attendance"><NavIcon name="clock" size={18}/>Review attendance</Link></div>}}/>}
     </PreviewShell>
   </div>;
 }

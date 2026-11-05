@@ -59,3 +59,12 @@ it("clamps an offscreen anchor into the visible viewport", () => {
   expect(box.maxHeight).toBeLessThanOrEqual(136);
   expect(box.top + box.maxHeight).toBeLessThanOrEqual(148);
 });
+
+it("opens a narrower preferred width right-aligned to its trigger (upscale S7: the 240px account menu)", () => {
+  const box = actionMenuGeometry({ trigger: { left: 1700, right: 1888, top: 4, bottom: 48 }, viewport: { width: 1920, height: 1080 }, naturalHeight: 260, preferredWidth: 240 });
+  expect(box.width).toBe(240);
+  expect(box.left).toBe(1888 - 240);
+  expect(box.top).toBe(56);
+  // Still clamped to the viewport on a narrow window.
+  expect(actionMenuGeometry({ trigger, viewport: { width: 200, height: 600 }, naturalHeight: 100, preferredWidth: 240 }).width).toBe(176);
+});

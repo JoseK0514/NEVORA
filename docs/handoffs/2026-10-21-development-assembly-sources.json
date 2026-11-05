@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-10-28",
+  "observedAt": "2026-11-05",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "682ecea9fa61548f68274c896ffa4e2d92b62989",
+      "sha": "e9c3a66da330959738100884f87cb76fd2af8296",
       "disposition": "target",
-      "reason": "Current development three-branch retirement policy is incorporated into collaboration. Archived source dispositions and existing collaboration application work are preserved; no main or production promotion."
+      "reason": "Freshly fetched combined application source for the November 5 native synchronization. No remote branch or deployment is changed."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -386,7 +386,7 @@
       "branch": "main",
       "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
       "disposition": "protected",
-      "reason": "Production branch; this task must not update it."
+      "reason": "Observed protected production head only; no integration, deployment or production qualification is authorized by the native update."
     },
     {
       "branch": "v0/replicating-gusto-ui-62ce164a",
@@ -478,6 +478,30 @@
       "disposition": "held",
       "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
       "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-mobile-cloud-handoff-20261027"
+    },
+    {
+      "branch": "AI-owner",
+      "sha": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
+      "disposition": "included",
+      "reason": "Exact head is an ancestor of fetched development e9c3a66d; no unique commit is imported. Existing remote head is preserved. Its retirement is not authorized by this bounded native update."
+    },
+    {
+      "branch": "claude-codex-collab-nevora",
+      "sha": "1456688ace235eeef42864a926b1f08012d87c1f",
+      "disposition": "held",
+      "reason": "Three Owner Direction B UI commits after e9c3a66d are outside the requested development synchronization and remain held, without acceptance or rejection of that separate work. Preserve this active collaboration line; no overlay or merge is performed."
+    },
+    {
+      "branch": "claude/employee-mobile-phase2-20261027",
+      "sha": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+      "disposition": "included",
+      "reason": "Exact head is an ancestor of fetched development e9c3a66d; Employee changes arrive through development. Existing worktrees and remote head are preserved."
+    },
+    {
+      "branch": "codex/release1-db-rehearsal-20261101",
+      "sha": "fb7da7628455434e221e131d81ae417b407162c6",
+      "disposition": "reference",
+      "reason": "The one unique commit fb7da762 contains database-rehearsal documentation/evidence only. It is outside native test-data custody and is not imported or executed. Preserve the remote head and its worktree."
     }
   ],
   "maximumActiveBranches": 3

@@ -19,7 +19,8 @@ jobs:
   validate:
     name: validate
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    # Unit tests alone take 14-15 minutes on hosted runners (maxWorkers=1), so 20 left too little room.
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -164,7 +165,8 @@ jobs:
   phase-d-attendance-ui:
     name: phase-d-attendance-ui
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    # Busy runners took 27-41 min on the Release 1 line (WebKit screenshots, owned PostgreSQL); 40 cut off a passing run.
+    timeout-minutes: 50
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

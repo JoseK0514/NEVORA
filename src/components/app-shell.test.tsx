@@ -2,6 +2,7 @@ import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 import { AppShell } from "./app-shell";
+import { NavIcon } from "./nav-icon";
 
 const navigationMock = vi.hoisted(() => ({ pathname: "/app/my-time" }));
 vi.mock("next/navigation", () => ({ usePathname: () => navigationMock.pathname, useRouter: () => ({ push: () => {}, replace: () => {}, refresh: () => {} }), useSearchParams: () => new URLSearchParams() }));
@@ -235,9 +236,11 @@ it('shows no section tabs on pages outside a shared group',()=>{
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
-it('lights Home on an EMPLOYEE Updates page, which opens from More behind the avatar',()=>{
- const {mobile}=render('EMPLOYEE','/app/updates/own-update');
- expect(mobile).toContain('href="/app" class="mobile-nav-link active"');
+// Upscale (Nov 1): pages opened from the avatar (More, Updates, Profile) and the bell (Notifications) light no tab.
+it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/app/notifications'])('lights no EMPLOYEE tab on %s, which opens from the avatar or bell',pathname=>{
+ const {mobile}=render('EMPLOYEE',pathname);
+ expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).not.toContain('aria-current');
 });
 it.each(['LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
  const {mobile}=render(role,'/app/updates/own-update');
@@ -276,4 +279,64 @@ it.each(['EMPLOYEE','LEAD'] as const)('scopes the teal mobile foundation to %s w
 });
 it.each(['OWNER','MANAGER'] as const)('does not opt %s into the Employee mobile foundation',role=>{
  expect(render(role,'/app').html).not.toContain('data-employee-mobile="true"');
+});
+
+// Upscale (Nov 1): one desktop shell for both roles, the rail on tablets, the filled tab icons and the account menu header.
+it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar choices, the workspace row and no native title tooltips',role=>{
+ const {html}=render(role,'/app');
+ // The server cannot know the width: desktop follows the stored choice (full here), tablets open as a rail.
+ expect(html).toContain('data-sidebar-desktop="full"');
+ expect(html).toContain('data-sidebar-tablet="rail"');
+ expect(html).toContain('<p class="cm-org"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span></p>');
+ const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+ expect(sidebar).not.toMatch(/class="nav-link[^"]*"[^>]*title=/);
+ // One tooltip element for the rail, outside the sidebar, hidden from assistive technology (it repeats the entry's name).
+ expect(html.match(/class="c-rail-tip"/g)).toHaveLength(1);
+ expect(html).toContain('<div class="c-rail-tip" aria-hidden="true"></div>');
+});
+
+it('keeps a Lead (on hold) out of the corporate shell changes',()=>{
+ const {html}=render('LEAD','/app');
+ expect(html).not.toContain('class="cm-org"');
+ expect(html).toContain('class="e5-new"');
+});
+
+it.each(['EMPLOYEE','OWNER'] as const)('orders the %s top bar Search · bell · avatar, with no "+" button',role=>{
+ navigationMock.pathname='/app';
+ const html=renderToStaticMarkup(<AppShell workspaceName="Northside Services" notificationAuthority="fictional-view-authority" operationalAuthority={company} user={{id:'actor',firstName:'Sam',lastName:'Cruz',role}}>Content</AppShell>);
+ const actions=html.split('class="mobile-header-actions"')[1].split('</header>')[0];
+ expect(actions).not.toContain('e5-new');
+ expect(actions).not.toContain('aria-label="New request"');
+ const bell=actions.indexOf('portal-notification-bell'), menu=actions.indexOf('class="portal-account-menu"');
+ expect(bell).toBeGreaterThan(-1);
+ expect(menu).toBeGreaterThan(bell);
+ if(role==='OWNER') expect(actions.indexOf('command-finder-trigger')).toBeLessThan(bell);
+});
+
+it.each([['EMPLOYEE','Employee'],['OWNER','Owner'],['MANAGER','Manager']] as const)('opens the %s account menu on the name, then the role and workspace',(role,label)=>{
+ const {html}=render(role);
+ const menu=html.split('id="portal-account-menu"')[1];
+ expect(menu).toContain(`<div class="portal-account-head"><strong class="portal-account-head__name">Sam Cruz</strong><span class="portal-account-head__detail">${label} · Northside Services</span></div><div class="nevora-action-menu-divider portal-account-head__divider"></div>`);
+ // Sign out stays last, after its own divider.
+ expect(menu.indexOf('portal-account-signout')).toBeGreaterThan(menu.lastIndexOf('nevora-action-menu-divider'));
+});
+
+it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','clock']] as const)('fills the current %s tab icon and keeps the others regular',(role,pathname,icon)=>{
+ const {mobile}=render(role,pathname);
+ const active=mobile.split('class="mobile-nav-link active"')[1].split('</a>')[0];
+ expect(active).toContain(renderToStaticMarkup(<NavIcon name={icon} size={24} weight="fill" />));
+ const home=mobile.split('href="/app"')[1].split('</a>')[0];
+ expect(home).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={24} weight="regular" />));
+});
+
+// Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.
+it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sidebar entry on Help or an unknown address',role=>{
+ for(const pathname of ['/app/help','/app/no-such-page','/app/nothing/here']){
+  const {html,mobile}=render(role,pathname);
+  expect(mobile).not.toContain('mobile-nav-link active');
+  expect(mobile).not.toContain('aria-current');
+  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+  expect(sidebar).not.toContain('nav-link active');
+  expect(sidebar).not.toContain('aria-current');
+ }
 });

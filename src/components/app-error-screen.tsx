@@ -18,7 +18,7 @@ export function AppErrorScreen({reset}: {reset: () => void}) {
           <p className="app-error-screen__text">Try loading the page again before taking an action.</p>
           <div className="app-error-screen__actions">
             <button type="button" className="nv-btn" data-kind="primary" onClick={() => { reset(); focusAfterRetry('[data-nv-page] [data-nv-band] h1', '.app-error-screen .nv-btn[data-kind="primary"]'); }}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
-            {/* A plain link: the app shell itself may be what failed, so leave it with a full load. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- the app shell itself may be what failed, so leave it with a full document load */}
             <a className="nv-btn" data-kind="secondary" href="/app">Back to Home</a>
           </div>
         </CardBody>

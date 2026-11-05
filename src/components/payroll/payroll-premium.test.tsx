@@ -26,8 +26,9 @@ beforeEach(() => { boundary.data = { version: 'PAYROLL_API_V1', capabilities: na
 describe('Payroll next step (A2)', () => {
   it('prepares when no draft exists, and the label matches the Prepare payroll page', () => {
     const html = home();
-    expect(html).toContain('>Prepare payroll<');
-    expect(html).toContain('href="/app/payroll/prepare"');
+    // Nov 1 upscale: Up next is one row that opens the step (no button); the step is in its name.
+    expect(html).toMatch(/<li class="c-payroll__upnext"><a class="c-row" aria-label="Weekly payroll, [^"]*\. Prepare payroll" href="\/app\/payroll\/prepare">/);
+    expect(html).not.toContain('c-btn');
     expect(html).not.toContain('>Review<');
   });
   it('reviews the issue when something stops the open draft', () => {
@@ -56,8 +57,10 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     const html = home();
     expect(html).toContain('3 pay periods have no payroll');
     expect(html).toContain(thin('Oldest is <span class="c-num">Sep 21 – 27</span>. Its payday was <span class="c-num">Tue, Sep 29</span>.'));
-    // A neutral secondary button that opens the period on Prepare payroll (it never prepares anything by itself).
-    expect(html).toMatch(/class="c-btn c-btn--secondary c-btn--md c-pay__unpaid-go" href="\/app\/payroll\/prepare#unpaid-2026-09-21">Start with Sep 21 – 27</);
+    // Nov 1 upscale: the page's one filled button, which opens the period on Prepare payroll (it never prepares anything
+    // by itself).
+    expect(html).toMatch(/class="c-btn c-btn--md c-pay__unpaid-go" href="\/app\/payroll\/prepare#unpaid-2026-09-21">Prepare Sep 21 – 27</);
+    expect(html.match(/class="c-btn[ "]/g)).toHaveLength(1);
     expect(html.match(/c-pay__unpaid-title/g)?.length).toBe(1);
     expect(html).not.toContain('c-callout--red');
     // The quiet tools row isn't repeated under the notice.
@@ -76,11 +79,13 @@ describe('Unpaid periods first (A6, round 2 R3)', () => {
     expect(html).not.toContain('c-pay__unpaid');
     expect(html).not.toContain('Start with the oldest');
     expect(html).toContain('Periods with no payroll');
-    // One filled primary (the oldest period); the current week's Prepare payroll is secondary.
+    // One filled button on the page (the oldest period's); the current week's Prepare payroll is a teal text action.
     const buttons = html.match(/<button[^>]*>Prepare payroll</g) ?? [];
     expect(buttons.length).toBe(2);
-    expect(buttons.filter(button => !button.includes('c-btn--secondary'))).toHaveLength(1);
-    expect(buttons.find(button => !button.includes('c-btn--secondary'))).toContain(thin('aria-label="Prepare payroll for Sep 21 – 27"'));
+    expect(buttons.filter(button => /class="c-btn[ "]/.test(button))).toHaveLength(1);
+    expect(buttons.find(button => /class="c-btn[ "]/.test(button))).toContain(thin('aria-label="Prepare payroll for Sep 21 – 27"'));
+    expect(buttons.find(button => button.includes('c-pay__quiet-go'))).toContain(thin('aria-label="Prepare payroll for Oct 5 – 11"'));
+    expect(html).not.toContain('c-btn--secondary');
     expect(html).not.toContain('Prepare draft');
   });
 });
@@ -90,7 +95,8 @@ describe('One status for the open period (R7)', () => {
     const html = home();
     expect(html).not.toContain('Due in');
     expect(html).not.toContain('Not prepared yet');
-    expect(html).toContain('Prepare by payday');
+    // Nov 1 upscale: the row says the period and the payday, nothing else.
+    expect(html).not.toContain('Prepare by payday');
     expect(html).toMatch(/ · Payday <span class="c-num">[A-Z][a-z]{2}, Oct 16<\/span>/);
   });
   it('names Pay history once, as the Recent payrolls link', () => {
@@ -147,7 +153,11 @@ describe('Payroll details documents (R9)', () => {
     expect(html).toContain('Pay statement · Shared with employee');
     expect(html).not.toMatch(/>[^<]*statement-ZZ9999[^<]*</);
     expect(html).not.toContain('Revision 2 approved');
-    expect(html).toMatch(/>Approved [A-Z][a-z]{2} 12/);
+    // Nov 1 upscale: the status (and the day it was approved) is the subtitle; no floating line under the cards.
+    expect(html).toMatch(/<span class="c-title__sub">Oct 5 – 11 · Payday [A-Z][a-z]{2}, Oct 16 · Approved [A-Z][a-z]{2} 12<\/span>/);
+    expect(html).not.toContain('c-note--center');
+    // The action rows end in chevrons.
+    expect(html).toMatch(/<span class="c-row__title">Fix this payroll<\/span>.*?<svg[^>]*class="c-chev"/);
   });
 });
 

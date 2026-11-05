@@ -17,7 +17,8 @@ it("lists who is clocked in (earliest first), who isn't in yet with how late, an
   const out = html({ monitor: monitor([person("b", "2026-10-30T11:58:00Z"), person("a", "2026-10-30T09:54:00Z", { state: "ON_BREAK", breakStartAt: "2026-10-30T12:10:00Z" })]),
     today: today([shift("c", "not_clocked_in", "2026-10-30T12:00:00Z"), shift("d", "no_punches", "2026-10-30T04:00:00Z")]) });
   expect(out).toContain('>Clocked in<span class="c-count c-num">2</span><');
-  expect(out).toContain('<span class="c-meta">Live</span>');
+  expect(out.replace(/\u202f/g, " ")).toContain('<span class="c-meta c-num">Updated 8:24 AM</span>');
+  expect(out).not.toContain(">Live<");
   expect(out).not.toContain("c-pill");
   expect(out.indexOf("Person a")).toBeLessThan(out.indexOf("Person b"));
   expect(out).toContain("On break since 8:10 AM");

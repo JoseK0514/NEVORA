@@ -19,9 +19,15 @@
 :is(#c-root, html) .c-xsheet .c-sheet-head__l { display: inline-flex; align-items: center; font-family: inherit; }
 :is(#c-root, html) .c-xsheet .c-sheet-body { padding: 16px 16px max(34px, calc(16px + env(safe-area-inset-bottom, 0px))); }
 
-/* By URL: a white card on the grey page under the pushed-page header. */
+/* By URL (upscale S15): no outer card. On the grey page the shift summary, the choices and the note are each their own
+ * white card, 12px apart; the action follows. */
 :is(#c-root, html) .c-page.c-xsheet--page { gap: 16px; }
-:is(#c-root, html) .c-xsheet--page > .c-sheet-body { padding: 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
+:is(#c-root, html) .c-xsheet--page > .c-sheet-body { display: flex; flex-direction: column; gap: 12px; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#c-root, html) .c-xsheet--page .c-xs-fields { gap: 12px; }
+:is(#c-root, html) .c-xsheet--page .c-xs-shift { padding: 14px 16px; border-radius: 12px; background: #FFFFFF; box-shadow: var(--c-shadow-card); }
+:is(#c-root, html) .c-xsheet--page .c-xs-options, :is(#c-root, html) .c-xsheet--page .c-xs-who { border-radius: 12px; box-shadow: var(--c-shadow-card); }
+:is(#c-root, html) .c-xsheet--page .c-xs-who--fill { min-height: 52px; padding: 10px 16px; background: #FFFFFF; }
+:is(#c-root, html) .c-xsheet--page .c-xs-option { padding: 8px 16px; }
 
 /* The shift on a grey block. */
 :is(#c-root, html) .c-xsheet .c-xs-shift { display: flex; flex-direction: column; padding: 12px 14px; border-radius: 8px; background: #F5F6F6; }

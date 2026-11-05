@@ -45,8 +45,9 @@ business days, Puerto Rico holidays excluded), `DELETION_COMPLETION_PERIOD` (30 
 `HOSTING_TRANSFER_DETAILS` (United States, Northern Virginia: Neon us-east-1, Vercel iad1),
 `SALE_SHARING_AND_TRACKING_STATEMENT`, `EMPLOYER_DATA_RESPONSIBILITIES`, `REGIONAL_PRIVACY_DETAILS` (Puerto Rico).
 
-`BACKUP_EXPIRY` uses Jose’s approved interim wording (six-hour restore history; the maximum across all copies is being
-verified). Update it once the full lifecycle is confirmed.
+`BACKUP_EXPIRY` follows the production database set up on November 1, 2026: a seven-day restore history (604,800
+seconds, independently read back) and separately kept recovery snapshots, which are not covered by the seven days.
+`POLICY_VERSION` moved to 2026-11-04 with this wording.
 
 `BUSINESS_CONTACT_DETAILS`: VELANI LLC, 1654 Calle Tulipan, Suite 100, San Juan, PR 00927 (Jose, October 20).
 

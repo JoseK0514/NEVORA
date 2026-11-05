@@ -7,7 +7,7 @@
 :is(#c-root, html) .c-page {
   --c-bg: #F5F6F6; --c-card: #FFFFFF; --c-ring: #E3E5E6; --c-line: #EDEEEF; --c-ink: #1A1C1E; --c-ink2: #4A4F54; --c-grey: #6B7075;
   --c-faint: #A7ACB1; --c-field: #D5D8DA; --c-teal: #0B6E69; --c-teal-hover: #084F4B; --c-tint: #E6F1EF;
-  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-blue-bg: #EAF0FD; --c-blue: #1D4ED8; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
+  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
   --c-badge-neutral-bg: #EDEEEF; --c-badge-neutral-ink: #1A1C1E; --c-av-bg: #EDEEEF; --c-av-ink: #4A4F54;
   display: flex; flex-direction: column; gap: 12px; min-height: 100%; margin: 0; padding: 16px 16px 24px; box-sizing: border-box;
   background: var(--c-bg); color: var(--c-ink); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -56,14 +56,14 @@
 :is(#c-root, html) .c-link:hover { color: var(--c-teal-hover); }
 :is(#c-root, html) .c-link--l { font-size: 15px; line-height: 20px; margin: 0; }
 
-/* Rows: 56px (two lines) or 52px (one line); a divider above every row after the first. */
+/* Rows (Nov 1 upscale, kit consistency 3): 60px for two lines, 52px for one; a divider above every row after the first.
+ * Titles 15/500 ink, details 13/400 grey, values 15/400 grey. */
 :is(#c-root, html) .c-rows > li + li > .c-row, :is(#c-root, html) .c-rows > .c-row + .c-row, :is(#c-root, html) .c-row + .c-row,
 :is(#c-root, html) .c-card__head + .c-card__note { box-shadow: inset 0 1px 0 var(--c-line); }
-:is(#c-root, html) .c-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; margin: 0; padding: 8px 16px; border: 0; background: none; color: var(--c-ink); text-align: left; font: inherit; }
+:is(#c-root, html) .c-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; margin: 0; padding: 8px 16px; border: 0; background: none; color: var(--c-ink); text-align: left; font: inherit; }
 :is(#c-root, html) .c-row--one { min-height: 52px; }
 :is(#c-root, html) .c-row--tall { min-height: 64px; }
 :is(#c-root, html) a.c-row, :is(#c-root, html) button.c-row, :is(#c-root, html) label.c-row { cursor: pointer; }
-:is(#c-root, html) a.c-row:active, :is(#c-root, html) button.c-row:active { background: #F7F8F8; }
 :is(#c-root, html) .c-row__lead { flex: none; width: 56px; white-space: nowrap; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__icon { flex: none; display: grid; place-items: center; width: 22px; height: 22px; color: var(--c-ink2); }
 :is(#c-root, html) .c-row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
@@ -74,8 +74,9 @@
 :is(#c-root, html) .c-row__title--b { font-weight: 500; }
 :is(#c-root, html) .c-row__detail { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-row__detail > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 500; color: var(--c-ink); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
+:is(#c-root, html) .c-row__value { flex: none; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--c-grey); text-align: right; white-space: nowrap; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) .c-row__value--soft { font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-row__value--ink { font-weight: 500; color: var(--c-ink); }
 :is(#c-root, html) .c-row__value--teal { color: var(--c-teal); }
 :is(#c-root, html) .c-row__value--red { color: var(--c-red); }
 :is(#c-root, html) .c-row__value--amber { color: var(--c-amber); }
@@ -85,12 +86,14 @@
 /* R3: an open shift is an ordinary row (the dashed avatar and its words mark it); the red ring retired. */
 :is(#c-root, html) .c-row[aria-disabled="true"] { cursor: default; }
 
-/* Status pills (filled), count badges, avatars */
+/* Status pills (filled), count badges, avatars. Nov 1 upscale (kit consistency 5): blue is not in the NEVORA palette; a
+ * blue pill reads as a default state, 13/18 500 grey text with no fill. */
 /* R3: pills are for exceptions only (see CorpPill); a default state is grey text (.c-meta). */
 :is(#c-root, html) .c-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 13px; line-height: 18px; font-weight: 500; white-space: nowrap; }
 :is(#c-root, html) .c-pill--teal { background: var(--c-tint); color: var(--c-teal); }
 :is(#c-root, html) .c-pill--amber { background: var(--c-amber-bg); color: var(--c-amber); }
-:is(#c-root, html) .c-pill--blue { background: var(--c-blue-bg); color: var(--c-blue); }
+:is(#c-root, html) .c-pill--blue { height: auto; padding: 0; border-radius: 0; background: none; color: var(--c-grey); font-weight: 500; }
+:is(#c-root, html) .c-pill--blue .c-pill__dot { display: none; }
 :is(#c-root, html) .c-pill--red { background: var(--c-red-bg); color: var(--c-red); }
 :is(#c-root, html) .c-pill--neutral { background: var(--c-neutral-bg); color: var(--c-ink2); }
 :is(#c-root, html) .c-pill__dot { width: 6px; height: 6px; border-radius: 3px; background: currentColor; }
@@ -142,8 +145,12 @@
 :is(#c-root, html) .c-callout--teal { background: var(--c-tint); color: var(--c-teal); }
 :is(#c-root, html) .c-callout--red { background: var(--c-red-bg); color: var(--c-red); }
 :is(#c-root, html) .c-callout b { display: block; font-weight: 600; }
-:is(#c-root, html) .c-empty { padding: 20px 16px; font-size: 15px; line-height: 20px; color: var(--c-grey); text-align: center; }
+:is(#c-root, html) .c-empty { display: flex; flex-direction: column; justify-content: center; min-height: 56px; padding: 8px 16px; font-size: 15px; line-height: 20px; color: var(--c-grey); text-align: left; }
 :is(#c-root, html) .c-empty b { display: block; margin-bottom: 2px; font-weight: 600; color: var(--c-ink); }
+/* Nov 1 upscale (kit consistency 6): an older empty block with a bold title ("<b>Nothing waiting</b>One line") reads as the
+ * one empty pattern: the title 15/600 ink over one 13/18 grey line, left-aligned with 16px padding. */
+:is(#c-root, html) .c-empty:has(> b) { min-height: 0; padding: 16px; font-size: 13px; line-height: 18px; }
+:is(#c-root, html) .c-empty:has(> b) > b { font-size: 15px; line-height: 20px; }
 :is(#c-root, html) .c-error { font-size: 13px; line-height: 18px; color: var(--c-red); }
 
 /* Segmented control */
@@ -319,15 +326,26 @@
   --c-num-features: "tnum" 1, "case" 1;
   --c-meta: #6B7075; --c-past-ink: #6B7075; --c-ampm: #4A4F54;
   --c-gap-group: 32px; --c-gap-item: 12px;
+  /* Nov 1 upscale (kit consistency 4): one hover and one pressed fill for every clickable row, list row and table row. */
+  --c-row-hover: #F2F4F4; --c-row-press: #EDEEEF; --c-dur-row: 120ms;
 }
 
 /* Pressed states (P4): every tap answers. Rows darken to #EDEEEF at once and fade back; text links, back links and
  * header actions dim to .55; icon and select buttons fill; the filled button deepens. Desktop rows get a hover. */
-:is(#c-root, html) :is(a, button).c-row { transition: background-color var(--c-dur-ui) ease-out; -webkit-tap-highlight-color: transparent; }
+:is(#c-root, html) :is(a, button, label, summary).c-row, :is(#c-root, html) .c-clickable { cursor: pointer; transition: background-color var(--c-dur-row) ease-out; -webkit-tap-highlight-color: transparent; }
 @media (hover: hover) and (pointer: fine) {
-  :is(#c-root, html) :is(a, button).c-row:hover { background: #F7F8F8; transition-duration: var(--c-dur-press); }
+  :is(#c-root, html) :is(a, button, label, summary).c-row:hover, :is(#c-root, html) .c-clickable:hover,
+  :is(#c-root, html) .c-clickable:hover > :is(td, th) { background: var(--c-row-hover); }
 }
-:is(#c-root, html) a.c-row:active, :is(#c-root, html) button.c-row:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) :is(a, button, label, summary).c-row:active, :is(#c-root, html) .c-clickable:active,
+:is(#c-root, html) .c-clickable:active > :is(td, th) { background: var(--c-row-press); transition: none; }
+/* Grey text keeps 4.5:1 on those fills and on every frame of their fade (#6B7075 is only 4.3:1 on #EDEEEF): while a row is
+ * hovered or pressed its grey is one step deeper, #63686D (4.8:1 on #EDEEEF, 5.1:1 on #F2F4F4). */
+:is(#c-root, html) :is(a, button, label, summary).c-row:is(:hover, :active), :is(#c-root, html) .c-clickable:is(:hover, :active) { --c-grey: #63686D; --c-meta: #63686D; }
+:is(#c-root, html) .c-clickable > :is(td, th) { transition: background-color var(--c-dur-row) ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) :is(a, button, label, summary).c-row, :is(#c-root, html) .c-clickable, :is(#c-root, html) .c-clickable > :is(td, th) { transition: none; }
+}
 :is(#c-root, html) :is(.c-link, .c-nav__back, .c-sheet-head__l, .c-sheet-head__r, .c-sheet__done, .c-back),
 :is(#c-root, html) .c-nav__right :is(a, button):not(.c-btn) { transition: opacity 150ms ease-out; -webkit-tap-highlight-color: transparent; }
 :is(#c-root, html) :is(.c-link, .c-nav__back, .c-sheet-head__l, .c-sheet-head__r, .c-sheet__done, .c-back):active,
@@ -350,11 +368,24 @@
 :is(#c-root, html) .c-error { display: block; margin-top: -2px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-red); }
 :is(#c-root, html) .c-in[aria-invalid="true"], :is(#c-root, html) .c-in[aria-invalid="true"]:focus { outline: 0; box-shadow: inset 0 0 0 2px var(--c-red); }
 
-/* Empty state (A10, visual-craft K): a card with one 15/600 line, one 13px line and at most one secondary action. */
-:is(#c-root, html) .c-empty--card { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 32px 16px; text-align: center; }
-:is(#c-root, html) .c-empty__title { display: block; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
-:is(#c-root, html) .c-empty__body { display: block; max-width: 360px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
-:is(#c-root, html) .c-empty__action { margin-top: 14px; }
+/* Empty state (A10; Nov 1 upscale, kit consistency 6): one pattern. A left-aligned card: a 15/600 title, one 13/18 grey
+ * line, an optional teal next-step link. Inside a list card, one 56px row of 15/400 grey text (.c-empty, .c-empty--row). */
+:is(#c-root, html) .c-empty--card { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; min-height: 0; padding: 16px; text-align: left; }
+:is(#c-root, html) .c-empty__title { display: block; margin: 0; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-empty__body { display: block; max-width: 560px; font-size: 13px; line-height: 18px; font-weight: 400; color: var(--c-grey); }
+:is(#c-root, html) .c-empty__next { display: block; margin-top: 4px; }
+:is(#c-root, html) .c-empty__next > .c-link { margin-top: -13px; margin-bottom: -13px; }
+:is(#c-root, html) .c-empty__action { margin-top: 12px; }
+:is(#c-root, html) .c-empty--row { display: flex; flex-direction: row; align-items: center; min-height: 56px; padding: 8px 16px; font-size: 15px; line-height: 20px; font-weight: 400; color: var(--c-grey); text-align: left; }
+:is(#c-root, html) .c-link__chev { flex: none; width: 12px; height: 12px; margin-left: -2px; }
+
+/* Partial failure (Nov 1 upscale, kit consistency 7): one line on the right of a card header, "Couldn't load · Try
+ * again" (grey 13/500, then a teal 13/600 link); a figure that is missing is an em dash in #A7ACB1. */
+:is(#c-root, html) .c-fail { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; line-height: 18px; font-weight: 500; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-fail__dot { color: var(--c-faint); }
+:is(#c-root, html) .c-fail > .c-fail__retry { font-weight: 600; }
+:is(#c-root, html) .c-fail > .c-fail__retry[aria-disabled="true"] { color: var(--c-grey); cursor: default; }
+:is(#c-root, html) .c-stat__value.c-stat__value--none { color: var(--c-faint); font-weight: 500; }
 
 /* Error card (P3, phone-native L3): the one failure style. A card with a 15/600 title, a 13px line and a neutral "Try again". */
 :is(#c-root, html) .c-error-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 16px; }
@@ -400,30 +431,70 @@
   :is(#c-root, html) .c-page :is(.c-icon-btn, .c-select-btn) { transition: background-color var(--c-dur-press) ease-out; }
 }
 
-/* Loading (P7): a page-shaped placeholder on the page's own background. The title is real text at once; the shapes fade
- * in only after 120ms, so a quick load shows no flash. After 2.5s it becomes the error card (P3). */
+/* Loading (P7; Nov 1 upscale, kit consistency 8): a page-shaped placeholder on the page's own background, built from the
+ * kit's own title, card, header, stat and row boxes so every height is the final one. The title is real text at once; the
+ * shapes fade in only after 120ms, so a quick load shows no flash. Bars are #EDEEEF, radius 4, 13px (text) or 20px (a
+ * figure) tall, centred in their line boxes. One shimmer crosses the shapes (transform only); none with reduced motion.
+ * After 2.5s it becomes the error card (P3). */
 :is(#c-root, html) .c-skel { display: none; }
-:is(#c-root, html) .c-skel__shape { display: block; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
-:is(#c-root, html) .c-skel__bar { display: block; height: 12px; border-radius: 6px; background: var(--c-neutral-bg); }
-:is(#c-root, html) .c-skel__shapes { display: flex; flex-direction: column; gap: 12px; opacity: 0; animation: c-skel-in 160ms ease-out 120ms both; }
-:is(#c-root, html) .c-skel__row { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; }
-:is(#c-root, html) .c-skel__row + .c-skel__row { box-shadow: inset 0 1px 0 var(--c-line); }
-:is(#c-root, html) .c-skel__row > i { flex: none; width: 32px; height: 32px; border-radius: 16px; background: var(--c-neutral-bg); }
-:is(#c-root, html) .c-skel__row > span { flex: 1; display: grid; gap: 8px; }
-:is(#c-root, html) .c-skel__row > span > b { display: block; width: 46%; height: 12px; border-radius: 6px; background: var(--c-neutral-bg); }
-:is(#c-root, html) .c-skel__row > span > b + b { width: 68%; height: 10px; background: #F2F3F4; }
-:is(#c-root, html) .c-skel__seg { display: block; height: 36px; border-radius: 8px; background: var(--c-neutral-bg); }
-@keyframes c-skel-in { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-skel__shapes { animation-duration: 1ms; } }
 :is(#c-root, html) .c-page.c-skel { min-height: 0; padding: 16px 16px 24px; background: none; }
-:is(#c-root, html) .c-skel__title { display: block; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.45px; color: var(--c-ink); }
-:is(#c-root, html) .c-skel__bar--title { width: 46%; max-width: 280px; height: 30px; border-radius: 8px; }
-:is(#c-root, html) .c-skel__shape--card { height: 108px; }
-:is(#c-root, html) .c-skel__shape--tall { height: 260px; }
-:is(#c-root, html) .c-skel__shape:has(> .c-skel__row) { overflow: hidden; }
+:is(#c-root, html) .c-skel__v { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+:is(#c-root, html) .c-skel__v--employee { display: none; }
+:is(#c-root, html) #employee-mobile .c-skel__v--employee { display: flex; }
+:is(#c-root, html) #employee-mobile .c-skel__v--owner { display: none; }
+:is(#c-root, html) .c-skel__bar { display: inline-block; flex: none; max-width: 100%; height: 13px; border-radius: 4px; background: var(--c-neutral-bg); vertical-align: middle; }
+:is(#c-root, html) .c-skel__bar--20 { height: 20px; }
+:is(#c-root, html) .c-skel__line { display: flex; align-items: center; min-width: 0; height: 20px; }
+:is(#c-root, html) .c-skel__line--detail { height: 18px; }
+:is(#c-root, html) .c-skel__line--20 { height: 26px; }
+:is(#c-root, html) .c-skel__title { display: block; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.45px; color: var(--c-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-skel__titlebar { display: flex; align-items: center; flex: 1; height: 30px; }
+:is(#c-root, html) .c-skel .c-title__sub { display: flex; align-items: center; height: 18px; }
+:is(#c-root, html) .c-skel__shapes { display: flex; flex-direction: column; gap: 12px; opacity: 0; animation: c-skel-in 160ms ease-out 120ms both; }
+:is(#c-root, html) .c-skel__shapes > .c-skel__label { display: flex; height: 18px; margin-bottom: -4px; }
+:is(#c-root, html) .c-skel__shapes > * + .c-skel__label { margin-top: calc(var(--c-gap-group) - var(--c-gap-item)); }
+:is(#c-root, html) .c-skel__label > .c-skel__line { height: 18px; flex: 1; }
+:is(#c-root, html) .c-skel__label > .c-skel__line + .c-skel__line { flex: none; }
+:is(#c-root, html) .c-skel__card { display: block; }
+:is(#c-root, html) .c-skel__card .c-card__head { justify-content: flex-start; }
+:is(#c-root, html) .c-skel__card .c-card__head > .c-skel__line { flex: 1; }
+:is(#c-root, html) .c-skel__body { display: flex; flex-direction: column; gap: 0; }
+:is(#c-root, html) .c-skel__button { display: block; width: 100%; height: 44px; margin-top: 14px; border-radius: 8px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__stats .c-stat__label, :is(#c-root, html) .c-skel__stats .c-stat__value { display: flex; align-items: center; height: 18px; }
+:is(#c-root, html) .c-skel__stats .c-stat__value { height: 26px; }
+:is(#c-root, html) .c-skel__rows { display: block; }
+:is(#c-root, html) .c-skel__rows > .c-row + .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-skel__rows .c-row__main { gap: 0; }
+:is(#c-root, html) .c-skel__rows .c-row__lead { display: flex; align-items: center; height: 20px; }
+:is(#c-root, html) .c-skel__av { flex: none; width: 32px; height: 32px; border-radius: 16px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__strip { display: flex; justify-content: space-between; gap: 4px; padding: 12px 16px; }
+:is(#c-root, html) .c-skel__strip > i { flex: none; width: 36px; height: 44px; border-radius: 8px; background: var(--c-neutral-bg); }
+:is(#c-root, html) .c-skel__seg { display: block; height: 36px; border-radius: 8px; background: var(--c-neutral-bg); }
+/* The shimmer: one soft light band that crosses each card every 1.6s, inside the card's own clip (a transform only). */
+:is(#c-root, html) .c-skel__card { position: relative; }
+:is(#c-root, html) .c-skel__card::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(100deg, rgb(255 255 255 / 0) 20%, rgb(255 255 255 / 0.6) 50%, rgb(255 255 255 / 0) 80%);
+  transform: translateX(-100%); animation: c-skel-shimmer 1.6s ease-in-out 280ms infinite; }
+@keyframes c-skel-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes c-skel-shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html) .c-skel__shapes { animation-duration: 1ms; }
+  :is(#c-root, html) .c-skel__card::after { display: none; animation: none; }
+}
 @media (min-width: 768px) {
   :is(#c-root, html) .c-page.c-skel { width: 100%; max-width: 1040px; margin: 0 auto; padding: 48px 24px 48px; }
+  :is(#c-root, html) .c-skel__strip { justify-content: flex-start; gap: 12px; }
+  :is(#c-root, html) .c-skel__strip > i { width: 104px; height: 64px; }
+  :is(#c-root, html) .c-skel__titlebar { height: 34px; }
+  /* A single-column page's placeholder is capped like the page (720px, left-aligned). */
+  :is(#c-root, html) .c-skel__v--narrow > * { width: 100%; max-width: 720px; }
 }
+/* The page that replaces a placeholder fades in over 150ms (CorpSkeleton sets data-c-arrived as it leaves), so the switch
+ * reads as one crossfade on the same canvas. Opacity only; none with reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-c-arrived] main.page-frame > :not(.route-skeleton):not(.section-tabs) { animation: c-arrive 150ms ease-out both; }
+}
+@keyframes c-arrive { from { opacity: 0; } to { opacity: 1; } }
 /* The phone back link is at least 44px wide, even as a chevron alone at 320 (Payroll builder request). */
 :is(#c-root, html) .c-nav__back { min-width: 44px; }
 
@@ -455,18 +526,21 @@
 :is(#c-root, html) .c-past { color: var(--c-past-ink); }
 
 /* R5: rhythm. 12px between cards of one group (the page's gap), 32px between groups. A list page groups its cards in
- * CorpSection: a 13/18 500 grey label 16px in from the card's edge and 8px above it, instead of a 44px header strip. */
+ * CorpSection: a 13/18 500 grey label on the card's edge and 8px above it, instead of a 44px header strip. */
 :is(#c-root, html) .c-section { display: flex; flex-direction: column; gap: var(--c-gap-item); min-width: 0; }
 :is(#c-root, html) .c-page > .c-section + *, :is(#c-root, html) .c-page > * + .c-section,
 :is(#c-root, html) .c-page > .c-group + *, :is(#c-root, html) .c-page > * + .c-group { margin-top: calc(var(--c-gap-group) - var(--c-gap-item)); }
 :is(#c-root, html) .c-page > :is(.c-title, .c-nav, .c-phone-sub) + :is(.c-section, .c-group) { margin-top: 0; }
-:is(#c-root, html) .c-section__label { margin: 0 16px -4px; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
-:is(#c-root, html) .c-section__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px -4px; }
+/* Nov 1 upscale (kit consistency 2): one section label. 13/18 500 #6B7075 on the card's left edge (inset 0), 8px above the
+ * card (the group's 12px gap less 4px) and 32px under the previous group. */
+:is(#c-root, html) .c-section__label { margin: 0 0 -4px; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
+:is(#c-root, html) .c-section__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 -4px; }
 :is(#c-root, html) .c-section__head > .c-section__label { margin: 0; }
 :is(#c-root, html) .c-group { display: flex; flex-direction: column; gap: var(--c-gap-item); min-width: 0; }
 /* The same label as a bare element above a card (Payroll builder's request): .c-sec-label holds an h2 (13/18 500 grey) and
- * an optional aside on the right; margin 0 16px 8px (the page's 12px gap still follows it). A .c-sec-label starts a new group, 32px under what came before. */
-:is(#c-root, html) .c-sec-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 16px 8px; }
+ * an optional aside on the right, on the card's edge, 8px above the card (-4px, then the page's 12px gap). A .c-sec-label
+ * starts a new group, 32px under what came before. */
+:is(#c-root, html) .c-sec-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 -4px; }
 :is(#c-root, html) .c-sec-label > h2 { margin: 0; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
 :is(#c-root, html) .c-page > * + .c-sec-label { margin-top: calc(var(--c-gap-group) - var(--c-gap-item)); }
 :is(#c-root, html) .c-page > :is(.c-title, .c-nav, .c-phone-sub) + .c-sec-label { margin-top: 0; }
@@ -486,8 +560,7 @@
   :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + .c-phone-sub + :not(.c-section):not(.c-group) { margin-top: 12px; }
   :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + :is(.c-section, .c-group),
   :is(#c-root, html) .c-page > :is(.c-title, .c-nav:not(.c-nav--phone)) + .c-phone-sub + :is(.c-section, .c-group) { margin-top: 12px; }
-  :is(#c-root, html) .c-skel__bar--title { height: 34px; }
-  /* A 44px icon button ("…") in the title row takes 40px of layout, so it never pushes the title down. */
+    /* A 44px icon button ("…") in the title row takes 40px of layout, so it never pushes the title down. */
   :is(#c-root, html) :is(.c-title__actions, .c-title__row, .c-nav__right) .c-icon-btn { margin-top: -2px; margin-bottom: -2px; }
 }
 
@@ -549,14 +622,16 @@
 }
 
 /* Round 2 requests from the Home and Insights builder. */
-/* A stat that links to its list. The link fills the stat; hover #F7F8F8, press #EDEEEF, an inset 2px teal focus ring. */
+/* A stat that links to its list. The link fills the stat; the row hover and press (#F2F4F4, #EDEEEF), an inset teal ring. */
 :is(#c-root, html) .c-stat.c-stat--link { padding: 0; }
-:is(#c-root, html) .c-stat__link { display: block; height: 100%; padding: 12px 16px; color: inherit; text-decoration: none; transition: background-color var(--c-dur-press) ease-out; -webkit-tap-highlight-color: transparent; }
-@media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-stat__link:hover { background: #F7F8F8; } }
-:is(#c-root, html) .c-stat__link:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) .c-stat__link { display: block; height: 100%; padding: 12px 16px; color: inherit; text-decoration: none; transition: background-color var(--c-dur-row) ease-out; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) and (pointer: fine) { :is(#c-root, html) .c-stat__link:hover { background: var(--c-row-hover); } }
+:is(#c-root, html) .c-stat__link:active { background: var(--c-row-press); transition: none; }
 :is(#c-root, html) .c-page .c-stat__link:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--c-teal); border-radius: 0; }
-/* A count after a label, in place of "(3)". */
-:is(#c-root, html) .c-count { margin-left: 6px; font-weight: 500; color: var(--c-grey); font-variant-numeric: tabular-nums; font-feature-settings: var(--c-num-features); }
+/* Nov 1 upscale (kit consistency 1): one count style after a label, in place of "(3)": "Label N", N 6px after the label at
+ * 13/18 600 #6B7075 with tabular figures. Written as span.c-count.c-count so it outranks the older per-page copies. */
+:is(#c-root, html) span.c-count.c-count { display: inline; margin-left: 6px; font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: 0; color: var(--c-grey, #6B7075);
+  font-variant-numeric: tabular-nums; font-feature-settings: var(--c-num-features); }
 /* A sub-head inside a card for a second kind of row. */
 :is(#c-root, html) .c-card__sub { display: block; margin: 0; padding: 12px 16px 8px; box-shadow: inset 0 1px 0 var(--c-line); font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: -0.04px; color: var(--c-grey); }
 :is(#c-root, html) .c-card > .c-card__sub:first-child { box-shadow: none; }
@@ -570,7 +645,7 @@
 :is(#c-root, html) :is(dialog.q-sheet, .c-sheet) {
   --c-bg: #F5F6F6; --c-card: #FFFFFF; --c-ring: #E3E5E6; --c-line: #EDEEEF; --c-ink: #1A1C1E; --c-ink2: #4A4F54; --c-grey: #6B7075;
   --c-faint: #A7ACB1; --c-field: #D5D8DA; --c-teal: #0B6E69; --c-teal-hover: #084F4B; --c-tint: #E6F1EF;
-  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-blue-bg: #EAF0FD; --c-blue: #1D4ED8; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
+  --c-amber-bg: #FEF4E6; --c-amber: #8A4B00; --c-red-bg: #FDECEA; --c-red: #B42318; --c-neutral-bg: #EDEEEF;
   --c-badge-neutral-bg: #EDEEEF; --c-badge-neutral-ink: #1A1C1E; --c-av-bg: #EDEEEF; --c-av-ink: #4A4F54;
 }
 /* A Cancel-style action in a sheet's bar that is disabled reads grey. */

@@ -69,7 +69,8 @@ it("labels overnight context and empty results without an assignment action", ()
   const html = render({ startTime: "22:00", endTime: "06:00", candidates: [] }).replace(/[\u00a0\u2009\u202f]/g, " ").replace(/<span class="c-ampm">([^<]*)<\/span>/g, "$1");
   expect(html).toContain("Ends Tue, Oct 13"); expect(html).toContain("10:00 PM – 6:00 AM");
   // Owner premium R14 / copy table 29–31: words for zero, and no "lead" (the role is on hold).
-  expect(html).toContain("No one free"); expect(html).toContain("No one is free"); expect(html).not.toContain("lead, location"); expect(html).not.toContain("/app/schedule/new?");
+  // Nov 1 upscale: the empty body says it once ("No one is free"); the header no longer repeats "No one free".
+  expect(html).not.toContain("No one free"); expect(html).toContain("No one is free"); expect(html).not.toContain("lead, location"); expect(html).not.toContain("/app/schedule/new?");
   expect(html).toContain(props.backHref.replaceAll("&", "&amp;"));
 });
 

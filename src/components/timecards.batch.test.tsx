@@ -306,10 +306,11 @@ it('does not restore focus after a user close is followed by window blur',async(
 
 // Codex review (Oct 23): phones keep the reviewed batch. Select in the top bar, the eligible cards, the exact
 // reviewed set, an explicit confirmation, then each card's result, and resizing never drops any of it.
-let media:{matches:boolean;listener:(()=>void)|null};
-function phoneWindow(matches=true){media={matches,listener:null};vi.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listener=l;},removeEventListener:()=>{}})}));}
+// Nov 1 upscale: Timecards now asks two media queries (phone layout and the wide-screen inspector), so every listener hears a resize.
+let media:{matches:boolean;listeners:(()=>void)[]};
+function phoneWindow(matches=true){media={matches,listeners:[]};vi.stubGlobal('window',Object.assign(new EventTarget(),{matchMedia:()=>({get matches(){return media.matches;},addEventListener:(_:string,l:()=>void)=>{media.listeners.push(l);},removeEventListener:()=>{}})}));}
 async function mountAll(){render();host.mounted=true;const cleanups=host.effects.map(effect=>effect());cleanup=()=>cleanups.forEach(c=>{if(typeof c==='function')c();});await flush();}
-const resize=(matches:boolean)=>{media.matches=matches;media.listener?.();};
+const resize=(matches:boolean)=>{media.matches=matches;for(const listener of media.listeners)listener();};
 it('phone: Select in the top bar opens eligible cards; self-review stays excluded with its reason',async()=>{
  phoneWindow();transport();await mountAll();
  expect(html()).toContain('c-page c-tc"');expect(html()).not.toContain('Selected timecard review');

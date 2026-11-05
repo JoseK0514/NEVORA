@@ -21,10 +21,7 @@
 :is(#c-root, html) .c-shift-page .c-shift__person > .c-av { position: absolute; left: 8px; top: 8px; pointer-events: none; }
 :is(#c-root, html) .c-shift-page .c-shift__person > select.c-in { padding-left: 52px; }
 :is(#c-root, html) .c-shift-page .c-shift select.c-in { text-overflow: ellipsis; cursor: pointer; }
-/* Date and times read as plain fields (board): no select arrow; the date carries a calendar glyph. */
-:is(#c-root, html) .c-shift-page .c-shift :is(.c-shift__time, .c-shift__date > select.c-in) { padding-right: 12px; background-image: none; }
-:is(#c-root, html) .c-shift-page .c-shift .c-shift__date > select.c-in { padding-right: 44px; }
-:is(#c-root, html) .c-shift-page .c-shift__glyph { position: absolute; right: 12px; top: 14px; width: 20px; height: 20px; color: var(--c-grey); pointer-events: none; }
+/* Nov 1 upscale: every select, date and times included, keeps the kit's caret (one select look). */
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__empty { color: var(--c-grey); }
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed { color: var(--c-ink2); cursor: default; background: var(--c-bg); box-shadow: none; }
 :is(#c-root, html) .c-shift-page .c-shift .c-shift__fixed:focus { box-shadow: none; }
@@ -45,8 +42,21 @@
 :is(#c-root, html) .c-shift-page .c-shift__alert { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 12px 14px; border-radius: 8px; background: var(--c-red-bg); color: var(--c-red); font-size: 13px; line-height: 18px; }
 :is(#c-root, html) .c-shift-page .c-shift__alert b { font-weight: 600; }
 
-/* Delete shift: a red outline under the save; a second tap confirms. */
-:is(#c-root, html) .c-shift-page .c-shift__delete { display: flex; flex-direction: column; gap: 10px; margin: 10px 0 0; }
+/* Delete shift (Nov 1 upscale): on phones a red text row in its own card, 32px under the last field; a second tap confirms
+ * inside the same card. Tablets and desktop keep it as red text at the form footer's left (below). */
+:is(#c-root, html) .c-shift-page .c-shift__delete { display: flex; flex-direction: column; gap: 10px; margin: 32px 0 0; }
+:is(#c-root, html) .c-shift-page .c-shift__delete-row { display: flex; align-items: center; width: 100%; min-height: 48px; margin: 0; padding: 0 16px; border: 0; border-radius: 12px;
+  background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); color: var(--c-red); font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-align: left; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: background-color var(--c-dur-press, 120ms) ease-out; }
+:is(#c-root, html) .c-shift-page .c-shift__delete-row:active { background: #EDEEEF; transition: none; }
+:is(#c-root, html) .c-shift-page .c-shift__delete-row:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> .c-shift__delete-row)) { padding: 16px; border-radius: 12px; box-shadow: 0 0 0 1px var(--c-ring); }
+}
+/* The title with the shift's state under it ("Published · Sun, Nov 1"), centred in the header's middle column. */
+:is(#c-root, html) .c-shift-page .c-shift__titles { display: flex; flex-direction: column; align-items: center; min-width: 0; padding: 4px 0; }
+:is(#c-root, html) .c-shift-page .c-shift__sub { font-size: 13px; line-height: 18px; color: var(--c-grey); white-space: nowrap; }
+:is(#c-root, html) .c-shift-page .c-shift__sub [data-tone="amber"] { color: var(--c-amber); }
 :is(#c-root, html) .c-shift-page .c-shift__warn { font-size: 13px; line-height: 18px; color: var(--c-ink2); }
 
 @media (min-width: 768px) {
@@ -74,13 +84,13 @@
 @media (min-width: 768px) {
   :is(#c-root, html) .c-shift-page .c-shift { position: relative; }
   /* Cancel and Save are phone-only, so the title keeps the middle column. */
-  :is(#c-root, html) .c-shift-page .c-shift__title { grid-column: 2; }
+  :is(#c-root, html) .c-shift-page :is(.c-shift__title, .c-shift__titles) { grid-column: 2; }
   /* The card has its own 24px inset, so the footer's line runs edge to edge. */
   :is(#c-root, html) .c-shift-page .c-shift .c-form-foot { margin: 8px -24px 0; padding: 16px 24px 0; }
   :is(#c-root, html) .c-shift-page .c-shift__submit { margin-top: 0; }
   /* Delete shift: red text at the footer's left. Once tapped, its confirmation opens under the card's footer. */
   :is(#c-root, html) .c-shift-page .c-shift__delete:has(> [aria-expanded="false"]) { position: absolute; left: 24px; bottom: 24px; margin: 0; }
-  :is(#c-root, html) .c-shift-page .c-shift__delete > [aria-expanded="false"].c-btn--danger { width: auto; min-width: 0; height: 44px; padding: 0; border: 0; background: none; box-shadow: none; color: var(--c-red); font-size: 15px; font-weight: 600; }
+  :is(#c-root, html) .c-shift-page .c-shift__delete > [aria-expanded="false"].c-shift__delete-row { width: auto; min-width: 0; height: 44px; min-height: 44px; padding: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--c-red); font-size: 15px; font-weight: 600; }
   :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) { margin-top: 16px; padding-top: 16px; box-shadow: inset 0 1px 0 var(--c-line); align-items: flex-start; }
   :is(#c-root, html) .c-shift-page .c-shift__delete:not(:has(> [aria-expanded="false"])) > .c-btn { width: auto; min-width: 160px; }
 }

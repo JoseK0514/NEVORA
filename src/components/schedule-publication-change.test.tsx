@@ -1,11 +1,18 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it } from 'vitest';
 import { SchedulePublicationChange } from './schedule-publication-change';
-it('is absent without actual changes and collapsed with readable before/after',()=>{
+it('is absent without actual changes and collapsed, one plain row per change (upscale S6)',()=>{
  expect(renderToStaticMarkup(<SchedulePublicationChange changes={[]}/>)).toBe('');
  const before={employeeId:'self',locationId:'2',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false};
  const html=renderToStaticMarkup(<SchedulePublicationChange changes={[{type:'TIME_CHANGED',before,after:{...before,startTime:'09:00'},affectedEmployeeIds:['self']}]}/>);
- expect(html).toContain('<details'); expect(html).not.toContain(' open'); expect(html).toContain('Before'); expect(html).toContain('After'); expect(html).toContain('8:00');expect(html).toContain('9:00');expect(html).not.toContain('<form');
+ const text=html.replace(/<[^>]+>/g,' ').replace(/[\u00a0\u202f]/g,' ').replace(/\s+/g,' ');
+ expect(html).toContain('<details'); expect(html).not.toContain(' open'); expect(text).toContain('New time · Mon, Oct 5'); expect(text).toContain('9:00 AM – 12:00 PM'); expect(text).toContain('Was 8:00 AM – 12:00 PM');
+ expect(text).not.toMatch(/Before:|After:|No shift/);expect(html).not.toContain('<form');
+ // An added shift is "Added · day" with the shift (time · position · place), and no "Before: No shift".
+ const added=renderToStaticMarkup(<SchedulePublicationChange changes={[{type:'ADDED',after:{...before,positionName:'Barista'},affectedEmployeeIds:['self']}]} locationNames={{'2':'Condado'}}/>).replace(/<[^>]+>/g,' ').replace(/[\u00a0\u202f]/g,' ').replace(/\s+/g,' ');
+ expect(added).toContain('Added · Mon, Oct 5');expect(added).toContain('8:00 AM – 12:00 PM · Barista · Condado');expect(added).not.toContain('Was');
+ // A time change to another day reads "Moved".
+ expect(renderToStaticMarkup(<SchedulePublicationChange changes={[{type:'TIME_CHANGED',before,after:{...before,date:'2026-10-08'},affectedEmployeeIds:['self']}]}/>).replace(/[\u00a0\u202f]/g,' ')).toContain('Moved · Thu, Oct 8');
 });
 
 it('uses existing location names and a generic unknown-location label without internal identifiers',()=>{
@@ -17,5 +24,5 @@ it('uses existing location names and a generic unknown-location label without in
 it('shows the captured position labels in a position change',()=>{
  const before={employeeId:'self',locationId:'known',date:'2026-10-05',startTime:'08:00',endTime:'12:00',isDesignatedLead:false,isCalloutApproved:false,positionId:'barista',positionName:'Barista at publication'};
  const html=renderToStaticMarkup(<SchedulePublicationChange changes={[{type:'POSITION_CHANGED',before,after:{...before,positionId:'cashier',positionName:'Cashier at publication'},affectedEmployeeIds:['self']}]} />);
- expect(html).toContain('Position changed');expect(html).toContain('Barista at publication');expect(html).toContain('Cashier at publication');
+ expect(html).toContain('New position');expect(html).toContain('Was Barista at publication');expect(html).toContain('Cashier at publication');
 });

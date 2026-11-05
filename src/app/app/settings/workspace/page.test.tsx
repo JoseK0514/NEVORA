@@ -34,6 +34,9 @@ it("keeps Owner authorization and both editable fields with clear scheduling con
   expect(html).toContain('type="submit" form="company-profile-form"');
   expect(html).toContain(">Save</button>");
   expect(html).toContain('href="/app/settings"');
+  // While nothing is locked there is no lock glyph and no note.
+  expect(html).not.toContain("c-coprof__lock");
+  expect(html).not.toContain("Locked while");
 });
 
 it("explains a protected timezone without locking the workspace name", async () => {
@@ -47,6 +50,11 @@ it("explains a protected timezone without locking the workspace name", async () 
   // Owner premium R7: the reason in plain words (the server's own error keeps its wording for a rejected save).
   expect(html).toContain("Time zone is locked because you have shifts and timecards. Contact support to change it.");
   expect(html).toContain('aria-describedby="timezone-help"');
+  // Nov 1 upscale: one grouped card (name, time zone, week start); the locked values carry a Lock glyph, and one line
+  // under the card says why.
+  expect(html.match(/<ul class="q-list c-coprof"/g)).toHaveLength(1);
+  expect(html.match(/class="c-coprof__lock"/g)).toHaveLength(2);
+  expect(html).toContain('<p class="c-coprof__note" aria-hidden="true">Locked while you have shifts</p>');
 });
 
 it("does not fetch or render workspace details when access is denied", async () => {

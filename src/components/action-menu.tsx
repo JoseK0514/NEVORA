@@ -20,6 +20,8 @@ type ActionMenuProps = {
   sheet?: boolean;
   /** The phone sheet's header title ("Schedule options", "Location"); defaults to the label. */
   title?: string;
+  /** The popover's preferred width on wider screens (default 318px; the account menu uses 240px). */
+  width?: number;
 };
 
 export function ActionMenu({
@@ -34,6 +36,7 @@ export function ActionMenu({
   triggerContent,
   sheet = false,
   title,
+  width,
 }: ActionMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -63,12 +66,13 @@ export function ActionMenu({
         return;
       }
       // Wrapping changes the natural height after a viewport resize.
-      menu.style.width = `${actionMenuGeometry({ trigger: triggerBox, viewport, naturalHeight: 0, align }).width}px`;
+      menu.style.width = `${actionMenuGeometry({ trigger: triggerBox, viewport, naturalHeight: 0, align, preferredWidth: width }).width}px`;
       const geometry = actionMenuGeometry({
         trigger: triggerBox,
         viewport,
         naturalHeight: menu.scrollHeight + menu.offsetHeight - menu.clientHeight,
         align,
+        preferredWidth: width,
       });
       menu.style.width = `${geometry.width}px`;
       menu.style.left = `${geometry.left}px`;
@@ -85,6 +89,7 @@ export function ActionMenu({
         viewport: visibleViewport(),
         naturalHeight: 0,
         align,
+        preferredWidth: width,
       });
       menu.style.width = `${geometry.width}px`;
       menu.style.left = `${geometry.left}px`;
@@ -120,7 +125,7 @@ export function ActionMenu({
       window.visualViewport?.removeEventListener("resize", position);
       window.visualViewport?.removeEventListener("scroll", position);
     };
-  }, [align, sheet]);
+  }, [align, sheet, width]);
 
   return (
     <div className="nevora-action-menu">
