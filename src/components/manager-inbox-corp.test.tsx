@@ -3,6 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {expect, it, vi} from 'vitest';
 import type {ActionCenter, ActionItem} from '../lib/action-center/project';
 import type {Today, TodayShift} from '../lib/today/project';
+import {onlyB} from './owner-b/test-support';
 
 vi.mock('next/link', () => ({default: ({children, prefetch: _prefetch, ...props}: ComponentProps<'a'> & {prefetch?: boolean}) => createElement('a', props, children)}));
 const {ThingsToDoPage} = await import('./manager-inbox-corp');
@@ -173,4 +174,16 @@ it('groups a week of earlier coverage gaps into one row with its count', () => {
   expect(html).toContain(count('Earlier this week', 3));
   expect(html).toMatch(/Coverage gaps<\/span><\/span><span class="c-row__value c-row__value--soft">3</);
   expect(page({snapshot: ready([past('p1'), past('p2'), past('p3')])})).toContain('You’re all set');
+});
+
+it('Direction B (phones): glass filters with counts, Find cover on each open shift, and Decline and Approve on a time off request that post the same review', () => {
+  const withReview = items.map(entry => entry.type === 'TIME_OFF' ? {...entry, detail: 'Ana Colon', request: {startDate: '2026-11-12', endDate: '2026-11-14', lengthText: '3 days', locationName: 'Condado', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem : entry);
+  const html = onlyB(page({snapshot: ready(withReview), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true})).replace(/\u00a0/g, ' ');
+  expect(html).toContain('<h1 id="b-todo-title">Things to do</h1>');
+  expect(html).toMatch(/aria-pressed="true">All \d+<\/button>/);
+  expect(html).toContain('>Shifts 1</button>');
+  expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*>Find cover<\/a>/);
+  expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
+  expect(html).toContain('aria-label="Decline time off for Ana Colon" value="DENIED" name="decision">Decline</button>');
+  expect(html).toContain('aria-label="Approve time off for Ana Colon" value="APPROVED" name="decision">Approve</button>');
 });

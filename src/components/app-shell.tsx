@@ -384,6 +384,8 @@ function AppShellView({
       // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
       // Owner premium (A7): a page that is itself a sidebar entry needs no "‹ Back" line on tablets and desktop.
       data-nav-root={!employee && !toolView && sidebarItems.some(item => item.href === pathname) ? "" : undefined}
+      // Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone screens draw a teal hero; see owner-b-shell.css.
+      data-nv-b={!employee && user.role !== "LEAD" ? "" : undefined}
       data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && (rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
@@ -518,6 +520,8 @@ function AppShellView({
                     <NavIcon name={user.role === "LEAD" ? (item.icon === "employees" ? "team" : item.icon) : tabIcon(item.icon)} size={24}
                       weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? "fill" : "regular"} />
                     <span>{item.label}</span>
+                    {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
+                    {needsYou !== null && user.role !== "LEAD" && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                     <TabPending />
                   </Link>
                 );

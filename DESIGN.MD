@@ -1343,3 +1343,33 @@ Jose approved the company summary mock in the pay statement v2 style. Mock: http
 - **Order:** company as a spaced-capital teal line with the run-kind chip; "Payroll summary" at 22pt bold; period and payday, with the employee count on the right; "Net pay to your team" at 44pt; one line on employer contributions paid on top (left out when they are zero); one strip "Employees · Gross pay – Employee deductions = Net pay"; the split bar; "Pay by employee" (name, then the employee ID beneath it, with gross and net pay, and a bold total); "Paid by the company" with employer contributions; References in two columns.
 - **Long runs:** names and IDs wrap in their column; a very large amount shrinks to fit, never below 7pt. The list continues under "Pay by employee (continued)" with a slim header (company, title and period).
 - **Words:** English and Spanish copy live in `WORDS` in that file. The summary uses the company's language setting.
+
+## Owner and Manager phones: Direction B, Brand hero (Jose approved Nov 5, 2026)
+
+Jose picked Direction B from the three premium directions ("NEVORA mobile, Direction B" mock) and asked for the Owner phone
+screens to match it exactly. This section supersedes, on phones (max-width 767px) for Owner and Manager only, the corporate
+phone header, page titles and card look on Home, Things to do, Schedule, Time (Timecards), Payroll and Team. Tablets,
+desktop, Employees and Leads keep their current rules. Server reads, actions, links and counts are unchanged.
+
+- **Where it lives.** `src/components/owner-b/` (kit `b-kit.tsx`, styles `owner-b.css`, Home, Things to do and Team screens)
+  and `src/app/app/owner-b-shell.css` (header and tab bar). The shell sets `data-nv-b` for Owner and Manager. Each page
+  renders one `BScreen` as the first child of its CorpPage; on a phone it replaces the page's other children (a `b-keep`
+  child, such as Time's sheet, stays), elsewhere it is not displayed. Schedule skips it while a planning, publish-check or
+  review view is open, and Time while Select or a reviewed batch is open, so those flows keep their layout.
+- **Hero.** The brand teal is a place: a gradient hero under the shell's header (white wordmark; bell and avatar as 40px
+  frosted circles inside 44px targets; unread is a coral dot). Title 30/36 700 white (Home's sentence 34/40), a 14px line
+  under it, one white action, and live figures on frosted glass (24/30 600, 12.5px labels; a green dot for live, amber for
+  late). Money screens (Payroll) use the dark ink hero. Pushed Things to do shows "‹ Home" in the wordmark's place.
+- **Cards.** White, 22px corners, layered shadows instead of borders, lifted 40px over the hero, 12px apart, 14px side
+  inset. Rows are 64px: face or 36px tinted icon, 15.5/600 title with its status chip beside it, 13.5px grey line, then a
+  value, a button or a chevron. Chips: amber late or waiting, red stops something, green done, grey neutral; always words.
+- **Faces.** Initials on one of six soft tints chosen from the name; amber ring for late, green for working.
+- **Tab bar.** Frosted white, a 56×30 teal-50 pill behind the current tab's icon, 10.5px labels, a visible red count where
+  the Inbox is a tab.
+- **Motion.** First load staggers the hero title and each card 100ms apart (opacity, 4px blur, 12px rise, 300ms ease-out);
+  reduced motion cross-fades. Buttons press to 0.96 over 150ms. No motion on routine taps.
+- **Narrow phones (320–359px).** A title's actions wrap under it rather than breaking the word; a row's button moves under
+  its text.
+- **Honest figures.** Nothing estimated: This week shows scheduled hours, shifts per day and people from the dashboard's
+  reads; Payroll shows the open payroll's own people, gross and net only once it holds amounts. Home's hero shows the date
+  (Home has no location filter); the mock's labor estimate and location switcher wait for a decision and real data.

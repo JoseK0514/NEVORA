@@ -11,6 +11,7 @@ import { itemPerson, presentItem, readableDates, spacedRanges } from "@/lib/acti
 import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
+import { InboxB } from "./owner-b/inbox-b";
 
 /* Things to do (Release 1; approved board O-Inbox, Oct 26). Presentation only: the same action center and Today reads as
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
@@ -247,6 +248,8 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
+    {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
+    {moreView ? null : <InboxB ready={ready} families={families} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />

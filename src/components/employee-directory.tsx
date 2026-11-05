@@ -9,6 +9,7 @@ import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, Cor
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
 import { TeamLivePill, TeamLiveProvider, TeamWorkingNow } from "./team-live";
 import "./employee-directory-corp.css";
+import { TeamB, type TeamBPerson } from "./owner-b/team-b";
 
 /** How many people the People card shows before "See all" (Jose: don't overwhelm). */
 export const TEAM_SHOWN = 8;
@@ -52,9 +53,25 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron={false}
       label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
   };
+  // Direction B (Jose approved Nov 5, 2026; mock "Owner · Team"): the phone screen, from the same list, links and search.
+  const bPerson = (employee: Employee): TeamBPerson => {
+    const name = `${employee.firstName} ${employee.lastName}`;
+    return { id: employee.id, name, detail: `${role(employee)} · ${where(employee)}`, href: `/app/employees/${encodeURIComponent(employee.id)}`, active: employee.active,
+      label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}` };
+  };
+  const inactiveCount = employees.filter(employee => !employee.active).length;
+  const bTools = [
+    { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
+    ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or recover an account", icon: "key" as const }] : []),
+    ...(!all && inactiveCount ? [{ href: "/app/employees?all=1#team-inactive", title: "Inactive people", detail: `${inactiveCount} no longer active`, icon: "inactive" as const }] : []),
+  ];
   return (
     <TeamLiveProvider>
     <CorpPage className="c-team c-page--narrow" labelledBy="team-title">
+      <TeamB people={active.map(bPerson)} limit={all ? undefined : TEAM_SHOWN} inactive={inactive.length && (all || !active.length) ? inactive.map(bPerson) : []} total={activeCount} query={filters.query} filtered={filtered}
+        people_word={words.people} person_word={person} tools={bTools} status={filters.status}
+        seeAll={!all && active.length > TEAM_SHOWN ? { href: "/app/employees?all=1", label: `See all ${active.length} ${people}` } : undefined}
+        searchHidden={<>{filters.role ? <input type="hidden" name="role" value={filters.role} /> : null}{filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}</>} />
       <CorpTitle id="team-title" title="Team" sub={<>{`${activeCount} ${activeCount === 1 ? person : people}`}<TeamWorkingNow /></>}
         actions={<CorpButtonLink href="/app/employees/new" size="md"><Plus className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{`Add ${person}`}</CorpButtonLink>} />
       <EmployeeDirectoryFilters className="c-team-search">

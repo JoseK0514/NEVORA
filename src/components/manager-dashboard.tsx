@@ -223,7 +223,11 @@ function homeDateLabel(timeZone: string) {
 /** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
 function PremiumOverview(props: Props) {
   // Corporate (Release 1, board C-Owner): "Welcome back, Carmen".
-  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
+  // Direction B (phones): This week's hours, shifts per day and people come from this page's own reads; nothing is estimated.
+  const homeB = { firstName: props.firstName, days: props.days.map(day => ({ date: day.date, weekday: day.weekday, shiftCount: day.shiftCount })),
+    scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
+    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined };
+  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;

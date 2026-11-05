@@ -11,6 +11,7 @@ import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import { gapRow } from "./manager-inbox-corp";
+import { HomeB, type HomeBWeek } from "./owner-b/home-b";
 export { toDoSentence } from "./manager-inbox-corp";
 
 /* Owner and Manager Home in the corporate look (Release 1; approved board C-Owner, Oct 26). Presentation only: every number
@@ -50,11 +51,17 @@ export type OwnerHomeCorpProps = {
   nextPay?: NextPay;
   setup?: ReactNode;
   liveReaders?: string;
+  /** Direction B (phones): the week behind This week, and where Payday's button goes. */
+  week?: HomeBWeek;
 };
 
 export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
   return <CorpPage className="c-home" label="Home">
     <div data-live-readers={props.liveReaders} hidden />
+    {/* Direction B: the phone screen (shown on phones under data-nv-b; tablets and desktop keep the cards below). */}
+    <HomeB today={props.today} monitor={props.monitor} monitorPending={props.monitorPending} offline={props.offline} value={props.value} connection={props.connection}
+      timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} setup={props.setup}
+      dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
     <PaydayCard nextPay={props.nextPay} timecards={props.timecards} ready={props.timecardsReady ?? props.value !== null} connection={props.connection} businessDay={props.businessDay} />

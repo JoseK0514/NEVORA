@@ -6,6 +6,7 @@ import { nativeCapabilities, nativeRun, statement } from './native-ui-fixture.te
 import { PayrollRuns } from './payroll-runs';
 import { payrollTabs } from './payroll-tabs';
 import { problemsMessage } from './form-keys';
+import { onlyB, withoutB } from '../owner-b/test-support';
 
 // Owner premium (Oct 31) presentation only: next-step labels, unpaid periods first, Pay history identity, tabs.
 const boundary = vi.hoisted(() => ({ data: null as PayrollRunsResponse | null, statements: [] as unknown[] }));
@@ -20,7 +21,8 @@ const missing = { period: { startDate: '2026-09-21', endDate: '2026-09-27' }, pa
 const backlog = { asOfDate: '2026-10-30', rangeStart: '2026-09-01', rangeEnd: '2026-10-30', missingCount: 3, remainingCount: 0, returnedCount: 3, ambiguousCount: 0, overflow: false };
 /** Payroll writes a range with thin spaces around the dash (R2). */
 const thin = (text: string) => text.replaceAll(' – ', '\u2009–\u2009');
-const home = (extra: Partial<Parameters<typeof PayrollRuns>[0]> = {}) => renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings {...extra} />);
+// The corporate layout (tablets and desktop); the Direction B phone screen is tested in owner-b/owner-b.test.tsx.
+const home = (extra: Partial<Parameters<typeof PayrollRuns>[0]> = {}) => withoutB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings {...extra} />));
 beforeEach(() => { boundary.data = { version: 'PAYROLL_API_V1', capabilities: nativeCapabilities, runs: [], jobs: [] }; boundary.statements = []; });
 
 describe('Payroll next step (A2)', () => {
@@ -170,5 +172,18 @@ describe('Payroll tabs and forms', () => {
     const field = (name: string) => ({ getAttribute: (key: string) => key === 'aria-label' ? name : null, validity: { valueMissing: true }, validationMessage: '' }) as unknown as HTMLInputElement;
     expect(problemsMessage([field('Payday after period end'), field('Reason for change')])).toBe('Fill in 2 fields: Payday after period end and Reason for change.');
     expect(problemsMessage([field('Reason for change')])).toBe('Fill in Reason for change.');
+  });
+});
+
+describe('Direction B phone screen (Payroll)', () => {
+  it('heads the ink hero with the open period, then the three steps with the same next-step button, and Recent payrolls with net pay', () => {
+    boundary.data = { version: 'PAYROLL_RUNS_V1', runs: [], capabilities: nativeCapabilities, missingPeriods: [] } as unknown as PayrollRunsResponse;
+    const html = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />)).replace(/\u2009/g, ' ');
+    expect(html).toContain('class="b-screen b-screen--ink"');
+    expect(html).toContain('<h1 id="b-payroll-title">Payroll</h1>');
+    expect(html).toContain('Up next · Weekly payroll');
+    expect(html).toMatch(/class="b-step b-step--now"><span class="b-step__n" aria-hidden="true">1<\/span>/);
+    expect(html).toMatch(/class="b-btn b-btn--teal b-btn--full b-btn--big"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);
+    expect(html).toContain('<a class="b-card__a" href="/app/payroll/history">Pay history</a>');
   });
 });

@@ -15,6 +15,8 @@ import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { addDays, formatDayLabel, formatTime } from "../lib/date-utils";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
+import { compactRange, BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone } from "./owner-b/b-kit";
 import { absencesOn, fullDayAbsence, type WeeklyApprovedAbsences, assignedHours, type RosterEmployee, type RosterShift } from "../lib/scheduling/manager-roster-presentation";
 
 /* Manager and Owner Schedule, rebuilt for the clean Manager app (v3, approved Oct 19; spec "Schedule" in
@@ -122,7 +124,15 @@ function liveState(shift: RosterShift, employeeId: string, today: Today | null, 
   return null;
 }
 
-export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices, corp }: {
+/** Direction B (phones): the page's hero pieces, built on the server (the same menus and Publish as the title row). */
+export type RosterB = {
+  sub: ReactNode; actions: ReactNode; location: ReactNode;
+  weekState: { text: string; tone: "due" | "ok" | "glass" } | null;
+  toPlan: { id: string; href: string; title: string; detail: string; action: string; label: string }[];
+  notes?: ReactNode;
+};
+
+export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZone, locationId, openShifts = [], absences = { state: "unavailable", reason: "read_failed" }, footnote, controls, notices, corp, b }: {
   employees: RosterEmployee[];
   absences?: WeeklyApprovedAbsences;
   dates: string[];
@@ -141,6 +151,8 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   notices?: ReactNode;
   /** Corporate phone view (Release 1): a week card and a day card instead of the Quiet strip and list. */
   corp?: RosterCorp;
+  /** Direction B phone screen (shown under the shell's data-nv-b); needs `corp`. */
+  b?: RosterB;
 }) {
   const [phoneDay, setPhoneDay] = useState(reviewDay ?? (dates.includes(today) ? today : dates[0]));
   // Desktop: the full week, or one day when an Action Center link opened it (kept, with Full week to go back).
@@ -382,7 +394,66 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     </div>
   </div>;
 
-  return <section className="cm-roster manager-issue-target" id={reviewDay ? undefined : "schedule-review"} tabIndex={-1} aria-labelledby="cm-roster-title">
+  // ---------- Direction B phone (mock "Owner · Schedule"): the hero with the week on glass, then the day as a card ----------
+  const bLive = (shift: RosterShift, employeeId: string): { chip?: { text: string; tone: BTone }; ring?: "late" | "on" } => {
+    const live = liveState(shift, employeeId, todayRead, timeZone);
+    if (live) return live.tone === "teal" ? { chip: { text: live.text, tone: "green" }, ring: "on" } : live.tone === "blue" ? { chip: { text: live.text, tone: "teal" }, ring: "on" } : { chip: { text: live.text, tone: "amber" }, ring: "late" };
+    return shift.status === "DRAFT" ? { chip: { text: "Draft", tone: "amber" } } : corp?.changedShiftIds?.includes(shift.id) ? { chip: { text: "Changed", tone: "amber" } } : {};
+  };
+  // A day's shifts at one place don't repeat it on every row (the open shifts keep theirs).
+  const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
+  const bRows = [
+    ...dayShifts.map(({ shift, employee }) => { const live = bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)}
+      lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.chip ? <BChip tone={live.chip.tone}>{live.chip.text}</BChip> : undefined}
+      sub={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null].filter(Boolean).join(" · ")} chevron={false} /> }; }),
+    ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={open.id} lead={<BAvatar open />} title="Open shift"
+      sub={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location].filter(Boolean).join(" · ")}
+      href={over ? undefined : open.href} label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
+      trail={over ? <BChip>Not filled</BChip> : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),
+  ].sort((a, b) => a.start.localeCompare(b.start));
+  const SHOWN_B = 8;
+  const bOpenAhead = dayOpen.filter(open => !ended(open)).length;
+  const bCover = dayShifts.length + dayOpen.length ? Math.round(dayShifts.length / (dayShifts.length + dayOpen.length) * 100) : 0;
+  const bScreen = b && corp ? <BScreen>
+    <BHero title="Schedule" titleId="b-schedule-title" sub={b.sub} right={b.actions}>
+      <div className="b-hrow">{b.location}</div>
+      <div className="b-week b-glass" role="group" aria-label="Week">
+        <div className="b-week__h"><span className="c-num">{corp.weekLabel}{b.weekState ? <span className={`b-chip b-chip--${b.weekState.tone}`}>{b.weekState.text}</span> : null}</span>
+          <span>{corp.todayHref ? <a className="b-btn b-btn--glass" href={corp.todayHref} aria-label="Go to this week">Today</a> : null}
+            <a className="b-week__arrow" href={corp.previousHref} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></a>
+            <a className="b-week__arrow" href={corp.nextHref} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></a></span></div>
+        <div className="b-week__days" role="group" aria-label="Schedule day">{dates.map(date => {
+          const shifts = shiftsOn(date).length, open = openShifts.filter(row => row.date === date && !ended(row)).length;
+          const day = formatDayLabel(date);
+          return <button key={date} type="button" className="b-week__d" aria-pressed={phoneDay === date} data-today={date === today || undefined}
+            aria-label={`${longWeekday(date)}, ${day.day}${date === today ? ", today" : ""}, ${shifts + open ? plural(shifts + open, "shift", "shifts") : "no shifts"}${open ? `, ${plural(open, "open shift", "open shifts")}` : ""}`}
+            onClick={() => setPhoneDay(date)}>
+            <span aria-hidden="true">{day.weekday}</span><b aria-hidden="true" className="c-num">{Number(date.slice(8))}</b><i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
+          </button>;
+        })}</div>
+      </div>
+    </BHero>
+    <BStack>
+      {b.notes ? <div className="b-notes">{b.notes}</div> : null}
+      {b.toPlan.length ? <BCard label="Locations the team can’t see yet"><BList label="Locations the team can’t see yet">{b.toPlan.map(row =>
+        <BRow key={row.id} lead={<BIcon tone="amber"><WarningIcon weight="bold" /></BIcon>} title={row.title} sub={row.detail} href={row.href} label={row.label}
+          end={<span className="b-link">{row.action}<CaretRightIcon size={16} weight="bold" aria-hidden="true" /></span>} chevron={false} />)}</BList></BCard> : null}
+      {employees.length ? <BCard id="b-schedule-day" title={corpDayLabel} meta={<span className="c-num">{`${plural(bRows.length, "shift", "shifts")}${corpHours ? ` · ${corpHours} h` : ""}`}</span>}>
+        {bRows.length ? <span className="b-cover" role="img" aria-label={bOpenAhead ? `${plural(bOpenAhead, "open shift", "open shifts")} still to fill` : "Every shift has someone"}>
+          <span className={bOpenAhead ? "b-bar b-bar--amber" : "b-bar"}><i style={{ width: `${bCover}%` }} /></span></span> : null}
+        {bRows.length ? <BList label={`Shifts on ${longWeekday(phoneDay)}`}>{(showAll ? bRows : bRows.slice(0, SHOWN_B)).map(row => row.node)}</BList> : <p className="b-state">Nothing scheduled.</p>}
+        {!showAll && bRows.length > SHOWN_B ? <button type="button" className="b-add" onClick={() => setMoreDay(phoneDay)}>{`Show ${bRows.length - SHOWN_B} more`}</button> : null}
+        {absences.state === "unavailable" || employees.some(employee => !absenceKnown(employee.id)) ? <p className="b-state" role="status">Time off unavailable. Reload before adding shifts.</p> : null}
+        {dayAbsences.length ? <BList label={`Approved time off on ${longWeekday(phoneDay)}`}>{dayAbsences.map(({ employee, rows }) =>
+          <BRow key={employee.id} lead={<BAvatar name={employee.name} />} title={employee.name} sub={absenceText(rows)} />)}</BList> : null}
+        <Link className="b-add" href={corp.addShiftHref.includes("date=") ? corp.addShiftHref : `${corp.addShiftHref}&date=${encodeURIComponent(phoneDay)}`}>
+          <span className="b-ico b-ico--teal" aria-hidden="true"><PlusIcon size={18} weight="bold" /></span>Add shift
+        </Link>
+      </BCard> : <BCard label="Team"><p className="b-state">Add people to your team to start scheduling.</p><Link className="b-add" href="/app/employees">Go to Team</Link></BCard>}
+    </BStack>
+  </BScreen> : null;
+
+  return <>{bScreen}<section className="cm-roster manager-issue-target" id={reviewDay ? undefined : "schedule-review"} tabIndex={-1} aria-labelledby="cm-roster-title">
     <h2 className="sr-only" id="cm-roster-title">Team schedule</h2>
     {corp ? corpWeek : <div className="cm-sched-phone">{weekStrip}</div>}
     {/* The page's controls and notices arrive as server-built elements; a fragment each keeps React's list check quiet. */}
@@ -393,7 +464,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       {/* The desktop people × days grid keeps its v3 styling (cm-sched-slot); Quiet hides it on phones. */}
       <div className="cm-sched-desk cm-sched-slot">{grid}</div>
     </> : <><p className="q-empty" style={{ marginTop: 24 }}>Add people to your team to start scheduling.</p><Link className="q-btn q-btn--sec" href="/app/employees">Go to Team</Link></>}
-  </section>;
+  </section></>;
 }
 
 /** Today's read only when the shown week holds today (the hook always runs; the read stays idle otherwise). */

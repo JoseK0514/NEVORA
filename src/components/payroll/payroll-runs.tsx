@@ -21,6 +21,11 @@ import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { flagProblems, formKeys } from './form-keys';
 import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
+import { BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BStack } from '../owner-b/b-kit';
+import { GearIcon } from '@phosphor-icons/react/dist/ssr/Gear';
+import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
+import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
+import { WarningIcon } from '@phosphor-icons/react/dist/ssr/Warning';
 
 export type PayrollView = 'home' | 'review' | 'fix' | 'people' | 'prepare' | 'history';
 type Operation = ReturnType<typeof usePayrollOperation>;
@@ -199,7 +204,62 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
   // Up next is one row (Nov 1 upscale): the payroll, its period and payday; it opens the next step (Prepare, Review issues,
   // Review payroll or the approved details). Once a draft exists, that step is the row's grey value ("Review issue").
   const nextValue = open && open.status !== 'APPROVED' ? step.label : undefined;
+  // Direction B (Jose approved Nov 5, 2026; mock "Owner · Payroll"): the dark ink hero for money, the open period as its
+  // headline with this payroll's own figures (people, gross, net once it holds amounts; never an estimate), the three
+  // steps with the same next-step button, then Recent payrolls. Tablets and desktop keep the layout below.
+  const days = current ? Math.round((Date.parse(`${current.payday}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000) : null;
+  const paydayChip = days === null ? null : days === 0 ? 'Payday today' : days === 1 ? 'Payday tomorrow' : days > 1 ? `Payday in ${days} days` : 'Payday passed';
+  const fixing = /issue/i.test(step.label);
+  const stepState = (n: 1 | 2 | 3) => n === 1 ? (open ? 'done' : 'now') : n === 2 ? (open?.status === 'APPROVED' ? 'done' : open ? 'now' : '') : open?.status === 'APPROVED' ? 'done' : '';
+  const bStep = (n: 1 | 2 | 3, title: string, detail: string) => <div className={`b-step${stepState(n) ? ` b-step--${stepState(n)}` : ''}`}>
+    <span className="b-step__n" aria-hidden="true">{n}</span><span className="b-step__tx"><span className="b-step__t">{title}</span><span className="b-step__s">{detail}</span></span>
+    <span className="b-sr">{stepState(n) === 'done' ? 'Done' : stepState(n) === 'now' ? 'Next' : 'Later'}</span></div>;
+  const bScreen = <BScreen ink>
+    <BHero title="Payroll" titleId="b-payroll-title" sub={sub || undefined} right={canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="glass" label="Payroll settings"><GearIcon size={16} weight="bold" aria-hidden="true" />Settings</BButtonLink> : undefined}>
+      {current ? <div className="b-hpad">
+        <div className="b-hkicker"><span>{`Up next · ${frequency}`}</span>{paydayChip ? <span className={days !== null && days <= 1 ? 'b-chip b-chip--due' : 'b-chip b-chip--ok'}>{paydayChip}</span> : null}</div>
+        <p className="b-hbig c-num">{quietRange(current.period.startDate, current.period.endDate)}</p>
+      </div> : null}
+      {current ? <BLive label="This payroll" items={[
+        { label: 'Payday', value: quietDay(current.payday).replace(/^\w+,\s*/, '') },
+        { label: 'People', value: open?.totals ? open.totals.employeeCount : people.length || '—' },
+        { label: open?.totals ? 'Net pay' : 'Gross', value: open?.totals ? formatPayrollMoney(open.totals.netMinor) : '—' },
+      ]} /> : null}
+    </BHero>
+    <BStack>
+      <Feedback operation={operation} />
+      {state ?? <>
+        {data && oldest ? <BCard label="Pay periods with no payroll"><div className="b-notice"><BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
+          <span className="b-notice__tx"><span className="b-notice__t">{data.backlog && !data.backlog.overflow && data.backlog.missingCount !== null && data.backlog.missingCount > 1 ? `${data.backlog.missingCount} pay periods have no payroll` : `${quietRange(oldest.period.startDate, oldest.period.endDate)} has no payroll`}</span>
+            <span className="b-notice__s">{data.backlog && !data.backlog.overflow && data.backlog.missingCount === 1 ? `Its payday was ${quietDay(oldest.payday)}` : `Oldest is ${quietRange(oldest.period.startDate, oldest.period.endDate)}, payday ${quietDay(oldest.payday)}`}</span></span>
+          <BButtonLink href={`/app/payroll/prepare#${unpaidHash(oldest)}`} kind="ghost">Prepare</BButtonLink></div></BCard> : null}
+        {current ? <BCard title={open?.status === 'APPROVED' ? 'Payroll approved' : 'Prepare payroll'} id="b-payroll-steps">
+          <div className="b-steps">
+            {bStep(1, 'Prepare payroll', open ? 'Started from approved time' : 'Bring in approved time for this period')}
+            {bStep(2, fixing ? 'Fix issues' : 'Review pay', fixing ? 'Something stops this payroll' : 'Hours, rates and deductions')}
+            {bStep(3, 'Approve payroll', 'Then share pay statements')}
+            <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>
+          </div>
+          {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
+        </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>
+          {canEditSettings ? <BButtonLink href="/app/settings/payroll" kind="ghost">Settings</BButtonLink> : null}</div></BCard>}
+        <BCard title="Recent payrolls" id="b-payroll-recent" link={{ href: '/app/payroll/history', label: 'Pay history' }}>
+          {past.length ? <BList label="Past periods">{past.slice(0, 3).map(item => {
+            const approved = item.status === 'APPROVED';
+            return <BRow key={item.id} href={reviewHref(item.id)} lead={<BIcon tone={approved ? 'green' : 'grey'}><ReceiptIcon weight="bold" /></BIcon>}
+              title={<span className="c-num">{quietRange(item.period.startDate, item.period.endDate)}</span>} chip={item.correctionOf ? <BChip>Correction</BChip> : approved ? undefined : <BChip tone="amber">{statusLabels[item.status]}</BChip>}
+              sub={<>Payday <span className="c-num">{quietDay(item.payday)}</span></>}
+              end={item.totals ? <><b className="c-num">{formatPayrollMoney(item.totals.netMinor)}</b><span>{approved ? 'Net · Approved' : 'Net'}</span></> : undefined} chevron={!item.totals} />;
+          })}</BList> : <p className="b-state">No past payrolls yet. Approved payrolls appear here.</p>}
+        </BCard>
+        <BCard label="Payroll tools"><BList label="Payroll tools">
+          <BRow href={exportsHref} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold" /></BIcon>} title="Time exports" sub="Hours by person and pay period" />
+        </BList></BCard>
+      </>}
+    </BStack>
+  </BScreen>;
   return <CorpPage className="c-payroll c-pay c-pay--home c-page--narrow" labelledBy="payroll-title">
+    {bScreen}
     <CorpTitle id="payroll-title" title="Payroll" sub={sub || undefined} actions={settings} />
     <PayrollTabs items={tabs} current="/app/payroll" />
     <Feedback operation={operation} />

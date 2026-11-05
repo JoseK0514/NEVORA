@@ -24,6 +24,10 @@ import type {TimecardIssue} from '@/lib/timecards/project';
 import {CorpAvatar,CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpDuration,CorpEmpty,CorpErrorCard,CorpPage,CorpRow,CorpRows,CorpStats,CorpTime,CorpTitle} from './corp/corp';
 import {QuietSheet,SheetCancel} from './quiet/quiet-sheet';
 import './timecards-corp.css';
+import {BAvatar,BButton,BCard,BChip,BHero,BIcon,BList,BLive,BRow,BScreen,BSeg,BStack} from './owner-b/b-kit';
+import {UploadSimpleIcon} from '@phosphor-icons/react/dist/ssr/UploadSimple';
+import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
 
@@ -511,7 +515,49 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       </section>:null;
       // Corporate (Release 1, board G-O-Time): Time is a tab, so no Back. Rows are name, state (plain text) and hours.
       const breaksOf=(item:TimecardItem)=>/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?` · ${quietHours(item.card.breakNanoseconds)} breaks`:'';
+      // Direction B (Jose approved Nov 5, 2026; mock "Owner · Time"): the hero with the week control and this period's figures,
+      // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
+      const most=cards.reduce((max,item)=>{const n=/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;return Math.max(max,n);},0);
+      const minutesOf=(item:TimecardItem)=>/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;
+      const toneOf=(item:TimecardItem)=>{const row=rowStatus(item);return row.tone==='done'?'green' as const:row.tone==='review'&&rowCue(item).act?'amber' as const:null;};
+      const bScreen=showBulk||selecting?null:<BScreen>
+        <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
+          <BSeg label="Week" items={[
+            {key:'this',label:'This week',current:periodName==='This week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(thisWeek);}},
+            {key:'last',label:'Last week',current:periodName==='Last week',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(lastWeek);}},
+            {key:'earlier',label:'Earlier',current:periodName===null,aria:periodName===null?`Earlier: ${rangeText(period)}. Show the week before`:'Earlier weeks',onSelect:()=>{if(!paused&&!busy&&!pending)goTo(shiftPeriod(periodName===null?period:lastWeek,-1));}},
+          ]}/>
+          <BLive label="This period" items={[
+            {label:'Recorded',value:ready?recordedTotal:'—'},
+            {label:'Approved',value:ready?approvedCount:'—',small:ready&&cards.length?`/${cards.length}`:undefined},
+            {label:'Attention',dot:attention?'warn':undefined,value:ready?attention:'—'},
+          ]}/>
+        </BHero>
+        <BStack>
+          {stateCard}
+          {emptyCard}
+          {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="teal"><CheckIcon weight="bold"/></BIcon>
+            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{attention?`${attention} need${attention===1?'s':''} attention first`:`${rangeText(period)} · ${recordedTotal} recorded`}</span></span>
+            <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
+          :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
+          {ready&&cards.length?<BCard id="b-tc-team" title="Team" count={cards.length}>
+            <BList label="Timecards in this period">{rows.map(item=>{
+              const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),minutes=minutesOf(item),hours=noTime(item)?'':quietHours(item.card.recordedNanoseconds),tone=toneOf(item);
+              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${quietHours(item.card.breakNanoseconds)} breaks`:null;
+              return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
+                title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
+                extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}
+                end={hours?<><b className="c-num">{hours}</b><span>Recorded</span></>:undefined} chevron={!hours}/>;
+            })}</BList>
+          </BCard>:null}
+          <BCard label="Time tools"><BList label="Time tools">
+            <BRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} lead={<BIcon tone="grey"><UploadSimpleIcon weight="bold"/></BIcon>} title="Time exports" sub="Download hours for payroll"/>
+            <BRow href="/app/timecards/corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Time corrections" sub="Fixes people asked for"/>
+          </BList></BCard>
+        </BStack>
+      </BScreen>;
       return <CorpPage className="c-tc" labelledBy="tc-title">
+        {bScreen}
         <CorpTitle id="tc-title" title="Timecards" sub={subtitle} actions={selectButton}/>
         {seg}
         <HoldHeight holding={!ready} memory="timecards-manager" className="c-tc-hold">
@@ -540,8 +586,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           </CorpCard>:null}
         </HoldHeight>
         {toolsCard}
-        <p className="c-sr" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
-        {sheetNode}
+        <p className="c-sr b-keep" role="status" aria-live="polite">{!data&&!busy?'':message}</p>
+        <div className="b-keep">{sheetNode}</div>
       </CorpPage>;
     }
     // Owner premium (A8, board G-O-Time on wide screens): the same title and period control as the phone, the period card,

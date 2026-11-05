@@ -1,6 +1,7 @@
 import { createElement, type ComponentProps } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
+import { withoutB } from "./owner-b/test-support";
 import { ManagerDashboard, homeWeek } from "./manager-dashboard";
 import { WeekSummary } from "./clean/week-summary";
 vi.mock("next/link", () => ({ default: ({href,children,...props}: ComponentProps<"a">) => createElement("a",{href,...props},children) }));
@@ -17,7 +18,8 @@ it("loads the current Action Center without exposing unverified server-provided 
     managerActions:[...Array.from({length:7},(_,i)=>({id:`request-${i}`,type:"TIME_OFF" as const,priority:"REVIEW" as const,title:"Time Off Request",detail:"Sam Cruz is waiting for review.",href:"/app/requests?tab=team"})),{id:"missing",type:"AVAILABILITY_MISSING",priority:"MISSING_INPUT",title:"Availability not submitted",detail:"Jamie has not submitted.",href:"/app/availability?week=2026-09-28"}],
     locations:[],days:[],hours:[],latestRevision:null,
   };
-  const html = renderToStaticMarkup(<ManagerDashboard {...props}/>);
+  // The corporate layout (the Direction B phone screen draws its own hero, shown on phones only).
+  const html = withoutB(renderToStaticMarkup(<ManagerDashboard {...props}/>));
   // One h1 (Release 1 corporate: the page title, no band), and no count until the live read confirms it (F1).
   expect(html.match(/<h1/g)).toHaveLength(1);
   expect(html).toContain('class="c-title"');

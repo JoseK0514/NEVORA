@@ -5,6 +5,7 @@ import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionItem } from "@/lib/action-center/project";
 import { needsYou } from "@/lib/action-center/needs-you";
+import { onlyB, withoutB } from "./owner-b/test-support";
 
 vi.mock("next/link", () => ({ default: ({ href, children, prefetch: _prefetch, ...props }: ComponentProps<"a"> & { prefetch?: boolean }) => createElement("a", { href, ...props }, children) }));
 // The kit's "Couldn't load · Try again" refreshes the page through the router when no retry is given.
@@ -36,7 +37,8 @@ const base = {
   value: needsYou(items, "2026-10-30", [shift("c", "no_punches")]), timecards: items.filter(i => i.type === "TIMECARD"),
   nextPay: { payday: "2026-11-03", daysUntil: 1, period: { startDate: "2026-10-26", endDate: "2026-11-01" } },
 };
-const html = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />);
+// The corporate cards (tablets and desktop); the Direction B phone screen has its own tests (owner-b/owner-b.test.tsx).
+const html = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => withoutB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />));
 
 describe("Owner Home on the corporate kit (board C-Owner)", () => {
   it("has a title, at most three cards and the live summary for screen readers", () => {
@@ -142,5 +144,32 @@ describe("Owner Home on the corporate kit (board C-Owner)", () => {
     expect(out).toContain("Nothing needs you right now.");
     const shiftsOnly = html({ value: needsYou([items[0]], "2026-10-30", []) });
     expect(shiftsOnly).toContain("No requests waiting</b>");
+  });
+});
+
+describe("Direction B phone screen (Owner and Manager Home)", () => {
+  const phone = (props: Partial<ComponentProps<typeof OwnerHomeCorp>> = {}) => onlyB(renderToStaticMarkup(<OwnerHomeCorp {...base} {...props} />)).replace(/ /g, " ");
+  it("leads with the shared needs-you count as a sentence and three live figures that open their lists", () => {
+    const out = phone();
+    expect(out).toMatch(/<h1>5 things need you<\/h1>/);
+    expect(out).toContain('<a href="/app?view=attendance" class="b-live__a" aria-label="Clocked in: 1 of 3. Who’s working">');
+    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Late: 1. Missed clock-ins">');
+    expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
+    expect(out).toContain(">Next: today, Barista 1–3\u00a0PM<");
+    expect(out).toContain(">1 missed clock-in<");
+  });
+  it("shows Payday as the ink tile, opening Payroll only when the page names it and Timecards otherwise", () => {
+    expect(phone()).toContain('<a href="/app/timecards" class="b-btn b-btn--white b-btn--full" aria-label="Open timecards">');
+    expect(phone({ week: { firstName: "Carmen", days: [], scheduledHours: 0, people: 0, payrollHref: "/app/payroll" } }))
+      .toContain('<a href="/app/payroll" class="b-btn b-btn--white b-btn--full" aria-label="Prepare payroll">');
+    expect(phone({ nextPay: undefined })).not.toContain('class="b-ink"');
+  });
+  it("draws This week from the page's own hours and shifts per day, today in teal, and nothing estimated", () => {
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((weekday, i) => ({ date: `2026-10-${26 + i}`, weekday, shiftCount: i + 1 }));
+    const out = phone({ week: { firstName: "Carmen", days, scheduledHours: 112, people: 3 } });
+    expect(out).toContain(">112 h</b><span>Scheduled</span>");
+    expect(out).toContain(">28</b><span>Shifts</span>");
+    expect(out).toContain('class="today" style="height:71%"');
+    expect(out).not.toMatch(/estimate|\$/i);
   });
 });

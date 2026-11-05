@@ -33,6 +33,8 @@ import "@/components/employee-mobile/creation.css";
 import "@/components/employee-mobile/planning.css";
 import "@/components/employee-mobile/hours.css";
 import "@/components/employee-mobile/messages.css";
+// Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone header and tab bar over the teal hero. Loaded last.
+import "./owner-b-shell.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";

@@ -32,6 +32,9 @@ import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { DotsThreeCircleIcon } from "@phosphor-icons/react/dist/ssr/DotsThreeCircle";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
+import { DotsThreeIcon } from "@phosphor-icons/react/dist/ssr/DotsThree";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { BButtonLink } from "@/components/owner-b/b-kit";
 import "./manager-schedule.css";
 import "./schedule-corp.css";
 import { ScheduleGenerationControls } from "@/components/schedule-generation-controls";
@@ -352,22 +355,12 @@ export default async function SchedulePage({
   const deadlineText = weekSettings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(weekSettings.availabilityDeadline)) : "Not set";
   // Send an update only where Company updates are on (the same module check More uses).
   const updatesOn = params.published ? pathEnabled("/app/updates", (await currentPresentation()).modules) : false;
-  return (
-    <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
-      <CorpTitle id="schedule-title" title="Schedule"
-        actions={<>
-          {/* Nov 1 upscale: the location control is a quiet select on the title row (desktop), or under the "…" on the
-            subtitle's line (phones, by CSS); the subtitle no longer repeats how many locations there are. */}
-          <ActionMenu id="schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`} align="end"
-            triggerClassName="c-select-btn c-sched-loc" triggerContent={<>{locationName}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></>}>
+  // The location list and the "…" menu's rows, shared by the title row and the Direction B phone hero.
+  const locationItems = <>
             <Link className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}`} aria-current={selectedLocation === "all" ? "true" : undefined}>All locations</Link>
             {locations.map(location => <Link key={location.id} className="nevora-action-menu-item" href={`/app/schedule?week=${weekStart}&location=${location.id}`} aria-current={selectedLocation === location.id ? "true" : undefined}>{location.shortName}</Link>)}
-          </ActionMenu>
-          <span className="c-sched-actions">
-            {/* Nov 1 upscale: "Schedule options" is two grouped lists, This week and Settings, one line per row. The week's
-              "Today" link (on the week card, only when you're off this week) replaces Go to this week. The availability
-              deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
-            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
+  </>;
+  const moreItems = <>
               <div className="c-menu-group" role="group" aria-labelledby="schedule-options-week">
                 <p className="c-menu-label" id="schedule-options-week">This week</p>
                 <div className="c-menu-card">
@@ -384,6 +377,61 @@ export default async function SchedulePage({
                 <Link className="nevora-action-menu-item" href={`/app?week=${encodeURIComponent(weekStart)}&view=activity`}><strong>Activity</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 </div>
               </div>
+  </>;
+  // Direction B (Jose approved Nov 5, 2026): on phones the schedule draws the teal hero, the week on glass and the day as a
+  // card. A planning, publish-check or review view keeps the corporate layout, so those flows are unchanged.
+  const bWeekState = !counts || !inView.length ? null
+    : changes && !counts.drafts ? { text: `Published · ${changes} ${changes === 1 ? "change" : "changes"}`, tone: "due" as const }
+    : counts.drafts ? { text: `${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`, tone: "due" as const }
+    : counts.published === inView.length ? { text: "Published", tone: "ok" as const }
+    : counts.published ? { text: `${counts.published} of ${inView.length} published`, tone: "glass" as const }
+    : { text: "Not started", tone: "glass" as const };
+  const bSchedule = publicationReview || params.publishCheck || params.plan === "1" || reviewDay ? undefined : {
+    sub: todayLong,
+    actions: <>
+      <ActionMenu id="b-schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="b-ib b-glass" triggerContent={<DotsThreeIcon size={20} weight="bold" aria-hidden="true" />}>
+        {moreItems}
+      </ActionMenu>
+      {publishLabel ? <BButtonLink href={publishHref} kind="white" label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</BButtonLink> : null}
+    </>,
+    location: <ActionMenu id="b-schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`}
+      triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
+      {locationItems}
+    </ActionMenu>,
+    weekState: bWeekState,
+    toPlan: toPlan.map(location => {
+      const drafted = statusFor(location.id) === "DRAFT";
+      return { id: location.id, href: planHref(location.id), title: drafted ? `${location.shortName} isn’t published` : `${location.shortName} isn’t planned`,
+        detail: drafted ? "The team can’t see this week yet" : "Nothing scheduled this week", action: drafted ? "Review" : "Plan", label: drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}` };
+    }),
+    notes: <>
+      <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
+      {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
+        <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
+        {updatesOn ? <BButtonLink href="/app/updates/compose" kind="ghost">Send an update</BButtonLink> : null}</div> : null}
+      {params.changesPublished ? <CorpNote>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.updated ? <CorpNote>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
+      {params.deleted ? <CorpNote>Shift deleted.</CorpNote> : null}
+      {params.deadlineSaved ? <CorpNote>Availability deadline updated.</CorpNote> : null}
+      {params.copied !== undefined ? <CorpNote>{`Copied ${params.copied} shift${params.copied === "1" ? "" : "s"} from the previous week.${Number(params.skipped ?? 0) > 0 ? ` ${params.skipped} skipped because of scheduling conflicts.` : ""}`}</CorpNote> : null}
+    </>,
+  };
+  return (
+    <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
+      <CorpTitle id="schedule-title" title="Schedule"
+        actions={<>
+          {/* Nov 1 upscale: the location control is a quiet select on the title row (desktop), or under the "…" on the
+            subtitle's line (phones, by CSS); the subtitle no longer repeats how many locations there are. */}
+          <ActionMenu id="schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`} align="end"
+            triggerClassName="c-select-btn c-sched-loc" triggerContent={<>{locationName}<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></>}>
+            {locationItems}
+          </ActionMenu>
+          <span className="c-sched-actions">
+            {/* Nov 1 upscale: "Schedule options" is two grouped lists, This week and Settings, one line per row. The week's
+              "Today" link (on the week card, only when you're off this week) replaces Go to this week. The availability
+              deadline is a row that opens its form in Scheduling rules (no inline date box or browser button). */}
+            <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
+              {moreItems}
             </ActionMenu>
             {publishAction}
           </span>
@@ -424,6 +472,7 @@ export default async function SchedulePage({
         absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
         corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref, changedShiftIds,
           todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locationQuery}`, observedAt: observedAt.toISOString() }}
+        b={bSchedule}
         notices={<>
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {
