@@ -130,7 +130,7 @@
 
   /* Pills become chips; buttons become the mock's pills. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-pill { height: 22px !important; padding: 0 8px !important; border-radius: 11px !important; font-size: 12px !important; font-weight: 600 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn:not(.c-btn--secondary):not(.c-btn--neutral):not(.c-btn--danger), .q-btn:not(.q-btn--sec):not(.q-btn--quiet)) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn:not(.c-btn--secondary):not(.c-btn--neutral):not(.c-btn--danger):not(:disabled):not([aria-disabled="true"]), .q-btn:not(.q-btn--sec):not(.q-btn--quiet):not(:disabled):not([aria-disabled="true"])) {
     border-radius: 999px !important; box-shadow: 0 8px 18px -8px rgb(11 110 105 / 0.6) !important;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs) {
@@ -230,7 +230,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-nav > :first-child:is(a, button):not(.q-nav__l) { opacity: 1 !important; color: #FFFFFF !important; }
   /* Narrow phones: a field pair stacks so nothing is cut ("No posit…", "Choose or"). */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__pair, .c-teamform .c-step > div:has(> .c-field + .c-field), .q-fl-pair) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__pair, .q-fl-pair) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; }
   }
   /* Company profile: the business name is a normal stacked field. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl { display: block !important; padding: 12px 18px 14px !important; }
@@ -241,7 +241,7 @@
 @media (max-width: 767px) {
   /* A Quiet page whose bar names it keeps its large title for screen readers only: it leaves the flow and the bar casts the band. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t:not(:empty)) > .q-hd { position: absolute !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; height: 0 !important; overflow: hidden !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t:not(:empty)) > .q-hd + * { margin-top: 12px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t:not(:empty)) > .q-hd + * { margin-top: 16px !important; }
   /* One divider per row: the row's own 1px line, nothing doubled from the list item or the row. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li > :is(.q-row, details > summary.q-row) { border-top: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
 }
@@ -258,7 +258,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn, .q-btn, .wc-btn, button):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
   /* Add employee: the Role and Location pair stacks on narrow phones; stacked pairs keep the form's rhythm. */
   @media (max-width: 359px) {
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform :has(> .c-field + .c-field) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: 16px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: 16px !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift__pair { row-gap: 16px !important; }
   }
   /* Selects in rows end in an ellipsis instead of being cut; icon buttons lose the old hairline. */
@@ -274,4 +274,61 @@
   /* Add employee: each field of a pair takes the full width on narrow phones, whatever the row's own layout. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row { display: flex !important; flex-direction: column !important; flex-wrap: wrap !important; gap: 16px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row > * { flex: 1 1 auto !important; width: 100% !important; max-width: none !important; min-width: 0 !important; grid-column: 1 / -1 !important; }
+}
+/* ---------- Round 3: measured insets and spacing (row text sits 18px inside the card, at 34–35px) ---------- */
+@media (max-width: 767px) {
+  /* Section labels: the page or list already gives 16px; the label adds the row's 18px, nothing more. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-sec-label.c-sec-label { margin-left: 0 !important; margin-right: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .q-grp.q-grp, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .q-sec.q-sec { padding-left: 18px !important; padding-right: 18px !important; }
+  /* Notes on the canvas at the row text too. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .c-coprof__note.c-coprof__note { margin-left: 16px !important; margin-right: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > p.q-help, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .q-deletion, section, form) > p.q-help, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page p.q-help.q-policy-legal { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-act__sub { padding-left: 18px !important; }
+  /* Text inside cards that isn't a row: 18px, like the rows. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-exp__ready, .c-exp__body, .c-exp__person, .c-pset__body, .c-help__a, .wc-emptyrow, .c-ins__reason, .wc-tcard__body, .c-photos__label, .c-photos__keep, .c-photos__moretext, .c-photos__helpform) { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-exp__people { margin-left: -18px !important; margin-right: -18px !important; }
+  /* Rows that aren't list items (rules, questions) get the same inset divider; their own lines go. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-rule-list, .c-card, .q-list) > :is(details, .q-rule, .c-row, a.c-row, button.c-row) + :is(details, .q-rule, .c-row, a.c-row, button.c-row) { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-rule-list > .q-rule, .c-card > details) > summary { box-shadow: none !important; border: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li:first-child { border-top: 0 !important; box-shadow: none !important; background-image: none !important; }
+  /* Hero to content: 16px on every page (a corporate page's own 12px gap counts toward it). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-page > :is(.c-nav--phone, .c-phone-sub, .c-title--wide, .c-seg) + :not(.c-phone-sub, .c-title--wide, .c-seg, .c-sr) { margin-top: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-page > :is(.c-nav--phone, .c-phone-sub, .c-title--wide, .c-seg) + .c-sr + :not(.c-phone-sub, .c-seg) { margin-top: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > :is(.q-nav, .q-hd, .q-seg, .c-seg) + :not(.q-hd, .q-seg, .c-seg, .q-sr) { margin-top: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > :is(.q-nav, .q-hd) + :is(.wc-content, section) > :first-child:not(.q-sr) { margin-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > :is(.q-nav, .q-hd) + :is(.wc-content, section) > .q-sr:first-child + * { margin-top: 0 !important; }
+  /* Sheets: 16px between the band and the form card; the card's own top padding is the 18px of its sides. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift__head + :is(.c-shift__form, .c-pub__body) { margin-top: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-formhead + form { margin-top: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift__form { margin-left: 0 !important; margin-right: 0 !important; padding-top: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift__form > :is(fieldset, .configuration-fields) { margin-top: 0 !important; padding-top: 0 !important; }
+  /* Account recovery: the row title wraps so the chosen value stays readable. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-row:has(select) .q-rt { flex: 1 1 45% !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-row:has(select) select { max-width: 55% !important; }
+  /* The person page's call and message buttons: soft tinted circles, no hairline. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-person__act { border-color: transparent !important; background: #E8F3F1 !important; color: #0B6E69 !important; box-shadow: none !important; }
+}
+@media (max-width: 359px) {
+  /* Four tabs on the hero (Insights): every label keeps padding and never touches its neighbour. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b].app-shell :is(.c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg)) > :is(a, button) { padding: 0 6px !important; font-size: 12px !important; letter-spacing: -0.02em !important; min-width: 0 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+}
+@media (max-width: 767px) {
+  /* Glass tabs on a corporate page: 16px of canvas under their teal frame (the page's own 12px gap counts). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-page > :is(.c-nav--phone + .c-seg, .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg) + * { margin-top: 22px !important; }
+  /* A label that opens the content sits at the same 16px under the hero as a card does. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > :is(.q-nav, .q-hd) + * > .q-grp:first-child, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > :is(.q-nav, .q-hd) + * > .q-sr:first-child + .q-grp { margin-top: 0 !important; padding-top: 0 !important; }
+  /* Card text that isn't a row: the last 2px to the row text. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-card :is(.c-pub__lead, .c-pay__detail, p[class*="schedule-generation"]) { padding-left: 2px !important; padding-right: 2px !important; }
+}
+@media (max-width: 767px) {
+  /* The first visible block after the hero, skipping desktop-only and screen-reader-only siblings: 16px under it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-page.c-page > .c-nav--phone ~ :not(.c-nav, .c-title--wide, .c-pay-tabs, .c-pay__feedback:empty, .c-phone-sub, .c-seg, .c-sr, [hidden], span.q-page):not(.c-page > .c-nav--phone ~ :not(.c-nav, .c-title--wide, .c-pay-tabs, .c-pay__feedback:empty, .c-phone-sub, .c-seg, .c-sr, [hidden], span.q-page) ~ *) { margin-top: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page > :is(.q-nav, .q-hd) + .q-sr + * { margin-top: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage.c-sheetpage > .c-formhead + form.c-teamform { margin-top: 4px !important; }
+}
+@media (max-width: 767px) {
+  /* Features and Delete account: the container owns the 16px under the hero, and its nested first blocks bring none. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + .wc-content:has(> .wc-main:first-child), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page.q-delete > :is(.q-hd, .q-nav) + form.q-deletion { margin-top: 16px !important; }
+  /* The first block's own top margin collapses up through its empty wrappers (wc-content > wc-main > section > q-grp): zero the chain. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + :is(.wc-content, form.q-deletion) > :first-child, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + :is(.wc-content, form.q-deletion) > :first-child > :first-child, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + :is(.wc-content, form.q-deletion) > :first-child > :first-child > :first-child, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + form.q-deletion > :is(div, section):first-of-type, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-hd, .q-nav) + form.q-deletion > :is(div, section):first-of-type > :first-child { margin-top: 0 !important; }
 }

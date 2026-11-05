@@ -247,7 +247,7 @@
   /* Rows: a title stays on one line beside its chip (an ellipsis if it must), lines wrap without orphans. */
   /* A name never ends in "…": when the chip doesn't fit beside it, the chip drops under it. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: balance; }
   /* With no chip beside it a title may take two lines rather than end in an ellipsis. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t:not(:has(.b-chip)) .b-row__tt { white-space: normal; text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row__s, .b-notice__s, .b-step__s, .b-sub, .b-note) { text-wrap: pretty; }
@@ -285,7 +285,7 @@
   /* Narrow phones: a line may take two lines (never cut to "…"), and a chip that doesn't fit drops under the name. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h { gap: 4px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h .b-chip { font-size: 11px; padding: 0 7px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { width: 32px; height: 36px; }
