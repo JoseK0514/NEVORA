@@ -1333,3 +1333,13 @@ Jose approved Option D ("premium, elegant and easy to understand") for the emplo
 - **Sections:** an 11.5pt bold title, a one-line plain-language explanation at 7.5pt, 7pt column labels, 9pt rows on hairlines, a bold total. Long lists continue on the next page under "(continued)" and a slim header (employer, employee, period). Any cell, including a very large amount, wraps inside its column.
 - **Footer on every page:** "This statement documents approved payroll. It doesn't confirm payment.", "Page x of y", the approval time in UTC, run and template, and "Prepared with" the NEVORA wordmark (52pt wide, embedded PNG).
 - **Words:** amounts as "$1,234.56" (exact, never rounded; a negative keeps its sign); hours as "40" or "2.5" when exact, "1 h 40 min" otherwise, a fraction only when the time isn't whole seconds; rates exact ("$17/3" when they don't terminate); dates "Sep 28 – Oct 4, 2026" / "28 sep – 4 oct 2026". English and Spanish copy live in `WORDS_V2`.
+
+## Company payroll summary PDF, template v2 — approved 2026-11-05
+
+Jose approved the company summary mock in the pay statement v2 style. Mock: https://claude.ai/artifact/X8UmYq1BX8X9AAf5Wt1xi5. Code: `renderNativeCompanySummary` in `src/lib/payroll/native/company-summary-document.ts`.
+
+- **Versioning:** a native run that recorded pay statement template v2 gets summary `NEVORA_NATIVE_COMPANY_SUMMARY_V2`. A native run that recorded v1 and every imported run keep the plain summary byte for byte (`NEVORA_NATIVE_COMPANY_SUMMARY_V1` in native metadata). Never restyle the plain summary; a further change is a v3.
+- **Page, colour, footer:** the same as the pay statement v2: US Letter, 44pt margins, pinned Helvetica, the same colours, chips and footer. The footer says "This summary documents approved payroll." The bar shows net pay in teal and employee deductions in `#9CBDB8`.
+- **Order:** company as a spaced-capital teal line with the run-kind chip; "Payroll summary" at 22pt bold; period and payday, with the employee count on the right; "Net pay to your team" at 44pt; one line on employer contributions paid on top (left out when they are zero); one strip "Employees · Gross pay – Employee deductions = Net pay"; the split bar; "Pay by employee" (name, then the employee ID beneath it, with gross and net pay, and a bold total); "Paid by the company" with employer contributions; References in two columns.
+- **Long runs:** names and IDs wrap in their column; a very large amount shrinks to fit, never below 7pt. The list continues under "Pay by employee (continued)" with a slim header (company, title and period).
+- **Words:** English and Spanish copy live in `WORDS` in that file. The summary uses the company's language setting.

@@ -51,8 +51,34 @@ The spaced capital employer line uppercased the name after the glyph check, so a
 
 Not done here: printing on paper, PDF readers other than poppler (pdftoppm), screen-reader or tagged-PDF checks (neither template is tagged), and hosted CI.
 
+## Company summary v2 (2026-11-05)
+
+Jose approved the company summary mock (https://claude.ai/artifact/X8UmYq1BX8X9AAf5Wt1xi5), and it's now built.
+
+- `src/lib/payroll/native/company-summary-document.ts` renders it. `generatePdfs` in `src/lib/payroll/documents.ts` uses it for native runs that recorded pay statement template v2 and records `NEVORA_NATIVE_COMPANY_SUMMARY_V2` in the summary's stored metadata.
+- Native runs that recorded v1, and every imported run, still get the plain summary. On the fixture run, the bytes match `f5fa463b` exactly: SHA-256 `66e6c4d9…` for both a native v1 run and an imported run.
+- No payroll data, calculation, migration or manifest change. The manifest already binds whatever summary bytes and metadata the worker writes.
+- The v2 pay statement helpers it shares (`WORDS_V2` dates, `V2` colours, `dollars`, `wrap`, `advance`, `approvalStamp`) are now exported from `paystub-document.ts`. The pay statement's bytes are unchanged. The PDF text reader for tests moved to `src/lib/payroll/native/pdf-text.test-support.ts`.
+
+Checks run:
+- New `company-summary-document.test.ts` has 7 tests, all passing:
+  - which runs get v2;
+  - unchanged plain bytes for v1 and imported runs;
+  - English content and order with the 44pt hero;
+  - Spanish with a corrected replacement and zero contributions;
+  - 40 employees with a 160-character name, a 124-character ID, a $9,999,999,999.99 amount and a company name with "µ", across pages;
+  - progress and a failed lease callback;
+  - glyph rejection by path.
+
+  Every rendering is checked for text inside the margins, at 7pt or larger, with no overlap.
+- Typecheck and lint pass. All payroll unit suites pass: 40 files, 845 tests.
+- Native payroll integration on owned local PostgreSQL 16 passes 44 of 44.
+- I rendered English, Spanish, replacement, 34-employee (3 pages) and stress samples to PNG and looked at each one.
+
+Not done here: hosted CI, printing on paper, readers other than poppler.
+
 ## Open
 
-- **Legal or payroll copy review.** The plain-language explanations and the disclaimer are new wording on a pay document: "Taken from your pay and sent to the government for you", "Amounts you authorized to be taken from your pay", "Your employer pays these on top of your wages. They don't come out of your pay.", "This statement documents approved payroll. It doesn't confirm payment." The Spanish uses "patrono".
+- **Legal or payroll copy review.** The plain-language explanations and the disclaimers are new wording on pay documents, including the summary's "This summary documents approved payroll. It doesn't confirm payment." and "They're paid on top of wages and don't come out of anyone's pay." On the statement: "Taken from your pay and sent to the government for you", "Amounts you authorized to be taken from your pay", "Your employer pays these on top of your wages. They don't come out of your pay.", "This statement documents approved payroll. It doesn't confirm payment." The Spanish uses "patrono".
 - **App font.** Embedding NEVORA's app font instead of Helvetica would need a change to the pinned-font rule, so it's a separate decision.
 - Deployment remains subject to Jose's authorization. No migration is needed.

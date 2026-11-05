@@ -272,10 +272,10 @@ function rate(r: NativePaystubRatio): string {
   return `USD ${exact(BigInt(r.numerator), BigInt(r.denominator) * BigInt(100), 2)}`;
 }
 // Standard-font drawText emits Tj without pair kerning; measure its actual glyph advances.
-function advance(value: string, font: PDFFont, size: number): number {
+export function advance(value: string, font: PDFFont, size: number): number {
   return [...value].reduce((sum, char) => sum + font.widthOfTextAtSize(char, size), 0);
 }
-function wrap(value: string, font: PDFFont, size: number, width: number): string[] {
+export function wrap(value: string, font: PDFFont, size: number, width: number): string[] {
   const lines: string[] = [];
   const widths = new Map<string, number>();
   let current = "", currentWidth = 0;
@@ -472,7 +472,7 @@ async function renderStatementV1(p: NativePaystubPresentation, options: NativePa
 /* Template v2 (approved November 2, 2026): an elegant, plain-language statement. The take-home amount leads,
  * then one strip reads "You earned - Taxes - Other deductions = Take home", then each section in plain words.
  * Same pinned Helvetica fonts and glyph check as v1; presentation arithmetic stays exact and never rounds. */
-const WORDS_V2 = {
+export const WORDS_V2 = {
   en: {
     title: "Pay statement", original: "Original", replacement: "Corrected replacement", employeeId: "Employee ID",
     home: "You take home", earned: "You earned", taxes: "Taxes", other: "Other deductions", takeHome: "Take home",
@@ -504,10 +504,10 @@ const WORDS_V2 = {
     months: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
   },
 } as const;
-type WordsV2 = (typeof WORDS_V2)["en" | "es"];
+export type WordsV2 = (typeof WORDS_V2)["en" | "es"];
 
 const hexV2 = (h: string) => rgb(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255);
-const V2 = {
+export const V2 = {
   ink: hexV2("#172622"), muted: hexV2("#5F6D68"), soft: hexV2("#8A958F"), teal: hexV2("#0B6E69"), wash: hexV2("#EAF4F1"),
   line: hexV2("#E3E9E6"), sheet: hexV2("#F7F6F3"), amber: hexV2("#8A5A00"), amberWash: hexV2("#FBF1DC"),
   net: hexV2("#0B6E69"), tax: hexV2("#D4A24C"), deduction: hexV2("#9CBDB8"),
@@ -518,7 +518,7 @@ type CellRow = { cells: string[]; sub?: string };
 type Column = { label: string; width: number; right?: boolean };
 
 /** "$1,234.56"; a negative amount keeps its sign. Approved cent strings only, never rounded. */
-function dollars(value: string): string {
+export function dollars(value: string): string {
   const n = BigInt(value), absolute = n < BigInt(0) ? -n : n;
   return `${n < BigInt(0) ? "-" : ""}$${(absolute / BigInt(100)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}.${(absolute % BigInt(100)).toString().padStart(2, "0")}`;
 }
@@ -533,12 +533,12 @@ function workedHours(nanoseconds: string, t: WordsV2): string {
   const total = ns / second, h = total / BigInt(3600), m = (total % BigInt(3600)) / BigInt(60), sec = total % BigInt(60);
   return [h ? `${h} ${t.h}` : "", m ? `${m} ${t.min}` : "", sec ? `${sec} ${t.s}` : ""].filter(Boolean).join(" ");
 }
-function calendarDate(iso: string, t: WordsV2, en: boolean, year = true): string {
+export function calendarDate(iso: string, t: WordsV2, en: boolean, year = true): string {
   const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
   return en ? `${t.months[m - 1]} ${d}${year ? `, ${y}` : ""}` : `${d} ${t.months[m - 1]}${year ? ` ${y}` : ""}`;
 }
-const dateRange = (start: string, end: string, t: WordsV2, en: boolean) => `${calendarDate(start, t, en, start.slice(0, 4) !== end.slice(0, 4))} – ${calendarDate(end, t, en)}`;
-function approvalStamp(approvedAt: string, t: WordsV2, en: boolean): string {
+export const dateRange = (start: string, end: string, t: WordsV2, en: boolean) => `${calendarDate(start, t, en, start.slice(0, 4) !== end.slice(0, 4))} – ${calendarDate(end, t, en)}`;
+export function approvalStamp(approvedAt: string, t: WordsV2, en: boolean): string {
   const utc = new Date(approvedAt).toISOString();
   return `${calendarDate(utc, t, en)}, ${utc.slice(11, 16)} UTC`;
 }
