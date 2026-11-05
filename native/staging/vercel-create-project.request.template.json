@@ -1,0 +1,26 @@
+{
+  "requestBody": {
+    "name": "nevora-native-staging",
+    "framework": "nextjs",
+    "installCommand": "npm ci",
+    "buildCommand": "npm run build",
+    "publicSource": false,
+    "enablePreviewFeedback": false,
+    "enableProductionFeedback": false,
+    "environmentVariables": [],
+    "skipGitConnectDuringLink": true,
+    "ssoProtection": {
+      "deploymentType": "all",
+      "enabled": true
+    },
+    "resourceConfig": {
+      "buildMachineSelection": "fixed",
+      "buildMachineType": "basic",
+      "elasticConcurrencyEnabled": false,
+      "functionDefaultRegions": [
+        "iad1"
+      ]
+    }
+  },
+  "teamId": null
+}

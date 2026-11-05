@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "deploymentScope": "new project / native-staging custom environment only",
+  "copyFromExistingProjectOrTeam": false,
+  "publicConfiguration": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NEVORA_ENVIRONMENT": "staging",
+    "NEVORA_MOBILE_ACCESS_ENABLED": "true",
+    "NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED": "false",
+    "FUEL_PORTAL_ORIGIN": "https://nevora-native-staging-qa.vercel.app",
+    "NEXT_PUBLIC_NEVORA_PASSKEYS": "off",
+    "NEVORA_OWNER_ADVISOR_ENABLED": "false",
+    "NEVORA_PAYROLL_ENABLED": "false",
+    "NEVORA_INVITATION_DELIVERY_ENABLED": "false",
+    "NEVORA_CLOCKER_PUNCH_ENABLED": "false",
+    "NEVORA_CLOCKER_UI_V2": "false",
+    "PUSH_ENVIRONMENT": "test",
+    "PUSH_FEATURE_ENABLED": "false",
+    "PUSH_DELIVERY_ENABLED": "false",
+    "PUSH_TEST_DELIVERY_ENABLED": "false",
+    "NATIVE_PUSH_ENVIRONMENT": "test",
+    "NATIVE_PUSH_REGISTRATION_ENABLED": "false",
+    "NATIVE_PUSH_DELIVERY_ENABLED": "false",
+    "NATIVE_PUSH_TEST_DELIVERY_ENABLED": "false"
+  },
+  "secretBindings": {
+    "DATABASE_URL": {
+      "value": null,
+      "source": "new isolated Neon project, exact branch/database and least-privilege runtime role only",
+      "vercelType": "Secret",
+      "scope": "native-staging only"
+    }
+  },
+  "omitEntirely": [
+    "NEVORA_APP_DATABASE_URL",
+    "NEVORA_WORKER_DATABASE_URL",
+    "NEVORA_RECOVERY_SMTP_HOST",
+    "NEVORA_RECOVERY_SMTP_USER",
+    "NEVORA_RECOVERY_SMTP_PASSWORD",
+    "NEVORA_RECOVERY_FROM",
+    "PUSH_VAPID_PRIVATE_KEY",
+    "PUSH_SUBSCRIPTION_ENCRYPTION_KEY",
+    "NOTIFICATION_WORKER_SECRET",
+    "NATIVE_PUSH_TOKEN_ENCRYPTION_KEY",
+    "NATIVE_APNS_PRIVATE_KEY",
+    "NATIVE_FCM_PRIVATE_KEY",
+    "OPENAI_API_KEY",
+    "NEON_AI_GATEWAY_TOKEN",
+    "NEVORA_DEV_CAPTURE_DIR"
+  ],
+  "neverCopy": "No production, existing Preview or Clocker values; no admin URL, bootstrap password or Vercel bypass token in the web/native runtime"
+}

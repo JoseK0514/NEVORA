@@ -1,0 +1,42 @@
+{
+  "executed": false,
+  "approvalRecorded": false,
+  "preserveLocalBranchesAndWorktrees": true,
+  "atomicArchiveAndRetireOnlyIfHeadsUnchanged": true,
+  "branches": [
+    {
+      "branch": "AI-owner",
+      "expectedHead": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
+      "existingExactArchiveTags": [],
+      "proposedArchiveRef": "refs/tags/archive/branches/2026-11-05/AI-owner",
+      "alreadyInDevelopment": true,
+      "openPullRequests": []
+    },
+    {
+      "branch": "claude/employee-mobile-phase2-20261027",
+      "expectedHead": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+      "existingExactArchiveTags": [],
+      "proposedArchiveRef": "refs/tags/archive/branches/2026-11-05/claude/employee-mobile-phase2-20261027",
+      "alreadyInDevelopment": true,
+      "openPullRequests": []
+    },
+    {
+      "branch": "codex/release1-db-rehearsal-20261101",
+      "expectedHead": "fb7da7628455434e221e131d81ae417b407162c6",
+      "existingExactArchiveTags": [],
+      "proposedArchiveRef": "refs/tags/archive/branches/2026-11-05/codex/release1-db-rehearsal-20261101",
+      "alreadyInDevelopment": false,
+      "openPullRequests": []
+    }
+  ],
+  "protectedOpenPullRequest": [
+    {
+      "baseRefName": "main",
+      "headRefName": "claude-codex-collab-nevora",
+      "isDraft": true,
+      "number": 37,
+      "title": "Release 1 frozen head: CI only (do not merge)",
+      "url": "https://github.com/JoseK0514/NEVORA/pull/37"
+    }
+  ]
+}

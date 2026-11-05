@@ -1,0 +1,28 @@
+{
+  "sourceCommit": "17102418b80fc5ebcae2fe4890eb1dd8252ac8d3",
+  "deploymentCreated": false,
+  "exportPath": "/Users/josek0514/.codex/native-runtime/nevora-native-staging-20261105/application-source-17102418",
+  "files": 2842,
+  "bytes": 53689064,
+  "excludedPrefixes": [
+    "native/",
+    "docs/",
+    ".codex/",
+    ".github/",
+    ".env*"
+  ],
+  "nativeBackendSourceIncluded": true,
+  "archivePath": "/Users/josek0514/.codex/native-runtime/nevora-native-staging-20261105/native-staging-source-17102418.tar.gz",
+  "archiveSha256": "c5f2f089208e9d907c9a7b98e83c2653fcb3006f1776896b15b44553520edec7",
+  "archiveBytes": 29515852,
+  "sourceManifestSha256": "c95cd7037fc7ed4e7a7173701eb42fe53e77c81b3a53b714116cec4b6a60cc17",
+  "sourceFilesReverified": true,
+  "buildGeneratedReferenceChanges": [],
+  "originalSourceRestoredAfterBuild": true,
+  "productionArtifactsScanned": 4112,
+  "developmentMarkers": "absent",
+  "cloudCreated": false,
+  "databaseSeeded": false,
+  "deployed": false,
+  "hostedVerified": false
+}

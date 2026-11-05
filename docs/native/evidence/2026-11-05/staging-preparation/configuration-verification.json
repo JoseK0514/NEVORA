@@ -1,0 +1,18 @@
+{
+  "configuredOnly": true,
+  "cloudCreated": false,
+  "deployed": false,
+  "databaseSeeded": false,
+  "checks": {
+    "nativeRegistrationOff": true,
+    "nativeProvidersOff": true,
+    "webPushFeatureAndDeliveryOff": true,
+    "mailAndInvitationsOff": true,
+    "aiOff": true,
+    "payrollAndClockerOff": true,
+    "passkeysOffPendingAssociations": true,
+    "noCopiedEnvironmentOrRuntimeSecret": true,
+    "fictionalIdentityInputsAcceptedByActualCompanySetup": true,
+    "unprovisionedStatusPreserved": true
+  }
+}
