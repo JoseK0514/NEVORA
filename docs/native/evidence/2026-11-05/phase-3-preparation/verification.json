@@ -1,0 +1,26 @@
+{
+  "preparedOnly": true,
+  "newAssociationTests": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "nativeToolSuite": {
+    "passed": 27,
+    "failed": 0,
+    "skipped": 0,
+    "realOwnedPostgresConcurrency": true
+  },
+  "red": {
+    "assertionFailures": 11,
+    "tests": 13,
+    "reason": "missing preparation behavior before implementation"
+  },
+  "nodeSyntaxCheck": true,
+  "diffCheck": true,
+  "applicationRuntimeChanged": false,
+  "actualAccountOrSigningIdentityUsed": false,
+  "deployed": false,
+  "signed": false,
+  "deviceVerified": false
+}

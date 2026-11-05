@@ -1,0 +1,17 @@
+[
+  {
+    "artifact": "task-1-red.log.gz",
+    "rawSha256": "d586325c3016213a699de9fb6984a321b653e3efab7198b0c822ed100d125ca5",
+    "rawBytes": 18030
+  },
+  {
+    "artifact": "task-1-green.log.gz",
+    "rawSha256": "9881f3d94301d524e100c98ea0aebd3d61238ae53d0a7e8be253d559a9bed6b1",
+    "rawBytes": 1212
+  },
+  {
+    "artifact": "task-1-suite.log.gz",
+    "rawSha256": "5362f5cb09b1c3e6897c0f101272a0e9aaef0c942eff2cbbb85a1a03915644e7",
+    "rawBytes": 2585
+  }
+]
