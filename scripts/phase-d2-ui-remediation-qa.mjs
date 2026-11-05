@@ -113,12 +113,14 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await shots(mp,'.manager-corrections','multiple-supersessions');
   // Nov 1 upscale: a page that replaces its loading placeholder fades in over 150ms (corp.css c-arrive, opacity only).
   // Measure once every finite animation on the corrections and their ancestors has finished, in settled colours.
-  await mp.locator('.manager-corrections').evaluate(root=>new Promise((done,fail)=>{
+  // In WebKit the comparison text was sometimes missing when measured right after the screenshots (an empty list, three
+  // times, while the review list renews in the background); measure again for up to 10 s, and name what is on screen.
+  const settle=()=>mp.locator('.manager-corrections').evaluate(root=>new Promise((done,fail)=>{
    const deadline=Date.now()+5000,nodes=[...root.querySelectorAll('*'),root];for(let node=root.parentElement;node;node=node.parentElement)nodes.push(node);
    const settled=()=>nodes.every(el=>el.getAnimations().every(animation=>!Number.isFinite(animation.effect?.getComputedTiming().endTime)||(!animation.pending&&animation.playState==='finished')));
    const poll=()=>settled()?done():Date.now()>deadline?fail(new Error('Correction animations did not settle within 5 s')):requestAnimationFrame(poll);poll();
   }));
-  const contrast=await mp.locator('.manager-corrections').evaluate(root=>{
+  const measure=async()=>{await settle();return mp.locator('.manager-corrections').evaluate(root=>{
    const rgb=value=>value.match(/[\d.]+/g).map(Number);
    const luminance=colour=>rgb(colour).slice(0,3).map(v=>{v/=255;return v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4;}).reduce((sum,v,i)=>sum+v*[0.2126,0.7152,0.0722][i],0);
    return [...root.querySelectorAll('.correction-comparison :is(small,strong),.correction-context-zone,.correction-prior-decisions :is(p,strong,span)')].map(el=>{
@@ -127,8 +129,11 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
     const a=luminance(foreground),b=luminance(background);
     return {foreground,background,opacity,ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)};
    });
-  });
-  observations.contrast=contrast;assert(contrast.length>0);
+  });};
+  let contrast=await measure();
+  for(const deadline=Date.now()+10000;!contrast.length&&Date.now()<deadline;contrast=await measure())await mp.waitForTimeout(250);
+  observations.contrast=contrast;
+  assert(contrast.length>0,'Correction comparison text must be on screen to measure its contrast: '+JSON.stringify(await mp.locator('.manager-corrections').evaluate(root=>({rows:root.querySelectorAll('.manager-correction-row').length,comparisons:root.querySelectorAll('.correction-comparison').length,busy:root.getAttribute('aria-busy'),text:root.textContent.replace(/\s+/g,' ').trim().slice(0,160)}))));
   assert(contrast.every(pair=>pair.opacity===1&&pair.ratio>=4.5),'Correction text must be opaque at 4.5:1 or more: '+JSON.stringify(contrast.filter(pair=>!(pair.opacity===1&&pair.ratio>=4.5))));
 
   observations.keyboard.push({stage:'employee-before-foreground',employeeFocused:await ep.evaluate(()=>document.hasFocus()),managerFocused:await mp.evaluate(()=>document.hasFocus())});
