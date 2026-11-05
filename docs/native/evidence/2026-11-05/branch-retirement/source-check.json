@@ -5,5 +5,20 @@
     "Remote branch ceiling exceeded: 4 > 3"
   ],
   "limitUnchanged": 3,
-  "otherDrift": false
+  "otherDrift": false,
+  "inventoryUnitTests": {
+    "passed": 12,
+    "failed": 1,
+    "failure": "published three-branch policy test assumes only development/main have no archiveRef; current policy preserves active collaboration and the unapproved new branch",
+    "preExistingAt": "5436eb28ee6ac9c0e721cd9367fa90fddc8fddd2",
+    "baselineNonArchivedSources": [
+      "AI-owner",
+      "claude-codex-collab-nevora",
+      "claude/employee-mobile-phase2-20261027",
+      "codex/release1-db-rehearsal-20261101",
+      "development",
+      "main"
+    ],
+    "assertionsUnchanged": true
+  }
 }
