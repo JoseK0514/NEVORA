@@ -207,7 +207,15 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.route('**/api/manager/time-corrections',delayRoute);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
   await mp.getByText('Loading correction requests',{exact:true}).waitFor();await shots(mp,'.manager-corrections','loading');release();
-  await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();await mp.unroute('**/api/manager/time-corrections',delayRoute);
+  // The panel abandons a read after 10 s and retries 30 s later (private-snapshot-client). WebKit's seven loading
+  // screenshots can outlast that hold, so the held read may already be abandoned: then the queue must say so, and a
+  // fresh focus read must restore it.
+  const queued=mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first();
+  const delayedOutcome=await Promise.race([queued.waitFor().then(()=>'ready',()=>null),mp.getByText('Correction requests unavailable',{exact:true}).waitFor().then(()=>'abandoned',()=>null)]);
+  observations.delayedRead=delayedOutcome;
+  if(delayedOutcome==='abandoned'){await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await queued.waitFor();}
+  else assert.equal(delayedOutcome,'ready','The released read restores the correction queue');
+  await mp.unroute('**/api/manager/time-corrections',delayRoute);
   const unavailable=route=>route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({state:'unavailable',reason:'read_failed'})});
   stage='injected-503';phase='injected-503';await mp.route('**/api/manager/time-corrections',unavailable);observations.injectedFailures.push('503 protected correction read');
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await mp.getByText('Correction requests unavailable',{exact:true}).waitFor();await safePause('read failure');await shots(mp,'.manager-corrections','unavailable');
