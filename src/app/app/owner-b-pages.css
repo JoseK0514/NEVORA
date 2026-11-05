@@ -18,7 +18,7 @@
     position: relative !important; z-index: 1 !important; isolation: isolate;
     margin: 0 -16px !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 6px) 16px 14px !important;
     min-height: 0 !important; height: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
-    background: radial-gradient(120% 140% at 100% 0%, rgb(63 179 168 / 0.42) 0%, transparent 55%), linear-gradient(180deg, #0E7A74 0%, #0B6E69 45%, #08524E 100%) !important;
+    background: radial-gradient(90% 75% at 100% 0%, rgb(63 179 168 / 0.42) 0%, transparent 70%), linear-gradient(180deg, #0E7A74 0%, #0B6E69 40%, #08524E 82%, #08524E 100%) !important;
     color: #FFFFFF !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > :is(.q-nav, .q-hd) { margin-left: 0 !important; margin-right: 0 !important; padding-left: 16px !important; padding-right: 16px !important; }
@@ -36,7 +36,7 @@
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav__back, .q-nav__l) {
     grid-area: back !important; justify-self: start !important; display: inline-flex !important; align-items: center !important; gap: 8px !important; min-height: 44px !important; padding: 0 !important; margin: 0 0 0 -4px !important;
-    font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: rgb(255 255 255 / 0.88) !important; background: none !important; text-decoration: none !important; max-width: 100% !important;
+    font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: rgb(255 255 255 / 0.88) !important; background: none !important; text-decoration: none !important; max-width: 100% !important; margin-left: 0 !important;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav__back, .q-nav__l) > svg {
     flex: none !important; width: 40px !important; height: 40px !important; padding: 10px !important; margin: 0 !important; border-radius: 20px !important; color: #FFFFFF !important;
@@ -46,11 +46,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__title, .q-nav__t) { position: static !important; inset: auto !important; transform: none !important; width: auto !important; height: auto !important; grid-column: 1 / -1 !important; grid-row: 2 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav__r, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-column: 2 !important; grid-row: 1 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__title, .q-nav__t) {
-    grid-area: title !important; justify-self: start !important; margin: 6px 4px 0 !important; padding: 0 !important; max-width: none !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-align: left !important;
+    grid-area: title !important; justify-self: start !important; margin: 6px 0 0 !important; padding: 0 !important; max-width: none !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-align: left !important;
     font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; text-wrap: balance;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav__title, .q-nav__t):empty { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav__right, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-area: right !important; justify-self: end !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__right, .q-nav > :last-child:not(.q-nav__t):not(.q-nav__l)) { grid-area: right !important; justify-self: end !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav__right, .q-nav) :is(a, button):not(.q-nav__l) { font-weight: 600 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__right > :is(a, button), .q-nav > :is(a, button).q-nav__r, .q-nav > :last-child:is(a, button):not(.q-nav__l)) {
     display: inline-flex !important; align-items: center !important; min-height: 36px !important; margin: 0 !important; padding: 0 14px !important; border: 0 !important; border-radius: 18px !important;
@@ -90,11 +90,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg) > :is(a, button) { height: 36px !important; min-height: 36px !important; margin: 0 !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 600 !important; }
   /* The teal runs on 44px under the hero's last line, so the first card lifts over it. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) { position: relative; isolation: isolate; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav.c-nav--phone, .q-page > .q-nav, .c-shift__head, .c-formhead):has(+ :is(.c-card, .c-section, .c-pay__group, .q-list, .wc-card, .c-shift__form, .c-teamform, ul, .wc-content:has(> :is(.q-list, .wc-card):first-child), .wc-content:has(> .q-sr:first-child + :is(.q-list, .wc-card)), section:has(> .q-notif-hold), section:has(> .q-seg:first-child))),
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .c-nav.c-nav--phone:has(+ .c-title--wide + :is(.c-card, .c-section, .c-pay__group, .q-list, .wc-card, .c-shift__form, .c-teamform, ul, .wc-content:has(> :is(.q-list, .wc-card):first-child), .wc-content:has(> .q-sr:first-child + :is(.q-list, .wc-card)), section:has(> .q-notif-hold), section:has(> .q-seg:first-child))) { box-shadow: 0 44px 0 #08524E !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav--phone ~ .c-phone-sub, .q-page > .q-nav + .q-hd) { box-shadow: 0 -14px 0 #08524E !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav--phone ~ .c-phone-sub, .q-page > .q-nav + .q-hd):has(+ :is(.c-card, .c-section, .c-pay__group, .q-list, .wc-card, .c-shift__form, .c-teamform, ul, .wc-content:has(> :is(.q-list, .wc-card):first-child), .wc-content:has(> .q-sr:first-child + :is(.q-list, .wc-card)), section:has(> .q-notif-hold), section:has(> .q-seg:first-child))) { box-shadow: 0 -14px 0 #08524E, 0 44px 0 #08524E !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav--phone ~ .c-phone-sub, .q-page > .q-nav + .q-hd) + :is(.q-seg, .c-seg):has(+ :is(.c-card, .c-section, .c-pay__group, .q-list, .wc-card, .c-shift__form, .c-teamform, ul, .wc-content:has(> :is(.q-list, .wc-card):first-child), .wc-content:has(> .q-sr:first-child + :is(.q-list, .wc-card)), section:has(> .q-notif-hold), section:has(> .q-seg:first-child))) { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16), 0 0 0 16px #08524E, 0 -14px 0 16px #08524E, 0 44px 0 16px #08524E !important; clip-path: inset(-30px -16px -60px -16px) !important; }
   /* Everything after the hero sits above that band. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) > :not(.c-nav, .q-nav, .c-phone-sub, .q-hd, .c-shift__head, .c-formhead) { position: relative; z-index: 2; }
   /* Labels that land on the teal read in white. */
@@ -141,9 +137,141 @@
     border-radius: 999px !important; border-color: transparent !important; background: #F0F2F3 !important; color: #111517 !important; box-shadow: none !important;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-in, .q-in, input[type="text"], input[type="search"], input[type="email"], input[type="tel"], select, textarea):not([type="checkbox"]):not([type="radio"]) { border-radius: 14px !important; }
-  /* Company profile: the business name is one row, the label left and the name right (it stacked oddly before). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; gap: 12px !important; min-height: 56px !important; padding: 0 18px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl > :not(:has(input)) { flex: none !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field :is(.q-fl__row, .q-fl__label) { flex: none !important; width: auto !important; text-align: left !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl :is(input, .q-in) { flex: 1 1 auto !important; min-width: 0 !important; width: auto !important; height: 44px !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; background: none !important; text-align: right !important; font-size: 16px !important; }
+}
+
+/* ---------- Inspection fixes (Nov 5) ---------- */
+@media (max-width: 767px) {
+  /* A page that draws its own Direction B screen keeps every other child hidden (the hero rules above must not revive its old bar). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > :not(.b-screen, .b-keep) { display: none !important; }
+  /* One canvas colour to the bottom of the screen. */
+  html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)), html:is(:root, [data-theme]):has(.app-shell[data-nv-b] .page-frame :is(.c-page, .q-page)) body { background: #F2F5F4 !important; }
+  /* Tabular figures on numbers only: in Inter they also widen the hyphen ("clock - ins"). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) { font-variant-numeric: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-num, .q-num, .c-stat__value, .c-row__value, .q-rv, .c-badge, .c-count, td, time) { font-variant-numeric: tabular-nums !important; }
+
+  /* Secondary pages (round 2): the hero ends cleanly and content starts 16px under it on the canvas. No band runs under
+   * content, so a label, field or line never lands on teal. The six main screens keep their lifted cards (owner-b.css). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav.c-nav--phone, .q-page > .q-nav, .c-shift__head, .c-formhead, .c-page > .c-nav--phone ~ .c-phone-sub, .q-page > .q-nav + .q-hd, .q-page > .q-nav + .pmp-content > .q-who) { box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) > :is(.c-sr, .q-sr, p.c-sr, span.q-sr) { position: absolute !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-page.c-page > .c-nav--phone ~ .c-phone-sub.c-phone-sub { margin: -12px -16px 0 !important; padding: 0 16px 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page.q-page.q-page > .q-nav + .q-hd { padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav.c-nav--phone, .q-page > .q-nav) { padding-bottom: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > :is(.c-nav--phone, .c-phone-sub, .c-title--wide, .c-seg) + :not(.c-phone-sub, .c-title--wide, .c-seg), .q-page > :is(.q-nav, .q-hd, .q-seg, .c-seg) + :not(.q-hd, .q-seg, .c-seg)) { margin-top: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > :is(.c-nav--phone, .c-phone-sub, .c-title--wide, .c-seg) + .c-sr + :not(.c-phone-sub, .c-seg) { margin-top: 16px !important; }
+  /* Glass tabs on the hero: teal fills a square frame round the control (16px at the sides and below) and its own corners. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) {
+    position: relative !important; z-index: 1 !important; clip-path: none !important; height: auto !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16) !important;
+    border: 0 solid transparent !important; border-image: linear-gradient(#08524E, #08524E) 1 / 16px 16px 18px 16px / 16px 16px 18px 16px !important;
+    outline: 14px solid #08524E !important; outline-offset: 0 !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > .c-nav--phone + .c-seg, .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg) { margin-top: -12px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child)::after { content: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-nav + .q-hd + :is(.q-seg, .c-seg), .c-page > .c-nav--phone + :is(.c-phone-sub, .c-title--wide) + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) + * { margin-top: 34px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd + section > .q-seg:first-child { margin: 0 16px 34px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button { height: 36px !important; min-height: 36px !important; margin: 0 !important; border-radius: 10px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd + section > .q-seg:first-child > button::before { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-hd + section > .q-seg:first-child ~ * { position: relative; z-index: 2; }
+  @media (max-width: 359px) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-seg, .q-seg) > :is(a, button) { padding: 0 4px !important; font-size: 12.5px !important; letter-spacing: -0.01em !important; } }
+
+  /* One inset for section labels (the row text's 18px), and 18px inside every card for non-row text. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-section__label { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-sec-label { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-sec-label > :is(h2, .c-pay__sec-aside) { padding-left: 0 !important; margin-left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.q-grp, .q-sec) { padding-left: 34px !important; padding-right: 34px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.q-grp, .q-sec) > h2 { padding-left: 0 !important; margin-left: 0 !important; }
+  /* Notes between cards line up with the row text too. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > :is(.c-note, p:not(.c-sr):not(.c-phone-sub)), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-section > p { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-foot, .c-coprof__note, .wc-intro) { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-card__head, .c-card__body, .c-empty--card, .c-error-card, .wc-cardhead, .q-list .q-empty, .c-card > .c-note) { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-cardhead > :first-child, .wc-cardhead :is(h2, b), .q-list .q-grp h2) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: #111517 !important; letter-spacing: -0.01em !important; }
+
+  /* One divider: 1px, inset to the row text. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li { border-top: 0 !important; border-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows, .c-coprof) > li + li { box-shadow: none !important; border-top: 0 !important; background: linear-gradient(#ECEEEF, #ECEEEF) 18px 0 / calc(100% - 18px) 1px no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows) > li > :is(*, details > summary) { border-top: 0 !important; border-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .c-rows) > li > :is(.q-row, .c-row, details > summary) { box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-row::after { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li:first-child > * { box-shadow: none !important; }
+
+  /* Empty states and the week stepper are cards too. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page > .q-empty, .q-page > * > .q-empty, .c-page > .c-week, :has(> .manager-corrections-empty)) {
+    border: 1px solid transparent !important; border-radius: 22px !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-empty { margin-left: 16px !important; margin-right: 16px !important; }
+
+  /* Segmented controls in content: a soft pill track and a white thumb. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) {
+    border-radius: 12px !important; padding: 3px !important; background: #E6EBEA !important; box-shadow: none !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.q-seg, .c-seg):not(.q-page > .q-nav + .q-hd + *, .c-page > .c-nav--phone + * + .c-seg, .c-page > .c-nav--phone + .c-seg, .q-page > .q-hd + section > .q-seg:first-child) > :is(a, button) { border-radius: 9px !important; font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .c-seg[data-slide]::before { border-radius: 9px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) .q-seg > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]) { background: #FFFFFF !important; box-shadow: 0 1px 3px rgb(16 24 32 / 0.14) !important; color: #111517 !important; }
+
+  /* Buttons: pills everywhere; secondary grey visible on the canvas too; disabled never glows. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn, .button) { border-radius: 999px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.wc-btn--sec, .button.secondary) { border-color: transparent !important; background: #E6EBEA !important; color: #111517 !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs) { background: #E6EBEA !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(button, .c-btn, .q-btn, .wc-btn):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
+
+  /* Row titles and lines wrap rather than end in "…"; a value keeps one line and gives way first. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__title, .c-row__detail, .c-row__detail > span, .q-rt b, .q-rt i, .q-rt span, .q-rt small) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; text-wrap: pretty; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-row__value, .q-rv) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; max-width: 50% !important; flex-shrink: 0 !important; text-align: right !important; overflow-wrap: anywhere; }
+
+  /* Field labels: one dark grey on every form. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { color: #3F464B !important; }
+
+  /* Sheets: the band starts at the top; Cancel, the title and the action on one line, the title centred on the screen. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheetpage { padding-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__head, .c-formhead) { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important; grid-template-areas: none !important; grid-template-rows: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__head, .c-formhead) > :nth-child(1 of :not(.q-page, [hidden])) { grid-column: 1 !important; grid-row: 1 !important; justify-self: start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__head, .c-formhead) > :is(.c-shift__title, .c-shift__titles, .c-formhead__t) { grid-column: 2 !important; grid-row: 1 !important; justify-self: center !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__head, .c-formhead) > :is(.c-shift__save, .c-nav__right, :last-child:not(.c-shift__title, .c-shift__titles, .c-formhead__t, .c-shift__cancel, .c-formhead__l)) { grid-column: 3 !important; grid-row: 1 !important; justify-self: end !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-formhead .c-formhead__step { color: rgb(255 255 255 / 0.85) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-nav > :first-child:is(a, button):not(.q-nav__l) { opacity: 1 !important; color: #FFFFFF !important; }
+  /* Narrow phones: a field pair stacks so nothing is cut ("No posit…", "Choose or"). */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-shift__pair, .c-teamform .c-step > div:has(> .c-field + .c-field), .q-fl-pair) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; }
+  }
+  /* Company profile: the business name is a normal stacked field. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl { display: block !important; padding: 12px 18px 14px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field :is(.q-fl__row, .q-fl__label) { display: block !important; width: auto !important; text-align: left !important; margin: 0 0 6px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-coprof__field .q-fl :is(input, .q-in) { display: block !important; width: 100% !important; height: 44px !important; padding: 0 12px !important; border: 1px solid #D5D8DA !important; border-radius: 14px !important; background: #FFFFFF !important; text-align: left !important; }
+}
+
+@media (max-width: 767px) {
+  /* A Quiet page whose bar names it keeps its large title for screen readers only: it leaves the flow and the bar casts the band. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t:not(:empty)) > .q-hd { position: absolute !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; height: 0 !important; overflow: hidden !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page:not([data-q-sheet]):has(> .q-nav .q-nav__t:not(:empty)) > .q-hd + * { margin-top: 12px !important; }
+  /* One divider per row: the row's own 1px line, nothing doubled from the list item or the row. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li > :is(.q-row, details > summary.q-row) { border-top: 0 !important; border-bottom: 0 !important; box-shadow: none !important; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-stat__label, .wc-preview__btn) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .manager-corrections-empty { border: 0 !important; box-shadow: none !important; background: transparent !important; }
+  /* One canvas to the bottom (the shell and its frames too). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:has(.page-frame :is(.c-page, .q-page)) :is(.app-main, .page-frame) { background: #F2F5F4 !important; }
+  /* Back labels and Cancel in pure white. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-nav--phone .c-nav__back, .q-nav__l, .c-shift__cancel, .c-formhead__link) { color: #FFFFFF !important; }
+  /* A disabled primary button never glows. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page):not(:has(> .b-screen)) :is(.c-btn, .q-btn, .wc-btn, button):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
+  /* Add employee: the Role and Location pair stacks on narrow phones; stacked pairs keep the form's rhythm. */
+  @media (max-width: 359px) {
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform :has(> .c-field + .c-field) { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; row-gap: 16px !important; }
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift__pair { row-gap: 16px !important; }
+  }
+  /* Selects in rows end in an ellipsis instead of being cut; icon buttons lose the old hairline. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .q-row select { text-overflow: ellipsis !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .c-icon-btn { border-color: transparent !important; background: #E8F3F1 !important; color: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-row__value, .q-rv) { text-wrap: balance; }
+}
+@media (max-width: 767px) {
+  /* Updates: the section holding the hero's tabs starts right under the title (its tabs' teal frame closes the gap). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-page > .q-hd + section:has(> .q-seg:first-child) { margin-top: 0 !important; }
+}
+@media (max-width: 359px) {
+  /* Add employee: each field of a pair takes the full width on narrow phones, whatever the row's own layout. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row { display: flex !important; flex-direction: column !important; flex-wrap: wrap !important; gap: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-teamform .c-field__row > * { flex: 1 1 auto !important; width: 100% !important; max-width: none !important; min-width: 0 !important; grid-column: 1 / -1 !important; }
 }

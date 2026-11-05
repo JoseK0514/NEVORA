@@ -111,7 +111,8 @@ export function BChip({ tone = "grey", children, label }: { tone?: BTone; childr
 const TINTS = [["#E4ECF7", "#2C4A7A"], ["#E7F2EC", "#22603F"], ["#EEE7F7", "#5B3D8F"], ["#F6EBE1", "#7A4A22"], ["#FBE8EC", "#8A2E44"], ["#E6F0F6", "#1F5670"]] as const;
 export function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  return ((parts[0]?.[0] ?? "") + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase() || "?";
+  // The first two words, as the rest of the app draws initials ("b Fictional QA" is BF on every screen).
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
 }
 export function BAvatar({ name, size = 36, ring, open }: { name?: string; size?: number; ring?: "late" | "on"; open?: boolean }) {
   if (open || !name) return <span className="b-av b-av--open" style={{ "--s": `${size}px` } as CSSProperties} aria-hidden="true" />;

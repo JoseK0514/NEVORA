@@ -13,7 +13,7 @@
     --b-teal: #0B6E69; --b-teal-50: #E8F3F1; --b-ink: #111517; --b-ink2: #3F464B; --b-grey: #6A7176; --b-line: #ECEEEF; --b-canvas: #F2F5F4;
     --b-amber: #8A4B00; --b-amber-50: #FDF3E4; --b-red: #B42318; --b-red-50: #FDECEA; --b-green: #1D6B45; --b-green-50: #E7F4EC; --b-quiet: #F0F2F3;
     display: block; margin: 0; color: var(--b-ink); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size: 15px; line-height: 1.4; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased; text-align: left;
+    font-size: 15px; line-height: 1.4; font-variant-numeric: normal; -webkit-font-smoothing: antialiased; text-align: left;
   }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(h1, h2, h3, p, ul, li, dl, dt, dd) { margin: 0; padding: 0; font: inherit; color: inherit; letter-spacing: inherit; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(ul) { list-style: none; }
@@ -137,10 +137,9 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-av--open::before { content: "+"; font-size: 18px; font-weight: 500; color: #7D868B; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-av--late { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #E2A13B; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-av--on { box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #2FB37F; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-faces { display: flex; flex: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av { box-shadow: 0 0 0 2px #FFFFFF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av + .b-av { margin-left: -6px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av:first-child { position: relative; z-index: 1; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-faces { display: flex; flex: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-faces .b-av + .b-av { margin-left: -6px; position: relative; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico svg { width: 18px; height: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico--teal { background: #E8F3F1; color: #0B6E69; }
@@ -239,7 +238,36 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-setup { padding: 0 2px 4px; }
   /* Setup finished: the slot renders nothing, so its card goes too. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-card:has(> .b-setup:empty) { display: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-lead-space { flex: none; width: 40px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* Inspection fixes (Nov 5). Tabular figures only on numbers: in Inter they also widen the hyphen ("clock - ins"). */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-live__v, .b-kv b, .b-row__end b, .c-num, .b-week__d b, .b-day b, .b-pill, .b-ink__big, .b-hbig, .b-days-l, .b-step__n, .b-tab-badge) { font-variant-numeric: tabular-nums; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { color: rgb(255 255 255 / 0.74); }
+  /* Rows: a title stays on one line beside its chip (an ellipsis if it must), lines wrap without orphans. */
+  /* A name never ends in "…": when the chip doesn't fit beside it, the chip drops under it. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: pretty; }
+  /* With no chip beside it a title may take two lines rather than end in an ellipsis. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t:not(:has(.b-chip)) .b-row__tt { white-space: normal; text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row__s, .b-notice__s, .b-step__s, .b-sub, .b-note) { text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-notice__t, .b-step__t) { text-wrap: balance; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__end .b-link { font-size: 14px; line-height: 20px; color: #0B6E69; }
+  /* The second face sits on top, ringed in white, as in the mock. */
+  /* Quieter shadow under inline buttons; the hero's round buttons match the 40px white pill beside them. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn:disabled { box-shadow: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib { width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important; padding: 0 !important; border-radius: 20px !important; position: relative; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-title__right .b-ib::after { content: ""; position: absolute; inset: -2px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-back { left: 14px; }
+  /* Setup card: the corporate row keeps no hairline of its own inside the card. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-setup :is(.c-row, li, .c-rows, .c-home__setup, .c-setup) { box-shadow: none !important; border: 0 !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-setup .c-row__title { font-size: 15.5px !important; font-weight: 600 !important; }
+  /* Search icon never collapses; filter chips are 32px pills; the chip row fades at its scrolling edge. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-search > svg { flex: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-filters button { min-height: 32px !important; height: 32px !important; border-radius: 16px !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-filters { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 24px), transparent); padding-right: 24px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-hkicker { flex-wrap: wrap; row-gap: 6px; }
 }
 
 /* Narrow phones (320–359px): a title never breaks mid-word (its actions wrap under it), and a row's button moves under its
@@ -250,9 +278,18 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { overflow-wrap: normal; word-break: normal; hyphens: none; }
 }
 @media (max-width: 359px) {
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) { flex-wrap: wrap; row-gap: 10px; }
+  /* A row's button drops under its text (compact, aligned with the text) so the words keep their width. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) { flex-wrap: wrap; row-gap: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) > .b-row__trail { flex-basis: 100%; padding-left: 48px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) > .b-row__trail .b-btn { flex: 1; min-height: 40px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__trail .b-btn { min-height: 34px; padding: 0 14px; font-size: 13.5px; }
+  /* Narrow phones: a line may take two lines (never cut to "…"), and a chip that doesn't fit drops under the name. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-week__h { gap: 4px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-week__h .b-chip { font-size: 11px; padding: 0 7px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { width: 32px; height: 36px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-filters button { padding: 0 10px; font-size: 13px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__i > :is(.b-live__a), :is(#c-root, html) .app-shell[data-nv-b] .b-live__i:not(:has(> .b-live__a)) { padding: 12px 10px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: 22px; }
 }

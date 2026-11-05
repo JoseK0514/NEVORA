@@ -60,9 +60,9 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
           { key: "late", label: "Late", count: late, current: filter === "late", onSelect: () => setFilter("late") },
           { key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") },
         ]} /> : null}
-        {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}</BList>
+        {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}
+          {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} label={seeAll.label} /> : null}</BList>
           : <p className="b-state">{people.length ? "No one right now." : total ? `No ${lowerPeople} match “${query}”.` : `No ${lowerPeople} yet.`}</p>}
-        {seeAll && filter === "all" ? <BList><BRow href={seeAll.href} title={seeAll.label} label={seeAll.label} /></BList> : null}
       </BCard>
       {inactive.length ? <BCard title="Inactive" count={inactive.length}><BList label={`Inactive ${lowerPeople}`}>{inactive.map(row)}</BList></BCard> : null}
       <BCard label="Team tools"><BList label="Team tools">{tools.map(tool =>
