@@ -24,8 +24,7 @@ Set `NEVORA_BACKEND_ORIGIN` to the exact approved HTTPS origin in Xcode build
 settings. There is deliberately no implicit production URL. Release requires a
 DNS deployment hostname and rejects cleartext, loopback/IP aliases, userinfo,
 and origins containing a path/query/fragment.
-Signing, provisioning, store identity, app icons, privacy disclosures, associated
-domains/passkeys and store distribution remain future work.
+The official app icon and required-reason privacy manifest are packaged by the generator. Signing, provisioning, final store identity/privacy disclosures, associated domains/passkeys and store distribution remain gated; see [release preparation](../release/README.md).
 
 Debug may use an invocation-owned loopback origin via launch arguments:
 `-nevora-debug-origin http://127.0.0.1:PORT`. That override is compiled out of

@@ -4,7 +4,7 @@ The app renders the existing Next.js Employee and Owner interface. Browser-owned
 
 Jose approved the v1 baseline on November4: **Android10/API29+ and AndroidSystemWebView149+**. Compile/target SDK36 and Java17 source/bytecode remain unchanged. Unknown, malformed and older providers show a native update explanation and deliberate browser fallback before any probe or private WebView. The fallback opens the configured protected `/app` in a separately resolved browser with no cookies, headers or tokens attached. Version admission is compatibility, never account/role authorization.
 
-The development identity `com.velani.nevora.development` is not a verified Play Console identity. AGP8.13.0/Gradle8.14.3 and wrapper checksums remain pinned. The current local JDK is21. Physical minimum-version, retail GooglePlay WebView, publisher/signing, hosted HTTPS and store qualification remain Phase3/4 gates.
+The development identity `com.velani.nevora.development` matches the NEVORA Development Play app record created November5; that record does not establish signing or distribution. AGP8.13.0/Gradle8.14.3 and wrapper checksums remain pinned. The current local JDK is21. Physical minimum-version, retail GooglePlay WebView, publisher/signing, hosted HTTPS and store qualification remain Phase3/4 gates.
 
 ## Build configuration
 
@@ -47,3 +47,5 @@ Targeted outdated-provider diagnostics live in `ShellInstrumentedTest`: native u
 - Older120/133 and historical135accessibility failures are retained. The supported baseline is an explicit product decision, not a slow-polling workaround, renderer flag or accessibility waiver. See [the approved proposal](../../docs/native/android-runtime-compatibility-proposal.md) and [evidence](../../docs/native/evidence/2026-11-04/webview-stack-review/README.md).
 
 Compilation/local SDK verification does not establish real APNs/FCM delivery, hardware key assurance, physical minimum-version acceptance, retail provider behavior, hosted deployment or store readiness.
+
+Release preparation, unchanged official launcher artwork, signing/recovery and store drafts are tracked in [native/release](../release/README.md).

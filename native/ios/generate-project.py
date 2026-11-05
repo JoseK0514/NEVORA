@@ -25,31 +25,34 @@ def configurations(settings):
 source_paths = [str(path.relative_to(root)) for directory in ['App', 'Sources/NevoraShellCore'] for path in sorted((root / directory).glob('*.swift'))]
 references = [add('PBXFileReference', lastKnownFileType='sourcecode.swift', path=path, sourceTree='SOURCE_ROOT') for path in source_paths]
 ui_reference = add('PBXFileReference', lastKnownFileType='sourcecode.swift', path='UITests/NevoraUITests.swift', sourceTree='SOURCE_ROOT')
+app_resources = [add('PBXFileReference', lastKnownFileType='folder.assetcatalog', path='Assets.xcassets', sourceTree='SOURCE_ROOT'),
+                 add('PBXFileReference', lastKnownFileType='text.xml', path='Configuration/PrivacyInfo.xcprivacy', sourceTree='SOURCE_ROOT')]
 app_product = add('PBXFileReference', explicitFileType='wrapper.application', path='NEVORA.app', sourceTree='BUILT_PRODUCTS_DIR')
 ui_product = add('PBXFileReference', explicitFileType='wrapper.cfbundle', path='NevoraUITests.xctest', sourceTree='BUILT_PRODUCTS_DIR')
 products = add('PBXGroup', children=[app_product, ui_product], name='Products', sourceTree='<group>')
-group = add('PBXGroup', children=references + [ui_reference, products], sourceTree='<group>')
+group = add('PBXGroup', children=references + app_resources + [ui_reference, products], sourceTree='<group>')
 
 common = dict(SWIFT_VERSION='5.0', IPHONEOS_DEPLOYMENT_TARGET='16.0', SDKROOT='iphoneos',
               TARGETED_DEVICE_FAMILY='1,2', CODE_SIGN_STYLE='Automatic',
               CURRENT_PROJECT_VERSION='1', MARKETING_VERSION='0.1.0',
               NEVORA_BACKEND_ORIGIN='', NEVORA_NATIVE_PUSH_ENABLED='false', NEVORA_NATIVE_PUSH_ENVIRONMENT='', ENABLE_USER_SCRIPT_SANDBOXING='YES')
 app_settings = dict(common, PRODUCT_NAME='NEVORA', PRODUCT_MODULE_NAME='Nevora',
+                    ASSETCATALOG_COMPILER_APPICON_NAME='AppIcon',
                     PRODUCT_BUNDLE_IDENTIFIER='com.velani.nevora.development', GENERATE_INFOPLIST_FILE='NO',
                     LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks')
 ui_settings = dict(common, PRODUCT_NAME='NevoraUITests', PRODUCT_MODULE_NAME='NevoraUITests',
                    PRODUCT_BUNDLE_IDENTIFIER='com.velani.nevora.development.uitests', GENERATE_INFOPLIST_FILE='YES',
                    TEST_TARGET_NAME='NEVORA', LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks @loader_path/Frameworks')
 
-def phases(files):
+def phases(files, resources=()):
     builds = [add('PBXBuildFile', fileRef=reference) for reference in files]
     return [add('PBXSourcesBuildPhase', buildActionMask=2147483647, files=builds, runOnlyForDeploymentPostprocessing=0),
             add('PBXFrameworksBuildPhase', buildActionMask=2147483647, files=[], runOnlyForDeploymentPostprocessing=0),
-            add('PBXResourcesBuildPhase', buildActionMask=2147483647, files=[], runOnlyForDeploymentPostprocessing=0)]
+            add('PBXResourcesBuildPhase', buildActionMask=2147483647, files=[add('PBXBuildFile', fileRef=reference) for reference in resources], runOnlyForDeploymentPostprocessing=0)]
 
 app = add('PBXNativeTarget', name='NEVORA', productName='NEVORA', productReference=app_product,
           productType='com.apple.product-type.application', buildConfigurationList=configurations(app_settings),
-          buildPhases=phases(references), buildRules=[], dependencies=[])
+          buildPhases=phases(references, app_resources), buildRules=[], dependencies=[])
 ui = add('PBXNativeTarget', name='NevoraUITests', productName='NevoraUITests', productReference=ui_product,
          productType='com.apple.product-type.bundle.ui-testing', buildConfigurationList=configurations(ui_settings),
          buildPhases=phases([ui_reference]), buildRules=[], dependencies=[])
