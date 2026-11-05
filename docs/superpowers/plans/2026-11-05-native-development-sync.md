@@ -1,6 +1,6 @@
 # Native development synchronization implementation plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Update the approved native app with fetched development `e9c3a66da330959738100884f87cb76fd2af8296`, preserving both histories and concurrent work.
 
@@ -32,10 +32,10 @@
 
 **Interfaces:** Consumes native checkpoint `1ea6e798c522ddcff96d6f315a9feb77d96b0500` and fetched development `e9c3a66d`. Produces a clean local merge containing both, preserved direct-shell contracts, isolated prototype/CI paths and verification receipts. It does not produce a hosted or store candidate.
 
-- [ ] Record source inventory, overlap/conflict preview and baseline native unit results.
-- [ ] Merge development without committing; preserve the direct-shell native tree and move the incoming prototype to `native/capacitor-spike/`. Update only its CI working/cache/artifact paths and repository-relative tool path; fix its README evidence link.
-- [ ] Classify current heads from actual ancestry: included AI-owner and Employee branch, held collaboration UI and reference database rehearsal. Keep the branch ceiling at three.
-- [ ] Verify retained native files, incoming application changes and relocated prototype bytes; inspect the automatic app-shell merge. Commit the resolved local update.
-- [ ] Run full root unit suite, typecheck, relevant lint, native Python/Node/Swift checks, Android unit/lint/builds, unsigned iOS build and the owned Next.js/PostgreSQL contract matrix. Preserve any failing evidence and make the smallest justified fix; no assertion weakening.
-- [ ] Obtain one fresh read-only whole-update review. Correct Important findings with regression evidence, record Minor findings, and update the handoff/status with exact checks and the still-open shared release gate.
-- [ ] Confirm a clean detached checkout and final local commit; no push/deployment or Phase 3 completion claim.
+- [x] Record source inventory, overlap/conflict preview and baseline native unit results.
+- [x] Merge development without committing; preserve the direct-shell native tree and move the incoming prototype to `native/capacitor-spike/`. Update only its CI working/cache/artifact paths and repository-relative tool path; fix its README evidence link.
+- [x] Classify current heads from actual ancestry: included AI-owner and Employee branch, held collaboration UI and reference database rehearsal. Keep the branch ceiling at three.
+- [x] Verify retained native files, incoming application changes and relocated prototype bytes; inspect the automatic app-shell merge. Commit the resolved local update.
+- [x] Run full root unit suite, typecheck, relevant lint, native Python/Node/Swift checks, Android unit/lint/builds, unsigned iOS build and the owned Next.js/PostgreSQL contract matrix. Preserve any failing evidence and make the smallest justified fix; no assertion weakening.
+- [x] Obtain one fresh read-only whole-update review. Correct Important findings with regression evidence, record Minor findings, and update the handoff/status with exact checks and the still-open shared release gate.
+- [x] Confirm a clean detached checkout and final local commit; no push/deployment or Phase 3 completion claim.

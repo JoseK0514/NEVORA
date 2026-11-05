@@ -35,7 +35,7 @@ question; a working debug wrapper does not settle it or guarantee store approval
 ## Build the packaged fixture
 
 ```sh
-cd native
+cd native/capacitor-spike
 npm ci
 npm run typecheck
 npm test

@@ -1,0 +1,44 @@
+[
+  {
+    "branch": "AI-owner",
+    "sha": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
+    "ancestorOfDevelopment": true,
+    "uniqueCommits": "",
+    "uniqueStat": ""
+  },
+  {
+    "branch": "claude-codex-collab-nevora",
+    "sha": "1456688ace235eeef42864a926b1f08012d87c1f",
+    "ancestorOfDevelopment": false,
+    "uniqueCommits": "1456688a Owner mobile Direction B: inspection fixes across every phone page\nae9b8f08 Owner mobile Direction B on every other page: teal hero bars, lifted cards, sheet forms\nc0140ada Owner mobile Direction B: brand hero, lifted cards and frosted tab bar on six screens",
+    "uniqueStat": "DESIGN.MD                                       |  49 ++++\n src/app/app/layout.tsx                          |   4 +\n src/app/app/owner-b-pages.css                   | 277 +++++++++++++++++++++\n src/app/app/owner-b-shell.css                   |  57 +++++\n src/app/app/schedule/page.tsx                   |  77 ++++--\n src/components/app-shell.tsx                    |   4 +\n src/components/employee-directory.tsx           |  17 ++\n src/components/manager-dashboard.test.tsx       |   4 +-\n src/components/manager-dashboard.tsx            |   6 +-\n src/components/manager-inbox-corp.test.tsx      |  13 +\n src/components/manager-inbox-corp.tsx           |   3 +\n src/components/manager-weekly-roster.tsx        |  77 +++++-\n src/components/owner-b/b-kit.tsx                | 174 +++++++++++++\n src/components/owner-b/home-b.tsx               | 158 ++++++++++++\n src/components/owner-b/inbox-b.tsx              | 100 ++++++++\n src/components/owner-b/owner-b.css              | 308 ++++++++++++++++++++++++\n src/components/owner-b/team-b.tsx               |  72 ++++++\n src/components/owner-b/test-support.ts          |  22 ++\n src/components/owner-home-corp.test.tsx         |  31 ++-\n src/components/owner-home-corp.tsx              |   7 +\n src/components/payroll/payroll-premium.test.tsx |  17 +-\n src/components/payroll/payroll-runs.tsx         |  60 +++++\n src/components/premium-home.tsx                 |   7 +-\n src/components/team-live.tsx                    |  15 +-\n src/components/timecards.tsx                    |  50 +++-\n src/components/ui-preview/home-preview.test.tsx |   4 +-\n 26 files changed, 1584 insertions(+), 29 deletions(-)"
+  },
+  {
+    "branch": "claude/employee-mobile-phase2-20261027",
+    "sha": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+    "ancestorOfDevelopment": true,
+    "uniqueCommits": "",
+    "uniqueStat": ""
+  },
+  {
+    "branch": "codex/release1-db-rehearsal-20261101",
+    "sha": "fb7da7628455434e221e131d81ae417b407162c6",
+    "ancestorOfDevelopment": false,
+    "uniqueCommits": "fb7da762 docs: record Release 1 clean database inventory and rehearsal",
+    "uniqueStat": "...1-01-codex-to-claude-release1-clean-database.md |   203 +\n .../artifact-sha256.json                           |    25 +\n .../clocker-smoke.html                             |     1 +\n .../hosted-final-verification.json                 |    10 +\n .../hosted-ledger.json                             |   502 +\n .../hosted-schema.json                             | 31093 +++++++++++++++++++\n .../local-ledger.json                              |   502 +\n .../local-schema.json                              | 31093 +++++++++++++++++++\n .../login-smoke.html                               |     1 +\n .../release1-db-rehearsal-20261101/manifest.json   |   302 +\n .../next-env-generated.diff.json                   |     4 +\n .../release1-db-rehearsal-20261101/next-smoke.log  |    11 +\n .../release1-db-rehearsal-20261101/page-smoke.json |    24 +\n .../production-inventory.json                      |   201 +\n .../protected-smoke-attempt1.json                  |    12 +\n .../protected-smoke-attempt2.json                  |    12 +\n .../protected-smoke-attempt3.json                  |    13 +\n .../protected-smoke-attempt4.json                  |    12 +\n .../protected-smoke.json                           |    30 +\n .../release1-db-rehearsal-20261101/results.json    |   757 +\n .../run-rehearsal.mts                              |   179 +\n .../schema-catalog.sql                             |    28 +\n .../release1-db-rehearsal-20261101/smoke-pages.mjs |    37 +\n .../smoke-protected-reads.mts                      |    87 +\n .../release1-db-rehearsal-20261101/validation.json |    19 +\n 25 files changed, 65158 insertions(+)"
+  },
+  {
+    "branch": "development",
+    "sha": "e9c3a66da330959738100884f87cb76fd2af8296",
+    "ancestorOfDevelopment": true,
+    "uniqueCommits": "",
+    "uniqueStat": ""
+  },
+  {
+    "branch": "main",
+    "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+    "ancestorOfDevelopment": true,
+    "uniqueCommits": "",
+    "uniqueStat": ""
+  }
+]
