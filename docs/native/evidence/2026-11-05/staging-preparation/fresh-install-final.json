@@ -7,10 +7,13 @@
     "--no-audit",
     "--no-fund"
   ],
-  "registry": "https://registry.npmjs.org",
-  "userAndGlobalNpmConfig": "separate empty private files",
-  "existingNodeModulesReused": false,
-  "lifecycleScriptsExecuted": false,
+  "nodeVersion": "v24.19.0",
+  "cleanAllowlistedSource": true,
+  "publicRegistry": "https://registry.npmjs.org",
+  "reusedNodeModules": false,
+  "initialNpmCacheFresh": true,
+  "databaseOrProviderCredentialsSupplied": false,
   "exitCode": 0,
-  "seconds": 45.93
+  "seconds": 85.6,
+  "deployed": false
 }

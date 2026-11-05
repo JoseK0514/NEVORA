@@ -18,7 +18,9 @@
     "quota": {
       "compute_time_seconds": 3600,
       "data_transfer_bytes": 1073741824,
-      "logical_size_bytes": 536870912
+      "logical_size_bytes": 536870912,
+      "active_time_seconds": 14400,
+      "written_data_bytes": 1073741824
     }
   }
 }

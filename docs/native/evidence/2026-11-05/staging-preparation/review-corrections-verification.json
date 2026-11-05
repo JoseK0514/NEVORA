@@ -1,0 +1,34 @@
+{
+  "before": {
+    "supportedSensitiveSecretType": false,
+    "customEnvironmentIdsOnly": false,
+    "finiteOverageBudget": false,
+    "hostedInstallMatchesRehearsal": false,
+    "authoringHistoryExcluded": false,
+    "explicitBootstrapCertificateVerification": false,
+    "nodeVersionUpdateDraftExists": false
+  },
+  "after": {
+    "supportedSensitiveSecretType": true,
+    "customEnvironmentIdsOnly": true,
+    "finiteOverageBudget": true,
+    "hostedInstallMatchesRehearsal": true,
+    "authoringHistoryExcluded": true,
+    "explicitBootstrapCertificateVerification": true,
+    "nodeVersionUpdateDraftExists": true
+  },
+  "beforeExitCode": 1,
+  "afterExitCode": 0,
+  "proofScope": "local packet regressions; no cloud or billing assertions",
+  "bootstrapTlsParserOnly": {
+    "sslmode": "verify-full",
+    "tlsEnabled": true,
+    "certificateVerificationDisabled": false,
+    "networkConnectionStarted": false
+  },
+  "nodeLocalVersion": "v24.19.0",
+  "nodeCloudReadbackStillRequired": true,
+  "applicationCodeChanged": false,
+  "cleanBuildExitCode": 0,
+  "secondReviewerApproval": false
+}

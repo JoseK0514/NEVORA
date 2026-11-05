@@ -5,9 +5,13 @@
     "run",
     "build"
   ],
-  "freshDependencies": true,
+  "nodeVersion": "v24.19.0",
+  "cleanAllowlistedSource": true,
+  "publicRegistry": "https://registry.npmjs.org",
+  "reusedNodeModules": false,
+  "initialNpmCacheFresh": true,
   "databaseOrProviderCredentialsSupplied": false,
-  "deployed": false,
   "exitCode": 0,
-  "seconds": 18.86
+  "seconds": 23.7,
+  "deployed": false
 }

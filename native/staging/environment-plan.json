@@ -12,7 +12,7 @@
     "projectName": "nevora-native-staging",
     "projectId": null,
     "framework": "nextjs",
-    "installCommand": "npm ci",
+    "installCommand": "npm ci --ignore-scripts --no-audit --no-fund",
     "buildCommand": "npm run build",
     "nodeVersion": "24.x",
     "customEnvironment": "native-staging",
@@ -22,7 +22,8 @@
     "domainReserved": false,
     "protection": "Protect generated deployments; one explicitly approved canonical-domain exception for the native probe/login and future public association metadata. Server sessions/authorization remain mandatory for all private data.",
     "publicDomainApprovalRecorded": false,
-    "firstDeploymentPolicy": "Inspect Vercel first-deployment behavior before any application deploy. If a new-project Production bootstrap is required, it must be a separate inert artifact with no application code, database or secrets. Obtain explicit approval for that bootstrap. Never place staging secrets in Production to work around it."
+    "firstDeploymentPolicy": "Inspect Vercel first-deployment behavior before any application deploy. If a new-project Production bootstrap is required, it must be a separate inert artifact with no application code, database or secrets. Obtain explicit approval for that bootstrap. Never place staging secrets in Production to work around it.",
+    "nodeVersionReadbackRequiredBeforeBuild": true
   },
   "database": {
     "provider": "neon",
@@ -46,12 +47,15 @@
     "quota": {
       "compute_time_seconds": 3600,
       "data_transfer_bytes": 1073741824,
-      "logical_size_bytes": 536870912
+      "logical_size_bytes": 536870912,
+      "active_time_seconds": 14400,
+      "written_data_bytes": 1073741824
     },
     "extraBranchesOrEndpoints": false,
     "authDataApiFunctionsAiGateway": false,
     "bootstrapRole": "Separate temporary schema installer; never bind it to the web app",
-    "runtimeRole": "Separate non-admin app login; only schema usage and required DML/function/sequence access, no schema CREATE/owner/role administration"
+    "runtimeRole": "Separate non-admin app login; only schema usage and required DML/function/sequence access, no schema CREATE/owner/role administration",
+    "bootstrapTlsMode": "verify-full"
   },
   "data": {
     "fictionalOnly": true,
@@ -104,7 +108,17 @@
     "neonStorageRatePerGbMonth": 0.35,
     "neonBoundedComputeEstimate": 0.106,
     "neonHalfGiBStorageEstimateConservative": 0.188,
-    "notes": "About $0.30 compute/storage before other metering/tax under the proposed quota; request $1 Neon budget headroom. No claim that Vercel spend alerts are a hard cap on custom/Preview deployments. No extra seats, trials, add-ons, team-wide changes to existing projects or automatic top-up."
+    "notes": "Requested: $20 base Pro seat + $5 Vercel metered-usage allowance + $1 Neon allowance, plus tax. These are operating budgets, not an invoice guarantee. Check costs before/after each build and at least every15minutes while the canonical domain is exposed; at $3 reported Vercel usage or on unavailable/lagging spend proof, stop public qualification. No unattended public staging. Provider metering/stop latency and retained storage can exceed thresholds; if Jose requires a strict invoice cap, do not provision until a verified enforcing path exists.",
+    "vercelAdditionalUsageBudgetUsd": 5,
+    "vercelStopThresholdUsd": 3,
+    "activeTestMonitoringMinutes": 15,
+    "monitoringOwner": "Codex/root during active qualification",
+    "checkBeforeAndAfterEveryBuild": true,
+    "unattendedPublicAccess": false,
+    "stopOnUnavailableUsageRead": true,
+    "stopAction": "Restore full Vercel Authentication and remove canonical-domain exception, cancel new builds/tests, suspend only the new Neon endpoint, preserve data and request Jose approval before resuming. Production-only pause is insufficient.",
+    "nominalMonthlyTotalWithAllowancesUsd": 26,
+    "invoiceGuarantee": false
   },
   "gates": {
     "sourceInventory": "FAIL: six active remote heads versus three; archive/retirement approval required",

@@ -27,8 +27,14 @@
     "DATABASE_URL": {
       "value": null,
       "source": "new isolated Neon project, exact branch/database and least-privilege runtime role only",
-      "vercelType": "Secret",
-      "scope": "native-staging only"
+      "vercelType": "sensitive",
+      "scope": "native-staging only",
+      "apiScope": {
+        "customEnvironmentIds": [
+          null
+        ]
+      },
+      "scopingInstruction": "Replace null only with the verified native-staging custom environment ID, omit built-in target entirely, and verify non-secret scope metadata before deploying."
     }
   },
   "omitEntirely": [
