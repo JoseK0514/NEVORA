@@ -1,0 +1,17 @@
+{
+  "revision": "1425131",
+  "officialArchive": "https://storage.googleapis.com/chromium-browser-snapshots/Android_Arm64/1425131/chrome-android.zip",
+  "entry": {
+    "name": "chrome-android/apks/SystemWebView.apk",
+    "method": 8,
+    "crc32": 2451110820,
+    "compressed": 135678703,
+    "size": 279754072,
+    "localOffset": 223189391
+  },
+  "apk": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/SystemWebView-1425131-arm64.apk",
+  "sha256": "da950b7fe72acd428e8e5d75539f39eeabd33b8d331fc94646a9421a08b7d86e",
+  "crc32Verified": true,
+  "downloadedAt": 1793839033.2832088,
+  "classification": "Official Chromium development snapshot; diagnostic only"
+}

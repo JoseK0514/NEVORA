@@ -1,0 +1,23 @@
+{
+  "commit": "e8c18ab1c8c801012872518d4077e20ccd94a2d2",
+  "parents": [
+    {
+      "commit": "29b1dd1ae5f4f3d02c08235281b83646fa7c6ebf",
+      "subject": "PrivateAggregationApiProtectedAudienceAdditionalExtensions on by default"
+    }
+  ],
+  "author": {
+    "name": "Mark Schillaci",
+    "email": "mschillaci@google.com",
+    "date": "2025-02-26 15:46:05.000000000",
+    "tz": -480
+  },
+  "committer": {
+    "name": "Chromium LUCI CQ",
+    "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+    "date": "2025-02-26 15:46:05.000000000",
+    "tz": -480
+  },
+  "subject": "Update root node id during node creation in Android accessibility",
+  "message": "Update root node id during node creation in Android accessibility\n\nThis CL removes a check that prevents the mCurrentRootId from updating\nduring the creation of AccessibilityNodeInfo objects.\n\nWith the current behavior, in some cases Android-side code is not\nreceiving a signal that the page was navigated, and so the root ID is\nnot being updated. When the root ID is stale, then we provide a stale\nAccessibilityNodeInfo tree to downstream clients/AT. With this change\nwe always fetch a fresh root ID during node creation to eliminate the\npossibility of a stale tree, at the cost of one extra JNI trip (which\nis minimal/trivial). This will keep the mCurrentRootId up-to-date with\nthe native browser-side AXTree. This can be considered a stopgap\nsolution to a P1 bug, and caching can be revisited in the future, but\na cache of this value may not be needed in general.\n\nAX-Relnotes: N/A\nBug: 396447488\nChange-Id: I134d2313c68c04973aefdaee82bd181ba1a47293\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6302633\nReviewed-by: Aaron Leventhal <aleventhal@chromium.org>\nCommit-Queue: Mark Schillaci <mschillaci@google.com>\nCr-Commit-Position: refs/heads/main@{#1425146}\n"
+}

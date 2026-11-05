@@ -1,0 +1,8 @@
+{
+  "revision": "1425150",
+  "installedApkSha256": "5813b742a80e11817596ad499096e837147414b8080f3c9349ef87ee843074ea",
+  "beforeVerified": true,
+  "afterVerified": true,
+  "arm": "post-full-matrix",
+  "runnerExitCode": 1
+}

@@ -1,6 +1,6 @@
 # Android foundation decision packet
 
-Phase1 remains open. No architecture change, engine/OS minimum, renderer override or accessibility waiver has been accepted.
+Phase1 implementation continues under Jose's approved Android10+/WebView149+ baseline (November4). The runtime gate and update/browser fallback still require implementation and final verification. No architecture change, renderer override or accessibility waiver has been accepted.
 
 ## Established evidence
 
@@ -17,13 +17,15 @@ Actual document QA also exposed an absent WebView subtree on API36 while native 
 
 The existing window-focus retirement protects against a reproduced Recents privacy leak: an Activity may remain resumed after losing window focus. Do not retain/reveal the old private document merely to preserve accessibility state. Keep browser-owned HttpOnly cookies, fresh protected server navigation on resume, closed page/lifecycle capability gates, no cookie/token export, exact-origin routing, protected snapshots, native Back/draft behavior and server role authority. Full default-mode Android acceptance remains required.
 
-## Decision requested
+## Decision and next gate
 
-Recommended: review the current WebView and AndroidX test stack first. The real backend driver uses standard selectors and public cache clearing where supported, while the transport driver traverses nodes through UiDeviceExt. That difference is a research lead, not an established fix. Compare naturally exposed provider nodes and a real accessibility consumer under the same lifecycle before assigning blame to the shell, provider or test client. Record service/configuration ownership and restore any test-only settings.
+Jose selected review of the current WebView/AndroidX stack, authorized necessary test-software installation when no physical device was available, then approved “Adopt the modern runtime baseline (Recommended)”: Android10+ and SystemWebView149+, with a native update/browser fallback for older providers. Android8/9 native support is excluded from v1; existing web/kiosk behavior remains unchanged.
 
-Alternative: plan a different Android rendering foundation. Retaining a WebView across Activity recreation or replacing the shared web UI changes resource, privacy, authentication and maintenance assumptions. A native UI replacement would also change the approved shared-UI design. This requires a concrete architecture plan and acceptance criteria before implementation.
+The [review evidence](evidence/2026-11-04/webview-stack-review/README.md) records unchanged-source provider comparisons. Google SDK149 passed the original ten cases plus cold restart on both Android32 and37.2. Original120 failed before and after a newer development-engine comparison. Standard selectors did not fix the failure when polling was matched. The historical135root-ID fix was insufficient in the full matrix. No slow-polling/helper/startup workaround is retained.
 
-The Systematic Debugging skill requires human discussion after three failed attempts: “Discuss with your human partner before attempting more fixes.” Jose has been asked to select the next direction. No answer is inferred from elapsed time. Independent Phase2 verification continues.
+The [approved compatibility proposal](android-runtime-compatibility-proposal.md) and [execution plan](../superpowers/plans/2026-11-04-android-runtime-baseline-plan.md) define the bounded correction: minSdk29, strict WebView149+ admission, native update/browser fallback before private content, and the original supported-runtime matrix plus real old-provider coverage. SDK evidence is not retail GooglePlay, physical-device, hosted or store certification. No independent release finding is self-closed.
+
+The Systematic Debugging human discussion has occurred; the earlier unanswered-direction question is resolved. No further product decision is currently pending for this bounded scope. Complete implementation, source/provider custody and final checks before marking Phase1 complete.
 
 ## Primary references
 

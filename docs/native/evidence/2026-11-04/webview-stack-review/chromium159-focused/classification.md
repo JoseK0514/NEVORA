@@ -1,0 +1,1 @@
+Official Chromium development snapshot159.0.8144.0 on owned Android32. Diagnostic engine comparison only: not Google-signed stable or release qualification. Identical restored native/fixture source hash8086bb8e5de2de18c1470b26198d343b4a70a890bb25973b23ddc48621d53301; original100ms lookup and10recreations unchanged. No renderer override or observer.

@@ -1,0 +1,11 @@
+{
+  "library": "androidx.test.uiautomator:uiautomator:2.4.0",
+  "officialSources": "https://dl.google.com/dl/android/maven2/androidx/test/uiautomator/uiautomator/2.4.0/uiautomator-2.4.0-sources.jar",
+  "sha256": "be710c5b295357f7e0deb652f1aa192b4fa6f2245af361743b402ce88ab8ec21",
+  "findings": [
+    "UiDeviceExt.onElementOrNull and standard ByMatcher both use UiDevice.getWindowRoots; neither path inherently clears the client cache.",
+    "UiDeviceExt eagerly materializes each child list and does not recycle it; ByMatcher walks/recycles children. Both missed Sign out on the same failed page.",
+    "UiObject2 create wraps the node; getAccessibilityNodeInfo refreshes it. The empty selector is not a demonstrated cause.",
+    "Registered service registration alone was already insufficient; this continuation compares actual independent node retrieval."
+  ]
+}

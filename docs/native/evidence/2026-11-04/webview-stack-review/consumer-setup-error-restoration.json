@@ -1,0 +1,15 @@
+{
+  "beforeRun": {
+    "enabled_accessibility_services": null,
+    "accessibility_enabled": "0"
+  },
+  "observedAfterInstrumentationForceStop": {
+    "enabled_accessibility_services": "null",
+    "accessibility_enabled": "0"
+  },
+  "restored": {
+    "enabled_accessibility_services": null,
+    "accessibility_enabled": "0"
+  },
+  "cause": "Instrumentation force-stopped target-owned service; setup assertion retained. No accessibility result."
+}

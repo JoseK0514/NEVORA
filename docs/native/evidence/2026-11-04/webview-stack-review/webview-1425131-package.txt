@@ -1,0 +1,7 @@
+package: name='com.android.webview' versionCode='703800001' versionName='135.0.7038.0' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'
+sdkVersion:'26'
+targetSdkVersion:'35'
+Signer #1 certificate DN: CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown
+Signer #1 certificate SHA-256 digest: 32a2fc74d731105859e5a85df16d95f102d85b22099b8064c5d8915c61dad1e0
+Signer #1 certificate SHA-1 digest: 33b28eafdf43dea4ff5dc3dbd9e5a523f67f6bb1
+Signer #1 certificate MD5 digest: d2be3d3da026d504a7ec9f52a2de54a3

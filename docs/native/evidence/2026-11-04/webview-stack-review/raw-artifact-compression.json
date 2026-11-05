@@ -1,0 +1,187 @@
+{
+  "chromium159-matrix/cold_start.xml": {
+    "stored": "chromium159-matrix/cold_start.xml.gz",
+    "rawSha256": "d142524d17bbeba83cf83178d422cbc1bfd972e45510fa77c928eaf6280b65d5",
+    "rawBytes": 19636
+  },
+  "chromium159-matrix/privacy_recents.xml": {
+    "stored": "chromium159-matrix/privacy_recents.xml.gz",
+    "rawSha256": "bbd33e5c946e1f32745bece14a9eff8249bb10005d074e7089bf8f95f79acb27",
+    "rawBytes": 18020
+  },
+  "chromium159-matrix/privacy_screen_off_recents.xml": {
+    "stored": "chromium159-matrix/privacy_screen_off_recents.xml.gz",
+    "rawSha256": "bbd33e5c946e1f32745bece14a9eff8249bb10005d074e7089bf8f95f79acb27",
+    "rawBytes": 18020
+  },
+  "classic-matched-cadence/Sign_out.xml": {
+    "stored": "classic-matched-cadence/Sign_out.xml.gz",
+    "rawSha256": "74850d4f041d8717052dc8f340f4733a2ef7aa2e807930e592320f95827cc623",
+    "rawBytes": 19226
+  },
+  "classic-matched-cadence/Sign_out_after_content_event.xml": {
+    "stored": "classic-matched-cadence/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "f37543131fe5fc8f745edeeb2d15caf255ae77f6abec63d5cf5f4f9839ee4ce6",
+    "rawBytes": 19226
+  },
+  "consumer-control/Sign_out.xml": {
+    "stored": "consumer-control/Sign_out.xml.gz",
+    "rawSha256": "4c207437895689af8805f6b93dde4e20895ba1140d0d64a09e07b24d269d6d1d",
+    "rawBytes": 18773
+  },
+  "consumer-control/Sign_out_after_content_event.xml": {
+    "stored": "consumer-control/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "4c207437895689af8805f6b93dde4e20895ba1140d0d64a09e07b24d269d6d1d",
+    "rawBytes": 18773
+  },
+  "consumer-home-failed/Fictional_Home.xml": {
+    "stored": "consumer-home-failed/Fictional_Home.xml.gz",
+    "rawSha256": "396c980add4890c92ceff6c90809f5c8e25ba58570b4b96ab6c36ff0e5c2ea21",
+    "rawBytes": 14003
+  },
+  "consumer-original-control/Sign_out.xml": {
+    "stored": "consumer-original-control/Sign_out.xml.gz",
+    "rawSha256": "72961f500228e24bd04921e05c6766bf88e899039355f2beda0c37c3da262e57",
+    "rawBytes": 18772
+  },
+  "consumer-original-control/Sign_out_after_content_event.xml": {
+    "stored": "consumer-original-control/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "72961f500228e24bd04921e05c6766bf88e899039355f2beda0c37c3da262e57",
+    "rawBytes": 18772
+  },
+  "consumer-same-document/Fictional_Home.xml": {
+    "stored": "consumer-same-document/Fictional_Home.xml.gz",
+    "rawSha256": "50352abd84cb1fcc0dbd035155119f98cc41905b7aabaa295bdd012745f5c8ca",
+    "rawBytes": 14003
+  },
+  "consumer-same-document/Sign_out_after_content_event.xml": {
+    "stored": "consumer-same-document/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "50352abd84cb1fcc0dbd035155119f98cc41905b7aabaa295bdd012745f5c8ca",
+    "rawBytes": 14003
+  },
+  "dual-client-Sign_out.xml": {
+    "stored": "dual-client-Sign_out.xml.gz",
+    "rawSha256": "7db130cbd42b09ea24604c62bb47b13c94672190f80365553d3e62a5fbc87307",
+    "rawBytes": 18773
+  },
+  "dual-client-Sign_out_after_content_event.xml": {
+    "stored": "dual-client-Sign_out_after_content_event.xml.gz",
+    "rawSha256": "7db130cbd42b09ea24604c62bb47b13c94672190f80365553d3e62a5fbc87307",
+    "rawBytes": 18773
+  },
+  "ext-same-source-reversal/Sign_out.xml": {
+    "stored": "ext-same-source-reversal/Sign_out.xml.gz",
+    "rawSha256": "b393f57bb16887acd5c5f9327036408379431cbbc438099298279bd6a03c727a",
+    "rawBytes": 18325
+  },
+  "ext-same-source-reversal/Sign_out_after_content_event.xml": {
+    "stored": "ext-same-source-reversal/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "58b7e0800b3d26b2c086da88b3c3e0f538aa03a9f6bb9f04009d77c63aca50c0",
+    "rawBytes": 18325
+  },
+  "google149-api32-matrix/cold_start.xml": {
+    "stored": "google149-api32-matrix/cold_start.xml.gz",
+    "rawSha256": "1254a54f740d5356a19faaa0b7b115cd44923c5d794129d208013e1d3b5a46b4",
+    "rawBytes": 19672
+  },
+  "google149-api32-matrix/privacy_recents.xml": {
+    "stored": "google149-api32-matrix/privacy_recents.xml.gz",
+    "rawSha256": "909da4af359436f0aa066ee7e626d4ca492abbd169d267ef074d141eb532301a",
+    "rawBytes": 18020
+  },
+  "google149-api32-matrix/privacy_screen_off_recents.xml": {
+    "stored": "google149-api32-matrix/privacy_screen_off_recents.xml.gz",
+    "rawSha256": "909da4af359436f0aa066ee7e626d4ca492abbd169d267ef074d141eb532301a",
+    "rawBytes": 18020
+  },
+  "google149-api37-matrix/cold_start.xml": {
+    "stored": "google149-api37-matrix/cold_start.xml.gz",
+    "rawSha256": "cec509b17ef28964bd85151879f52ff4752e49da51a5b90ee25009b656118d92",
+    "rawBytes": 24380
+  },
+  "historical-post-root-fix-matrix/Fictional_Home.xml": {
+    "stored": "historical-post-root-fix-matrix/Fictional_Home.xml.gz",
+    "rawSha256": "70ad6ac0a238bc12b5f6ddefbfcf2bc0ba14e617cc6c449a2f961e19e13ccd42",
+    "rawBytes": 14004
+  },
+  "historical-post-root-fix-matrix/Fictional_sign_in.xml": {
+    "stored": "historical-post-root-fix-matrix/Fictional_sign_in.xml.gz",
+    "rawSha256": "aebd54509fb984340ae5be254ee37e019995da980e8fb0bc76621f4427dbc0b4",
+    "rawBytes": 14008
+  },
+  "historical-post-root-fix-matrix/Sign_out.xml": {
+    "stored": "historical-post-root-fix-matrix/Sign_out.xml.gz",
+    "rawSha256": "1e5b4a9bb24b498d842559fd04b8678f14cbb81d79363c1365cb9b251f0031e8",
+    "rawBytes": 18773
+  },
+  "historical-post-root-fix-matrix/Sign_out_after_content_event.xml": {
+    "stored": "historical-post-root-fix-matrix/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "9f22657361beda1f361cd38b723643320450d601a79d66649eeea9927eb96fc2",
+    "rawBytes": 18773
+  },
+  "historical-post-root-fix-matrix/cold_start.xml": {
+    "stored": "historical-post-root-fix-matrix/cold_start.xml.gz",
+    "rawSha256": "93b9f5aeee49ee39bda8f5ea010c70171efd06ab67c4d91ce5105b72d6a4b5b5",
+    "rawBytes": 19672
+  },
+  "historical-post-root-fix-matrix/privacy_recents.xml": {
+    "stored": "historical-post-root-fix-matrix/privacy_recents.xml.gz",
+    "rawSha256": "208fc6dd395b91b3b3eea8c7a27c51728ea37a8e93fa9c55378ee3fa7b5adc5d",
+    "rawBytes": 18020
+  },
+  "historical-post-root-fix-matrix/privacy_screen_off_recents.xml": {
+    "stored": "historical-post-root-fix-matrix/privacy_screen_off_recents.xml.gz",
+    "rawSha256": "208fc6dd395b91b3b3eea8c7a27c51728ea37a8e93fa9c55378ee3fa7b5adc5d",
+    "rawBytes": 18020
+  },
+  "historical-pre-root-fix/Sign_out.xml": {
+    "stored": "historical-pre-root-fix/Sign_out.xml.gz",
+    "rawSha256": "023f32613949027275633571b3a516af5ac0cd1d9974ef1ff16aca251cb3be69",
+    "rawBytes": 17872
+  },
+  "historical-pre-root-fix/Sign_out_after_content_event.xml": {
+    "stored": "historical-pre-root-fix/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "023f32613949027275633571b3a516af5ac0cd1d9974ef1ff16aca251cb3be69",
+    "rawBytes": 17872
+  },
+  "historical-pre-root-fix-reversal/Sign_out.xml": {
+    "stored": "historical-pre-root-fix-reversal/Sign_out.xml.gz",
+    "rawSha256": "1f32ff4cc2f3f53da409097105f80cc0425c582639cdaffda65aebb8a5df2482",
+    "rawBytes": 18773
+  },
+  "historical-pre-root-fix-reversal/Sign_out_after_content_event.xml": {
+    "stored": "historical-pre-root-fix-reversal/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "1f32ff4cc2f3f53da409097105f80cc0425c582639cdaffda65aebb8a5df2482",
+    "rawBytes": 18773
+  },
+  "original-provider-reversal/Sign_out.xml": {
+    "stored": "original-provider-reversal/Sign_out.xml.gz",
+    "rawSha256": "cbe72fe71fc05bba865dba27330bb25b352617d2bb44022b7adfefeb4c901853",
+    "rawBytes": 18772
+  },
+  "original-provider-reversal/Sign_out_after_content_event.xml": {
+    "stored": "original-provider-reversal/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "cbe72fe71fc05bba865dba27330bb25b352617d2bb44022b7adfefeb4c901853",
+    "rawBytes": 18772
+  },
+  "restored-default-baseline/Sign_out.xml": {
+    "stored": "restored-default-baseline/Sign_out.xml.gz",
+    "rawSha256": "79bc9f2bab6183d1c1a49469895bb31ca7201b4aefd61559aba9c5dfc8023ae6",
+    "rawBytes": 17869
+  },
+  "restored-default-baseline/Sign_out_after_content_event.xml": {
+    "stored": "restored-default-baseline/Sign_out_after_content_event.xml.gz",
+    "rawSha256": "79bc9f2bab6183d1c1a49469895bb31ca7201b4aefd61559aba9c5dfc8023ae6",
+    "rawBytes": 17869
+  },
+  "stock-reference-focused/Stock_missing_control.xml": {
+    "stored": "stock-reference-focused/Stock_missing_control.xml.gz",
+    "rawSha256": "71c2495d6853c3a28bb4e3b38b31ecf3c33e3a2664a22e1a577bb595950d17a3",
+    "rawBytes": 13575
+  },
+  "stock-reference-unfocused/Stock_missing_control.xml": {
+    "stored": "stock-reference-unfocused/Stock_missing_control.xml.gz",
+    "rawSha256": "22f647ba87efe2bf077d18d5c206cc97eec73edd54a38e5419e48e0b6d26476f",
+    "rawBytes": 13575
+  }
+}

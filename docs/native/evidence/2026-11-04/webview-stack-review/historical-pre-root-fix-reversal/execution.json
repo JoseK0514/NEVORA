@@ -1,0 +1,8 @@
+{
+  "revision": "1425131",
+  "installedApkSha256": "da950b7fe72acd428e8e5d75539f39eeabd33b8d331fc94646a9421a08b7d86e",
+  "beforeVerified": true,
+  "afterVerified": true,
+  "arm": "pre-reversal",
+  "runnerExitCode": 1
+}

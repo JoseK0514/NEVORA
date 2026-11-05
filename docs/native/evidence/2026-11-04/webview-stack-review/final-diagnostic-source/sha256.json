@@ -1,0 +1,9 @@
+{
+  "native/android/test-ui.py": "a7fa46817f8dedd5f4bdac71a9750be1f84243958c5cdafcd5fa671ab5a04e9e",
+  "native/android/app/src/androidTest/java/com/velani/nevora/development/ShellInstrumentedTest.java": "6d5a5944d2fa42f02fb36f54805f7ee36444f2b72d2d695af501730197fa49a7",
+  "native/android/app/src/androidTest/java/com/velani/nevora/development/QaAccessibilityProbe.java": "cd7ec8be43980278ff0802eadb49b84eeeb16f05d56d542e05096f01783db094",
+  "native/android/app/src/androidTest/res/xml/qa_accessibility_probe.xml": "955c0d0e99b8e84730c2164dc2e5bcbbbf49d1088c2ab2baec9455a70ade9383",
+  "native/android/app/src/androidTest/AndroidManifest.xml": "e939550e7a44a21c7e01970eea4db59be8c592d9d225f9b2f944c198a3431031",
+  "native/android/app/src/debug/AndroidManifest.xml": "dbc53cc6d0c8602f9f2df8c35345ef8895cbcc2dec347d2e6abdf262149db03a",
+  "native/android/app/src/debug/java/com/velani/nevora/development/StockWebViewActivity.java": "c5719af8b83c9ad88c55a5ff9153780dc37e904c3ad362df2f40587c09ece5e5"
+}

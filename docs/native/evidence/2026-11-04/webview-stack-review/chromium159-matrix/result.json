@@ -1,0 +1,23 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-pimd_ib7",
+  "serial": "emulator-5560",
+  "passed": true,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "ownerId": null,
+  "qualification": "transport",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.android.webview",
+    "version": "159.0.8144.0",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "8086bb8e5de2de18c1470b26198d343b4a70a890bb25973b23ddc48621d53301",
+  "origin": "http://127.0.0.1:57208",
+  "fixtureOrigin": "http://127.0.0.1:57208",
+  "isolatedTestProcesses": true,
+  "instrumentationTests": 10,
+  "coldInstrumentationTests": 1,
+  "coldProcessRestart": true
+}

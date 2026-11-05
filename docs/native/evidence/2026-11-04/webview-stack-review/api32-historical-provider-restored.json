@@ -1,0 +1,16 @@
+{
+  "serial": "emulator-5560",
+  "avd": "NevoraPhase12_API32",
+  "originalProvider": "com.google.android.webview",
+  "originalProviderSetting": null,
+  "diagnosticPackage": "com.android.webview",
+  "historicalSnapshots": [
+    "1425131",
+    "1425150"
+  ],
+  "restored": true,
+  "started": 1793839071.9006479,
+  "providerSettingRestored": true,
+  "diagnosticPackageUninstalled": true,
+  "restoredAt": 1793839661.16066
+}
