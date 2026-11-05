@@ -330,6 +330,103 @@ public class ShellInstrumentedTest {
         }
         signOut();
     }
+    @Test public void i_outdatedWebViewRequiresNativeUpdateBeforeConnecting() throws Exception {
+        android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
+        assertNotNull("An actual old SDK provider is required", provider);
+        assertTrue("Run this diagnostic only on an outdated provider",
+            Integer.parseInt(provider.versionName.split("\\.")[0]) < 149);
+        String offline = InstrumentationRegistry.getArguments().getString("unavailableOrigin");
+        assertLocal(offline);
+        // An unavailable backend distinguishes admission before the compatibility probe.
+        launch(offline);
+        expectText("Update Android System WebView");
+        scenario.onActivity(activity -> assertNull("Unsupported engines must never create a private browser",
+            browser(activity.getWindow().getDecorView())));
+        scenario.recreate();
+        expectText("Update Android System WebView");
+        scenario.onActivity(activity -> assertNull(browser(activity.getWindow().getDecorView())));
+        assertNotNull("Update action must be accessible", text("Update WebView", true));
+
+        android.app.Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        java.util.concurrent.atomic.AtomicReference<Intent> captured = new java.util.concurrent.atomic.AtomicReference<>();
+        java.util.concurrent.CountDownLatch attempted = new java.util.concurrent.CountDownLatch(1);
+        android.app.Instrumentation.ActivityMonitor monitor = new android.app.Instrumentation.ActivityMonitor() {
+            @Override public android.app.Instrumentation.ActivityResult onStartActivity(Intent intent) {
+                captured.set(new Intent(intent)); attempted.countDown();
+                return new android.app.Instrumentation.ActivityResult(android.app.Activity.RESULT_CANCELED, null);
+            }
+        };
+        instrumentation.addMonitor(monitor);
+        try {
+            tapText("Continue in browser");
+            assertTrue("User action must request the browser", attempted.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            Intent intent = captured.get(); assertNotNull(intent);
+            assertEquals(Intent.ACTION_VIEW, intent.getAction());
+            assertEquals(offline + "/app", intent.getDataString());
+            assertTrue(intent.hasCategory(Intent.CATEGORY_BROWSABLE));
+            assertNotNull("Resolve a separate browser role", intent.getPackage());
+            assertNotEquals(instrumentation.getTargetContext().getPackageName(), intent.getPackage());
+            assertTrue("No cookies, tokens or header extras may cross", intent.getExtras() == null || intent.getExtras().isEmpty());
+            assertNull(intent.getClipData()); assertNull(intent.getSelector());
+        } finally {
+            instrumentation.removeMonitor(monitor);
+        }
+    }
+    @Test public void j_missingWebViewStillShowsNativeUpdate() {
+        assertNull("Run only with the owned provider temporarily disabled", WebView.getCurrentWebViewPackage());
+        String offline = InstrumentationRegistry.getArguments().getString("unavailableOrigin");
+        assertLocal(offline); launch(offline);
+        expectText("Update Android System WebView");
+        scenario.onActivity(activity -> assertNull("Missing providers must not create a browser",
+            browser(activity.getWindow().getDecorView())));
+    }
+    private void captureNativeRuntime(String name) {
+        scenario.onActivity(activity -> {
+            View decor = activity.getWindow().getDecorView();
+            assertNull("Only the public native fallback may be captured", browser(decor));
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(decor.getWidth(), decor.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
+            decor.draw(new android.graphics.Canvas(bitmap));
+            try (java.io.FileOutputStream output = new java.io.FileOutputStream(new File(evidenceDirectory(), name + ".png"))) {
+                assertTrue(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, output));
+            } catch (java.io.IOException error) { throw new AssertionError(error); }
+            finally { bitmap.recycle(); }
+        });
+    }
+    @Test public void k_largeTextRuntimeFallbackSupportsLandscapeAndKeyboard() {
+        android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
+        assertNotNull(provider);
+        assertTrue("Outdated-provider UI profile required", Integer.parseInt(provider.versionName.split("\\.")[0]) < 149);
+        String offline = InstrumentationRegistry.getArguments().getString("unavailableOrigin");
+        assertLocal(offline); launch(offline);
+        scenario.onActivity(activity -> {
+            assertTrue("Owned large-text profile required", activity.getResources().getConfiguration().fontScale >= 1.9f);
+            activity.setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        });
+        assertTrue("Actual display must rotate", device.wait(current -> current.getDisplayWidth() > current.getDisplayHeight(), 5000L));
+        expectText("Update Android System WebView");
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        captureNativeRuntime("runtime_large_text_top");
+        UiObject2 scroll = device.findObject(By.clazz("android.widget.ScrollView")); assertNotNull(scroll);
+        final float[] density = new float[1];
+        scenario.onActivity(activity -> density[0] = activity.getResources().getDisplayMetrics().density);
+        int minimum = Math.round(48 * density[0]);
+        UiObject2 action = null;
+        for (int attempt = 0; attempt < 8; attempt++) {
+            action = device.findObject(By.text("Continue in browser"));
+            if (action != null && action.getVisibleBounds().height() >= minimum) break;
+            scroll.scroll(androidx.test.uiautomator.Direction.DOWN, 1.0f);
+        }
+        assertNotNull("Fallback must be reachable at large text", action);
+        assertTrue("Visible target must retain at least48dp", action.getVisibleBounds().height() >= minimum);
+        boolean focused = false;
+        for (int attempt = 0; attempt < 4 && !focused; attempt++) {
+            device.pressKeyCode(android.view.KeyEvent.KEYCODE_TAB);
+            UiObject2 current = device.findObject(By.text("Continue in browser"));
+            focused = current != null && current.isFocused();
+        }
+        assertTrue("Keyboard navigation must reach the fallback", focused);
+        captureNativeRuntime("runtime_large_text_keyboard");
+    }
     @Test public void z_ownerSessionForExternalProcessRestartCheck() {
         launch(origin); signIn("FICTIONAL-OWNER"); expectText("Fictional Owner Home");
     }

@@ -28,6 +28,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
@@ -44,6 +45,7 @@ public final class PortalActivity extends ComponentActivity {
     private String documentPage;
     private FrameLayout root;
     private LinearLayout cover;
+    private ScrollView runtimeUpdate;
     private TextView status;
     private Button retry;
     private WebView web;
@@ -86,7 +88,9 @@ public final class PortalActivity extends ComponentActivity {
         retry = new Button(this); retry.setText("Try again"); retry.setAllCaps(false); retry.setMinHeight(dp(48)); retry.setMinWidth(dp(48));
         retry.setOnClickListener(view -> activate());
         cover.addView(status); cover.addView(retry);
-        root.addView(cover, new FrameLayout.LayoutParams(-1, -1)); setContentView(root);
+        root.addView(cover, new FrameLayout.LayoutParams(-1, -1));
+        runtimeUpdate = runtimeUpdateScreen(); runtimeUpdate.setVisibility(View.GONE);
+        root.addView(runtimeUpdate, new FrameLayout.LayoutParams(-1, -1)); setContentView(root);
         String origin = BuildConfig.BACKEND_ORIGIN;
         if (BuildConfig.DEBUG && getIntent().hasExtra("nevora.debug.origin")) origin = getIntent().getStringExtra("nevora.debug.origin");
         try { policy = new BackendPolicy(origin, BuildConfig.DEBUG); } catch (IllegalArgumentException ignored) { policy = null; }
@@ -127,9 +131,48 @@ public final class PortalActivity extends ComponentActivity {
     private int dp(int value) { return Math.round(value * getResources().getDisplayMetrics().density); }
     private void showCover(String message, boolean canRetry) {
         back.setEnabled(false); backAction = null; handlingBack = false;
+        if (runtimeUpdate != null) runtimeUpdate.setVisibility(View.GONE);
         if (web != null) web.setVisibility(View.GONE);
         status.setText(message); retry.setVisibility(canRetry ? View.VISIBLE : View.GONE);
         cover.setVisibility(View.VISIBLE); cover.bringToFront();
+    }
+    private ScrollView runtimeUpdateScreen() {
+        ScrollView scroll = new ScrollView(this); scroll.setFillViewport(true);
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL); content.setGravity(Gravity.CENTER);
+        content.setPadding(dp(24), dp(24), dp(24), dp(24));
+        TextView title = new TextView(this); title.setText("Update Android System WebView");
+        title.setTextAppearance(android.R.style.TextAppearance_Material_Headline);
+        title.setTextColor(getColor(R.color.nevora_on_surface)); title.setGravity(Gravity.CENTER);
+        title.setAccessibilityHeading(true); title.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        TextView help = new TextView(this);
+        help.setText("Update Android System WebView in your app store, then reopen NEVORA. Or sign in using your browser.");
+        help.setTextAppearance(android.R.style.TextAppearance_Material_Body1);
+        help.setTextColor(getColor(R.color.nevora_on_surface)); help.setGravity(Gravity.CENTER);
+        help.setPadding(0, dp(12), 0, dp(12));
+        Button update = new Button(this); update.setText("Update WebView"); update.setAllCaps(false);
+        update.setMinHeight(dp(48)); update.setMinWidth(dp(48));
+        update.setOnClickListener(view -> openRuntimeBrowser(URI.create("https://play.google.com/store/apps/details?id=com.google.android.webview")));
+        Button browser = new Button(this); browser.setText("Continue in browser"); browser.setAllCaps(false);
+        browser.setMinHeight(dp(48)); browser.setMinWidth(dp(48));
+        browser.setOnClickListener(view -> { if (policy != null) openRuntimeBrowser(policy.url("/app")); });
+        for (View item : new View[] {title, help, update, browser}) content.addView(item, new LinearLayout.LayoutParams(-1, -2));
+        scroll.addView(content); return scroll;
+    }
+    private void openRuntimeBrowser(URI target) {
+        if (resumed && hasWindowFocus() && runtimeUpdate.getVisibility() == View.VISIBLE) openBrowser(target);
+    }
+    private boolean supportedRuntime() {
+        try {
+            android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
+            return WebViewRuntimePolicy.supported(provider == null ? null : provider.versionName);
+        } catch (RuntimeException unavailable) {
+            return false;
+        }
+    }
+    private void showRuntimeUpdate() {
+        showCover("NEVORA", false); cover.setVisibility(View.GONE);
+        runtimeUpdate.setVisibility(View.VISIBLE); runtimeUpdate.bringToFront();
     }
     private void destroyWeb() {
         if (web != null) { WebView old = web; web = null; old.stopLoading(); root.removeView(old); old.destroy(); }
@@ -140,11 +183,17 @@ public final class PortalActivity extends ComponentActivity {
         lifecycle.suspend(); if (probe != null) probe.cancel(); probe = null;
         if (deadline != null) main.removeCallbacks(deadline);
         if (cover != null) showCover("NEVORA", false);
-        destroyWeb(); CookieManager.getInstance().flush();
+        boolean hadBrowser = web != null;
+        destroyWeb();
+        // An unopened/missing provider must remain a native fallback. When a
+        // browser existed, retain the same flush after retiring its document.
+        if (hadBrowser) CookieManager.getInstance().flush();
     }
     private void activate() {
         if (policy == null) return;
-        suspend(); long ticket = lifecycle.activate();
+        suspend();
+        if (!supportedRuntime()) { showRuntimeUpdate(); return; }
+        long ticket = lifecycle.activate();
         capabilities.refreshTokenIfAllowed();
         showCover("Connecting to NEVORA", false);
         deadline = () -> unavailable(ticket); main.postDelayed(deadline, 8000);
@@ -187,6 +236,7 @@ public final class PortalActivity extends ComponentActivity {
     }
 
     private void load(long ticket) {
+        if (!supportedRuntime()) { suspend(); showRuntimeUpdate(); return; }
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
         web = new WebView(this);
         WebView current = web;

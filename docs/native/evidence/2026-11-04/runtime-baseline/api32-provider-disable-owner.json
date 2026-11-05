@@ -1,0 +1,10 @@
+{
+  "serial": "emulator-5560",
+  "avd": "NevoraPhase12_API32",
+  "package": "com.google.android.webview",
+  "originalUserState": "User 0: ceDataInode=123164 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false",
+  "originalEnabledState": 0,
+  "ownedDisabledState": 3,
+  "restored": true,
+  "restoredUserState": "User 0: ceDataInode=123164 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false"
+}

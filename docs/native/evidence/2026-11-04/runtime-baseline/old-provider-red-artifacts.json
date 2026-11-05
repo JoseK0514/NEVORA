@@ -1,0 +1,14 @@
+{
+  "result.json": {
+    "stored": "old-provider-red-result.json",
+    "rawSha256": "7add7e9188558baf5bc135099e8be56eb7e33ebbd0fe2fc209d8ca3500d65e57"
+  },
+  "instrumentation.log": {
+    "stored": "old-provider-red-instrumentation.log.gz",
+    "rawSha256": "3bfc94fc10c035b129764e2ef6085fb4bb13b9e06e7c7609b250acf76f978e2a"
+  },
+  "Update_Android_System_WebView.xml": {
+    "stored": "old-provider-red-Update_Android_System_WebView.xml.gz",
+    "rawSha256": "bafe8f535885a368a01ed30ed767c701691fc5301adce709792ab5f82697f65a"
+  }
+}
