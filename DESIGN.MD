@@ -1417,3 +1417,9 @@ Jose approved the "Owner desktop, Direction B" mock (50 pages at 1440px). Deskto
 - **Checked** on fictional data in a desktop browser: all 53 Owner page loads at 1440px, Home, Things to do, Payroll,
   Settings and Schedule at 1280px (no overflow) and at 900px (tablet look unchanged); the phone audit at 390 and 320px is
   identical to the previous run.
+- **Inspected (Nov 6, 2026).** Five UI inspectors checked every Owner desktop page at 1440 and 1280 over three rounds
+  (pixel measurements, focus, hover, open menus). Results: one 296px column edge everywhere; content 24px under the band on
+  secondary pages and cards lifted exactly 52px over it on the six main screens; cards 20px apart; white focus rings on the
+  band and top bar; menus on the band read dark on white; every page keeps its own actions (Save, New update) as the band's
+  white pill. Left as they are: the Schedule week grid's inner insets, the dense Timecards table (52px rows, underline tabs),
+  document titles, which forms carry actions on the band vs in a footer, and the loading and paused states.
