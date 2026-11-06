@@ -83,8 +83,12 @@ public class BackendInstrumentedTest {
         try{device.dumpWindowHierarchy(new File(directory,name+".xml"));}catch(java.io.IOException error){throw new AssertionError(error);}
     }
     private void tap(BySelector selector) {
-        UiObject2 target=device.wait(current->{if(android.os.Build.VERSION.SDK_INT>=34)InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();return current.findObject(selector);},20000L);
-        if(target==null)retain("missing_touch_target");assertNotNull("Visible touch target: "+selector,target);target.click();
+        String appPackage=InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName();
+        // SystemUI can expose a matching label, such as a Settings notification.
+        BySelector appSelector=selector.pkg(appPackage);
+        UiObject2 target=device.wait(current->{if(android.os.Build.VERSION.SDK_INT>=34)InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();return current.findObject(appSelector);},20000L);
+        if(target==null)retain("missing_touch_target");assertNotNull("Visible touch target: "+appSelector,target);
+        assertEquals("Only tap the application's UI",appPackage,target.getApplicationPackage());target.click();
     }
     private void assertBrowserFocus() {
         assertTrue("Fresh browser must become visible",device.wait(current->{AtomicBoolean ready=new AtomicBoolean();scenario.onActivity(activity->{WebView view=browser(activity.getWindow().getDecorView());ready.set(view!=null&&view.getVisibility()==View.VISIBLE);});return ready.get();},20000L));
