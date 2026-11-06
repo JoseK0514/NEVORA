@@ -1,0 +1,11 @@
+{
+  "api": 29,
+  "apkSha256": "e22c91cdd90bdc7c505fc9924a15ccaca7c1a3a1164a3f7e5b0f80a9f13576de",
+  "signatureVerified": true,
+  "minimumApi": 32,
+  "exitCode": 1,
+  "expectedInstallRejection": true,
+  "error": "INSTALL_FAILED_OLDER_SDK",
+  "providerUnchanged": true,
+  "note": "Rejection applies to this retained Play-delivered variant only; it does not prove all 156 variants require API32."
+}

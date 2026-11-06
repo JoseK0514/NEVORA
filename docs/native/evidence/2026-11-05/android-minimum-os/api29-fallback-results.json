@@ -1,0 +1,22 @@
+[
+  {
+    "api": 29,
+    "serial": "emulator-5580",
+    "case": "i_outdatedWebViewRequiresNativeUpdateBeforeConnecting",
+    "fontScaleBefore": "null",
+    "passed": true,
+    "exitCode": 0,
+    "fontScaleAfter": "null",
+    "fontScaleRestored": true
+  },
+  {
+    "api": 29,
+    "serial": "emulator-5580",
+    "case": "k_largeTextRuntimeFallbackSupportsLandscapeAndKeyboard",
+    "fontScaleBefore": "null",
+    "passed": true,
+    "exitCode": 0,
+    "fontScaleAfter": "null",
+    "fontScaleRestored": true
+  }
+]
