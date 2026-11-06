@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "state": "free-database-and-private-source-created-render-access-pending",
+  "state": "free-host-initial-admission-passed-database-empty",
   "sourceCommit": "bc6b739750562716283d57b821ca6ef4aca72370",
   "purpose": "Disposable fictional NEVORA Employee/Owner native staging; no production/customer data",
   "hosting": {
@@ -10,7 +10,7 @@
     "observedWorkspacePlan": "Hobby",
     "paymentMethodPresent": false,
     "serviceName": "nevora-native-staging-20261106",
-    "serviceId": null,
+    "serviceId": "srv-dbmsjuui0phs73co1oq0",
     "instanceType": "free",
     "region": "virginia",
     "nodeVersion": "24.19.0",
@@ -18,8 +18,8 @@
     "buildCommand": "npm run build",
     "startCommand": "node node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port $PORT",
     "automaticGitDeployments": false,
-    "publicOrigin": null,
-    "publicExposureAuthorized": false,
+    "publicOrigin": "https://nevora-native-staging-20261106.onrender.com",
+    "publicExposureAuthorized": true,
     "paidApprovalRecorded": false,
     "limitations": [
       "15-minute idle suspension with startup page; qualify initial unavailable/retry behavior",
@@ -31,13 +31,21 @@
     "newSecurityGrantPerformed": false,
     "existingGitHubInstallationId": "161173039",
     "existingInstallationScope": "All repositories, installed September 12, 2026; unchanged",
-    "runtimeSelectionVerified": false,
-    "manualDeploySelectionVerified": false,
-    "draftSubmitted": false,
-    "draftBlocker": "Native Chrome content renders blank while AX controls remain. Free/Virginia/name/build/start read back; runtime/manual deploy not conclusively verified.",
+    "runtimeSelectionVerified": true,
+    "manualDeploySelectionVerified": true,
+    "draftSubmitted": true,
+    "draftBlocker": null,
     "draftReloadedBeforeSubmission": true,
-    "draftFieldsNeedReentry": true,
-    "reloadRestoredVisualRendering": false
+    "draftFieldsNeedReentry": false,
+    "reloadRestoredVisualRendering": false,
+    "deploymentId": "dep-dbmsjvmi0phs73co1r20",
+    "alternateInAppBrowserVerified": true,
+    "initialDeploymentWithoutDatabaseOrProviderCredentials": true,
+    "buildStatus": "Live",
+    "providerProjectId": "prj-dbmsjugm7kps73c7u980",
+    "providerEnvironmentId": "evm-dbmsjugm7kps73c7u98g",
+    "providerEnvironmentLabel": "Production (provider default in isolated new project)",
+    "actualServiceSettingsReadBack": true
   },
   "database": {
     "provider": "neon",
@@ -100,9 +108,9 @@
   ],
   "gates": {
     "sourceInventoryPassed": true,
-    "independentKeyRecoveryVerified": false,
+    "independentKeyRecoveryVerified": true,
     "neonFreeOrganizationVerified": true,
-    "sourceTransportApproved": false,
+    "sourceTransportApproved": true,
     "cloudCreated": true,
     "hostedVerified": false,
     "signed": false,
@@ -110,7 +118,8 @@
     "uploaded": false,
     "databaseCreated": true,
     "databaseSeeded": false,
-    "renderServiceCreated": false
+    "renderServiceCreated": true,
+    "initialHostedAdmissionPassed": true
   },
   "references": [
     "https://render.com/docs/free",

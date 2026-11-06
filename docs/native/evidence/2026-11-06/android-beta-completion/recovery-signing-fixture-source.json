@@ -1,0 +1,49 @@
+{
+  "purpose": "Disposable private-key recovery signature proof; not the NEVORA application",
+  "package": "com.velani.nevora.keyrecovery.fixture",
+  "internetPermission": false,
+  "activities": 0,
+  "dataAccess": false,
+  "backendOrigin": null,
+  "installed": false,
+  "uploaded": false,
+  "sourceFiles": [
+    {
+      "path": "settings.gradle",
+      "sha256": "d6f4842fad8fa10993398c871ac443984bee33678683413804dee5fabc9c7d3f"
+    },
+    {
+      "path": "build.gradle",
+      "sha256": "3c3fc43beca35fbf6d0ef33204bbfb8720624ae23219732c153a731c5351cb1d"
+    },
+    {
+      "path": "gradle.properties",
+      "sha256": "bacbafe216a17ef3e723f0d0c9ec68e2256d79d7be2c40a13ad5ddfc53ceda2a"
+    },
+    {
+      "path": "app/build.gradle",
+      "sha256": "9b27006261ed02d2a4bf5b1bc8654eddb936a5a0cd1da90a6a3c1ac5469e6c61"
+    },
+    {
+      "path": "app/src/main/AndroidManifest.xml",
+      "sha256": "21c3116f7781aee0afec6bac0178280d8d806066dd4ee55ad5bcc023f536edcc"
+    },
+    {
+      "path": "gradlew",
+      "sha256": "b187b4c52e749f5760afdd6fadc31b2a98ad35fb249bf0dff03b72650f320409"
+    },
+    {
+      "path": "gradlew.bat",
+      "sha256": "94102713eb8fb22d032397924c0f38ab2da783ba60d07054339f1190a0c4e2cd"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "f004e7f70af822a6441abf79e46cc9ae34419198b5a91988210acf7ebf1d25e8"
+    }
+  ],
+  "standardR8ReleaseOptimizationEnabled": true
+}

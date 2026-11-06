@@ -1,0 +1,10 @@
+{
+  "settingsPath": "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/android/settings.gradle",
+  "beforeSha256": "5bb6b7902126b021bb19f4137c68005b5ee175da3f80e83c261a57a9d0396af1",
+  "temporarySha256": "3d2bb43436dd709b6b7a8b07826533d8e1e3a87e53bf03f70f9e4a1bb69f732c",
+  "fixtureModule": "recoveryProof",
+  "fixturePackage": "com.velani.nevora.keyrecovery.fixture",
+  "realAppSourceChanged": false,
+  "restored": true,
+  "originalSettingsBytesVerified": true
+}

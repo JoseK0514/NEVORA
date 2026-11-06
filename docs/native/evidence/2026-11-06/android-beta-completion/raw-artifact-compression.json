@@ -46,5 +46,11 @@
     "stored": "replacement-cloud-restore.log.gz",
     "bytes": 647,
     "sha256": "bfc643593f78c4934d2e732d9e8a532194908ae670e3f3558cb9be73b088d02e"
+  },
+  {
+    "source": "recovery-fixture-apksigner.log",
+    "stored": "recovery-fixture-apksigner.log.gz",
+    "bytes": 993,
+    "sha256": "0b92c2a67cfa45840ec37b1404affe41a29b831dc9b579e0aba90782250b0469"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "jsonEvidenceParsed": true,
-  "compressedEvidenceHashesMatched": 8,
+  "compressedEvidenceHashesMatched": 9,
   "activeAndRestoredKeystoreHashesMatched": true,
   "keyFileAndDirectoryPermissionsVerified": true,
   "ownedTemporaryImagesClosed": true,
@@ -11,5 +11,11 @@
   "scope": "Current tracked/unignored files and filtered deployment mirror; not historical automation output or all repository history",
   "finalFreshFetchSourceInventoryPassed": true,
   "applicationCodeChangedInContinuation": false,
-  "rootApplicationSuitesRerunForDocsOnly": false
+  "rootApplicationSuitesRerunForDocsOnly": false,
+  "independentRecoveryVerified": true,
+  "initialHostedAdmissionPassed": true,
+  "originalNativeSettingsRestored": true,
+  "ownedTemporaryCredentialScanFiles": 134,
+  "ownedTemporaryCredentialMatches": 0,
+  "localLinksVerified": 31
 }

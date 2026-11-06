@@ -1,8 +1,8 @@
 # Android development release signing and independent recovery
 
-**November 6 active identity:** Jose approved replacing the old unused upload key after its password appeared in a native file-picker preview. The new key is active, its encrypted iCloud backup was restored with matching bytes, and the password imported into Bitwarden opened the restored private-key alias in Android Studio. The replacement password was not printed. Full independent recovery remains **pending**: owner access without this Mac is unconfirmed, and a signature using the vault-recovered credential was not rehearsed. The creation-time strict dummy-JAR proof passed separately. [Current evidence, incident and limitations](../../docs/native/evidence/2026-11-06/android-beta-completion/README.md).
+**November 6 active identity and independent recovery:** Jose approved replacing the old unused key after its password appeared in a file-picker preview. Replacement certificate `FCE29B05…F08C749E` is active; the encrypted iCloud file passed actual restore, its Bitwarden password signed a disposable no-code/no-permission fixture through Android Studio, SDK verification matched the certificate, and a modified payload was rejected. Jose confirmed iPhone/iPad access and login/verification without this Mac. Password storage was off; clipboard replaced with the public alias; exact native settings restored. **Independent recovery is verified.** [Actual proof and incident history](../../docs/native/evidence/2026-11-06/android-beta-completion/README.md).
 
-Status: replacement upload identity active; Android release signing, approved hosted origin and full independent recovery remain gated. No Android release APK/AAB has been signed or uploaded.
+Status: upload identity/recovery verified. A usable NEVORA release remains gated on full hosted database/app qualification, shared source integration/CI, physical-device and distribution acceptance. The signed recovery fixture was never installed/uploaded; no NEVORA release APK/AAB has been signed or uploaded.
 
 ## Existing identity and custody
 
@@ -13,12 +13,12 @@ Status: replacement upload identity active; Android release signing, approved ho
 - Encrypted cloud backup: existing iCloud Drive / NEVORA Private Recovery / Android Development Upload Key 2026-11-06. No plaintext password is stored beside the keystore. Old `upload-20261105` identity/fingerprint `406F573B…974B47E2` is retired and must not sign future artifacts; its files are preserved privately with retirement markers.
 - This is an upload certificate, not the future Google Play distribution certificate. Android app-link metadata for a Play-installed app must use its actual Play signing certificate.
 
-## Recovery checklist and remaining acceptance
+## Recovery checklist and evidence
 
-1. The owner selected existing iCloud Drive for the encrypted key and Bitwarden for its password. Upload, cloud eviction/download and recovered-vault-password keystore opening are verified. Confirm owner login/recovery/2-step methods for both services from another owner-controlled device before marking independent access complete. A second path on this Mac alone is not independent.
+1. The owner selected existing iCloud Drive for the encrypted key and Bitwarden for its password. Upload, cloud eviction/download and recovered-vault-password keystore opening are verified. Jose confirmed access/login/verification from an iPhone/iPad without this Mac on November 6. A second path on this Mac alone is not independent.
 2. Save the existing encrypted PKCS12, its alias, public certificate/fingerprint and recovery instructions. Keep the password recoverable in the owner's selected private credential custody; an encrypted keystore whose only password is on a lost Mac cannot be recovered. Avoid a plaintext password file beside the keystore.
 3. Compare source/backup SHA256 bytes locally without opening or printing private key material. Verify intended owner/access restrictions. Do not overwrite a different backup.
-4. From the backup location, open the keystore in the owner's private UI using the saved password and confirm the private-key entry/alias and certificate fingerprint. Prefer a disposable dummy-JAR signing/verification rehearsal; this proves the recovered private key, rather than only a copied file.
+4. Completed: the restored keystore opened with the vault password; a disposable fixture APK then signed through Android Studio and verified with SDK apksigner against the active certificate. The modified-payload negative check failed correctly. The fixture has no code, permissions or activities and was never installed or uploaded.
 5. Record only destination class, encrypted-file checksum, public fingerprint and successful recovery date in a receipt outside private credential values. Keep backup verification false until the independent restore test actually passes.
 
 ## Build and sign only after runtime/source gates are ready

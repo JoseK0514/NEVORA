@@ -18,9 +18,11 @@
   "privateVerified": true,
   "remoteCommitVerified": true,
   "authoritativeNevoraBranchesChanged": false,
-  "renderDeployed": false,
+  "renderDeployed": true,
   "newRenderSecurityGrantPerformed": false,
   "existingRenderInstallationCanListRepository": true,
   "existingGitHubInstallationId": "161173039",
-  "existingInstallationScopeUnchanged": true
+  "existingInstallationScopeUnchanged": true,
+  "renderServiceId": "srv-dbmsjuui0phs73co1oq0",
+  "renderDeploymentId": "dep-dbmsjvmi0phs73co1r20"
 }

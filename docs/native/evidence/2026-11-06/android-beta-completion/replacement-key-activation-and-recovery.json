@@ -12,9 +12,9 @@
   "cloudUploadVerified": true,
   "cloudFileRestoreVerified": true,
   "bitwardenImportPerformed": true,
-  "vaultCredentialRecoverySigningVerified": false,
-  "ownerIndependentAccountAccessConfirmed": false,
-  "independentRecoveryFullyVerified": false,
+  "vaultCredentialRecoverySigningVerified": true,
+  "ownerIndependentAccountAccessConfirmed": true,
+  "independentRecoveryFullyVerified": true,
   "bitwardenItem": "NEVORA Development \u2014 Android upload key",
   "bitwardenImportVerifiedAt": 1793965639.0234299,
   "temporaryImportResourcesClosed": true,
@@ -23,7 +23,7 @@
   "vaultRecoveredAlias": "nevora-development-upload",
   "recoveredKeystoreVerifiedThrough": "Android Studio Choose Key dialog using Bitwarden Copy password and private masked paste",
   "rememberPasswordsEnabled": false,
-  "signingWizardCancelled": true,
+  "signingWizardCancelled": false,
   "clipboardReplacedWithPublicAlias": true,
   "terminalAutomationAvailable": false,
   "activeManifest": "~/.codex/native-signing/nevora-development/active-development-upload-key.json",
@@ -33,5 +33,10 @@
     "password": "Owner-approved existing Bitwarden vault / NEVORA Development \u2014 Android upload key"
   },
   "candidateStrictDummyJarProofVerified": true,
-  "temporaryTransferReceiptScope": "The helper receipt records cleanup, not whether the UI imported it; Bitwarden success and saved item were independently observed by the executor."
+  "temporaryTransferReceiptScope": "The helper receipt records cleanup, not whether the UI imported it; Bitwarden success and saved item were independently observed by the executor.",
+  "ownerIndependentAccessEvidence": "Jose confirmed on iPhone/iPad: Both found; login and verification do not need the Mac",
+  "recoveryProofKind": "Disposable APK with no code, permissions or activities",
+  "fixtureSigningWizardCompleted": true,
+  "realNevoraReleaseSigned": false,
+  "terminalAttemptSucceeded": false
 }

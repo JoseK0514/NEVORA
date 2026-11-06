@@ -1,6 +1,6 @@
 # Android beta continuation — November 6, 2026
 
-Status: **replacement upload identity active; cloud/vault restore opens the key; source policy reconciled; Free database and private deployment source created. Hosted/device/release gates remain open**.
+Status: **independent upload-key recovery verified; source policy reconciled; Free service live and initial HTTPS admission passed. Database/app/device/release qualification remains open**.
 Owner: Codex/root. Starting candidate `bc6b739750562716283d57b821ca6ef4aca72370`.
 Fresh development `e9c3a66da330959738100884f87cb76fd2af8296` is included.
 The [Android 10–12 qualification](../android-supported-os/README.md) remains the
@@ -26,7 +26,7 @@ This is not import/acceptance of Claude's newer UI or a push of native code.
 
 The unchanged production checker now **passes: 73 classified sources, 3 active
 branches**, with exact archive verification. All 14 inventory unit checks pass.
-The earlier proposal and RED logs remain as history; final compressed logs are
+Earlier proposals/backup-progress snapshots and RED logs remain as history; the current activation/recovery/fixture receipts take precedence. Final compressed source logs are
 `final-source-inventory-unit.log.gz` and `final-source-inventory-live.log.gz`.
 Shared native application integration/CI has not yet been performed.
 
@@ -60,15 +60,36 @@ Bitwarden vault; “Data successfully imported” and the saved item were observ
 The encrypted interchange image/file was closed and removed immediately.
 The replacement password was not printed.
 
-Bitwarden's recovered password opened that restored PKCS12 in Android Studio's
-Choose Key dialog and listed `nevora-development-upload`. Remember passwords was
-off; the wizard was canceled without building/signing an Android app, and the
-clipboard was replaced with the public alias. This proves recovered-password
-keystore access. A dummy-JAR signature using the **vault-recovered** password was
-not performed; do not substitute the new key's creation proof for that step.
-Terminal UI automation was unavailable; no alternate UI was used to bypass it.
-Jose is unsure he can access iCloud and Bitwarden without this Mac, so
-**full independent recovery remains false** until that owner recovery check.
+The recovered vault password first opened the restored alias in Android Studio.
+Jose then confirmed both recovery destinations from an iPhone/iPad, including
+login/verification without this Mac. A human Terminal attempt failed before
+signature output and is retained privately; Jose requested executor takeover.
+No shell clipboard read, Terminal UI bypass or alternate app terminal was used.
+
+The executor completed the actual recovery signing proof through Android Studio's
+purpose-built wizard: only disposable module `recoveryProof`, restored November 6
+cloud key, Bitwarden Copy password into masked fields and Remember passwords OFF.
+The SDK verified the resulting APK against the active replacement certificate and
+rejected a copy with modified manifest bytes. Package
+`com.velani.nevora.keyrecovery.fixture` has no DEX, permissions or activities; it
+was never installed, uploaded or distributed. This is a recovery fixture, not a
+NEVORA release. [Actual proof](vault-recovery-signing-fixture.json).
+**Independent recovery is now verified**: cloud restore, actual vault credential
+retrieval/signature and owner-confirmed independent account access all passed.
+
+An initial zero-DEX assertion found AGP's unused generated R class. A resource
+feature toggle was unsupported in the pinned application-module API. The fixture
+was corrected with standard R8 optimization; the original zero-DEX assertion
+passed without weakening it. [Retained failure](recovery-fixture-no-code-red.json),
+[correction](recovery-fixture-no-code-green.json),
+[fixture source hashes](recovery-signing-fixture-source.json).
+A new-key dialog opened during navigation was canceled without creating a key.
+The temporary fixture attachment to the already trusted SDK workspace was
+[hash-guard restored](temporary-fixture-attachment.json); tracked native source
+is unchanged. Password storage remained off, clipboard was replaced with the
+public alias, and [134 owned temporary/IDE/Gradle log files](recovery-temporary-credential-scan.json)
+contained no exact active credential value. The unused generated IDE run
+configuration is a local fixture artifact; it is not a project module or release.
 
 The single [fresh review](fresh-review.md) returned HOLD on two private transfer
 helper defects. The executor reproduced them with fictional data and corrected
@@ -83,12 +104,12 @@ confirmed no JSON/password contents in AX output. Actual sensitive reads used
 emit:false and metadata allowlists. These are executor corrections; no second
 review approval or independent finding closure is claimed.
 
-## Staging preparation — local verification and free account
+## Free staging — live initial deployment; database setup pending
 
 Jose accepted the Render signup terms and creation under `support@furbrandpr.com`.
 Native Chrome verified workspace `tea-dbmr3t6c6qcc73cbf0jg`: Hobby, no card,
 no services and no pending charges. [Account receipt](render-account.json).
-No server secret, Render service or deployment was created.
+That initial account observation predates the separately approved Free deployment below.
 Paid hosting and the existing Vercel/Neon cost proposal remain ON HOLD.
 
 The new [free alternative](../../../../../native/staging/free-environment-plan.json)
@@ -138,19 +159,28 @@ Eleven pre-existing whitespace findings in the frozen source were preserved and
 
 Chrome sign-in was confirmed as JoseK0514. Render reused an existing September12
 GitHub installation, ID161173039, already set to all repositories. The executor
-did not expand or narrow that existing setting. Only the filtered repository was
-selected in the new-service draft. Name `nevora-native-staging-20261106`, Free
-$0/month, Virginia and exact build/start commands were read back. Manual-deploy
-and runtime selection could not be conclusively verified because native Chrome
-rendered blank content while retaining AX controls. A reload returned to source selection and still rendered blank; the proposed
-settings are retained in [the receipt](render-service-draft.json) and must be
-re-entered/verified. No service was submitted; no new security grant or public
-deployment approval was inferred.
+did not expand or narrow that existing setting. Chrome's blank rendering was
+resolved for this workflow by using the in-app browser's existing company Google
+session. Only the filtered repository was selected. Node, Free $0/month,
+Virginia, auto-deploy Off and all 20 public values were verified before submission.
+Jose explicitly approved “Deploy the free isolated staging service.”
+
+The new service **srv-dbmsjuui0phs73co1oq0**, deployment
+**dep-dbmsjvmi0phs73co1r20**, built exact mirror commit `59c78f7` and reported
+**Deploy succeeded | Live** at
+[the approved staging origin](https://nevora-native-staging-20261106.onrender.com).
+No database or provider credential was supplied. [Creation receipt](render-service-created.json).
+Five actual HTTPS admission checks passed with TLS certificate/hostname
+verification: 401 unauthenticated protocol1 JSON/no-store, 400 selector refusal,
+403 foreign-origin refusal, 403 cross-site refusal, and 307 private-route login
+redirect. [HTTP receipt](initial-hosted-admission.json).
+This establishes initial hosting/admission, not functional Owner/Employee login,
+database setup, provider delivery, installed native acceptance or a signed beta.
+The separate Free Neon endpoint remains empty/idle; paid hosting remains on hold.
 
 ## Remaining gates and authority
 
-Independent key recovery still requires owner access independent of this Mac and
-the outstanding recovered-credential signing rehearsal. A usable signed beta requires a qualified
+Independent key recovery is complete. A usable signed beta requires a qualified
 isolated HTTPS origin, exact source integration/CI, artifact/certificate/origin
 checks and controlled internal distribution. Jose confirms no physical Android
 phone/tablet is available; emulator results do not close that gate. Firebase client
