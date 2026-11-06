@@ -1,0 +1,15 @@
+{
+  "jsonEvidenceParsed": true,
+  "compressedEvidenceHashesMatched": 8,
+  "activeAndRestoredKeystoreHashesMatched": true,
+  "keyFileAndDirectoryPermissionsVerified": true,
+  "ownedTemporaryImagesClosed": true,
+  "helperHashMatchesFinalRegressionReceipt": true,
+  "exactOldAndReplacementCredentialValuesAbsentFromRepositoryAndMirror": true,
+  "scannedFiles": 17857,
+  "credentialValuesPrinted": false,
+  "scope": "Current tracked/unignored files and filtered deployment mirror; not historical automation output or all repository history",
+  "finalFreshFetchSourceInventoryPassed": true,
+  "applicationCodeChangedInContinuation": false,
+  "rootApplicationSuitesRerunForDocsOnly": false
+}

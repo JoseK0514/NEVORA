@@ -1,18 +1,21 @@
 # Android development release signing and independent recovery
 
-Status: upload key created/verified November5; release packaging prepared; independent recovery backup still **pending**. Jose is unsure of a destination. No encrypted key/password has been copied or exported for this preparation. Actual signing waits for independent recovery and an approved HTTPS environment. No new key is generated.
+**November 6 active identity:** Jose approved replacing the old unused upload key after its password appeared in a native file-picker preview. The new key is active, its encrypted iCloud backup was restored with matching bytes, and the password imported into Bitwarden opened the restored private-key alias in Android Studio. The replacement password was not printed. Full independent recovery remains **pending**: owner access without this Mac is unconfirmed, and a signature using the vault-recovered credential was not rehearsed. The creation-time strict dummy-JAR proof passed separately. [Current evidence, incident and limitations](../../docs/native/evidence/2026-11-06/android-beta-completion/README.md).
+
+Status: replacement upload identity active; Android release signing, approved hosted origin and full independent recovery remain gated. No Android release APK/AAB has been signed or uploaded.
 
 ## Existing identity and custody
 
 - Package: `com.velani.nevora.development`; Play record: NEVORA Development, app4975670290730158697.
-- Existing PKCS12: `/Users/josek0514/.codex/native-signing/nevora-development/upload-20261105/nevora-development-upload.p12`.
-- Alias: `nevora-development-upload`; RSA3072; certificate SHA256 `406F573B164EBF0B4E4D2E5A925D2C592248B3390919E66388364A1D974B47E2`.
-- Password is in the actual macOS login Keychain, service `com.velani.nevora.development.upload-key.20261105`, account `nevora-development-upload`. Use the owner's private credential UI; never print it with `security -w`, pass it in command arguments, paste it into chat, save it in Gradle properties or commit it.
+- Authoritative active manifest: `/Users/josek0514/.codex/native-signing/nevora-development/active-development-upload-key.json`. Resolve its exact keystore path, scoped Keychain service and checksums before signing. Its creation directory retains the name `upload-candidate-20261106-f5d389c9` for traceability; the manifest establishes activation.
+- Alias: `nevora-development-upload`; RSA3072; active certificate SHA256 `FCE29B057557198C9FD73B458C28A59DBA713F8C26619DBB9B5B262CF08C749E`.
+- Password custody: scoped macOS login Keychain plus the owner-approved Bitwarden item “NEVORA Development — Android upload key.” Never print it with `security -w`, pass it in command arguments, paste it into chat, save it in Gradle properties or commit it. New-key file SHA256: `5095fe44a71b91cfe2b1852a793f2c56b1abe84753dcb161767a6f69df5f2208`; working/backup file modes0600 inside0700 directories.
+- Encrypted cloud backup: existing iCloud Drive / NEVORA Private Recovery / Android Development Upload Key 2026-11-06. No plaintext password is stored beside the keystore. Old `upload-20261105` identity/fingerprint `406F573B…974B47E2` is retired and must not sign future artifacts; its files are preserved privately with retirement markers.
 - This is an upload certificate, not the future Google Play distribution certificate. Android app-link metadata for a Play-installed app must use its actual Play signing certificate.
 
-## Recovery checklist, once a destination is chosen
+## Recovery checklist and remaining acceptance
 
-1. Select an owner-controlled independent location: an encrypted external drive or an existing vault with encrypted file attachments and a recovery method independent of this Mac. No new subscription/cloud upload is authorized here. A second path on this Mac alone is not independent.
+1. The owner selected existing iCloud Drive for the encrypted key and Bitwarden for its password. Upload, cloud eviction/download and recovered-vault-password keystore opening are verified. Confirm owner login/recovery/2-step methods for both services from another owner-controlled device before marking independent access complete. A second path on this Mac alone is not independent.
 2. Save the existing encrypted PKCS12, its alias, public certificate/fingerprint and recovery instructions. Keep the password recoverable in the owner's selected private credential custody; an encrypted keystore whose only password is on a lost Mac cannot be recovered. Avoid a plaintext password file beside the keystore.
 3. Compare source/backup SHA256 bytes locally without opening or printing private key material. Verify intended owner/access restrictions. Do not overwrite a different backup.
 4. From the backup location, open the keystore in the owner's private UI using the saved password and confirm the private-key entry/alias and certificate fingerprint. Prefer a disposable dummy-JAR signing/verification rehearsal; this proves the recovered private key, rather than only a copied file.
@@ -28,6 +31,6 @@ For an AAB, the standard alternative is `jarsigner -keystore PRIVATE_KEYSTORE_PA
 
 For a directly installed APK, run the installed SDK `zipalign` before `apksigner sign`, using private password prompts and new output paths, then `apksigner verify --verbose --print-certs`. Never run zipalign after signing. Do not use jarsigner for an APK. APK transport to a phone and Play upload remain separate controlled actions.
 
-Keep unsigned/signed hashes, exact source, package/version, origin, upload certificate and resource checks together. No internal distribution, Play signing-key selection or upload has occurred. Published release identity and production origin require their own decision.
+Keep unsigned/signed hashes, exact source, package/version, origin, upload certificate and resource checks together. Google Play currently reports a managed distribution-signing certificate `9F43414105A39F83E07B5598E148E8C4E901FE644927FB9B47AC6270ACF4E262` in use, no bundles/releases and 0% install base. No key change was performed. Actual Play installation/certificate qualification remains pending; use neither upload fingerprint nor console observation alone as installed-app acceptance. No internal distribution or upload has occurred. Published release identity and production origin require their own decision.
 
 Sources: [Android signing](https://developer.android.com/studio/publish/app-signing), [command-line AAB/APK signing](https://developer.android.com/build/building-cmdline), [apksigner](https://developer.android.com/tools/apksigner).

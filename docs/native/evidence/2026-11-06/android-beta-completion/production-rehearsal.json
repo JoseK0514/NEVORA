@@ -1,0 +1,38 @@
+{
+  "sourceCommit": "bc6b739750562716283d57b821ca6ef4aca72370",
+  "localOnly": true,
+  "databaseOrProviderCredentialsSupplied": false,
+  "cloudHostedVerified": false,
+  "owner": "bf89a7af811d40b7bee5302204911efa",
+  "checks": [
+    {
+      "name": "credential-free-probe",
+      "status": 401,
+      "passed": true
+    },
+    {
+      "name": "selector-rejected",
+      "status": 400,
+      "passed": true
+    },
+    {
+      "name": "foreign-origin-rejected",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "name": "cross-site-rejected",
+      "status": 403,
+      "passed": true
+    },
+    {
+      "name": "private-route-requires-login",
+      "status": 307,
+      "passed": true
+    }
+  ],
+  "ownershipClosed": true,
+  "pid": 27578,
+  "port": 55256,
+  "passed": true
+}

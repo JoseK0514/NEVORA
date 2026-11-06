@@ -1,0 +1,30 @@
+{
+  "workspaceId": "tea-dbmr3t6c6qcc73cbf0jg",
+  "accountEmail": "support@furbrandpr.com",
+  "sourceRepository": "JoseK0514/nevora-native-staging-source",
+  "sourceCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "name": "nevora-native-staging-20261106",
+  "observedPlan": "Free",
+  "observedMonthlyPriceUsd": 0,
+  "observedRegion": "Virginia (US East)",
+  "observedBranch": "main (filtered deployment mirror only)",
+  "observedBuildCommand": "npm ci --ignore-scripts --no-audit --no-fund && npm run build",
+  "observedStartCommand": "node node_modules/next/dist/bin/next start --hostname 0.0.0.0 --port $PORT",
+  "runtimeSelectionVerified": false,
+  "manualDeploymentSelectionVerified": false,
+  "databaseCredentialsBound": false,
+  "submitted": false,
+  "serviceCreated": false,
+  "publicOrigin": null,
+  "publicExposureApproved": false,
+  "existingGitHubInstallation": {
+    "id": "161173039",
+    "installed": "2026-09-12",
+    "scope": "All repositories",
+    "changedByExecutor": false
+  },
+  "blocker": "Native Chrome page content appeared blank while accessibility controls remained available. Runtime/manual-deploy choices could not be conclusively verified, so Deploy was not clicked.",
+  "draftReloadedBeforeSubmission": true,
+  "draftFieldsNeedReentry": true,
+  "reloadRestoredVisualRendering": false
+}

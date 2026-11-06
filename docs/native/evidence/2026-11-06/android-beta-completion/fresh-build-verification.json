@@ -1,0 +1,31 @@
+{
+  "sourceCommit": "bc6b739750562716283d57b821ca6ef4aca72370",
+  "nodeVersion": "v24.19.0",
+  "databaseOrProviderCredentialsSupplied": false,
+  "originConfigured": false,
+  "deployed": false,
+  "steps": [
+    {
+      "name": "install",
+      "command": [
+        "npm",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "exitCode": 0,
+      "seconds": 6.99
+    },
+    {
+      "name": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "seconds": 23.07
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "exitCode": 2,
+  "preExistingSourceUnchanged": true,
+  "locations": [
+    "scripts/ui-checks/preview-runtime.mjs:126: new blank line at EOF.",
+    "src/app/app/inbox/page.tsx:25: new blank line at EOF.",
+    "src/app/app/portal-premium.css:390: trailing whitespace.",
+    "src/components/assisted-recovery.tsx:110: new blank line at EOF.",
+    "src/components/team-live.tsx:46: new blank line at EOF.",
+    "src/lib/calendar/service.server.ts:175: new blank line at EOF.",
+    "src/lib/data/notification-state.ts:38: trailing whitespace.",
+    "src/lib/private-snapshot-client.ts:55: new blank line at EOF.",
+    "src/lib/tenancy/runtime/portal-administrative-authority-storage.sql:275: trailing whitespace.",
+    "src/lib/timecards/read-model.ts:45: new blank line at EOF.",
+    "src/test/fixtures/portal-legacy-administrative-authority-storage.sql:275: trailing whitespace."
+  ],
+  "sourceCommit": "bc6b739750562716283d57b821ca6ef4aca72370",
+  "ruling": "Preserve exact tested source bytes in deployment snapshot. Initial-repository whitespace diagnostics are retained, not normalized or reported green."
+}

@@ -1,0 +1,11 @@
+{
+  "fixtureOnly": true,
+  "actualCredentialRead": false,
+  "mountLossReproduced": true,
+  "oldImplementationCreatedHostPlaintext": true,
+  "fictionalHostFileRemoved": true,
+  "ownedImageDetachedRemoved": true,
+  "truncatedLeaseOldCleanupFailed": true,
+  "alreadyDetachedOldCleanupFailed": true,
+  "failureFixturesClosedRemoved": true
+}

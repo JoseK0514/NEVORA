@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "observedAt": "2026-11-06",
+  "organization": {
+    "id": "org-wild-heart-93376487",
+    "name": "VELANI Native Development",
+    "plan": "free",
+    "existingLaunchOrganizationsChanged": false
+  },
+  "project": {
+    "id": "noisy-fog-17044568",
+    "name": "nevora-native-staging-20261106",
+    "region": "aws-us-east-1",
+    "postgresVersion": 17,
+    "historyRetentionSeconds": 0,
+    "quota": {
+      "active_time_seconds": 14400,
+      "compute_time_seconds": 3600,
+      "written_data_bytes": 1073741824,
+      "data_transfer_bytes": 1073741824,
+      "logical_size_bytes": 536870912
+    }
+  },
+  "branch": {
+    "id": "br-still-haze-bb6qa2a2",
+    "name": "native-fictional-only",
+    "createdFromProductionOrClocker": false
+  },
+  "database": {
+    "name": "nevora_native_staging",
+    "tableInventory": [],
+    "emptyInventoryVerified": true,
+    "setupPerformed": false,
+    "connectionStringRetrieved": false,
+    "credentialsBound": false,
+    "runtimeRoleCreated": false
+  },
+  "compute": {
+    "id": "ep-jolly-dream-bbqd82uj",
+    "host": "ep-jolly-dream-bbqd82uj.c-15.us-east-1.aws.neon.tech",
+    "minimumCu": 0.25,
+    "maximumCu": 0.25,
+    "suspendTimeoutSeconds": 0,
+    "observedState": "idle",
+    "explicitlySuspended": true
+  },
+  "creationReconciliation": {
+    "firstRequestRejectedWith412": "Modifying the suspend interval is not permitted on this account",
+    "confirmedNoProjectBeforeRetry": true,
+    "createdOnceAfterOmittingUnsupportedInterval": true
+  },
+  "limitations": [
+    "The provider reports suspend_timeout_seconds=0; five-minute auto-suspend was not established. Explicitly suspend the owned endpoint when idle.",
+    "No schema, fictional login, hosted runtime or device acceptance is established by resource creation."
+  ]
+}
