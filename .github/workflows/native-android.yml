@@ -59,7 +59,7 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           node --test native/association/prepare.check.mjs scripts/native-build.check.mjs
-          python3 -m unittest discover -s native/android -p test_ui_runner.py
+          python3 -m unittest discover -s native/android -p 'test_*.py'
       - name: Install pinned Android SDK packages
         run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Test and build the active Android application
@@ -76,22 +76,24 @@ jobs:
       - name: Record unsigned artifact custody
         shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
-          git diff --exit-code
-          printf '%s\n' "$EXPECTED_SHA" > "$RUNNER_TEMP/native-android-build/source-sha.txt"
-          sha256sum "$RUNNER_TEMP/native-android-build/outputs/apk/release/app-release-unsigned.apk" \
-            "$RUNNER_TEMP/native-android-build/outputs/bundle/release/app-release.aab" \
-            > "$RUNNER_TEMP/native-android-build/unsigned-artifacts.sha256"
-      - name: Preserve build and policy evidence
-        if: always()
+          python3 native/android/ci-artifacts.py \
+            --repo "$GITHUB_WORKSPACE" --expected-sha "$EXPECTED_SHA" \
+            --build-dir "$RUNNER_TEMP/native-android-build" \
+            --output-directory "$RUNNER_TEMP/native-android-artifacts"
+      - name: Publish verified unsigned packages
+        if: success()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: active-android-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/native-android-artifacts/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Preserve build and policy diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: active-android-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
           path: |
-            ${{ runner.temp }}/native-android-build/source-sha.txt
-            ${{ runner.temp }}/native-android-build/unsigned-artifacts.sha256
-            ${{ runner.temp }}/native-android-build/outputs/apk/release/*.apk
-            ${{ runner.temp }}/native-android-build/outputs/bundle/release/*.aab
             ${{ runner.temp }}/native-android-build/outputs/androidTest-results/**
             ${{ runner.temp }}/native-android-build/test-results/**
             ${{ runner.temp }}/native-android-build/reports/**
