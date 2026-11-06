@@ -1423,3 +1423,28 @@ Jose approved the "Owner desktop, Direction B" mock (50 pages at 1440px). Deskto
   band and top bar; menus on the band read dark on white; every page keeps its own actions (Save, New update) as the band's
   white pill. Left as they are: the Schedule week grid's inner insets, the dense Timecards table (52px rows, underline tabs),
   document titles, which forms carry actions on the band vs in a footer, and the loading and paused states.
+
+## Employee phones: Direction B (Jose, Nov 6, 2026: "lets built it, lets make sure everything is exactly the same")
+
+Jose approved the "Employee mobile, Direction B" mock (25 phone pages, polished twice). Phones only (below 768px), Employee
+role only: a Lead keeps the v5 look while that role is on hold, and the employee's tablet and desktop layouts are unchanged
+(`owner-b-desktop.css` skips `[data-employee-mobile]`). The shell sets `data-nv-b` for employees; the kit, shell and page
+layers are the Owner's, plus `src/components/employee-b/` (one screen file and stylesheet per group).
+
+- **How a page is built.** Each employee page draws a `BScreen` as a direct child of its `.c-page`, from the same reads,
+  links, actions and states as the corporate layout beside it; CSS shows one per width. Pieces that hold state exist once:
+  forms stay in the page and are restyled as the screen's card (`b-keep`); the shift sheet and the weekly confirmation mount
+  by viewport (`employee-b/viewport.tsx`, the CSS breakpoint exactly). Focus moves to whichever presentation is on screen.
+- **The look.** Teal hero (dark ink on Pay), white title 30/36 with a 14px sub 2px under it, glass figures and segments
+  (34px thumbs), white cards lifting 40px over the hero, 12px apart, 46px card headers, 64px two-line rows and 56px one-line
+  rows with text 18px in, Phosphor bold icons in 36px tinted circles (grey by default; colour only for meaning), 22px chips in
+  rows and 24px in card headers, one empty state (48px grey icon, title, line), notes 18px in, forms as one white card with
+  48px fields and the full-width primary at the bottom. Header: white wordmark or the back circle and label, the bold bell
+  with a coral dot, a 36px avatar; forms (Fix my time, Request time off, swaps, can't work) and More and Notifications hide
+  the bell and avatar; forms also hide the tab bar. Tab bar: Pay is a receipt, Requests a clipboard, filled when active;
+  shift swaps, open shifts and Availability light Schedule.
+- **Data rules over the mock.** Pay statements carry no amounts, so Pay shows paydays, work weeks and the PDF; employees
+  can't see who else is on a shift; Home's figures are hours worked this week (the Time tab's own read) and the next payday
+  (pay schedule); hero figures hide when there is nothing to show.
+- **Inspected (Nov 6, 2026).** Three rounds of UI inspectors checked every employee page at 390 and 320px (and 1440px for
+  desktop leakage) against the mock with pixel measurements; their findings are fixed in the round commits.

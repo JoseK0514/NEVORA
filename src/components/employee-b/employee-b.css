@@ -121,3 +121,7 @@
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen.b-screen .b-seg { margin-left: 20px; margin-right: 20px; }
 }
+/* (The Owner layer's "block after the phone bar" rule carries two ids and fourteen classes; this one carries four ids.) */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile] .c-page > .b-screen:not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
+}
