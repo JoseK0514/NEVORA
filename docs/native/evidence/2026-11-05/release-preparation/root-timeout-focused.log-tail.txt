@@ -1,0 +1,51 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/test/phase-e-browser-evidence.test.ts --maxWorkers=1 --no-color
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101
+
+ ✓ src/test/phase-e-browser-evidence.test.ts (47 tests) 34314ms
+   ✓ accepts five relocated suite artifacts with 70 unique executed cells 1053ms
+   ✓ rejects matrix job result failure 861ms
+   ✓ rejects matrix job result cancelled 871ms
+   ✓ rejects matrix job result skipped 916ms
+   ✓ rejects matrix job result neutral 866ms
+   ✓ rejects matrix job result missing 931ms
+   ✓ rejects matrix job result extra 931ms
+   ✓ rejects relocated missing-suite 893ms
+   ✓ rejects relocated extra-suite 876ms
+   ✓ rejects relocated duplicate-suite 863ms
+   ✓ rejects relocated missing-cell 859ms
+   ✓ rejects relocated duplicate-cell 867ms
+   ✓ rejects relocated extra-cell 884ms
+   ✓ rejects relocated failed-cell 872ms
+   ✓ rejects relocated skipped-cell 895ms
+   ✓ rejects relocated empty-checks 862ms
+   ✓ rejects relocated sha 875ms
+   ✓ rejects relocated tree 880ms
+   ✓ rejects relocated source-hash 862ms
+   ✓ rejects relocated mirror-hash 919ms
+   ✓ rejects relocated runtime-error 866ms
+   ✓ rejects relocated pg-open 893ms
+   ✓ rejects relocated next-open 875ms
+   ✓ rejects relocated resource-open 866ms
+   ✓ rejects relocated missing-resource 865ms
+   ✓ rejects relocated observation-failure 880ms
+   ✓ rejects relocated command 926ms
+   ✓ rejects relocated missing-preload 873ms
+   ✓ rejects relocated wrong-preload 861ms
+   ✓ rejects relocated partial-command-checks 869ms
+   ✓ rejects relocated leaf-proof 891ms
+   ✓ rejects relocated missing-receipt 872ms
+   ✓ rejects relocated owner-mismatch 866ms
+   ✓ rejects relocated traversal 865ms
+   ✓ rejects relocated symlink 881ms
+   ✓ rejects relocated duplicate-layout 895ms
+   ✓ rejects aggregate without echoing untrusted artifact text 901ms
+
+ Test Files  1 passed (1)
+      Tests  47 passed (47)
+   Start at  20:15:17
+   Duration  34.47s (tests 100%)
+

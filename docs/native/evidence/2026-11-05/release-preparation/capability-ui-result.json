@@ -1,0 +1,82 @@
+{
+  "status": "passed",
+  "fictional": true,
+  "realProviderCalls": false,
+  "checks": [
+    {
+      "width": 390,
+      "name": "initial-layout-keyboard-target",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "enrollment-and-shared-port",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "detach-confirm-cancel-focus-and-off",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "denial-no-false-enabled",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "lost-reply-error-then-fresh-read-no-false-enabled",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "explicit-reconciliation",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "name": "account-switch-no-automatic-adoption",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "initial-layout-keyboard-target",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "enrollment-and-shared-port",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "detach-confirm-cancel-focus-and-off",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "denial-no-false-enabled",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "lost-reply-error-then-fresh-read-no-false-enabled",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "explicit-reconciliation",
+      "status": "passed"
+    },
+    {
+      "width": 1280,
+      "name": "account-switch-no-automatic-adoption",
+      "status": "passed"
+    }
+  ],
+  "ownershipClosed": true,
+  "fixture": {
+    "pid": 48430,
+    "origin": "http://127.0.0.1:50200"
+  }
+}

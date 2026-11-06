@@ -1,0 +1,95 @@
+ ✓ src/lib/notification-labels.test.ts (1 test) 2ms
+ ✓ src/lib/scheduling/capabilities.test.ts (1 test) 2ms
+ ✓ src/lib/attendance/format.test.ts (14 tests) 5ms
+ ✓ src/components/employee-mobile/availability-summary.test.ts (1 test) 11ms
+ ✓ src/lib/notifications/device-state.test.ts (9 tests) 5ms
+ ✓ src/lib/employee-compensation.test.ts (3 tests) 3ms
+ ✓ src/lib/workspace-presentation/updates-held.test.ts (4 tests) 4ms
+ ✓ src/test/authority-refusal-observation.test.ts (13 tests) 8ms
+ ✓ src/components/app-shell.prefetch.test.ts (1 test) 7ms
+ ✓ src/components/command-finder.test.ts (4 tests) 13ms
+ ✓ src/lib/tenancy/migrations/employee-number-enrollment-binding.server.test.ts (4 tests) 13ms
+ ✓ src/lib/communications/service.server.test.ts (2 tests) 87ms
+ ✓ src/lib/company-access/scope-selection.test.ts (1 test) 5ms
+ ✓ src/test/integration/owned-next-payroll.test.ts (1 test) 4ms
+ ✓ src/lib/employee-view-authority.test.ts (1 test) 37ms
+ ✓ src/lib/phone.test.ts (4 tests) 3ms
+ ✓ src/lib/navigation-ownership.test.ts (6 tests) 4ms
+ ✓ src/components/employee-mobile/request-status.test.ts (3 tests) 2ms
+ ✓ src/lib/auth/account-email-copy.test.ts (3 tests) 7ms
+ ✓ src/lib/publication-note.test.ts (2 tests) 3ms
+ ✓ src/components/payroll-review-copy.test.ts (2 tests) 3ms
+ ↓ src/test/integration/coverage-repair.integration.test.ts (39 tests | 39 skipped)
+ ↓ src/test/integration/employee-notification-capacity.integration.test.ts (9 tests | 9 skipped)
+ ↓ src/test/integration/f1-canonical-native.postgres.test.ts (12 tests | 12 skipped)
+ ↓ src/lib/tenancy/migrations/lossless-array.postgres.test.ts (35 tests | 35 skipped)
+ ↓ src/lib/auth/portal-credential-session.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/migrations/typed-key-comparators.postgres.test.ts (11 tests | 11 skipped)
+ ↓ src/lib/tenancy/runtime/control-storage.postgres.test.ts (14 tests | 14 skipped)
+ ↓ src/lib/tenancy/migrations/typed-ownership.postgres.test.ts (9 tests | 9 skipped)
+ ↓ src/lib/tenancy/runtime/catalog-fence.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/runtime/employee-login-identity-storage.postgres.test.ts (12 tests | 12 skipped)
+ ✓ src/components/employee-home-corp.test.ts (1 test) 9ms
+ ↓ src/lib/tenancy/runtime/portal-administrative-authority-storage.postgres.test.ts (24 tests | 24 skipped)
+ ↓ src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts (40 tests | 40 skipped)
+ ↓ src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts (58 tests | 58 skipped)
+ ↓ src/lib/tenancy/runtime/original-runtime-login-installer.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts (57 tests | 2 skipped)
+ ↓ src/lib/tenancy/runtime/portal-session-issuance-storage.postgres.test.ts (24 tests | 24 skipped)
+ ↓ src/lib/tenancy/runtime/executor-catalog-fence.postgres.test.ts (4 tests | 4 skipped)
+ ↓ src/lib/tenancy/runtime/portal-authority-storage.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts (12 tests | 12 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-locks.postgres.test.ts (20 tests | 20 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts (30 tests | 30 skipped)
+ ↓ src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts (46 tests | 46 skipped)
+ ↓ src/lib/tenancy/runtime/workspace-locator-storage.postgres.test.ts (20 tests | 20 skipped)
+ ↓ src/lib/tenancy/runtime/role-guard-installers.postgres.test.ts (16 tests | 16 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts (39 tests | 39 skipped)
+ ✓ src/components/payroll/payroll-settings-today.test.ts (1 test) 11ms
+stdout | src/lib/scheduling/generation/planner.test.ts > measures deterministic 50-worker 7-day 20-location planning
+PLANNER_PERFORMANCE {"locations":20,"employees":50,"milliseconds":146579,"status":"COMPLETE","additions":280,"nodes":281,"evaluations":86750,"cacheHits":2867530,"periods":39200}
+
+ ✓ src/lib/scheduling/generation/planner.test.ts (56 tests) 245557ms
+   ✓ measures deterministic 50-worker 7-day 3-location planning 3732ms
+   ✓ measures deterministic 50-worker 7-day 20-location planning 241046ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated partial-command-checks
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated missing-receipt
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated owner-mismatch
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated traversal
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated symlink
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated duplicate-layout
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/test/phase-e-browser-evidence.test.ts:108:470
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects aggregate without echoing untrusted artifact text
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/test/phase-e-browser-evidence.test.ts:184:31
+    182| });
+    183|
+    184| it.each(['leaf', 'aggregate'])('rejects %s without echoing untrusted a…
+       |                               ^
+    185|   const f = fixture();
+    186|   if (mode === 'aggregate') f.leaves();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+
+ Test Files  1 failed | 722 passed | 27 skipped (750)
+      Tests  7 failed | 10971 passed | 801 skipped (11834)
+   Start at  20:09:44
+   Duration  245.85s (tests 61%, import 35%, transform 3%, worker 1%)
+
+     Import  1951 modules were evaluated 5479 times · 398.66s total, 35% of tracked time
+             ~14.49s faster with isolate: false — shared modules are evaluated once per worker instead of once per file
+             learn more: https://vitest.dev/guide/improving-performance#test-isolation
+

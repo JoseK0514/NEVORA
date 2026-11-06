@@ -1,0 +1,12 @@
+✔ a changed process can never receive the immediate-shutdown fallback (0.154166ms)
+✔ a large count or fixture run cannot stand in for named full-backend checks (4.292958ms)
+✔ ownership-only concurrency verification cannot be labeled as a device run (0.076125ms)
+✔ mixed current-source bytes or a different SHA cannot produce acceptance (268.520459ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1555.021208

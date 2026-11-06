@@ -1,0 +1,13 @@
+{
+  "udid": "33056525-1248-481D-A3BB-7FA9DBA19215",
+  "name": "NEVORA Release Prep d8b8e7b2",
+  "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-27-0",
+  "type": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro",
+  "source": "5d4f3fb581b8c27dbd7caa1aa4b5d48d904094bc",
+  "createdAt": 1793923833.3636649,
+  "absentBefore": true,
+  "stopped": true,
+  "removed": true,
+  "stoppedAt": 1793924078.822449,
+  "removedAt": 1793924079.030289
+}

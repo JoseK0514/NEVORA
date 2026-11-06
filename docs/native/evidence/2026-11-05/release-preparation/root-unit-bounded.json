@@ -1,0 +1,15 @@
+{
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "--maxWorkers=2",
+    "--no-color"
+  ],
+  "exitCode": 0,
+  "seconds": 200.5,
+  "source": "5d4f3fb581b8c27dbd7caa1aa4b5d48d904094bc",
+  "testAssertionsChanged": false,
+  "testTimeoutsChanged": false,
+  "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/root-unit-bounded.log"
+}
