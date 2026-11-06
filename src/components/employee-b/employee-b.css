@@ -143,3 +143,16 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty .b-ico { margin-bottom: 5px; color: #3F464B; }
 }
+
+/* Inspection round 3 (tabs and Time): the week strip's day tiles at the mock's 1.4 line height (61px), its header 8px over
+ * them; the tab bar's pill 8px under the bar's top and 6px over its label; "What changed" and narrow-phone subtitles balance. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__d { line-height: 1.4; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h { padding-bottom: 8px; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile] .mobile-nav .mobile-nav-link { padding-top: 10px !important; gap: 6px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile] .mobile-nav .mobile-nav-link::before { top: 7px !important; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary { text-wrap: balance; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-sub { text-wrap: balance; }
+}

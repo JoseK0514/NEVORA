@@ -16,7 +16,7 @@ import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
 import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
 import { BChip } from './owner-b/b-kit';
-import { BDay } from './employee-b/parts';
+import { BDay, Dotted } from './employee-b/parts';
 import { NotPhone, PhoneOnly } from './employee-b/viewport';
 
 /* An Employee's Schedule on the corporate kit (Release 1, boards G-E-Schedule, E-ShiftDetail and E-OpenShifts). The
@@ -160,7 +160,7 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       list={{ label: listLabel, wholeWeekHref: chosen ? `/app/schedule?week=${weekStart}${keep}` : null,
         empty: listed.length ? null : state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.') : emptyScheduleLabel(state),
         rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false} aria-label={rowLabel(shift)}>
-          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{rowDetail(shift)}</span></span>
+          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s"><Dotted text={rowDetail(shift)}/></span></span>
           <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
           <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
             b={{ lead: bLead(shift), chip: bChip(shift), label: rowLabel(shift) }} />

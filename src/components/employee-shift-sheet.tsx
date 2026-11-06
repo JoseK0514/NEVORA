@@ -10,6 +10,7 @@ import {UserPlusIcon} from '@phosphor-icons/react/dist/ssr/UserPlus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import './employee-shift-sheet.css';
 import {QuietSheet, SheetCancel} from './quiet/quiet-sheet';
+import {Dotted} from './employee-b/parts';
 
 /* v5 Schedule (mockup E03): tapping a shift opens it as a sheet over the week: the shift in full, then the ways to
  * change it. Swap, Offer it for cover and Unable to work open their own sheets (intercepted routes) over Schedule.
@@ -88,7 +89,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
   return <li className={b ? 'b-li' : undefined}>
     {b ? <Link className="b-row b-row--link" href={href} scroll={false} aria-haspopup="dialog" aria-label={b.label} onClick={opener}>
       {b.lead}
-      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s">{detail}</span></span>
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s"><Dotted text={detail}/></span></span>
       <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true"/>
     </Link> : <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={opener}>
       {lead ? <span className="c-row__lead">{lead}</span> : null}

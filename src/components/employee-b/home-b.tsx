@@ -15,7 +15,7 @@ import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {useHours} from '../employee-mobile/use-hours';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
-import {BDay, wallTime} from './parts';
+import {BDay, Dotted, wallTime} from './parts';
 import './employee-b.css';
 
 /* Employee Home on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026). The
@@ -92,7 +92,7 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
     chip={now ? <BChip tone="teal">Until {clock(now.endAt, zone)}</BChip> : <BChip tone="teal">{startsIn(shift, snapshot)}</BChip>}>
     <div className="eb-shift">
       <p className="eb-shift__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></p>
-      <p className="eb-shift__where">{today ? where : keepWhole(`${shortDay(shift.date)} · ${where}`)}{!today && ends !== shift.date ? keepWhole(` · ends ${shortDay(ends)}`) : null}</p>
+      <p className="eb-shift__where"><Dotted text={today ? where : `${shortDay(shift.date)} · ${where}`}/>{!today && ends !== shift.date ? keepWhole(` · ends ${shortDay(ends)}`) : null}</p>
       <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>
       <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink>
@@ -122,7 +122,7 @@ function ComingUp({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
     <BList>{rows.slice(0, 3).map(shift => {
       const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)} sub={shift.where || undefined}
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)} sub={shift.where ? <Dotted text={shift.where}/> : undefined}
         label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}`)}/>;
     })}</BList>
   </BCard>;

@@ -24,6 +24,13 @@ export function BValue({children, sub}: {children: ReactNode; sub?: ReactNode}) 
   return <><b>{children}</b>{sub ? <span>{sub}</span> : null}</>;
 }
 
+/** "Customer Support · Main Office" with each segment kept whole and each "·" leading the segment after it, so a line
+ * never ends in a dot. */
+export function Dotted({text}: {text: string}) {
+  const parts = text.split(' · ');
+  return <>{parts.map((part, index) => <span key={index}>{index ? ' ' : ''}<span className="eb-nowrap">{index ? '·\u00a0' : ''}{part}</span></span>)}</>;
+}
+
 /** A quiet line inside a card, under its rows (a hint, or what a list means). */
 export function BCardNote({children, center}: {children: ReactNode; center?: boolean}) {
   return <p className={center ? 'eb-cardnote eb-cardnote--center' : 'eb-cardnote'}>{children}</p>;
