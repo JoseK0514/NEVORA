@@ -4,7 +4,9 @@ import {useEffect,useState,useSyncExternalStore,type ReactNode} from 'react';
 import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
-import {EmployeeAccountPanel} from '../employee-account-panel';
+import {EmployeeAccountView,useEmployeeAccountRead} from '../employee-account-panel';
+import {EmployeeProfileB} from '../employee-b/account-b-client';
+import {shown} from '../employee-b/account-host';
 import {QuietHeader,QuietNav,QuietPage} from '../quiet/quiet';
 import {CorpCard,CorpNav,CorpPage,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
 import {switchTo} from '../auth-premium/lang-switch';
@@ -43,7 +45,8 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
   // Older links (Schedule's "Add shifts to your calendar") point at Profile's calendar section, now its own page.
   if(location.hash==='#employee-calendar-title'){router.replace('/app/profile/calendar');return;}
   if(!/^#profile-(account-deletion|passkeys)$/.test(location.hash))return;
-  const frame=requestAnimationFrame(()=>document.getElementById(location.hash.slice(1))?.focus());
+  // The row on screen: the phone screen's (b-…) or this layout's.
+  const frame=requestAnimationFrame(()=>{const id=location.hash.slice(1);shown(document.getElementById(id),document.getElementById('b-'+id))?.focus();});
   return()=>cancelAnimationFrame(frame);
  },[router]);
  const security=passkeys||policies;
@@ -51,8 +54,18 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
   <CorpNav phoneOnly back={{href:'/app/more',label:'More'}} title="Profile and settings" titleId="profile-title"/>
   <CorpTitle wide title="Profile and settings"/>
   <noscript><p className="c-note">Enable JavaScript to view your profile and account settings.</p></noscript>
+  <ProfileBody key={authority} authority={authority} lang={lang} passkeys={passkeys} policies={policies} security={security} ending={ending}/>
+ </CorpPage>;
+}
+
+/** One own read for both presentations: the phone screen (Direction B) and the cards tablets and desktop show. Keyed by
+ * the authority, as the panel was. */
+function ProfileBody({authority,lang,passkeys,policies,security,ending}:{authority:string;lang:AuthLang;passkeys:boolean;policies:boolean;security:boolean;ending:boolean}){
+ const {state,refresh}=useEmployeeAccountRead('profile',authority);
+ return <>
+  <EmployeeProfileB state={state} onRetry={refresh} lang={lang} passkeys={passkeys} policies={policies} ending={ending}/>
   {ending?<p className="c-note" role="status">Signing out…</p>:<>
-   <EmployeeAccountPanel key={authority} kind="profile" authority={authority} quiet employeeMobile/>
+   <EmployeeAccountView kind="profile" state={state} onRetry={refresh} quiet employeeMobile/>
    <EmployeeProfilePreferences lang={lang}/>
    {security?<CorpCard id="profile-security" label="Security">
     <CorpRows>
@@ -61,7 +74,7 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
     </CorpRows>
    </CorpCard>:null}
   </>}
- </CorpPage>;
+ </>;
 }
 
 /** A pushed account page (calendar, passkeys, alerts): the phone header and the desktop title, then its cards. */

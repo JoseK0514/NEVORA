@@ -110,3 +110,7 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
  * translucent for 160ms, so their contrast can't be read while it runs. */
 @keyframes tof-sheet-in-fade { from { box-shadow: 0 -8px 24px rgb(0 0 0 / 0), 0 0 0 100vmax rgb(26 28 30 / 0); } }
 :is(#c-root, html) .c-page .tof-foot { display: flex; flex-direction: column; }
+
+/* Direction B's own pieces of the request form (the field glyphs and the approval notice) show only on the employee's
+ * phone screen (employee-b/requests.css); everywhere else the form is as before. */
+:is(#c-root, html) .c-page :is(.tof-pick__ic, .eb-tof-approve) { display: none; }

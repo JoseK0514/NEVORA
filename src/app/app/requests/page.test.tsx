@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { expect, it, vi } from 'vitest';
 import RequestsPage from './page';
+import { onlyB, withoutB } from '@/components/owner-b/test-support';
 
 vi.mock('next/navigation',()=>({useRouter:()=>({refresh:()=>{},replace:()=>{}})}));
 vi.mock('@/lib/auth/session', () => ({ requireSession: async () => ({ id: 'fictional', role: 'EMPLOYEE' }),
@@ -16,13 +17,13 @@ vi.mock('@/lib/data/requests', () => ({ listEmployeeTimeOffRequests: async () =>
 ] }));
 
 it('lists waiting and decided requests with their state in grey text, each opening its own page', async () => {
-  const html = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) }));
+  const html = withoutB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'my' }) })));
   // Upscale S4: Waiting lists the waiting request with its state in grey (no amber pill); the row opens its page.
   expect(html).toContain('data-employee-status="PENDING"');expect(html).toContain('c-meta">Waiting<');expect(html).not.toMatch(/c-pill--(amber|blue)/);
   expect(html).toContain('href="/app/requests?requestId=pending"');expect(html).not.toContain('Waiting for approval');
-  const decided = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) }));
+  const decided = withoutB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ filter: 'decided' }) })));
   expect(decided).toContain('c-meta">Approved<');expect(decided).toContain('data-employee-status="APPROVED"');expect(decided).toContain('c-meta">Withdrawn<');
-  const detail = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'pending' }) }));
+  const detail = withoutB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'pending' }) })));
   // The detail says the state once ("Waiting for your manager"), with no pill and no icon tile.
   expect(detail).toContain('Waiting for your manager');expect(detail).toContain('Fictional pending request');
   expect(detail.match(/Waiting/g)).toHaveLength(1);expect(detail).not.toMatch(/c-pill|c-av--grey/);
@@ -31,10 +32,18 @@ it('lists waiting and decided requests with their state in grey text, each openi
 });
 
 it('names who decided a request and when, and never names anyone on a withdrawal', async () => {
-  const approved = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'approved' }) })).replace(/\u00a0/g, ' ');
+  const approved = withoutB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'approved' }) }))).replace(/\u00a0/g, ' ');
   expect(approved).toContain('Sent Tue, Oct 1');
   expect(approved).toContain('Approved by Fictional Manager');expect(approved).toMatch(/Oct 2, \d/);
-  const withdrawn = renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'withdrawn' }) })).replace(/\u00a0/g, ' ');
+  const withdrawn = withoutB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ requestId: 'withdrawn' }) }))).replace(/\u00a0/g, ' ');
   expect(withdrawn).toContain('You withdrew it');expect(withdrawn).toMatch(/Oct 3, \d/);
   expect(withdrawn).not.toMatch(/Withdrawn by/);
+});
+
+it('draws the phone’s first frame as the page’s Direction B hero, checking, before its private read (no request data)', async () => {
+  const list = onlyB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({}) })));
+  expect(list).toContain('>Time off</h1>'); expect(list).toContain('href="/app/requests/hub"'); expect(list).toContain('aria-current="page" href="/app/requests"');
+  expect(list).toContain('Checking your current planning…'); expect(list).not.toContain('requestId=pending'); expect(list).not.toContain('Fictional');
+  const form = onlyB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'new' }) })));
+  expect(form).toContain('>Request time off</h1>'); expect(form).toContain('>Cancel</a>'); expect(form).toContain('class="eb-form"'); expect(form).not.toContain('<form');
 });

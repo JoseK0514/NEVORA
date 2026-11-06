@@ -9,6 +9,11 @@ import type {NextPay} from '../payroll/my-pay';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpLink,CorpNote,CorpRow,CorpRows,CorpTitle} from '../corp/corp';
 import {arrangeStatements,type PayView} from './pay';
 import './pay-corp.css';
+import {PayB, type PayBStatus} from '../employee-b/pay-b';
+import {BButton, BButtonLink} from '../owner-b/b-kit';
+
+/** The element to focus: the phone screen's (Direction B) when it is the one showing, else the corporate one. */
+const shownById=(...ids:string[])=>ids.map(id=>document.getElementById(id)).find(el=>!!el&&el.getClientRects().length>0)??document.getElementById(ids[ids.length-1]);
 
 /* An Employee's Pay on the corporate kit (Release 1 boards G-E-Pay, E-PayHistory, E-Paycheck). The same statements read,
  * documents, arrival notices and states as the older view. Statements carry no amounts, hours or deposit details, so the
@@ -58,7 +63,7 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  const [latch,setLatch]=useState(()=>({target:arrivedTarget,failure:arrivedFailure,seq:0}));
  if((arrivedTarget||arrivedFailure)&&(arrivedTarget!==latch.target||arrivedFailure!==latch.failure))setLatch({target:arrivedTarget,failure:arrivedFailure,seq:latch.seq+1});
  const {target,failure}=latch;
- const notice=useRef<HTMLDivElement>(null),returnTo=useRef<string|null>(null),arrived=useRef(-1),shown=useRef<string|null>(null);
+ const notice=useRef<HTMLDivElement>(null),bNotice=useRef<HTMLDivElement>(null),returnTo=useRef<string|null>(null),arrived=useRef(-1),shown=useRef<string|null>(null);
  const arranged=statements?arrangeStatements(statements):null,ordered=arranged?.latest?[arranged.latest,...arranged.earlier]:[];
  const found=!!target&&!!statements?.some(item=>item.id===target),missing=!!target&&!!statements&&!found;
  const byId=new Map((statements??[]).map(item=>[item.id,item]));
@@ -69,14 +74,14 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
   const frame=requestAnimationFrame(()=>{
    arrived.current=latch.seq;
    // Next integrates native replaceState without a server round trip, so a refresh can't replay this notice.
-   if(failure||missing){notice.current?.focus();if(location.search)history.replaceState(null,'','/app/my-pay');}
+   if(failure||missing){(bNotice.current&&bNotice.current.getClientRects().length?bNotice.current:notice.current)?.focus();if(location.search)history.replaceState(null,'','/app/my-pay');}
    else if(target)history.replaceState(null,'',paycheckHref(target));
   });
   return()=>cancelAnimationFrame(frame);
  },[failure,target,statements,missing,latch.seq]);
  // A pushed page puts focus on its title when it opens.
  useEffect(()=>{const key=view+(paycheck??'');if(shown.current===null){shown.current=key;if(view==='pay')return;}else if(shown.current===key)return;shown.current=key;
-  const frame=requestAnimationFrame(()=>document.getElementById(view==='pay'?'pay-title':'pay-page-title')?.focus());return()=>cancelAnimationFrame(frame);},[view,paycheck]);
+  const frame=requestAnimationFrame(()=>{const id=view==='pay'?'pay-title':'pay-page-title';shownById('b-'+id,id)?.focus();});return()=>cancelAnimationFrame(frame);},[view,paycheck]);
  // Returning from a PDF reloads the list; put focus back on the control that opened it.
  useEffect(()=>{
   if(!statements||!returnTo.current)return;
@@ -98,7 +103,17 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
   :state==='empty'?<CorpCard label="Recent pay"><p className="c-empty"><b>No published statements yet</b>Your statements appear here after your workplace publishes payroll.</p></CorpCard>:null;
  const row=(item:Statement)=><li key={item.id}><CorpRow id={`pay-statement-${item.id}`} href={paycheckHref(item.id)} bold title={payday(item.payday)} detail={period(item.period.startDate,item.period.endDate)}
   label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate,item.period.endDate)}`} trail={pill(item)} chevron/></li>;
- const frame=(children:ReactNode,sub:boolean)=><div className={sub?'c-page c-page--narrow c-pay c-pay--sub':'c-page c-page--narrow c-pay'} data-nv-page="" data-corp="" data-pay-state={state} data-pay-view={view} aria-busy={loading}>{children}</div>;
+ // Direction B (phones): the same states, words and links on the dark ink screen.
+ const bStatus:PayBStatus=state==='signed-out'?{title:'Sign in to see your statements',body:'Your session ended. Statements stay private until you sign in again.',action:<BButtonLink href="/login?returnTo=%2Fapp%2Fmy-pay" kind="teal" full>Sign in</BButtonLink>,live:'alert'}
+  :state==='denied'?{title:'Your access to pay statements changed',body:'NEVORA can’t show your statements right now. If that seems wrong, ask your manager.',live:'status'}
+  :state==='module-off'?{title:'Pay statements are turned off',body:'Your workplace isn’t sharing pay statements in NEVORA right now. Ask your manager where to find your pay information.',live:'status'}
+  :state==='paused'?{title:errorCode==='OFFLINE'?'You’re offline':'Statements are paused',body:errorCode==='OFFLINE'?'Reconnect to see your current statements.':'Statements are hidden while NEVORA is in the background. They reload when you return.',live:'status'}
+  :state==='error'?{title:'Couldn’t load your statements',body:'Check your connection, then try again.',action:<BButton kind="quiet" full onClick={reload}>Try again</BButton>,live:'alert'}:null;
+ const bNoticeText=failure||missing?{title:failure==='failed'||failure==='temporary'?'We couldn’t open that statement':'That statement isn’t available',
+  body:failure==='failed'?'It didn’t pass NEVORA’s file check, so it wasn’t opened. Try again later, or ask your manager.':failure==='temporary'?'NEVORA couldn’t open it just now. Try again in a moment.':state==='empty'?'It may have been replaced, or your access changed.':'It may have been replaced, or your access changed. Your current statements are below.'}:null;
+ const b=<PayB view={view} state={state} ordered={ordered} byId={byId} paycheck={paycheck} nextPay={nextPay} daysUntil={daysUntil} listed={listed} thisYear={thisYear}
+  notice={bNoticeText} noticeRef={bNotice} status={bStatus} onOpenPdf={id=>{returnTo.current=id;}}/>;
+ const frame=(children:ReactNode,sub:boolean)=><div className={sub?'c-page c-page--narrow c-pay c-pay--sub':'c-page c-page--narrow c-pay'} data-nv-page="" data-corp="" data-pay-state={state} data-pay-view={view} aria-busy={loading}>{b}{children}</div>;
 
  if(view==='paycheck'){
   const item=paycheck?byId.get(paycheck):undefined;

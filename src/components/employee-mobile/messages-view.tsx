@@ -23,8 +23,9 @@ export function MessageInbox({kind,items,partial,search,filter,timeZone,onSearch
    :<section className="em-request-notice"><h2>{search||filter!=='all'?'No matches on this page':kind==='notifications'?'No current notifications':'No current updates'}</h2><p>{search||filter!=='all'?'Try a different search or show All.':'There are no current items on this page.'}{more?' Older items may be on another page.':''}</p></section>}
  </>;
 }
-export function MessageDetail({item,busy,onAction}:{item:ReadyUpdate;busy:boolean;onAction:(kind:'MARK_READ'|'ACKNOWLEDGE'|'WITHDRAW')=>void}){
- const [confirm,setConfirm]=useState(false);
+/** `confirm`/`onConfirm`: the withdraw review held by the page, when it draws the phone screen beside this one. */
+export function MessageDetail({item,busy,onAction,confirm:held,onConfirm}:{item:ReadyUpdate;busy:boolean;onAction:(kind:'MARK_READ'|'ACKNOWLEDGE'|'WITHDRAW')=>void;confirm?:boolean;onConfirm?:(value:boolean)=>void}){
+ const [own,setOwn]=useState(false),confirm=held??own,setConfirm=onConfirm??setOwn;
  return <article className="em-message-detail" aria-label="Update content"><header><p className="em-message-meta">{item.authorContext}</p><h2>{item.title}</h2>{item.sentCount!==undefined?<p className="em-message-meta">Original audience: {item.sentCount} {item.sentCount===1?'recipient':'recipients'}</p>:null}<p className="em-message-meta">{messageTime(item.publishedAt,item.timeZone)}{item.editedAt?' · Edited '+messageTime(item.editedAt,item.timeZone):''}</p></header><p className="em-message-copy">{item.body}</p>
   <div className="em-message-reading"><h3>Your reading status</h3><p>{item.ownAcknowledgedAt?'Acknowledged '+messageTime(item.ownAcknowledgedAt,item.timeZone):item.ownReadAt?'Read '+messageTime(item.ownReadAt,item.timeZone):'You haven’t marked this update as read.'}</p>{item.expiresAt?<p>Available until {messageTime(item.expiresAt,item.timeZone)}.</p>:null}
    {item.acknowledgement==='REQUIRED'&&!item.ownAcknowledgedAt?<p>Your acknowledgement is required. Opening this update does not record it.</p>:null}

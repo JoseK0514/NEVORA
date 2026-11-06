@@ -5,6 +5,8 @@ import {POLICY_DOCUMENTS,POLICY_FACTS,POLICY_OPERATOR,policiesVisible} from '@/l
 import {BlockView,shortTitle} from '@/components/legal/legal-document';
 import {EmployeeProfileDocumentFrame} from '@/components/employee-mobile/profile';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+import {EmployeeDocumentB} from '@/components/employee-b/account-b';
+import {BHost} from '@/components/employee-b/account-host';
 
 export async function generateMetadata({params}:{params:Promise<{document:string}>}){
  const {document}=await params;
@@ -16,7 +18,9 @@ export default async function EmployeePolicyPage({params}:{params:Promise<{docum
  const {document}=await params,doc=POLICY_DOCUMENTS.find(item=>item.slug===document);if(!doc)notFound();
  const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app/profile');
  const sub=doc.effective?`Effective ${POLICY_FACTS.EFFECTIVE_DATE??'[CONFIRM_EFFECTIVE_DATE]'} · ${POLICY_OPERATOR}`:POLICY_OPERATOR;
- return <EmployeeProfileDocumentFrame title={doc.title} sub={sub} back={'/app/profile#profile-'+(doc.slug==='account-deletion'?'privacy':doc.slug)}>
+ const back='/app/profile#profile-'+(doc.slug==='account-deletion'?'privacy':doc.slug);
+ // Direction B on an Employee's phone (mock e-privacy, e-terms): the same text and links, before the Quiet page it replaces there.
+ return <><BHost><EmployeeDocumentB doc={doc} sub={sub} back={back} documents={POLICY_DOCUMENTS}/></BHost><EmployeeProfileDocumentFrame title={doc.title} sub={sub} back={back}>
   <p className="em-document-summary">{doc.summary}</p>
   {doc.sections.map((section,index)=><details className="em-document-section" key={section.heading} open={index===0}>
    <summary><span>{section.heading}</span><CaretDownIcon size={20} aria-hidden="true"/></summary>
@@ -24,5 +28,5 @@ export default async function EmployeePolicyPage({params}:{params:Promise<{docum
   </details>)}
   {doc.slug==='account-deletion'?<p><Link className="em-request-secondary" href="/app/account/delete">Review deletion request</Link></p>:null}
   <nav className="em-document-links" aria-label="NEVORA policies and help">{POLICY_DOCUMENTS.map(other=>other.slug===doc.slug?<span key={other.slug} aria-current="page">{shortTitle(other)}</span>:<Link key={other.slug} href={'/app/profile/'+other.slug}>{shortTitle(other)}</Link>)}</nav>
- </EmployeeProfileDocumentFrame>;
+ </EmployeeProfileDocumentFrame></>;
 }

@@ -248,9 +248,11 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
     // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Pay and Requests; More opens from the header avatar.
     // Upscale (Nov 1): pages opened from the avatar or the bell (More, Updates, Profile, Notifications), Help and unknown
     // addresses light no tab; Home owns Home only.
-    const tabs: MobileTab[] = [home, schedule, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
+    // Direction B (Nov 6, 2026): shift swaps, open shifts and Availability go back to Schedule, so they light Schedule.
+    const shiftPages = ["/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"];
+    const tabs: MobileTab[] = [home, { ...schedule, owns: [...schedule.owns, ...shiftPages] }, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
     if (payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements) tabs.push({ href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay"] });
-    return [...tabs, requests];
+    return [...tabs, { ...requests, owns: requests.owns.filter(href => !shiftPages.includes(href)) }];
   }
   if (role === "LEAD") {
     const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
@@ -284,6 +286,13 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
 
 /** The tab that owns the current page: a tab href, "more", or none. */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
+  // Direction B (Employee phones, Nov 6, 2026): a page a tab owns lights that tab (shift swaps and Availability light
+  // Schedule, where their back link goes), whatever the sidebar entry it belongs to.
+  if (role === "EMPLOYEE") {
+    const bare = path.split(/[?#]/)[0];
+    const own = mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
+    if (own) return own.href;
+  }
   const active = activeNavigationHref(role, path, payroll, context);
   // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.
   if (!active) return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href;

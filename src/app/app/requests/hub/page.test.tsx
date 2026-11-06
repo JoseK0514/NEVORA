@@ -15,6 +15,7 @@ vi.mock("@/lib/data/requests", () => ({ listEmployeeTimeOffRequests: async () =>
 vi.mock("@/lib/data/workspaces", () => ({ getWorkspace: async () => ({ timeZone: "America/Puerto_Rico" }) }));
 
 import RequestsHubPage from "./page";
+import { onlyB, withoutB } from "@/components/owner-b/test-support";
 
 beforeEach(() => {
   auth.proof.mockReset();
@@ -24,7 +25,9 @@ beforeEach(() => {
 
 it.each(["EMPLOYEE", "LEAD"])("retains the request destinations for %s", async (role) => {
   auth.role = role;
-  const html = renderToStaticMarkup(await RequestsHubPage());
+  const full = renderToStaticMarkup(await RequestsHubPage()), html = withoutB(full);
+  // Direction B (phones): before the private read, the Requests hero and a checking card, with no request rows.
+  expect(onlyB(full)).toContain(">Requests</h1>"); expect(onlyB(full)).toContain("Checking your current requests…"); expect(onlyB(full)).not.toContain("requestId=");
   // Upscale S7: Request time off starts time off; decided time off is a See all away; shift requests keep their row.
   expect(html).toContain('href="/app/requests?tab=new"');
   expect(html).toContain('>Request time off<');expect(html).not.toContain('>New request<');
@@ -49,7 +52,7 @@ it("lists the person's own time off, waiting first, and never turns a failed rea
     { id: "w", status: "PENDING", startDate: "2030-10-29", endDate: "2030-10-30", createdAt: "2030-10-19T12:00:00Z" },
     { id: "a", status: "APPROVED", startDate: "2030-11-13", endDate: "2030-11-13", createdAt: "2030-10-17T12:00:00Z" },
   ];
-  const html = renderToStaticMarkup(await RequestsHubPage());
+  const html = withoutB(renderToStaticMarkup(await RequestsHubPage()));
   // Upscale S4: the state is said once, by the card ("Waiting for your manager"); decided rows say theirs in grey text.
   expect(html).toContain("requestId=w"); expect(html).toContain("requestId=a");
   expect(html.indexOf("requestId=w")).toBeLessThan(html.indexOf("requestId=a"));
@@ -57,7 +60,7 @@ it("lists the person's own time off, waiting first, and never turns a failed rea
   expect(html).not.toContain("waiting for approval"); expect(html).not.toContain("c-pill");
   expect(html).toContain("2 days");
   data.requests = new Error("read failed");
-  const failed = renderToStaticMarkup(await RequestsHubPage());
+  const failed = withoutB(renderToStaticMarkup(await RequestsHubPage()));
   expect(failed).toContain("Couldn’t load your requests");
   expect(failed).not.toContain("No time-off requests yet");
   data.requests = [];

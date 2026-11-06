@@ -29,6 +29,7 @@ import "@/components/employee-mobile/account-corp.css";
 import { readEmployeeProfile } from "@/lib/data/employee-profile.server";
 import { listAvailability } from "@/lib/data/availability";
 import { availabilitySummary } from "@/components/employee-mobile/availability-summary";
+import { EmployeeMoreB } from "@/components/employee-b/account-b";
 
 export const metadata = { title: "More" };
 
@@ -74,7 +75,11 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
   ]);
   const locations = profile?.state === "ready" && profile.kind === "profile" ? profile.profile.locations : [];
   const name = `${firstName} ${lastName}`;
+  const count = <NotificationCount authority={employeeViewAuthority(proof, "notifications")} />;
   return <CorpPage className="c-more c-more--employee" labelledBy="more-title">
+    {/* Direction B on a phone (mock e-more): the same rows, links, values and Sign out. */}
+    <EmployeeMoreB name={name} place={[...locations, workspaceName].join(" · ")} availability={availability}
+      has={{ availability: has.has("/app/availability"), notifications: has.has("/app/notifications"), updates: has.has("/app/updates") }} count={count} />
     <CorpNav back={{ href: "/app", label: "Home" }} title="More" titleId="more-title" />
     <CorpCard as="div" ariaLabel="Profile">
       <CorpRows><li><CorpRow avatar={<CorpAvatar initials={initialsOf(name)} />} title={name} detail={[...locations, workspaceName].join(" · ")} bold /></li>
@@ -83,7 +88,7 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
     <CorpCard as="div" label="Your work">
       <CorpRows>
         {has.has("/app/availability") ? <li><CorpRow href="/app/availability" title="Availability" one value={availability ?? undefined} valueTone="soft" chevron /></li> : null}
-        {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={<NotificationCount authority={employeeViewAuthority(proof, "notifications")} />} /></li> : null}
+        {has.has("/app/notifications") ? <li><CorpRow href="/app/notifications" title="Notifications" one value={count} /></li> : null}
         {has.has("/app/updates") ? <li><CorpRow href="/app/updates" title="Updates" one /></li> : null}
         <li><CorpRow href="/app/profile/calendar" title="Add shifts to your calendar" one /></li>
       </CorpRows>

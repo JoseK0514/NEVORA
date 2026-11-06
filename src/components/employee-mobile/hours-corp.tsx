@@ -1,10 +1,10 @@
 'use client';
 import Link from 'next/link';
-import {useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
+import {useCallback,useEffect,useId,useRef,useState,useSyncExternalStore,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CorpBody,CorpButton,CorpButtonLink,CorpCard,CorpField,CorpNote,CorpPill,CorpRow,CorpRows,CorpSegments,CorpStats,CorpTitle} from '../corp/corp';
 import {addDays,weekStartFor} from '@/lib/date-utils';
-import type {EmployeeTime,EmployeeTimeEntry} from '@/lib/employee-time';
+import type {EmployeeTimeEntry} from '@/lib/employee-time';
 import type {EmployeeHoursSnapshot,HoursView,HoursDecision,HoursCorrectionPayload} from '@/lib/employee-hours';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
 import type {TimecardsResult} from '@/lib/timecards/read-model';
@@ -13,55 +13,38 @@ import type {EmployeeTimeCorrections,PublicCorrectionItem} from '@/lib/time-corr
 import {buildHoursProposal,initialHoursDraft,resolveHoursEdit,type HoursDraft} from '@/lib/employee-hours-draft';
 import type {HoursCorrectionOperation} from './hours-operation';
 import {useHours} from './use-hours';
+import {EARLIER_MAX,EARLIER_STEP,boardDuration,cardStatus,cardsHref,clockAt,clockRange,dateKey,dayMedium,dayShort,entryHref,interval,issueText,kindLabel,rangeLabel,seconds,sentAt,span,statusWord,timeWeek,weekOf,type CardState,type Ready,type StatusTone} from './hours-model';
+import {CorrectionDetailB,CorrectionsB,DayB,FixPendingB,FixRecordedB,HoursBScreen,HoursFrameStatusB,HoursStatusB,HoursUnavailableB,PastTimecardsB,TimeTabB,type WeekState} from '../employee-b/time-b';
 
 /* Employee Time on the corporate kit (Release 1 boards G-E-Time, E-TimeOnClock, E-TimecardDay, E-PastTimecards and
  * E-CorrectionSheet). Presentation only: the same reads, links, correction operation and states as the older views.
  * Clocking in, breaks and clocking out stay on the location's tablet. */
 
-type Ready=Extract<EmployeeTime,{state:'ready'}>;
-const noon=(date:string)=>new Date(date+'T12:00:00Z');
-const fmt=(zone:string,options:Intl.DateTimeFormatOptions)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,...options});
-
-/** The boards' duration: "7 h 32 min", "32 h", "45 min". */
-export function boardDuration(seconds:number){
- const minutes=Math.floor(Math.max(0,seconds)/60);if(seconds>0&&minutes===0)return '<1 min';
- const hours=Math.floor(minutes/60),rest=minutes%60;
- return !hours?`${rest} min`:rest?`${hours} h ${rest} min`:`${hours} h`;
-}
-export const clockAt=(at:string,zone:string)=>fmt(zone,{hour:'numeric',minute:'2-digit'}).format(new Date(at));
-/** "7:59 AM – 4:01 PM", or "12:00 – 12:30 PM" when both halves share AM or PM; an open end reads "now". */
-export function clockRange(start:string,end:string|null,zone:string){
- const a=clockAt(start,zone);if(!end)return `${a} – now`;
- const b=clockAt(end,zone),suffix=(value:string)=>/[AP]M$/.test(value)?value.slice(-2):null;
- return suffix(a)&&suffix(a)===suffix(b)?`${a.slice(0,-3)} – ${b}`:`${a} – ${b}`;
-}
-/** The business date (YYYY-MM-DD) of an instant in the workspace zone. */
-export const dateKey=(at:string,zone:string)=>new Intl.DateTimeFormat('en-CA',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(at));
-/** "Mon 26" */
-export const dayShort=(date:string)=>`${fmt('UTC',{weekday:'short'}).format(noon(date))} ${Number(date.slice(8))}`;
-/** "Mon, Oct 26" */
-export const dayMedium=(date:string)=>fmt('UTC',{weekday:'short',month:'short',day:'numeric'}).format(noon(date));
-const dayLong=(date:string)=>fmt('UTC',{weekday:'long',month:'long',day:'numeric'}).format(noon(date));
-/** "Oct 19 – 25", or "Oct 26 – Nov 1" across a month. */
-export function rangeLabel(start:string,end:string){
- const short=(date:string)=>fmt('UTC',{month:'short',day:'numeric'}).format(noon(date));
- return start===end?short(start):start.slice(0,7)===end.slice(0,7)?`${short(start)} – ${Number(end.slice(8))}`:`${short(start)} – ${short(end)}`;
-}
-const seconds=(nanos:string)=>Number(BigInt(nanos)/BigInt(1000000000));
-const span=(start:string,end:string|null)=>end?Math.max(0,Math.round((Date.parse(end)-Date.parse(start))/1000)):null;
+export {boardDuration,clockAt,clockRange,dateKey,dayShort,dayMedium,rangeLabel,timeSubtitle,cardsHref} from './hours-model';
 
 /* ---------- Frame ---------- */
 
+/** The visible element for an id: the corporate one on tablets and desktop; on a phone its Direction B twin (the same id
+ * with "b-", or the row link around it), which takes focus the same way. */
+function visible(id:string){
+ const own=document.getElementById(id);if(!own||own.getClientRects().length)return own;
+ const twin=document.getElementById('b-'+id),target=twin?.closest<HTMLElement>('a,button')??twin;
+ if(!target||!target.getClientRects().length)return own;
+ if(target===twin&&!target.hasAttribute('tabindex'))target.setAttribute('tabindex','-1');
+ return target;
+}
 /** One header per page: the tab title on Time itself; a white "‹ Back  Title" bar on pushed pages; Cancel · title · Send
- * on the correction sheet. Ready content, otherwise the read's status and its one recovery action. */
+ * on the correction sheet. Ready content, otherwise the read's status and its one recovery action. On a phone the ready
+ * content draws its Direction B screen and the frame's own states draw theirs (time-b.tsx). */
 export function CorpHoursFrame({contextKey,view,state,ready,refresh,head,headInside=false,sub,children}:{contextKey:string;view:HoursView;state:PrivatePanelState<EmployeeHoursSnapshot>;ready:boolean;refresh:()=>void;
  head:ReactNode;/** The ready content draws its own header (the correction sheet's Send lives in its form). */headInside?:boolean;/** A pushed page (hides the shell's brand header on a phone). */sub:boolean;children:ReactNode}){
  const focused=useRef<string|null>(null);
  useEffect(()=>{if(!ready||focused.current===contextKey)return;const first=focused.current===null;focused.current=contextKey;const target=window.location.hash.slice(1);
-  if(target&&document.getElementById(target))document.getElementById(target)?.focus();else if(!first||sub)document.getElementById('hours-title')?.focus();},[ready,contextKey,sub]);
+  if(target&&document.getElementById(target))visible(target)?.focus();else if(!first||sub)visible('hours-title')?.focus();},[ready,contextKey,sub]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  return <div className={sub?'c-page c-page--narrow c-hours c-hours--sub':'c-page c-page--narrow c-hours'} data-nv-page="" data-corp="" data-hours-context={contextKey} data-hours-view={view}
   data-hours-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'} aria-busy={state.refreshing}>
+  {ready?null:<HoursFrameStatusB paused={state.paused} denied={denied} refreshing={state.refreshing} refresh={refresh}/>}
   {ready&&headInside?null:head}
   {ready?children:<CorpCard ariaLabel="Time access"><CorpBody>
    <p className="c-line2" role="status">{state.paused?'Your time records are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current time records…':'Your records couldn’t be checked.'}</p>
@@ -83,31 +66,18 @@ export function CorpHoursSheetHead({cancel,cancelLabel='Cancel',send}:{cancel:st
 export function CorpHoursTitle({sub}:{sub?:string}){
  return <CorpTitle id="hours-title" focusTarget title="Time" sub={sub} actions={<CorpButtonLink href="/app/my-time?view=cards" kind="neutral" size="sm">Past timecards</CorpButtonLink>}/>;
 }
+/** A read that couldn't be used, with Try again; on a phone the same message on the page's hero. */
 export function CorpHoursUnavailable({message,onRefresh}:{message:string;onRefresh:()=>void}){
- return <CorpCard ariaLabel="Time status"><CorpBody><p className="c-line2" role="status">{message}</p><CorpButton kind="secondary" size="md" full onClick={onRefresh}>Try again</CorpButton></CorpBody></CorpCard>;
+ return <><HoursUnavailableB message={message} onRefresh={onRefresh}/><CorpCard ariaLabel="Time status"><CorpBody><p className="c-line2" role="status">{message}</p><CorpButton kind="secondary" size="md" full onClick={onRefresh}>Try again</CorpButton></CorpBody></CorpCard></>;
 }
 
 /* ---------- Time tab ---------- */
 
-/** "Saturday, October 31 · Condado": today, and where the person is (or last was) clocked in today. */
-export function timeSubtitle(data:Ready){
- const latest=[...data.today.entries].sort((a,b)=>b.clockInAt.localeCompare(a.clockInAt))[0];
- return [dayLong(data.date),data.current?.locationName??latest?.locationName].filter(Boolean).join(' · ');
-}
-const entryHref=(id:string)=>'/app/my-time?entry='+encodeURIComponent(id);
 export function CorpTimeTab({data}:{data:Ready}){
- const zone=data.timeZone,current=data.current,weekStart=weekStartFor(data.date),weekEnd=addDays(weekStart,6);
- const byId=new Map([...data.today.entries,...data.recent.entries].map(entry=>[entry.id,entry]));
- const week=[...byId.values()].filter(entry=>{const date=dateKey(entry.clockInAt,zone);return date>=weekStart&&date<=weekEnd;}).sort((a,b)=>a.clockInAt.localeCompare(b.clockInAt));
- // The read keeps the 20 newest earlier entries. If it was cut inside this week, the week's totals would be short.
- const oldest=data.recent.entries.reduce<string|null>((min,entry)=>!min||entry.clockInAt<min?entry.clockInAt:min,null);
- const partial=data.recent.entries.length<data.recent.total&&!!oldest&&dateKey(oldest,zone)>=weekStart;
- const total=(pick:(entry:EmployeeTimeEntry)=>number)=>partial?'—':boardDuration(week.reduce((sum,entry)=>sum+pick(entry),0));
- const onBreak=current?.state==='ON_BREAK',openBreak=current?.breaks.find(item=>!item.endAt);
- // The tablet to clock in on: the one location this person has recently worked at, else the tablet where they work.
- const places=[...new Set([...byId.values()].map(entry=>entry.locationName?.trim()).filter(Boolean))];
- const tablet=places.length===1?`the ${places[0]} tablet`:'the tablet where you work';
+ const {zone,current,weekStart,weekEnd,week,partial,worked,breaks,onBreak,openBreak,tablet}=timeWeek(data);
+ const total=(value:number)=>partial?'—':boardDuration(value);
  return <>
+  <TimeTabB data={data}/>
   {/* Upscale S9: off the clock, the heading says it once (no "Off the clock" pill) and names the tablet to use. */}
   <CorpCard id="hours-now" label={current?'Current shift':'Right now'} aside={current?onBreak?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>On the clock</CorpPill>:undefined}>
    <CorpBody>
@@ -117,7 +87,7 @@ export function CorpTimeTab({data}:{data:Ready}){
    </CorpBody>
   </CorpCard>
   <CorpCard id="hours-week" label={<><span className="c-hours-wide">This week · </span>{rangeLabel(weekStart,weekEnd)}</>} aside={<CorpPill>In progress</CorpPill>}>
-   {week.length?<CorpStats items={[{label:'Hours',value:total(entry=>entry.elapsedSeconds)},{label:'Breaks',value:total(entry=>entry.breakSeconds)}]}/>:null}
+   {week.length?<CorpStats items={[{label:'Hours',value:total(worked)},{label:'Breaks',value:total(breaks)}]}/>:null}
    <CorpRows label="This week’s time">
     {week.map(entry=><li key={entry.id}><CorpRow id={'hours-entry-'+entry.id} href={entryHref(entry.id)} bold title={dayShort(dateKey(entry.clockInAt,zone))}
      detail={clockRange(entry.clockInAt,entry.clockOutAt,zone)+(entry.breakSeconds?` · ${boardDuration(entry.breakSeconds)} break`:'')}
@@ -133,8 +103,10 @@ export function CorpTimeTab({data}:{data:Ready}){
 /* ---------- One day (board E-TimecardDay) ---------- */
 
 type Punch={key:string;title:string;detail?:string;value:string;soft?:boolean};
-function DayCards({total,running,pill,line,punches,location,fix,notes}:{total:string;running:boolean;pill:ReactNode;line:string;punches:Punch[];location:string;fix:string|null;notes:string[]}){
+function DayCards({seconds:length,running,status,pill,line,punches,location,fix,notes}:{/** null: still open. */seconds:number|null;running:boolean;status:{word:string;tone:StatusTone};pill:ReactNode;line:string;punches:Punch[];location:string;fix:string|null;notes:string[]}){
+ const total=length===null?'In progress':boardDuration(length);
  return <>
+  <DayB total={length} running={running} status={status} line={line} punches={punches} location={location} fix={fix} notes={notes}/>
   <CorpCard id="hours-day" label="Hours" aside={pill}>
    <CorpBody><b className="c-big">{running?`${total} so far`:total}</b><span className="c-line2">{line}</span></CorpBody>
   </CorpCard>
@@ -149,10 +121,11 @@ function DayCards({total,running,pill,line,punches,location,fix,notes}:{total:st
  </>;
 }
 const entryPill=(state:EmployeeTimeEntry['state'])=>state==='CLOCKED_OUT'?<CorpPill>Completed</CorpPill>:state==='ON_BREAK'?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>On the clock</CorpPill>;
+const entryStatus=(state:EmployeeTimeEntry['state']):{word:string;tone:StatusTone}=>state==='CLOCKED_OUT'?{word:'Completed',tone:'grey'}:state==='ON_BREAK'?{word:'On break',tone:'amber'}:{word:'On the clock',tone:'teal'};
 /** A recorded entry from the Time tab. */
 export function CorpTimeEntry({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
  const done=!!entry.clockOutAt;
- return <DayCards total={boardDuration(entry.elapsedSeconds)} running={!done} pill={entryPill(entry.state)} location={entry.locationName}
+ return <DayCards seconds={entry.elapsedSeconds} running={!done} status={entryStatus(entry.state)} pill={entryPill(entry.state)} location={entry.locationName}
   line={entry.breakSeconds?`Includes ${boardDuration(entry.breakSeconds)} of breaks`:'No breaks recorded'}
   punches={[{key:'in',title:'Clock in',value:clockAt(entry.clockInAt,zone)},
    ...entry.breaks.map(item=>({key:item.id,title:item.name??'Break',detail:boardDuration(item.elapsedSeconds)+(item.endAt?'':' so far'),value:clockRange(item.startAt,item.endAt,zone)})),
@@ -163,8 +136,6 @@ export function CorpTimeEntry({entry,zone}:{entry:EmployeeTimeEntry;zone:string}
 
 /* ---------- Past timecards (board E-PastTimecards) ---------- */
 
-const issueText:Partial<Record<TimecardIssue,string>>={open_entry:'An entry is still missing its clock-out.',open_break:'A break is still in progress.',pending_correction:'A correction is waiting for review.',overlapping_time:'Some time entries overlap.'};
-type CardState='DRAFT'|'APPROVED'|'FINALIZED'|'REOPENED'|'NEEDS_REVIEW';
 /** Upscale S4/M4: a default state is grey text; Approved stays a teal pill and Reopened or Needs review an amber one. */
 function cardPill(state:CardState,issues:TimecardIssue[]){
  if(state==='APPROVED')return <CorpPill tone="teal">Approved</CorpPill>;
@@ -173,35 +144,45 @@ function cardPill(state:CardState,issues:TimecardIssue[]){
  if(state==='NEEDS_REVIEW')return <CorpPill tone="amber">Needs review</CorpPill>;
  return <span className="c-meta">{issues.includes('period_open')?'In progress':'Not approved yet'}</span>;
 }
-export const cardsHref=(period:Period)=>'/app/my-time?view=cards&start='+period.startDate+'&end='+period.endDate;
-const weekOf=(monday:string):Period=>({startDate:monday,endDate:addDays(monday,6)});
-// At most 8 earlier weeks on screen (each card is its own private read); "Earlier weeks" then moves the list back.
-const EARLIER_STEP=4,EARLIER_MAX=8;
-/** One earlier week as a card: its range and state, then its total (17/600) linking to the week. Each card reads its week
- * through the same private hours read as the page (paused and cleared with it). */
-function WeekCard({authority,period}:{authority:string;period:Period}){
+/** One earlier week's private read (the same hours read as the page, paused and cleared with it), reported to the page so
+ * the week's card here and its row on the phone screen share one read. Draws nothing. */
+function WeekRead({authority,period,onState}:{authority:string;period:Period;onState:(key:string,state:WeekState|null)=>void}){
  const selection=period.startDate+'_'+period.endDate,panel=useHours(authority,'cards',selection,null);
- const data=panel.read?.view==='cards'?panel.read.data:null,item=data?.state==='ready'?data.cards[0]:null,card=item?.card;
+ const data=panel.read?.view==='cards'?panel.read.data:null,paused=panel.state.paused;
+ useEffect(()=>{onState(selection,{data,paused});},[onState,selection,data,paused]);
+ useEffect(()=>()=>onState(selection,null),[onState,selection]);
+ return null;
+}
+/** One earlier week as a card: its range and state, then its total (17/600) linking to the week. */
+function WeekCard({period,state}:{period:Period;state:WeekState|undefined}){
+ const data=state?.data??null,item=data?.state==='ready'?data.cards[0]:null,card=item?.card;
  const label=rangeLabel(period.startDate,period.endDate),worked=!!card&&card.entries.length>0;
  return <CorpCard label={label} aside={worked&&item?cardPill(item.state,card!.issues):undefined}>
-  <CorpRows>{!data?<li><CorpRow title={<span className="c-hours-soft">{panel.state.paused?'Paused':'Loading…'}</span>} one/></li>
+  <CorpRows>{!data?<li><CorpRow title={<span className="c-hours-soft">{state?.paused?'Paused':'Loading…'}</span>} one/></li>
    :data.state!=='ready'?<li><CorpRow href={cardsHref(period)} title={<span className="c-hours-soft">Couldn’t be checked</span>} label={`${label}, couldn’t be checked`} one/></li>
    :worked?<li><CorpRow href={cardsHref(period)} label={`${label}, ${boardDuration(seconds(card!.recordedNanoseconds))}`} title={<span className="c-hours-total">{boardDuration(seconds(card!.recordedNanoseconds))}</span>}
      detail={card!.breakNanoseconds!=='0'?`Hours · includes ${boardDuration(seconds(card!.breakNanoseconds))} of breaks`:'Hours'}/></li>
    :<li><CorpRow title={<span className="c-hours-soft">No hours this week</span>} one/></li>}</CorpRows>
  </CorpCard>;
 }
-export function CorpPastTimecards({authority,data,period,today,entryId,onRefresh}:{authority:string;data:TimecardsResult;period:Period;today:string;entryId:string|null;onRefresh:()=>void}){
- const [earlierCount,setEarlierCount]=useState(EARLIER_STEP);
+export function CorpPastTimecards({authority,data,period,today,entryId,onRefresh,chosen=true}:{authority:string;data:TimecardsResult;period:Period;today:string;entryId:string|null;onRefresh:()=>void;
+ /** The week was chosen (?start&end): the phone screen lists its days; otherwise it is one row of the weeks list. */chosen?:boolean}){
+ const [earlierCount,setEarlierCount]=useState(EARLIER_STEP),[weeks,setWeeks]=useState<Record<string,WeekState>>({});
+ const onWeek=useCallback((key:string,state:WeekState|null)=>setWeeks(previous=>{if(state)return previous[key]?.data===state.data&&previous[key]?.paused===state.paused?previous:{...previous,[key]:state};if(!(key in previous))return previous;const next={...previous};delete next[key];return next;}),[]);
  if(data.state!=='ready')return <CorpHoursUnavailable message={data.reason==='source_limit'?'This timecard can’t be loaded in full. Contact your manager for help.':'Your timecard couldn’t be checked.'} onRefresh={onRefresh}/>;
  const item=data.cards[0],card=item?.card;
- if(entryId){const entry=card?.entries.find(e=>e.id===entryId);return entry&&card&&item?<CorpTimecardDay entry={entry} zone={card.timeZone} pill={cardPill(item.state,card.issues)} period={period}/>:<CorpHoursUnavailable message="This entry isn’t in this timecard." onRefresh={onRefresh}/>;}
+ if(entryId){const entry=card?.entries.find(e=>e.id===entryId);return entry&&card&&item?<CorpTimecardDay entry={entry} zone={card.timeZone} status={cardStatus(item.state,card.issues)} pill={cardPill(item.state,card.issues)} period={period}/>:<CorpHoursUnavailable message="This entry isn’t in this timecard." onRefresh={onRefresh}/>;}
  const monday=weekStartFor(period.startDate),later=weekOf(addDays(monday,7));
  const earlier=Array.from({length:earlierCount},(_,index)=>weekOf(addDays(monday,-7*(index+1))));
  const notes=card?card.issues.map(issue=>issueText[issue]).filter((text):text is string=>!!text):[];
  const entries=card?[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)):[];
+ const more=()=>setEarlierCount(count=>Math.min(EARLIER_MAX,count+EARLIER_STEP)),key=(week:Period)=>week.startDate+'_'+week.endDate;
  // Upscale M4: the chosen week in full, then earlier weeks as one card each, newest first, and "Show earlier weeks".
  return <>
+  <PastTimecardsB data={data} period={period} today={today} chosen={chosen} weeks={weeks} earlier={earlier} earlierCount={earlierCount} onMore={more}/>
+  {/* Each week is read once; its card here and its row on the phone screen show that read. The later week is the phone list's first row. */}
+  {later.startDate<=today?<WeekRead authority={authority} period={later} onState={onWeek}/>:null}
+  {earlier.map(week=><WeekRead key={week.startDate} authority={authority} period={week} onState={onWeek}/>)}
   {later.startDate<=today?<CorpCard ariaLabel="Later weeks"><CorpRows><li><CorpRow href={cardsHref(later)} title="Later week" value={rangeLabel(later.startDate,later.endDate)} valueTone="soft" one/></li></CorpRows></CorpCard>:null}
   {card&&item?<CorpCard id="hours-timecard" label={rangeLabel(card.startDate,card.endDate)} aside={entries.length?cardPill(item.state,card.issues):undefined}>
    {entries.length?<CorpBody><b className="c-big">{boardDuration(seconds(card.recordedNanoseconds))}</b>
@@ -213,20 +194,20 @@ export function CorpPastTimecards({authority,data,period,today,entryId,onRefresh
      value={length===null?'In progress':boardDuration(length)} valueTone={length===null?'teal':undefined}/></li>;})}
    </CorpRows>:null}
   </CorpCard>:<CorpCard label={rangeLabel(period.startDate,period.endDate)}><CorpRows><li><CorpRow title={<span className="c-hours-soft">No hours this week</span>} one/></li></CorpRows></CorpCard>}
-  {earlier.map(week=><WeekCard key={week.startDate} authority={authority} period={week}/>)}
+  {earlier.map(week=><WeekCard key={week.startDate} period={week} state={weeks[key(week)]}/>)}
   <CorpCard ariaLabel="More timecards">
    <CorpRows>
-    {earlierCount<EARLIER_MAX?<li><CorpRow onClick={()=>setEarlierCount(count=>Math.min(EARLIER_MAX,count+EARLIER_STEP))} title={<span className="c-link c-link--l">Show earlier weeks</span>} label="Show earlier weeks" chevron={false} one/></li>
+    {earlierCount<EARLIER_MAX?<li><CorpRow onClick={more} title={<span className="c-link c-link--l">Show earlier weeks</span>} label="Show earlier weeks" chevron={false} one/></li>
      :<li><CorpRow href={cardsHref(weekOf(addDays(monday,-7*(EARLIER_MAX+1))))} title="Earlier weeks" one/></li>}
     <li><CorpRow href="/app/my-time?view=corrections" title="Your corrections" one/></li>
    </CorpRows>
   </CorpCard>
  </>;
 }
-function CorpTimecardDay({entry,zone,pill,period}:{entry:TimecardEntry;zone:string;pill:ReactNode;period:Period}){
+function CorpTimecardDay({entry,zone,status,pill,period}:{entry:TimecardEntry;zone:string;status:{word:string;tone:StatusTone};pill:ReactNode;period:Period}){
  const length=span(entry.startAt,entry.endAt),moved=(raw:string|null,now:string|null)=>!!raw&&!!now&&raw!==now;
  const missing=!entry.rawStartAt,breakTotal=entry.breaks.reduce((sum,item)=>sum+(span(item.startAt,item.endAt)??0),0);
- return <DayCards total={length===null?'In progress':boardDuration(length)} running={false} pill={pill} location={entry.locationName}
+ return <DayCards seconds={length} running={false} status={status} pill={pill} location={entry.locationName}
   line={[entry.positionName,missing?'Approved missing time':entry.adjustmentId?'Includes an approved correction':null,breakTotal?`${boardDuration(breakTotal)} of breaks`:'No breaks recorded'].filter(Boolean).join(' · ')}
   punches={[{key:'in',title:'Clock in',detail:moved(entry.rawStartAt,entry.startAt)?`Recorded ${clockAt(entry.rawStartAt!,zone)}`:undefined,value:clockAt(entry.startAt,zone)},
    ...entry.breaks.map(item=>{const time=span(item.startAt,item.endAt);return {key:item.id,title:item.name,detail:(time===null?'In progress':boardDuration(time))+(item.adjustmentId?' · corrected':''),value:clockRange(item.startAt,item.endAt,zone)};}),
@@ -237,17 +218,15 @@ function CorpTimecardDay({entry,zone,pill,period}:{entry:TimecardEntry;zone:stri
 
 /* ---------- Corrections ---------- */
 
-const kindLabel={ENTRY_BOUNDARY:'Clock in and out',BREAK_BOUNDARY:'Break',MISSING_ENTRY:'Missed shift'};
 const statusPill=(status:PublicCorrectionItem['status'])=>status==='PENDING'?<span className="c-meta">Waiting</span>:status==='APPROVED'?<CorpPill tone="teal">Approved</CorpPill>:<CorpPill tone="red">Declined</CorpPill>;
-const statusWord={PENDING:'Waiting for review',APPROVED:'Approved',REJECTED:'Declined'};
-const interval=(start:string,end:string,zone:string)=>`${dayMedium(dateKey(start,zone))} · ${clockRange(start,end,zone)}`;
-const sentAt=(at:string,zone:string)=>fmt(zone,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
 export function CorpCorrections({snapshot,decisions,requestId,filter,onRefresh}:{snapshot:EmployeeTimeCorrections;decisions:HoursDecision[];requestId:string|null;filter:string;onRefresh:()=>void}){
  if(snapshot.state!=='ready')return <CorpHoursUnavailable message={snapshot.reason==='source_limit'?'This history can’t be loaded in full. Contact your manager for help.':'Your corrections couldn’t be checked.'} onRefresh={onRefresh}/>;
  const zone=snapshot.timeZone;
- if(requestId){const item=snapshot.requests.find(r=>r.id===requestId);return item?<CorpCorrectionDetail item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={zone}/>:<CorpCard ariaLabel="Correction"><p className="c-empty" role="status">This correction isn’t available to your current account.</p></CorpCard>;}
+ if(requestId){const item=snapshot.requests.find(r=>r.id===requestId);return item?<><CorrectionDetailB item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={zone}/><CorpCorrectionDetail item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={zone}/></>
+  :<><HoursBScreen><HoursStatusB label="Correction" message="This correction isn’t available to your current account."/></HoursBScreen><CorpCard ariaLabel="Correction"><p className="c-empty" role="status">This correction isn’t available to your current account.</p></CorpCard></>;}
  const decided=filter==='decided',rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING');
  return <>
+  <CorrectionsB snapshot={snapshot} decided={decided}/>
   <CorpSegments label="Correction requests" items={[{href:'/app/my-time?view=corrections',label:'Waiting',current:!decided},{href:'/app/my-time?view=corrections&filter=decided',label:'Decided',current:decided}]}/>
   <CorpCard label={decided?'Decisions':'Waiting for review'}>
    {rows.length?<CorpRows label={decided?'Decisions':'Waiting for review'}>{rows.map(r=><li key={r.id}><CorpRow id={'hours-request-'+r.id} href={'/app/my-time?view=corrections&requestId='+r.id+(decided?'&filter=decided':'')}
@@ -309,10 +288,12 @@ const blocked:Record<string,string>={stale_source:'Your time records changed. Re
 export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActive,otherPending,onSubmit,onRetry,onReset,onRefresh,onEdit,cancel}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;basis:string;edit:string;draft:HoursDraft|undefined;onDraft:(draft:HoursDraft)=>void;operation:HoursCorrectionOperation;isActive:boolean;otherPending:boolean;onSubmit:(payload:HoursCorrectionPayload)=>void;onRetry:()=>void;onReset:()=>void;onRefresh:()=>void;onEdit:(edit:string)=>void;cancel:string}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const zone=snapshot.timeZone,info=resolveHoursEdit(snapshot,edit),readyDraft=draft??(info?initialHoursDraft(info,basis,zone,snapshot.locations):null);
- const [error,setError]=useState<{field:keyof HoursDraft;message:string}|null>(null),uid=useId(),errorId=uid+'error',formId=uid+'form',whatId=uid+'what',form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
+ const [error,setError]=useState<{field:keyof HoursDraft;message:string}|null>(null),uid=useId(),errorId=uid+'error',formId=uid+'form',whatId=uid+'what',form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null),receiptB=useRef<HTMLHeadingElement>(null);
  const pending=operation.pending,uncertain=operation.uncertain,recorded=isActive&&operation.result?.status==='recorded',locked=pending||uncertain||recorded||otherPending,stale=!!readyDraft&&readyDraft.basis!==basis;
- useEffect(()=>{if(recorded)receipt.current?.focus();},[recorded]);
+ // The receipt's heading takes focus: the phone screen's when it shows, else the corporate one.
+ useEffect(()=>{if(recorded)(receiptB.current?.getClientRects().length?receiptB.current:receipt.current)?.focus();},[recorded]);
  if(recorded&&operation.result?.status==='recorded')return <>
+  <FixRecordedB requestId={operation.result.requestId} onReset={onReset} heading={receiptB}/>
   <CorpHoursSheetHead cancel={cancel} cancelLabel="Close"/>
   <CorpCard ariaLabel="Submission result"><CorpBody>
    <h2 className="c-big" ref={receipt} tabIndex={-1}>Correction recorded</h2><span className="c-line2">Your manager reviews it. Open it to check its status.</span>
@@ -320,6 +301,7 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
   </CorpBody></CorpCard>
  </>;
  if(isActive&&(pending||uncertain))return <>
+  <FixPendingB pending={pending} onRetry={onRetry}/>
   <CorpHoursSheetHead cancel={cancel}/>
   <CorpCard ariaLabel="Submission status"><CorpBody>
    <h2 className="c-big">{pending?'Checking your proposal':'Check your original submission'}</h2>
@@ -353,7 +335,10 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
  // Upscale S14: Send stays grey (aria-disabled) until the proposal is complete; pressing it then says what is missing.
  const complete=!!buildHoursProposal(readyDraft,info,PROBE_ID,zone).payload&&(!missing||snapshot.locations.some(l=>l.id===readyDraft.locationId));
  return <>
+  {/* Phones: the hero over one white card holding this same form (time.css), with Send at its foot; the sheet bar is hidden there. */}
+  <HoursBScreen sub={options.length>1?null:edit==='new'?'A missed whole shift, with no clock-in or clock-out':'Change your approved time for a missed shift'}/>
   <CorpHoursSheetHead cancel={cancel} send={<button type="submit" form={formId} disabled={disabled} aria-disabled={!disabled&&!complete?true:undefined}>{pending?'Sending…':'Send'}</button>}/>
+  <div className="b-keep eb-fix">
   {stale?<div className="c-callout c-hours-stack" role="status" aria-label="Changed time records"><b>Time records changed</b><span>Your unsent times are kept. Check the current times before sending.</span>
    <div className="c-btns"><CorpButton kind="secondary" size="sm" disabled={locked} onClick={()=>onDraft({...readyDraft,basis})}>Review updated records</CorpButton><CorpButton kind="secondary" size="sm" disabled={locked} onClick={()=>onDraft({...initialHoursDraft(info,basis,zone,snapshot.locations),reason:readyDraft.reason})}>Use current times</CorpButton></div></div>:null}
   {unconfirmed?<div className="c-callout c-hours-stack" role="status"><span>Your current times couldn’t be confirmed. Refresh before sending a fix.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRefresh}>Refresh</CorpButton></div></div>:null}
@@ -361,7 +346,7 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
    if(missing&&!snapshot.locations.some(l=>l.id===readyDraft.locationId)){setError({field:'locationId',message:'Choose a currently available work location.'});focus('locationId');return;}
    const result=buildHoursProposal(readyDraft,info,crypto.randomUUID(),zone);if(!result.payload){setError(result.error);focus(result.error?.field);return;}setError(null);onSubmit(result.payload);}}>
    <fieldset className="c-hours-fieldset" disabled={locked}>
-    <div className="c-field"><span className="c-field__label" id={whatId}>What to fix</span>
+    <div className={options.length>1?'c-field':'c-field eb-fix-one'}><span className="c-field__label" id={whatId}>What to fix</span>
      <div className="c-card c-hours-choices" role="radiogroup" aria-labelledby={whatId}>
       {options.map(option=><label key={option.key} className="c-row">
        <span className="c-row__main"><span className="c-row__title">{option.title}</span><span className="c-row__detail"><span>{option.detail}</span></span></span>
@@ -382,7 +367,9 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
    {error?<p className="c-error" id={errorId} role="alert">{message}</p>:null}
    {pending?<p className="c-note" role="status"><span>Sending your original proposal…</span></p>:isActive&&uncertain?<div className="c-callout c-hours-stack" role="status"><span>The result couldn’t be confirmed. Check your original submission before starting a new proposal.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRetry}>Check submission status</CorpButton></div></div>
     :feedback&&feedback.status!=='recorded'?<p className="c-callout" role="status">{feedback.status==='blocked'?blocked[feedback.reason]:feedback.status==='conflict'?'This time changed or already has a fix waiting. Refresh and check its status.':feedback.status==='denied'?'Your access changed. Sign in again to continue.':'Check the day, times and note.'}</p>:null}
+   <button type="submit" className="eb-fix-send" disabled={disabled} aria-disabled={!disabled&&!complete?true:undefined}>{pending?'Sending…':'Send'}</button>
    <CorpNote>Your manager reviews it. Your timecard changes once it’s approved.</CorpNote>
   </form>
+  </div>
  </>;
 }

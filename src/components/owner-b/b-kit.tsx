@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
  * renders one `BScreen` as the first child of its CorpPage; on a phone under the shell's data-nv-b it replaces the page's
@@ -15,16 +16,18 @@ export function BScreen({ children, ink, back }: { children: ReactNode; ink?: bo
 
 /** The brand hero: the shell's header floats over its top; the title, one white action and live figures sit on it. */
 export function BHero({ title, titleId, eyebrow, sub, right, back, children, big }: {
-  title: ReactNode; titleId?: string; eyebrow?: ReactNode; sub?: ReactNode; right?: ReactNode; back?: { href: string; label: string }; children?: ReactNode;
+  title: ReactNode; titleId?: string; eyebrow?: ReactNode; sub?: ReactNode; right?: ReactNode; children?: ReactNode;
+  /** A pushed page's way back; `close` (a form's Cancel) draws an X instead of the back chevron. */
+  back?: { href: string; label: string; close?: boolean };
   /** Home's 34px sentence instead of a 30px page title. */
   big?: boolean;
 }) {
   return <header className="b-hero">
-    {back ? <Link className="b-back" href={back.href}><span className="b-back__ic b-glass" aria-hidden="true"><CaretLeftIcon size={20} weight="bold" /></span>{back.label}</Link> : null}
+    {back ? <Link className="b-back" href={back.href}><span className="b-back__ic b-glass" aria-hidden="true">{back.close ? <XIcon size={20} weight="bold" /> : <CaretLeftIcon size={20} weight="bold" />}</span>{back.label}</Link> : null}
     <div className={big ? "b-title b-title--big" : "b-title"}>
       <div className="b-title__text">
         {eyebrow ? <p className="b-eyebrow">{eyebrow}</p> : null}
-        <h1 id={titleId}>{title}</h1>
+        <h1 id={titleId} tabIndex={titleId ? -1 : undefined}>{title}</h1>
         {sub ? <p className="b-sub">{sub}</p> : null}
       </div>
       {right ? <div className="b-title__right">{right}</div> : null}

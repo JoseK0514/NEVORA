@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import {useState, type ReactNode} from 'react';
+import {useState, type MouseEvent, type ReactNode} from 'react';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {HandCoinsIcon} from '@phosphor-icons/react/dist/ssr/HandCoins';
@@ -73,22 +73,29 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
 
 /** Corporate (Release 1, board E-ShiftDetail; Nov 1 upscale S5, S12): the same row and sheet on the corporate kit. The row is a kit row (day in
  * the lead column, hours and place); the sheet shows the shift in full, then Swap, Offer for cover and I can't work. */
-export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, initiallyOpen = false}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; initiallyOpen?: boolean}) {
+export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, trail, initiallyOpen = false, b}: {shift: ShiftSheetShift; href: string; closeHref: string; lead?: string; title: string; detail: string; trail?: ReactNode; initiallyOpen?: boolean;
+  /** Direction B (Employee phones): the same row and sheet, drawn as the phone screen's row (day lead, a chip beside the hours, a chevron). */
+  b?: {lead: ReactNode; chip?: ReactNode; label?: string}}) {
   const [open, setOpen] = useState(initiallyOpen);
   const id = encodeURIComponent(shift.id);
   // Upscale S5/S12: the details on one line ("Barista · Condado · 8 h"), in a white card under the "Tomorrow, Nov 2" title.
   const facts = [shift.position, shift.location, shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re the shift lead' : null, shift.calloutApproved ? 'Unable to work approved' : null].filter(Boolean).join(' · ');
-  return <li>
-    <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={event => {
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
-      event.preventDefault();
-      setOpen(true);
-    }}>
+  const opener = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+    event.preventDefault();
+    setOpen(true);
+  };
+  return <li className={b ? 'b-li' : undefined}>
+    {b ? <Link className="b-row b-row--link" href={href} scroll={false} aria-haspopup="dialog" aria-label={b.label} onClick={opener}>
+      {b.lead}
+      <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span>{b.chip ?? null}</span><span className="b-row__s">{detail}</span></span>
+      <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true"/>
+    </Link> : <Link className="c-row" href={href} scroll={false} aria-haspopup="dialog" onClick={opener}>
       {lead ? <span className="c-row__lead">{lead}</span> : null}
       <span className="c-row__main"><span className="c-row__title">{title}</span><span className="c-row__detail"><span>{detail}</span>{trail ?? null}</span></span>
       {/* Board G-E-Schedule: a row with a status pill has no chevron. */}
       {trail ? null : <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/>}
-    </Link>
+    </Link>}
     <QuietSheet open={open} labelledBy={`shift-${shift.id}-title`} onClose={() => {
       setOpen(false);
       if (initiallyOpen && window.location.search.includes('shift=')) window.history.replaceState(window.history.state, '', closeHref);

@@ -180,7 +180,7 @@ describe('Direction B phone screen (Payroll)', () => {
     boundary.data = { version: 'PAYROLL_RUNS_V1', runs: [], capabilities: nativeCapabilities, missingPeriods: [] } as unknown as PayrollRunsResponse;
     const html = onlyB(renderToStaticMarkup(<PayrollRuns recoveryScope="fictional" view="home" current={current} canEditSettings />)).replace(/\u2009/g, ' ');
     expect(html).toContain('class="b-screen b-screen--ink"');
-    expect(html).toContain('<h1 id="b-payroll-title">Payroll</h1>');
+    expect(html).toContain('<h1 id="b-payroll-title" tabindex="-1">Payroll</h1>');
     expect(html).toContain('Up next · Weekly payroll');
     expect(html).toMatch(/class="b-step b-step--now"><span class="b-step__n" aria-hidden="true">1<\/span>/);
     expect(html).toMatch(/class="b-btn b-btn--teal b-btn--full b-btn--big"[^>]*href="\/app\/payroll\/prepare"[^>]*>Prepare payroll<\/a>/);

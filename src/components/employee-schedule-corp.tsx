@@ -14,6 +14,10 @@ import { addDays, formatTime, weekDates, weekStartFor } from '../lib/date-utils'
 import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
+import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
+import { BChip } from './owner-b/b-kit';
+import { BDay } from './employee-b/parts';
+import { NotPhone, PhoneOnly } from './employee-b/viewport';
 
 /* An Employee's Schedule on the corporate kit (Release 1, boards G-E-Schedule, E-ShiftDetail and E-OpenShifts). The
  * week card (range, arrows, day strip), the confirmation when the manager asks for one, the week's shifts, then open
@@ -104,13 +108,64 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
     };
   };
 
-  if (view === 'open') return <CorpPage className="c-esched" labelledBy="open-title">
+  if (view === 'open') {
+    const open = props.openShifts;
+    const bRows: OpenB[] | null = open ? [...open.requested.map(shift => ({ shift, requested: true })), ...open.available.map(shift => ({ shift, requested: false }))].map(({ shift, requested }) => ({
+      id: shift.id, date: shift.date, hours: keepWhole(`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`), requested, nextWeek: shift.date >= addDays(weekStart, 7), href: shift.href,
+      facts: [shift.position, `${Math.round(shiftMinutes(shift) / 6) / 10} h`].filter(Boolean).join(' · '), place: shift.location,
+      label: `${requested ? 'View request' : 'Pick up'}, ${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${formatTime(shift.startTime)}`,
+    })) : null;
+    return <CorpPage className="c-esched" labelledBy="open-title">
+    {/* Direction B: the phone screen (phones only). */}
+    <OpenShiftsB backHref={`/app/schedule?week=${weekStart}`} rows={bRows} empty={!!open && !open.available.length && !open.requested.length} unavailableHref="/app/exchange?tab=available"
+      blocked={open?.unavailable?.length ? <BlockedOpenShifts shifts={open.unavailable} /> : null} note="Your manager confirms before the shift is yours. You’ll get a notification either way." />
     <CorpNav back={{ href: `/app/schedule?week=${weekStart}`, label: 'Schedule' }} title="Open shifts" titleId="open-title" />
     <OpenShiftCards open={props.openShifts} weekStart={weekStart} />
   </CorpPage>;
+  }
 
   const listLabel = chosen ? keepWhole(dayFmt(chosen, { weekday: 'long', month: 'short', day: 'numeric' })) : weekStart === currentWeek ? 'Coming up' : weekStart < currentWeek ? 'This week' : 'Shifts';
+  const subText = state === 'unavailable' ? 'Your schedule couldn’t be checked'
+    : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>;
+  const rowLabel = (shift: Shift) => keepWhole(`${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${hours(shift)}, ${[shift.positionName, nameOf(shift.locationId) || 'Location unavailable'].filter(Boolean).join(', ')}`);
+  const rowDetail = (shift: Shift) => [shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ');
+  const bChip = (shift: Shift) => {
+    const soon = startsIn(shift, today, observedAt, timeZone);
+    return shift.isCalloutApproved ? <BChip tone="grey">Can’t work · approved</BChip> : soon ? <BChip tone="teal">{soon}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : shift.isDesignatedLead ? <BChip tone="grey">Shift lead</BChip> : undefined;
+  };
+  const bLead = (shift: Shift) => <BDay date={shift.date} today={shift.date === today} past={shift.date < today}/>;
   return <CorpPage className="c-esched">
+    {/* Direction B: the phone screen (phones only; tablets and desktop keep the layout below). The shift sheets and the
+      * confirmation are mounted once, in the layout that shows. */}
+    <ScheduleB sub={subText} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
+      todayHref={weekStart !== currentWeek ? `/app/schedule?week=${currentWeek}` : null} prevHref={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} nextHref={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`}
+      days={dates.map(date => {
+        const assigned = shifts.some(shift => shift.date === date);
+        return { date, short: dayFmt(date, { weekday: 'short' }), day: Number(date.slice(8)), today: date === today, past: date < today, selected: chosen ? date === chosen : date === today, assigned,
+          href: date === chosen ? `/app/schedule?week=${weekStart}${keep}` : dayHref(date),
+          label: `${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${assigned ? ', assigned shift' : ''}${date === chosen ? ', selected day, show the whole week' : ''}` };
+      })}
+      confirm={review && !acknowledged ? { title: confirmationNeeded ? 'Confirm this week' : 'Schedule review',
+        detail: confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.',
+        control: <PhoneOnly fallback={<span className="b-btn b-btn--teal" aria-hidden="true">Confirm</span>}>{confirmation}</PhoneOnly> } : null}
+      celebration={review && acknowledged && props.acknowledgedRevisionId ? <PhoneOnly><Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /></PhoneOnly> : null}
+      changes={changes && state !== 'unavailable' ? changes : null}
+      swap={swapIntent ? { title: swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week', detail: swapCount ? 'Tap the shift, then Swap with someone.' : 'Only upcoming shifts can be swapped.', doneHref: `/app/schedule?week=${weekStart}` } : null}
+      error={error ? <>Confirmation could not be completed. {typeof error === 'string' ? error : 'Review the current schedule and try again.'}</> : null}
+      receipt={null}
+      open={modules.marketplace && view === 'mine' ? { count: openCount, href: `/app/schedule?week=${weekStart}&view=open`,
+        label: openCount === null ? 'Open shifts, couldn’t be checked' : openCount ? `${openCount} open ${openCount === 1 ? 'shift' : 'shifts'} you can pick up` : 'Open shifts, none right now',
+        detail: openCount === null ? 'Couldn’t check right now' : openCount ? keepWhole([...new Set(props.openShifts!.available.slice(0, 2).map(shift => dayFmt(shift.date, { weekday: 'short', month: 'short', day: 'numeric' })))].join(' and ')) : 'None right now' } : null}
+      unavailable={state === 'unavailable' ? { retryHref: `/app/schedule?week=${weekStart}` } : null}
+      list={{ label: listLabel, wholeWeekHref: chosen ? `/app/schedule?week=${weekStart}${keep}` : null,
+        empty: listed.length ? null : state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.') : emptyScheduleLabel(state),
+        rows: listed.map(shift => <PhoneOnly key={shift.id} fallback={<li className="b-li"><Link className="b-row b-row--link" href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} scroll={false} aria-label={rowLabel(shift)}>
+          {bLead(shift)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{hours(shift)}</span>{bChip(shift) ?? null}</span><span className="b-row__s">{rowDetail(shift)}</span></span>
+          <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" /></Link></li>}>
+          <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
+            b={{ lead: bLead(shift), chip: bChip(shift), label: rowLabel(shift) }} />
+        </PhoneOnly>) }}
+      unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
       : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>}
       actions={<CorpButtonLink href="/app/availability" kind="neutral" size="sm">Availability</CorpButtonLink>} />
@@ -139,11 +194,11 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         })}
       </nav>
       {/* Board G-E-Schedule has three cards; a requested confirmation and what changed fold into the week card. */}
-      {review && acknowledged && props.acknowledgedRevisionId ? <Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /> : null}
+      {review && acknowledged && props.acknowledgedRevisionId ? <NotPhone><Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /></NotPhone> : null}
       {review && !acknowledged ? <div className="c-esched__confirm c-esched__confirm--in" role="group" aria-labelledby="my-review-title">
         <span className="c-row__main"><h2 id="my-review-title" className="c-row__title c-row__title--b">{confirmationNeeded ? 'Confirm this week' : 'Schedule review'}</h2>
           <span className="c-row__detail"><span>{confirmationNeeded ? (shifts.length ? 'Your manager asked you to check it' : 'No assignments remain this week. Review the changes, then confirm.') : 'Review the current week again.'}</span></span></span>
-        {confirmation}
+        <NotPhone>{confirmation}</NotPhone>
       </div> : null}
       {changes && state !== 'unavailable' ? <div className="c-esched__changes">{changes}</div> : null}
     </CorpCard>
@@ -165,9 +220,9 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         const soon = startsIn(shift, today, observedAt, timeZone);
         // Upscale S4: only "Starts in …" stays a pill; other states are grey text.
         const pill = shift.isCalloutApproved ? <span className="c-meta">Can’t work · approved</span> : soon ? <CorpPill tone="teal">{soon}</CorpPill> : shift.isDesignatedLead ? <span className="c-meta">Shift lead</span> : undefined;
-        return <ShiftSheetCorpRow key={shift.id} shift={sheetShift(shift)} lead={keepWhole(`${dayFmt(shift.date, { weekday: 'short' })} ${Number(shift.date.slice(8))}`)}
+        return <NotPhone key={shift.id}><ShiftSheetCorpRow shift={sheetShift(shift)} lead={keepWhole(`${dayFmt(shift.date, { weekday: 'short' })} ${Number(shift.date.slice(8))}`)}
           title={hours(shift)} detail={[shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ')}
-          trail={pill} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id} />;
+          trail={pill} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id} /></NotPhone>;
       })}</CorpRows>
         : <CorpBody><p className="c-esched__state">{state === 'published' ? (chosen ? (chosen === today ? 'Day off today.' : 'Day off.') : weekStart === currentWeek && shifts.length ? 'No more shifts this week.' : 'Day off all week.') : emptyScheduleLabel(state)}</p></CorpBody>}
     </CorpCard>}

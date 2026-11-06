@@ -5,6 +5,7 @@ import { POLICY_FACTS, SUPPORT, SUPPORT_EMAIL, policiesVisible, type Block } fro
 import { BlockView } from "@/components/legal/legal-document";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
+import { EmployeeHelpB } from "@/components/employee-b/account-b";
 import "./help.css";
 
 export const metadata: Metadata = { title: "Help" };
@@ -38,6 +39,8 @@ export default async function HelpPage() {
   // "Report a problem": what to include (the second Contact paragraph) and how to report content; no unconfirmed facts.
   const reportBlocks = [...(contact?.blocks.slice(1) ?? []), ...(report?.blocks ?? [])];
   return <CorpPage className="c-help c-page--narrow" labelledBy="help-title">
+    {/* Direction B on an Employee's phone (mock e-help): the same content, links and questions. */}
+    {employee ? <EmployeeHelpB email={SUPPORT_EMAIL} response={response ?? null} signIn={signIn?.blocks ?? null} work={work?.blocks ?? null} report={reportBlocks} legal={legal} /> : null}
     <CorpNav back={{ href: "/app/more", label: "More" }} title="Help" titleId="help-nav-title" phoneOnly />
     <CorpTitle id="help-title" title="Help" wide />
     <CorpSection id="help-contact" label="Contact">

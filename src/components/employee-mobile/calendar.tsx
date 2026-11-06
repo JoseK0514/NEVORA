@@ -6,14 +6,12 @@ import type {CalendarCommand} from '../../lib/calendar/types';
 import type {CalendarClientState} from '../../lib/calendar/client';
 import {revealFeedback} from '../../lib/reveal-feedback';
 import {CorpPill} from '../corp/corp';
+import {CALENDAR_PROVIDERS,EmployeeCalendarB} from '../employee-b/account-b-client';
+import {shown} from '../employee-b/account-host';
 import './account-corp.css';
 type Props=Omit<CalendarClientState,'pendingKind'>&{pendingKind?:CalendarCommand['kind']|null;onCommand:(kind:CalendarCommand['kind'])=>void;onCopy:()=>void;onRetry:()=>void};
 
-const PROVIDERS=[
- {id:'apple',name:'Apple Calendar',detail:'iPhone, iPad and Mac',steps:['Copy your private link from NEVORA.','On iPhone or iPad, open Calendar, then Calendars and Add Calendar. Choose Add Subscription Calendar.','Paste the link and follow the setup prompts. On Mac, choose File, then New Calendar Subscription.'],guide:['Apple setup guide','https://support.apple.com/en-us/102301']},
- {id:'google',name:'Google Calendar',detail:'Set up on a computer',steps:['Copy your private link from NEVORA.','On a computer, open Google Calendar. Beside Other calendars, choose Add other calendars, then From URL.','Paste the link and choose Add calendar. The Google Calendar phone app can’t add a link.'],guide:['Google setup guide','https://support.google.com/calendar/answer/37100?hl=en']},
- {id:'outlook',name:'Outlook',detail:'Set up on the web',steps:['Copy your private link from NEVORA.','In Outlook on the web, open Calendar, then Add calendar and Subscribe from web.','Paste the link and choose Import.'],guide:['Outlook setup guide','https://support.microsoft.com/en-us/outlook/import-or-subscribe-to-a-calendar-in-outlook-com-or-outlook-on-the-web']},
-] as const;
+const PROVIDERS=CALENDAR_PROVIDERS;
 
 /** Board E-Calendar: "Your calendar link" (status pill, what it does, one primary action), "Or add it straight to"
  * (setup steps per calendar app), then Reset link in red. The client owner, commands and confirmations are unchanged:
@@ -24,16 +22,20 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
  const priorNotice=useRef('');
  const recoveryReady=Boolean(pendingKind&&!paused&&!busy&&status&&'authority'in status);
  const feedback=useRef<HTMLDivElement>(null),confirm=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement|null>(null),link=useRef<HTMLTextAreaElement>(null),resetButton=useRef<HTMLButtonElement>(null),revokeButton=useRef<HTMLButtonElement>(null);
- useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;if(notice&&(changed||recoveryReady)&&feedback.current)revealFeedback(feedback.current);},[notice,recoveryReady]);
+ // The phone screen (Direction B) draws the same state; focus goes to whichever of the two is on screen.
+ const bFeedback=useRef<HTMLDivElement>(null),bConfirm=useRef<HTMLDivElement>(null),bReset=useRef<HTMLButtonElement>(null),bRevoke=useRef<HTMLButtonElement>(null);
+ useEffect(()=>{const changed=notice!==priorNotice.current;priorNotice.current=notice;const target=shown(feedback.current,bFeedback.current);if(notice&&(changed||recoveryReady)&&target)revealFeedback(target);},[notice,recoveryReady]);
  const available=!paused&&status&&'authority'in status,active=available&&status.state==='active',unknown=!!pendingKind;
  const currentUrl=active?url:null,confirmationCurrent=active&&!busy&&!unknown&&confirmation&&confirmation.generation===status.generation;
  // The review takes focus on the next frame, unless focus already moved into it (a quick Tab or a screen reader), so a
  // control the person reached first is never pulled back to the group.
- function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{const review=confirm.current;if(review&&!review.contains(document.activeElement))revealFeedback(review);});}
+ function ask(kind:'ROTATE'|'REVOKE',button:HTMLButtonElement){if(!active||busy||unknown)return;trigger.current=button;setConfirmation({kind,generation:status.generation});requestAnimationFrame(()=>{const review=shown(confirm.current,bConfirm.current);if(review&&!review.contains(document.activeElement))revealFeedback(review);});}
  // The review replaces Reset link and Revoke link, so Keep returns focus to the button that was drawn again in its place.
- function cancel(){const kind=confirmation?.kind;setConfirmation(null);requestAnimationFrame(()=>{const target=trigger.current?.isConnected?trigger.current:kind==='REVOKE'?revokeButton.current:resetButton.current;target?.focus();});}
+ function cancel(){const kind=confirmation?.kind;setConfirmation(null);requestAnimationFrame(()=>{const target=trigger.current?.isConnected?trigger.current:kind==='REVOKE'?shown(revokeButton.current,bRevoke.current):shown(resetButton.current,bReset.current);target?.focus();});}
+ function confirmNow(){if(!confirmation||!status||!('authority'in status))return;if(confirmation.kind==='ROTATE'&&!status.canIssue)return;const kind=confirmation.kind;setConfirmation(null);onCommand(kind);}
  const pill=!available?null:active?<CorpPill tone="teal">Active</CorpPill>:<CorpPill>{status.state==='revoked'?'Revoked':'Off'}</CorpPill>;
- return <section className="em-account-stack em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
+ return <><EmployeeCalendarB {...{status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry,confirmation,open}} onOpen={setOpen} onAsk={ask} onCancel={cancel} onConfirm={confirmNow} feedbackRef={bFeedback} confirmRef={bConfirm} resetRef={bReset} revokeRef={bRevoke}/>
+ <section className="em-account-stack em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
   <div className="c-card" aria-busy={busy}>
    <div className="c-card__head"><h2 className="c-card__label" id="employee-calendar-heading">Your calendar link</h2>{pill?<div className="c-card__aside">{pill}</div>:null}</div>
    <div className="c-card__body em-calendar-body">
@@ -76,7 +78,7 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
    {confirmationCurrent?<div ref={confirm} id="calendar-link-confirmation" className="c-card" role="group" aria-labelledby="calendar-confirm-title" tabIndex={-1}>
     <div className="c-card__head"><h2 className="c-card__label" id="calendar-confirm-title">{confirmation.kind==='ROTATE'?'Reset your calendar link?':'Revoke your calendar link?'}</h2></div>
     <div className="c-card__body"><p>{confirmation.kind==='ROTATE'?'The old link stops working right away. Copy the new link and add it to your calendar app again.':'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.'}</p>
-     <div className="c-btns em-calendar-confirm-actions"><button type="button" className="c-btn c-btn--secondary" onClick={cancel}>Keep current link</button><button type="button" className="c-btn c-btn--danger" onClick={()=>{if(confirmation.kind==='ROTATE'&&!status.canIssue)return;const kind=confirmation.kind;setConfirmation(null);onCommand(kind);}}>{confirmation.kind==='ROTATE'?'Reset link':'Revoke link'}</button></div>
+     <div className="c-btns em-calendar-confirm-actions"><button type="button" className="c-btn c-btn--secondary" onClick={cancel}>Keep current link</button><button type="button" className="c-btn c-btn--danger" onClick={confirmNow}>{confirmation.kind==='ROTATE'?'Reset link':'Revoke link'}</button></div>
     </div>
    </div>:active&&!unknown?<div className="em-calendar-manage">
     {status.canIssue?<button ref={resetButton} type="button" className="em-account-textbtn em-account-textbtn--danger" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('ROTATE',event.currentTarget)}>Reset link</button>:null}
@@ -84,5 +86,5 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
     <button ref={revokeButton} type="button" className="em-account-textbtn em-account-textbtn--quiet" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('REVOKE',event.currentTarget)}>Revoke link</button>
    </div>:null}
   </>:null}
- </section>;
+ </section></>;
 }

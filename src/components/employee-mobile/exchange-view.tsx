@@ -12,6 +12,9 @@ import {shiftChangeFeedback} from '../shift-change-form-state';
 import type {EmployeeRequestOperation} from './request-operation';
 import type {ShiftChangeResult} from '@/lib/shift-changes/types';
 import {shiftRequestStatus} from './request-status';
+import {shiftPill} from '../employee-requests-corp';
+import {ExchangeDetailB,ExchangeListB,exchangeChip,type ExchangeRowB} from '../employee-b/exchange-b';
+import {BStateCard,bTone} from '../employee-b/requests-b';
 export type ExchangeMode='incoming'|'mine';
 export const requestListHref=(mode:ExchangeMode)=>'/app/exchange?tab='+(mode==='incoming'?'foryou':'requests');
 export const requestKind=(row:RequestSummary)=>row.kind==='callout'?'Unable to work':row.kind==='swap'?'Swap request':row.viewer==='recipient'?'Shift pickup':'Cover offer';
@@ -26,25 +29,30 @@ function HistoryTime({slot,title}:{slot:HistorySlot|null;title:string}){
  return slot?<span>{title}: {day(slot.date)} · {formatTime(slot.startTime)} – {formatTime(slot.endTime)}{slot.endTime<=slot.startTime?` · Ends ${day(addDays(slot.date,1))}`:''}</span>:null;
 }
 const confirmed=(kind:EmployeeResponseKind,result:ShiftChangeResult)=>kind==='WITHDRAW'?'Your response was withdrawn. Check your current schedule.':kind==='DECLINE'?'You declined this swap.':kind==='CANCEL_CALLOUT'?'Your report was cancelled. Check your current schedule.':kind==='CANCEL'?'Your request was cancelled. Check your current schedule.':shiftChangeFeedback(result);
-export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh}:{detail:EmployeeRequestDetail;operation:EmployeeRequestOperation|null;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;onRefresh:()=>void}){
+/** The response buttons and their outcome. `look="b"` draws them for the Direction B phone screen; that copy passes
+ * `effects={false}` so the refresh after a settled response runs once (the corporate copy is always mounted). */
+export function ResponseControls({detail,operation,onRespond,onRetry,onRefresh,look='corp',effects=true}:{detail:EmployeeRequestDetail;operation:EmployeeRequestOperation|null;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;onRefresh:()=>void;look?:'corp'|'b';effects?:boolean}){
  useSyncExternalStore(operation?.subscribe??(()=>()=>{}),operation?.snapshot??(()=>0),operation?.snapshot??(()=>0));
  const pending=operation?.state.pending??false,result=operation?.state.result,uncertain=operation?.state.uncertain??false;
  const settled=!!result&&['completed','pending','closed'].includes(result.status),receipt=result?null:operation?.receipt??null,confirmation=useRef<HTMLParagraphElement>(null);
- // The pressed button goes away once the response settles; the confirmation takes focus so it is announced.
+ // The pressed button goes away once the response settles; the confirmation takes focus so it is announced (only the
+ // copy on screen can take it).
  useEffect(()=>{if(settled||receipt)confirmation.current?.focus();},[settled,receipt]);
- useEffect(()=>{if(settled)onRefresh();},[settled,onRefresh]);
+ useEffect(()=>{if(effects&&settled)onRefresh();},[effects,settled,onRefresh]);
+ const b=look==='b',primary=b?'b-btn b-btn--teal b-btn--full':'em-request-primary',secondary=b?'b-btn b-btn--quiet b-btn--full':'em-request-secondary';
  const allowed=detail.checks.filter(check=>check.allowed),accept=allowed.find(check=>check.kind==='ACCEPT');
- return <section className="em-response-actions" aria-label="Your response" aria-busy={pending}>
+ const body=<>
   {allowed.some(check=>check.kind==='WITHDRAW')?<p>{detail.summary.kind==='swap'?'Withdrawing closes this swap request. Both employees keep their currently assigned shifts.':'Withdrawing closes this pickup request. The shift stays with its currently assigned employee.'}</p>:null}
   {accept?<p>{accept.outcome==='completed'?'Accepting completes this swap immediately if the shifts still meet company rules.':'Accepting sends this swap for manager review. Keep your current shift until the swap is completed.'}</p>:null}
   {detail.checks.filter(check=>!check.allowed).map(check=><p key={check.kind} role="status">{actionLabels[check.kind]} unavailable. {check.notice??'Refresh to check the current request.'}</p>)}
-  {!uncertain&&!settled?allowed.map(check=><button key={check.kind} className={check.kind==='ACCEPT'?'em-request-primary':'em-request-secondary'} type="button" disabled={pending||operation===null} onClick={()=>onRespond(check.kind)}>{pending&&operation?.kind===check.kind?'Submitting…':actionLabels[check.kind]}</button>):null}
+  {!uncertain&&!settled?allowed.map(check=><button key={check.kind} className={check.kind==='ACCEPT'?primary:secondary} type="button" disabled={pending||operation===null} onClick={()=>onRespond(check.kind)}>{pending&&operation?.kind===check.kind?'Submitting…':actionLabels[check.kind]}</button>):null}
   {pending?<p role="status">{uncertain?'Checking the original response…':'Submitting your response…'}</p>:null}
   {result?<p ref={settled?confirmation:undefined} tabIndex={settled?-1:undefined} role={settled?'status':'alert'}>{settled&&operation?.kind?confirmed(operation.kind,result):shiftChangeFeedback(result)}</p>:receipt?<p ref={confirmation} tabIndex={-1} role="status">{confirmed(receipt.kind,receipt.result)}</p>:null}
-  {uncertain?<button className="em-request-secondary" type="button" disabled={pending} onClick={onRetry}>Check response status</button>:null}
-  {result&&!uncertain&&!settled?<button className="em-request-secondary" type="button" onClick={onRefresh}>Refresh request</button>:null}
-  {settled?<Link className="em-request-text" href="/app/schedule">View my current schedule</Link>:null}
- </section>;
+  {uncertain?<button className={secondary} type="button" disabled={pending} onClick={onRetry}>Check response status</button>:null}
+  {result&&!uncertain&&!settled?<button className={secondary} type="button" onClick={onRefresh}>Refresh request</button>:null}
+  {settled?<Link className={b?'b-link':'em-request-text'} href="/app/schedule">View my current schedule</Link>:null}
+ </>;
+ return b?<div className="eb-resp" aria-busy={pending}>{body}</div>:<section className="em-response-actions" aria-label="Your response" aria-busy={pending}>{body}</section>;
 }
 function Detail({detail,timeZone,operation,onRespond,onRetry,onRefresh}:{detail:EmployeeRequestDetail;timeZone:string;operation:EmployeeRequestOperation|null;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;onRefresh:()=>void}){
  const row=detail.summary,incoming=row.kind==='swap'&&row.viewer==='recipient'&&row.status==='EMPLOYEE_PENDING';
@@ -62,13 +70,27 @@ function Detail({detail,timeZone,operation,onRespond,onRetry,onRefresh}:{detail:
 function List({rows,mode}:{rows:RequestSummary[];mode:ExchangeMode}){
  return <ul className="em-request-list em-response-list">{rows.map(row=><li key={row.id}><Link id={'exchange-request-'+row.id} className="em-request-entry" href={requestListHref(mode)+'&requestId='+encodeURIComponent(row.id)}><span className="em-request-icon" aria-hidden="true"><ArrowsLeftRightIcon/></span><span><strong>{row.kind==='swap'&&mode==='incoming'?`Swap with ${row.counterparty??'a teammate'}`:requestKind(row)}</strong><small>{day(row.date)} · {requestStatus(row)}</small></span><CaretRightIcon aria-hidden="true"/></Link></li>)}</ul>;
 }
-export function EmployeeExchangeView({state,authority,mode,selection,operation,onRefresh,onRespond,onRetry,recoveries}:{state:PrivatePanelState<EmployeeExchangeSnapshot>;authority:string;mode:ExchangeMode;selection:string|null;operation:EmployeeRequestOperation|null;onRefresh:()=>void;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;recoveries?:React.ReactNode}){
+export function EmployeeExchangeView({state,authority,mode,selection,operation,onRefresh,onRespond,onRetry,recoveries,recoveriesB}:{state:PrivatePanelState<EmployeeExchangeSnapshot>;authority:string;mode:ExchangeMode;selection:string|null;operation:EmployeeRequestOperation|null;onRefresh:()=>void;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;recoveries?:React.ReactNode;
+ /** The same recoveries drawn for the Direction B phone screen. */
+ recoveriesB?:React.ReactNode}){
  const read=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority&&state.snapshot.selection===selection?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',detail=read?.detail;
  const title=selection?(detail?requestKind(detail.summary):'Request details'):mode==='incoming'?'Swaps for you':'My shift requests';
  const rows=mode==='incoming'?read?.incoming:read?.activity;
  const back=selection?requestListHref(mode)+'#exchange-request-'+encodeURIComponent(selection):'/app/requests/hub';
- return <div className="q-page em-requests em-exchange" data-exchange-state={state.paused?'paused':read?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
+ const stateB=!read?<BStateCard label="Request access" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'Your requests couldn’t be checked. Try again.'}
+  denied={denied} retry={state.paused?null:onRefresh} busy={state.refreshing}/>:null;
+ const enabled=read?read.enabled:null;
+ const rowB=(row:RequestSummary):ExchangeRowB=>{const pill=shiftPill(row.status,row.kind==='callout');
+  return {row,href:requestListHref(mode)+'&requestId='+encodeURIComponent(row.id),title:row.kind==='swap'&&mode==='incoming'?`Swap with ${row.counterparty??'a teammate'}`:row.kind==='callout'?'Can’t work':requestKind(row),
+   sub:row.counterparty&&mode==='mine'?`${row.viewer==='requester'?'With':'From'} ${row.counterparty} · ${day(row.date)}`:day(row.date),chip:exchangeChip(row,{tone:bTone(pill.tone),text:pill.text}),status:requestStatus(row)};};
+ const b=selection?<ExchangeDetailB mode={mode} title={title} back={back} state={stateB} enabled={enabled} recoveries={recoveriesB} detail={read?.enabled?detail??null:undefined} timeZone={read?.timeZone??'UTC'} status={detail?requestStatus(detail.summary):''}
+   controls={detail?<ResponseControls look="b" effects={false} detail={detail} operation={operation} onRespond={onRespond} onRetry={onRetry} onRefresh={onRefresh}/>:null}/>
+  :<ExchangeListB mode={mode} state={stateB} enabled={enabled} recoveries={recoveriesB} rows={read?.enabled?rows===null||rows===undefined?null:rows.map(rowB):[]}/>;
+ return <>
+ {/* Direction B (phones only): Pick up and swap, or the request's own page. Tablets and phones turned sideways keep the page below. */}
+ <div className="c-page eb-sib" data-corp="">{b}</div>
+ <div className="q-page em-requests em-exchange" data-exchange-state={state.paused?'paused':read?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
   <header className="em-request-heading"><Link className="em-request-back" href={back}><CaretLeftIcon size={18} aria-hidden="true"/>{selection?(mode==='incoming'?'Swaps for you':'My shift requests'):'Requests'}</Link><h1 tabIndex={-1}>{title}</h1>{!selection?<p>{mode==='incoming'?'Review a teammate’s request':'Your responses and recorded activity'}</p>:null}</header>
   <div className="em-request-body">
    {!read?<section className="em-request-notice" aria-label="Request access"><p role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'Your requests couldn’t be checked. Try again.'}</p>{denied?<Link className="em-request-secondary" href="/login">Sign in</Link>:<button type="button" className="em-request-secondary" disabled={state.paused||state.refreshing} onClick={onRefresh}>{state.refreshing?'Checking…':'Try again'}</button>}</section>:!read.enabled?<p className="em-request-notice" role="status">Shift requests are turned off for your company.</p>:<>
@@ -78,5 +100,6 @@ export function EmployeeExchangeView({state,authority,mode,selection,operation,o
 
    </>}
   </div>
- </div>;
+ </div>
+ </>;
 }

@@ -8,17 +8,16 @@ import type {DeletionFormState} from '@/app/app/account/delete/actions';
 import {logout} from '@/app/login/actions';
 import {SUPPORT_EMAIL} from '@/lib/legal/policies';
 import {CorpNav,CorpPage,CorpPill,CorpTitle} from '../corp/corp';
+import {EmployeeDeleteB,receivedAt} from '../employee-b/account-b-client';
 import './account-corp.css';
 
-export type DeletionView={state:DeletionFormState;pending:boolean;retry:boolean;confirmed:boolean;shown:boolean;period:string|null;retention:string|null};
-type Props={account:{name:string;role:string;employeeId:string};view:DeletionView;action(formData:FormData):void;outcomeRef?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void;workplace?:string|null};
+export {receivedAt};
 
-/** Postgres timestamptz text ("2026-10-27 23:45:01.123456-04") as a local date and time, or null. */
-export function receivedAt(text:string){
- const iso=text.trim().replace(' ','T').replace(/(\.\d{3})\d+/,'$1').replace(/([+-]\d\d)$/,'$1:00');
- const time=Date.parse(iso);
- return Number.isFinite(time)?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}).format(time):null;
-}
+export type DeletionView={state:DeletionFormState;pending:boolean;retry:boolean;confirmed:boolean;shown:boolean;period:string|null;retention:string|null};
+type Props={account:{name:string;role:string;employeeId:string};view:DeletionView;action(formData:FormData):void;outcomeRef?:RefObject<HTMLDivElement|null>;
+ /** The phone screen's outcome (receipt or ended), focused instead of outcomeRef when it is the one on screen. */
+ outcomeRefB?:RefObject<HTMLDivElement|null>;passwordRef?:Ref<HTMLInputElement>;onPassword(value:string):void;onShown():void;onConfirmed(value:boolean):void;workplace?:string|null};
+
 
 const missing=(token:string)=><mark className="legal-unresolved">[CONFIRM_{token}]</mark>;
 const support=(reference?:string)=><a className="em-delete-link" href={`mailto:${SUPPORT_EMAIL}${reference?`?subject=${encodeURIComponent(`Account deletion ${reference}`)}`:''}`}>{SUPPORT_EMAIL}</a>;
@@ -27,9 +26,12 @@ const support=(reference?:string)=><a className="em-delete-link" href={`mailto:$
  * account-deletion-form.tsx: the same action, password check, confirmation and outcomes. The consequences are the
  * service's actual ones (sessions, passkeys and calendar feeds end in the accepting transaction; alerts need a session;
  * erasure follows the runbook later). Nothing here decides an outcome. */
-export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef,onPassword,onShown,onConfirmed,workplace}:Props){
+export function EmployeeDeletionView({account,view,action,outcomeRef,outcomeRefB,passwordRef,onPassword,onShown,onConfirmed,workplace}:Props){
  const {state,pending,retry,confirmed,shown,period}=view;
  const [invalid,setInvalid]=useState<'password'|'confirm'|null>(null);
+ // Whether a password is typed for the current reply (the owner clears the field after each one): the phone's Delete
+ // my account turns solid red once it and the box are both done. It stays a working button either way, as today.
+ const [typed,setTyped]=useState<{state:DeletionFormState;value:boolean}>({state,value:false}),armed=typed.state===state&&typed.value&&confirmed;
  const receipt=state.kind==='received'||state.kind==='duplicate';
  const ended=state.kind==='signed_out'||state.kind==='changed';
  const checking=retry&&state.kind!=='failed';
@@ -38,7 +40,9 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
  return <CorpPage className="em-account em-delete" labelledBy="deletion-page-title">
   <CorpNav phoneOnly back={!receipt&&!ended?{href:'/app/profile#profile-account-deletion',label:'Profile'}:undefined} title={title} titleId="deletion-page-title"/>
   <CorpTitle wide title={title}/>
-  <div className="em-account-stack" data-deletion-state={state.kind}>
+  <EmployeeDeleteB state={state} period={period} workplace={workplace} outcomeRef={outcomeRefB} missingPeriod={missing('DELETION_COMPLETION_PERIOD')} support={support}/>
+  {/* On a phone the form stays this one (b-keep): its first two cards are the screen's, the rest is "Confirm it’s you". */}
+  <div className={receipt||ended?'em-account-stack':'em-account-stack b-keep eb-delete-keep'} data-deletion-state={state.kind}>
    {receipt?<>
     <div className="c-card" ref={outcomeRef} tabIndex={-1} role="status" aria-labelledby="deletion-done-title">
      <div className="c-card__head"><h2 className="c-card__label">Your request</h2><div className="c-card__aside"><CorpPill tone="teal">Received</CorpPill></div></div>
@@ -63,12 +67,12 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
      onSubmit={event=>{const field=event.currentTarget.elements.namedItem('password') as HTMLInputElement|null,next=!field?.value?'password':!confirmed?'confirm':null;setInvalid(next);if(!next)return;event.preventDefault();requestAnimationFrame(()=>(next==='password'?field:document.getElementById('deletion-understand'))?.focus());}}>
     <input type="hidden" name="account" value={account.employeeId}/>
     <input type="hidden" name="retry" value={retry?'1':'0'}/>
-    <section className="c-card" aria-labelledby="deletion-effects-title">
+    <section className="c-card eb-desk" aria-labelledby="deletion-effects-title">
      <div className="c-card__head"><h2 className="c-card__label" id="deletion-effects-title">What we delete</h2></div>
      <div className="c-card__body em-delete-copy"><p>Your access ends right away: you’re signed out on every device and can’t sign in again with your password or a passkey. Calendar feed links and device alerts stop.</p>
       <p>Within {period??missing('DELETION_COMPLETION_PERIOD')}, we aim to delete your profile, sign-in details, notification subscriptions, calendar links and the content you contributed. After you confirm, you can’t cancel it in the app.</p></div>
     </section>
-    <section className="c-card" aria-labelledby="deletion-kept-title">
+    <section className="c-card eb-desk" aria-labelledby="deletion-kept-title">
      <div className="c-card__head"><h2 className="c-card__label" id="deletion-kept-title">What {workplace??'your employer'} keeps</h2></div>
      <div className="c-card__body em-delete-copy"><p>Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p></div>
      <ul className="c-rows"><li><Link className="c-row c-row--one" href="/app/profile/account-deletion"><span className="c-row__main"><span className="c-row__title c-row__title--b c-link--l em-delete-kept">What may be kept</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li></ul>
@@ -81,10 +85,11 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
        :'The connection ended before NEVORA answered. Enter your password again and choose Check my request to find out. If it wasn’t saved, this sends your deletion request now, so only check if you still want your account deleted.'}</p>
       {state.kind==='uncertain'||(checking&&state.kind!=='unavailable')?<p>You can also email {support()}. We’ll never ask for your password.</p>:null}</div>
     </div>:null}
+    <div className="eb-confirm"><h2 className="eb-confirm__h">Confirm it’s you</h2>
     <div className="c-field">
      <label className="c-field__label" htmlFor="deletion-password">Enter your password to confirm</label>
      <span className="c-in__wrap"><input className="c-in em-delete-password" ref={passwordRef} id="deletion-password" name="password" type={shown?'text':'password'} autoComplete="current-password" required disabled={pending}
-      onChange={event=>{onPassword(event.target.value);if(invalid==='password')setInvalid(null);}}
+      onChange={event=>{onPassword(event.target.value);setTyped({state,value:event.target.value!==''});if(invalid==='password')setInvalid(null);}}
       aria-describedby={passwordError?'deletion-password-help deletion-password-error':'deletion-password-help'} aria-invalid={passwordError?true:undefined}/>
       <button type="button" className="c-in__btn em-delete-eye" onClick={onShown} aria-pressed={shown} aria-label="Show password">{shown?<EyeSlashIcon size={22} aria-hidden="true"/>:<EyeIcon size={22} aria-hidden="true"/>}</button></span>
      <span className="c-sr" id="deletion-password-help">The password you use to sign in.</span>
@@ -95,8 +100,9 @@ export function EmployeeDeletionView({account,view,action,outcomeRef,passwordRef
       aria-describedby={invalid==='confirm'?'deletion-understand-error':undefined} aria-invalid={invalid==='confirm'?true:undefined}/>
      <span>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</span></label>
     {invalid==='confirm'?<p className="c-error" id="deletion-understand-error">Check this box to confirm you understand.</p>:null}
-    {state.kind!=='unavailable'?<button type="submit" className="c-btn c-btn--danger c-btn--full em-delete-confirm" disabled={pending}>{pending?(checking?'Checking…':'Sending request…'):checking?'Check my request':'Delete my account'}</button>:null}
+    {state.kind!=='unavailable'?<button type="submit" className="c-btn c-btn--danger c-btn--full em-delete-confirm" data-armed={armed?'':undefined} disabled={pending}>{pending?(checking?'Checking…':'Sending request…'):checking?'Check my request':'Delete my account'}</button>:null}
     <p className="c-note c-note--center">This can’t be undone.</p>
+    </div>
    </form>}
   </div>
  </CorpPage>;

@@ -7,15 +7,23 @@ import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/a
 import {EmployeeRequestOperation} from './request-operation';
 import {useEmployeeMobile} from './use-mobile';
 import {EmployeeExchangeView,type ExchangeMode} from './exchange-view';
-function Recovery({operation,onRetry,onRefresh}:{operation:EmployeeRequestOperation;onRetry:(operation:EmployeeRequestOperation)=>void;onRefresh:()=>void}){
+import {RequestsWaitB} from '../employee-b/requests-b';
+import {focusShown} from '../employee-b/focus';
+/** An earlier response that still needs checking. `look="b"` draws it as a Direction B card; that copy passes
+ * `effects={false}` so the refresh after it settles runs once. */
+function Recovery({operation,onRetry,onRefresh,look='corp',effects=true}:{operation:EmployeeRequestOperation;onRetry:(operation:EmployeeRequestOperation)=>void;onRefresh:()=>void;look?:'corp'|'b';effects?:boolean}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const settled=!!operation.state.result&&['completed','pending','closed'].includes(operation.state.result.status);
- useEffect(()=>{if(settled)onRefresh();},[settled,onRefresh]);
- return <section className="em-request-notice" aria-label="Unconfirmed response"><p role="status">{operation.state.pending?'Your previous response is being checked.':'A previous response may have been saved. Check its status before sending it again.'}</p>{operation.state.uncertain?<button type="button" className="em-request-secondary" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</section>;
+ useEffect(()=>{if(effects&&settled)onRefresh();},[effects,settled,onRefresh]);
+ const text=operation.state.pending?'Your previous response is being checked.':'A previous response may have been saved. Check its status before sending it again.';
+ if(look==='b')return <section className="b-card" aria-label="Unconfirmed response"><div className="eb-status"><p className="b-state" role="status">{text}</p>{operation.state.uncertain?<button type="button" className="b-btn b-btn--quiet b-btn--full" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</div></section>;
+ return <section className="em-request-notice" aria-label="Unconfirmed response"><p role="status">{text}</p>{operation.state.uncertain?<button type="button" className="em-request-secondary" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</section>;
 }
 export function ResponsiveEmployeeExchange({authority,mode,selection=null,children}:{authority:string;mode:ExchangeMode;selection?:string|null;children:ReactNode}){
  const mobile=useEmployeeMobile();
- return mobile?<div className="em-requests-mobile"><EmployeeMobileExchange key={authority} authority={authority} mode={mode} selection={selection}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p></div></>;
+ return mobile?<div className="em-requests-mobile"><EmployeeMobileExchange key={authority} authority={authority} mode={mode} selection={selection}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p>
+  {/* Direction B: the phone's first frame is this page's hero, checking (phones only). */}
+  <RequestsWaitB page={selection?mode==='incoming'?'detail-foryou':'detail-mine':mode==='incoming'?'foryou':'mine'} text="Checking your current requests…"/></div></>;
 }
 function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mode:ExchangeMode;selection:string|null}){
  const [state,setState]=useState<PrivatePanelState<EmployeeExchangeSnapshot>>({snapshot:null,refreshing:true,paused:false}),[operations,setOperations]=useState(()=>new Map<string,EmployeeRequestOperation>());
@@ -52,7 +60,7 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
   if(selection){
    focusReturn.current=null;
    // The row that opened this request is gone; its heading takes focus once its details have loaded.
-   if(!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.selection===selection&&focusedDetail.current!==selection){focusedDetail.current=selection;document.querySelector<HTMLElement>('.em-exchange h1')?.focus();}
+   if(!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.selection===selection&&focusedDetail.current!==selection){focusedDetail.current=selection;focusShown(document.querySelector<HTMLElement>('.em-exchange h1'),document.getElementById('b-exchange-detail-title'));}
    return;
   }
   focusedDetail.current=null;
@@ -61,8 +69,8 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
   if(!hash||focusReturn.current===hash)return;
   const rows=mode==='incoming'?state.snapshot.incoming:state.snapshot.activity;if(rows===null)return;
   focusReturn.current=hash;
-  const element=rows?.some(row=>'exchange-request-'+row.id===hash)?document.getElementById(hash):document.querySelector<HTMLElement>('.em-exchange h1');
-  element?.focus();element?.scrollIntoView({block:'center'});
+  const element=rows?.some(row=>'exchange-request-'+row.id===hash)?focusShown(document.getElementById(hash),document.getElementById('b-'+hash)):focusShown(document.querySelector<HTMLElement>('.em-exchange h1'),document.getElementById('b-exchange-title'));
+  element?.scrollIntoView({block:'center'});
  },[selection,mode,state]);
  const operation=selection?operations.get(selection)??null:null;
  const currentPath=()=>window.location.pathname==='/app/exchange';
@@ -72,6 +80,8 @@ function EmployeeMobileExchange({authority,mode,selection}:{authority:string;mod
  };
  const retry=useCallback((op:EmployeeRequestOperation)=>{if(navigator.onLine)void op.retry(reconcileShiftChangeAction,shiftChangeAction,()=>window.location.pathname==='/app/exchange'&&lifetime.current!==null);},[]);
  const read=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority&&state.snapshot.selection===selection?state.snapshot:null;
- const recoveries=read?.enabled?[...operations.values()].filter(op=>op.requestId!==selection&&(op.state.pending||op.state.uncertain)).map(op=><Recovery key={op.requestId} operation={op} onRetry={retry} onRefresh={refresh}/>):null;
- return <EmployeeExchangeView state={state} authority={authority} mode={mode} selection={selection} operation={operation} onRefresh={refresh} onRespond={respond} onRetry={()=>{if(operation)retry(operation);}} recoveries={recoveries}/>;
+ const recovering=read?.enabled?[...operations.values()].filter(op=>op.requestId!==selection&&(op.state.pending||op.state.uncertain)):null;
+ const recoveries=recovering?.map(op=><Recovery key={op.requestId} operation={op} onRetry={retry} onRefresh={refresh}/>)??null;
+ const recoveriesB=recovering?.map(op=><Recovery key={op.requestId} look="b" effects={false} operation={op} onRetry={retry} onRefresh={refresh}/>)??null;
+ return <EmployeeExchangeView state={state} authority={authority} mode={mode} selection={selection} operation={operation} onRefresh={refresh} onRespond={respond} onRetry={()=>{if(operation)retry(operation);}} recoveries={recoveries} recoveriesB={recoveriesB}/>;
 }

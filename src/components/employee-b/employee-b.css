@@ -1,0 +1,47 @@
+/* Employee phones, Direction B (Jose approved the mock "Employee mobile, Direction B" on Nov 6, 2026). The kit, shell and
+ * page layers are the Owner's (owner-b.css, owner-b-shell.css, owner-b-pages.css); this file holds what only the Employee
+ * screens need. Phones only: tablets and desktop keep the employee's own layout. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen { display: none !important; }
+}
+
+@media (max-width: 767px) {
+  /* The next shift: a 26px time range, where, the tablet note on a soft tint, then Shift details. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift { display: flex; flex-direction: column; gap: 14px; padding: 6px 18px 18px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__time { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__where { margin-top: -12px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #F4F7F6; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__t { font-size: 14.5px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: 48px; border-radius: 16px; font-size: 15.5px; font-weight: 700; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
+
+  /* A day as a row's lead: 36px wide so text edges line up with the 36px icons. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day { width: 36px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--today b { color: #0B6E69; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day--past { opacity: 0.55; }
+
+  /* Quiet lines inside a card (a hint under a list). */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote { padding: 0 18px 16px; font-size: 13px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-cardnote--center { text-align: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li + .b-li .b-add, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-li:first-child .b-add { box-shadow: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add { width: 100%; padding: 10px 18px; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add:active { background-color: rgb(16 24 32 / 0.04); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-add .b-ico svg { width: 16px; height: 16px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list + .eb-cardnote { padding-top: 0; }
+}
+
+/* The header over the hero: an unread count is a coral dot ringed in the hero's colour (the bell's label keeps the number),
+ * as on the Owner's phone. The corporate shell's count rule uses two ids, so this one does too. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .portal-notification-count {
+    position: absolute !important; top: 11px !important; right: 12px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important;
+    border: 0 !important; border-radius: 4px !important; background: #FF6B5E !important; box-shadow: 0 0 0 2px #0B6E69 !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important; transform: none !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen--ink) .mobile-header .portal-notification-count { box-shadow: 0 0 0 2px #152A28 !important; }
+}
+
+/* An unread count beside a row's title (More › Notifications) reads as the kit's teal pill. */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+}

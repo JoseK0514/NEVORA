@@ -60,10 +60,12 @@ describe('phone tabs', () => {
     }
     expect(mobileTabsForRole('EMPLOYEE', payroll)[0].owns).toEqual(['/app']);
     expect(activeMobileTab('EMPLOYEE', '/app', payroll)).toBe('/app');
-    expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/requests/hub');
-    // Release 1: opened from Schedule, these stay on Schedule; the rest of Requests stays on Requests.
+    // Direction B (Nov 6, 2026): Pick up and swap (all its tabs), swaps, can't work and Availability go back to Schedule, so
+    // they light Schedule; time off stays on Requests.
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange', payroll)).toBe('/app/schedule');
     for (const path of ['/app/availability', '/app/exchange/swap?shiftId=s1', '/app/exchange/callout?shiftId=s1', '/app/exchange?tab=available']) expect(activeMobileTab('EMPLOYEE', path, payroll)).toBe('/app/schedule');
-    expect(activeMobileTab('EMPLOYEE', '/app/exchange?tab=my', payroll)).toBe('/app/requests/hub');
+    expect(activeMobileTab('EMPLOYEE', '/app/exchange?tab=my', payroll)).toBe('/app/schedule');
+    expect(activeMobileTab('EMPLOYEE', '/app/requests', payroll)).toBe('/app/requests/hub');
     expect(activeMobileTab('LEAD', '/app/availability', payroll)).toBe('/app/requests/hub');
     expect(activeMobileTab('OWNER', '/app?view=activity', payroll)).toBe('/app/schedule');
     expect(activeMobileTab('OWNER', '/app', payroll)).toBe('/app');

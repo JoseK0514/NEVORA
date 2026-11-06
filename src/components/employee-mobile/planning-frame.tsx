@@ -5,14 +5,23 @@ import {useEffect,useRef,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import type {EmployeePlanningSnapshot} from '@/lib/employee-planning';
 import type {PrivatePanelState} from '@/lib/private-snapshot-client';
+import {focusShown} from '../employee-b/focus';
 /* Employee planning pages (Time off, Availability) on the corporate kit (Release 1): the pushed page's white bar with
  * "‹ Back" and the centred title, then the page's cards. `sheet`: the bar reads Cancel · title like the board's sheet
  * (Request time off). The read states keep their own words and a single Try again or Sign in. */
-export function PlanningFrame({title,sub,back,backLabel='Requests',selection,state,ready,refresh,children,sheet=false}:{title:string;sub:string;back:string;backLabel?:string;selection:string;state:PrivatePanelState<EmployeePlanningSnapshot>;ready:boolean;refresh:()=>void;children:ReactNode;sheet?:boolean}){
+/** `b`: a Direction B phone screen, drawn as the page's first child (phones only); on a phone it takes the bar's place.
+ * `bTitleId` is its title, which takes focus instead of this bar's when that screen is the one shown (without it, the
+ * screen's own h1). */
+export function PlanningFrame({title,sub,back,backLabel='Requests',selection,state,ready,refresh,children,sheet=false,b,bTitleId}:{title:string;sub:string;back:string;backLabel?:string;selection:string;state:PrivatePanelState<EmployeePlanningSnapshot>;ready:boolean;refresh:()=>void;children:ReactNode;sheet?:boolean;b?:ReactNode;bTitleId?:string}){
  const heading=useRef<HTMLHeadingElement>(null),focused=useRef<string|null>(null);
- useEffect(()=>{if(!ready||focused.current===selection)return;focused.current=selection;const id=window.location.hash.slice(1);if(id)document.getElementById(id)?.focus();else heading.current?.focus();},[ready,selection]);
+ useEffect(()=>{if(!ready||focused.current===selection)return;focused.current=selection;const id=window.location.hash.slice(1);
+  const twin=()=>bTitleId?document.getElementById(bTitleId):heading.current?.closest('.c-page')?.querySelector<HTMLElement>(':scope > .b-screen h1')??null;
+  if(id)focusShown(document.getElementById(id),b?document.getElementById('b-'+id):null);else focusShown(heading.current,b?twin():null);
+ // eslint-disable-next-line react-hooks/exhaustive-deps -- focus moves once per selection, as before; `b` is the screen, not a trigger.
+ },[ready,selection]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  return <div className={'c-page c-page--narrow tof-frame em-planning'+(sheet?' tof-frame--sheet':'')} data-corp="" data-planning-selection={selection} data-planning-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
+  {b??null}
   {/* Upscale M2: Request time off reads as a sheet on a phone (grabber, 16px top corners, no tab bar). */}
   {sheet?<div className="tof-grab" aria-hidden="true"/>:null}
   <div className="c-nav">

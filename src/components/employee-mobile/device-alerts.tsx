@@ -5,6 +5,8 @@ import {DEVICE_TURN_OFF_PENDING_MESSAGE,type DeviceSnapshot} from '../../lib/not
 import {EmployeeAccountFrame} from './profile';
 import {CorpPill} from '../corp/corp';
 import {useEmployeeDevice} from './device-owner';
+import {EmployeeAlertsB} from '../employee-b/account-b-client';
+import {shown} from '../employee-b/account-host';
 import './account-corp.css';
 
 type Props={snapshot:DeviceSnapshot|null;paused:boolean;enabled:boolean;canInstall:boolean;confirm:boolean;onEnable():void;onRefresh():void;onPostpone():void;onInstall():void;onReview():void;onKeep():void;onTurnOff():void;onTest():void;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLDivElement|null>;turnOffRef?:RefObject<HTMLButtonElement|null>;installMessage?:string};
@@ -48,13 +50,17 @@ export function EmployeeDeviceAlertsView({confirmationRef,feedbackRef,turnOffRef
 
 export function EmployeeDeviceAlertsPage({enabled}:{enabled:boolean}){
  const owner=useEmployeeDevice(),[review,setReview]=useState<{generation:string|undefined}|null>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null),lastMessage=useRef('');
+ // The phone screen (Direction B) draws the same state; focus goes to whichever of the two is on screen.
+ const bConfirmation=useRef<HTMLDivElement>(null),bFeedback=useRef<HTMLDivElement>(null),bTrigger=useRef<HTMLButtonElement>(null);
  const snapshot=owner?.snapshot??null,paused=owner?.paused??false;
  const currentReview=!!review&&!paused&&!owner?.ending&&!snapshot?.accessChanged&&snapshot?.server.ownershipGeneration===review.generation;
- useEffect(()=>{if(currentReview){confirmation.current?.focus();confirmation.current?.scrollIntoView({block:'center'});}},[currentReview]);
- useEffect(()=>{if(!snapshot?.message||snapshot.message===lastMessage.current||paused)return;lastMessage.current=snapshot.message;requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});},[paused,snapshot?.message]);
+ useEffect(()=>{if(currentReview){const review=shown(confirmation.current,bConfirmation.current);review?.focus();review?.scrollIntoView({block:'center'});}},[currentReview]);
+ useEffect(()=>{if(!snapshot?.message||snapshot.message===lastMessage.current||paused)return;lastMessage.current=snapshot.message;requestAnimationFrame(()=>{const target=shown(feedback.current,bFeedback.current);target?.focus();target?.scrollIntoView({block:'center'});});},[paused,snapshot?.message]);
+ const actions={onEnable:()=>{if(snapshot?.state==='dismissed'){owner?.reopen();return;}owner?.enable();},onRefresh:()=>owner?.refresh(),onPostpone:()=>owner?.postpone(),onInstall:()=>owner?.install(),onReview:()=>setReview({generation:snapshot?.server.ownershipGeneration}),
+  onKeep:()=>{setReview(null);requestAnimationFrame(()=>shown(trigger.current,bTrigger.current)?.focus());},onTurnOff:()=>{if(review&&!currentReview)return;const generation=review?review.generation:snapshot?.cleanupPending?snapshot.cleanupGeneration:snapshot?.server.ownershipGeneration;setReview(null);owner?.turnOff(generation??null);},onTest:()=>owner?.test()};
+ const view={snapshot,enabled,paused,canInstall:owner?.canInstall??false,confirm:currentReview,installMessage:owner?.installMessage,...actions};
  return <EmployeeAccountFrame title="Alerts" back={{href:'/app/notifications',label:'Notifications'}}>
-  {!owner?.ending?<EmployeeDeviceAlertsView snapshot={snapshot} enabled={enabled} paused={paused} canInstall={owner?.canInstall??false} confirm={currentReview} confirmationRef={confirmation} feedbackRef={feedback} turnOffRef={trigger} installMessage={owner?.installMessage}
-   onEnable={()=>{if(snapshot?.state==='dismissed'){owner?.reopen();return;}owner?.enable();}} onRefresh={()=>owner?.refresh()} onPostpone={()=>owner?.postpone()} onInstall={()=>owner?.install()} onReview={()=>setReview({generation:snapshot?.server.ownershipGeneration})}
-   onKeep={()=>{setReview(null);requestAnimationFrame(()=>trigger.current?.focus());}} onTurnOff={()=>{if(review&&!currentReview)return;const generation=review?review.generation:snapshot?.cleanupPending?snapshot.cleanupGeneration:snapshot?.server.ownershipGeneration;setReview(null);owner?.turnOff(generation??null);}} onTest={()=>owner?.test()}/>:<p className="c-note" role="status">Signing out…</p>}
+  <EmployeeAlertsB {...view} ending={!!owner?.ending} confirmationRef={bConfirmation} feedbackRef={bFeedback} turnOffRef={bTrigger}/>
+  {!owner?.ending?<EmployeeDeviceAlertsView {...view} confirmationRef={confirmation} feedbackRef={feedback} turnOffRef={trigger}/>:<p className="c-note" role="status">Signing out…</p>}
  </EmployeeAccountFrame>;
 }

@@ -7,8 +7,11 @@ import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/a
 import {EmployeeCreationOperation} from './creation-operation';
 import {useEmployeeMobile} from './use-mobile';
 import {CreationView} from './creation-view';
+import {RequestsWaitB} from '../employee-b/requests-b';
 export function ResponsiveEmployeeCreation({authority,mode,sourceId,children}:{authority:string;mode:CreationMode;sourceId:string;children:ReactNode}){
- const mobile=useEmployeeMobile();return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your shift…</p></div></>;
+ const mobile=useEmployeeMobile();return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your shift…</p>
+  {/* Direction B: the phone's first frame is this form's hero, checking (phones only). */}
+  <RequestsWaitB page={mode} text="Checking your current shift and options…"/></div></>;
 }
 function EmployeeMobileCreation({authority,mode,sourceId}:{authority:string;mode:CreationMode;sourceId:string}){
  const [state,setState]=useState<PrivatePanelState<EmployeeCreationSnapshot>>({snapshot:null,refreshing:true,paused:false}),[draft,setDraft]=useState<CreationDraft>({sourceKey:null,targetKey:null,reason:'',note:''}),[operation]=useState(()=>new EmployeeCreationOperation());

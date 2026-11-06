@@ -27,6 +27,8 @@ import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
 import {readNextPay} from './my-pay/next-pay';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {payrollFeatureEnabled} from '@/lib/payroll/service';
 import {retiredViewDestination} from '@/lib/retired-views';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
@@ -72,8 +74,11 @@ export default async function DashboardPage({
     const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName})=>({id,date,startTime,endTime,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
     const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
-    const teamMessage=session.role==='LEAD'&&(await currentPresentation()).modules.updates;
-    return <EmployeeDashboard intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'}/>;
+    const presentation=await currentPresentation();
+    const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
+    // Direction B (phones): hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees only.
+    const b=session.role==='EMPLOYEE'?{hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'}/>;
   }
 
   const proof=await requireSessionMutationProof();

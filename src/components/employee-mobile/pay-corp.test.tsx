@@ -3,6 +3,7 @@ import {createElement} from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
 import type {PayView} from './pay';
+import {onlyB,withoutB} from '../owner-b/test-support';
 
 const route=vi.hoisted(()=>({search:''}));
 vi.mock('next/navigation',()=>({useSearchParams:()=>new URLSearchParams(route.search)}));
@@ -69,12 +70,17 @@ describe('Pay history and Paycheck (E-PayHistory, E-Paycheck)',()=>{
   expect(plain).toContain('Pay history');expect(plain).toContain('January');expect(plain).toContain('Thu, Jan 10');expect(plain).toContain('Dec 23 – Jan 5');
  });
  it('opens one statement with one PDF row, and the year only outside the current year',()=>{
-  const html=render({},`paycheck=${ids.correction}`),plain=text(html);
+  // The corporate layout (tablets and desktop); the phone screen (Direction B) is checked after it.
+  const full=render({},`paycheck=${ids.correction}`),html=withoutB(full),plain=text(html);
   expect(plain).toContain('Paycheck');expect(plain).toContain('Pay period Jan 6 – 19');expect(plain).toContain('Thu, Jan 24, 2030');
   expect(plain).toContain('This corrects your earlier statement for the same period.');
   // Upscale S8: one "Pay statement (PDF)" row that opens the document separately.
   expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="Pay statement (PDF), corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);
   expect(plain.match(/Pay statement \(PDF\)/g)).toHaveLength(1);expect(plain).not.toMatch(/View PDF|Download PDF/);
+  // Direction B: the phone screen has the same one PDF row, opening the same document separately.
+  const phone=onlyB(full);expect(text(phone).match(/Pay statement \(PDF\)/g)).toHaveLength(1);
+  expect(phone).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="Pay statement (PDF), corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);
+  expect(phone).not.toMatch(/\$\d/);
   expect(html).not.toMatch(/ download[ =>]/);
   expect(plain).toContain('Downloaded files may contain personal pay information.');
   // Without a viewer link the row goes to the route itself (its attachment header downloads it), in the same tab.

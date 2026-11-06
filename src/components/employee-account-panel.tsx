@@ -44,11 +44,9 @@ export function EmployeeAccountView({kind,state,onRetry,notificationsEnabled=fal
    :<button type="button" className={kind==='profile'?'profile-refresh-link':'button secondary'} disabled={state.paused||state.refreshing} onClick={onRetry}>{state.refreshing?'Checking…':kind==='profile'?'Refresh details':'Refresh'}</button>}</footer>
  </section>;
 }
-export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false,signature=false,quiet=false,employeeMobile=false,corp=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean;quiet?:boolean;employeeMobile?:boolean;
- /** Employee Notifications (board E-Notifications): the corporate list with All / Unread tabs. */
- corp?:boolean;
- /** Employee Signature pages (phase 2): the Notifications page draws its own band and sheet. */
- signature?:boolean}){
+/** The private own read behind an account panel (Profile, Notifications): one controller, refreshed on focus and
+ * reconnect, cleared on pause and sign-out. Shared by the panel and by pages that draw two presentations of one read. */
+export function useEmployeeAccountRead(kind:EmployeeViewKind,authority:string,endpoint?:string){
  const [state,setState]=useState<PrivatePanelState<EmployeeViewSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeeViewSnapshot>>|null>(null);
  useEffect(()=>{
@@ -78,8 +76,16 @@ export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,
   void Promise.resolve().then(()=>{if(mounted)sync();});
   return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);window.removeEventListener('nevora:signout',signout);if(kind==='notifications')window.removeEventListener('nevora:notifications-changed',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,kind,endpoint]);
- return <EmployeeAccountView kind={kind} state={state} onRetry={()=>control.current?.refresh()} notificationsEnabled={notificationsEnabled} signature={signature} quiet={quiet} employeeMobile={employeeMobile} corp={corp} onMarkRead={markReadAllowed?async id=>{
+ return {state,refresh:()=>control.current?.refresh()};
+}
+export function EmployeeAccountPanel({kind,authority,notificationsEnabled=false,endpoint,markReadAllowed=false,signature=false,quiet=false,employeeMobile=false,corp=false}:{kind:EmployeeViewKind;authority:string;notificationsEnabled?:boolean;endpoint?:string;markReadAllowed?:boolean;quiet?:boolean;employeeMobile?:boolean;
+ /** Employee Notifications (board E-Notifications): the corporate list with All / Unread tabs. */
+ corp?:boolean;
+ /** Employee Signature pages (phase 2): the Notifications page draws its own band and sheet. */
+ signature?:boolean}){
+ const {state,refresh}=useEmployeeAccountRead(kind,authority,endpoint);
+ return <EmployeeAccountView kind={kind} state={state} onRetry={refresh} notificationsEnabled={notificationsEnabled} signature={signature} quiet={quiet} employeeMobile={employeeMobile} corp={corp} onMarkRead={markReadAllowed?async id=>{
  const response=await fetch('/api/notifications/read',{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000),headers:{'Content-Type':'application/json','X-Nevora-Notification-Read':'1','X-Nevora-Employee-View':authority},body:JSON.stringify({notificationId:id})});
- if(!response.ok)throw Error('Read not confirmed');control.current?.refresh();window.dispatchEvent(new Event('nevora:notifications-changed'));
+ if(!response.ok)throw Error('Read not confirmed');refresh();window.dispatchEvent(new Event('nevora:notifications-changed'));
  }:undefined}/>;
 }

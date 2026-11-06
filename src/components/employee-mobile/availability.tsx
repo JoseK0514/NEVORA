@@ -8,6 +8,8 @@ import {availabilityWeekLabel} from '../availability-week-label';
 import {AvailabilityDayRows,AvailabilityDaySheet,AvailabilityTime} from '../availability-corp';
 import {timeZoneLabel} from '@/lib/time-zone-label';
 import {PlanningFrame} from './planning-frame';
+import {AvailabilityB,AvailabilityStatusB,availabilitySubB} from '../employee-b/availability-b';
+import {BButton,BButtonLink} from '../owner-b/b-kit';
 import {usePlanning} from './use-planning';
 import {PlanningOperations} from './planning-operation';
 import {PlanningFeedback,usePlanningOperation} from './planning-feedback';
@@ -51,8 +53,15 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
  const issueDay=error&&issue?issue.dayOfWeek:null,sheetDay=draft&&sheet?draft.days.find(day=>day.dayOfWeek===sheet.day)??null:null,errorInSheet=!!sheet?.open&&issueDay!==null&&sheet.day===issueDay;
  const errorText=error?<p id={errorId} className="c-error" role="alert">{error}</p>:null;
  const setDay=(dayOfWeek:number,update:(day:Day)=>Day)=>change(d=>({...d,days:d.days.map(row=>row.dayOfWeek===dayOfWeek?update(row):row)}));
- return <PlanningFrame title="Availability" sub={isNormal?'Used to build your future schedules':'Used for the week of '+formatWeekRange(selection)} back="/app/schedule" backLabel="Schedule" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh}>
- {read?<div className="c-avail c-avail--phone" data-availability-status={status}>
+ // Direction B (phones): the hero; the page's own content below it is a `b-keep` card (employee-b/time.css), and the
+ // read's states show on the hero too.
+ const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied';
+ const b=<AvailabilityB sub={availabilitySubB(isNormal?null:selection,isNormal?undefined:formatWeekRange(selection))} change={read&&isNormal?'/app/availability?week='+read.data.nextWeek:null}>
+  {read?null:<AvailabilityStatusB message={panel.state.paused?'Your planning is paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':panel.state.refreshing?'Checking your current planning…':'Your planning couldn’t be checked.'}
+   action={denied?<BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>:panel.state.refreshing||panel.state.paused?null:<BButton kind="quiet" full onClick={panel.refresh}>Try again</BButton>}/>}
+ </AvailabilityB>;
+ return <PlanningFrame title="Availability" sub={isNormal?'Used to build your future schedules':'Used for the week of '+formatWeekRange(selection)} back="/app/schedule" backLabel="Schedule" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh} b={b}>
+ {read?<div className="c-avail c-avail--phone b-keep" data-availability-status={status}>
   {other?<CorpCard as="div" ariaLabel="Earlier submission"><div className="c-avail__msg"><p>A submission for another week still needs to be checked.</p><Link className="c-link c-link--l" href={'/app/availability'+(other[0]==='normal'?'':'?week='+other[0])}>Return to that submission</Link></div></CorpCard>:null}
   {complete?<CorpCard as="div" ariaLabel="Submission result"><div className="c-avail__msg"><h2 ref={receipt} tabIndex={-1}>{isNormal?'Usual hours saved':'Weekly availability submitted'}</h2><p>Saved hours match your submission.</p><CorpButton kind="secondary" size="md" full disabled={panel.state.refreshing||locked} onClick={()=>{ops.reset(selection);setDrafts(previous=>({...previous,[selection]:draftFrom(read)}));}}>{locked?'This week is closed':'Review saved hours'}</CorpButton></div></CorpCard>:draft?<>
    {stale?<CorpCard as="div" ariaLabel="Changed saved hours"><div className="c-avail__msg"><h2>Saved hours changed</h2><p>Your edits are still here. Review the saved hours before applying your edited days.</p><details><summary>Current saved hours</summary><dl>{daysFrom(read.data.windows).map(day=><div key={day.dayOfWeek} style={{display:'contents'}}><dt>{dayNames[day.dayOfWeek]}</dt><dd>{daySummary(day)}</dd></div>)}</dl></details><div className="c-btns c-btns--stack"><CorpButton kind="secondary" size="md" disabled={blocked} onClick={()=>change(d=>({...draftFrom(read),days:daysFrom(mergePlanningDraft(read.data.windows,hoursFrom(d.days),changedDays(d))),confirmEmpty:d.confirmEmpty}))}>Keep my edited days</CorpButton><CorpButton kind="secondary" size="md" disabled={pending||uncertain} onClick={()=>change(()=>draftFrom(read))}>Use saved hours</CorpButton></div></div></CorpCard>:null}
@@ -74,7 +83,7 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
      <AvailabilityDayRows days={draft.days.map(day=>({key:day.dayOfWeek,name:dayNames[day.dayOfWeek],hours:day.available?rowHours(day):null,label:dayNames[day.dayOfWeek]+', '+daySummary(day),onOpen:()=>openDay(day.dayOfWeek)}))}/>
     </CorpCard>
     {!hoursFrom(draft.days).length?<label className="c-avail__check"><input type="checkbox" name="confirmEmpty" aria-invalid={!!error&&!hoursFrom(draft.days).length||undefined} aria-describedby={error&&!hoursFrom(draft.days).length?errorId:undefined} checked={draft.confirmEmpty} disabled={blocked} onChange={e=>change(d=>({...d,confirmEmpty:e.target.checked}))}/>I am unavailable for the entire {isNormal?'usual week':'week'}.</label>:null}
-    <p className="c-note c-avail__note">{isNormal?<span>Your manager uses this to build the schedule. One-off days off go in Requests.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" href="/app/availability">Usual week</Link></span>}</p>
+    <p className="c-note c-avail__note">{isNormal?<span><span className="eb-avail-lead">Your manager uses this to build the schedule. </span>One-off days off go in Requests.</span>:locked?<span>This week is closed. Contact your manager if your availability changed. <Link className="c-link" href="/app/availability">Usual week</Link></span>:<span>{read.data.deadline?'Send by '+zoneDay(read.data.deadline,true)+' ('+timeZoneLabel(read.timeZone)+'). ':''}Hours for this week only; your usual week stays the same. <Link className="c-link" href="/app/availability">Usual week</Link></span>}</p>
     {errorInSheet?null:errorText}<PlanningFeedback operation={currentOperation} onRetry={()=>{void currentOperation.retry(check,send,()=>panel.allowed());}}/>
     {/* Upscale B4: Save (the usual week) stays disabled until something changes; a week's Submit stays available. */}
     {!locked?<><CorpButton type="submit" full disabled={blocked||stale||isNormal&&!changedDays(draft).length&&!draft.confirmEmpty}>{pending?'Saving…':isNormal?'Save':'Submit this week'}</CorpButton>{changedDays(draft).length?<button className="c-avail__link" type="button" disabled={pending||uncertain} onClick={()=>change(()=>draftFrom(read))}>Discard changes</button>:null}</>:null}

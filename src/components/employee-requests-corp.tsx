@@ -46,6 +46,8 @@ export const waitingStatus = (status: string) => ['PENDING', 'EMPLOYEE_PENDING',
 
 /** Statuses that wait on the manager (said once, by the Waiting card's label). */
 const managerWaits = new Set(['Waiting', 'Needs approval']);
+/** A row waits on the manager (the Waiting card then says "Waiting for your manager"). */
+export const waitsOnManager = (pill: {text: string}) => managerWaits.has(pill.text);
 
 /** Upscale S4: a row's state is grey text, never a pill, and is left out where the card's label already says it. */
 function Rows({rows, said}: {rows: CorpRequestRow[]; said?: (row: CorpRequestRow) => boolean}) {
@@ -63,7 +65,7 @@ export function requestsSubtitle(modules: {timeOff: boolean; marketplace: boolea
   return !modules || modules.timeOff && modules.marketplace ? 'Time off and shift changes you’ve sent' : modules.timeOff ? 'Time off you’ve asked for' : 'Shift changes you’ve sent';
 }
 
-export function EmployeeRequestsCorp({sub, newHref, waiting, decided, decidedHref, waitingExtra, notice, after, state, className}: {
+export function EmployeeRequestsCorp({sub, newHref, waiting, decided, decidedHref, waitingExtra, notice, after, state, className, b}: {
   sub: ReactNode;
   /** The one primary ("New request"); omitted when no request can start here. */
   newHref?: string | null;
@@ -78,11 +80,14 @@ export function EmployeeRequestsCorp({sub, newHref, waiting, decided, decidedHre
   after?: ReactNode;
   state?: string;
   className?: string;
+  /** Direction B: the phone screen, the page's first child (phones only; tablets and desktop keep this layout). */
+  b?: ReactNode;
 }) {
   // Upscale S7: the button names what it opens. The Waiting card says who it waits on once, when every row waits on the
   // manager; a row waiting on someone else (a teammate, cover) says so in grey.
   const forManager = !!waiting && waiting.every(row => managerWaits.has(row.pill.text));
   return <CorpPage className={className ? `c-ereq c-page--narrow ${className}` : 'c-ereq c-page--narrow'} label="Requests">
+    {b ?? null}
     <div className="c-ereq__body" data-requests-state={state}>
       <CorpTitle title="Requests" sub={sub} actions={newHref ? <CorpButtonLink href={newHref}>Request time off</CorpButtonLink> : undefined}/>
       {notice ?? null}

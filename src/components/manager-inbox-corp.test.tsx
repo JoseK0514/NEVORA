@@ -179,7 +179,7 @@ it('groups a week of earlier coverage gaps into one row with its count', () => {
 it('Direction B (phones): glass filters with counts, Find cover on each open shift, and Decline and Approve on a time off request that post the same review', () => {
   const withReview = items.map(entry => entry.type === 'TIME_OFF' ? {...entry, detail: 'Ana Colon', request: {startDate: '2026-11-12', endDate: '2026-11-14', lengthText: '3 days', locationName: 'Condado', reviewHref: '/app/requests?tab=pending&requestId=r1&from=inbox'}} as ActionItem : entry);
   const html = onlyB(page({snapshot: ready(withReview), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true})).replace(/\u00a0/g, ' ');
-  expect(html).toContain('<h1 id="b-todo-title">Things to do</h1>');
+  expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
   expect(html).toMatch(/aria-pressed="true">All \d+<\/button>/);
   expect(html).toContain('>Shifts 1</button>');
   expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*>Find cover<\/a>/);

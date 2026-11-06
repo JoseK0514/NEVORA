@@ -14,6 +14,7 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import { CorpButtonLink, CorpNav, CorpNote, CorpPage, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import { TimeOffListRow, TimeOffRequestCard, canWithdrawTimeOff, timeOffDates, type TimeOffView } from "@/components/employee-mobile/timeoff-parts";
 import "@/components/employee-mobile/timeoff-corp.css";
+import { TimeOffWaitB } from "@/components/employee-b/timeoff-b";
 import "./owner-lists.css";
 
 /* Employee Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet), in the desktop column.
@@ -61,6 +62,8 @@ export default async function RequestsPage({
 
   const proof = await requireSessionMutationProof();
   return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow">
+    {/* Direction B: before the phone's private read starts, its first frame is this page's hero, checking (phones only). */}
+    <TimeOffWaitB selection={sheetOpen ? "new" : params.requestId ?? "list"} filter={view} />
     <CorpNav back={{ href: "/app/requests/hub", label: "Requests" }} title="Time off" phoneOnly />
     <CorpTitle title="Time off" wide />
     {status ? <CorpNote><span role="status">{status}</span></CorpNote> : null}

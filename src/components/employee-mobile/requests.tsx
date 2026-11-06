@@ -5,7 +5,10 @@ import {usePathname} from 'next/navigation';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRow,CorpRows} from '../corp/corp';
-import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,type CorpRequestRow} from '../employee-requests-corp';
+import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,waitsOnManager,type CorpRequestRow} from '../employee-requests-corp';
+import {BStateCard,IncomingB,InlineRetryB,RequestsHubB,RequestsWaitB,bTone,type BRequestRow} from '../employee-b/requests-b';
+import {OpenShiftsB,PickupResultB,type OpenRowB} from '../employee-b/exchange-b';
+import {BButton,BButtonLink} from '../owner-b/b-kit';
 import {keepWhole} from '@/lib/keep-whole';
 import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/private-snapshot-client';
 import {parseEmployeeRequests,type EmployeeRequestsSnapshot,type OpenEmployeeShift,type OwnRequest} from '@/lib/employee-requests';
@@ -25,28 +28,38 @@ const requestRow=(row:OwnRequest):CorpRequestRow=>{
  const detail=row.kind==='timeOff'&&row.endDate?keepWhole(timeOffDetail({startDate:row.date,endDate:row.endDate,startTime:row.startTime,endTime:row.endTime})):day(row.date);
  return {key:row.kind+row.id,href:href(row),title,detail,pill:row.kind==='timeOff'?timeOffPill(row.status):shiftPill(row.status,row.kind==='callout')};
 };
+/** The same request as a Direction B row: its type icon, and its status as a chip in today's tones. */
+const requestRowB=(row:OwnRequest):BRequestRow=>{const corp=requestRow(row);return {key:corp.key,href:corp.href,kind:row.kind,title:corp.title,sub:corp.detail,chip:{tone:bTone(corp.pill.tone),text:corp.pill.text}};};
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
  if(count===null)return <div className="c-ereq__inline"><span role="status">Swaps for you couldn’t be checked. <Link className="c-link" href="/app/exchange?tab=foryou">Open swaps for you</Link></span><button className="c-ereq__retry" type="button" onClick={onRetry}>Try again</button></div>;
  return count?<CorpRows label="Needs your answer"><li><CorpRow href="/app/exchange?tab=foryou" bold title={count===1?'A teammate requested a swap':`${count} swaps need your answer`} detail="Review the shifts before responding" chevron/></li></CorpRows>:null;
 }
-/** One pickup: its button ("action"), its outcome ("status"), or both stacked. */
-export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false,part='all',label}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean;part?:'all'|'action'|'status';label?:string}){
+/** One pickup: its button ("action"), its outcome ("status"), or both stacked. `look="b"` draws the same controls for the
+ * Direction B phone screen; its copy passes `effects={false}` so the refresh after a settled pickup runs once (the corporate
+ * copy is always mounted). */
+export function Pickup({operation,onRefresh,canSubmit=false,isCurrent=()=>false,canRecover=()=>false,part='all',label,look='corp',effects=true}:{operation:PickupOperation;onRefresh:()=>void;canSubmit?:boolean;isCurrent?:(operation:PickupOperation)=>boolean;canRecover?:()=>boolean;part?:'all'|'action'|'status';label?:string;look?:'corp'|'b';effects?:boolean}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const current=operation.state,result=current.result,resolved=result&&['completed','pending','closed'].includes(result.status);
- useEffect(()=>{if(resolved&&part!=='action')onRefresh();},[resolved,onRefresh,part]);
+ useEffect(()=>{if(effects&&resolved&&part!=='action')onRefresh();},[effects,resolved,onRefresh,part]);
  const run=()=>{if(canSubmit&&navigator.onLine)void operation.submit(shiftChangeAction,()=>isCurrent(operation));};
- const action=canSubmit&&(!result||!resolved&&!current.uncertain)?<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={run} aria-label={label}>{current.pending?'Submitting…':'Pick up'}</CorpButton>:null;
+ const check=()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction,canRecover);};
+ const b=look==='b';
+ const ready=canSubmit&&(!result||!resolved&&!current.uncertain),word=current.pending?'Submitting…':'Pick up';
+ const action=ready?b?<BButton kind="teal" disabled={current.pending} onClick={run} label={label}>{word}</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={run} aria-label={label}>{word}</CorpButton>:null;
  if(part==='action')return action;
+ const next=resolved?{href:result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests',text:result.status==='completed'?'View my schedule':'View my requests'}:null;
  const status=<>
   {current.pending&&current.uncertain?<p role="status">Checking the original request…</p>:null}
   {result?<p role={resolved?'status':'alert'}>{result.status==='completed'?'Shift pickup completed. Check your current schedule.':result.status==='pending'?'Pickup requested. Your assignment is awaiting review.':shiftChangeFeedback(result)}</p>:null}
-  {current.uncertain?<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={()=>{if(navigator.onLine)void operation.retry(reconcileShiftChangeAction,shiftChangeAction,canRecover);}}>Check pickup status</CorpButton>:null}
-  {result&&!current.uncertain&&!resolved?<CorpButton kind="secondary" size="sm" onClick={onRefresh}>Refresh shift options</CorpButton>:null}
-  {resolved?<CorpButtonLink href={result.status==='completed'?'/app/schedule':'/app/exchange?tab=requests'} kind="secondary" size="sm">{result.status==='completed'?'View my schedule':'View my requests'}</CorpButtonLink>:null}
+  {current.uncertain?b?<BButton kind="quiet" full disabled={current.pending} onClick={check}>Check pickup status</BButton>:<CorpButton kind="secondary" size="sm" disabled={current.pending} onClick={check}>Check pickup status</CorpButton>:null}
+  {result&&!current.uncertain&&!resolved?b?<BButton kind="quiet" full onClick={onRefresh}>Refresh shift options</BButton>:<CorpButton kind="secondary" size="sm" onClick={onRefresh}>Refresh shift options</CorpButton>:null}
+  {next?b?<BButtonLink href={next.href} kind="quiet" full>{next.text}</BButtonLink>:<CorpButtonLink href={next.href} kind="secondary" size="sm">{next.text}</CorpButtonLink>:null}
  </>;
- return <div className="c-ereq__result em-pickup" aria-busy={current.pending}>{part==='all'?action:null}{status}</div>;
+ return <div className={b?'eb-pickup':'c-ereq__result em-pickup'} aria-busy={current.pending}>{part==='all'?action:null}{status}</div>;
 }
+/** Whether a pickup has an outcome to show under its row. */
+function usePickupStatus(operation:PickupOperation){useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);return !!(operation.state.result||operation.state.uncertain);}
 const shiftHours=(shift:{startTime:string;endTime:string})=>{const m=(t:string)=>{const [h,mm]=t.split(':').map(Number);return h*60+mm;};const a=m(shift.startTime),b=m(shift.endTime),total=b>a?b-a:b+1440-a,h=Math.round(total/6)/10;return `${Number.isInteger(h)?h:h.toFixed(1)} h`;};
 function ShiftCard({shift,operation,onRefresh,selected,nextWeek,isCurrent,canRecover}:{shift:OpenEmployeeShift;operation:PickupOperation;onRefresh:()=>void;selected:boolean;nextWeek:boolean;isCurrent:(operation:PickupOperation)=>boolean;canRecover:()=>boolean}){
  const card=useRef<HTMLDivElement>(null);
@@ -63,9 +76,15 @@ function ShiftCard({shift,operation,onRefresh,selected,nextWeek,isCurrent,canRec
   </CorpCard>
  </div>;
 }
+/** A pickup's outcome under its Direction B row, only when it has one. */
+function PickupStatusB(props:{operation:PickupOperation;onRefresh:()=>void;canSubmit:boolean;isCurrent:(operation:PickupOperation)=>boolean;canRecover:()=>boolean}){
+ return usePickupStatus(props.operation)?<Pickup look="b" effects={false} part="status" {...props}/>:null;
+}
 export function ResponsiveEmployeeRequests({authority,mode,selected,children}:{authority:string;mode:Mode;selected?:string;children:ReactNode}){
  const mobile=useEmployeeMobile();
- return mobile?<div className="em-requests-mobile"><EmployeeMobileRequests key={authority} authority={authority} mode={mode} selected={selected}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p></div></>;
+ return mobile?<div className="em-requests-mobile"><EmployeeMobileRequests key={authority} authority={authority} mode={mode} selected={selected}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p>
+  {/* Direction B: the phone's first frame is this page's hero, checking (phones only). */}
+  <RequestsWaitB page={mode==='hub'?'hub':'open'} text="Checking your current requests…"/></div></>;
 }
 function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode:Mode;selected?:string}){
  const [state,setState]=useState<PrivatePanelState<EmployeeRequestsSnapshot>>({snapshot:null,refreshing:true,paused:false});
@@ -111,13 +130,22 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
  useEffect(()=>{const read=()=>setHash(decodeURIComponent(window.location.hash.slice(1)));read();window.addEventListener('hashchange',read);return()=>window.removeEventListener('hashchange',read);},[]);
  const unavailable=!snapshot?<CorpCard ariaLabel="Requests status"><div className="c-card__body"><p className="c-ereq__state" role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>
   {denied?<CorpButtonLink href="/login" kind="secondary" size="md" full>Sign in</CorpButtonLink>:!state.paused&&!state.refreshing?<CorpButton kind="secondary" size="md" full onClick={refresh}>Try again</CorpButton>:null}</div></CorpCard>:null;
+ const stateB=!snapshot?<BStateCard label="Requests status" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}
+  denied={denied} retry={!state.paused&&!state.refreshing?refresh:null}/>:null;
  if(mode==='hub'){
   const modules=snapshot?.modules;
   const recent=snapshot?.recent;
   const waiting=recent?recent.filter(row=>waitingStatus(row.status)).map(requestRow):[],decided=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRow):[];
   const incoming=modules?.marketplace&&snapshot!.incoming!==0?<IncomingRequestSection count={snapshot!.incoming} onRetry={refresh}/>:null;
   const historyFailed=snapshot&&recent===null?<div className="c-ereq__inline"><span role="status">Your request history couldn’t be checked.</span><button className="c-ereq__retry" type="button" disabled={state.refreshing} onClick={refresh}>Try again</button></div>:null;
+  const waitingB=recent?recent.filter(row=>waitingStatus(row.status)).map(requestRowB):[],decidedB=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRowB):[];
+  const incomingB=modules?.marketplace&&snapshot!.incoming!==0?<IncomingB count={snapshot!.incoming} onRetry={refresh}/>:null;
+  const historyFailedB=snapshot&&recent===null?<InlineRetryB text="Your request history couldn’t be checked." onRetry={refresh} busy={state.refreshing}/>:null;
   return <EmployeeRequestsCorp className="em-requests-corp" state={viewState}
+   b={<RequestsHubB sub={requestsSubtitle(modules)} newHref={modules?.timeOff?'/app/requests?tab=new':null}
+    waiting={snapshot?waitingB:null} decided={snapshot?decidedB:null} forManager={waitingB.every(row=>waitsOnManager(row.chip))}
+    decidedHref={modules?.timeOff?'/app/requests?filter=decided':modules?.marketplace?'/app/exchange?tab=requests':null}
+    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} state={stateB}/>}
    sub={requestsSubtitle(modules)}
    newHref={modules?.timeOff?'/app/requests?tab=new':null}
    waiting={snapshot?waiting:null} decided={snapshot?decided:null}
@@ -128,18 +156,27 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
  const todayHere=snapshot?new Intl.DateTimeFormat('en-CA',{timeZone:snapshot.timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(snapshot.observedAt)):null;
  const nextWeekStart=todayHere?addDays(weekStartFor(todayHere),7):null;
  const outcomes=new Set(eligible.map(shift=>shift.outcome));
+ const note=eligible.length?outcomes.has('pending')&&!outcomes.has('completed')?'Your manager confirms before the shift is yours. You’ll get a notification either way.':outcomes.has('completed')&&!outcomes.has('pending')?'Picking up a shift makes it yours right away if it’s still open and you still meet the rules.':'Some shifts are yours right away; others need your manager to confirm. You’ll get a notification either way.':null;
+ const orphans=[...operations.values()].filter(item=>(item.state.pending||item.state.result)&&!eligible.some(shift=>shift.id===item.requestId));
  return <CorpPage className="c-ereq em-requests-corp" label="Open shifts">
+  {/* Direction B: Pick up and swap's Open shifts (phones only). The Pick up buttons drive the same operations. */}
+  <OpenShiftsB state={stateB} enabled={snapshot?snapshot.modules.marketplace:null} failed={!!snapshot&&snapshot.open===null} refreshing={state.refreshing} onRefresh={refresh}
+   results={orphans.map(item=><PickupResultB key={item.requestId}><Pickup look="b" effects={false} operation={item} onRefresh={refresh} canRecover={canRecover}/></PickupResultB>)}
+   rows={eligible.flatMap(shift=>{const operation=operations.get(shift.id);if(!operation)return [];return [{shift,hours:shiftHours(shift),nextWeek:!!nextWeekStart&&shift.date>=nextWeekStart,selected:selected===shift.id||hash==='request-'+shift.id,
+    action:<Pickup look="b" part="action" operation={operation} onRefresh={refresh} canSubmit={operation.revision===shift.revision} isCurrent={isCurrent} canRecover={canRecover} label={`Pick up ${day(shift.date)}, ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`}/>,
+    status:<PickupStatusB operation={operation} onRefresh={refresh} canSubmit={operation.revision===shift.revision} isCurrent={isCurrent} canRecover={canRecover}/>} satisfies OpenRowB];})}
+   unconfirmed={unconfirmed} refused={refused} note={note}/>
   <div className="c-ereq__body" data-requests-state={viewState}>
    <CorpNav back={{href:'/app/schedule',label:'Schedule'}} title="Open shifts"/>
    {unavailable??(snapshot!.modules.marketplace?<>
-    {[...operations.values()].filter(item=>(item.state.pending||item.state.result)&&!eligible.some(shift=>shift.id===item.requestId)).map(item=><CorpCard key={item.requestId} ariaLabel="Your pickup result"><div className="c-card__body"><Pickup operation={item} onRefresh={refresh} canRecover={canRecover}/></div></CorpCard>)}
+    {orphans.map(item=><CorpCard key={item.requestId} ariaLabel="Your pickup result"><div className="c-card__body"><Pickup operation={item} onRefresh={refresh} canRecover={canRecover}/></div></CorpCard>)}
     {snapshot!.open===null?<CorpCard ariaLabel="Open shifts"><div className="c-card__body"><p className="c-ereq__state" role="status">Open shifts couldn’t be checked.</p><CorpButton kind="secondary" size="md" full disabled={state.refreshing} onClick={refresh}>Try again</CorpButton></div></CorpCard>:<>
      <p className="c-ereq__lede" id="em-eligible-heading">{eligible.length?'Shifts at your locations you can pick up':unconfirmed.length?'Some shifts still need an eligibility check. Refresh to try again.':'No eligible open shifts right now. Check back when more coverage is offered.'}</p>
      {eligible.map(shift=>operations.has(shift.id)?<ShiftCard key={shift.id} shift={shift} selected={selected===shift.id||hash==='request-'+shift.id} nextWeek={!!nextWeekStart&&shift.date>=nextWeekStart} operation={operations.get(shift.id)!} onRefresh={refresh} isCurrent={isCurrent} canRecover={canRecover}/>:null)}
      {!eligible.length&&unconfirmed.length?<CorpButton kind="secondary" size="md" full disabled={state.refreshing} onClick={refresh}>Refresh</CorpButton>:null}
      {unconfirmed.length?<CorpCard label="Eligibility unavailable" id="em-unconfirmed"><CorpRows>{unconfirmed.map(row=><li key={row.id}><CorpRow title={`${day(row.date)} · ${formatTime(row.startTime)}`} detail={row.notice?`${row.location} · ${row.notice}`:row.location}/></li>)}</CorpRows></CorpCard>:null}
      {refused.length?<details className="c-ereq__why"><summary>Why other shifts aren’t available <CaretDownIcon aria-hidden="true"/></summary><ul>{refused.map(row=><li key={row.id}><strong>{day(row.date)} · {formatTime(row.startTime)}</strong><span>{row.location}</span>{row.notice?<p>{row.notice}</p>:null}</li>)}</ul></details>:null}
-     {eligible.length?<CorpNote icon={<InfoIcon className="c-ic" aria-hidden="true"/>}>{outcomes.has('pending')&&!outcomes.has('completed')?'Your manager confirms before the shift is yours. You’ll get a notification either way.':outcomes.has('completed')&&!outcomes.has('pending')?'Picking up a shift makes it yours right away if it’s still open and you still meet the rules.':'Some shifts are yours right away; others need your manager to confirm. You’ll get a notification either way.'}</CorpNote>:null}
+     {note?<CorpNote icon={<InfoIcon className="c-ic" aria-hidden="true"/>}>{note}</CorpNote>:null}
     </>}
    </>:<CorpCard ariaLabel="Open shifts"><div className="c-card__body"><p className="c-ereq__state" role="status">Shift pickup is turned off for your company.</p></div></CorpCard>)}
   </div>

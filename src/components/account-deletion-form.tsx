@@ -15,6 +15,7 @@ import { EyeSlashIcon } from "@phosphor-icons/react/dist/ssr/EyeSlash";
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr/Trash";
 import { ShieldCheckIcon } from "@phosphor-icons/react/dist/ssr/ShieldCheck";
 import { EmployeeDeletionView, type DeletionView } from "./employee-mobile/deletion";
+import { shown as onScreen } from "./employee-b/account-host";
 
 type Account = { name: string; role: string; employeeId: string; roleKey?: "OWNER" | "MANAGER" | "LEAD" | "EMPLOYEE" };
 type Done = Extract<DeletionFormState, { reference: string }>;
@@ -55,18 +56,20 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
   // Board E-DeleteAccount: Employees and Leads get the corporate page on every width; other roles keep Quiet.
   const phone = account.roleKey === "EMPLOYEE" || account.roleKey === "LEAD";
   const outcome = useRef<HTMLDivElement>(null);
+  // An Employee's phone screen (Direction B) draws the receipt and the ended outcomes itself; focus the one on screen.
+  const outcomeB = useRef<HTMLDivElement>(null);
   const { errors, handlers } = useFieldErrors({ password: { missing: "Enter your password to confirm it’s you." } });
   const receipt = RECEIPT.has(state.kind);
 
   useEffect(() => {
     // One response, one announcement: focus the outcome, or the password it rejected.
-    const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef : ANNOUNCED.has(state.kind) ? outcome : null)?.current?.focus());
+    const frame = requestAnimationFrame(() => (state.kind === "wrong_password" ? passwordRef.current : ANNOUNCED.has(state.kind) ? onScreen(outcome.current, outcomeB.current) : null)?.focus());
     return () => cancelAnimationFrame(frame);
   }, [state]);
 
   if (phone) {
     const view: DeletionView = { state, pending, retry, confirmed, shown, period, retention };
-    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} passwordRef={bindPassword}
+    return <EmployeeDeletionView account={account} view={view} action={action} outcomeRef={outcome} outcomeRefB={outcomeB} passwordRef={bindPassword}
       onPassword={value => { typed.current = value; }} onShown={() => setShown(value => !value)} onConfirmed={setConfirmed} workplace={workplaceName} />;
   }
 
