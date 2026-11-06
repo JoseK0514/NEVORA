@@ -1,6 +1,6 @@
 # Fresh read-only review of b6ebe40c
 
-Reviewer: android_integration_final_review. Scope: origin/development e9c3a66d through b6ebe40c and private signing helper source/allowlisted metadata. This is a code/release review, not independent QA certification. Verbatim findings follow.
+Reviewer: android_integration_final_review. Scope: origin/development e9c3a66d through b6ebe40c and private signing helper source/allowlisted metadata. This is a code/release review, not independent QA certification. Findings are summarized below; the original response remains in the reviewer session.
 
 **Critical:** None found.
 
