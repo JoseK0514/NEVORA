@@ -1,0 +1,19 @@
+# Local preparation review — 89633d8d..0f68ed6d
+
+codeQualityStatus: WATCH. recommendation: APPROVE (local preparation only). blockers for this preparation diff: none. Android release qualification: BLOCKED.
+
+**Strengths:** Independent run: 14 inventory tests passed; production checker returned only the four-head ceiling. The branch and archives remain intact; the held change is one schedule-label commit. The deterministic iOS generator reproduced all four checked-in outputs in memory. Native and store hashes, including original xcresult payloads for all five draft screenshots, match. The packaged empty origin, disabled push, icon and privacy plist agree with source. The signing guide separates upload and distribution identities, uses private prompts and leaves independent recovery pending. The worksheet covers hosted workforce data and conditional processors without claiming no collection. No src/public UI delta since the captures. The two-worker root result records 10,978 passed and 801 skips; the seven default-worker timeouts remain documented. These are packaging and fixture checks only.
+
+**Critical:** None in the reviewed diff.
+
+**High:** None introduced by the reviewed diff. Separate release blocker: at native/android/app/src/androidTest/java/com/velani/nevora/development/ShellInstrumentedTest.java:325 the recreated page showed Fictional Home and Sign out but its WebView document exposed no controls in the captured accessibility hierarchy. Current matrix 9/10, cold restart passed. The unchanged pre-resource control failed the same assertion. This establishes the failure predates the new resources on this setup; it does not distinguish WebView, app lifecycle, instrumentation or physical-device impact. Do not qualify Android until explained and resolved. Current result/log/XML/screenshot: /private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-9uxnvd74/. Control: /Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-pre-resource-control/. Current browser-resolution rerun and AVD cleanup were still in progress at review cutoff.
+
+**Medium:** native/release/store/feature-graphic.html:1 embeds copies of the existing Inter and icon binaries in a 344,559-byte line. Verified both hashes; refer to the repository assets relatively for a diffable recipe. This does not invalidate the submitted draft PNG.
+
+**Low:** native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml:4 references a density-unspecified PNG; the v26 folder is also redundant at minSdk 29. See docs/native/evidence/2026-11-05/release-preparation/lint-warnings.json:40 and :50. Non-blocking asset cleanup. Whitespace from literal log capture triggers git diff --check only in log receipts.
+
+**Skill perspectives:** Consulted remove-ai-slops and programming. Inventory tests mutate observable archive/head state and check failures; no deletion-only, tautological or prompt-string tests. No added runtime parsing, normalization or untyped escapes. Only maintainability concern under these perspectives is the duplicated graphic payload above.
+
+**Declined to judge:** hosted/backend/provider acceptance, signed device/store readiness, external backup recovery, live support/deletion, final privacy declarations, physical assistive-technology behavior and authorization for merge or release. No signing store, provider account, production or shared build was accessed. Apple pending is reported by the executor's receipt.
+
+**Evidence:** docs/native/evidence/2026-11-05/release-preparation/{verification-notes.md,release-artifacts.json,source-gate.txt,root-unit-bounded.log-tail.txt}; native/release/store/screenshots/manifest.json; .superpowers/sdd/2026-11-05-native-release-preparation/progress.md. Reviewed bounded local preparation only, not independent QA certification. No repository writes.

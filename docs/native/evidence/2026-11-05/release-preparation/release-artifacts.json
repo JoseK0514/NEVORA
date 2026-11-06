@@ -20,6 +20,11 @@
     },
     "lint": [
       {
+        "file": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/reports/lint-results-release.xml",
+        "errors": 0,
+        "warnings": 15
+      },
+      {
         "file": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/reports/lint-results-debug.xml",
         "errors": 0,
         "warnings": 15

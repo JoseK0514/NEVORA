@@ -1,0 +1,14 @@
+{
+  "observedAt": "2026-11-05",
+  "previousCollaboration": "875ceda86ab97f2f46fa3370eb5d0af744daf5a8",
+  "currentCollaboration": "1808fcf76819c10e05c974e90acbfc8fb6b9e8d7",
+  "disposition": "held",
+  "workImported": false,
+  "scopeReviewed": "Owner desktop styling only;4files,272additions/2deletions",
+  "main": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+  "development": "e9c3a66da330959738100884f87cb76fd2af8296",
+  "extraSource": "28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+  "activeRemoteHeads": 4,
+  "ceiling": 3,
+  "actualGate": "FAIL"
+}

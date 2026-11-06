@@ -1,0 +1,17 @@
+{
+  "source": "fafa56ded5fe855350ebd58e3b070ea25c75baf4",
+  "serial": "emulator-5572",
+  "instrumentationTests": 1,
+  "passed": true,
+  "scope": "Current application-UID browser visibility and scoped HTTPS intent resolution only; no live document/browser-cookie test",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/outputs/apk/debug/app-debug.apk",
+      "sha256": "3c97c239280921041668867cdfc7ca5a03bb98cb5f967e77f67f1afd157f449f"
+    },
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "sha256": "562b6410cfc3f36e42374fdba66fa247413957fab9aaeed06a4b25f5ddb0bd53"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Native phases 1–2 handoff — November 4, 2026
 
+**November5 qualification update:** the later default-WebView149 run failed the original repeated-Employee-recreation case, and an immutable pre-resource APK reproduced it. Repeated-recreation acceptance is reopened as a release blocker; the approved API29+/WebView149+ minimum itself is unchanged. Prior passing results below remain historical evidence. See [reproduction and follow-up](android-recreation-accessibility-followup.md).
+
 Phases1–2 implementation and local executor verification are complete for the approved Employee/Owner scope, under Jose's Android10+/WebView149+ decision. The fresh runtime-extension review approved the change with no functional/security blockers. Native update/browser fallback, supported-runtime matrices and current Android real-backend acceptance passed. The native program is not ready for release.
 
 Current Android application checkpoint: `ad9f38fa0becc47aa37e4b7c45f8dba78cc72856`; final backend-test candidate: `79f2d9cbf746009add1be757858664cda0873780`. Prior iOS/server/shared web checkpoint: `0231524bc7ea9f385fcc5249535e75e6e03f3d60`, retained by exact source comparison. Local detached worktree: `/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101`. Earlier implementation commits: `9a46ccf7` dispatch, `59bcdf9f` platform capabilities, `5c816e8f` Android document browser visibility. No merge, push, hosted deployment, production signing or release.

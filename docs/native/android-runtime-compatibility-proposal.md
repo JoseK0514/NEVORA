@@ -1,5 +1,7 @@
 # Android runtime compatibility proposal
 
+**November5 qualification update:** the later default-WebView149 run failed the original repeated-Employee-recreation case, and an immutable pre-resource APK reproduced it. Repeated-recreation acceptance is reopened as a release blocker; the approved API29+/WebView149+ minimum itself is unchanged. Prior passing results below remain historical evidence. See [reproduction and follow-up](android-recreation-accessibility-followup.md).
+
 Status: approved by Jose on November 4, 2026: ‘Adopt the modern runtime baseline (Recommended)’. Implemented at ad9f38fa, with backend test-label corrections through 79f2d9cb. Local executor verification passed; the fresh extension review approved the change with no functional/security blockers. See `evidence/2026-11-04/runtime-baseline/README.md`.
 
 ## Recommended v1 baseline

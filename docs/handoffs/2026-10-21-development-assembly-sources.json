@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "875ceda86ab97f2f46fa3370eb5d0af744daf5a8",
+      "sha": "1808fcf76819c10e05c974e90acbfc8fb6b9e8d7",
       "disposition": "held",
-      "reason": "Four Owner Direction B UI commits beyond development e9c3a66d remain held outside native development synchronization. Preserve active collaboration line and draft PR37; no overlay, merge or release acceptance."
+      "reason": "Five Owner Direction B mobile/desktop UI commits beyond development e9c3a66d remain held outside native development synchronization. Desktop commit1808fcf7 appeared during release preparation: four files (DESIGN, layout stylesheet import, desktop CSS, mobile CSS),272 additions/2 deletions; identity/ancestry/scope inspected, no functional acceptance or import. Preserve collaboration and draft PR37."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",

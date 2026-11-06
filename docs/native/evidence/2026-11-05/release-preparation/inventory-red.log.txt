@@ -26,14 +26,14 @@ test at scripts/development-source-inventory.check.mjs:105:1
 ✖ published three-branch policy retains exact source archives and rejects a recreated fourth branch (1.846458ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
   + actual - expected
-  
+
     [
   +   'claude-codex-collab-nevora',
   +   'claude/youthful-mendel-9mg8hu',
       'development',
       'main'
     ]
-  
+
       at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/scripts/development-source-inventory.check.mjs:109:10)
       at Test.runInAsyncScope (node:async_hooks:227:14)
       at Test.run (node:internal/test_runner/test:1382:25)

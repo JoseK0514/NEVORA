@@ -1,0 +1,34 @@
+{
+  "source": "5d4f3fb581b8c27dbd7caa1aa4b5d48d904094bc",
+  "name": "NevoraReleasePrep_320162fcac",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-avds",
+  "userHome": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-user",
+  "image": "system-images;android-37.2;google_apis_ps16k;arm64-v8a",
+  "pid": 86793,
+  "port": 5572,
+  "serial": "emulator-5572",
+  "started": 1793924718.278296,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraReleasePrep_320162fcac",
+    "-port",
+    "5572",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-window",
+    "-no-audio"
+  ],
+  "stopped": true,
+  "firstAttempt": {
+    "pid": 86453,
+    "exitedBeforeBoot": true,
+    "failure": "Insufficient space for default10G userdata allocation;12288MB needed versus12235MB available. No tests ran."
+  },
+  "dataPartition": "6G",
+  "storageSelection": "Invocation-owned fictional test storage only; no renderer/runtime/accessibility override",
+  "processIdentity": "Thu Nov  5 20:25:18 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd NevoraReleasePrep_320162fcac -port 5572 -no-snapshot -no-boot-anim -no-window -no-audio",
+  "serialAbsent": true,
+  "stoppedAt": 1793925289.6731598,
+  "disposableAvdRemoved": true
+}

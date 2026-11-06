@@ -1,0 +1,87 @@
+[
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-9uxnvd74/result.json",
+    "bytes": 735,
+    "sha256": "9580ba542c86416a5be098e775828860cff9e6326e4f9ad14a1862e769898105"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-9uxnvd74/instrumentation.log",
+    "bytes": 1889,
+    "sha256": "42a6973d1372ca0b2917d1cc2344404da8c95cdae0d507145692c7117b447564"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-9uxnvd74/Fictional_Home.xml",
+    "bytes": 18289,
+    "sha256": "90edfd07a313323c63ab979a96ba0da4904301f5a29cb8321640a82ac161e07d"
+  },
+  {
+    "path": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-9uxnvd74/Fictional_Home.png",
+    "bytes": 54179,
+    "sha256": "846280059f1574ff8eeec7330b10f4d9835926d9cde93618f7ffd11f35c99948"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-pre-resource-control/result.json",
+    "bytes": 969,
+    "sha256": "a4e30973e5e55734de8c591c1ad648510c1db6a535f3234f09ce374d5168c4c6"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-pre-resource-control/instrumentation.log",
+    "bytes": 1137,
+    "sha256": "ca72193d8bb4201697b103ae0d507575130b446583352d7ede8d73f1a9ed824f"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-pre-resource-control/Fictional_Home.xml",
+    "bytes": 18288,
+    "sha256": "5b37a17c5de9ee5e8ee630b4d6db83b9b0c395575a81714ec6e46465905a3989"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-pre-resource-control/Fictional_Home.png",
+    "bytes": 54589,
+    "sha256": "06550e2f7faf2cca25080d080390a736f948bc1e1b2fb5229b9499ea8587a37e"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/root-unit.log",
+    "bytes": 83477,
+    "sha256": "5c776e7d7e80a9e2df775c6a91d3a7fa5e3bbc1dcba8ca950965a574607f0920"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/root-unit-bounded.log",
+    "bytes": 69124,
+    "sha256": "a9830af5455589b2f6431156d966c3bd13e8468d3d573539b299093918eaa275"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-fixture-driver.log",
+    "bytes": 2077,
+    "sha256": "a3b3d3d5ea061cbe559a2f67714d60f3383a7a462fbb404eff48c77f76cb97ec"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-emulator-first-attempt.log",
+    "bytes": 1345,
+    "sha256": "35e65c13eeeb180457b756fb7d732224239ea835764cf70dbd134b8b219f1432"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-current-document-browser.log",
+    "bytes": 92,
+    "sha256": "a25d57f5db25bbd89a60d725578c08f1e3e63b19e6cf4e523def86c741475f37"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/ios-documents-driver.log",
+    "bytes": 426,
+    "sha256": "5b9171f22cc439f521ebde03533d8ecc9b01e62d2a9f6349278d7c09b3e8d66c"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/capability-ui/result.json",
+    "bytes": 882,
+    "sha256": "d417b837a016746a5d7f7bcc402c76b528d033e804f798f5adc466d6e73f835a"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/capability-ui-rechecked/result.json",
+    "bytes": 617,
+    "sha256": "d3a4c78929513ff40ea15db10ac28e35796c6714b23663a71f052e18855ab097"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/capability-ui-verified/result.json",
+    "bytes": 1713,
+    "sha256": "09427284fa85fc76fad12e4bf748c4c7c33bab2854bb9b4a40d4561dacf21ce5"
+  }
+]
