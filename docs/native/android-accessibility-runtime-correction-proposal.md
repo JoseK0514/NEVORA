@@ -1,6 +1,6 @@
 # Android accessibility runtime correction — proposed November 5
 
-Status: **approved by Jose on November5; final verification in progress**. Jose selected “Adopt156.0.8078.50+ (Recommended).” Android10/API29 remains unchanged. The prepared patch is now applied locally; no release is authorized.
+Status: **approved by Jose on November5; local executor verification complete**. Jose selected “Adopt156.0.8078.50+ (Recommended).” Android10/API29 remains unchanged. The prepared patch is now applied locally; no release is authorized.
 
 ## Proposed correction
 
@@ -20,6 +20,6 @@ The relevant [Chromium per-WebContents initialization fix](https://chromium-revi
 
 ## Scope, controls and remaining gates
 
-CTO recommends the smallest supported-runtime correction over another unproven lifecycle workaround. CPO flags the customer compatibility change from149 to156.0.8078.50: older providers must update or use the browser. CISO retains closed private entry and all lifecycle/session fences. Technical assurance requires continued failures to remain visible and limits this evidence to owned emulators. Jose has approved the new minimum; the original accessibility test remains required. Delivery keeps final candidate verification unfinished.
+CTO recommends the smallest supported-runtime correction over another unproven lifecycle workaround. CPO flags the customer compatibility change from149 to156.0.8078.50: older providers must update or use the browser. CISO retains closed private entry and all lifecycle/session fences. Technical assurance requires continued failures to remain visible and limits this evidence to owned emulators. Jose has approved the new minimum; the original accessibility test remains required. Delivery records completed local candidate verification.
 
-The approved patch is applied. Actual149 update/browser-intent and fontScale2/landscape/keyboard cases passed. Missing-provider setup on API37.1 still exposed a provider and failed its precondition; that is not a product pass. The fresh API32 missing-provider control and final current-guard10-case matrix/cold restart passed. The owned18-check Next/PostgreSQL gate with3native journeys remains the next gate. Minimum-OS/physical accessibility, hosted environment, signing/provider and store release checks remain separate. Paid hosting is on hold; no production, branch integration, push or distribution is authorized.
+The approved patch is applied. Actual149 update/browser-intent and fontScale2/landscape/keyboard cases passed. Missing-provider setup on API37.1 still exposed a provider and failed its precondition; that is not a product pass. The fresh API32 missing-provider control and final current-guard10-case matrix/cold restart passed. Candidate114d81cf passed the owned18-check Next/PostgreSQL gate with3native journeys and cold restart, with source verified and owned services closed. Only documentation/evidence changed afterward. Minimum-OS/physical accessibility, hosted environment, signing/provider and store release checks remain separate. Paid hosting is on hold; no production, branch integration, push or distribution is authorized.

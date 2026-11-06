@@ -7,6 +7,8 @@
     "Correction document acknowledges approval/application rather than asking again"
   ],
   "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001",
-  "backend": "Pending clean committed-candidate execution",
-  "recordedAt": 1793932298.205759
+  "backend": "passed18checks/3nativejourneys+cold; source/ownership verified",
+  "recordedAt": 1793932298.205759,
+  "testedCandidate": "114d81cfda05c09dc3e68ee593f2b245f997b0b6",
+  "cleanupClosed": true
 }

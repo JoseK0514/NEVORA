@@ -1,6 +1,6 @@
 # Native Phase3 — November5,2026
 
-**Current Android correction:** Jose approved WebView156.0.8078.50+ on November5, with Android10/API29 unchanged. The matched Play update passed200recreations and10cases/cold restart; the older149 provider failed. The precise runtime guard is applied and final old-provider/backend verification is in progress. See the [correction](android-accessibility-runtime-correction-proposal.md). Paid hosting remains ON HOLD; no release or independent finding closure is claimed. Earlier observations below are historical.
+**Current Android correction:** Jose approved WebView156.0.8078.50+ on November5, with Android10/API29 unchanged. The matched Play update passed200recreations and10cases/cold restart; the older149 provider failed. The precise runtime guard is applied. Candidate114d81cf passed current old/missing-provider and large-text/keyboard checks, fullAPI32matrix/cold restart and18backendchecks/3native journeys/cold; source and owned-service closure are verified. Physical/minimum-OS, hosted/signing/provider/store gates remain open. See the [correction](android-accessibility-runtime-correction-proposal.md). Paid hosting remains ON HOLD; no release or independent finding closure is claimed. Earlier observations below are historical.
 
 Status: IN PROGRESS. Owner: Codex/root. Jose instructed Phase3 to proceed; prior Phases1–2 local qualification remains at8630e5af. No release or hosted/device acceptance is inferred.
 

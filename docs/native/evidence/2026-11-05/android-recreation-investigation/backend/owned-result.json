@@ -1,0 +1,92 @@
+{
+  "checkpoint": "114d81cfda05c09dc3e68ee593f2b245f997b0b6",
+  "checks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    },
+    {
+      "name": "android-full-backend",
+      "status": "passed"
+    }
+  ],
+  "closedAt": "2026-11-06T02:39:26.214Z",
+  "nativeBuilds": [
+    {
+      "platform": "android",
+      "checkpoint": "114d81cfda05c09dc3e68ee593f2b245f997b0b6",
+      "artifacts": 2
+    }
+  ],
+  "ownerId": "81ac963e2ec9ac8969a39e3687c4c71d",
+  "ownershipClosed": true,
+  "platform": "android",
+  "sourceVerified": true,
+  "startedAt": "2026-11-06T02:37:54.800Z",
+  "status": "passed",
+  "verification": "full-backend"
+}

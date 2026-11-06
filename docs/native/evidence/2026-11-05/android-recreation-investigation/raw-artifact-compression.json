@@ -1,5 +1,95 @@
 [
   {
+    "source": "backend/android/a_employeeActionRevocationOutageAndLogout.xml",
+    "stored": "backend/android/a_employeeActionRevocationOutageAndLogout.xml.gz",
+    "bytes": 31987,
+    "sha256": "8e02e22e316582e49430f3a91e48781141754a183aaf30e55e83871996af758b"
+  },
+  {
+    "source": "backend/android/aa_activatedAccountCanSignIn.xml",
+    "stored": "backend/android/aa_activatedAccountCanSignIn.xml.gz",
+    "bytes": 33841,
+    "sha256": "bd1c5beac560ed34a99c40f562b6d61ae41b7c813917449351114b5da537258c"
+  },
+  {
+    "source": "backend/android/activated_employee.xml",
+    "stored": "backend/android/activated_employee.xml.gz",
+    "bytes": 37262,
+    "sha256": "20910e8cc2944ecd60e36e5ca7011fac7314d68281b0e5576cd28a0c5dc8f26d"
+  },
+  {
+    "source": "backend/android/b_ownerActionAndPersistentSession.xml",
+    "stored": "backend/android/b_ownerActionAndPersistentSession.xml.gz",
+    "bytes": 37996,
+    "sha256": "dd36525f23ace35ab9993cf20599a9526585efedb9ca52d05330c5a68a94d8d6"
+  },
+  {
+    "source": "backend/android/cold-start-instrumentation.log",
+    "stored": "backend/android/cold-start-instrumentation.log.gz",
+    "bytes": 87,
+    "sha256": "c1e7808123a533495036c9aab65a3ac2920eeb716ab4b3512e88ae335eee2d23"
+  },
+  {
+    "source": "backend/android/cold_start.xml",
+    "stored": "backend/android/cold_start.xml.gz",
+    "bytes": 36118,
+    "sha256": "a11f13deacb9f46a1ce476663454d81fd49645f275089b07afb4d9eeb002b7f4"
+  },
+  {
+    "source": "backend/android/employee_back_retained_draft.xml",
+    "stored": "backend/android/employee_back_retained_draft.xml.gz",
+    "bytes": 33132,
+    "sha256": "dd4c5ff0ca1500e9b775f31582753447cbd9f3d52c57b82529747f28476e5e62"
+  },
+  {
+    "source": "backend/android/employee_saved.xml",
+    "stored": "backend/android/employee_saved.xml.gz",
+    "bytes": 24584,
+    "sha256": "f76c8be2d81eabfe730da177f414a44f959226d2686d2eb389bebce3eb028208"
+  },
+  {
+    "source": "backend/android/employee_signed_out.xml",
+    "stored": "backend/android/employee_signed_out.xml.gz",
+    "bytes": 31987,
+    "sha256": "8e02e22e316582e49430f3a91e48781141754a183aaf30e55e83871996af758b"
+  },
+  {
+    "source": "backend/android/instrumentation-0.log",
+    "stored": "backend/android/instrumentation-0.log.gz",
+    "bytes": 85,
+    "sha256": "9331e0f146450b3035709b0f578e5529210bf903f2534e93aa9a8b3e897e743c"
+  },
+  {
+    "source": "backend/android/instrumentation-1.log",
+    "stored": "backend/android/instrumentation-1.log.gz",
+    "bytes": 85,
+    "sha256": "4cf1092bb75d2d12898d70c119a3ef19c3693790d1c968c42d80372f4afae277"
+  },
+  {
+    "source": "backend/android/instrumentation-2.log",
+    "stored": "backend/android/instrumentation-2.log.gz",
+    "bytes": 86,
+    "sha256": "bdf6e0908d05908cbd7e896dc3b54c8b9d2c54e16376ac2b0d5595162697bdb0"
+  },
+  {
+    "source": "backend/android/instrumentation.log",
+    "stored": "backend/android/instrumentation.log.gz",
+    "bytes": 258,
+    "sha256": "a3445697ba76910d01ed893fe44318fc4b83609adac3622bd2ffb0d7c327679b"
+  },
+  {
+    "source": "backend/android/owner_persistent.xml",
+    "stored": "backend/android/owner_persistent.xml.gz",
+    "bytes": 37996,
+    "sha256": "dd36525f23ace35ab9993cf20599a9526585efedb9ca52d05330c5a68a94d8d6"
+  },
+  {
+    "source": "backend/android/owner_saved.xml",
+    "stored": "backend/android/owner_saved.xml.gz",
+    "bytes": 32192,
+    "sha256": "1fada26c66fcb1fa90dd824943c8e77c1212405ce3a93c463fbe5f46ddcecf91"
+  },
+  {
     "source": "current-large-text-fallback/instrumentation-0.log",
     "stored": "current-large-text-fallback/instrumentation-0.log.gz",
     "bytes": 83,

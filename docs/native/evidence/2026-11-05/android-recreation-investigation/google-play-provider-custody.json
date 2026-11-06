@@ -11,5 +11,7 @@
     "native-code: 'arm64-v8a'"
   ],
   "defaultPlatformAccessibility": true,
-  "rendererObserver": false
+  "rendererObserver": false,
+  "testedVariantMinimumApi": 32,
+  "minimumApiEvidence": "Installed package versionCode807805003 reported minSdk32/targetSdk36; private webview156-package.txt retains original output"
 }
