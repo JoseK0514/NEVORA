@@ -1,5 +1,7 @@
 # Native release preparation without paid hosting
 
+Execution: all five preparation tasks recorded November5; Android recreation qualification remains BLOCKED. Resume from `docs/native/evidence/2026-11-05/release-preparation/README.md` and its durable `execution-ledger.md`; do not repeat key/account creation. No merge/release is authorized.
+
 Spec: `docs/superpowers/specs/2026-11-01-native-employee-owner-design.md` plus Jose's November 5 instruction to do all five available preparation tasks. Owner: Codex/root. Base: `89633d8d2166b265d9776a397de963a53edd5159`; freshly fetched development remains `e9c3a66da330959738100884f87cb76fd2af8296` and is already included. Existing isolated detached worktree is clean.
 
 ## Global constraints
