@@ -42,7 +42,7 @@ it('draws the Requests tab: the white Request time off, what waits on the manage
   expect(html).toContain('aria-label="Time off, Nov 12 – 14 · 3 days, Waiting"');expect(html).toContain('b-chip--amber">Waiting<');
   expect(html).toContain('href="/app/requests?filter=decided"');expect(html).toContain('b-chip--red">Declined<');
   const empty = renderToStaticMarkup(<RequestsHubB sub="Time off you’ve asked for" newHref={null} forManager decidedHref={null} waiting={[]} decided={[]}/>);
-  expect(empty).toContain('Nothing waiting right now.');expect(empty).not.toContain('Request time off');expect(empty).not.toContain('Decided');
+  expect(empty).toContain('Nothing waiting right now');expect(empty).not.toContain('Request time off');expect(empty).not.toContain('Decided');
 });
 
 it('draws Time off’s list on the phone with the same rows, links and empty words as the corporate list', () => {

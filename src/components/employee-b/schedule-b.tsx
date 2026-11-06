@@ -5,8 +5,9 @@ import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
-import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BNote, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
+import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {BCardNote, BDay} from './parts';
+import {BEmpty, ExchangeHeroB} from './requests-b';
 import './schedule.css';
 
 /* Employee Schedule on the phone, Direction B (Jose approved the mock, Nov 6, 2026): the week on glass, open shifts to
@@ -94,17 +95,14 @@ export function ScheduleB(props: ScheduleBProps) {
 export type OpenB = {id: string; date: string; hours: string; facts: string; place: string; href: string; requested: boolean; nextWeek: boolean; label: string};
 export function OpenShiftsB({backHref, rows, empty, blocked, unavailableHref, note}: {backHref: string; rows: OpenB[] | null; empty: boolean; blocked: ReactNode; unavailableHref: string; note: string}) {
   return <BScreen back>
-    <BHero back={{href: backHref, label: 'Schedule'}} title="Pick up and swap" titleId="b-open-title">
-      <BSeg label="Shift changes" items={[{key: 'open', label: 'Open shifts', current: true, href: '/app/exchange'}, {key: 'mine', label: 'For you', href: '/app/exchange?tab=foryou'}, {key: 'sent', label: 'My requests', href: '/app/exchange?tab=my'}]}/>
-    </BHero>
+    {/* The same place as /app/exchange's Open shifts: the same hero and tabs. */}
+    <ExchangeHeroB tab="open" back={backHref}/>
     <BStack>
       {rows === null ? <BCard title="Open shifts"><div className="es-state"><p className="b-state">We couldn’t check open shifts right now.</p>
         <BButtonLink href={unavailableHref} kind="quiet" full>Open shift requests</BButtonLink></div></BCard>
-        : empty ? <BCard label="Open shifts"><div className="es-empty-state">
-          <BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>
-          <p className="es-empty-state__t">No open shifts right now</p><p className="es-empty-state__s">When a teammate offers a shift you can work, it shows here.</p>
+        : empty ? <BCard label="Open shifts"><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
           <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link>
-        </div></BCard>
+        </BCard>
         : <BCard title="You can pick up" count={rows.filter(row => !row.requested).length || undefined}>
           <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date}/>} title={row.hours} label={row.label}
             chip={row.requested ? <BChip tone="amber">Waiting</BChip> : row.nextWeek ? <BChip tone="grey">Next week</BChip> : undefined}

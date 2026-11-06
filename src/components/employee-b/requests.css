@@ -203,3 +203,13 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-receipt p { font-size: 14.5px; line-height: 20px; color: #3F464B; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xsk { border-radius: 14px; }
 }
+
+/* Narrow phones (320–359px): From and To stack so "Choose date" is never cut; the All day / Part of day labels keep their
+ * size (the Owner pages' narrow rule shrinks every segmented control); the approval title never leaves one word alone. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { text-wrap: balance; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { grid-template-columns: minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { font-size: 14.5px !important; letter-spacing: 0 !important; }
+}

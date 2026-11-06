@@ -45,3 +45,12 @@
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 }
+
+/* Narrow phones: glass tabs (three labels) keep air inside their pills; a link under an empty state sits centred. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg { margin-left: 16px; margin-right: 16px; }
+  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg > * { font-size: 13px; letter-spacing: -0.01em; padding: 0 4px; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .es-empty-state__a { display: flex; justify-content: center; margin: -8px 0 10px; }
+}

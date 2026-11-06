@@ -82,7 +82,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'} count={waiting.length || undefined}>
         {waitingExtra ?? null}
         {waiting.length ? <BList>{waiting.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
-          : waitingExtra ? null : <p className="b-state">Nothing waiting right now.</p>}
+          : waitingExtra ? null : <div className="eb-tof-empty"><p className="eb-tof-empty__t">Nothing waiting right now</p><p className="eb-tof-empty__s">Requests you send show here until they’re decided.</p></div>}
       </BCard> : null}
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
@@ -115,8 +115,8 @@ export const EXCHANGE_TABS: {key: ExchangeTab; label: string; href: string}[] = 
 
 /** The hero of Pick up and swap: back to Schedule, the title, and its three places on glass (left out when shift requests
  * are off for the company). */
-export function ExchangeHeroB({tab, tabs = true}: {tab: ExchangeTab; tabs?: boolean}) {
-  return <BHero back={{href: '/app/schedule', label: 'Schedule'}} title="Pick up and swap" titleId="b-exchange-title">
+export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule'}: {tab: ExchangeTab; tabs?: boolean; back?: string}) {
+  return <BHero back={{href: back, label: 'Schedule'}} title="Pick up and swap" titleId="b-exchange-title">
     {tabs ? <BSeg label="Pick up and swap" items={EXCHANGE_TABS.map(item => ({key: item.key, label: item.label, href: item.href, current: item.key === tab}))}/> : null}
   </BHero>;
 }
