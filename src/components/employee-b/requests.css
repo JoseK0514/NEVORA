@@ -225,3 +225,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { row-gap: 16px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { padding: 12px !important; gap: 10px !important; }
 }
+
+/* Inspection round 3: the form's 13.5px lines sit on 19px, like the mock. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { line-height: 19px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .c-field__label { line-height: 19px !important; }
+}

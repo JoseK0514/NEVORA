@@ -49,7 +49,7 @@
 /* Narrow phones: glass tabs (three labels) keep air inside their pills; a link under an empty state sits centred. */
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg { margin-left: 16px; margin-right: 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg > * { font-size: 13px; letter-spacing: -0.01em; padding: 0 4px; }
+  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg:has(> :nth-child(3)) > * { font-size: 13px; letter-spacing: -0.01em; padding: 0 4px; }
 }
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .es-empty-state__a { display: flex; justify-content: center; margin: -8px 0 10px; }
@@ -110,7 +110,7 @@
 /* Inspection round 2 (tabs and Time). */
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-shift { padding-top: 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .b-add { padding: 11px 18px 15px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .b-add { padding: 12px 18px 16px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l { line-height: 19px; }
   /* The week strip's arrows: 32px glyph circles 4px apart (a 44px tap area each), as in the mock. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h > span:last-child { gap: 4px; }
@@ -124,4 +124,14 @@
 /* (The Owner layer's "block after the phone bar" rule carries two ids and fourteen classes; this one carries four ids.) */
 @media (max-width: 767px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile] .c-page > .b-screen:not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
+}
+
+/* Inspection round 3. */
+@media (max-width: 767px) {
+  /* The link under an empty state ("Get alerts on this phone"), wherever that empty state shows. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
+  /* Glass segment labels centred like the mock's (line height 1.4). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { line-height: 19.6px; }
+  /* The bell sits 8px from the 36px avatar, as in the mock. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .c-top-avatar { margin-left: -2px !important; }
 }
