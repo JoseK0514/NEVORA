@@ -276,7 +276,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-card, .c-section) details > summary:not(#nvd-none) { padding-left: 22px !important; padding-right: 22px !important; }
   /* Empty states: a card on the canvas, plain inside a card. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-list, .wc-card, .c-card) .q-empty:not(#nvd-none) { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; background: none !important; margin: 0 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .manager-corrections-empty:not(#nvd-none), .c-tcx :is(.manager-corrections > div:only-child):not(#nvd-none) { border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .manager-corrections:not(#nvd-none) { border: 0 !important; background: none !important; box-shadow: none !important; padding: 0 !important; border-radius: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .manager-corrections-empty:not(#nvd-none) { border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; overflow: hidden !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .manager-corrections-empty *:not(#nvd-none) { border: 0 !important; box-shadow: none !important; background: transparent !important; }
   /* Band tabs: the thumb sits inside its track; tabs keep their natural width. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg) > :is(a, button):not(#nvd-none) { margin: 0 !important; flex: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-seg, .c-tc-seg)::after, :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-seg) > :is(a, button):not(#nvd-none) { border-bottom: 0 !important; }
@@ -329,7 +331,8 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-stack > #b-home-needs:not(#nvd-none) { grid-row: span 3 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-todo > .b-screen .b-stack > .b-card[aria-label="More"]:not(#nvd-none) { grid-row: 1 / span 2 !important; }
   /* Phone rows on desktop: titles line up whatever leads them; dividers inset 22px; the ring sits inside the row. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-row > :first-child:not(.b-row__tx):not(#nvd-none) { min-width: 48px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-row > :is(.b-ico, .b-av):first-child:not(#nvd-none) { margin-right: calc(58px - var(--b-lead-w, 36px)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-row > .b-av:first-child:not(#nvd-none) { --b-lead-w: 44px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-list > :is(li, .b-row) + :is(li, .b-row):not(#nvd-none), .b-screen .b-row + .b-row:not(#nvd-none) { box-shadow: none !important; border-top: 0 !important; background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-ink:not(#nvd-none) { padding: 22px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-ink__btn:not(#nvd-none) { border-radius: 24px !important; }
@@ -348,10 +351,10 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page:not(.c-settings):not(#nvd-none) { row-gap: 0 !important; gap: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page:not(.c-settings) > * + * { margin-top: 20px; }
   /* Fields that sit on the canvas join into one white card (New update, Main Office, Help someone sign in, New location). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:not(#nvd-none) { margin: 0 !important; padding: 14px 22px 16px !important; background: #fff !important; box-shadow: 0 0 0 1px rgb(16 40 38 / .05) !important; border-radius: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:not(#nvd-none) { margin: 0 !important; padding: 10px 22px 10px !important; background: #fff !important; box-shadow: none !important; border-radius: 0 !important; border: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > :not(.q-fl) + .q-fl, .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:first-child):not(#nvd-none) { border-top-left-radius: 22px !important; border-top-right-radius: 22px !important; padding-top: 18px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:not(:has(+ .q-fl)):not(#nvd-none) { border-bottom-left-radius: 22px !important; border-bottom-right-radius: 22px !important; padding-bottom: 20px !important; box-shadow: var(--nvd-card) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl + .q-fl:not(#nvd-none) { background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:not(:has(+ .q-fl)):not(#nvd-none) { border-bottom-left-radius: 22px !important; border-bottom-right-radius: 22px !important; padding-bottom: 20px !important; box-shadow: 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18) !important; }
+
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .nv-content, form, fieldset, .wc-main) > .q-fl:not(:has(+ .q-fl)) + *:not(#nvd-none) { margin-top: 20px !important; }
 
   /* ---------- Inspection round 1d ---------- */
@@ -379,7 +382,8 @@
   /* One field height. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(input.c-in, input.q-in, select.c-in, select.q-in, .q-in__wrap > select):not(header.c-title *, form.c-team-search *, .c-coprof .c-coprof__field:not(:first-child) *):not(#nvd-none) { height: 46px !important; min-height: 46px !important; box-sizing: border-box !important; }
   /* Figures and text inside Insights, Hours this week and payroll cards line up with the card header (22px). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-ins, .c-teamweek, .c-pay, .c-exp) .c-card > :not(.c-card__head, .c-rows, ul, table, details, .c-card__foot, .c-row, a.c-row, .c-card):not(#nvd-none) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-pay, .c-exp) .c-card:not(.c-pay__unpaid, .c-card--alert) > :not(.c-card__head, .c-rows, ul, table, details, .c-card__foot, .c-row, a.c-row, .c-card):not(#nvd-none) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-ins .c-card > :is(p, .c-note), .c-ins .c-card details > summary:not(#nvd-none) { padding-left: 22px !important; padding-right: 22px !important; }
   /* The Schedule week grid is a Direction B card. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .cm-roster > .cm-sched-desk:not(#nvd-none) { border: 1px solid transparent !important; border-radius: 22px !important; overflow: hidden !important; background: #fff !important; box-shadow: var(--nvd-card) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .cm-roster > .cm-sched-desk :is(.cm-grid-wrap, .c-card, .cm-grid):not(#nvd-none) { border: 0 !important; box-shadow: none !important; border-radius: 0 !important; }
@@ -392,4 +396,63 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .cm-roster > section.c-card:first-of-type:not(#nvd-none) { margin-top: 0 !important; }
   /* Embedded blocks start at their top (a screen-reader line before the first card added 20px). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-embed > :is(.c-sr, .q-sr):first-child + *:not(#nvd-none) { margin-top: 0 !important; }
+
+  /* Band strips sit on the title's edge (a 16px side margin leaked from the lists layer). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page > header.c-title, .q-page > .q-hd) ~ :is(nav.c-pay-tabs, nav.c-week, nav.c-seg, .c-seg, .c-tc-seg, form.c-team-search, .c-act__sub, .c-ins__range):not(#nvd-none) { margin-left: 0 !important; margin-right: 0 !important; }
+  /* Insights: Export is the band's white action; it is a top-level page, so no back link. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-ins > header.c-title .c-title__actions > :last-child :is(.cm-insights__button, button, a):not(.nevora-action-menu-popover *):not(#nvd-none), .c-page.c-ins > header.c-title .c-title__actions > .cm-insights__button:last-child:not(#nvd-none) { background: #fff !important; color: #0B3B38 !important; font-weight: 700 !important; box-shadow: 0 8px 18px -8px rgb(0 0 0 / .45) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-ins > .c-nav--phone:not(#nvd-none) { display: none !important; }
+  /* Activity: the week arrows sit apart, end on the column edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title ~ .c-act__sub:not(#nvd-none) { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title ~ .c-act__sub :is(a, button) + :is(a, button):not(#nvd-none) { margin-left: 6px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title ~ .c-act__sub :is(a, button):not(#nvd-none) { width: 32px !important; height: 32px !important; border-radius: 16px !important; }
+  /* Band tails sized to their strips so content starts 24px under the band. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title:has(~ nav.c-week):not(#nvd-none) { border-image-outset: 240px 100vw 92px 100vw !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > header.c-title ~ .c-ins__range + *:not(#nvd-none) { margin-top: 70px !important; }
+  /* Content tab strips: buttons fit their track, 20px under them, no doubled thumb. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title ~ *, .q-page > .q-hd + *) > :is(a, button):not(#nvd-none) { height: 36px !important; min-height: 36px !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title ~ *, .q-page > .q-hd + *):not(#nvd-none) { height: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title ~ *, .q-page > .q-hd + *) + *:not(#nvd-none) { margin-top: 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-seg[data-slide] > :is([aria-pressed="true"], [aria-selected="true"], [aria-current="page"]):not(#nvd-none) { background: transparent !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-seg[data-slide]:not(#nvd-none)::before { left: 4px !important; }
+
+  /* ---------- Inspection round 2b ---------- */
+  /* Settings hub: rows 20px apart (two margins stacked); no back link to the phone's More; card heads like every other. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame .c-page.c-settings > :is(.c-section, .c-card):not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-settings, .c-ins) > .c-nav--phone:not(#nvd-none):not(#nvd-none2) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-section > :is(.c-section__label, .c-section__head) + :is(.c-card, .c-rows, ul):not(#nvd-none) { margin-top: 0 !important; padding-top: 0 !important; }
+  /* Features: the terms card's head reads like every card head. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page section:has(> .q-grp):has(> [role="radiogroup"] > .q-list) > .q-grp :is(h2, h3):not(#nvd-none) { font: 700 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -.01em !important; color: #111517 !important; }
+  /* Disclosure rows in lists keep their divider (their own background covered it). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li > details > summary:not(#nvd-none), .q-list > li > details:not(#nvd-none) { background-color: transparent !important; }
+  /* Notes under cards line up with the row text; buttons outside cards end on the card edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .c-embed, .q-deletion, form, fieldset) > p:not(.q-sr, .c-sr):not(#nvd-none), .c-tablets__note:not(#nvd-none) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page :is(.wc-content, .q-deletion, form, fieldset) > :is(div, footer):not(.q-fl, .q-list, [class*="card"], [class*="list"], .c-embed):not(#nvd-none) { padding-left: 0 !important; padding-right: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page section:has(> .q-grp):has(> .q-list) > .q-fl:not(#nvd-none) { padding: 4px 22px 16px !important; margin: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .wc-addrow:not(#nvd-none) { padding-left: 22px !important; }
+  /* Form rows: one 60px height; the date row shows its focus. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-select-row, .q-picker-row):not(#nvd-none) { min-height: 60px !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.q-picker-row, .q-select-row):has(:is(input, select):focus-visible):not(#nvd-none) { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+  /* Card heads with a button (Clocker recovery's Refresh) keep the 49px head. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.wc-cardhead, .c-card__head) :is(button, a):not(#nvd-none) { min-height: 32px !important; height: 32px !important; }
+  /* Add shift: no hidden space above the first field; Build and publish's Cancel ends on the card edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page > .c-shift > .c-shift__form > :first-child:not(#nvd-none) { margin-top: 0 !important; padding-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page > .c-shift:not(#nvd-none), .c-shift-page > .c-shift > .c-shift__head:not(#nvd-none) { width: 100% !important; max-width: none !important; }
+
+  /* Rows that are links in a list don't paint over the list's inset divider. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-list > li > :is(a.q-row, button.q-row, .q-row):not(:hover):not(#nvd-none) { background-color: transparent !important; }
+  /* A card inside a card is flattened (Week templates' Save this week). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-card, .q-list, .q-card, .wc-card, .q-group-card) :is(.wc-card, .q-group-card, .q-card):not(#nvd-none) { box-shadow: none !important; border: 0 !important; border-radius: 0 !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; background: transparent !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page .wc-btn--full:not(#nvd-none) { width: auto !important; align-self: flex-start !important; padding: 0 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-section > :is(.c-section__label, .c-section__head):not(#nvd-none) { min-height: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page .c-section > :is(.c-section__label, .c-section__head) :is(h2, h3):not(#nvd-none) { margin: 0 !important; }
+
+  /* ---------- Inspection round 2c: main screens ---------- */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-home, .c-todo) > .c-nav--phone:not(#nvd-none):not(#nvd-none2) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:is(.c-home, .c-todo) > .b-screen:not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-pay--home > header.c-title:not(#nvd-none):has(~ nav.c-pay-tabs):not(#nvd-none) { border-image-outset: 240px 100vw 148px 100vw !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-team > header.c-title:not(#nvd-none):has(~ form.c-team-search):not(#nvd-none) { border-image-outset: 240px 100vw 146px 100vw !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-ink :is(.b-btn--white, .b-btn--full):not(#nvd-none) { border-radius: 24px !important; height: 48px !important; min-height: 48px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] aside.sidebar .sidebar-toggle:not(#nvd-none) { transform: translateY(-10px) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-row__tx:not(#nvd-none) { flex: 1 1 auto !important; min-width: 0 !important; }
 }
