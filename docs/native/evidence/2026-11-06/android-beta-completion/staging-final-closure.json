@@ -1,0 +1,64 @@
+{
+  "projectId": "noisy-fog-17044568",
+  "branchId": "br-still-haze-bb6qa2a2",
+  "database": "nevora_native_staging",
+  "endpoint": {
+    "endpointId": "ep-jolly-dream-bbqd82uj",
+    "currentState": "idle",
+    "suspendTimeoutSeconds": 0,
+    "observedAt": "2026-11-06 14:54:18 UTC"
+  },
+  "databaseFacts": {
+    "workspaces": 1,
+    "invitations": 0,
+    "employeeRows": 2,
+    "activeSessions": 0,
+    "credentialRows": 2,
+    "nativeChallenges": 0,
+    "nativeDeliveries": 0,
+    "databaseSizeBytes": 14589952,
+    "otherEmployeeRows": 0,
+    "availabilityWindows": 1,
+    "nativeInstallations": 0
+  },
+  "providerUsage": {
+    "projectId": "noisy-fog-17044568",
+    "organizationId": "org-wild-heart-93376487",
+    "computeTimeSeconds": 402,
+    "activeTimeSeconds": 1588,
+    "dataTransferBytes": 20148,
+    "writtenDataBytes": 0,
+    "syntheticStorageSize": 0,
+    "settings": {
+      "quota": {
+        "active_time_seconds": 14400,
+        "compute_time_seconds": 3600,
+        "written_data_bytes": 1073741824,
+        "data_transfer_bytes": 1073741824,
+        "logical_size_bytes": 536870912
+      },
+      "allowed_ips": {
+        "ips": [],
+        "protected_branches_only": false
+      },
+      "enable_logical_replication": false,
+      "maintenance_window": {
+        "weekdays": [
+          6
+        ],
+        "start_time": "07:00",
+        "end_time": "08:00"
+      },
+      "block_public_connections": false,
+      "block_vpc_connections": false,
+      "hipaa": false
+    }
+  },
+  "metricsMayLagActualWrites": true,
+  "temporaryBrowserCredentialTransferClosed": true,
+  "allFictionalSessionsInactive": true,
+  "renderFreeServiceStillDeployed": true,
+  "renderServiceIdleColdStartTested": true,
+  "productionOrClockerResourcesChanged": false,
+  "paidHostingStarted": false
+}

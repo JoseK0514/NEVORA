@@ -1,0 +1,22 @@
+{
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "environmentId": "evm-dbmsjugm7kps73c7u98g",
+  "environmentName": "Native Staging",
+  "key": "DATABASE_URL",
+  "role": "nevora_native_app",
+  "database": "nevora_native_staging",
+  "ownerAuthorization": "Connect the database and run the checks",
+  "valueEnteredThroughOrdinaryUI": true,
+  "encryptedFileFdIdentityVerifiedBeforeRead": true,
+  "savedKeyReadBackWithoutValue": true,
+  "installerCredentialTransmitted": false,
+  "credentialPrinted": false,
+  "applicationRedeployed": true,
+  "fullHostedApplicationQualified": true,
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "mirrorCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "observedBuildStatus": "Deploy succeeded | Live",
+  "boundedHostedFlowsPassed": true,
+  "qualificationScope": "Bounded fictional Owner/Employee browser flows, restricted runtime, HTTPS admission and actual Render idle wake/retry; no native/device qualification",
+  "renderIdleWakeQualified": true
+}

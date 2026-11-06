@@ -33,9 +33,9 @@
       "projectId": "noisy-fog-17044568",
       "branchId": "br-still-haze-bb6qa2a2",
       "databaseName": "nevora_native_staging",
-      "runtimeRoleName": null,
-      "runtimePrivilegesVerified": false,
-      "bound": false,
+      "runtimeRoleName": "nevora_native_app",
+      "runtimePrivilegesVerified": true,
+      "bound": true,
       "requireTlsMode": "verify-full",
       "scope": "Exact Render service above only; never installer/admin or existing project credentials"
     }

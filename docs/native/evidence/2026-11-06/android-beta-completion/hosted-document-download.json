@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "role": "OWNER",
+  "normalBrowserDownloadObserved": true,
+  "type": "text/csv",
+  "filename": "fictional-report-2026-11-02-2026-11-06.csv",
+  "bytes": 4929,
+  "sha256": "bc7c3e524ea33259f332012f0d4c4397c42245a13b9d996378dc97d20458396f",
+  "csvRows": 17,
+  "periodStart": "2026-11-02",
+  "periodEnd": "2026-11-06",
+  "nativeDocumentHandoffTested": false,
+  "payrollDocumentsTested": false,
+  "payrollRemainsDisabled": true
+}

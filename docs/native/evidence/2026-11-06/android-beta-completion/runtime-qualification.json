@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "database": "nevora_native_staging",
+  "role": "nevora_native_app",
+  "tlsProtocol": "TLSv1.3",
+  "checks": [
+    "runtime-tls-certificate-hostname-and-required-channel-binding",
+    "exact-runtime-database-and-role",
+    "fictional-owner-update-succeeds-and-rolls-back",
+    "permanent-schema-create-denied",
+    "temporary-schema-create-denied",
+    "role-administration-denied",
+    "protected-table-denied:clocker_photo_policy",
+    "protected-table-denied:clocker_photo_policy_revisions",
+    "protected-table-denied:clocker_punch_photos",
+    "protected-table-denied:clocker_photo_access_events",
+    "protected-table-denied:clocker_photo_notice_profiles",
+    "protected-table-denied:clocker_photo_notice_revisions",
+    "protected-table-denied:clocker_photo_review_events",
+    "protected-table-denied:clocker_photo_platform_lifecycle",
+    "protected-table-denied:clocker_photo_cleanup_runs",
+    "worker-only-cleanup-rpc-denied",
+    "real-neon-http-runtime-login-and-fictional-auth-row-read"
+  ],
+  "writesRolledBack": true,
+  "webBindingPerformed": false,
+  "postgresAdministrationGranted": false,
+  "productionOrClockerResourceChanged": false,
+  "exitCode": 0,
+  "credentialInArgvOrOutput": false
+}

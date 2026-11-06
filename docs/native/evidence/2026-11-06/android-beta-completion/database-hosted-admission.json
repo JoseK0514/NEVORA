@@ -1,0 +1,41 @@
+{
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "mirrorCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "databaseBound": true,
+  "tlsCertificateAndHostnameVerificationEnabled": true,
+  "checks": [
+    {
+      "name": "credential-free-probe",
+      "status": 401,
+      "passed": true,
+      "durationMs": 859
+    },
+    {
+      "name": "selector-rejected",
+      "status": 400,
+      "passed": true,
+      "durationMs": 539
+    },
+    {
+      "name": "foreign-origin-rejected",
+      "status": 403,
+      "passed": true,
+      "durationMs": 629
+    },
+    {
+      "name": "cross-site-rejected",
+      "status": 403,
+      "passed": true,
+      "durationMs": 491
+    },
+    {
+      "name": "private-route-requires-login",
+      "status": 307,
+      "passed": true,
+      "durationMs": 1402
+    }
+  ],
+  "passed": true
+}

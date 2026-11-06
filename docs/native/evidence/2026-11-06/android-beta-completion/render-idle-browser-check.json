@@ -1,0 +1,11 @@
+{
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "providerStartupPageObserved": true,
+  "providerStartupEvidence": "Initial tab displayed Render - Application loading and APPLICATION LOADING",
+  "loginReadyAfterStartup": true,
+  "sameOwnedOrigin": true,
+  "loginFormVisible": true,
+  "credentialsEntered": false,
+  "actualNativeUiTested": false
+}

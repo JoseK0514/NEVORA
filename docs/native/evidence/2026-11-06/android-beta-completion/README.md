@@ -1,6 +1,6 @@
 # Android beta continuation — November 6, 2026
 
-Status: **independent upload-key recovery verified; source policy reconciled; Free service live and initial HTTPS admission passed. Database/app/device/release qualification remains open**.
+Status: **independent upload-key recovery and source policy verified; Free database-connected staging live; 5 HTTPS, 17 restricted-runtime and 18 bounded fictional Owner/Employee checks passed. Actual Render idle wake/retry also passed; native/device/release gates remain open**. [Current qualification and exact resume instructions](hosted-staging-qualification.md).
 Owner: Codex/root. Starting candidate `bc6b739750562716283d57b821ca6ef4aca72370`.
 Fresh development `e9c3a66da330959738100884f87cb76fd2af8296` is included.
 The [Android 10–12 qualification](../android-supported-os/README.md) remains the
@@ -104,7 +104,7 @@ confirmed no JSON/password contents in AX output. Actual sensitive reads used
 emit:false and metadata allowlists. These are executor corrections; no second
 review approval or independent finding closure is claimed.
 
-## Free staging — live initial deployment; database setup pending
+## Free staging — connected and bounded hosted checks passed
 
 Jose accepted the Render signup terms and creation under `support@furbrandpr.com`.
 Native Chrome verified workspace `tea-dbmr3t6c6qcc73cbf0jg`: Hobby, no card,
@@ -118,7 +118,9 @@ uses Render Free plus a **separate new Neon Free organization**, now verified:
 `noisy-fog-17044568`, root `br-still-haze-bb6qa2a2` / native-fictional-only,
 database `nevora_native_staging`, endpoint `ep-jolly-dream-bbqd82uj`, PostgreSQL17,
 0.25CU min/max and quotas were read back. Empty table inventory returned `[]`.
-No schema setup, credential retrieval, runtime role or secret binding occurred.
+At that initial creation checkpoint, no schema setup, credential retrieval,
+runtime role or secret binding had occurred. That historical empty-resource
+receipt is superseded by the completed bootstrap/binding/qualification below.
 The owned endpoint was explicitly suspended and read back **idle**. Its reported
 suspend_timeout_seconds is **0**; five-minute automatic suspension was not
 established. The first create request rejected an unsupported interval; a zero
@@ -128,8 +130,8 @@ Both existing Launch organizations remain unchanged.
 Ordinary Render Postgres is not a drop-in for the application's Neon HTTP transport.
 Render Free sleeps after 15 idle minutes and can display a startup page; usage is
 finite and workspace-scoped. Keep the no-card state and verify enforcing limits
-before service creation. Public origin/exposure and hosted runtime acceptance
-remain open.
+before service creation. Public origin/exposure were separately approved below;
+full native acceptance remains separate.
 Sources: [Render limits](https://render.com/docs/free),
 [Neon organization creation](https://neon.com/docs/manage/orgs-manage),
 [Neon plans](https://neon.com/docs/introduction/plans).
@@ -174,15 +176,29 @@ Five actual HTTPS admission checks passed with TLS certificate/hostname
 verification: 401 unauthenticated protocol1 JSON/no-store, 400 selector refusal,
 403 foreign-origin refusal, 403 cross-site refusal, and 307 private-route login
 redirect. [HTTP receipt](initial-hosted-admission.json).
-This establishes initial hosting/admission, not functional Owner/Employee login,
-database setup, provider delivery, installed native acceptance or a signed beta.
-The separate Free Neon endpoint remains empty/idle; paid hosting remains on hold.
+Those initial results preceded database setup. Jose subsequently approved
+“Connect the database and run the checks.” The authoritative installer bootstrapped
+only the new fictional database; the restricted runtime passed17 real checks and
+was saved only on this exact service. Pinned database-bound deployment
+`dep-dbmu17vf3r2c73bkv07g` reported Live on the same mirror59c78f7. All5 HTTPS
+admission checks passed again. [Binding](render-database-binding.json),
+[bootstrap](neon-fictional-bootstrap.json), [runtime](runtime-qualification.json).
+
+All18 bounded hosted Owner/Employee checks passed: normal sign-in, Owner-created
+Employee, private separately seeded QA login, role restrictions, saved availability,
+logout/session expiry, Neon suspended-wake sign-in and an actual Owner CSV download.
+The Employee credential was not delivered by invitation. All fictional sessions
+are inactive; the owned endpoint was explicitly suspended/observed idle. Provider
+delivery remained off, and no signed native/device acceptance is inferred.
+Render's15-minute idle-service wake/retry also passed: first six-second probe timed out, retry was compatible, and the ordinary browser recovered from Render's startup page to NEVORA sign-in. Paid hosting remains
+on hold. [Complete qualification, closure and next gates](hosted-staging-qualification.md).
 
 ## Remaining gates and authority
 
 Independent key recovery is complete. A usable signed beta requires a qualified
-isolated HTTPS origin, exact source integration/CI, artifact/certificate/origin
-checks and controlled internal distribution. Jose confirms no physical Android
+isolated HTTPS origin (now qualified for this bounded staging scope), exact
+source integration/CI, artifact/certificate/origin checks and controlled internal
+distribution. Jose confirms no physical Android
 phone/tablet is available; emulator results do not close that gate. Firebase client
 config is privately downloaded/identity-verified; server credential, enrollment,
 real delivery and Play installed signing identity are not yet qualified.

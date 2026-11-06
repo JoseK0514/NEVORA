@@ -1,0 +1,37 @@
+{
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "mirrorCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "noOwnedApplicationTrafficSinceBeforeUtc": "2026-11-06T14:36:34Z",
+  "firstRequestAtOrAfterUtc": "2026-11-06T14:52:00Z",
+  "robotsBeforeWake": {
+    "status": 200,
+    "contentType": "text/plain",
+    "cacheControl": "",
+    "elapsedMs": 339,
+    "standardDisallowAll": true
+  },
+  "apiAttempts": [
+    {
+      "errorClass": "timeout",
+      "elapsedMs": 6103,
+      "protocolCompatible": false
+    },
+    {
+      "status": 401,
+      "contentType": "application/json",
+      "cacheControl": "no-store, private",
+      "elapsedMs": 3402,
+      "protocolCompatible": true
+    }
+  ],
+  "eventualProtocolCompatible": true,
+  "coldServiceEstablished": true,
+  "elapsedWakeObservationMs": 24506,
+  "tlsCertificateAndHostnameVerificationEnabled": true,
+  "httpRetryOnly": true,
+  "actualNativeUiTested": false,
+  "passed": true,
+  "providerReference": "https://render.com/docs/free"
+}
