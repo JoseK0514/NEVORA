@@ -82,7 +82,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px 14px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty__t { font-size: 15.5px; line-height: 21px; font-weight: 600; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty__s { font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req { display: flex; flex-direction: column; gap: 4px; padding: 2px 18px 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req__d { font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tof-req__l { font-size: 14px; line-height: 19px; color: var(--b-grey); overflow-wrap: anywhere; text-wrap: pretty; }
@@ -212,4 +212,16 @@
 @media (max-width: 359px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { grid-template-columns: minmax(0, 1fr) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-seg > button { font-size: 14.5px !important; letter-spacing: 0 !important; }
+}
+
+/* Inspection round 2 (Requests and shifts). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
+  /* Send request: the mock's in-card big button (56px, 18px corners, 17px bold, flat). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep :is(.c-btn--primary, button[type="submit"].c-btn) { min-height: 56px !important; border-radius: 18px !important; font-size: 17px !important; font-weight: 700 !important; box-shadow: none !important; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .tof-row { row-gap: 16px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve { padding: 12px !important; gap: 10px !important; }
 }

@@ -10,7 +10,7 @@ import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCou
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {BButton, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone} from '../owner-b/b-kit';
 import {BCardNote, BDay} from './parts';
-import {BEmpty, BText, ExchangeHeroB, MyScheduleCardB, RequestTypeIcon, type ExchangeTab} from './requests-b';
+import {BEmpty, BText, ExchangeHeroB, MyScheduleCardB, RequestTypeIcon, type ExchangeTab, OpenShiftsEmptyB} from './requests-b';
 import type {OpenEmployeeShift} from '@/lib/employee-requests';
 import type {EmployeeRequestDetail, HistorySlot, RequestSlot, RequestSummary} from '@/lib/employee-exchange';
 import {addDays, formatTime} from '@/lib/date-utils';
@@ -87,7 +87,7 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
             {note ? <BCardNote>{note}</BCardNote> : null}
           </BCard> : unconfirmed.length ? <BCard><div className="eb-status"><p className="b-state" role="status">Some shifts still need an eligibility check. Refresh to try again.</p>
             <BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Refresh</BButton></div></BCard>
-            : <BCard><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No eligible open shifts right now" sub="Check back when more coverage is offered."/></BCard>}
+            : <BCard><OpenShiftsEmptyB/></BCard>}
           {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="Eligibility unavailable"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}

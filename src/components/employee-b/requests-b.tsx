@@ -5,6 +5,7 @@ import type {ReactNode} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {ClipboardTextIcon} from '@phosphor-icons/react/dist/ssr/ClipboardText';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
+import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
@@ -49,6 +50,12 @@ export function BStateCard({text, denied, retry, busy, label}: {text: ReactNode;
 /** A centred empty state: a 48px grey icon, what is missing, then where it will appear. */
 export function BEmpty({icon, title, sub}: {icon: ReactNode; title: ReactNode; sub?: ReactNode}) {
   return <div className="eb-empty"><BIcon tone="grey">{icon}</BIcon><p className="eb-empty__t">{title}</p>{sub ? <p className="eb-empty__s">{sub}</p> : null}</div>;
+}
+
+/** Open shifts with nothing to pick up, the same on Schedule's and Pick up and swap's Open shifts. */
+export function OpenShiftsEmptyB() {
+  return <><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
+    <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link></>;
 }
 
 /** A plain paragraph inside a card (a notice, a reason). */

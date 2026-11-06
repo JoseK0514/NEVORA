@@ -88,7 +88,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
   const stack = state ?? (enabled === false ? <BCard><BText status>Time off is turned off for your company.</BText></BCard> : page === 'new' ? null : <>
     {earlier ? <BCard><div className="eb-status"><p className="b-state">An earlier time-off submission still needs to be checked.</p><Link className="b-link" href="/app/requests?tab=new">Return to my submission</Link></div></BCard> : null}
     {page === 'list' ? <BCard label={filter === 'decided' ? 'Decided requests' : 'Waiting requests'}>
-      {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting'}
+      {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
         sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
         {requests.map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}

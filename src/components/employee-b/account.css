@@ -254,3 +254,14 @@
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: 15px; line-height: 22.5px; }
 }
+
+/* Inspection round 2 (Account). */
+@media (max-width: 767px) {
+  /* Updates search: the hidden clear button doesn't reserve space while the field is empty; the placeholder is 15px (the
+   * typed text stays 16px so iPhones don't zoom). */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: 15px; }
+  /* Legal footer: 18px lines 6px apart, as in the mock; each link keeps a 32px tap area. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: -7px 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
+}

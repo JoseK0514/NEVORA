@@ -77,3 +77,32 @@
 @media (max-width: 767px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen.b-screen.b-screen.b-screen.b-screen { margin-top: 0 !important; }
 }
+
+/* Inspection round 2 (shared by every Employee phone screen). */
+@media (max-width: 767px) {
+  /* One empty state everywhere: a 48px grey circle with a 22px glyph, then the title and its line. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; margin-bottom: 4px; border-radius: 24px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico svg { width: 22px; height: 22px; }
+  /* Card headers: the mock's 46px (title where it was, 2px more air to the first row); header chips 24px; titles never
+   * leave one word alone. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h { min-height: 46px; padding-bottom: 4px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h > .b-chip { height: 24px; padding: 0 9px; border-radius: 12px; font-size: 12.5px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card__h h2 { text-wrap: balance; }
+  /* Glass segments: 34px thumbs, as in the mock. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { min-height: 34px; }
+  /* A big button inside a card sits flat (the glow is for buttons on the canvas). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card .b-btn--big { box-shadow: none; }
+  /* Notice rows: the mock's line heights, and the title wraps naturally. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__t { line-height: 21px; text-wrap: wrap; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__s { line-height: 19px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
+}
+
+/* Inspection round 2, the shell over an Employee phone screen: the mock's 36px avatar circle, 12px wordmark and a tab bar
+ * inset 6px at each side. Same weight as owner-b-shell.css. */
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .c-top-avatar {
+    background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 17px, rgb(255 255 255 / 0.24) 17.5px 18px, transparent 18.5px) !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup .brand-wordmark { height: 12px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile] .mobile-nav { padding-left: 6px !important; padding-right: 6px !important; }
+}

@@ -249,7 +249,7 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
         </BCard>
         <BCard title={`What ${workplace ?? 'your employer'} keeps`} id="b-deletion-kept">
           <p className="eb-para eb-para--lg eb-pad">Deleting your NEVORA account doesn’t end your employment or remove records your employer has to keep.</p>
-          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link eb-row-plain" href="/app/profile/account-deletion"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
+          <ul className="b-list eb-list-top"><li className="b-li"><Link className="b-row b-row--link" href="/app/profile/account-deletion"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">What may be kept</span></span></span><Chev /></Link></li></ul>
         </BCard>
       </>}
     </BStack>

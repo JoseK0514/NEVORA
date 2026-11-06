@@ -7,7 +7,7 @@ import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import {BCardNote, BDay} from './parts';
-import {BEmpty, ExchangeHeroB} from './requests-b';
+import {ExchangeHeroB, OpenShiftsEmptyB} from './requests-b';
 import './schedule.css';
 
 /* Employee Schedule on the phone, Direction B (Jose approved the mock, Nov 6, 2026): the week on glass, open shifts to
@@ -100,9 +100,7 @@ export function OpenShiftsB({backHref, rows, empty, blocked, unavailableHref, no
     <BStack>
       {rows === null ? <BCard title="Open shifts"><div className="es-state"><p className="b-state">We couldn’t check open shifts right now.</p>
         <BButtonLink href={unavailableHref} kind="quiet" full>Open shift requests</BButtonLink></div></BCard>
-        : empty ? <BCard label="Open shifts"><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
-          <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link>
-        </BCard>
+        : empty ? <BCard label="Open shifts"><OpenShiftsEmptyB/></BCard>
         : <BCard title="You can pick up" count={rows.filter(row => !row.requested).length || undefined}>
           <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date}/>} title={row.hours} label={row.label}
             chip={row.requested ? <BChip tone="amber">Waiting</BChip> : row.nextWeek ? <BChip tone="grey">Next week</BChip> : undefined}
