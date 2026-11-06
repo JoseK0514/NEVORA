@@ -56,6 +56,8 @@ jobs:
           packages: platform-tools
       - name: Check exact checkout and native tooling
         shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/native-python-cache
         run: |
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           node --test native/association/prepare.check.mjs scripts/native-build.check.mjs

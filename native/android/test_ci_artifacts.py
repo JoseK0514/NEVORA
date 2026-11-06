@@ -1,6 +1,6 @@
 """Exercise real artifact publication and a recipient's checksum verification."""
 from pathlib import Path
-import json,shutil,struct,subprocess,sys,tempfile,unittest,zipfile
+import json,os,shutil,struct,subprocess,sys,tempfile,unittest,zipfile
 
 TOOL=Path(__file__).with_name('ci-artifacts.py')
 
@@ -38,6 +38,22 @@ class ArtifactCustodyTests(unittest.TestCase):
         self.apk.rename(self.apk.with_name('app-release.apk'));self.refused('missing')
     def test_dirty_source_cannot_publish_existing_binaries(self):
         (self.repo/'source.txt').write_text('changed source\n');self.refused('source')
+    def test_python_cache_is_kept_outside_source_without_excusing_dirty_files(self):
+        module=self.repo/'owned_fixture.py';module.write_text('VALUE = 1\n')
+        self.git('add',module.name);self.git('commit','-qm','Python source fixture')
+        self.expected=self.git('rev-parse','HEAD').stdout.strip()
+        # Reproduce Linux's default cache placement even on macOS, whose Python
+        # redirects bytecode to a user cache. Custody must reject that dirt.
+        subprocess.run([sys.executable,'-c','import sys;sys.pycache_prefix=None;import owned_fixture'],cwd=self.repo,check=True)
+        self.assertTrue((self.repo/'__pycache__').is_dir());self.refused('source')
+        shutil.rmtree(self.repo/'__pycache__')
+        # Match CI's external bytecode destination, keeping the clean-source
+        # assertion intact rather than ignoring generated paths in the guard.
+        cache=self.root/'python-cache'
+        subprocess.run([sys.executable,'-c','import owned_fixture'],cwd=self.repo,env={**os.environ,'PYTHONPYCACHEPREFIX':str(cache)},check=True)
+        self.assertTrue(list(cache.rglob('owned_fixture.*.pyc')))
+        self.assertFalse((self.repo/'__pycache__').exists())
+        result=self.run_tool();self.assertEqual(result.returncode,0,result.stderr)
     def test_wrong_head_cannot_publish(self):
         result=self.run_tool('0'*40);self.assertEqual(result.returncode,1)
         self.assertEqual(json.loads(result.stdout)['reason'],'source');self.assertFalse(self.output.exists())
