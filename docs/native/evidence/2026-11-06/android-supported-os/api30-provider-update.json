@@ -1,0 +1,11 @@
+{
+  "api": 30,
+  "serial": "emulator-5580",
+  "normalSignedUpdate": true,
+  "factorySignerMatches": true,
+  "provider": "com.google.android.webview",
+  "version": "156.0.8078.50",
+  "minimumApi": 29,
+  "factoryApkSha256": "70f241fbbdd6349707c9411598f4ae6f918647ad53cb80d0e8420cc965ec012b",
+  "noTrustOrRendererOverride": true
+}

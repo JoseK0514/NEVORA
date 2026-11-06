@@ -1,0 +1,118 @@
+{
+  "url": "https://dl.google.com/android/repository/sys-img/google_apis/arm64-v8a-31_r11.zip",
+  "archiveBytes": 1415899687,
+  "archiveSha1": "21bcb00f4ac3dc91c4040da7980b8c5f3c681781",
+  "licenseAuthorization": "license-authorization-reused.json",
+  "extraction": "ZIP CRC checked, sparse zero extents preserve exact bytes",
+  "files": [
+    {
+      "path": "arm64-v8a/NOTICE.txt",
+      "bytes": 12717296,
+      "sha256": "ab9eff8404cd068477967711cbe02157cb72932bbae56a416cadc7cb0e9a7c69",
+      "zipCrc32": 2068319062
+    },
+    {
+      "path": "arm64-v8a/VerifiedBootParams.textproto",
+      "bytes": 356,
+      "sha256": "08018d0f7cb64ef717af70ffe614bb7247d0e0ee37a3333d03336032f4722704",
+      "zipCrc32": 3534514065
+    },
+    {
+      "path": "arm64-v8a/advancedFeatures.ini",
+      "bytes": 603,
+      "sha256": "7c0f4963326cb6dafc987624b31ad6e3a895d78f4bd71bc91be66073c0817176",
+      "zipCrc32": 3034079554
+    },
+    {
+      "path": "arm64-v8a/build.prop",
+      "bytes": 4324,
+      "sha256": "4bbad20dd8957799de74c16df29b616c85aca59c33b3a64fd5d7bbd3c21e8441",
+      "zipCrc32": 1898284503
+    },
+    {
+      "path": "arm64-v8a/encryptionkey.img",
+      "bytes": 18874368,
+      "sha256": "522bd0b6a2c92e37de465059bb9487bb9597a9aae032b469a8ebe0b38146d8c3",
+      "zipCrc32": 1482984437
+    },
+    {
+      "path": "arm64-v8a/kernel-ranchu",
+      "bytes": 20044221,
+      "sha256": "63115488836f49c96dbb142145d007188fb5875cf653ad9725bb762f2b53cd65",
+      "zipCrc32": 3164999827
+    },
+    {
+      "path": "arm64-v8a/ramdisk.img",
+      "bytes": 4282663,
+      "sha256": "401dd0cfe27762bc353a3459e3d52c6156968ec6825be52b0a9cddb6ffba76e3",
+      "zipCrc32": 3554105160
+    },
+    {
+      "path": "arm64-v8a/source.properties",
+      "bytes": 300,
+      "sha256": "f7323e20cfa186cccabfac2746223db8088bce1dec19d4d4878d14971f61f132",
+      "zipCrc32": 1706600503
+    },
+    {
+      "path": "arm64-v8a/system.img",
+      "bytes": 4306501632,
+      "sha256": "e12defa87550510ef4695a45956c291ad3b537fd4c5fb96b06a68fbe40082922",
+      "zipCrc32": 4245012202
+    },
+    {
+      "path": "arm64-v8a/userdata.img",
+      "bytes": 1048576,
+      "sha256": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+      "zipCrc32": 2805525020
+    },
+    {
+      "path": "arm64-v8a/vendor.img",
+      "bytes": 144703488,
+      "sha256": "623c0f8e6e125865ee3df286df72891cee203ad9c62943c924d33e5592665547",
+      "zipCrc32": 60358333
+    },
+    {
+      "path": "arm64-v8a/data/local.prop",
+      "bytes": 46,
+      "sha256": "49b05d093a46d35d85df01fb99133f077fcc725cc49efe1a1bedae884d24e20b",
+      "zipCrc32": 1254945383
+    },
+    {
+      "path": "arm64-v8a/data/misc/apns/apns-conf.xml",
+      "bytes": 6575,
+      "sha256": "c35b899f2b6296aee4a9742302651cce9eb64622669d4d8fe8d276ca11060eb6",
+      "zipCrc32": 2001431324
+    },
+    {
+      "path": "arm64-v8a/data/misc/emulator/version.txt",
+      "bytes": 61,
+      "sha256": "70d709973a48c0fa88e1f5d3a6fba20e17fb3e385d91dc8e6e4324c266f3755c",
+      "zipCrc32": 2675028789
+    },
+    {
+      "path": "arm64-v8a/data/misc/emulator/config/radioconfig.xml",
+      "bytes": 1433,
+      "sha256": "534a81b662ad62fc70ec0ea22715670524a05a066afc9fdac8e7c0f5a7789cd7",
+      "zipCrc32": 3948199815
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/iccprofile_for_carrierapitests.xml",
+      "bytes": 16537,
+      "sha256": "dc4b5f5344f084fc44f89250bbcf2b12e452eb98c104e4ef3ec115366eb6ce32",
+      "zipCrc32": 3215429983
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/iccprofile_for_sim0.xml",
+      "bytes": 14647,
+      "sha256": "a2744726a306b18d7547251026201aa5c6a9e120aa1555992eeb8b0a3b4aa6d9",
+      "zipCrc32": 310006284
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/etc/modem_simulator/files/numeric_operator.xml",
+      "bytes": 297,
+      "sha256": "c2557e604beea20b67642cdbb14ae7b792f804e4476b3f6cf47035690234f436",
+      "zipCrc32": 1806977340
+    }
+  ],
+  "time": 1793959144.929945
+}

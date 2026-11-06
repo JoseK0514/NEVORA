@@ -1,5 +1,7 @@
 # Android accessibility runtime correction — proposed November 5
 
+**November 6 minimum-OS follow-up:** the matching Google-signed API29 package is verified and locally qualified on API29–31 ARM64: 10 original cases/cold restart each, 18 backend checks/3 native journeys/cold on API29 and 28 JVM tests. Candidate 3e22d98b contains a test-only package-scoping correction for a proven SystemUI label collision. Production native code, original expectations and the approved baseline remain unchanged. Physical/hosted/signing/store acceptance remains separate. [Qualification packet](evidence/2026-11-06/android-supported-os/README.md).
+
 Status: **approved by Jose on November5; local executor verification complete**. Jose selected “Adopt156.0.8078.50+ (Recommended).” Android10/API29 remains unchanged. The prepared patch is now applied locally; no release is authorized.
 
 ## Proposed correction

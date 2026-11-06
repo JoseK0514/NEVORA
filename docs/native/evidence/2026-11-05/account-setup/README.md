@@ -32,11 +32,13 @@ The embedded verification flow initially produced overlapping dialogs and unavai
 
 ## Firebase
 
+**November 6 follow-up:** the company console downloaded the Android client configuration successfully. Project, app ID and package match the registered development app; a verified working copy is outside Git with private file permissions. Spark/no-cost was reobserved. Runtime binding, server credential setup and real push delivery remain unperformed; analytics/billing settings were unchanged. [Receipt and scope](../../2026-11-06/android-supported-os/firebase-configuration-preparation.json).
+
 - Project: **NEVORA Native Development**, ID `nevora-native-development`.
 - Company account accepted the approved Owner invitation after Jose explicitly accepted Firebase Terms for that account. The original owner remains; no owner removal was authorized or performed.
 - Spark/no-cost plan observed; no billing upgrade. Google Analytics unlinked during setup.
 - General settings confirm Android app **NEVORA Android Development**, package `com.velani.nevora.development`, under the company session.
-- Two earlier config-download attempts timed out. No local downloaded configuration, server credential, new SDK dependency, enabled native enrollment or delivered FCM notification is claimed. Existing pinned dependencies, default-off flags and backend/session authority remain unchanged.
+- Two earlier config-download attempts timed out during account creation; the November 6 follow-up above resolves that download gap. No server credential, new SDK dependency, enabled native enrollment or delivered FCM notification is claimed. Existing pinned dependencies, default-off flags and backend/session authority remain unchanged.
 
 ## Apple
 

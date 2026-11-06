@@ -1,0 +1,33 @@
+{
+  "name": "NevoraCompat29_b7bb86eb",
+  "serial": "emulator-5580",
+  "api": 29,
+  "pid": 69927,
+  "started": 1793935750.294934,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraCompat29_b7bb86eb",
+    "-sysdir",
+    "/Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/image-29/arm64-v8a",
+    "-port",
+    "5580",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-window",
+    "-no-audio"
+  ],
+  "image": "/Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/image-29/arm64-v8a",
+  "hardwareTemplate": "installed SDK32 Google APIs AVD; actual image overridden with verified Google API29",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/avds",
+  "configSha256": "a5f3434d39154877486a71e944b6047f6c7d79cacdca1263ebf01f563bf56dda",
+  "stopped": true,
+  "processIdentity": "Thu Nov  5 23:29:10 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd NevoraCompat29_b7bb86eb -sysdir /Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/image-29/arm64-v8a -port 5580 -no-snapshot -no-boot-anim -no-window -no-audio",
+  "bootVerified": true,
+  "actualApi": "29",
+  "providerBefore": "Current WebView Update Service state\n  Fallback logic enabled: false\n  Multiprocess enabled: true\n  Current WebView package (name, version): (com.google.android.webview, 91.0.4472.114)\n  Minimum targetSdkVersion: 29\n  Minimum WebView version code: 447211484\n  Number of relros started: 1\n  Number of relros finished: 1\n  WebView package dirty: false\n  Any WebView package installed: true\n  Preferred WebView package (name, version): (com.google.android.webview, 91.0.4472.114)\n  WebView packages:\n    Valid package com.google.android.webview (versionName: 91.0.4472.114, versionCode: 447211484, targetSdkVersion: 31) is  installed/enabled for all users\n    com.google.android.webview.beta is NOT installed.\n    com.google.android.webview.dev is NOT installed.\n    com.google.android.webview.canary is NOT installed.\n    com.google.android.webview.debug is NOT installed.\n    com.android.webview is NOT installed.\n",
+  "serialAbsent": true,
+  "disposableAvdRemoved": true,
+  "stoppedAt": 1793959007.989179,
+  "cleanupNote": "Initial serial-retirement check raced adb. After confirmed PID disappearance and launcher exit0, validated normalized config against invocation snapshot; only emulator userdata expansion differed. Deleted only this private AVD."
+}

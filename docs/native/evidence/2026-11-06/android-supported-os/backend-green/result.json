@@ -1,0 +1,399 @@
+{
+  "ownerId": "cc28d9e2a17a9fc7be8df4b221f5e1e6",
+  "root": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-6SHSAq",
+  "port": 49907,
+  "checkpoint": "3e22d98b61dab82f33b64b6f1b553d2b16b097fb",
+  "platform": "android",
+  "verification": "full-backend",
+  "status": "passed",
+  "ownershipClosed": true,
+  "nativeBuilds": [
+    {
+      "platform": "android",
+      "checkpoint": "3e22d98b61dab82f33b64b6f1b553d2b16b097fb",
+      "artifacts": 2
+    }
+  ],
+  "postgres": {
+    "pid": 48575,
+    "data": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-6SHSAq/data",
+    "port": 49907,
+    "started": 1793936422,
+    "fingerprint": "d4596e9927a7c12641de81c4ce93249529c4ee43a1b7ffab387d606aeeb1439c",
+    "marker": "cc28d9e2a17a9fc7be8df4b221f5e1e6"
+  },
+  "startedAt": "2026-11-06T03:40:22.508Z",
+  "execution": {
+    "status": 0,
+    "signal": null,
+    "timedOut": false,
+    "resources": [
+      {
+        "pid": 49499,
+        "ppid": 48611,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:36 2026",
+        "commandHash": "8a61291cc6a0469416823e4d37d56cc6c9ffb86be3be328084ff1e9b378209df",
+        "lastObservedPpid": 48611,
+        "kind": "next",
+        "stopped": true
+      },
+      {
+        "pid": 49521,
+        "ppid": 49499,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:36 2026",
+        "commandHash": "2b19aba51e2b345e85f35c988792c06a0c9bee5c00d68034206f64465d76756d",
+        "lastObservedPpid": 49499,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 49909,
+        "ppid": 48611,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:40:39 2026",
+        "commandHash": "8951f3eede953af65af2dc99d2e16b7d1cf1ecae16ed000508199a6b3f7a522a",
+        "lastObservedPpid": 48611,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 50042,
+        "ppid": 48611,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:39 2026",
+        "commandHash": "5b53618875f5e413bc57c606f8774797c2c9161683491cc3e2499eb82be84557",
+        "lastObservedPpid": 48611,
+        "kind": "browser-chromium",
+        "stopped": true
+      },
+      {
+        "pid": 50106,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:39 2026",
+        "commandHash": "998637e00facdf7372ad3625d6d9d42b6b5f2cc69ce1b62bb954f443df156e7c",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 50107,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:39 2026",
+        "commandHash": "5e566d9f13d5fabcb2a9d588a97546b37019e30f1b129950da9cb6a023f43a05",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 50312,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:40 2026",
+        "commandHash": "002f2f84ec222f46f9a11929a4c2df9b7ae9c96036c823a8de9a22419b2658d0",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 51627,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:43 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 52452,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:45 2026",
+        "commandHash": "9aebafc777b8d3d51185a8a17bf7cd3f5e87b98e2a2c938a1d5826a0b10a7e8a",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 52453,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:45 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 53454,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:47 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 53588,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:47 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 53589,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:47 2026",
+        "commandHash": "bfcecb30948b5f6d592f791b06416116685bb23b792fedac7ab8f1d854f2841e",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 54286,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:48 2026",
+        "commandHash": "cfac49f19391cb4e37c77c1d68f3e5011b06480a72036fff1efed13983efcadb",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 54736,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:49 2026",
+        "commandHash": "8c50bf291242c37a48ffa42f231933efc2a4614f96248d9ee208592f35413bb7",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 54907,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:49 2026",
+        "commandHash": "1f6d974896dfbaa92ca6f7f99a908ee17105907bffd98439ce1773b36c3b6ada",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 55443,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:50 2026",
+        "commandHash": "f506d68cc4e4c492152e94633789fb4f837575af83f2fc8d0305ff7d6336cdcc",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 55633,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:50 2026",
+        "commandHash": "4848e18949e6fe611fb0f85719d44989f49808a87c188430003f69c561af29da",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 56243,
+        "ppid": 50042,
+        "pgid": 50042,
+        "started": "Thu Nov 5 23:40:51 2026",
+        "commandHash": "b7e8bee67568239f764435a3cd6bd1a59727e1e1e2b5e328f2f2fd804412d077",
+        "lastObservedPpid": 50042,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 57131,
+        "ppid": 48611,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:40:52 2026",
+        "commandHash": "f2fd78525489c1b60f236084233047940ee9e24a9e57304f4a14d487f16559df",
+        "lastObservedPpid": 48611,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 57323,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:40:52 2026",
+        "commandHash": "edfbc1bb77227d82e098552d973f48e0b7bc10c473dad121079b75c1c1796edf",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 57493,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:40:53 2026",
+        "commandHash": "112fcf9c638b815d8b63d428f83fa7f8eea93b59e5dc4a1964799e92e9b953c5",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 57684,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:40:53 2026",
+        "commandHash": "86ad929f4c931038f8b395e1decf83129889c9f3fb14e860a66c38449d4bbfe3",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 62758,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:40:58 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 65593,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:41:02 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 67938,
+        "ppid": 49521,
+        "pgid": 49499,
+        "started": "Thu Nov 5 23:41:04 2026",
+        "commandHash": "00879f498e8b5d272adcd07da94653ba71847fb037bd266672a3d8de7d810ca2",
+        "lastObservedPpid": 49521,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 77398,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:41:14 2026",
+        "commandHash": "aa75657a8694d524acfb7e89f21e7269ca3c55dc554db18a56b6827c570d88e4",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 84003,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:41:21 2026",
+        "commandHash": "10f91b5d3f92594fc9e9846131ed6eef5bc07289c76b4738a0ec2dcda4c8a217",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      },
+      {
+        "pid": 97787,
+        "ppid": 57131,
+        "pgid": 48611,
+        "started": "Thu Nov 5 23:41:35 2026",
+        "commandHash": "d541c06b345964fd9fc68e24f75ae2ae51255d913b0126667aa6f4a41a0d9398",
+        "lastObservedPpid": 57131,
+        "kind": "owned-descendant",
+        "stopped": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    },
+    {
+      "name": "android-full-backend",
+      "status": "passed"
+    }
+  ],
+  "closedAt": "2026-11-06T03:41:47.394Z",
+  "sourceVerified": true
+}

@@ -1,0 +1,6 @@
+{
+  "candidate": "3e22d98b61dab82f33b64b6f1b553d2b16b097fb",
+  "nativeSourceHash": "c84fa2555cf40c4d31fce69d469e19f4ff58e4abee3cbaea7ecc4ccbebcb1b69",
+  "productionNativeUnchanged": true,
+  "change": "BackendInstrumentedTest tap selector package binding and package assertion only"
+}

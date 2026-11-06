@@ -1,5 +1,7 @@
 # Android minimum-OS follow-up — November 5, 2026
 
+**Superseded November 6:** the matching provider download succeeded after Mac unlock, and API29–31 ARM64 local qualification is complete on candidate 3e22d98b. The temporarily retained API29 image was reused, verified and retired after qualification. This packet preserves the earlier blocked snapshot; [current results and remaining gates](../../2026-11-06/android-supported-os/README.md) are authoritative for the follow-up.
+
 Status: **API29 fallback diagnostics passed; supported-runtime qualification is
 unfinished**. Owner: Codex/root. Source: detached
 `c8211cd2a71655bedba067eed2437b5ee7c2c3a4`. Android application, test and build

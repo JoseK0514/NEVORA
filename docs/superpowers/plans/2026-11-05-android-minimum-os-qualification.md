@@ -5,12 +5,17 @@ WebView 156.0.8078.50 minimum. Android 10/API29 remains the declared minimum.
 This continues local preparation; it does not authorize hosting, distribution,
 production, a new subscription, or a different runtime baseline.
 
-Execution status: API29 actual old-provider and large-text/keyboard diagnostics
-passed. The retained Play APK's API32 requirement was confirmed by a normal
-API29 install rejection. Matching-package acquisition remains blocked by browser
-access/download availability; full API29–31 qualification is not complete.
-Task-owned services and the disposable AVD are closed. Results and next action:
-[minimum-OS evidence](../../native/evidence/2026-11-05/android-minimum-os/README.md).
+Execution status, November 6: **local API29–31 ARM64 qualification complete**.
+The matching Google-signed API29 provider was obtained and verified. Candidate
+`3e22d98b61dab82f33b64b6f1b553d2b16b097fb` passed the original 10-case matrix and
+independent cold restart on each OS. Its API29 backend run passed 18 checks,
+including 3 native journeys and cold restart; 28 JVM tests passed. A reproduced
+SystemUI/app label collision was corrected by binding backend-test taps to the
+target package, with all original expectations retained. Production native
+source and the approved baseline are unchanged. Task-owned services/AVDs are
+closed; temporary downloaded images were retired after custody checks.
+Physical, shared-source, hosted, signing and distribution gates remain open.
+Results: [qualification evidence](../../native/evidence/2026-11-06/android-supported-os/README.md).
 
 ## Starting evidence and controls
 

@@ -1,0 +1,18 @@
+{
+  "project": "nevora-native-development",
+  "projectNumber": "967870547641",
+  "appId": "1:967870547641:android:31c70b20fa4f06b62c3d68",
+  "package": "com.velani.nevora.development",
+  "source": "Existing company-owned Firebase console Android registration, Download google-services.json in Chrome",
+  "observedPlan": "Spark, No-cost ($0/month)",
+  "bytes": 709,
+  "sha256": "2b2a5732f3d6bd4b06c73f8671787acd314a68a2d9e885adbd7b052b9a06fcbf",
+  "privateFile": "/Users/josek0514/.codex/native-runtime/nevora-firebase-config-20261106-8c02d63f/google-services.json",
+  "fileMode": "0600",
+  "directoryMode": "0700",
+  "runtimeConfigured": false,
+  "serverCredentialDownloaded": false,
+  "actualPushDeliveryTested": false,
+  "analyticsOrBillingChanged": false,
+  "downloadedAt": 1793959772.447826
+}

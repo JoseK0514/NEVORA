@@ -1,5 +1,7 @@
 # Android foundation decision packet
 
+**November 6 qualification update:** the correct Google-signed API29 variant is now obtained. Candidate 3e22d98b passed the original full matrix/cold restart on API29–31 ARM64 and real-backend acceptance on API29. The test-selector correction is confined to the test driver; shared architecture, production code and approved baseline remain. Physical and release gates are open. [Evidence and limits](evidence/2026-11-06/android-supported-os/README.md).
+
 **Current November5 decision:** Jose approved WebView156.0.8078.50+ after a same-device Play update passed200recreations and10cases/cold restart while149 failed. Android10/API29 remains unchanged. The precise admission correction is applied and local acceptance passed on candidate114d81cf (fullmatrix/cold,28JVM,18backendchecks/3nativejourneys/cold). Physical/minimum-OS and release gates remain open; evidence is tracked in the [correction packet](android-accessibility-runtime-correction-proposal.md). The original149-era findings below remain historical; they do not establish current readiness.
 
 Phase1 local executor verification passed under Jose's approved Android10+/WebView149+ baseline (November4). The runtime gate and native update/browser fallback are implemented; the fresh extension review approved it with no functional/security blockers. No architecture change, renderer override or accessibility waiver has been accepted.

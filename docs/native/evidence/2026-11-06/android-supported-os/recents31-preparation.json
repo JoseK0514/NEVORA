@@ -1,0 +1,17 @@
+{
+  "api": 31,
+  "ownedSerial": "emulator-5582",
+  "actions": [
+    "Open public Android Settings",
+    "Open Overview",
+    "Back",
+    "Home",
+    "Reopen Overview",
+    "Home"
+  ],
+  "pendingScreenshotObservation": false,
+  "assertionsOrTimeoutsChanged": false,
+  "firstUseTutorialObserved": true,
+  "tutorialAbsentAfterBackHomeAndReopen": true,
+  "returnedHome": true
+}
