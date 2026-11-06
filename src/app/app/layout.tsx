@@ -37,6 +37,8 @@ import "@/components/employee-mobile/messages.css";
 import "./owner-b-shell.css";
 // Direction B on every other Owner and Manager phone page (the corporate and Quiet kits). Loaded last.
 import "./owner-b-pages.css";
+// Direction B on desktop (Owner and Manager, 1024px and wider). Last, so it wins over every older layer.
+import "./owner-b-desktop.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";

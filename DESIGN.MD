@@ -1392,3 +1392,28 @@ pages' own:
   hero only when a card or list comes next, so a form's first label or a plain line never lands on teal.
 - **Rows** use 15.5px titles and 13.5px lines with 18px sides; pills are 22px chips; primary buttons are teal pills with a
   soft shadow, secondary ones grey pills; fields have 14px corners.
+
+## Owner and Manager desktop: Direction B (Jose, Nov 6, 2026: "i like this new design just make sure it looks organize and clean and premium")
+
+Jose approved the "Owner desktop, Direction B" mock (50 pages at 1440px). Desktop only (1024px and wider), Owner and Manager
+(`data-nv-b`); tablets (768–1023px), phones, Employees and Leads keep their own rules. One stylesheet,
+`src/app/app/owner-b-desktop.css`, loaded last; no markup, server reads, links, actions or counts change.
+
+- **Shell.** The sidebar is calm off-white with a hairline edge; the current entry is a teal-50 pill with teal text (the phone
+  tab bar's mark); the Things to do count is a red badge. The top bar is flat teal (dark ink on payroll pages) with glass
+  search, bell and account controls.
+- **The band.** Each page's own title paints the brand band under the top bar with `border-image` (outset up under the sticky
+  bar and to both edges), so the title, its sub line, back link and actions sit on teal: the main action is a white pill, the
+  rest glass. Strips that belong to the title (section tabs, the Team search, week steppers, segmented tabs, Insights' and
+  Activity's date lines) join the band on glass. Handled headers: corporate titles, Quiet headers, back-bar-only pages (New
+  update, New location), Add employee, Add shift and Build and publish sheets, and Profile.
+- **Content.** 24px under the band on the canvas; reading pages use an 860px column. Cards are white, 22px corners, layered
+  shadows; a titled section is one card with its label as the header; rows are 60–64px with 22px sides and one inset
+  divider; pills are chips; buttons are pills; fields have 14px corners. The Settings hub flows into two columns.
+- **Main screens.** Home and Things to do show their Direction B screens (the phone kit's `b-*` look now also applies at
+  1024px and wider; its layout rules stay phone-only) in a two-column grid with the live figures on glass and cards lifted
+  52px over the band. Schedule, Timecards, Payroll and Team keep their desktop content (week grid, batch approval, payroll
+  tabs, people list) under a taller band, with the first card lifted 52px over it. Payroll pages use the dark ink band.
+- **Checked** on fictional data in a desktop browser: all 53 Owner page loads at 1440px, Home, Things to do, Payroll,
+  Settings and Schedule at 1280px (no overflow) and at 900px (tablet look unchanged); the phone audit at 390 and 320px is
+  identical to the previous run.
