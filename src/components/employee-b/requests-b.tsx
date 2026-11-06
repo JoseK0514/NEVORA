@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
+import {ClipboardTextIcon} from '@phosphor-icons/react/dist/ssr/ClipboardText';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
@@ -82,7 +83,7 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'} count={waiting.length || undefined}>
         {waitingExtra ?? null}
         {waiting.length ? <BList>{waiting.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
-          : waitingExtra ? null : <div className="eb-tof-empty"><p className="eb-tof-empty__t">Nothing waiting right now</p><p className="eb-tof-empty__s">Requests you send show here until they’re decided.</p></div>}
+          : waitingExtra ? null : <BEmpty icon={<ClipboardTextIcon weight="bold"/>} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
       </BCard> : null}
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>

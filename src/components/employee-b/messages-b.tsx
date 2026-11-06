@@ -118,8 +118,8 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
                 {busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}</span>
             </Link></li>;
           })}</ul>
-        </BCard>) : <BCard><p className="eb-empty"><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
-          <span>{list.tab === 'unread' ? 'No unread notifications.' : list.partial ? 'Some notices couldn’t be checked. Refresh to check again.' : 'New schedule, request and pay notices will show here.'}{list.more ? ' Older items may be on another page.' : ''}</span></p></BCard>}
+        </BCard>) : <BCard><div className="eb-empty"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
+          <span>{list.tab === 'unread' ? 'No unread notifications.' : list.partial ? 'Some notices couldn’t be checked. Refresh to check again.' : 'New schedule, request and pay notices will show here.'}{list.more ? ' Older items may be on another page.' : ''}</span></div></BCard>}
       </> : null}
       <Pager pager={pager} />
       {opening ? <p className="b-sr" role="status">Opening current details…</p> : null}
@@ -185,9 +185,9 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
             </Link></li>)}
             <WriteRow onClick={list.onCompose} /></ul>
           : <>
-            <p className="eb-empty" role={list.partial ? 'status' : undefined}>{list.partial
+            <div className="eb-empty" role={list.partial ? 'status' : undefined}><BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>{list.partial
               ? <><b>{rows.length ? 'No confirmed matches on this page' : 'Nothing confirmed on this page'}</b><span>Some current updates couldn’t be checked, so they aren’t listed. {narrowed ? 'Try a different search or show All, or refresh to check again.' : 'Refresh to check again.'}</span></>
-              : <><b>{narrowed ? 'No matches on this page' : 'No current updates'}</b><span>{narrowed ? 'Try a different search or show All.' : 'There are no current items on this page.'}{list.more ? ' Older items may be on another page.' : ''}</span></>}</p>
+              : <><b>{narrowed ? 'No matches on this page' : 'No current updates'}</b><span>{narrowed ? 'Try a different search or show All.' : 'There are no current items on this page.'}{list.more ? ' Older items may be on another page.' : ''}</span></>}</div>
             <ul className="b-list"><WriteRow onClick={list.onCompose} /></ul>
           </>}
         </BCard> : <BCard label="Write an update"><ul className="b-list"><WriteRow onClick={list.onCompose} /></ul></BCard>}

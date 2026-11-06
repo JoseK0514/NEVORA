@@ -27,7 +27,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now { align-items: flex-start; padding: 6px 18px 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now .b-notice__tx { gap: 2px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { padding: 14px 18px; font-size: 15px; line-height: 20px; color: var(--b-grey); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px 18px; font-size: 15px; line-height: 20px; color: var(--b-grey); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: #0B6E69; }
   /* A day's or a week's total: a 30px figure, then its line. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: 2px; padding: 2px 18px 16px; }

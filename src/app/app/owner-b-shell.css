@@ -55,3 +55,10 @@
 /* The badge is a phone piece; the sidebar keeps its own count. */
 .b-tab-badge { display: none; }
 @media (max-width: 767px) { .app-shell:not([data-nv-b]) .b-tab-badge { display: none !important; } }
+
+/* The bell: the outline glyph everywhere; on a Direction B phone screen the bold one (the mock's Phosphor Bell). */
+.portal-notification-bell .nb-bold { display: none !important; }
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-simple { display: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-bold { display: block !important; }
+}

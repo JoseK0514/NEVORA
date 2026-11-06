@@ -66,3 +66,16 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-weekly-confirmation { align-items: flex-start; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act p { text-align: left; }
 }
+
+/* Inspection round 1: the confirmation's button is the kit's 36px teal pill (the corporate button rules carry ids, so this
+ * matches their weight); on narrow phones it drops under the words. Past days in the week strip stay full white, as in the mock. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-height: 36px !important; height: 36px !important; padding: 0 14px !important; border-radius: 18px !important; border: 0 !important;
+    background: #0B6E69 !important; color: #FFFFFF !important; font: 600 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important; width: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-week__d.is-past:not(.is-on) > :is(span, b) { opacity: 1; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm { flex-wrap: wrap !important; row-gap: 10px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act { flex-basis: 100% !important; padding-left: 48px !important; }
+}

@@ -93,7 +93,7 @@ export function TimeTabB({data}:{data:Ready}){
      return <BRow key={entry.id} href={entryHref(entry.id)} lead={<BDay date={date} today={date===data.date}/>} title={<span id={'b-hours-entry-'+entry.id}>{keepWhole(range)}</span>}
       sub={entry.breakSeconds?`${boardDuration(entry.breakSeconds)} break`:undefined} end={<BValue><span className={entry.clockOutAt?undefined:'eb-teal'}><Dur value={entry.elapsedSeconds}/></span></BValue>}
       label={`${dayLong(date)}, ${range}, ${boardDuration(entry.elapsedSeconds)}${entry.breakSeconds?`, ${boardDuration(entry.breakSeconds)} break`:''}`}/>;})}
-    {m.week.length?null:<li className="b-li"><p className="eb-empty">No time recorded yet this week</p></li>}
+    {m.week.length?null:<li className="b-li"><p className="eb-quiet">No time recorded yet this week</p></li>}
     <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>Fix a missed punch</BAddRow>
    </BList>
    <BCardNote>Hours include breaks.</BCardNote>
@@ -153,7 +153,7 @@ function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
 /** The chosen week (?start&end): its total and its days. */
 function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period}){
  const item=data.cards[0],card=item?.card,range=rangeLabel(period.startDate,period.endDate);
- if(!item||!card)return <BCard title={range} id="b-hours-timecard"><p className="eb-empty">No hours this week</p></BCard>;
+ if(!item||!card)return <BCard title={range} id="b-hours-timecard"><p className="eb-quiet">No hours this week</p></BCard>;
  const entries=[...card.entries].sort((a,b)=>a.startAt.localeCompare(b.startAt)),notes=card.issues.map(issue=>issueText[issue]).filter((text):text is string=>!!text);
  return <BCard title={rangeLabel(card.startDate,card.endDate)} id="b-hours-timecard" chip={entries.length?chip(cardStatus(item.state as CardState,card.issues)):undefined}>
   {entries.length?<>
@@ -162,7 +162,7 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
    <BList label="Days">{entries.map(entry=>{const length=span(entry.startAt,entry.endAt),date=dateKey(entry.startAt,card.timeZone),times=clockRange(entry.startAt,entry.endAt,card.timeZone);
     return <BRow key={entry.id} href={cardsHref(period)+'&entry='+encodeURIComponent(entry.id)} lead={<BDay date={date}/>} title={<span id={'b-hours-card-entry-'+entry.id}>{keepWhole(times)}</span>}
      end={length===null?<span className="eb-val eb-val--teal">In progress</span>:<BValue><Dur value={length}/></BValue>} label={`${dayLong(date)}, ${times}, ${length===null?'in progress':boardDuration(length)}`}/>;})}</BList>
-  </>:<p className="eb-empty">No hours this week</p>}
+  </>:<p className="eb-quiet">No hours this week</p>}
  </BCard>;
 }
 export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCount,onMore}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period;today:string;chosen:boolean;weeks:Record<string,WeekState>;earlier:Period[];earlierCount:number;onMore:()=>void}){

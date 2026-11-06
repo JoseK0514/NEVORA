@@ -27,3 +27,9 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-status__act { padding: 0 18px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-notice { padding: 14px 18px; outline-offset: -2px; }
 }
+
+/* Narrow phones: the period chip and See your hours stay on one line. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { gap: 6px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { padding: 0 10px; }
+}

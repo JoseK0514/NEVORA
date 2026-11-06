@@ -233,3 +233,24 @@
   :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-fade 200ms linear both; }
   @keyframes eb-keep-fade { from { opacity: 0; } to { opacity: 1; } }
 }
+
+/* Inspection round 1 (Account). */
+@media (max-width: 767px) {
+  /* The language switch keeps the mock's 34px thumbs (the app's 44px button floor doesn't apply inside a segment). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .eb-lseg button { min-height: 34px !important; height: 34px !important; }
+  /* Label-over-value rows are 63px like the mock. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { padding-top: 12px; padding-bottom: 12px; }
+  /* The search field ends in an ellipsis instead of cutting a word. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input { text-overflow: ellipsis; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { text-overflow: ellipsis; }
+  /* Delete account: the "I understand" box is drawn like the mock's (1.5px grey ring, 7px corners, teal when checked);
+   * the eye sits centred in the 48px field. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input { -webkit-appearance: none !important; appearance: none !important; flex: none; display: grid; place-items: center; width: 24px !important; height: 24px !important;
+    margin: 1px 0 0 !important; border: 1.5px solid #9AA3A8 !important; border-radius: 7px !important; background: #FFFFFF !important; cursor: pointer; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input:checked { border-color: #0B6E69 !important; background: #0B6E69 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23fff' d='M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / 16px no-repeat !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { top: 50% !important; transform: translateY(-50%) !important; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: 15px; line-height: 22.5px; }
+}

@@ -4,6 +4,8 @@ import type {ReactNode, RefObject} from 'react';
 import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {FileTextIcon} from '@phosphor-icons/react/dist/ssr/FileText';
+import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
+import {BEmpty} from './requests-b';
 import {BButtonLink, BCard, BChip, BHero, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import type {PayView} from '../employee-mobile/pay';
 import {BAddRow} from './parts';
@@ -64,7 +66,7 @@ export function PayB(props: PayBProps) {
   const empty = state === 'empty';
   const surface = status ? <StatusCard status={status} state={state}/> : null;
   const loadingCard = <BCard title={view === 'history' ? 'Pay history' : 'Recent pay'}><p className="b-state" role="status">Loading your statements…</p></BCard>;
-  const emptyCard = <BCard title="Recent pay"><div className="ep-empty"><p className="ep-empty__t">No published statements yet</p><p className="ep-empty__s">Your statements appear here after your workplace publishes payroll.</p></div></BCard>;
+  const emptyCard = <BCard label="Recent pay"><BEmpty icon={<ReceiptIcon weight="bold"/>} title="No published statements yet" sub="Your statements appear here after your workplace publishes payroll."/></BCard>;
   const fallback = loading ? loadingCard : empty ? emptyCard : surface;
 
   if (view === 'paycheck') {

@@ -6,7 +6,7 @@ import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BAvatar, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
 import {BAddRow, BCardNote} from './parts';
-import {BStateCard, BText, FormMark, bTone} from './requests-b';
+import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
 import {formatTime} from '@/lib/date-utils';
@@ -88,8 +88,8 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
   const stack = state ?? (enabled === false ? <BCard><BText status>Time off is turned off for your company.</BText></BCard> : page === 'new' ? null : <>
     {earlier ? <BCard><div className="eb-status"><p className="b-state">An earlier time-off submission still needs to be checked.</p><Link className="b-link" href="/app/requests?tab=new">Return to my submission</Link></div></BCard> : null}
     {page === 'list' ? <BCard label={filter === 'decided' ? 'Decided requests' : 'Waiting requests'}>
-      {requests.length ? null : <div className="eb-tof-empty"><p className="eb-tof-empty__t">{filter === 'decided' ? 'No decisions yet' : 'Nothing waiting'}</p>
-        <p className="eb-tof-empty__s">{filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}</p></div>}
+      {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting'}
+        sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
         {requests.map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
         <BAddRow href="/app/requests?tab=new" icon={<PlusIcon weight="bold"/>}>Request time off</BAddRow>
