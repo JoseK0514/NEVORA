@@ -108,7 +108,7 @@ function LastWeekB({authority,date}:{authority:string;date:string}){
  const data=panel.read?.view==='cards'?panel.read.data:null;
  if(!data||data.state!=='ready')return null;
  const item=data.cards[0],card=item?.card,range=rangeLabel(period.startDate,period.endDate);
- if(!item||!card||!card.entries.length)return <BCard title="Last week" id="b-hours-last"><BList><BRow title={range} sub="No hours this week"/></BList></BCard>;
+ if(!item||!card||!card.entries.length)return <BCard title="Last week" id="b-hours-last"><BList><BRow title={range} sub="No hours recorded"/></BList></BCard>;
  // Last week is over: an open period reads as not approved yet.
  const status=item.state==='DRAFT'?{word:'Not approved yet',tone:'grey' as const}:cardStatus(item.state,card.issues),total=seconds(card.recordedNanoseconds);
  return <BCard title="Last week" id="b-hours-last" chip={chip(status)}><BList>
@@ -144,7 +144,9 @@ function WeekRowB({period,state}:{period:Period;state:WeekState|undefined}){
  if(!data)return <BRow title={range} sub={state?.paused?'Paused':'Loading…'}/>;
  if(data.state!=='ready')return <BRow href={cardsHref(period)} title={range} sub="Couldn’t be checked" label={`${range}, couldn’t be checked`}/>;
  const item=data.cards[0],card=item?.card;
- if(!item||!card||!card.entries.length)return <BRow title={range} sub="No hours this week"/>;
+ // The week under way says so (as on Time), with nothing recorded yet; a past week with none says it recorded none.
+ if(!item||!card||!card.entries.length){const open=!!item&&!!card&&cardStatus(item.state,card.issues).open;
+  return <BRow title={range} chip={open?<BChip tone="teal">In progress</BChip>:undefined} sub={open?'No hours yet':'No hours recorded'}/>;}
  const status=cardStatus(item.state,card.issues),count=shiftCount(card.entries.length),total=seconds(card.recordedNanoseconds);
  // A closed week says its state in grey; the week under way and one that needs attention carry a chip.
  return <BRow href={cardsHref(period)} title={range} chip={status.open||status.flag?chip(status):undefined} sub={status.open?`${count} so far`:status.flag?count:`${count} · ${status.word}`}

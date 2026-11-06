@@ -117,19 +117,19 @@
   }
 
   /* Buttons: full-width pills, teal primary, quiet grey secondary, a soft red for withdraw and can't work. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btn {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn {
     display: flex; align-items: center; justify-content: center; width: 100%; height: auto !important; min-height: 52px; margin: 0; padding: 0 16px !important; border: 0;
     border-radius: 16px !important; background: #0B6E69 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important;
     font-size: 16px !important; line-height: 20px !important; font-weight: 600 !important; text-align: center; transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out;
   }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btn:is(.c-btn--secondary, .c-btn--neutral) { min-height: 48px; background: #F0F2F3 !important; color: #111517 !important; box-shadow: none !important; font-size: 15.5px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btn.c-btn--danger { background: #FDECEA !important; color: #B42318 !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:is(.c-btn--secondary, .c-btn--neutral) { min-height: 48px; background: #F0F2F3 !important; color: #111517 !important; box-shadow: none !important; font-size: 15.5px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn--danger { background: #FDECEA !important; color: #B42318 !important; box-shadow: none !important; }
   /* Can't work's Send to manager is the form's primary action: solid red, as it stops a shift. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-xs-form .c-btn.c-btn--danger { background: #B42318 !important; color: #FFFFFF !important; box-shadow: 0 4px 10px -6px rgb(180 35 24 / 0.55) !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3 !important; color: #A7ACB1 !important; box-shadow: none !important; opacity: 1; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btn:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btns { display: flex; gap: 8px; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-btns > .c-btn { flex: 1; min-width: 0; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn.c-btn.c-btn:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3 !important; color: #A7ACB1 !important; box-shadow: none !important; opacity: 1; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns { display: flex; gap: 8px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns > .c-btn { flex: 1; min-width: 0; }
 
   /* Fields: 13.5px grey labels 6px above 48px fields (1px #D5DADC, 14px corners); a 96px reason; 13px grey hints. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__label, .c-xs-group > legend) { font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: #6A7176 !important; }

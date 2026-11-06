@@ -69,7 +69,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen { margin-top: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero { padding-top: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 52px) !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-sub { margin-top: 2px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(p, li, .eb-read, .b-row__s) a { font-size: inherit !important; line-height: inherit !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(p, li, .eb-read, .b-row__s) a:not(.b-btn, .b-row, .b-row__hit, .b-add) { font-size: inherit !important; line-height: inherit !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-doc__links > * { font-size: 13px !important; line-height: 18px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .page-frame { padding-bottom: 0 !important; }
 }
@@ -105,4 +105,19 @@
     background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 17px, rgb(255 255 255 / 0.24) 17.5px 18px, transparent 18.5px) !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup .brand-wordmark { height: 12px !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile] .mobile-nav { padding-left: 6px !important; padding-right: 6px !important; }
+}
+
+/* Inspection round 2 (tabs and Time). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-shift { padding-top: 18px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .b-add { padding: 11px 18px 15px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l { line-height: 19px; }
+  /* The week strip's arrows: 32px glyph circles 4px apart (a 44px tap area each), as in the mock. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h > span:last-child { gap: 4px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__arrow { position: relative; width: 32px; height: 32px; border-radius: 16px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__arrow::after { content: ""; position: absolute; inset: -6px -2px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h { padding-bottom: 6px; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen.b-screen .b-seg { margin-left: 20px; margin-right: 20px; }
 }
