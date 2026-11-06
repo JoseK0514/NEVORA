@@ -1,0 +1,99 @@
+name: Active Android build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [development]
+    paths:
+      - native/android/**
+      - native/contracts/**
+      - native/release/android-beta.json
+      - native/association/**
+      - scripts/native-build.mjs
+      - scripts/native-build.check.mjs
+      - .github/workflows/native-android.yml
+  pull_request:
+    branches: [development]
+    paths:
+      - native/android/**
+      - native/contracts/**
+      - native/release/android-beta.json
+      - native/association/**
+      - scripts/native-build.mjs
+      - scripts/native-build.check.mjs
+      - .github/workflows/native-android.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: active-android-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  android-build:
+    name: Android policies and unsigned release packaging
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/development'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          packages: platform-tools
+      - name: Check exact checkout and native tooling
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          node --test native/association/prepare.check.mjs scripts/native-build.check.mjs
+          python3 -m unittest discover -s native/android -p test_ui_runner.py
+      - name: Install pinned Android SDK packages
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Test and build the active Android application
+        shell: bash
+        run: |
+          ORIGIN="$(node -p "require('./native/release/android-beta.json').origin")"
+          native/android/gradlew --project-dir native/android --no-daemon \
+            --project-cache-dir "$RUNNER_TEMP/native-android-gradle" \
+            -PnevoraBuildDirectory="$RUNNER_TEMP/native-android-build" \
+            -PnevoraBackendOrigin="$ORIGIN" \
+            -PnevoraNativeEnvironment=staging -PnevoraNativePushEnabled=false \
+            :app:testDebugUnitTest :app:testReleaseUnitTest :app:lint \
+            :app:assembleRelease :app:bundleRelease :app:assembleDebugAndroidTest
+      - name: Record unsigned artifact custody
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --exit-code
+          printf '%s\n' "$EXPECTED_SHA" > "$RUNNER_TEMP/native-android-build/source-sha.txt"
+          sha256sum "$RUNNER_TEMP/native-android-build/outputs/apk/release/app-release-unsigned.apk" \
+            "$RUNNER_TEMP/native-android-build/outputs/bundle/release/app-release.aab" \
+            > "$RUNNER_TEMP/native-android-build/unsigned-artifacts.sha256"
+      - name: Preserve build and policy evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: active-android-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/native-android-build/source-sha.txt
+            ${{ runner.temp }}/native-android-build/unsigned-artifacts.sha256
+            ${{ runner.temp }}/native-android-build/outputs/apk/release/*.apk
+            ${{ runner.temp }}/native-android-build/outputs/bundle/release/*.aab
+            ${{ runner.temp }}/native-android-build/outputs/androidTest-results/**
+            ${{ runner.temp }}/native-android-build/test-results/**
+            ${{ runner.temp }}/native-android-build/reports/**
+          if-no-files-found: error
+          retention-days: 7
