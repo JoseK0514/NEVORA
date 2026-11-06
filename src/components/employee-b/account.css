@@ -56,7 +56,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .eb-textlink { min-height: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 18px 20px; text-align: center; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty b { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty span { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty > span:not(.b-ico) { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback { outline: none; display: flex; flex-direction: column; gap: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback:empty, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-feedback--empty { display: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-note.eb-callout { padding: 12px 16px; border-radius: 16px; background: #E8F3F1; color: #0B6E69; font-size: 14px; line-height: 20px; font-weight: 500; }
@@ -69,7 +69,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-input:focus { border-color: #0B6E69; box-shadow: 0 0 0 1px #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-hint { font-size: 13px; line-height: 18px; color: var(--b-grey); text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { align-items: flex-start; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__s { margin-top: 2px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__s { margin-top: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice { align-items: flex-start; padding: 8px 18px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notice .b-notice__s { margin-top: 2px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-notice + .eb-cardnote { margin-top: -4px; }
@@ -262,6 +262,12 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input::placeholder { font-size: 15px; }
   /* Legal footer: 18px lines 6px apart, as in the mock; each link keeps a 32px tap area. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: -7px 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links { row-gap: 6px; margin: 2px 0 -7px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links > * { margin: -7px 0; }
+}
+
+/* Inspection round 3: Confirm it's you has the same 19px inset as every card; the eye sits 26px from the field's edge. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm { border: 1px solid transparent !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { right: 6px !important; }
 }

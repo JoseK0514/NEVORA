@@ -93,7 +93,7 @@
   /* A big button inside a card sits flat (the glow is for buttons on the canvas). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-card .b-btn--big { box-shadow: none; }
   /* Notice rows: the mock's line heights, and the title wraps naturally. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__t { line-height: 21px; text-wrap: wrap; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__t { line-height: 21px; text-wrap: pretty; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-notice__s { line-height: 19px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
 }
@@ -134,4 +134,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-seg > * { line-height: 19.6px; }
   /* The bell sits 8px from the 36px avatar, as in the mock. */
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .mobile-header .c-top-avatar { margin-left: -2px !important; }
+}
+
+/* Inspection round 3 (Account): the empty state's divider and line height wherever it shows (not only where Requests' sheet
+ * is loaded). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty .b-ico { margin-bottom: 5px; color: #3F464B; }
 }
