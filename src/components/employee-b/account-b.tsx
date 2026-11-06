@@ -19,6 +19,7 @@ import {PortalSignout} from '../portal-signout';
 import {BlockView, shortTitle} from '../legal/legal-document';
 import type {Block, PolicyDocument} from '../../lib/legal/policies';
 import {NoHeaderActions} from './account-host';
+import {Dotted} from './parts';
 import './account.css';
 
 /* Employee phones, Direction B, the Account group (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026):
@@ -38,7 +39,7 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
     <NoHeaderActions />
     <BHero back={{href: '/app', label: 'Home'}} title="More" titleId="b-more-title">
       <div className="eb-id b-glass">
-        <div className="eb-id__me"><BAvatar name={name} size={48} /><span className="eb-id__tx"><b>{name}</b>{place ? <span>{place.split(' · ').map((part, index) => <span key={index} className="eb-nowrap">{index ? ' · ' : ''}{part}</span>)}</span> : null}</span></div>
+        <div className="eb-id__me"><BAvatar name={name} size={48} /><span className="eb-id__tx"><b>{name}</b>{place ? <span><Dotted text={place} /></span> : null}</span></div>
         <Link className="eb-id__link" href="/app/profile" aria-label={`Profile and settings, ${name}`}>Profile and settings<CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
       </div>
     </BHero>
