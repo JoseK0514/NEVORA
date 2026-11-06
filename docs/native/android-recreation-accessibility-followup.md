@@ -1,6 +1,8 @@
 # Android recreation accessibility — reopened gate, November 5
 
-Status: **release blocker; cause unresolved**. Owner: Codex/root. Approved minimum remains Android10/API29+ and WebView149+; no product-baseline change or accessibility waiver is authorized.
+Status: **correction in final verification**. Owner: Codex/root. Jose approved Android10/API29+ and WebView156.0.8078.50+ on November5 after the matched provider comparison. This supersedes149; no accessibility assertion or security control is waived.
+
+November5 focused execution has reproduced the failure on API36 as well as37.2, ruled out a simple client-cache reset, and captured a zero-child document directly in provider output in a separate diagnostic replay. The [investigation packet](evidence/2026-11-05/android-recreation-investigation/README.md) records raw-edge discrimination, the distinct minimal-control failure shape, and a relevant Chromium per-WebContents accessibility-mode fix. The same Play emulator failed on149, then passed200recreations and the complete10-case matrix/cold restart on156.0.8078.50. The [approved correction](android-accessibility-runtime-correction-proposal.md) adds a precise version admission guard; final fallback/backend checks are in progress.
 
 ## What was reproduced
 

@@ -1,0 +1,22 @@
+{
+  "unitTests": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "lint-results-release.xml": {
+      "errors": 0,
+      "warnings": 14
+    },
+    "lint-results-debug.xml": {
+      "errors": 0,
+      "warnings": 14
+    }
+  },
+  "debugAndInstrumentationApks": true,
+  "unsignedReleaseApkAndBundle": true,
+  "gradleExit": 0,
+  "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001"
+}

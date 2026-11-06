@@ -1,0 +1,10 @@
+{
+  "accepted": true,
+  "requiredTextSha1": "434392e8fb23341e9e0130b2702e19f236493a42",
+  "state": "Authorized for free disposable WebView comparison emulator; no billing",
+  "downloadPausedAt": 1793928067.36505,
+  "acceptedAt": 1793928094.255543,
+  "authority": "Jose explicitly replied: I accept the SDK license; continue",
+  "licenseText": "google-play-image-license.txt",
+  "officialMetadata": "https://dl.google.com/android/repository/sys-img/google_apis_playstore/sys-img2-4.xml"
+}

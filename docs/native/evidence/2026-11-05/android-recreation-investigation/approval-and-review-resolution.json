@@ -1,0 +1,12 @@
+{
+  "approvedBy": "Jose",
+  "decision": "Adopt156.0.8078.50+ (Recommended)",
+  "scope": "AndroidAPI29 unchanged; native update/browser fallback for missing, malformed, older providers",
+  "reviewFindingsResolved": [
+    "Active staging plan now records exact androidMinimumWebViewVersion156.0.8078.50",
+    "Correction document acknowledges approval/application rather than asking again"
+  ],
+  "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001",
+  "backend": "Pending clean committed-candidate execution",
+  "recordedAt": 1793932298.205759
+}

@@ -1,0 +1,15 @@
+{
+  "build": "postreview-build.log",
+  "gradleExit": 0,
+  "unitTests": {
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "qualification": "Compilation/JVM only; repeated Android acceptance remains failed",
+  "originalAssertionsPreserved": true,
+  "changedExecutableScope": "Failure-only ShellInstrumentedTest diagnostics",
+  "native/android/app/src/main/java/com/velani/nevora/development/PortalActivity.java": "f92145d9053e4194cb7c84263269f76d92c68623670253b6b0f670c5b337c5a7",
+  "native/android/app/src/androidTest/java/com/velani/nevora/development/ShellInstrumentedTest.java": "687f931eb80f0912e743c4475def64d054a0538a94103a1ac2ee79cc15b848e1"
+}

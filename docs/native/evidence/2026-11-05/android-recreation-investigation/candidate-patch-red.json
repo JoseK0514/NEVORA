@@ -1,0 +1,7 @@
+{
+  "expectedRed": true,
+  "tests": 1,
+  "failures": 1,
+  "reason": "A major-only floor156 still admits earlier156 prerelease/patch versions",
+  "failureMessage": "java.lang.AssertionError: 156.0.0.0"
+}

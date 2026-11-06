@@ -1,0 +1,15 @@
+{
+  "source": "Authenticated Google Play Update on owned emulator NevoraAXPlay_f8211cae; not a mirror or Chromium snapshot",
+  "apk": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/GoogleWebView-156.0.8078.50.apk",
+  "bytes": 262055273,
+  "sha256": "e22c91cdd90bdc7c505fc9924a15ccaca7c1a3a1164a3f7e5b0f80a9f13576de",
+  "certificateSha256": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5",
+  "sameSignerAsFactoryGoogleProvider": true,
+  "package": "package: name='com.google.android.webview' versionCode='807805003' versionName='156.0.8078.50' platformBuildVersionName='DEV' platformBuildVersionCode='37' compileSdkVersion='37' compileSdkVersionCodename='DEV'",
+  "sdk": [
+    "targetSdkVersion:'36'",
+    "native-code: 'arm64-v8a'"
+  ],
+  "defaultPlatformAccessibility": true,
+  "rendererObserver": false
+}

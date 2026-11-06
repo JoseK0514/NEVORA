@@ -1,5 +1,7 @@
 # Android foundation decision packet
 
+**Current November5 decision:** Jose approved WebView156.0.8078.50+ after a same-device Play update passed200recreations and10cases/cold restart while149 failed. Android10/API29 remains unchanged. The precise admission correction is applied; final verification is tracked in the [correction packet](android-accessibility-runtime-correction-proposal.md). The original149-era findings below remain historical; they do not establish current readiness.
+
 Phase1 local executor verification passed under Jose's approved Android10+/WebView149+ baseline (November4). The runtime gate and native update/browser fallback are implemented; the fresh extension review approved it with no functional/security blockers. No architecture change, renderer override or accessibility waiver has been accepted.
 
 ## Established evidence

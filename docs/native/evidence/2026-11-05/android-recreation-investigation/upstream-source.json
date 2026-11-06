@@ -1,0 +1,26 @@
+{
+  "review": "https://chromium-review.googlesource.com/c/chromium/src/+/8464344",
+  "commit": "aa5b49c698472b6212207958b72facd23d6d8ed4",
+  "submitted": "2026-10-02 19:20:24.000000000",
+  "source": [
+    {
+      "version": "149.0.7827.5",
+      "url": "https://chromium.googlesource.com/chromium/src/+/149.0.7827.5/content/browser/accessibility/web_contents_accessibility_android.cc",
+      "sha256": "11d9a4facca6eeb2852a2fc4109a12c556f872f207ba3fd2af386d47891471ec",
+      "modeScope": "process"
+    },
+    {
+      "version": "157.0.8103.38",
+      "url": "https://chromium.googlesource.com/chromium/src/+/157.0.8103.38/content/browser/accessibility/web_contents_accessibility_android.cc",
+      "sha256": "d8feb909100e2163768eb428f828f78a913166f6411db65262303a6a31d995a9",
+      "modeScope": "individual WebContents"
+    },
+    {
+      "version": "156.0.8078.50",
+      "url": "https://chromium.googlesource.com/chromium/src/+/156.0.8078.50/content/browser/accessibility/web_contents_accessibility_android.cc",
+      "sha256": "c7f171c04d4d0e1c72c6dc934ba74848ecf928b5d354e5de3c2b50851e843134",
+      "modeScope": "process"
+    }
+  ],
+  "limit": "Matches an initialization hazard; one causal patch has not been isolated by a matched binary comparison."
+}

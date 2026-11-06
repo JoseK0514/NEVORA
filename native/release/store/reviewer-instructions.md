@@ -23,7 +23,7 @@ Record the exact source/artifact hashes, signed package/bundle/version, canonica
 
 ## Conditional device acceptance
 
-- Android baseline: API29+/Android10+, SystemWebView149+. Older/unknown WebView gets update/browser guidance before private content. Qualify the actual retail runtime and minimum OS on hardware; installed emulator evidence alone is insufficient.
+- Android baseline: API29+/Android10+, SystemWebView156.0.8078.50+. Older/unknown WebView gets update/browser guidance before private content. Qualify the actual retail runtime and minimum OS on hardware; installed emulator evidence alone is insufficient.
 - iOS minimum deployment target16; current automated simulator evidence is iOS27. Qualify the minimum supported OS/hardware, keyboard, safe areas, Back/navigation, text scaling, VoiceOver/TalkBack and interruptions.
 - Native push stays off for this preparation. Only after provider/signing/device authorization, test deliberate permission/enrollment, denial/revocation, rotation, stale delivery, account switching/logout and generic notification taps. No actual provider send is approved by this walkthrough.
 - Associated domains/passkeys require exact installed-app signing identity and approved HTTPS association files. Verify registration/sign-in/recovery/revocation on actual devices; no placeholder AASA/assetlinks or upload-certificate substitution.

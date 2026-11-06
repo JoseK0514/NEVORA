@@ -2,9 +2,9 @@
 
 The app renders the existing Next.js Employee and Owner interface. Browser-owned HttpOnly cookies remain authoritative; native code does not export cookies or create a second bearer session. A credential-free compatibility probe and fresh protected navigation precede private content.
 
-Jose approved the v1 baseline on November4: **Android10/API29+ and AndroidSystemWebView149+**. Compile/target SDK36 and Java17 source/bytecode remain unchanged. Unknown, malformed and older providers show a native update explanation and deliberate browser fallback before any probe or private WebView. The fallback opens the configured protected `/app` in a separately resolved browser with no cookies, headers or tokens attached. Version admission is compatibility, never account/role authorization.
+Jose approved the corrected v1 baseline on November5: **Android10/API29+ and AndroidSystemWebView156.0.8078.50+**. All four version components are compared numerically. This supersedes the earlier149 minimum after repeated accessibility failures. Compile/target SDK36 and Java17 source/bytecode remain unchanged. Unknown, malformed and older providers show a native update explanation and deliberate browser fallback before any probe or private WebView. The fallback opens the configured protected `/app` in a separately resolved browser with no cookies, headers or tokens attached. Version admission is compatibility, never account/role authorization.
 
-The development identity `com.velani.nevora.development` matches the NEVORA Development Play app record created November5; that record does not establish signing or distribution. AGP8.13.0/Gradle8.14.3 and wrapper checksums remain pinned. The current local JDK is21. Physical minimum-version, retail GooglePlay WebView, publisher/signing, hosted HTTPS and store qualification remain Phase3/4 gates.
+The development identity `com.velani.nevora.development` matches the NEVORA Development Play app record created November5; that record does not establish signing or distribution. AGP8.13.0/Gradle8.14.3 and wrapper checksums remain pinned. The current local JDK is21. GooglePlay-delivered156.0.8078.50 was observed on an owned emulator; physical/minimum-version and manufacturer qualification, publisher/signing, hosted HTTPS and store checks remain Phase3/4 gates.
 
 ## Build configuration
 
@@ -20,6 +20,9 @@ That hostname is a placeholder. Unconfigured/invalid release origins fail closed
 Native platform capability code is implemented: constrained main-frame/origin/lifecycle messaging, installation-key proof, enrollment/reconciliation, contextual permissions, receipt/token maintenance, generic taps and protected incoming links. Native delivery stays default-off and requires explicit valid environment/provider configuration. Direct Android permissions are INTERNET and POST_NOTIFICATIONS; the merged Firebase/AndroidX manifest additionally contains ACCESS_NETWORK_STATE, WAKE_LOCK, C2DM RECEIVE and the app-scoped non-exported-receiver signature permission. No analytics/replay, geolocation, camera or microphone collection is enabled. Browser WebPush remains separate. See [platform capabilities](../../docs/native/platform-capabilities.md) and [enrollment protocol](../../docs/native/native-enrollment-protocol.md) for exact boundaries and remaining provider/device gates.
 
 ## Local checks
+
+On a fresh owned emulator, finish system first-use setup, including Recents education, before qualification. Retain any failed run; do not change privacy/accessibility assertions or timeouts to bypass an overlay. The original matrix and independent cold restart remain required.
+
 
 ```sh
 ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:lint

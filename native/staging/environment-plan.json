@@ -92,7 +92,7 @@
     "androidPackage": "com.velani.nevora.development",
     "iosBundle": "com.velani.nevora.development",
     "androidMinimumApi": 29,
-    "androidMinimumWebViewMajor": 149,
+    "androidMinimumWebViewVersion": "156.0.8078.50",
     "iosMinimumVersion": "16.0",
     "nativePushEnabled": false,
     "associations": "Pending actual installed-app signing identities and active Apple organization team; publish no placeholder associations",

@@ -166,11 +166,80 @@ public class ShellInstrumentedTest {
         device.takeScreenshot(new File(directory, name + ".png"));
         try { device.dumpWindowHierarchy(new File(directory, name + ".xml")); }
         catch (java.io.IOException error) { throw new AssertionError("Could not retain failure hierarchy", error); }
+        // XML omits null/invisible children. Record the raw client edges before
+        // any cache reset or event experiment, without using them for a pass.
+        try {
+            int[] remaining = {256};
+            for (android.view.accessibility.AccessibilityNodeInfo node : device.getWindowRoots()) {
+                try { diagnoseRawNodes(node, 0, remaining); }
+                finally { node.recycle(); }
+            }
+        } catch (RuntimeException | AssertionError error) {
+            android.util.Log.i("NEVORA_QA_AX_RAW", "diagnostic=" + error.getClass().getSimpleName());
+        }
+    }
+    private void diagnoseRawNodes(android.view.accessibility.AccessibilityNodeInfo node, int depth, int[] remaining) {
+        if (node == null || depth > 24 || remaining[0]-- <= 0) return;
+        if (!"com.velani.nevora.development".contentEquals(node.getPackageName() == null ? "" : node.getPackageName())) return;
+        int count = node.getChildCount(), absent = 0, invisible = 0;
+        java.util.List<android.view.accessibility.AccessibilityNodeInfo> children = new java.util.ArrayList<>();
+        for (int index = 0; index < Math.min(count, 256); index++) {
+            android.view.accessibility.AccessibilityNodeInfo child = node.getChild(index);
+            if (child == null) absent++;
+            else { if (!child.isVisibleToUser()) invisible++; children.add(child); }
+        }
+        android.graphics.Rect bounds = new android.graphics.Rect(); node.getBoundsInScreen(bounds);
+        android.util.Log.i("NEVORA_QA_AX_RAW", "depth=" + depth + " class=" + node.getClassName()
+            + " children=" + count + " null=" + absent + " invisible=" + invisible
+            + " visible=" + node.isVisibleToUser() + " bounds=" + bounds.flattenToString()
+            + " home=" + matchesTarget(node, "Fictional Home", false)
+            + " signOut=" + matchesTarget(node, "Sign out", true));
+        for (android.view.accessibility.AccessibilityNodeInfo child : children) {
+            diagnoseRawNodes(child, depth + 1, remaining); child.recycle();
+        }
     }
     private void expectText(String value) {
         boolean visible = text(value, false) != null;
-        if (!visible) retainFailure(value);
+        if (!visible) {
+            retainFailure(value);
+            if (value.equals("Fictional Home")) diagnoseMissingHome();
+        }
         assertTrue("Expected visible text: " + value, visible);
+    }
+    private void diagnoseMissingHome() {
+        // Observe only AFTER the original assertion has failed. Neither a
+        // diagnostic reread nor cache clearing can turn that failure into a pass.
+        java.util.concurrent.CountDownLatch observed = new java.util.concurrent.CountDownLatch(1);
+        try {
+            scenario.onActivity(activity -> {
+                WebView view = browser(activity.getWindow().getDecorView());
+                android.util.Log.i("NEVORA_QA_AX_CACHE", "activity=" + System.identityHashCode(activity)
+                    + " windowFocus=" + activity.hasWindowFocus() + " browser=" + (view != null));
+                if (view == null) { observed.countDown(); return; }
+                android.view.accessibility.AccessibilityNodeProvider provider = view.getAccessibilityNodeProvider();
+                android.view.accessibility.AccessibilityNodeInfo host = provider == null ? null
+                    : provider.createAccessibilityNodeInfo(android.view.accessibility.AccessibilityNodeProvider.HOST_VIEW_ID);
+                android.util.Log.i("NEVORA_QA_AX_CACHE", "provider=" + (provider != null)
+                    + " hostChildren=" + (host == null ? -1 : host.getChildCount()));
+                if (host != null) host.recycle();
+                view.evaluateJavascript("JSON.stringify({ready:document.readyState,focus:document.hasFocus(),visible:document.visibilityState==='visible',home:!![...document.querySelectorAll('h1')].find(e=>e.textContent==='Fictional Home'),signOut:!![...document.querySelectorAll('button')].find(e=>e.textContent==='Sign out'),width:innerWidth,height:innerHeight})", result -> {
+                    android.util.Log.i("NEVORA_QA_AX_CACHE", "dom=" + result); observed.countDown();
+                });
+            });
+            boolean completed = observed.await(5, java.util.concurrent.TimeUnit.SECONDS);
+            boolean cleared = android.os.Build.VERSION.SDK_INT >= 34
+                && InstrumentationRegistry.getInstrumentation().getUiAutomation().clearCache();
+            UiObject2 after = UiDeviceExt.onElementOrNull(device, 3000L, 100L,
+                node -> matchesTarget(node, "Fictional Home", false));
+            android.util.Log.i("NEVORA_QA_AX_CACHE", "domCompleted=" + completed
+                + " clientCacheCleared=" + cleared + " homeAfterClear=" + (after != null));
+            device.dumpWindowHierarchy(new File(evidenceDirectory(), "Fictional_Home_after_client_cache_clear.xml"));
+        } catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            android.util.Log.i("NEVORA_QA_AX_CACHE", "diagnostic=InterruptedException");
+        } catch (Exception | AssertionError error) {
+            android.util.Log.i("NEVORA_QA_AX_CACHE", "diagnostic=" + error.getClass().getSimpleName());
+        }
     }
     private void tapText(String value) {
         UiObject2 target = text(value, true);
@@ -334,7 +403,7 @@ public class ShellInstrumentedTest {
         android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
         assertNotNull("An actual old SDK provider is required", provider);
         assertTrue("Run this diagnostic only on an outdated provider",
-            Integer.parseInt(provider.versionName.split("\\.")[0]) < 149);
+            !WebViewRuntimePolicy.supported(provider.versionName));
         String offline = InstrumentationRegistry.getArguments().getString("unavailableOrigin");
         assertLocal(offline);
         // An unavailable backend distinguishes admission before the compatibility probe.
@@ -395,7 +464,7 @@ public class ShellInstrumentedTest {
     @Test public void k_largeTextRuntimeFallbackSupportsLandscapeAndKeyboard() {
         android.content.pm.PackageInfo provider = WebView.getCurrentWebViewPackage();
         assertNotNull(provider);
-        assertTrue("Outdated-provider UI profile required", Integer.parseInt(provider.versionName.split("\\.")[0]) < 149);
+        assertTrue("Outdated-provider UI profile required", !WebViewRuntimePolicy.supported(provider.versionName));
         String offline = InstrumentationRegistry.getArguments().getString("unavailableOrigin");
         assertLocal(offline); launch(offline);
         scenario.onActivity(activity -> {

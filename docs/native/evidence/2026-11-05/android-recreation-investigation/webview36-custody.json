@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/WebView36Factory.apk",
+    "sha256": "bce871632f8904175015e12edf58c508b20de0a39030563eddd7a2b3e1c94cd6",
+    "signer": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5"
+  },
+  {
+    "path": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/google-sdk149/WebViewGoogle.apk",
+    "sha256": "ef0a58095b677879ff9164ff4a2bd03cbbd28e1734276d0ed7dd6fe171390d06",
+    "signer": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5"
+  }
+]

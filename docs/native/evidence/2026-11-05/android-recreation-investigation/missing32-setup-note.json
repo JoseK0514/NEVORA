@@ -1,0 +1,5 @@
+{
+  "phase": "Discovery only; no provider mutation/test yet",
+  "observation": "API32 cmd package help returned255; inspect its help output with unchecked exit only for discovery, retaining default-state presence assertion",
+  "acceptanceAssertionsChanged": false
+}

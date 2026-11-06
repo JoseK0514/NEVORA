@@ -1,0 +1,16 @@
+{
+  "diagnosticOnly": true,
+  "runs": [
+    {
+      "index": 0,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/provider-repeat36-0"
+    },
+    {
+      "index": 1,
+      "passed": false,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/provider-repeat36-1"
+    }
+  ],
+  "cleanupClosed": true
+}
