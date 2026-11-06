@@ -1,0 +1,23 @@
+{
+  "state": "draft-not-submitted",
+  "language": "en-US",
+  "developer": "VELANI LLC",
+  "existingDevelopmentListingName": "NEVORA Development",
+  "proposedPublicName": "NEVORA",
+  "subtitle": "Your workplace, connected",
+  "shortDescription": "Schedules, requests and workplace updates for your team.",
+  "fullDescription": "NEVORA connects employees and owners with their workplace.\n\nEmployees can review their schedule, update availability, submit permitted requests and keep up with workplace updates. Time and pay information is available where the workplace enables it.\n\nOwners can review their team and manage the scheduling and workplace operations their account is authorized to access. Existing workspace roles and permissions apply in the app.\n\nNEVORA requires an account provided by a participating workplace and an internet connection. Available features depend on your role and your workplace configuration. Workplace tablet clock-in stays on the existing Clocker flow.\n\nContact your workplace administrator for access or questions about work records. For app support, use the Support link or contact support@thevelani.com.",
+  "categoryProposal": "Business",
+  "keywords": "workplace,schedule,availability,team,requests,time",
+  "supportEmailFromCurrentPolicy": "support@thevelani.com",
+  "adsInCurrentImplementation": false,
+  "reviewCredentials": "Create fresh private fictional accounts only after isolated HTTPS environment is approved; never use published fixture credentials on a public host.",
+  "claimsNotMade": [
+    "offline operation",
+    "employee phone punching",
+    "verified native passkeys",
+    "verified APNs/FCM delivery",
+    "native private-file sharing",
+    "store acceptance"
+  ]
+}
