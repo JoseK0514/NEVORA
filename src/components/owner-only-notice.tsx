@@ -1,17 +1,13 @@
-import { LockSimpleIcon } from "@phosphor-icons/react/ssr";
-import { Button, Card, CardBody, PageBand } from "./kit/kit";
-import { EmptyState } from "./empty-state";
-import "./owner-only-notice.css";
+import { CorpButtonLink, CorpEmpty, CorpNav, CorpPage, CorpTitle } from "./corp/corp";
 
 /** PD9 / UX10: an Owner-only page opened by someone else (a shared link, a bookmark) says why it is closed and who can
- * help, in place of a silent move to Home. Permissions are unchanged: nothing on the page is read or shown. */
+ * help, in place of a silent move to Home. Permissions are unchanged: nothing on the page is read or shown.
+ * Round 4 (Nov 7, 2026): drawn on the corporate kit like Help, so Direction B gives it the same hero (phones) and band
+ * (desktop) as every other page, instead of the older white box. */
 export function OwnerOnlyNotice({ title, reason, help = "Ask an Owner if you need a change here." }: { title: string; reason: string; help?: string }) {
-  return <div className="nv-page cm-page cm-owner-only" data-nv-page="">
-    <PageBand title={title} />
-    <div className="nv-content">
-      <Card><CardBody>
-        <EmptyState icon={<LockSimpleIcon size={24} weight="regular" />} title={reason} action={<Button href="/app" kind="secondary">Back to Home</Button>}>{help}</EmptyState>
-      </CardBody></Card>
-    </div>
-  </div>;
+  return <CorpPage className="c-page--narrow cm-owner-only" labelledBy="owner-only-title">
+    <CorpNav back={{ href: "/app", label: "Home" }} title={title} titleId="owner-only-nav-title" phoneOnly />
+    <CorpTitle id="owner-only-title" title={title} />
+    <CorpEmpty label={title} title={reason} body={help} action={<CorpButtonLink href="/app" kind="secondary">Back to Home</CorpButtonLink>} />
+  </CorpPage>;
 }

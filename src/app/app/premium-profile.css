@@ -118,6 +118,9 @@ html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-part { display: inline-block; max-width: 100%; overflow-wrap: break-word; }
 /* TC-09, WR-5: the contact values (Email and Phone, as one block) take the full row under their labels when the value column is under 17rem (phones up to 430),
  * in every state, so an address keeps its parts whole and its row is the same height loading and ready. */
+/* Round 4: a short label (Email, Phone) leaves the value up to three quarters of the row, so an ordinary address stays on
+ * one line; a longer one still breaks between its parts. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .q-row--one > .q-rv.q-rv--l { max-width: 75%; }
 /* Loading alert rows (AL-2): the expected words as text-shaped grey bars, so the row is a ready row's size. */
 html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-ghost { border-radius: 6px; background: var(--nv-inset); color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 /* Busy words stay readable (TC-01): the old portal stylesheet fades every disabled button to 55%. */

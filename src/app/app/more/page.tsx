@@ -152,10 +152,12 @@ export default async function MorePage() {
         label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
-    {has("/app/reports") || has("/app/updates") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
+    {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">
       <CorpRows label="Work">
         {has("/app/reports") ? row("/app/reports", label("/app/reports", "Insights"), <Suspense fallback={null}><WeekHours proof={proof} timeZone={workspace.timeZone} /></Suspense>) : null}
         {has("/app/updates") ? row("/app/updates", label("/app/updates", "Updates")) : null}
+        {/* Your own pay: on a phone More is the only way to it (desktop has it in the account menu too). */}
+        {has("/app/my-pay") ? row("/app/my-pay", "My pay") : null}
         {has("/app/ai-manager") ? row("/app/ai-manager", label("/app/ai-manager", "AI manager")) : null}
       </CorpRows>
     </CorpCard></CorpSection> : null}

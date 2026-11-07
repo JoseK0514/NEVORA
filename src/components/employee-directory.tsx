@@ -62,7 +62,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const inactiveCount = employees.filter(employee => !employee.active).length;
   const bTools = [
     { href: "/app?view=team", title: "Hours this week", detail: "Scheduled hours for each person", icon: "hours" as const },
-    ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or recover an account", icon: "key" as const }] : []),
+    ...(recovery ? [{ href: "/app/account-recovery", title: "Help someone sign in", detail: clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in", icon: "key" as const }] : []),
     ...(!all && inactiveCount ? [{ href: "/app/employees?all=1#team-inactive", title: "Inactive people", detail: `${inactiveCount} no longer active`, icon: "inactive" as const }] : []),
   ];
   return (
@@ -99,7 +99,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         <CorpRows label="Team tools">
           <li><CorpRow href="/app?view=team" bold title="Hours this week" detail="Scheduled hours for each person" chevron /></li>
           {/* Board G-O-Team: one row for both ways back in. Its page resets a password and, for an Owner, links to Employee PINs. */}
-          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or recover an account"} chevron /></li> : null}
+          {recovery ? <li><CorpRow href="/app/account-recovery" bold title="Help someone sign in" detail={clockerRecovery ? "Reset a password or Clocker PIN" : "Reset a password or sign-in"} chevron /></li> : null}
           {!all && employees.some(employee => !employee.active) ? <li><CorpRow href="/app/employees?all=1#team-inactive" bold title="Inactive people" detail={`${employees.filter(employee => !employee.active).length} no longer active`} chevron /></li> : null}
         </CorpRows>
       </CorpCard>

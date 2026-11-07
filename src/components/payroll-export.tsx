@@ -148,8 +148,11 @@ export function PayrollExport({initialPeriod,actorId,tabs=null}:{initialPeriod:P
  const create=()=>{if(selected.length){setResult(null);generate();}else exportAll();};
  const chooseProfile=(id:string)=>{setProfileId(id);const p=profiles.find(p=>p.id===id)?.profile??neutralProfile();setDraft(p);setReviewed(false);setResult(null);};
  const timecardsHref=`/app/timecards?start=${period.startDate}&end=${period.endDate}`;
- return <div className="c-page c-payroll c-pay c-exp c-page--narrow" data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
-  <CorpNav back={{href:'/app/payroll',label:'Payroll'}} title="Time exports" phoneOnly/>
+ // Someone without payroll (a Manager) reaches Time exports from Timecards: the way back goes there, and the page isn't drawn
+ // as a money page (its sidebar entry is Time).
+ const payroll=!!tabs?.length;
+ return <div className={`c-page c-payroll c-pay c-exp c-page--narrow${payroll?'':' c-exp--time'}`} data-nv-page="" data-corp="" aria-labelledby="time-exports-title">
+  <CorpNav back={payroll?{href:'/app/payroll',label:'Payroll'}:{href:'/app/timecards',label:'Timecards'}} title="Time exports" phoneOnly/>
   <CorpTitle id="time-exports-title" title="Time exports" wide/>
   <PayrollTabs items={tabs} current="/app/payroll-export"/>
   <div className="c-field">
