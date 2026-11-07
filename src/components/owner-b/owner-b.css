@@ -309,6 +309,26 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__i > :is(.b-live__a), :is(#c-root, html) .app-shell[data-nv-b] .b-live__i:not(:has(> .b-live__a)) { padding: 12px 10px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: 22px; }
 }
+/* Round 5 (Nov 7): phone fixes from the Owner and Manager filled-data inspection. */
+@media (max-width: 767px) {
+  /* Round 5 (Nov 7) P5: on another week the header holds the range, its chip, Today and two arrows, which don't fit under
+   * 390px (the page scrolled sideways). The controls wrap to their own line, kept at the right. Owner and Manager only:
+   * the Employee week strip has its own header. */
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h { flex-wrap: wrap; row-gap: 6px; }
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-week__h > span:last-child:not(:first-child) { margin-left: auto; }
+  /* Round 5 (Nov 7) P6: a status chip beside a row title never runs wider than the text column ("Correction awaiting
+   * review" ran under the hours at 320px); a chip too long for it ends in an ellipsis. Right for every role. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { min-width: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: inline-block; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
+  /* Round 5 (Nov 7) P7: four glass tabs (Things to do) take their words' width and share the rest evenly, so the gaps
+   * between labels match and "Requests 10" stays inside the control. Owner and Manager only. */
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 6px; }
+}
+@media (max-width: 359px) {
+  /* Round 5 (Nov 7) P7: on narrow phones the four labels are 13px so all of them fit with room to breathe. */
+  :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 4px; font-size: 13px; letter-spacing: -0.01em; }
+}
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-btn, .b-ink__btn, .b-live__a, .b-back):not(:disabled):active { scale: 0.96; }
   /* A view's first load: the hero, then each card, 100ms apart (opacity, 4px blur, 12px rise over 300ms). */

@@ -1,5 +1,5 @@
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
@@ -86,8 +86,11 @@ export default async function EmployeeProfilePage({
         <div className="c-person__who">
           <CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
           <span className="c-row__main">
-            <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).join(" · ")}</span>
-            <span className="c-row__detail"><span><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span>{" · "}<span className="c-person__bit">{`ID ${employee.id}`}</span></span>
+            {/* Round 5 (Nov 7): each segment carries its own "· " so a phone can wrap segments whole and clip the dot that
+              would start a line; the text reads the same as before ("Kitchen · Calle Loíza", "555-0199 · ID 7"). */}
+            <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).map((part, index) =>
+              <Fragment key={index}>{index ? " " : null}<span className="c-person__part">{index ? <span className="c-person__sep">·{" "}</span> : null}{part}</span></Fragment>)}</span>
+            <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span>{" "}<span className="c-person__bit"><span className="c-person__sep">·{" "}</span>{`ID ${employee.id}`}</span></span>
               {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
           </span>
           {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon className="c-ic" aria-hidden="true" /></a> : null}
