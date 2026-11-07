@@ -49,7 +49,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const row = (employee: Employee) => {
     const name = `${employee.firstName} ${employee.lastName}`;
     return <li key={employee.id}><CorpRow href={`/app/employees/${encodeURIComponent(employee.id)}`} bold title={name} detail={`${role(employee)} · ${where(employee)}`}
-      avatar={<CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
+      avatar={<CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
       trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron={false}
       label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
   };

@@ -198,11 +198,13 @@ it.each(['EMPLOYEE','LEAD'] as const)('push_disabled_profile_and_inbox_accessibl
  const {html}=render(role);expect(html).toContain('href="/app/profile"');expect(html).toContain('href="/app/notifications"');expect(html).not.toContain('portal-device-settings');
 });
 
-it.each(['MANAGER','OWNER'] as const)('keeps %s Updates under More with no tab lit and a pushed page header',role=>{
+// Direction B (Nov 7, 2026): Updates opens from More, which goes back to Home, so the phone lights Home ("current", not this page).
+it.each(['MANAGER','OWNER'] as const)('keeps %s Updates under More, lights Home on the phone, with a pushed page header',role=>{
  const {html,mobile}=render(role,'/app/updates/compose');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(mobile).not.toContain('href="/app/updates"');
- expect(mobile).not.toContain('mobile-nav-link active');
+ expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
+ expect(mobile.match(/mobile-nav-link active/g)).toHaveLength(1);
  expect(html).not.toContain('data-corp-root=""');
  expect(sidebar).toMatch(/href="\/app\/updates"[^>]*aria-current="true"/);
  expect(sidebar.match(/href="\/app\/updates"/g)).toHaveLength(1);
@@ -332,9 +334,15 @@ it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','cloc
 });
 
 // Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.
+it.each(['OWNER','MANAGER'] as const)('lights Home on a %s phone for Help, with no sidebar entry',role=>{
+ const {html,mobile}=render(role,'/app/help');
+ expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
+ const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
+ expect(sidebar).not.toContain('nav-link active');
+});
 it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sidebar entry on Help or an unknown address',role=>{
- // An Employee's Help lights Home (above); an unknown address lights nothing for anyone.
- for(const pathname of role==='EMPLOYEE'?['/app/no-such-page','/app/nothing/here']:['/app/help','/app/no-such-page','/app/nothing/here']){
+ // Help lights Home on Employee, Owner and Manager phones (it opens from More); an unknown address lights nothing for anyone.
+ for(const pathname of role==='LEAD'?['/app/help','/app/no-such-page','/app/nothing/here']:['/app/no-such-page','/app/nothing/here']){
   const {html,mobile}=render(role,pathname);
   expect(mobile).not.toContain('mobile-nav-link active');
   expect(mobile).not.toContain('aria-current');

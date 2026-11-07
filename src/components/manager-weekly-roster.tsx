@@ -261,7 +261,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   };
   const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={shift.id}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
     <DayTime start={shift.startTime} end={shift.endTime} />
-    <CorpAvatar initials={initials(employee.name).toUpperCase()} />
+    <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
       <span className="c-sched-row__top"><span className="c-row__title c-row__title--b">{employee.name}</span>{statePill(shift, employee.id)}</span>
       <span className="c-row__detail"><span>{[shift.position || employee.role, !locationId ? shift.location : null].filter(Boolean).join(" · ")}</span></span>

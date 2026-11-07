@@ -64,7 +64,7 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
     <CorpCard id="who-in" label={ready ? headed("Clocked in", people.length) : "Clocked in"} aside={ready ? <span className="c-meta c-num">{`Updated ${clock(ready.observedAt, timeZone)}`}</span> : undefined}>
       {!ready ? <CorpBody><p className="c-who__state" aria-busy={refreshing || undefined}>{monitor?.state === "unavailable" ? "Clock-ins aren’t available right now." : "Checking who’s clocked in…"}</p></CorpBody>
         : people.length ? <ul className="c-rows" aria-label="Clocked in now">{shown.map(person => <li key={person.timeEntryId}>
-          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar initials={initials(person.employeeName)} grey />}
+          <CorpRow href={`/app/employees/${encodeURIComponent(person.employeeId)}`} bold title={person.employeeName} avatar={<CorpAvatar name={person.employeeName} initials={initials(person.employeeName)} />}
             detail={`${person.state === "ON_BREAK" && person.breakStartAt ? `On break since ${clock(person.breakStartAt, timeZone)}` : `In since ${clock(person.clockInAt, timeZone)}`}${where(person.locationName)}`}
             chevron />
         </li>)}</ul> : <div className="c-empty c-empty--card"><b className="c-empty__title">No one is clocked in right now</b><span className="c-empty__body">They show up here when they clock in.</span></div>}
@@ -75,11 +75,11 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
       {onRetry ? <CorpButton kind="secondary" size="md" onClick={onRetry}>Try again</CorpButton> : null}
     </CorpBody></CorpCard> : null}
     {late.length ? <CorpCard id="who-late" label={headed("Not in yet", late.length)}><ul className="c-rows" aria-label="Not in yet">{late.map(shift => <li key={shift.id}>
-      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
-        detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="red" chevron />
+      <CorpRow href={`/app/employees/${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
+        detail={`Due ${clock(shift.startAt, timeZone)}${where(shift.locationName)}`} value={day ? lateBy(shift.startAt, day.observedAt) : undefined} valueTone="amber" chevron />
     </li>)}</ul></CorpCard> : null}
     {none.length ? <CorpCard id="who-none" label={headed("Missed clock-ins", none.length)}><ul className="c-rows" aria-label="Shifts that ended with no clock-in">{none.map(shift => <li key={shift.id}>
-      <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar initials={initials(shift.employeeName)} grey />}
+      <CorpRow href={`/app/timecards#timecard-${encodeURIComponent(shift.employeeId)}`} bold title={shift.employeeName} avatar={<CorpAvatar name={shift.employeeName} initials={initials(shift.employeeName)} />}
         detail={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}${where(shift.locationName)}`} chevron />
     </li>)}</ul></CorpCard> : null}
     {children ? <CorpCard as="div" ariaLabel="Review">

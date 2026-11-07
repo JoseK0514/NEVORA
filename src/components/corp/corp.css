@@ -650,3 +650,7 @@
 }
 /* A Cancel-style action in a sheet's bar that is disabled reads grey. */
 :is(#c-root, html) .c-sheet__nav .c-sheet-head__l:is(:disabled, [aria-disabled="true"]) { color: var(--c-grey); cursor: default; }
+
+/* Round 5 (Nov 7, 2026): on Owner and Manager Direction B pages a person's corporate avatar takes the same tint as their
+ * Direction B face (BAvatar), so they keep one colour on every screen. Other shells keep the kit's teal. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-av.c-av--tint:not(#nvd-none):not(#nvd-none2) { background: var(--av-bg) !important; color: var(--av-fg) !important; }

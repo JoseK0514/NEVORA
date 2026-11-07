@@ -868,3 +868,8 @@ html[data-theme="dark"] #mobile-access-page.q-page {
   --q-border: #D6D6D3; --q-body: #3A3A38;
   background: #FFFFFF !important; color-scheme: light;
 }
+
+/* Round 5 (Nov 7, 2026): an unread notification shows a teal dot before its chevron; read rows keep a quieter title. */
+:is(#q-root, html) .q-notif-list .q-row .q-notif-dot { flex: none; width: 9px; height: 9px; margin-left: 8px; border-radius: 5px; background: #0B6E69; }
+:is(#q-root, html) .q-notif-list .q-row:not([data-unread]) .q-rt b { font-weight: 500; }
+:is(#q-root, html) .q-notif-list .q-row > .q-chev { flex: none; margin-left: 6px; color: #B5BBBF; }

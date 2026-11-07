@@ -92,7 +92,7 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
     <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
       <div className="c-request__who">
-        <CorpAvatar initials={initialsOf(request.employeeName)} large />
+        <CorpAvatar name={request.employeeName} initials={initialsOf(request.employeeName)} large />
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
       </div>
       <div className="c-request__body">

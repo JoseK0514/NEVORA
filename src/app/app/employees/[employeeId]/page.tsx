@@ -84,7 +84,7 @@ export default async function EmployeeProfilePage({
         words beside it (R3), not a header or a pill. */}
       <CorpCard id="person-who" ariaLabel={name}>
         <div className="c-person__who">
-          <CorpAvatar initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
+          <CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} large />
           <span className="c-row__main">
             <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).join(" · ")}</span>
             <span className="c-row__detail"><span><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span>{" · "}<span className="c-person__bit">{`ID ${employee.id}`}</span></span>

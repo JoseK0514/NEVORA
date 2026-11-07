@@ -44,7 +44,7 @@ export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek,
     <CorpCard id="team-hours" label="Scheduled hours" aside={<CorpLink href="/app/schedule/settings">Manage targets</CorpLink>}>
       {hours.length ? <CorpRows label="Scheduled hours by person">{hours.map(item => <li key={item.employeeId}>
         <CorpRow bold title={item.employeeName}
-          avatar={<CorpAvatar initials={initials(item.employeeName)} grey />}
+          avatar={<CorpAvatar name={item.employeeName} initials={initials(item.employeeName)} />}
           detail={hoursDetail(item)}
           label={`${item.employeeName}, ${item.scheduledHours} hours scheduled${item.targetHours === undefined ? ", no weekly target" : ` of a ${item.targetHours} hour target`}`}
           chevron={false} />

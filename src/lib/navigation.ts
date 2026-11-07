@@ -284,6 +284,9 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
   return navigationForRole(role, payroll, context).filter(item => !owned.has(item.href));
 }
 
+/** Pages opened from More (or the avatar and bell): on phones without a More tab they light Home. */
+export const MORE_FAMILY = /^\/app\/(more|profile|help|account|notifications|updates|settings|reports|my-pay|ai-manager)(\/|$)/;
+
 /** The tab that owns the current page: a tab href, "more", or none. */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
   // Direction B (Employee phones, Nov 6, 2026): a page a tab owns lights that tab (shift swaps and Availability light
@@ -298,8 +301,12 @@ export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollC
   }
   const active = activeNavigationHref(role, path, payroll, context);
   // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.
-  if (!active) return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href;
-  return mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
+  const lit = !active ? mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (path === owned || path.startsWith(`${owned}/`))))?.href
+    : mobileTabsForRole(role, payroll, context).find(tab => tab.owns.includes(active))?.href ?? "more";
+  // Direction B (Owner and Manager phones, Nov 7, 2026): More opens from the avatar and goes back to Home, so More and the
+  // pages it opens light Home when no tab owns them (their phones have no More tab).
+  if ((role === "OWNER" || role === "MANAGER") && (lit === "more" || lit === undefined) && MORE_FAMILY.test(path.split(/[?#]/)[0])) return "/app";
+  return lit;
 }
 
 export type SectionTabGroup = { label: string; items: { href: string; label: string }[] };

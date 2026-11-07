@@ -98,10 +98,13 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
       const Icon=icons[notificationPresentation(item.label).icon];
       const review=item.reviewState??'unavailable';
       return <li key={item.id} data-inbox-row>
-       <Link className="q-row q-row--av" href={item.href} prefetch={false} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
+       <Link className="q-row q-row--av" data-unread={review==='unread'||undefined} href={item.href} prefetch={false} aria-label={`${item.label}, ${reviewLabels[review]}, ${whenLong(item.at)}`}
         onClick={()=>{if(review==='unread')void markRead(item.id);}}>
         <span className="q-av" aria-hidden="true"><Icon className="q-ic" aria-hidden="true"/></span>
         <span className="q-rt"><b>{item.label}</b><i>{weekOf(item.href)?<>{weekOf(item.href)} · </>:null}<time dateTime={item.at}>{when(item.at)}</time></i></span>
+        {/* Round 5: unread shows, not only in the label (a teal dot), and the row reads as a link (chevron). */}
+        {review==='unread'?<span className="q-notif-dot" aria-hidden="true"/>:null}
+        <svg className="q-chev" viewBox="0 0 256 256" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg>
        </Link>
       </li>;
      })}</ul>

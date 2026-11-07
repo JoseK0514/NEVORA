@@ -22,7 +22,7 @@ import { SheetGestures } from "./sheet-gestures";
 import { Toaster } from "./toaster";
 import { FormValidation } from "./form-validation";
 import type { UserRole } from "@/lib/domain";
-import { employeeNavigationGroups, teamToolHolder, teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
+import { MORE_FAMILY, employeeNavigationGroups, teamToolHolder, teamToolsForRole, activeMobileTab, activeNavigationHref, managementNavigationGroups, mobileTabsForRole, navigationForRole, sectionTabsFor, sidebarActiveHref, sidebarNavigation, type NavContext } from "@/lib/navigation";
 import { SectionTabs } from "./section-tabs";
 import { isPopoverOpen, hidePopover } from "./kit/popover-open";
 import { CommandFinder } from "./command-finder";
@@ -510,7 +510,7 @@ function AppShellView({
                     prefetch
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     // Direction B: More and the pages it opens light Home (where they go back to); Home is then "current", not this page.
-                    aria-current={active ? (employee && /^\/app\/(more|profile|help|account|notifications|updates)(\/|$)/.test(pathname) ? "true" : "page") : undefined}
+                    aria-current={active ? (item.href === "/app" && pathname !== "/app" && MORE_FAMILY.test(pathname) ? "true" : "page") : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                     // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
                     onClick={event => {

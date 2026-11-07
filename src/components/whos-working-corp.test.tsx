@@ -25,7 +25,7 @@ it("lists who is clocked in (earliest first), who isn't in yet with how late, an
   expect(out).toContain("In since 7:58 AM");
   expect(out).toContain('>Not in yet<span class="c-count c-num">1</span><');
   expect(out).toContain("Due 8:00 AM");
-  expect(out).toContain("c-row__value--red\">24 min late<");
+  expect(out).toContain("c-row__value--amber\">24 min late<");
   expect(out).toContain('>Missed clock-ins<span class="c-count c-num">1</span><');
   expect(out).toContain('href="/app/timecards#timecard-d"');
   expect(out).toContain('<a class="c-nav__back" href="/app">');

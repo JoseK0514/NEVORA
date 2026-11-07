@@ -4,6 +4,7 @@ import type { ReactNode, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { faceTint } from "@/lib/face-tint";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
  * renders one `BScreen` as the first child of its CorpPage; on a phone under the shell's data-nv-b it replaces the page's
@@ -111,7 +112,6 @@ export function BChip({ tone = "grey", children, label }: { tone?: BTone; childr
 }
 
 /* Faces: initials on one of six soft tints, picked from the name so a person keeps their colour on every screen. */
-const TINTS = [["#E4ECF7", "#2C4A7A"], ["#E7F2EC", "#22603F"], ["#EEE7F7", "#5B3D8F"], ["#F6EBE1", "#7A4A22"], ["#FBE8EC", "#8A2E44"], ["#E6F0F6", "#1F5670"]] as const;
 export function initialsOf(name: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   // The first two words, as the rest of the app draws initials ("b Fictional QA" is BF on every screen).
@@ -119,8 +119,7 @@ export function initialsOf(name: string) {
 }
 export function BAvatar({ name, size = 36, ring, open }: { name?: string; size?: number; ring?: "late" | "on"; open?: boolean }) {
   if (open || !name) return <span className="b-av b-av--open" style={{ "--s": `${size}px` } as CSSProperties} aria-hidden="true" />;
-  let hash = 0; for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
-  const [bg, fg] = TINTS[hash % TINTS.length];
+  const [bg, fg] = faceTint(name);
   return <span className={`b-av${ring ? ` b-av--${ring}` : ""}`} style={{ "--s": `${size}px`, background: bg, color: fg } as CSSProperties} aria-hidden="true">{initialsOf(name)}</span>;
 }
 export function BFaces({ names, size = 32 }: { names: string[]; size?: number }) {

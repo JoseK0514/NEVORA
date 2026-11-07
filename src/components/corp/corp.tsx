@@ -1,3 +1,4 @@
+import { faceTint } from "@/lib/face-tint";
 import "./corp.css";
 import Link from "next/link";
 import type { ReactNode, ButtonHTMLAttributes, AnchorHTMLAttributes, CSSProperties } from "react";
@@ -82,8 +83,11 @@ export function CorpBadge({ count, label }: { count: number; label?: string }) {
   return <span className="c-badge" aria-label={label}>{count > 99 ? "99+" : count}</span>;
 }
 
-export function CorpAvatar({ initials, grey, large, open }: { initials?: string; grey?: boolean; large?: boolean; open?: boolean }) {
-  return <span className={`c-av${grey ? " c-av--grey" : ""}${large ? " c-av--l" : ""}${open ? " c-av--open" : ""}`} aria-hidden="true">{initials}</span>;
+/** `name` gives the face its own tint (the same as Direction B's BAvatar), drawn where the Owner/Manager Direction B shell is on. */
+export function CorpAvatar({ initials, grey, large, open, name }: { initials?: string; grey?: boolean; large?: boolean; open?: boolean; name?: string }) {
+  const tint = name && !grey && !open ? faceTint(name) : null;
+  return <span className={`c-av${grey ? " c-av--grey" : ""}${large ? " c-av--l" : ""}${open ? " c-av--open" : ""}${tint ? " c-av--tint" : ""}`}
+    style={tint ? { "--av-bg": tint[0], "--av-fg": tint[1] } as CSSProperties : undefined} aria-hidden="true">{initials}</span>;
 }
 
 export type CorpRowProps = {

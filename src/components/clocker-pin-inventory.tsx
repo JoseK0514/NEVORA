@@ -25,7 +25,7 @@ export function ClockerPinInventory({statuses,details={}}:{statuses:OwnerPinStat
   <CorpCard as="div" label={filter==='Inactive'?'Inactive people':'People'} >
    {visible.length?<CorpRows label="Clocker PINs">{visible.map(p=><li key={p.employeeId}>
     <CorpRow href={`/app/employees/${encodeURIComponent(p.employeeId)}${p.active?'/clocker-pin':''}`} bold title={`${p.firstName} ${p.lastName}`} detail={details[p.employeeId]}
-     avatar={<CorpAvatar initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey={!p.active}/>}
+     avatar={<CorpAvatar name={`${p.firstName} ${p.lastName}`} initials={`${p.firstName[0]??''}${p.lastName[0]??''}`.toUpperCase()} grey={!p.active}/>}
      label={`${p.firstName} ${p.lastName}${details[p.employeeId]?`, ${details[p.employeeId]}`:''}, ${p.active?'':'inactive, '}${p.configured?'PIN set':'no PIN yet'}`} chevron/>
    </li>)}</CorpRows>:<CorpBody><p className="c-pins__empty" role="status">{query.trim()?'No one matches that name.':filter==='No PIN'?'Everyone has a PIN.':filter==='PIN set'?'No one has a PIN yet.':'No inactive people.'}</p></CorpBody>}
   </CorpCard>
