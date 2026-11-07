@@ -740,3 +740,15 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .b-screen .b-row__acts > *:not(#nvd-none):not(#nvd-none2), :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .b-screen .b-row__acts :is(.b-btn, form):not(#nvd-none):not(#nvd-none2) { flex: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .b-screen .b-row__acts .b-btn:not(#nvd-none):not(#nvd-none2) { width: auto !important; min-height: 40px !important; padding: 0 18px !important; border-radius: 20px !important; }
 }
+
+/* ---------- Round 5 verification fixes (Nov 7) ---------- */
+@media (min-width: 1024px) {
+  /* Timecards table: an approved card ("Ready to finalize") or a finalized one reads green, as on phones. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-tc-cue[data-done]:not(#nvd-none):not(#nvd-none2) { color: #1D6B45 !important; }
+  /* Settings hub: the title keeps the usual 24px to the first cards (the columns dropped the first card's top margin). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) main.page-frame .c-page.c-settings > header.c-title:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { margin-bottom: 24px !important; }
+  /* Footers centre their actions on one line (Edit shift's Delete sat 8px above Save). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) :is(.c-form-foot, .c-card__foot):not(#nvd-none):not(#nvd-none2) { align-items: center !important; }
+  /* Labor settings rows centre their two values in the row. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .policy-private-review dl > div:not(#nvd-none):not(#nvd-none2) { align-items: center !important; }
+}

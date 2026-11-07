@@ -319,7 +319,7 @@
   /* Round 5 (Nov 7) P6: a status chip beside a row title never runs wider than the text column ("Correction awaiting
    * review" ran under the hours at 320px); a chip too long for it ends in an ellipsis. Right for every role. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tx { min-width: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: inline-block; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__t > .b-chip { display: block; width: fit-content; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 22px; }
   /* Round 5 (Nov 7) P7: four glass tabs (Things to do) take their words' width and share the rest evenly, so the gaps
    * between labels match and "Requests 10" stays inside the control. Owner and Manager only. */
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) { grid-auto-columns: auto; }
@@ -341,4 +341,10 @@
 @media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero > .b-title, :is(#c-root, html) .app-shell[data-nv-b] .b-stack > * { animation: b-fade 200ms linear both; }
   @keyframes b-fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* Round 5 (Nov 7): on the Timecards team list every status chip sits under the name (a short name had pulled its chip up
+ * beside it, so chips moved row to row). */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] #b-tc-team .b-row__t > .b-row__tt { flex-basis: 100%; }
 }

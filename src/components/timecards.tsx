@@ -653,7 +653,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 {showRole?<td data-col="role" className="c-tc-muted">{roleOf(item.card)??'—'}</td>:null}
                 <td data-col="recorded" className="c-tc-num"><CorpDuration>{quietHours(item.card.recordedNanoseconds)}</CorpDuration></td>
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
-                <td data-col="status"><span className="c-tc-cue" data-act={row.act||undefined}>{row.text}</span></td>
+                <td data-col="status"><span className="c-tc-cue" data-act={row.act||undefined} data-done={rowStatus(item).tone==='done'||undefined}>{row.text}</span></td>
               </tr>;
             }):<tr><td colSpan={cols} className="c-tc-none">{tab==='review'?(inProgress?'No timecards in progress.':'No timecards to approve.'):'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="c-tc-idle">{selecting?<td className="c-tc-check" aria-hidden="true"/>:null}<td colSpan={cols-(selecting?1:0)}>
