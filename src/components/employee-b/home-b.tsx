@@ -14,6 +14,7 @@ import {keepWhole} from '../../lib/keep-whole';
 import {addDays, weekStartFor} from '../../lib/date-utils';
 import type {EmployeeTime} from '../../lib/employee-time';
 import {useHours} from '../employee-mobile/use-hours';
+import {boardDuration, compactDuration} from '../employee-mobile/hours-model';
 import {businessDate, clock, dayWord, fmt, isComplete, sourceDestinations, sourceNames, todoTitle, weekRange, type HomeWeek} from '../employee-home-quiet';
 import {BDay, Dotted, wallTime} from './parts';
 import './employee-b.css';
@@ -58,8 +59,9 @@ function paydayWord(payday: string, today: string) {
 function Figures({week, payday, worked}: {week: HomeWeek | null; payday?: string | null; worked: number | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
   const items: BLiveItem[] = [];
-  if (worked !== null && scheduled) items.push({label: 'This week', value: hoursNumber(worked), small: `/${hoursNumber(scheduled)} h`, href: '/app/my-time', aria: `This week, ${hoursNumber(worked)} of ${hoursNumber(scheduled)} scheduled hours worked`});
-  else if (worked !== null) items.push({label: 'This week', value: `${hoursNumber(worked)} h`, href: '/app/my-time', aria: `This week, ${hoursNumber(worked)} hours worked`});
+  // Worked time reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours ("/56 h").
+  if (worked !== null && scheduled) items.push({label: 'This week', value: compactDuration(worked * 60), small: `/${hoursNumber(scheduled)} h`, href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled hours`});
+  else if (worked !== null) items.push({label: 'This week', value: compactDuration(worked * 60), href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked`});
   else if (scheduled !== null) items.push({label: 'This week', value: `${hoursNumber(scheduled)} h`, href: '/app/schedule', aria: `This week, ${hoursNumber(scheduled)} hours scheduled`});
   if (payday && week) items.push({label: 'Next payday', value: paydayWord(payday, week.today), href: '/app/my-pay', aria: `Next payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
@@ -151,7 +153,8 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
       {snapshot ? <>
         <ShiftCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <BNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</BNote> : null}
-        {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}>
+        {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
+          link={todos.length > 3 ? {href: '/app/notifications', label: 'See all', aria: `See all ${todos.length} things to do`} : undefined}>
           <BList>
             {todos.slice(0, 3).map(({key, item, week: confirm}) => {
               const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
@@ -160,7 +163,6 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
                 ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub} label={`${title}, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
                 : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
             })}
-            {todos.length > 3 ? <BRow href="/app/notifications" title={`See all ${todos.length}`}/> : null}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
               const source = snapshot.sources[key];
               const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
