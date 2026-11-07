@@ -83,7 +83,7 @@ export default async function RequestsPage({
           href={`/app/requests?requestId=${encodeURIComponent(request.id)}${view === "decided" ? "&filter=decided" : ""}`} />)}</CorpRows>
           : <p className="c-empty"><b>{view === "decided" ? "No decisions yet" : "Nothing waiting"}</b>{view === "decided" ? "Approved, declined and withdrawn requests will appear here." : mine.length ? "When you send a request, you can follow its status here." : "No time-off requests yet."}</p>}
       </section>
-      <CorpButtonLink href="/app/requests?tab=new" full>Request time off</CorpButtonLink>
+      <CorpButtonLink href="/app/requests?tab=new" full className="tof-new">Request time off</CorpButtonLink>
     </>}
     <TimeOffSheet open={sheetOpen} closeHref={listHref} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
   </CorpPage></ResponsiveEmployeePlanning>;

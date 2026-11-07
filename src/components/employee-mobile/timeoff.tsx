@@ -94,7 +94,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     <nav className="c-seg" aria-label="Time-off requests"><Link href="/app/requests" aria-current={filter!=='decided'?'page':undefined}>Waiting</Link><Link href="/app/requests?filter=decided" aria-current={filter==='decided'?'page':undefined}>Decided</Link></nav>
     <section className="c-card" aria-label={filter==='decided'?'Decided requests':'Waiting requests'}>{shown.length?<ul className="c-rows">{shown.map(r=><TimeOffListRow key={r.id} id={'timeoff-'+r.id} request={r} href={'/app/requests?requestId='+encodeURIComponent(r.id)+(filter==='decided'?'&filter=decided':'')}/>)}</ul>
      :<p className="c-empty"><b>{filter==='decided'?'No decisions yet':'Nothing waiting'}</b>{filter==='decided'?'Approved, declined and withdrawn requests will appear here.':'When you send a request, you can follow its status here.'}</p>}</section>
-    <Link className="c-btn c-btn--full" href="/app/requests?tab=new">Request time off</Link>
+    <Link className="c-btn c-btn--full tof-new" href="/app/requests?tab=new">Request time off</Link>
    </>:row?<>
     <TimeOffRequestCard request={row} zone={read.timeZone} headingId={'timeoff-'+row.id+'-dates'}/>
     {row.status==='PENDING'?<Withdrawal key={row.id} request={row} getOperation={()=>withdrawals.for(row.id)} allowed={panel.allowed} send={send} check={check}/>:withdrawals.peek(row.id)?<WithdrawalReceipt key={row.id} operation={withdrawals.peek(row.id)!}/>:null}

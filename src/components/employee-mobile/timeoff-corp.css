@@ -114,3 +114,9 @@ html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet
 /* Direction B's own pieces of the request form (the field glyphs and the approval notice) show only on the employee's
  * phone screen (employee-b/requests.css); everywhere else the form is as before. */
 :is(#c-root, html) .c-page :is(.tof-pick__ic, .eb-tof-approve) { display: none; }
+
+/* Desktop: Request time off is the kit's auto-width button at the right edge of the 720px list column. The narrow page's
+ * 100% width (720px cap) and the button's auto left margin had made it a 720px bar pushed past the list's right edge. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-page--narrow > .c-btn--full.tof-new.tof-new { width: fit-content; max-width: none; margin-left: auto; margin-right: max(0px, calc(100% - 720px)); }
+}
