@@ -90,6 +90,9 @@
   /* ---------- Notifications ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-when { align-self: center; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-when > span { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* A one-line notice: the time is level with the title, the unread dot hangs under it. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notif:not(:has(.b-row__s)) .eb-when { position: relative; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notif:not(:has(.b-row__s)) .eb-when > :is(.eb-unread, .eb-spin) { position: absolute; top: 100%; right: 0; margin-top: 3px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-unread { display: block; width: 9px; height: 9px; border-radius: 5px; background: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { color: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notif--busy { background-color: rgb(16 24 32 / 0.04); }
@@ -147,7 +150,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary:focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; border-radius: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-q, .eb-doc__sec) > summary:active { background-color: rgb(16 24 32 / 0.04); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__chev { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q[open] .eb-q__chev { rotate: 90deg; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q[open] .eb-q__chev { rotate: 180deg; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a { padding: 0 18px 16px 66px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-read { display: flex; flex-direction: column; gap: 12px; font-size: 15px; line-height: 1.6; color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-q__a.eb-read { font-size: 14.5px; line-height: 21px; gap: 8px; }
@@ -158,7 +161,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__intro { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 44px; padding-top: 16px; box-shadow: inset 0 1px 0 #ECEEEF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary h2 { font-size: 18px; line-height: 24px; font-weight: 700; letter-spacing: -0.01em; color: var(--b-ink); text-wrap: balance; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary .eb-doc__caret { flex: none; color: #0B6E69; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > summary .eb-doc__caret { flex: none; color: #B5BBBF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__first > .eb-read { margin-top: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__caret { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-doc__first, .eb-doc__sec)[open] > summary .eb-doc__caret { rotate: 180deg; }

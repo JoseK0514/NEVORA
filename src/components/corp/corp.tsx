@@ -205,11 +205,11 @@ export function CorpSegments({ label, items }: { label: string; items: { key?: s
 }
 
 /** Label above a control, optional help under it. */
-export function CorpField({ label, htmlFor, help, error, children }: { label: ReactNode; htmlFor?: string; help?: ReactNode; error?: ReactNode; children: ReactNode }) {
+export function CorpField({ label, htmlFor, help, error, errorId, children }: { label: ReactNode; htmlFor?: string; help?: ReactNode; error?: ReactNode; errorId?: string; children: ReactNode }) {
   return <div className="c-field">
     {htmlFor ? <label className="c-field__label" htmlFor={htmlFor}>{label}</label> : <span className="c-field__label">{label}</span>}
     {children}
-    {error ? <span className="c-error" role="alert">{error}</span> : help ? <span className="c-field__help">{help}</span> : null}
+    {error ? <span className="c-error" id={errorId} role="alert">{error}</span> : help ? <span className="c-field__help">{help}</span> : null}
   </div>;
 }
 

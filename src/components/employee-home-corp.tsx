@@ -153,13 +153,15 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
     ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time>
     // Before Home is read, the workspace's public date, so the line is there from the first frame.
     : <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(new Date()))}</time>;
+  // Direction B writes the month short ("Saturday, Nov 7"), read or not.
+  const dateB = <time suppressHydrationWarning>{keepWhole(fmt(timeZone ?? 'UTC', {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date()))}</time>;
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   const waiting: ReactNode = paused ? (online ? 'Paused while you’re away. Your shift updates when you come back.' : 'You’re offline. Your shift updates when you reconnect.')
     : denied ? 'Your session ended. Sign in again to see your shift.' : loading ? 'Loading your shift…' : 'Couldn’t load Home.';
 
   return <CorpPage className="c-ehome c-page--narrow">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
-    <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={date} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
+    <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
       waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>

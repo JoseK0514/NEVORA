@@ -292,6 +292,9 @@ export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollC
     const bare = path.split(/[?#]/)[0];
     const own = mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
     if (own) return own.href;
+    // More and the pages it opens (Profile and its pages, Help, Account, Notifications, Updates) go back to Home, so they
+    // light Home, as on the approved boards.
+    if (/^\/app\/(more|profile|help|account|notifications|updates)(\/|$)/.test(bare)) return "/app";
   }
   const active = activeNavigationHref(role, path, payroll, context);
   // Quiet (v4): a tool page with no menu entry of its own (Account and Clocker recovery) lights the tab that owns it.

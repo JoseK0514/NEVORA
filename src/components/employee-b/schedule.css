@@ -79,3 +79,13 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm .b-row__s { display: block !important; -webkit-line-clamp: unset !important; overflow: visible !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act { flex-basis: 100% !important; padding-left: 48px !important; }
 }
+
+/* Round 4. While the confirmation checks or answers, its line takes the row's full width under the words, so the title
+ * keeps one line and the card doesn't jump. Why other shifts aren't available: the corporate summary's own inset goes, so
+ * its words line up with the rows' text and its chevron with theirs. */
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) { flex-basis: 100%; padding-left: 48px; justify-content: flex-start; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) .employee-weekly-confirmation { align-items: flex-start; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) p { text-align: left; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-blocked summary { padding: 0 !important; min-height: 36px; }
+}

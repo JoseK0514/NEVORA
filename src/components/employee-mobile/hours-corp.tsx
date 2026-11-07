@@ -317,6 +317,8 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
   onDraft(next);};
  const shown=(field:keyof HoursDraft)=>error?.field===field||(field==='endTime'&&error?.field==='endDate');
  const attr=(field:keyof HoursDraft)=>({'aria-invalid':shown(field)||undefined,'aria-describedby':shown(field)?errorId:undefined});
+ // Round 4: an error sits right under the field it names (the form-level line is only for anything else).
+ const under=(field:keyof HoursDraft)=>shown(field)?{error:message,errorId}:{};
  const focus=(field:keyof HoursDraft|undefined)=>form.current?.querySelector<HTMLElement>('[name="'+(field==='endDate'?'endTime':field)+'"]')?.focus();
  // What to fix: a shift with no punches, the latest recorded days, and the breaks of the day being fixed.
  const key=(t:{kind:string;timeEntryId:string;breakEntryId:string|null})=>t.kind==='ENTRY_BOUNDARY'?'entry:'+t.timeEntryId:'break:'+t.timeEntryId+':'+t.breakEntryId;
@@ -331,6 +333,7 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
   :missing&&info.adjustmentId&&info.context.state==='confirmed'?`Approved ${clockRange(info.context.startAt,info.context.endAt,zone)}`:undefined;
  const feedback=isActive?operation.result:null;
  const message=error?.message.startsWith('The end must be after the start')?'The end must be after the start.':error?.message;
+ const placed=!!error&&(['startDate','startTime','endTime','endDate','reason'].includes(error.field)||error.field==='locationId'&&missing);
  const disabled=locked||stale||unconfirmed||missing&&!snapshot.locations.length;
  // Upscale S14: Send stays grey (aria-disabled) until the proposal is complete; pressing it then says what is missing.
  const complete=!!buildHoursProposal(readyDraft,info,PROBE_ID,zone).payload&&(!missing||snapshot.locations.some(l=>l.id===readyDraft.locationId));
@@ -354,17 +357,17 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
       </label>)}
      </div>
     </div>
-    {missing?<CorpField label="Location" htmlFor={uid+'location'}><select id={uid+'location'} name="locationId" className="c-in" value={readyDraft.locationId} {...attr('locationId')} disabled={locked||!!info.adjustmentId} onChange={e=>change({locationId:e.target.value})}>
+    {missing?<CorpField label="Location" htmlFor={uid+'location'} {...under('locationId')}><select id={uid+'location'} name="locationId" className="c-in" value={readyDraft.locationId} {...attr('locationId')} disabled={locked||!!info.adjustmentId} onChange={e=>change({locationId:e.target.value})}>
      <option value="">Choose location</option>{snapshot.locations.map(l=><option value={l.id} key={l.id}>{l.name}</option>)}</select></CorpField>:null}
-    <CorpField label="Day" htmlFor={uid+'day'} help={recordedHelp}><select id={uid+'day'} name="startDate" className="c-in" value={readyDraft.startDate} {...attr('startDate')} onChange={e=>change({startDate:e.target.value})}>
+    <CorpField label="Day" htmlFor={uid+'day'} help={recordedHelp} {...under('startDate')}><select id={uid+'day'} name="startDate" className="c-in" value={readyDraft.startDate} {...attr('startDate')} onChange={e=>change({startDate:e.target.value})}>
      {readyDraft.startDate?null:<option value="">Choose a day</option>}{dates.map(date=><option key={date} value={date}>{date===today?`Today, ${dayMedium(date).split(', ')[1]}`:dayMedium(date)}</option>)}</select></CorpField>
     <div className="c-field__row">
-     <CorpField label="Start" htmlFor={uid+'start'}><TimeInput id={uid+'start'} name="startTime" placeholder="Choose" value={readyDraft.startTime} invalid={shown('startTime')} describedBy={shown('startTime')?errorId:undefined} onValue={value=>change({startTime:value})}/></CorpField>
-     <CorpField label="End" htmlFor={uid+'end'}><TimeInput id={uid+'end'} name="endTime" placeholder="Choose" value={readyDraft.endTime} invalid={shown('endTime')} describedBy={shown('endTime')?errorId:undefined} onValue={value=>change({endTime:value})}/></CorpField>
+     <CorpField label="Start" htmlFor={uid+'start'} {...under('startTime')}><TimeInput id={uid+'start'} name="startTime" placeholder="Choose" value={readyDraft.startTime} invalid={shown('startTime')} describedBy={shown('startTime')?errorId:undefined} onValue={value=>change({startTime:value})}/></CorpField>
+     <CorpField label="End" htmlFor={uid+'end'} {...under('endTime')}><TimeInput id={uid+'end'} name="endTime" placeholder="Choose" value={readyDraft.endTime} invalid={shown('endTime')} describedBy={shown('endTime')?errorId:undefined} onValue={value=>change({endTime:value})}/></CorpField>
     </div>
-    <CorpField label="Note (required)" htmlFor={uid+'note'}><textarea id={uid+'note'} name="reason" className="c-in" rows={3} maxLength={500} value={readyDraft.reason} {...attr('reason')} onChange={e=>change({reason:e.target.value})}/></CorpField>
+    <CorpField label="Note (required)" htmlFor={uid+'note'} {...under('reason')}><textarea id={uid+'note'} name="reason" className="c-in" rows={3} maxLength={500} value={readyDraft.reason} {...attr('reason')} onChange={e=>change({reason:e.target.value})}/></CorpField>
    </fieldset>
-   {error?<p className="c-error" id={errorId} role="alert">{message}</p>:null}
+   {error&&!placed?<p className="c-error" id={errorId} role="alert">{message}</p>:null}
    {pending?<p className="c-note" role="status"><span>Sending your original proposal…</span></p>:isActive&&uncertain?<div className="c-callout c-hours-stack" role="status"><span>The result couldn’t be confirmed. Check your original submission before starting a new proposal.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRetry}>Check submission status</CorpButton></div></div>
     :feedback&&feedback.status!=='recorded'?<p className="c-callout" role="status">{feedback.status==='blocked'?blocked[feedback.reason]:feedback.status==='conflict'?'This time changed or already has a fix waiting. Refresh and check its status.':feedback.status==='denied'?'Your access changed. Sign in again to continue.':'Check the day, times and note.'}</p>:null}
    <button type="submit" className="eb-fix-send" disabled={disabled} aria-disabled={!disabled&&!complete?true:undefined}>{pending?'Sending…':'Send'}</button>

@@ -24,11 +24,13 @@ export function BValue({children, sub}: {children: ReactNode; sub?: ReactNode}) 
   return <><b>{children}</b>{sub ? <span>{sub}</span> : null}</>;
 }
 
-/** "Customer Support · Main Office" with each segment kept whole and each "·" leading the segment after it, so a line
- * never ends in a dot. */
+/** "Customer Support · Main Office": each segment kept whole, and a "·" only between segments on the same line. Each
+ * segment carries its dot in front; the line is pulled left by one dot's width and clipped, so the dot that would start
+ * a line (the first, or one after a wrap) falls outside and never shows. Screen readers hear a comma between segments. */
 export function Dotted({text}: {text: string}) {
   const parts = text.split(' · ');
-  return <>{parts.map((part, index) => <span key={index}>{index ? ' ' : ''}<span className="eb-nowrap">{index ? '·\u00a0' : ''}{part}</span></span>)}</>;
+  return <span className="eb-dots"><span className="eb-dots__in">{parts.map((part, index) =>
+    <span key={index} className="eb-dots__p"><span className="eb-dots__sep" aria-hidden="true">·</span>{index ? <span className="b-sr">, </span> : null}{part}</span>)}</span></span>;
 }
 
 /** A quiet line inside a card, under its rows (a hint, or what a list means). */

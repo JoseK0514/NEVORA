@@ -21,3 +21,11 @@
    * centring (its translate) would lift that panel half off the screen. */
   :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
 }
+
+/* Direction B phones (Round 4): the shift sits in the kit's lifted white card, so it keeps the card's inset (it would
+ * otherwise touch the 22px corner); the bar's day is the kit's 600 weight and Done is teal, like every B back link. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-esheet__card { padding: 16px 18px 18px !important; margin: 0 !important; gap: 2px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__title { font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__done { font-weight: 600 !important; color: #0B6E69 !important; }
+}

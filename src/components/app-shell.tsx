@@ -509,7 +509,8 @@ function AppShellView({
                     // periodic refresh re-renders only the open page, so these prefetches are not repeated every few seconds.
                     prefetch
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
-                    aria-current={active ? "page" : undefined}
+                    // Direction B: More and the pages it opens light Home (where they go back to); Home is then "current", not this page.
+                    aria-current={active ? (employee && /^\/app\/(more|profile|help|account|notifications|updates)(\/|$)/.test(pathname) ? "true" : "page") : undefined}
                     aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
                     // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
                     onClick={event => {

@@ -34,7 +34,6 @@
   /* ---------- inside the B screens ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-form { display: none; }
   /* A titleless card's first line sits 16–18px under its top edge. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-state:first-child { padding-top: 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-btn--full { min-height: 48px; font-size: 15.5px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-link { align-self: flex-start; }

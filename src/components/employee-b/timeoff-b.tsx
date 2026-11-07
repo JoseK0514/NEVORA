@@ -5,7 +5,7 @@ import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BAvatar, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
-import {BAddRow, BCardNote} from './parts';
+import {BAddRow, BCardNote, Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
@@ -53,7 +53,7 @@ function TimeOffHero({page, filter, tabs}: {page: TimeOffPage; filter: string; t
 function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) {
   const pill = timeOffPill(request.status);
   return <BRow href={`/app/requests?requestId=${encodeURIComponent(request.id)}${filter === 'decided' ? '&filter=decided' : ''}`}
-    lead={<BIcon tone="grey"><SunIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={keepWhole(timeOffSpan(request))}
+    lead={<BIcon tone="grey"><SunIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
     end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
 }
 

@@ -9,8 +9,8 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {BButton, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BStack, type BTone} from '../owner-b/b-kit';
-import {BCardNote, BDay} from './parts';
-import {BEmpty, BText, ExchangeHeroB, MyScheduleCardB, RequestTypeIcon, type ExchangeTab, OpenShiftsEmptyB} from './requests-b';
+import {BCardNote, BDay, Dotted} from './parts';
+import {BEmpty, BText, bPillText, ExchangeHeroB, MyScheduleCardB, RequestTypeIcon, type ExchangeTab, OpenShiftsEmptyB} from './requests-b';
 import type {OpenEmployeeShift} from '@/lib/employee-requests';
 import type {EmployeeRequestDetail, HistorySlot, RequestSlot, RequestSummary} from '@/lib/employee-exchange';
 import {addDays, formatTime} from '@/lib/date-utils';
@@ -45,8 +45,7 @@ function OpenShiftRow({row}: {row: OpenRowB}) {
   // An overnight shift ends the next day; the row's day already says which, so its weekday is enough ("ends Sat").
   const first = [shift.position, row.hours, overnight ? `ends ${weekdayB(addDays(shift.date, 1))}` : null].filter(Boolean).join(' · ');
   return <BRow lead={<BDay date={shift.date}/>} title={<span ref={title} id={`b-request-${shift.id}`} data-selected={row.selected || undefined}>{range(shift)}</span>}
-    chip={row.nextWeek ? <BChip tone="grey">Next week</BChip> : undefined}
-    sub={<><span className="eb-line">{keepWhole(first)}</span><span className="eb-line">{shift.location}</span></>}
+    sub={<><span className="eb-line"><Dotted text={first}/></span><span className="eb-line">{/* "Next week" rides on the place line (board E-Open draws no chip). */}<Dotted text={row.nextWeek ? `${shift.location} · Next week` : shift.location}/></span></>}
     trail={row.action ?? undefined} actions={row.status ?? undefined}/>;
 }
 
@@ -106,7 +105,7 @@ export function PickupResultB({children}: {children: ReactNode}) {
 
 /** A shift request's chip: the hub's words and tones; a swap that waits on you says so. */
 export function exchangeChip(row: RequestSummary, pill: {tone: BTone; text: string}) {
-  return row.status === 'EMPLOYEE_PENDING' && row.viewer === 'recipient' ? {tone: 'amber' as const, text: 'Needs your answer'} : pill;
+  return row.status === 'EMPLOYEE_PENDING' && row.viewer === 'recipient' ? {tone: 'amber' as const, text: 'Needs your answer'} : {...pill, text: bPillText(pill.text)};
 }
 
 export type ExchangeRowB = {row: RequestSummary; href: string; title: string; sub: string; chip: {tone: BTone; text: string}; status: string};
@@ -137,7 +136,7 @@ export function ExchangeListB({mode, state, enabled, recoveries, rows}: {
 function BRowLink({item}: {item: ExchangeRowB}) {
   return <Link className="b-row b-row--link" id={`b-exchange-request-${item.row.id}`} href={item.href} aria-label={`${item.title}, ${item.sub}, ${item.status}`}>
     <RequestTypeIcon kind={item.row.kind === 'callout' ? 'callout' : 'shift'}/>
-    <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s">{item.sub}</span></span>
+    <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={item.sub}/></span></span>
     <span className="b-row__end"><BChip tone={item.chip.tone}>{item.chip.text}</BChip></span>
     <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true"/>
   </Link>;
@@ -171,7 +170,7 @@ export function ExchangeDetailB({mode, title, back, state, enabled, recoveries, 
         {recoveries}
         {detail && row ? <>
           <BCard label="Current request status"><BList><BRow lead={<RequestTypeIcon kind={row.kind === 'callout' ? 'callout' : 'shift'}/>} title={status}
-            sub={keepWhole([row.counterparty ? `${row.viewer === 'requester' ? 'With' : 'From'} ${row.counterparty}` : null, `Submitted ${stamp(row.createdAt, timeZone)}`].filter(Boolean).join(' · '))}/></BList></BCard>
+            sub={<Dotted text={[row.counterparty ? `${row.viewer === 'requester' ? 'With' : 'From'} ${row.counterparty}` : null, `Submitted ${keepWhole(stamp(row.createdAt, timeZone))}`].filter(Boolean).join(' · ')}/>}/></BList></BCard>
           {detail.notice ? <BCard><BText status>{detail.notice}</BText></BCard> : null}
           {incoming ? <><SlotCard title="Your current shift" slot={detail.requested}/><SlotCard title="You would work" slot={detail.offered}/></>
             : <><SlotCard title={row.kind === 'swap' ? 'Offered shift' : row.kind === 'callout' ? 'Reported shift' : 'Offered coverage'} slot={detail.offered}/>{row.kind === 'swap' ? <SlotCard title="Requested shift" slot={detail.requested}/> : null}</>}

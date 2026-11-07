@@ -6,7 +6,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {CorpButton,CorpButtonLink,CorpCard,CorpNav,CorpNote,CorpPage,CorpRow,CorpRows} from '../corp/corp';
 import {EmployeeRequestsCorp,requestDay,requestsSubtitle,shiftPill,timeOffDetail,timeOffPill,waitingStatus,waitsOnManager,type CorpRequestRow} from '../employee-requests-corp';
-import {BStateCard,IncomingB,InlineRetryB,RequestsHubB,RequestsWaitB,bTone,type BRequestRow} from '../employee-b/requests-b';
+import {BStateCard,IncomingB,InlineRetryB,RequestsHubB,RequestsWaitB,bPillText,bTone,type BRequestRow} from '../employee-b/requests-b';
 import {OpenShiftsB,PickupResultB,type OpenRowB} from '../employee-b/exchange-b';
 import {BButton,BButtonLink} from '../owner-b/b-kit';
 import {keepWhole} from '@/lib/keep-whole';
@@ -29,7 +29,7 @@ const requestRow=(row:OwnRequest):CorpRequestRow=>{
  return {key:row.kind+row.id,href:href(row),title,detail,pill:row.kind==='timeOff'?timeOffPill(row.status):shiftPill(row.status,row.kind==='callout')};
 };
 /** The same request as a Direction B row: its type icon, and its status as a chip in today's tones. */
-const requestRowB=(row:OwnRequest):BRequestRow=>{const corp=requestRow(row);return {key:corp.key,href:corp.href,kind:row.kind,title:corp.title,sub:corp.detail,chip:{tone:bTone(corp.pill.tone),text:corp.pill.text}};};
+const requestRowB=(row:OwnRequest):BRequestRow=>{const corp=requestRow(row);return {key:corp.key,href:corp.href,kind:row.kind,title:corp.title,sub:corp.detail,chip:{tone:bTone(corp.pill.tone),text:bPillText(corp.pill.text)}};};
 /** Swaps addressed to you, inside the Waiting card: a row when some need your answer, a retry when they couldn't be checked. */
 export function IncomingRequestSection({count,onRetry}:{count:number|null;onRetry:()=>void}){
  if(count===null)return <div className="c-ereq__inline"><span role="status">Swaps for you couldn’t be checked. <Link className="c-link" href="/app/exchange?tab=foryou">Open swaps for you</Link></span><button className="c-ereq__retry" type="button" onClick={onRetry}>Try again</button></div>;
@@ -145,7 +145,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
    b={<RequestsHubB sub={requestsSubtitle(modules)} newHref={modules?.timeOff?'/app/requests?tab=new':null}
     waiting={snapshot?waitingB:null} decided={snapshot?decidedB:null} forManager={waitingB.every(row=>waitsOnManager(row.chip))}
     decidedHref={modules?.timeOff?'/app/requests?filter=decided':modules?.marketplace?'/app/exchange?tab=requests':null}
-    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} state={stateB}/>}
+    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} extraCount={incomingB&&snapshot!.incoming?1:0} state={stateB}/>}
    sub={requestsSubtitle(modules)}
    newHref={modules?.timeOff?'/app/requests?tab=new':null}
    waiting={snapshot?waiting:null} decided={snapshot?decided:null}

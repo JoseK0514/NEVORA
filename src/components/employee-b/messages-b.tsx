@@ -24,6 +24,7 @@ import type {CommunicationRecoveryState} from '../../lib/communications/recovery
 import {notificationGroup, type NotificationTab} from '../employee-mobile/notifications-list';
 import {messageTime, type MessageFilter, type ReadyUpdate} from '../employee-mobile/messages-view';
 import {NoHeaderActions} from './account-host';
+import {Dotted} from './parts';
 import './account.css';
 
 /* Employee phones, Direction B: Notifications, Updates, an update and Write an update (mock e-notifications,
@@ -113,7 +114,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
               onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
               aria-label={`${item.label}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
               <BIcon tone={tone}><Icon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.label}</span></span>{sub ? <span className="b-row__s">{sub}</span> : null}</span>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.label}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
               <span className="b-row__end eb-when"><span>{earlier ? shortDate(item.at, zone) : time}</span>
                 {busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}</span>
             </Link></li>;

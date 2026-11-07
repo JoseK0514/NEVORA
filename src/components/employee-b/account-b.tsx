@@ -69,7 +69,7 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
 function Question({icon, title, sub, blocks}: {icon: ReactNode; title: string; sub?: string; blocks: Block[]}) {
   return <li className="b-li"><details className="eb-q">
     <summary className="b-row b-row--link">{grey(icon)}<span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{title}</span></span>{sub ? <span className="b-row__s">{sub}</span> : null}</span>
-      <CaretRightIcon className="b-chev eb-q__chev" size={18} weight="bold" aria-hidden="true" /></summary>
+      <CaretDownIcon className="b-chev eb-q__chev" size={18} weight="bold" aria-hidden="true" /></summary>
     <div className="eb-read eb-q__a">{blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
   </details></li>;
 }

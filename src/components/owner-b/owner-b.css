@@ -24,6 +24,11 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a) { color: inherit; text-decoration: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a, button):focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+  /* On the teal hero the ring is white (teal on teal can't be seen); the live tiles fill a clipped band, so theirs is inset.
+   * Rows and action rows fill their card edge to edge, and the card clips, so their ring sits inside them. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero :where(a, button):focus-visible { outline-color: #FFFFFF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline-offset: -2px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card :is(.b-row--link, .b-add):focus-visible { outline-offset: -2px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :where(a, button) { -webkit-tap-highlight-color: transparent; }
 
   /* ---------- hero: the brand teal is a place ---------- */
@@ -122,7 +127,8 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { font-size: 13.5px; line-height: 18px; color: var(--b-grey); overflow-wrap: anywhere; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__end { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex: none; text-align: right; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__end b { font-size: 15.5px; line-height: 20px; font-weight: 700; color: var(--b-ink); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-row__end span { font-size: 12.5px; line-height: 16px; color: var(--b-grey); }
+  /* The small grey line under a row's value; never the value's own parts, a chip or a link. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__end > span:where(:not(.b-chip, .b-link)) { font-size: 12.5px; line-height: 16px; color: var(--b-grey); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__trail { display: flex; gap: 8px; align-items: center; flex: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chev { flex: none; color: #B5BBBF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-bar { display: block; height: 6px; margin-top: 6px; border-radius: 3px; background: #EDF0F0; overflow: hidden; }
@@ -286,6 +292,12 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) { flex-wrap: wrap; row-gap: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row:has(> .b-row__trail .b-btn) > .b-row__trail { flex-basis: 100%; padding-left: 48px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__trail .b-btn { min-height: 34px; padding: 0 14px; font-size: 13.5px; }
+  /* A status chip at a row's end moves under the row's text, so the name keeps its width (never one letter per line). */
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 12px; row-gap: 6px; align-items: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) > :not(.b-row__tx, .b-row__end, .b-chev) { grid-column: 1; grid-row: 1 / 3; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) > .b-row__tx { grid-column: 2; grid-row: 1; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) > .b-row__end { grid-column: 2; grid-row: 2; align-items: flex-start; justify-self: start; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) > .b-chev { grid-column: 3; grid-row: 1 / 3; margin-left: 0 !important; }
   /* Narrow phones: a line may take two lines (never cut to "…"), and a chip that doesn't fit drops under the name. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }

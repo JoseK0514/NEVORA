@@ -6,7 +6,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
-import {BCardNote, BDay} from './parts';
+import {BCardNote, BDay, Dotted} from './parts';
 import {ExchangeHeroB, OpenShiftsEmptyB} from './requests-b';
 import './schedule.css';
 
@@ -103,8 +103,8 @@ export function OpenShiftsB({backHref, rows, empty, blocked, unavailableHref, no
         : empty ? <BCard label="Open shifts"><OpenShiftsEmptyB/></BCard>
         : <BCard title="You can pick up" count={rows.filter(row => !row.requested).length || undefined}>
           <BList>{rows.map(row => <BRow key={row.id} lead={<BDay date={row.date}/>} title={row.hours} label={row.label}
-            chip={row.requested ? <BChip tone="amber">Waiting</BChip> : row.nextWeek ? <BChip tone="grey">Next week</BChip> : undefined}
-            sub={<>{row.facts}<br/>{row.place}</>}
+            chip={row.requested ? <BChip tone="amber">Waiting</BChip> : undefined}
+            sub={<><span className="eb-line"><Dotted text={row.facts}/></span><span className="eb-line"><Dotted text={row.nextWeek ? `${row.place} · Next week` : row.place}/></span></>}
             trail={<BButtonLink href={row.href} kind={row.requested ? 'ghost' : 'teal'} label={row.label} prefetch={false}>{row.requested ? 'View' : 'Pick up'}</BButtonLink>}/>)}</BList>
           <BCardNote>{note}</BCardNote>
         </BCard>}

@@ -1448,3 +1448,13 @@ layers are the Owner's, plus `src/components/employee-b/` (one screen file and s
   (pay schedule); hero figures hide when there is nothing to show.
 - **Inspected (Nov 6, 2026).** Three rounds of UI inspectors checked every employee page at 390 and 320px (and 1440px for
   desktop leakage) against the mock with pixel measurements; their findings are fixed in the round commits.
+- **Round 4 (Nov 7, 2026, filled data and interaction states).** Status chips keep their tone at a row's end (amber
+  waiting, green approved, grey decided, including Declined), and a row's value is 15.5/700 ink; on 320px phones a chip at a
+  row's end moves under the row's text. "Waiting on teammate" reads "With teammate" on phones. Dotted lines ("Customer
+  Support · Main Office") wrap between whole segments and never start or end a line with a "·" (`Dotted` in
+  `employee-b/parts.tsx`). More and the pages it opens (Profile, Help, Account, Notifications, Updates) light Home, with
+  `aria-current="true"`. Focus rings are white on the teal hero and drawn inside full-width rows. A field's error sits
+  under that field. Offline is one dark pill above the tab bar. The shift sheet's shift card keeps its 16/18px inset. Open
+  shifts say "Next week" on the place line, not as a chip. Help, Calendar and Privacy open with the same grey down caret.
+  A phone held sideways keeps the corporate page (unchanged; an 844x390 full-page screenshot loses touch emulation and
+  draws the desktop rail, which is a capture artifact).

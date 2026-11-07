@@ -178,3 +178,14 @@
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-now { align-items: flex-start; }
 }
+
+/* Round 4. Availability on narrow phones: the day keeps its width and a long range takes two lines (never cut to "…").
+ * Fix my time: the chosen option is tinted with a teal ring, as on the board. */
+@media (max-width: 359px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day { gap: 8px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 1 1 0; white-space: normal; overflow: visible; text-overflow: clip; text-wrap: balance; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:has(input:checked) { background: #E8F3F1; box-shadow: inset 0 0 0 1.5px #0B6E69; }
+}

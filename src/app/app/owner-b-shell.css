@@ -11,6 +11,11 @@
     border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; pointer-events: none;
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header > * { pointer-events: auto; }
+  /* Offline (Round 4): one dark pill floating over the page above the tab bar, so it never splits the hero under the header. */
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-offline {
+    position: fixed !important; top: auto !important; bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 76px) !important; left: 50% !important; translate: -50% 0; z-index: 40 !important;
+    width: max-content; max-width: calc(100% - 28px); min-height: 36px; padding: 8px 16px !important; border-radius: 18px; background: rgb(16 24 32 / 0.88) !important;
+    box-shadow: 0 10px 24px -10px rgb(16 24 32 / 0.5) !important; color: #FFFFFF !important; font: 500 13.5px/19px Inter, "Inter Fallback", -apple-system, sans-serif !important; text-wrap: balance; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .brand.compact {
     display: inline-flex !important; align-items: center !important; order: 0 !important; height: 44px !important; min-height: 44px !important; width: auto !important; margin: 0 !important; padding: 0 !important;
@@ -38,6 +43,7 @@
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-unavailable { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: #FFFFFF !important; font: 700 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: -2px !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: 2px !important; border-radius: 6px; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-progress { z-index: 32 !important; }
 
   /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible red count. */

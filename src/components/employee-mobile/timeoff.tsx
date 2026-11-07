@@ -22,7 +22,7 @@ type Draft={startDate:string;endDate:string;partial:boolean;startTime:string;end
 const empty:Draft={startDate:'',endDate:'',partial:false,startTime:'09:00',endTime:'12:00',note:''};
 
 /** A date or time field that looks like the board's field ("Thu, Nov 12"), with the real input laid over it. */
-export function PickField({id,name,type,label,value,min,onChange,invalid,describedBy,help}:{id:string;name:string;type:'date'|'time';label:string;value:string;min?:string;onChange:(value:string)=>void;invalid?:boolean;describedBy?:string;help?:string}){
+export function PickField({id,name,type,label,value,min,onChange,invalid,describedBy,help,error}:{id:string;name:string;type:'date'|'time';label:string;value:string;min?:string;onChange:(value:string)=>void;invalid?:boolean;describedBy?:string;help?:string;error?:string}){
  const shown=!value?type==='date'?'Choose date':'Choose time':type==='date'?(isValidIsoDate(value)?timeOffDay(value):value):formatTime(value==='24:00'?'00:00':value);
  return <div className="c-field"><label className="c-field__label" htmlFor={id}>{label}</label>
   <span className="c-in tof-pick"><span className={value?undefined:'tof-pick__ph'} aria-hidden="true">{shown}</span>
@@ -32,6 +32,8 @@ export function PickField({id,name,type,label,value,min,onChange,invalid,describ
     onClick={event=>{try{event.currentTarget.showPicker();}catch{/* Browsers without showPicker open their own picker. */}}}
     onChange={event=>onChange(event.target.value)}/></span>
   {help?<span className="c-field__help">{help}</span>:null}
+  {/* The field's own error sits right under it (Round 4: never down the form). */}
+  {error&&describedBy?<span id={describedBy} className="c-error tof-pick__err" role="alert">{error}</span>:null}
  </div>;
 }
 
@@ -40,7 +42,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
  const [draft,setDraft]=useState<Draft>(empty),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
  const [error,setError]=useState<{message:string;field:string}|null>(null),errorId=useId(),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
  const {pending,uncertain,complete}=usePlanningOperation(operation),locked=pending||uncertain||complete;
- const fieldError=(name:string)=>({invalid:error?.field===name,describedBy:error?.field===name?errorId:undefined});
+ const fieldError=(name:string)=>({invalid:error?.field===name,describedBy:error?.field===name?errorId:undefined,error:error?.field===name?error.message:undefined});
  const listHref='/app/requests'+(filter==='decided'?'?filter=decided':''),isNew=selection==='new',isList=selection==='list';
  const row=read?.data.requests[0];
  useEffect(()=>{if(complete&&isNew&&read?.enabled)receipt.current?.focus();},[complete,isNew,read?.enabled]);
@@ -66,7 +68,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
      if(!command){const field=!isValidIsoDate(draft.startDate)?'startDate':!draft.partial&&(!isValidIsoDate(draft.endDate)||draft.endDate<draft.startDate)?'endDate':draft.partial&&!draft.startTime?'startTime':draft.partial?'endTime':'note';const message=field==='startDate'?'Choose a valid start date.':field==='endDate'?'Choose an end date on or after the start date.':field==='startTime'?'Choose a start time.':field==='endTime'?'Choose an end time after the start time.':'Keep your note within 250 characters.';setError({message,field});form.current?.querySelector<HTMLElement>('[name="'+field+'"]')?.focus();return;}
      setError(null);void operation.submit(command,send,panel.allowed);
     }}><fieldset disabled={locked} className="tof-fields"><legend className="nv-sr">Time away</legend>
-     <div className="c-seg tof-seg" role="group" aria-label="How long"><button type="button" aria-pressed={!draft.partial} onClick={()=>setDraft(d=>({...d,partial:false}))}>All day</button><button type="button" aria-pressed={draft.partial} onClick={()=>setDraft(d=>({...d,partial:true}))}>Part of day</button></div>
+     <div className="c-seg tof-seg" role="group" aria-label="How long"><button type="button" aria-pressed={!draft.partial} onClick={()=>{setDraft(d=>({...d,partial:false}));setError(null);}}>All day</button><button type="button" aria-pressed={draft.partial} onClick={()=>{setDraft(d=>({...d,partial:true}));setError(null);}}>Part of day</button></div>
      {draft.partial?<>
       <PickField id="tof-date" name="startDate" type="date" label="Date" value={draft.startDate} {...fieldError('startDate')} onChange={v=>{setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate<v?v:d.endDate}));setError(null);}}/>
       <div className="tof-row">
@@ -81,7 +83,7 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
      </div>}
      <div className="c-field"><label className="c-field__label" htmlFor="tof-note">Reason (optional)</label><textarea id="tof-note" className="c-in tof-note" name="note" rows={3} maxLength={250} autoComplete="off" aria-invalid={error?.field==='note'||undefined} aria-describedby={error?.field==='note'?errorId:undefined} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/></div>
     </fieldset>
-    {error?<p id={errorId} className="c-error" role="alert">{error.message}</p>:null}
+    {error?.field==='note'?<p id={errorId} className="c-error" role="alert">{error.message}</p>:null}
     <p className="c-note tof-approve">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
     {/* Direction B (phones): the same words as a soft notice; hidden elsewhere. */}
     <div className="eb-tof-approve"><BIcon tone="grey"><HourglassIcon weight="bold"/></BIcon><span><b>Your manager approves it</b><span>Keep your scheduled shifts until it is approved.</span></span></div>

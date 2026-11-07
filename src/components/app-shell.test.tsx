@@ -236,11 +236,13 @@ it('shows no section tabs on pages outside a shared group',()=>{
  expect(render('OWNER','/app/schedule').html).not.toContain('class="section-tabs"');
 });
 
-// Upscale (Nov 1): pages opened from the avatar (More, Updates, Profile) and the bell (Notifications) light no tab.
-it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/app/notifications'])('lights no EMPLOYEE tab on %s, which opens from the avatar or bell',pathname=>{
+// Direction B (Nov 7, 2026): pages opened from the avatar (More, Updates, Profile) and the bell (Notifications) go back to
+// Home, so they light Home, as on the approved boards; Home is "current", not the page itself.
+it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/app/notifications','/app/help'])('lights Home for EMPLOYEE on %s, which opens from the avatar or bell',pathname=>{
  const {mobile}=render('EMPLOYEE',pathname);
- expect(mobile).not.toContain('mobile-nav-link active');
- expect(mobile).not.toContain('aria-current');
+ expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
+ expect(mobile.match(/mobile-nav-link active/g)).toHaveLength(1);
+ expect(mobile).not.toContain('aria-current="page"');
 });
 it.each(['LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
  const {mobile}=render(role,'/app/updates/own-update');
@@ -331,7 +333,8 @@ it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','cloc
 
 // Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.
 it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sidebar entry on Help or an unknown address',role=>{
- for(const pathname of ['/app/help','/app/no-such-page','/app/nothing/here']){
+ // An Employee's Help lights Home (above); an unknown address lights nothing for anyone.
+ for(const pathname of role==='EMPLOYEE'?['/app/no-such-page','/app/nothing/here']:['/app/help','/app/no-such-page','/app/nothing/here']){
   const {html,mobile}=render(role,pathname);
   expect(mobile).not.toContain('mobile-nav-link active');
   expect(mobile).not.toContain('aria-current');

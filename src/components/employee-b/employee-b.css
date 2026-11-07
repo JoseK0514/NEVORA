@@ -15,6 +15,9 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: 48px; border-radius: 16px; font-size: 15.5px; font-weight: 700; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
+  /* Two lists in one card (Needs your answer, then Waiting) keep the hairline between them. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-list + .b-list > .b-li:first-child { box-shadow: inset 0 1px 0 #ECEEEF; }
 
   /* A day as a row's lead: 36px wide so text edges line up with the 36px icons. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-day { width: 36px; }
@@ -156,3 +159,10 @@
 @media (max-width: 359px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-sub { text-wrap: balance; }
 }
+
+/* Dotted lines (parts.tsx): segments wrap whole, and the dot that would lead a line is clipped off its left edge. */
+.eb-dots { display: block; overflow: hidden; }
+.eb-dots__in { display: flex; flex-wrap: wrap; margin-left: -0.85em; }
+.eb-dots__p { min-width: 0; overflow-wrap: anywhere; }
+.eb-dots__sep { display: inline-block; width: 0.85em; text-align: center; }
+.eb-dots .b-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

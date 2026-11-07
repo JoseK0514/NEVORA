@@ -27,10 +27,10 @@ it('reads a time-off request as its dates over its days and length, in today’s
 });
 
 it('maps today’s request tones to the B chips and says when a swap waits on you', () => {
-  expect(['teal', 'amber', 'red', 'neutral', 'blue'].map(bTone)).toEqual(['green', 'amber', 'red', 'grey', 'grey']);
+  expect(['teal', 'amber', 'red', 'neutral', 'blue'].map(bTone)).toEqual(['green', 'amber', 'grey', 'grey', 'grey']);
   const row = {id: 'r', kind: 'swap' as const, status: 'EMPLOYEE_PENDING', date: '2026-11-03', createdAt: '2026-10-27T12:00:00Z', counterparty: null, revision: 1, releaseApplies: null};
   expect(exchangeChip({...row, viewer: 'recipient'}, {tone: 'amber', text: 'Waiting on teammate'})).toEqual({tone: 'amber', text: 'Needs your answer'});
-  expect(exchangeChip({...row, viewer: 'requester'}, {tone: 'amber', text: 'Waiting on teammate'}).text).toBe('Waiting on teammate');
+  expect(exchangeChip({...row, viewer: 'requester'}, {tone: 'amber', text: 'Waiting on teammate'}).text).toBe('With teammate');
 });
 
 it('draws the Requests tab: the white Request time off, what waits on the manager, then what was decided', () => {
@@ -49,7 +49,7 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: [request(PENDING, 'PENDING', '2026-11-12', '2026-11-14')]}};
   const html = plain(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>)), b = onlyB(html);
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
-  expect(b).toContain('Thu – Sat · All day · 3 days');expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('href="/app/requests?tab=new"');
+  expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('href="/app/requests?tab=new"');
   expect(b).toContain('Open a request to see its details or withdraw it.');
   expect(withoutB(html)).toContain('c-meta">Waiting<');
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: []}};

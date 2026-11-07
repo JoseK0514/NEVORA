@@ -16,7 +16,7 @@ describe('More', () => {
     renderToStaticMarkup(<EmployeeMoreB name="Fictional Person" place="Main Office · Fictional QA Workforce" availability={availability} has={has} count={<span className="q-count">2</span>} />);
   it('your face and places on glass, Profile and settings, every row More has, Sign out alone', () => {
     const html = draw(), plain = text(html);
-    for (const value of ['More', 'Fictional Person', 'Main Office · Fictional QA Workforce', 'Profile and settings', 'Your work', 'Availability', 'Every day · 12 AM – 12 AM', 'Notifications', 'Updates',
+    for (const value of ['More', 'Fictional Person', 'Main Office', 'Fictional QA Workforce', 'Profile and settings', 'Your work', 'Availability', 'Every day · 12 AM – 12 AM', 'Notifications', 'Updates',
       'Add shifts to your calendar', 'Apple, Google or Outlook', 'Help and legal', 'Help', 'Privacy and terms', 'Sign out']) expect(plain).toContain(value);
     for (const href of ['/app', '/app/profile', '/app/availability', '/app/notifications', '/app/updates', '/app/profile/calendar', '/app/help', '/privacy']) expect(html).toContain(`href="${href}"`);
     expect(html).toContain('class="eb-noacts"');expect(html).toContain('<button type="submit" class="eb-signout__btn">Sign out</button>');

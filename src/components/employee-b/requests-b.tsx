@@ -10,6 +10,7 @@ import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, type BTone} from '../owner-b/b-kit';
+import {Dotted} from './parts';
 import './employee-b.css';
 import './requests.css';
 
@@ -18,9 +19,12 @@ import './requests.css';
  * off and Pick up and swap. Presentation only: callers pass the rows, links, states and actions their own reads and
  * operations already give the corporate view; on tablets and desktop these screens are not shown. */
 
-/** Today's request tones in the B chip palette: Approved and Completed green, Declined red, the waiting states amber,
- * Withdrawn, Cancelled, Expired and Recorded grey. */
-export const bTone = (tone: string): BTone => tone === 'teal' ? 'green' : tone === 'amber' ? 'amber' : tone === 'red' ? 'red' : 'grey';
+/** Today's request tones in the B chip palette (board E-Requests): Approved and Completed green, the waiting states amber,
+ * Declined, Withdrawn, Cancelled, Expired and Recorded grey (a decision isn't an error). */
+export const bTone = (tone: string): BTone => tone === 'teal' ? 'green' : tone === 'amber' ? 'amber' : 'grey';
+
+/** A chip's words on the phone: the hub's, shortened where they would squeeze the name beside them. */
+export const bPillText = (text: string) => text === 'Waiting on teammate' ? 'With teammate' : text;
 
 export type BRequestKind = 'timeOff' | 'shift' | 'callout';
 /** What a request is, as a grey icon: Sun for time off, ArrowsLeftRight for a swap, cover or pickup, Prohibit for can't work. */
@@ -32,7 +36,7 @@ export function RequestTypeIcon({kind}: {kind: BRequestKind}) {
 export type BRequestRow = {key: string; href: string; kind: BRequestKind; title: string; sub: string; chip: {tone: BTone; text: string}};
 /** One request: its type icon, name, dates, then the status chip and a chevron, all one link. */
 export function RequestRowB({row}: {row: BRequestRow}) {
-  return <BRow href={row.href} lead={<RequestTypeIcon kind={row.kind}/>} title={row.title} sub={row.sub}
+  return <BRow href={row.href} lead={<RequestTypeIcon kind={row.kind}/>} title={row.title} sub={<Dotted text={row.sub}/>}
     end={<BChip tone={row.chip.tone}>{row.chip.text}</BChip>} chevron label={`${row.title}, ${row.sub}, ${row.chip.text}`}/>;
 }
 
@@ -77,17 +81,19 @@ export type RequestsHubBProps = {
   forManager: boolean;
   /** Swaps that need your answer, or why they couldn't be checked, inside the Waiting card. */
   waitingExtra?: ReactNode;
+  /** How many of those swaps there are (counted in the Waiting card's pill). */
+  extraCount?: number;
   state?: ReactNode;
 };
 
-export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, state}: RequestsHubBProps) {
+export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, extraCount = 0, state}: RequestsHubBProps) {
   return <BScreen>
     <BHero title="Requests" titleId="b-requests-title" sub={sub}>
       {newHref ? <div className="b-hpad"><BButtonLink href={newHref} kind="white" full><PlusIcon size={18} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></div> : null}
     </BHero>
     <BStack>
       {state ?? null}
-      {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'} count={waiting.length || undefined}>
+      {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length && !extraCount ? 'Waiting for your manager' : 'Waiting'} count={waiting.length + extraCount || undefined}>
         {waitingExtra ?? null}
         {waiting.length ? <BList>{waiting.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
           : waitingExtra ? null : <BEmpty icon={<ClipboardTextIcon weight="bold"/>} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
