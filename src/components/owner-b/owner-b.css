@@ -348,3 +348,7 @@
 @media (max-width: 767px) {
   :is(#c-root, html) .app-shell[data-nv-b] #b-tc-team .b-row__t > .b-row__tt { flex-basis: 100%; }
 }
+
+/* Round 5 (Nov 7): a paused or stuck page (scoped-read-frame) as a Direction B card: the line, then Refresh. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-route-state { display: flex; flex-direction: column; gap: 14px; padding: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-route-state p { margin: 0; font-size: 15px; line-height: 21px; color: var(--b-grey); text-wrap: pretty; }

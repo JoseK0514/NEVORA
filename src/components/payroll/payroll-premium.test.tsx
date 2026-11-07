@@ -129,8 +129,8 @@ describe('Pay history (A11, round 2 R9)', () => {
     // One teal action per row (View); Download is a neutral icon button.
     expect(html.match(/c-pay__stmt-view/g)?.length).toBe(2);
     expect(html.match(/c-pay__icon-btn/g)?.length).toBe(2);
-    // Two payroll rows for one week differ in their titles.
-    expect(html).toContain(thin('<span class="c-num">Oct 5 – 11</span> · Correction'));
+    // Two payroll rows for one week differ at a glance: the correction carries a "Correction" pill (Round 5, as on Payroll).
+    expect(html).toMatch(new RegExp(thin('Oct 5 – 11') + '</span>[\\s\\S]*?>Correction<'));
   });
   it('says Employee statement when no record names the person', () => {
     boundary.data!.runs = [nativeRun({ status: 'APPROVED', rows: null, documents: [statement] })];

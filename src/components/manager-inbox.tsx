@@ -16,7 +16,7 @@ import { QuietHeader } from "./quiet/quiet";
 import { usePresentation } from "./presentation-context";
 import { pathEnabled } from "@/lib/workspace-presentation/modules";
 import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
-import { groupInboxItems, inboxFilter, type InboxFilter } from "@/lib/action-center/inbox";
+import { groupInboxItems, inboxFilter, workspaceNow, type InboxFilter } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence } from "@/lib/action-center/needs-you";
 import { keepWhole } from "@/lib/keep-whole";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
@@ -315,7 +315,7 @@ export function InboxSurface({ snapshot, today = null, connection, onRefresh: re
   const shifts = today?.state === "ready" ? today.missed : [];
   // IS-6: when clock-ins can't be read, say so instead of quietly dropping them.
   const todayFailed = today?.state === "unavailable";
-  const value = ready ? needsYou(ready.items, day, shifts) : null;
+  const value = ready ? needsYou(ready.items, day, shifts, workspaceNow(ready.observedAt, timeZone)) : null;
   const total = value ? value.count + value.planning.length + value.past.length : 0;
   const updated = ready ? clock(ready.observedAt, timeZone) : null;
   const show = (group: InboxFilter) => filter === "all" || filter === group;

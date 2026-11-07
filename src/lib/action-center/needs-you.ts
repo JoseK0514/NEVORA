@@ -20,8 +20,8 @@ export type NeedsYou = {
   count: number;
 };
 
-export function needsYou(items: readonly ActionItem[], today: string | undefined, noClockIn: readonly TodayShift[] = []): NeedsYou {
-  const sections = inboxSections([...items], today);
+export function needsYou(items: readonly ActionItem[], today: string | undefined, noClockIn: readonly TodayShift[] = [], localNow?: string): NeedsYou {
+  const sections = inboxSections([...items], today, localNow);
   const pick = (id: string) => sections.find(section => section.id === id)?.items ?? [];
   const now = pick('urgent'), requests = pick('requests');
   return {

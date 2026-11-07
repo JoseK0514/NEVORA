@@ -752,3 +752,10 @@
   /* Labor settings rows centre their two values in the row. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .policy-private-review dl > div:not(#nvd-none):not(#nvd-none2) { align-items: center !important; }
 }
+
+/* Round 5 (Nov 7): Insights' figures, bars, links and notes sit on the 22px card inset like its titles (they kept 16). */
+@media (min-width: 1024px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-ins :is(.c-ins__labor, .c-ins__chart, .c-ins__custom, .c-ins__link, .c-ins__counted summary, .c-ins__reason, .c-stats):not(#nvd-none):not(#nvd-none2) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-ins .c-ins__counted ul:not(#nvd-none):not(#nvd-none2) { padding-left: 38px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-ins .c-ins__bar:not(#nvd-none):not(#nvd-none2) { margin-left: 22px !important; margin-right: 22px !important; }
+}

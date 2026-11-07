@@ -12,6 +12,7 @@ import { useToday } from "./manager-today";
 import { useSharedHomeRead, type ActionCenterConnection } from "./manager-action-center";
 import { mobileActionDetail } from "./manager-action-center";
 import { withoutSetupItems } from "@/lib/action-center/setup";
+import { workspaceNow } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence, type NeedsYou } from "@/lib/action-center/needs-you";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
@@ -113,7 +114,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   const items = readyActions?.state === "ready" ? readyActions.items : [];
   const day = readyActions?.state === "ready" ? workspaceDay(readyActions.observedAt, timeZone) : undefined;
   const todayFailed = today?.state === "unavailable";
-  const value = readyActions && (readyToday || todayFailed) ? needsYou(items, day, readyToday?.missed ?? []) : null;
+  const value = readyActions && (readyToday || todayFailed) ? needsYou(items, day, readyToday?.missed ?? [], readyActions?.state === "ready" ? workspaceNow(readyActions.observedAt, timeZone) : undefined) : null;
   const retryAll = () => { onRetryActions?.(); onRetryToday?.(); focusAfterRetry("#home-needs-you .nv-card__title", ".premium-pending-failed .nv-btn"); };
   // The band's one live line. Once Home has numbers the Needs you card says them, so the line is for screen readers only.
   // Corporate Home names its card ("5 things to do today."); the older looks keep their line.

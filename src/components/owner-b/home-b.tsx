@@ -122,7 +122,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   const closed = businessDay ? ends.filter(end => end && end < businessDay).length : 0;
   const openEnd = businessDay ? [...ends, nextPay.period?.endDate].filter((end): end is string => !!end && end >= businessDay).sort()[0] : undefined;
   const step = !timecardsReady ? { title: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", done: false }
-    : closed ? { title: `${plural(closed, "timecard", "timecards")} to approve`, detail: "Ready now", done: false }
+    : closed ? { title: `${plural(closed, "timecard", "timecards")} to review`, detail: "Ready now", done: false }
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;

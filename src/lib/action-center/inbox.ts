@@ -19,8 +19,19 @@ function ordered(items: ActionItem[], rank: Partial<Record<ActionItem['type'], n
 
 /** C2: a coverage gap on a day before today (workspace dates, "YYYY-MM-DD") is
  * history to review, not work for now. It keeps its own section; nothing is dropped. */
-export function isPastCoverageGap(item: ActionItem, today?: string) {
-  return !!today && item.type === 'COVERAGE_GAP' && !!item.dateTime && item.dateTime.slice(0, 10) < today;
+export function isPastCoverageGap(item: ActionItem, today?: string, now?: string) {
+  if (item.type !== 'COVERAGE_GAP' || !item.dateTime) return false;
+  // Round 5 (Nov 7, 2026): a window that has already ended today is history too (it can't be covered any more).
+  return (!!today && item.dateTime.slice(0, 10) < today) || (!!now && !!item.endDateTime && item.endDateTime <= now);
+}
+
+/** The workspace's local date and time ("YYYY-MM-DDTHH:MM") at an observation, to compare with coverage windows. */
+export function workspaceNow(observedAt: string, timeZone: string) {
+  const at = new Date(observedAt);
+  if (!Number.isFinite(at.getTime())) return undefined;
+  const day = new Intl.DateTimeFormat('en-CA', {timeZone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(at);
+  const clock = new Intl.DateTimeFormat('en-GB', {timeZone, hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(at);
+  return `${day}T${clock}`;
 }
 
 /** Clean Manager (v3, approved Oct 19): a coverage gap on a later day is planning, not "act now". It moves to the
@@ -29,9 +40,9 @@ export function isLaterCoverageGap(item: ActionItem, today?: string) {
   return !!today && item.type === 'COVERAGE_GAP' && !!item.dateTime && item.dateTime.slice(0, 10) > today;
 }
 
-export function inboxSections(items: ActionItem[], today?: string): InboxSection[] {
-  const past = items.filter(item => isPastCoverageGap(item, today));
-  const current = items.filter(item => !isPastCoverageGap(item, today));
+export function inboxSections(items: ActionItem[], today?: string, now?: string): InboxSection[] {
+  const past = items.filter(item => isPastCoverageGap(item, today, now));
+  const current = items.filter(item => !isPastCoverageGap(item, today, now));
   const urgent = current.filter(item => item.priority === 'URGENT' && !isLaterCoverageGap(item, today));
   const rest = current.filter(item => item.priority !== 'URGENT' || isLaterCoverageGap(item, today));
   return [

@@ -172,11 +172,13 @@ function nextStep(open: PayrollRun | undefined): { label: string; href: string; 
  * in grey (R3). The amount shows only when the payroll holds one (a missing amount is never a zero). */
 function RunRow({ item }: { item: PayrollRun }) {
   const approved = item.status === 'APPROVED';
-  return <CorpRow href={reviewHref(item.id)} bold
-    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{item.correctionOf ? ' · Correction' : ''}</>}
+  // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
+  // the title, the amount bold. A status that needs the Owner still wins the pill.
+  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" />}
+    title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
     detail={<>Payday <Num>{quietDay(item.payday)}</Num>{approved ? ' · Approved' : ''}</>}
-    value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined}
-    trail={approved ? undefined : <CorpPill tone="neutral">{statusLabels[item.status]}</CorpPill>} chevron />;
+    value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined} valueTone="ink"
+    trail={!approved ? <CorpPill tone="neutral">{statusLabels[item.status]}</CorpPill> : undefined} chevron />;
 }
 
 /** Corporate (Release 1, board G-O-Payroll), round 2: one 720px column. Unpaid periods first, then Up next (the open

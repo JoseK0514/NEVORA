@@ -272,7 +272,7 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
     { href: "/app/timecards", label: "Time", icon: "clock", owns: ["/app/timecards", ...(payrollTab ? [] : ["/app/payroll-export"])] },
     payrollTab
       ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }
-      : { href: "/app/inbox", label: "Inbox", icon: "inbox", owns: inboxPages },
+      : { href: "/app/inbox", label: "To do", icon: "inbox", owns: inboxPages },
     { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery", "/app/clocker-recovery"] },
   ];
   return tabs.filter(tab=>authorized.has(tab.href));

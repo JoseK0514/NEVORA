@@ -6,6 +6,7 @@ import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
 import { useToday } from "./manager-today";
 import { gapPlace, itemEntry, lateBy, planLabel, shiftEntry } from "./manager-inbox";
+import { workspaceNow } from "@/lib/action-center/inbox";
 import { needsYou } from "@/lib/action-center/needs-you";
 import { itemPerson, presentItem, readableDates, spacedRanges } from "@/lib/action-center/present";
 import { actionCenterNavigation } from "./action-center-navigation";
@@ -120,7 +121,7 @@ function planRows(items: ActionItem[], timeZone: string): Row[] {
  * Presentation only: the same reads and the same counts as before. */
 export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready" }>, today: Today | null, timeZone: string, coverageFirst: boolean) {
   const day = new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(snapshot.observedAt));
-  const value = needsYou(snapshot.items, day, today?.state === "ready" ? today.missed : []);
+  const value = needsYou(snapshot.items, day, today?.state === "ready" ? today.missed : [], workspaceNow(snapshot.observedAt, timeZone));
   const urgent = value.now, later = value.planning;
   const of = (types: ActionItem["type"][], list: ActionItem[]) => list.filter(item => types.includes(item.type));
   const requests = [...urgent.filter(item => item.category === "requests"), ...value.requests];

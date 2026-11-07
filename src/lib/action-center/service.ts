@@ -24,11 +24,14 @@ async function readActionCenterCore(proof:SessionMutationProof,weekStart:string,
   assertManagementProof(proof,proof?.employee?.id);if(!['OWNER','MANAGER'].includes(proof.employee.role))return {state:'unavailable',reason:'access_denied'};if(!isValidWeekStart(weekStart))throw Error('Invalid week');
   const workspace=await getWorkspace(executor),started=performance.now();
   await executor.transaction([...workspaceReadGuard(workspace),{text:'SELECT id FROM employees WHERE id=$1 FOR SHARE',values:[proof.employee.id]},...managementSessionStatements(proof,proof.employee.id)]);
-  const settled=await Promise.allSettled([readScheduling(proof,weekStart,executor),readAttendanceReview(proof,executor),readManagerTimeCorrections(proof,executor),readTimecards(proof,{startDate:weekStart,endDate:addDays(weekStart,6)},executor)]);
+  const settled=await Promise.allSettled([readScheduling(proof,weekStart,executor),readAttendanceReview(proof,executor),readManagerTimeCorrections(proof,executor),readTimecards(proof,{startDate:weekStart,endDate:addDays(weekStart,6)},executor),readTimecards(proof,{startDate:addDays(weekStart,-7),endDate:addDays(weekStart,-1)},executor)]);
   if(settled.some(result=>result.status==='rejected'))throw Error('Source unavailable');
-  const [scheduling,attendance,corrections,timecards]=settled.map(result=>result.status==='fulfilled'?result.value:null) as [ManagerActionItem[],Awaited<ReturnType<typeof readAttendanceReview>>,Awaited<ReturnType<typeof readManagerTimeCorrections>>,Awaited<ReturnType<typeof readTimecards>>];
-  for(const source of [attendance,corrections,timecards])if(source.state!=='ready')return {state:'unavailable',reason:source.reason==='access_denied'?'access_denied':'read_failed'};
-  if(attendance.state!=='ready'||corrections.state!=='ready'||timecards.state!=='ready')throw Error('Incomplete sources');
+  const [scheduling,attendance,corrections,thisWeekCards,lastWeekCards]=settled.map(result=>result.status==='fulfilled'?result.value:null) as [ManagerActionItem[],Awaited<ReturnType<typeof readAttendanceReview>>,Awaited<ReturnType<typeof readManagerTimeCorrections>>,Awaited<ReturnType<typeof readTimecards>>,Awaited<ReturnType<typeof readTimecards>>];
+  for(const source of [attendance,corrections,thisWeekCards,lastWeekCards])if(source.state!=='ready')return {state:'unavailable',reason:source.reason==='access_denied'?'access_denied':'read_failed'};
+  if(attendance.state!=='ready'||corrections.state!=='ready'||thisWeekCards.state!=='ready'||lastWeekCards.state!=='ready')throw Error('Incomplete sources');
+  // Round 5 (Nov 7, 2026): last week's cards still waiting to be approved or finalized are work too (Home's Payday step
+  // counted only this week's, so it said "From Mon" while last week waited). Each card keeps its own period in its id.
+  const timecards={...thisWeekCards,cards:[...lastWeekCards.cards,...thisWeekCards.cards]};
   // Company modules (B2): requests in a module that is off are not shown.
   const modules=(await readActivePresentation(workspace.id,executor)).modules;
   const items=await withActionRequestFacts(proof,workspace,combineManagerActions(scheduling,attendance,corrections,timecards,proof.employee.id).filter(item=>requestTypeAllowed(item.type,modules)),executor);

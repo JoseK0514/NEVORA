@@ -31,6 +31,8 @@ export type ManagerActionItem = {
   detail: string;
   href: string;
   dateTime?: string;
+  /** A coverage gap's end, workspace-local ("YYYY-MM-DDTHH:MM"; an overnight window ends the next day). */
+  endDateTime?: string;
   employeeId?: string;
   locationId?: string;
 };
@@ -88,6 +90,14 @@ function encode(value: string) {
   return encodeURIComponent(value);
 }
 
+/** When a coverage window ends, local to the workspace: the same day, or the next for an overnight (or to-midnight) window. */
+function gapEnd(gap: { date: string; startTime: string; endTime: string }) {
+  const end = gap.endTime.slice(0, 5);
+  if (end > gap.startTime.slice(0, 5)) return `${gap.date}T${end}`;
+  const next = new Date(`${gap.date}T12:00:00Z`); next.setUTCDate(next.getUTCDate() + 1);
+  return `${next.toISOString().slice(0, 10)}T${end === "24:00" ? "00:00" : end}`;
+}
+
 function coverageAction(
   weekStart: string,
   gap: ManagerCoverageGapInput,
@@ -109,7 +119,7 @@ function coverageAction(
     title: `Position not covered at ${gap.locationName}`,
     detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
     href: repairHref,
-    dateTime: `${gap.date}T${gap.startTime}`, locationId: gap.locationId,
+    dateTime: `${gap.date}T${gap.startTime}`, endDateTime: gapEnd(gap), locationId: gap.locationId,
   };
   const leadOnly = gap.gap === 0;
   const people = gap.gap === 1 ? "1 employee" : `${gap.gap} employees`;
@@ -126,6 +136,7 @@ function coverageAction(
       : `${gapWhen(gap)} · Need ${people}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,
+    endDateTime: gapEnd(gap),
     locationId: gap.locationId,
   };
 }

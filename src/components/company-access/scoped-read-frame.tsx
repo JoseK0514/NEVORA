@@ -6,6 +6,8 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
 import {useAppNavigation} from '../app-navigation';
 import {QuietSkeleton} from '../quiet/quiet';
+import {BButton,BCard,BHero,BScreen,BStack} from '../owner-b/b-kit';
+import {CorpBody,CorpButton,CorpCard,CorpTitle} from '../corp/corp';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
 type CurrentAuthority=Extract<OperationalAuthorityView,{state:'ready'}>&{requestStartedAt:number};
@@ -176,5 +178,16 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  if(ready)return body.content;
  if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
  const checking=body.phase!=='paused'&&!stuck;
- return <section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
+ if(checking)return stateSection;
+ // Round 5 (Nov 7, 2026): paused (offline) or stuck, the page says so in the page's own look: Direction B's hero and card
+ // on phones, the band and a card on desktop (an older white box sat under a white header). The brief "checking" state
+ // above keeps its skeleton, so a normal tab tap never flashes this.
+ const title=body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…';
+ const line=body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.';
+ return <div className="c-page c-page--narrow c-route-state" data-corp="">
+  <BScreen back><BHero title={title} back={{href:'/app',label:'Home'}}/><BStack><BCard><div className="b-route-state" role="status"><p>{line}</p><BButton kind="quiet" full onClick={refreshCurrent}>Refresh current view</BButton></div></BCard></BStack></BScreen>
+  <CorpTitle title={title}/>
+  <CorpCard><CorpBody><p className="c-route-state__line" role="status">{line}</p><CorpButton kind="secondary" onClick={refreshCurrent}>Refresh current view</CorpButton></CorpBody></CorpCard>
+ </div>;
 }

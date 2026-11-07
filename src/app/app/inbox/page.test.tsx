@@ -17,8 +17,9 @@ it('reads no directory phone numbers and passes no contacts', async () => {
   expect(fixture.inbox).toHaveBeenCalledWith(expect.objectContaining({ actorId: 'actor', timeZone: 'America/Puerto_Rico' }));
 });
 
-it.each(['OWNER', 'MANAGER'])('selects coverage-first presentation only for the actual %s session', async role => {
+// Round 5 (Nov 7, 2026): Owners and Managers see Things to do in the same order as Home's Needs you (coverage first).
+it.each(['OWNER', 'MANAGER'])('selects coverage-first presentation for the %s session, as Home does', async role => {
   fixture.role = role;
   renderToStaticMarkup(await InboxPage());
-  expect(fixture.inbox).toHaveBeenCalledWith(expect.objectContaining({coverageFirst: role === 'OWNER'}));
+  expect(fixture.inbox).toHaveBeenCalledWith(expect.objectContaining({coverageFirst: true}));
 });

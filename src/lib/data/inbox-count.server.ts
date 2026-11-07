@@ -1,5 +1,6 @@
 import 'server-only';
 import {readActionCenter} from '../action-center/service';
+import {workspaceNow} from '../action-center/inbox';
 import {needsYou} from '../action-center/needs-you';
 import {readToday} from './today.server';
 import {weekStartFor} from '../date-utils';
@@ -19,6 +20,6 @@ export async function readInboxCount(proof:SessionMutationProof,executor:SqlExec
     // Both private sources must still be live; never turn a partial read into zero.
     if(Date.parse(actions.observedAt)>Date.parse(today.observedAt)+today.validForMs)return {state:'unavailable'};
     await executor.transaction(managementSessionStatements(proof,proof.employee.id,[proof.employee.role]));
-    return {state:'ready',count:needsYou(actions.items,today.today,today.missed).count,observedAt:actions.observedAt};
+    return {state:'ready',count:needsYou(actions.items,today.today,today.missed,workspaceNow(actions.observedAt,today.timeZone)).count,observedAt:actions.observedAt};
   }catch{return {state:'unavailable'};}
 }
