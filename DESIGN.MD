@@ -1424,6 +1424,17 @@ Jose approved the "Owner desktop, Direction B" mock (50 pages at 1440px). Deskto
   white pill. Left as they are: the Schedule week grid's inner insets, the dense Timecards table (52px rows, underline tabs),
   document titles, which forms carry actions on the band vs in a footer, and the loading and paused states.
 
+### Owner and Manager: filled-data round (Nov 7, 2026)
+Checked with a rich fictional business (11 people, 2 locations, approvals, requests, payroll history) at 390, 320, 1440
+and 1280. Rules that came out of it: a person keeps one face tint on every screen (corporate avatars use BAvatar's tint);
+lateness is amber, never red; More and the pages it opens light Home on phones; an approved timecard offers Finalize only,
+live shifts read "Clocked in now"/"On break now", period totals are whole hours ("511 h") and rows "24 h 06"; the desktop
+timecard opens as a right-hand panel under the top bar (QuietSheet dialogs must never be put into the page flow); the
+Schedule grid is wide enough that shift times never truncate; Approve is always the teal pill and Decline the grey one;
+band tabs keep their count on one line; field groups are one white card; payroll pages wear the ink hero on phones too;
+owner-only pages (Payroll, Settings) show a Direction B notice to Managers. Never nest :has() inside :has() — browsers drop
+the whole rule.
+
 ## Employee phones: Direction B (Jose, Nov 6, 2026: "lets built it, lets make sure everything is exactly the same")
 
 Jose approved the "Employee mobile, Direction B" mock (25 phone pages, polished twice). Phones only (below 768px), Employee

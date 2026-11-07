@@ -106,7 +106,8 @@ function rowStatus(item:TimecardItem):{text:string;tone:RowTone}{
   if(item.state==='FINALIZED')return {text:'Finalized',tone:'done'};
   const reason=item.card.issues.find(issue=>issue!=='period_open');
   // Round 4: an open entry in a period that hasn't ended is someone still on the clock, not a missed clock-out.
-  if(reason==='open_entry'&&item.card.issues.includes('period_open')&&item.card.issues.every(issue=>issue==='open_entry'||issue==='period_open'))return {text:'Clocked in now',tone:'neutral'};
+  if(item.card.issues.includes('period_open')&&item.card.issues.includes('open_entry')&&item.card.issues.every(issue=>issue==='open_entry'||issue==='open_break'||issue==='period_open'))
+   return {text:item.card.issues.includes('open_break')?'On break now':'Clocked in now',tone:'neutral'};
   if(reason)return {text:reasonNames[reason]??issueNames[reason],tone:'review'};
   if(item.state==='APPROVED')return {text:'Ready to finalize',tone:'done'};
   if(needsReview(item))return item.card.issues.includes('period_open')?{text:'In progress',tone:'neutral'}:{text:'Ready to approve',tone:'review'};
