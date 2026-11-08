@@ -1,0 +1,3032 @@
+{
+  "baseline": "e2872f30ea8548b1310ea4a9b25813352decf82a",
+  "generatedFrom": "direct transport, shared executors, request/action/cache/worker/native entrypoints",
+  "entries": [
+    {
+      "path": "src/app/access-help/[[...topic]]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/account-deletion/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/activate/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/activate/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/activate/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkey/login/options/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkey/login/verify/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkey/register/options/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkey/register/verify/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkeys/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/passkeys/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/recovery/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/auth/reset-access/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/calendar/[token]/schedule.ics/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/photos/[photoId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/photos/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/pin/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/punch/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/review/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/[location]/setup/route.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/clocker/photos/review/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-access/employee-operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-access/invitation-operations/[operationId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-access/invitations/[employeeId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-access/operational-authority/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-access/operational-scopes/[employeeId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/company-policies/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/calendar-subscriptions/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/communications/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/communications/context/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/communications/operations/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/communications/preview/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/communications/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/creation/[mode]/[sourceId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/exchange/[requestId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/exchange/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/home/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/hours/[view]/[selection]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/messages/[view]/[selection]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/messages/open/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/my-time/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/notifications/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/planning/[view]/[selection]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/profile/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/requests/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/employee/time-corrections/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/internal/notifications/dispatch/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/internal/notifications/reminders/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/management/profile/alerts/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/management/profile/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/account-recovery/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/action-center/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/attendance/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/calendar-subscriptions/[employeeId]/revoke/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/clock-monitor/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/clocker-recovery/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/communications/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/communications/context/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/communications/operations/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/communications/preview/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/communications/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/finder/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/inbox-count/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/time-corrections/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/timecards/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/manager/today/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/challenge/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/complete/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/status/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/mobile/v1/session/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/notifications/read/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/notifications/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/owner/advisor/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/owner/clocker-recovery/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/documents/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/documents/[id]/view/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/native-profiles/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/portal-statements/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/receipts/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/runs/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/settings/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll/statements/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll-export/profiles/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/payroll-export/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/period-close/artifact/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/period-close/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/reports/export/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/reports/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/schedule-copy/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/timecards/route.ts",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/workspace-presentation/logo/[assetId]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/workspace-presentation/logo/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/workspace-presentation/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/api/workspaces/[locator]/session/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/@sheet/(.)exchange/callout/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/@sheet/(.)exchange/layout.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/@sheet/(.)exchange/swap/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/@sheet/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/[...missing]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/account/delete/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/account/delete/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/account-recovery/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/ai-manager/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/api/push/status/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/api/push/subscribe/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/api/push/test/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/app/app/api/push/unsubscribe/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/availability/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/availability/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/clocker-recovery/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employee-hours/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employee-planning/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/clocker-pin/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/clocker-pin/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/actions.ts",
+      "tags": [
+        "shared-executor",
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/new/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/employees/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/exchange/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/exchange/callout/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/exchange/callout/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/exchange/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/exchange/swap/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/help/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/inbox/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/layout.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/more/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/my-pay/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/my-time/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/notifications/open/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/notifications/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/fix/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/history/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/people/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/prepare/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll/review/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/payroll-export/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/profile/[document]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/profile/calendar/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/profile/device-alerts/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/profile/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/profile/passkeys/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/reports/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/requests/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/requests/hub/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/requests/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/acknowledge-actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/copy-receipt/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/coverage/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/edit/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/generation-actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/new/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/publish/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/publish/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/settings/actions.ts",
+      "tags": [
+        "shared-executor",
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/settings/page.tsx",
+      "tags": [
+        "shared-executor",
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/templates/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/schedule/templates/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/branding/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/breaks/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/breaks/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/review/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/review/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/clocker/pins/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/company-policies/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/features/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/layout.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/locations/[locationId]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/locations/new/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/locations/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/payroll/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/positions/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/settings/workspace/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/timecards/corrections/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/timecards/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/updates/[id]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/updates/compose/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/app/updates/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/clocker/[location]/manifest.webmanifest/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/clocker/[location]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/forgot-access/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/fuel-portal.webmanifest/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/login/actions.ts",
+      "tags": [
+        "server-action"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/login/layout.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/privacy/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/reset-access/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/support/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/terms/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/ui-preview/home/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/ui-preview/kit/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/ui-preview/signature/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/app/welcome/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/account-deletion/requests.server.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/action-center/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/invitations/claim.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/invitations/service.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/login-limits.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/login-limits.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/passkeys/service.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/portal-credential-session.postgres-fixture.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/recovery.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/auth/session.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor",
+        "cache"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/business-improvements/attendance-policy/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/business-improvements/company-policies/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/calendar/service.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/break-types.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/devices.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/photo-server/runtime.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/pin-identity.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/pin-operations.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/pins.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/punches.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/recovery-review.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/clocker/review-requests.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/communications/service.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/company-access/employee-profile.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/company-access/operational-read.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/company-access/operational-scope.server.ts",
+      "tags": [
+        "shared-executor",
+        "cache"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/acknowledgements.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/attendance-review.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/attendance-review.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/availability-inputs.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/availability-submissions.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/availability.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/callouts.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/clock-monitor.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/coverage-repair.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-attention-receipts.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-creation.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-exchange.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-home.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-hours-write.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-hours.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-message-destination.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-message-module.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-messages.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-notification-list.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-planning-write.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-planning.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-profile.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-published-assignments.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-requests.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-schedule.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-time.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employee-weekly-review.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/employees.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/exchanges.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/generation-exclusions.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/hour-fairness.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/inbox-count.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/locations.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/management-profile.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/manager-dashboard.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/notification-state.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/notification-transactions.test.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/data/notification-transactions.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/notifications.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/portal-notification-list.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/positions.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/publication-revisions.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/push-deliveries.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/push-subscriptions.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/requests.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedule-copy.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedule-generation-snapshot.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedule-generation.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedule-health.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedule-templates.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/schedules.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/shift-change-snapshot.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/shift-change-views.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/shift-changes.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/sql-executor.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/time-clock.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/today.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/week-settings.ts",
+      "tags": [
+        "direct-transport",
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/weekly-approved-absences.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/data/workspaces.ts",
+      "tags": [
+        "shared-executor",
+        "cache"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/db.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/native-push/enrollment.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/native-push/runtime.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/notifications/logout.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/notifications/subscription-service.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/notifications/worker.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/access.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/native/profiles.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/pay-calendar.server.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/schedule.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll/worker.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/payroll-export/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/period-close/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/reports/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/tenancy/executor.server.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/tenancy/executor.transport.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/capture.server.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/expand.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/guarded-backfill.server.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/journal-storage.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-journal-storage.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-key-comparators.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-ownership.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/validate.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/resolve.server.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/catalog-fence.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/control-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/employee-login-identity-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/executor-catalog-fence.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/original-runtime-login-installer.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-administrative-authority-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-authority-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-session-issuance-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-source-locks.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/role-guard-installers.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/role-guard.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/workspace-locator-storage.postgres.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/lib/time-corrections/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/timecards/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/workspace-presentation/current.server.tsx",
+      "tags": [
+        "cache"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/lib/workspace-presentation/service.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "src/test/integration/foundation.integration.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/test/integration/management-api.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/test/integration/owned-next-app.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/test/integration/self-service-api.ts",
+      "tags": [
+        "shared-executor"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "src/test/phase-e-runner.test.ts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "test or fictional fixture"
+    },
+    {
+      "path": "scripts/employee-mobile-closure-verification.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/fuel-notification-worker.ts",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/lib/premium-owned-runtime.mts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/nevora-navigation-ui-qa.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/payroll-exports-ui-qa.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/payroll-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/payroll-worker.ts",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/payroll-workflow-ui-qa.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-c-clocker-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-c-release-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-d-attendance-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-d-owned.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-d2-corrections-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-e-calendar-browser-scenarios.mjs",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-e-owned-startup.check.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/phase-e-owned.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/premium-release-postgres.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/release-mirror-custody-qa.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/release-postgres-cleanup.check.mjs",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/ui-checks/owned-preview-app-dev.mts",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "scripts/ui-checks/preview-runtime.mjs",
+      "tags": [
+        "direct-transport"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "functions/clocker-photo-cleanup.ts",
+      "tags": [
+        "direct-transport",
+        "non-request-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "native/ios/App/SessionProbe.swift",
+      "tags": [
+        "native-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "native/ios/Sources/NevoraShellCore/NativeRegistrationRequest.swift",
+      "tags": [
+        "native-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "native/ios/Tests/NevoraShellCoreTests/NativeTransportTests.swift",
+      "tags": [
+        "native-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    },
+    {
+      "path": "native/ios/UITests/NevoraUITests.swift",
+      "tags": [
+        "native-entrypoint"
+      ],
+      "status": "UNCONVERTED",
+      "reason": null
+    }
+  ]
+}
