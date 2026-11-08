@@ -11,6 +11,8 @@ Jira: [SCRUM-174](https://thevelani-team.atlassian.net/browse/SCRUM-174). Codex 
 
 Implementation commits: d3183f687 (runtime/account),92ab07740 (installed SDK current-account types),bf9573bfd (conditional Tax). No dependency or schema change.
 
+The fresh review identified two Important Tax gaps, fixed in one executor pass: paid Tax-disabled renewals cannot extend coverage and produce deduplicated operator exceptions; saved Checkout replay recovers uncertain sessions before validating the original price/classification again. Six added regressions pass; final owned commerce65/65, types/lint pass. [Review and dispositions](stripe-evidence-20261108/review.md) explain provider-side limits. The following earlier root/build checkpoint is historical until the patched candidate's final receipt supersedes it.
+
 ## Provider sandbox evidence
 
 See `stripe-evidence-20261108/sandbox-readiness.json` for IDs and bounded receipts. Payment URLs, API keys, client secrets and signing secrets are excluded.
@@ -28,11 +30,15 @@ RED/GREEN logs retained in this plan's `.superpowers/sdd/2026-11-08-stripe-runti
 
 The initial broader root run reported three unchanged5second timeouts and one dependent mock-state failure while another worktree's suite also ran. Both affected unchanged files pass82/82 in isolation with unchanged assertions/timeouts. Full rerun and source-custodied build results are recorded below when completed; do not infer them from targeted checks.
 
+Final verification: serialized full root rerun11165 passed/841 skipped/0 failed; no timeout/assertion changes. Clean source-pinned build47b5954d43738e19acc9dccf093c11e95bd89139 passes with sourceUnchanged=true;4438 artifact hashes retained in the external build receipt. Production artifact scan passes, development markers absent. Application files are unchanged from bf9573bfd through the build checkpoint; later commits update handoff evidence only. The fresh reviewer is read-only and does not certify hosted or independent release acceptance.
+
 These are distinct states: MCP OAuth authenticated; provider parameter acceptance verified; application code fixture-tested; hosted runtime not verified. The deployed isolated staging source remains81d3d1d07; this new Stripe code is local/detached and has not been deployed or pushed. Prior independent/UI release gates remain open.
 
 ## Hosted acceptance gates and next action
 
 - Securely configure a least-privilege sandbox runtime key in the dedicated staging secret store as `STRIPE_SECRET_KEY`, never in chat. MCP OAuth cannot be extracted or substituted. Required capabilities are in `services/commerce/README.md`; account-read capability must be tested with the actual key.
+
+  Secure entry: [Stripe API keys](https://dashboard.stripe.com/test/apikeys), select **Velani LLC sandbox** (acct_1UZZK1HT1nhEuOJ2), create a restricted sandbox key named NEVORA staging with only the runbook capabilities. Save it as a sensitive `STRIPE_SECRET_KEY` in [the dedicated staging project's environment settings](https://vercel.com/josekarlo-5933s-projects/nevora-onboarding-staging/settings/environment-variables), Preview only for this preparation. Do not paste it into chat, source, logs or a Shopify theme. Keep signup/mail/live-payment flags disabled. Native project/env connector lookups return404; the already authenticated, explicitly scoped Vercel CLI confirms the project ID/name/Node24 and reads environment metadata only. No runtime Stripe key/account/price variables were present when checked; only the explicit false live flag exists. No environment values were decrypted or pulled. Saving a key is not deployment or hosted verification.
 - Bind `STRIPE_ACCOUNT_ID=acct_1UZZK1HT1nhEuOJ2`, the two receipt price IDs, explicit staging environment and the correct endpoint signing secret. Never reuse a live key or another account's webhook secret. Do not enable public signup/mail/live payment flags merely because these variables exist.
 - Stripe must reach `POST /api/billing/webhooks/stripe` (standalone API: `/webhooks/stripe`). Current Vercel SSO blocks unauthenticated provider requests. Retain protection; no bypass key, share link, exception or policy change was made. Choose/review narrowly scoped signed-webhook ingress before endpoint activation. API version must match2026-10-28.endive; subscribe to used checkout completion/async-success, subscription and invoice events. Real signed delivery/replay/retry acceptance remains required.
 - Configure/verify private billing worker and reconciliation scheduling, protected application readiness and SMTP/provider onboarding dependencies. Then test the actual A/B Owner journey, trial subscription, verified invoice payment, failed renewal/recovery/cancellation and isolation with fictional data. Claude's finished screens and browser/mobile/accessibility acceptance are separate.

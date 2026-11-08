@@ -270,7 +270,7 @@ export class StripeBilling implements BillingPort {
       businessId = initial.metadata.nevora_business_id;
     if (!businessId || !/^[0-9a-f-]{36}$/i.test(businessId))
       throw Error("subscription_identity_mismatch");
-    await this.store.withBusinessLock(businessId, async (client, business) => {
+    const taxReviewRequired = await this.store.withBusinessLock(businessId, async (client, business) => {
       const subscription = await this.stripe.subscriptions.retrieve(id, {
         expand: ["latest_invoice"],
       });
@@ -321,6 +321,14 @@ export class StripeBilling implements BillingPort {
         status: "paid",
         limit: 100,
       });
+      const intent = (await client.query(
+        "SELECT operation,params_secret FROM commerce.checkout_intents WHERE business_id=$1 AND operation=$2",
+        [businessId, subscription.metadata.nevora_checkout_operation ?? ""],
+      )).rows[0];
+      const tax = intent ? readTaxTerms(JSON.parse(unseal(intent.params_secret, this.store.key, `intent:${businessId}:${intent.operation}`))) : undefined;
+      const taxIssues = new Set<string>();
+      if (tax && (!subscription.automatic_tax?.enabled || subscription.automatic_tax.disabled_reason))
+        taxIssues.add(`stripe_tax_subscription_review:${id.slice(0,100)}`);
       let matchingPaidThrough = 0;
       for (const invoice of invoices.data) {
         if (
@@ -329,6 +337,10 @@ export class StripeBilling implements BillingPort {
           invoice.currency !== "usd"
         )
           continue;
+        if (tax && (!invoice.automatic_tax?.enabled || invoice.automatic_tax.status !== "complete" || invoice.automatic_tax.disabled_reason)) {
+          taxIssues.add(`stripe_tax_invoice_review:${invoice.id.slice(0,100)}`);
+          continue;
+        }
         for (const line of invoice.lines.data)
           if (
             stripeObjectId(line.pricing?.price_details?.price) ===
@@ -381,7 +393,20 @@ export class StripeBilling implements BillingPort {
           confirmedPlan,
         ],
       );
+      for (const event of taxIssues) {
+        // Namespaced internal event receipts use the existing durable dedup table.
+        // The API principal can insert audit rows, but deliberately cannot read them.
+        const receipt = await client.query(
+          "INSERT INTO commerce.webhooks(id) VALUES($1) ON CONFLICT DO NOTHING RETURNING id",
+          [`tax-review:${businessId}:${event}`],
+        );
+        if (receipt.rowCount) await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,$2)", [businessId, event]);
+      }
+      return taxIssues.size > 0;
     });
+    // Commit the retained coverage and operator exception before retrying the job.
+    // A paid provider invoice is irreversible here; this gate does not undo a charge.
+    if (taxReviewRequired) throw new CommerceError("stripe_tax_review_required", 503);
   }
   async reconcile() {
     await this.verifyAccount();

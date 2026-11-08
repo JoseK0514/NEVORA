@@ -17,6 +17,7 @@ export type FixtureSubscription = {
   customer: string;
   status: string;
   metadata: Metadata;
+  automatic_tax: { enabled: boolean; disabled_reason: string | null };
   items: {
     data: {
       quantity: number;
@@ -43,6 +44,7 @@ type Session = {
     customer: string;
   };
   subscription: string | null;
+  automatic_tax: { enabled: boolean };
 };
 export class StripeFixture {
   readonly prices = new Map<string, Price>([
@@ -81,7 +83,7 @@ export class StripeFixture {
   readonly sessions = new Map<string, Session>();
   readonly payments = new Map<
     string,
-    { end: number; price: string; amount: number }[]
+    { end: number; price: string; amount: number; automatic_tax?: { enabled: boolean; status: string | null; disabled_reason: string | null } }[]
   >();
   readonly counts = new Map<string, number>();
   readonly unavailableSubscriptions = new Set<string>();
@@ -89,6 +91,7 @@ export class StripeFixture {
     [];
   readonly cache = new Map<string, { body: string; value: unknown }>();
   loseCheckoutResponse = false;
+  failCheckoutBeforeCreate = false;
   accountId = "acct_fictional";
   unavailableAccount = false;
   taxLocationValid = true;
@@ -138,6 +141,7 @@ export class StripeFixture {
       customer,
       status: trialEnd ? "trialing" : "active",
       metadata,
+      automatic_tax: { enabled: false, disabled_reason: null },
       items: {
         data: [
           {
@@ -157,15 +161,18 @@ export class StripeFixture {
     const session = this.sessions.get(id);
     if (!session) throw Error("missing_fixture_checkout");
     session.status = "complete";
-    if (session.mode === "subscription" && !session.subscription)
-      session.subscription = this.createSubscription(
+    if (session.mode === "subscription" && !session.subscription) {
+      const sub = this.createSubscription(
         session.customer,
         session.metadata.nevora_price,
         {
           nevora_business_id: session.metadata.nevora_business_id,
           nevora_checkout_operation: session.metadata.nevora_checkout_operation,
         },
-      ).id;
+      );
+      sub.automatic_tax.enabled = session.automatic_tax.enabled;
+      session.subscription = sub.id;
+    }
     return session;
   }
   markPaid(id: string, end = 1799236800) {
@@ -175,7 +182,7 @@ export class StripeFixture {
     const price = sub.items.data[0].price;
     this.payments.set(id, [
       ...(this.payments.get(id) ?? []),
-      { end, price: price.id, amount: price.unit_amount },
+      { end, price: price.id, amount: price.unit_amount, automatic_tax: { enabled: sub.automatic_tax.enabled, status: sub.automatic_tax.enabled ? "complete" : null, disabled_reason: sub.automatic_tax.disabled_reason } },
     ]);
   }
   private async fetch(
@@ -194,6 +201,10 @@ export class StripeFixture {
       form = new URLSearchParams(body),
       key = new Headers(init?.headers).get("idempotency-key");
     this.requests.push({ method, path: url.pathname, form });
+    if (url.pathname === "/v1/checkout/sessions" && method === "POST" && this.failCheckoutBeforeCreate) {
+      this.failCheckoutBeforeCreate = false;
+      throw Error("Simulated failure before provider checkout creation");
+    }
     if (method === "POST" && key && this.cache.has(key)) {
       const cached = this.cache.get(key)!;
       return cached.body === body
@@ -243,12 +254,14 @@ export class StripeFixture {
     else if (url.pathname === "/v1/subscriptions" && method === "POST") {
       if (form.get("automatic_tax[enabled]") === "true" && !this.taxLocationValid)
         return this.response({error:{type:"invalid_request_error",code:"customer_tax_location_invalid",message:"Fixture tax location missing"}},400);
-      value = this.createSubscription(
+      const created = this.createSubscription(
         form.get("customer")!,
         form.get("items[0][price]")!,
         this.metadata(form),
         Number(form.get("trial_end")) || undefined,
       );
+      created.automatic_tax.enabled = form.get("automatic_tax[enabled]") === "true";
+      value = created;
     }
     else if (url.pathname.startsWith("/v1/subscriptions/")) {
       const id = url.pathname.split("/").at(-1)!;
@@ -290,6 +303,7 @@ export class StripeFixture {
           customer,
         },
         subscription: null,
+        automatic_tax: { enabled: form.get("automatic_tax[enabled]") === "true" },
       };
       this.sessions.set(id, session);
       value = session;
@@ -306,6 +320,8 @@ export class StripeFixture {
             status: "paid",
             amount_paid: payment.amount,
             currency: "usd",
+            automatic_tax: payment.automatic_tax ?? { enabled: false, status: null, disabled_reason: null },
+            total_taxes: [],
             lines: {
               data: [
                 {

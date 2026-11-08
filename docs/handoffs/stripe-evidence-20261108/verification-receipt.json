@@ -1,0 +1,136 @@
+{
+  "applicationCommit": "bf9573bfdad19089825fa3a2585a7b8643cf79b9",
+  "buildCheckpoint": "47b5954d43738e19acc9dccf093c11e95bd89139",
+  "buildTree": "6d0222f9c39cfd0f56a816ec088906bb0213e830",
+  "buildSourceClean": true,
+  "buildSourceUnchanged": true,
+  "buildExit": 0,
+  "node": "v24.19.0",
+  "npm": "11.17.0",
+  "lockSha256": "4f01f09da2db940c48da6b09e51b220fa69a8d8caaf34e3a53493bbaabce4036",
+  "artifactsHashed": 4438,
+  "artifactDevelopmentMarkers": "absent",
+  "root": {
+    "numTotalTestSuites": 1244,
+    "numPassedTestSuites": 1244,
+    "numFailedTestSuites": 0,
+    "numPendingTestSuites": 0,
+    "numTotalTests": 12061,
+    "numPassedTests": 11165,
+    "numFailedTests": 0,
+    "numPendingTests": 841,
+    "numTodoTests": 0,
+    "success": true
+  },
+  "rootInvocation": "npm test -- --maxWorkers=1 --reporter=json --outputFile=<owned-evidence>/root-final.json",
+  "ownedCommerce": {
+    "passed": 59,
+    "failed": 0
+  },
+  "integratedOnboardingCommerce": {
+    "passed": 17,
+    "failed": 0
+  },
+  "typecheck": "pass",
+  "lint": "pass",
+  "initialRootRun": {
+    "failures": 4,
+    "causes": "3 unchanged 5-second timeouts and one mock-state cascade",
+    "isolatedUnchangedFilesPassed": 82,
+    "assertionsOrTimeoutsChanged": false
+  },
+  "hostedVerified": false,
+  "runtimeStripeKeyPresent": false,
+  "evidence": {
+    "runtime-red.log": {
+      "sha256": "79800428f46c139eeac054714a41242afba021c4576f1f3161b0b6685341a7bc",
+      "bytes": 3439,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/runtime-red.log"
+    },
+    "account-red.log": {
+      "sha256": "cd9487a169905f2bb82b390ecfc7c29c1d1b9a1c6211414458ee72e3681b2a1a",
+      "bytes": 8310,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/account-red.log"
+    },
+    "reconcile-red.log": {
+      "sha256": "81d389ce1b5c6cd5de47e2d55f38545fa28e6d07f8bbcc73d3b636125d928d54",
+      "bytes": 1529,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/reconcile-red.log"
+    },
+    "runtime-green.log": {
+      "sha256": "f0e43eb993cada1be268b87ab49590876082b38058d5b08480b08696b558cb22",
+      "bytes": 248,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/runtime-green.log"
+    },
+    "account-types-green.log": {
+      "sha256": "a42147b95b5bb08f408fafb4642e413d7ef8bb4cf5371e123e653bf1b173f895",
+      "bytes": 321,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/account-types-green.log"
+    },
+    "tax-red.log": {
+      "sha256": "9f5937b018a5f4815ebff3dbc82af2e2f03dce51ef50f885bbe91ae0e1db8233",
+      "bytes": 7416,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/tax-red.log"
+    },
+    "tax-green.log": {
+      "sha256": "72760df07208514e032174409173e988be2cc790d57721d3cd456a89d96ac018",
+      "bytes": 321,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/tax-green.log"
+    },
+    "task2-final.log": {
+      "sha256": "598b93ebffd722fe68c83ed5bbde30dcef48a71b74d60b72b85cbd6e7e9301bb",
+      "bytes": 332,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/task2-final.log"
+    },
+    "types-task2-fixed.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/types-task2-fixed.log"
+    },
+    "lint.log": {
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "bytes": 41,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/lint.log"
+    },
+    "root-tests.log": {
+      "sha256": "ff62c66aeb99da752cdfb1c5108ada719c042585ca25a686422fc8b0558458d0",
+      "bytes": 4000,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-tests.log"
+    },
+    "root-focused.log": {
+      "sha256": "7c97df5fcbf34835b48153e1d8a74625f60338cc1a0f9c30480be6287d4e584d",
+      "bytes": 214,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-focused.log"
+    },
+    "root-final.log": {
+      "sha256": "e2ee99e1e9acac9219bfe2061af529459064b8d60220625b0bceeb86d843e790",
+      "bytes": 325,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-final.log"
+    },
+    "root-final.json": {
+      "sha256": "beca638390da4843b1193816cde6cfc9600c79ad46e35bfcaf9def048fbb5559",
+      "bytes": 4437865,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-final.json"
+    },
+    "onboarding-commerce.log": {
+      "sha256": "15e92d230fd2fbe18379829931463cdd1242ae650d99aae35d151df2433f4c25",
+      "bytes": 2712,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/onboarding-commerce.log"
+    },
+    "build.log": {
+      "sha256": "88a8be898c7f97e168c85bf1eefdff14e5bc25f7cc766bd5618b912b8542d7d3",
+      "bytes": 7238,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/build.log"
+    },
+    "progress.md": {
+      "sha256": "86f7e32d2ce636e646ec01477a345f55347fc3656f600a659aecb5d2da840927",
+      "bytes": 1283,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/progress.md"
+    },
+    "stripe-runtime-tax-build-47b5954d4.json": {
+      "sha256": "fa917d989c36262047f83bbb66effdabc9f5d41b7f5003c4b8c7e52dd2ff828b",
+      "bytes": 3149663,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/stripe-runtime-tax-build-47b5954d4.json"
+    }
+  }
+}

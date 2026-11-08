@@ -6,7 +6,7 @@ import { CommerceStore, type Business } from "./store";
 import { CommerceError, planFor, type PlanKey } from "./model";
 import { seal, unseal } from "./security";
 import type { StripeTaxConfig } from "./stripe-config";
-import { assertTaxPrice, taxTerms } from "./stripe-tax";
+import { assertTaxPrice, readTaxTerms, taxTerms } from "./stripe-tax";
 import {
   assertOwnedSubscription,
   terminalSubscription,
@@ -251,6 +251,32 @@ export async function createCheckout(
         `intent:${business.id}:${intent.operation}`,
       ),
     ) as Stripe.Checkout.SessionCreateParams;
+    const tax = readTaxTerms(params);
+    if (tax) {
+      if (typeof params.customer !== "string") throw Error("checkout_identity_mismatch");
+      // Recover an uncertain earlier request before revalidating mutable catalog
+      // state. Revalidation must never replace a session already accepted by Stripe.
+      const sessions = await ports.stripe.checkout.sessions.list({
+        customer: params.customer,
+        created: { gte: Math.floor(intent.expires_at.getTime() / 1000) - 2760 },
+        limit: 100,
+      });
+      const matches = sessions.data.filter((s) => s.metadata?.nevora_business_id === business.id && s.metadata.nevora_checkout_operation === intent.operation);
+      if (sessions.has_more || matches.length > 1) throw Error("checkout_reconciliation_required");
+      if (matches[0]) {
+        if (!matches[0].url) throw new CommerceError("checkout_unavailable", 503);
+        await record(ports, client, intent, matches[0]);
+        return matches[0].url;
+      }
+      const savedPrice = typeof params.metadata === "object" ? params.metadata?.nevora_price : undefined;
+      if (savedPrice !== ports.prices[intent.plan_key]) throw new CommerceError("invalid_billing_price", 503);
+      const price = await ports.stripe.prices.retrieve(savedPrice);
+      if (!price.active || price.livemode !== ports.live || price.currency !== "usd" ||
+          price.unit_amount !== (intent.plan_key === "small" ? 1900 : 2900) ||
+          price.recurring?.interval !== "month" || price.recurring.interval_count !== 1)
+        throw new CommerceError("invalid_billing_price", 503);
+      await assertTaxPrice(ports.stripe, price, tax);
+    }
     const session = await ports.stripe.checkout.sessions.create(params, {
       idempotencyKey: `nevora-checkout:${business.id}:${intent.operation}`,
     });

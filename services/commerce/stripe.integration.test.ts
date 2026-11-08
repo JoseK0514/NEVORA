@@ -10,6 +10,7 @@ import { dropTestDatabase } from "./test-database";
 import { accessAt } from "./model";
 import { createCommerce } from "./service";
 import { digest } from "./security";
+import { commercePrincipalGrants } from "./principals";
 const enabled = Boolean(process.env.NEVORA_COMMERCE_TEST_URL),
   id = "11111111-1111-4111-8111-111111111111",
   now = Date.parse("2026-11-07T12:00:00Z"),
@@ -203,6 +204,85 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect(requests.every((r) => r.form.get("automatic_tax[enabled]") === "true")).toBe(true);
     expect(requests[0].form.toString()).toBe(requests[1].form.toString());
     expect(provider.subscriptions.size).toBe(1);
+  });
+  it("does not extend paid coverage from a Tax-disabled renewal and records an operator exception", async () => {
+    enableTax();
+    const { subscription } = await subscribed();
+    provider.markPaid(subscription.id, 1799236800); // A completed calculation can legitimately have zero Tax.
+    await billing.syncJob({ subscriptionId: subscription.id });
+    const paidThrough = (await store.business(id)).paidThrough;
+    expect(paidThrough).toBe(1799236800000);
+    subscription.automatic_tax = { enabled: false, disabled_reason: "requires_location_inputs" };
+    provider.markPaid(subscription.id, 1801915200);
+    await expect(billing.syncJob({ subscriptionId: subscription.id })).rejects.toThrow("stripe_tax_review_required");
+    expect((await store.business(id)).paidThrough).toBe(paidThrough);
+    const events = (await pool.query("SELECT event FROM commerce.audit WHERE business_id=$1 AND event LIKE 'stripe_tax_%'", [id])).rows;
+    expect(events.length).toBeGreaterThan(0);
+    await expect(billing.syncJob({ subscriptionId: subscription.id })).rejects.toThrow("stripe_tax_review_required");
+    expect((await store.business(id)).paidThrough).toBe(paidThrough);
+    expect((await pool.query("SELECT event FROM commerce.audit WHERE business_id=$1 AND event LIKE 'stripe_tax_%'", [id])).rows).toEqual(events);
+  });
+  it("rejects failed invoice Tax calculation even when the subscription still enables Tax", async () => {
+    enableTax();
+    const { subscription } = await subscribed();
+    provider.markPaid(subscription.id);
+    provider.payments.get(subscription.id)![0].automatic_tax!.status = "failed";
+    await expect(billing.syncJob({ subscriptionId: subscription.id })).rejects.toThrow("stripe_tax_review_required");
+    expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it("records a Tax exception using the existing restricted catalog API principal", async () => {
+    enableTax();
+    const { subscription } = await subscribed();
+    subscription.automatic_tax = { enabled: false, disabled_reason: "requires_location_inputs" };
+    provider.markPaid(subscription.id);
+    const suffix = randomUUID().replaceAll("-", "").slice(0, 24);
+    const api = `nv_commerce_api_${suffix}`, enrollment = `nv_commerce_enroll_${suffix}`;
+    await pool.query(`CREATE ROLE ${api} NOLOGIN; CREATE ROLE ${enrollment} NOLOGIN`);
+    for (const statement of commercePrincipalGrants(api, enrollment)) await pool.query(statement);
+    const url = new URL(process.env.NEVORA_COMMERCE_TEST_URL!); url.pathname = `/${name}`;
+    const restricted = new Pool({ connectionString: url.href, options: `-c role=${api}`, max: 1 });
+    try {
+      const scoped = new StripeBilling(new CommerceStore(restricted, store.key), provider.client, billing.options);
+      await expect(scoped.syncJob({ subscriptionId: subscription.id })).rejects.toThrow("stripe_tax_review_required");
+      expect((await pool.query("SELECT event FROM commerce.audit WHERE business_id=$1 AND event LIKE 'stripe_tax_%'", [id])).rows.length).toBeGreaterThan(0);
+    } finally {
+      await restricted.end();
+      await pool.query(`DROP OWNED BY ${api},${enrollment}; DROP ROLE ${api},${enrollment}`);
+    }
+  });
+  it("revalidates an encrypted immediate Checkout after failure before the first provider creation", async () => {
+    enableTax();
+    await pool.query("UPDATE commerce.businesses SET trial_ends_at=$2 WHERE id=$1", [id, new Date(now - 1)]);
+    const operation = randomUUID();
+    provider.failCheckoutBeforeCreate = true;
+    await expect(checkout(id, operation)).rejects.toThrow();
+    expect(provider.sessions.size).toBe(0);
+    provider.products.get("prod_nevora")!.tax_code = "txcd_10000000";
+    await expect(checkout(id, operation)).rejects.toThrow("stripe_tax_price_mismatch");
+    expect(provider.sessions.size).toBe(0);
+    expect(provider.requests.filter((r) => r.path === "/v1/checkout/sessions" && r.method === "POST")).toHaveLength(1);
+  });
+  it("recovers an already-created Tax checkout after a lost response without another creation POST", async () => {
+    enableTax();
+    provider.loseCheckoutResponse = true;
+    const operation = randomUUID();
+    await expect(checkout(id, operation)).rejects.toThrow();
+    provider.products.get("prod_nevora")!.tax_code = "txcd_10000000";
+    await expect(billing.checkout(await store.business(id), operation)).resolves.toContain("checkout.stripe.com");
+    expect(provider.sessions.size).toBe(1);
+    expect(provider.requests.filter((r) => r.path === "/v1/checkout/sessions" && r.method === "POST")).toHaveLength(1);
+  });
+  it("does not validate a different configured price in place of the original saved Tax price", async () => {
+    enableTax();
+    const operation = randomUUID();
+    provider.failCheckoutBeforeCreate = true;
+    await expect(checkout(id, operation)).rejects.toThrow();
+    provider.products.set("prod_alternate", { id: "prod_alternate", object: "product", tax_code: "txcd_10103000" });
+    provider.prices.set("price_alternate", { ...provider.prices.get("price_small")!, id: "price_alternate", product: "prod_alternate" });
+    billing.options.prices.small = "price_alternate";
+    provider.products.get("prod_nevora")!.tax_code = "txcd_10000000";
+    await expect(checkout(id, operation)).rejects.toThrow("invalid_billing_price");
+    expect(provider.sessions.size).toBe(0);
   });
   it("restores the same owner after a hosted redirect without treating return as payment", async () => {
     await checkout();
