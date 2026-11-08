@@ -1,0 +1,47 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdtemp,cp,rm} from 'node:fs/promises';
+import {resolve,join,isAbsolute} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {tmpdir} from 'node:os';
+import {createHash} from 'node:crypto';
+
+const args=process.argv.slice(2),allowDirty=args.includes('--allow-dirty'),paths=args.filter(x=>x!=='--allow-dirty');
+assert.equal(paths.length,1,'Supply the owned bundle directory');
+const output=resolve(paths[0]),receipt=JSON.parse(await readFile(join(output,'receipt.json'),'utf8'));
+assert.equal(receipt.sourceUnchanged,true);
+if(!allowDirty)assert.equal(receipt.deployable,true,'Only clean source bundles are deployable');
+// This child process never inherits an application capability for artifact checks.
+for(const key of Object.keys(process.env))if(/^(NEVORA_|STRIPE_|DATABASE_URL)/.test(key))delete process.env[key];
+Object.assign(process.env,{NEVORA_NEON_HOST_ENABLED:'false',NEVORA_NEON_BRANCH_ID:'br-owned-local',NEON_BRANCH_ID:'br-owned-local',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:'postgresql://disabled.invalid/disabled',DATABASE_URL_UNPOOLED:'postgresql://disabled.invalid/disabled'});
+const expected=['stripewebhook','commercequeue','commercereconcile','provisioner'];
+assert.deepEqual(receipt.artifacts.map(x=>x.slug),expected);
+let verifiedFiles=0;
+for(const artifact of receipt.artifacts){
+ const dir=join(output,artifact.slug),archive=await readFile(join(output,artifact.slug+'.zip'));
+ assert.equal(createHash('sha256').update(archive).digest('hex'),artifact.zipSha256);
+ for(const file of artifact.files){
+  assert(!isAbsolute(file.path)&&!file.path.split(/[\\/]/).includes('..'),'Unsafe artifact path');
+  assert.equal(createHash('sha256').update(await readFile(join(dir,file.path))).digest('hex'),file.sha256);verifiedFiles++;
+ }
+ const artifactModule=await import(pathToFileURL(join(dir,'index.mjs')).href);
+ const h=artifactModule.default.fetch;
+ assert.equal((await h(new Request('https://owned.invalid/other'))).status,404);
+ if(artifact.slug==='stripewebhook')assert.equal((await h(new Request('https://owned.invalid/webhooks/stripe',{method:'POST'}))).status,503);
+ else{
+  assert.equal((await h(new Request('https://owned.invalid/run',{method:'POST'}))).status,401);
+  const envelope={version:1,invocation_id:'owned-fixture',trigger:{type:'schedule',id:'trigger-owned',name:'nevora-staging-'+artifact.slug},data:{scheduled_at:'2026-11-08T12:00:00Z'}};
+  const accepted=await h(new Request('https://owned.invalid/run',{method:'POST',headers:{'x-neon-trigger-invocation-id':'owned-fixture'},body:JSON.stringify(envelope)}));
+  assert.equal(accepted.status,200);assert.deepEqual(await accepted.json(),{state:'disabled'});
+ }
+ if(artifact.slug==='provisioner'){
+  const manifest=await artifactModule.verifyProvisionerBundle();assert(manifest.files>0);
+  const owned=await mkdtemp(join(tmpdir(),'nv-neon-bundle-probe-'));
+  try{
+   const copied=join(owned,'provisioner');await cp(dir,copied,{recursive:true});
+   const modified=join(copied,'db/migrations/0001_initial.sql');await writeFile(modified,(await readFile(modified,'utf8'))+'\n-- owned fixture modification\n');
+   const tampered=await import(pathToFileURL(join(copied,'index.mjs')).href);
+   await assert.rejects(tampered.verifyProvisionerBundle(),/provisioner_source_manifest_mismatch/);
+  }finally{await rm(owned,{recursive:true,force:true});}
+ }
+}
+console.log(JSON.stringify({state:'passed',source:receipt.source,verifiedFiles,functions:expected,canonicalSqlTamperingRejected:true,localTriggerSimulationOnly:true}));

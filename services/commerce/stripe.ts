@@ -9,6 +9,7 @@ import { createCheckout, recoverCheckouts } from "./checkout";
 import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
 import { unseal } from "./security";
+import {parseStripeWebhook,enqueueStripeWebhook} from "./stripe-webhook";
 import {
   applyInstallationCapacity,
   readInstallationHeadcount,
@@ -91,49 +92,7 @@ export class StripeBilling implements BillingPort {
     });
   }
   async webhook(raw: string, signature: string) {
-    let event: Stripe.Event;
-    try {
-      event = this.stripe.webhooks.constructEvent(
-        raw,
-        signature,
-        this.options.webhookSecret,
-      );
-    } catch {
-      throw new CommerceError("invalid_signature");
-    }
-    if (event.livemode !== this.options.live)
-      throw new CommerceError("mode_mismatch");
-    const object = event.data.object as unknown as Record<string, unknown>;
-    if (
-      event.type === "checkout.session.completed" ||
-      event.type === "checkout.session.async_payment_succeeded"
-    ) {
-      const id = stripeObjectId(object);
-      if (!id) return;
-      await this.store.transaction(async (client) => {
-        const r = await client.query(
-          "INSERT INTO commerce.webhooks(id) VALUES($1) ON CONFLICT DO NOTHING RETURNING id",
-          [event.id],
-        );
-        if (r.rowCount)
-          await this.store.enqueue(client, "stripe", `stripe:${event.id}`, {
-            sessionId: id,
-          });
-      });
-      return;
-    }
-    let subscriptionId: string | null = null;
-    if (event.type.startsWith("customer.subscription."))
-      subscriptionId = stripeObjectId(object);
-    else if (event.type.startsWith("invoice.")) {
-      const parent = object.parent as
-        | { subscription_details?: { subscription?: unknown } }
-        | undefined;
-      subscriptionId = stripeObjectId(
-        parent?.subscription_details?.subscription,
-      );
-    }
-    if (subscriptionId) await this.store.webhook(event.id, subscriptionId);
+    await enqueueStripeWebhook(this.store,parseStripeWebhook(raw,signature,this.options.webhookSecret,this.options.live));
   }
   async syncJob(payload: Record<string, string>) {
     await this.verifyAccount();
