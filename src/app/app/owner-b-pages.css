@@ -529,3 +529,10 @@
   /* Round 5 (Nov 8): Time corrections' count chip follows its title, as on every other card header. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-header:not(.sr-only) { display: flex !important; justify-content: flex-start !important; align-items: center !important; gap: 8px !important; }
 }
+
+/* Nov 8, 2026: on phones a payroll's totals sit on the card's 18px text edge, like the People row under them and every other
+ * row on the page (they kept the corporate 16px, so People read 2px further in). */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__totals:not(#ob-none) { padding-left: 18px !important; padding-right: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-pay .c-pay__totals > .c-pay__net:not(#ob-none) { margin-left: -18px !important; margin-right: -18px !important; padding-left: 18px !important; padding-right: 18px !important; }
+}

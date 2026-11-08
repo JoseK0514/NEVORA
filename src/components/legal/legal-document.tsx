@@ -63,6 +63,7 @@ export function LegalDocumentPage({ doc, action }: { doc: PolicyDocument; action
   );
 }
 
+const TOC_TITLE: Partial<Record<PolicyDocument["slug"], string>> = { privacy: "In this policy", terms: "In these terms" };
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 export const shortTitle = (doc: PolicyDocument) => doc.slug === "account-deletion" ? "Account deletion" : doc.title;
 
@@ -78,12 +79,16 @@ export function QuietLegalDocumentPage({ doc, action }: { doc: PolicyDocument; a
         <QuietNav back={{ href: "/login", label: "Sign in" }} />
         <QuietHeader title={doc.title} sub={sub} titleId="legal-title" />
         <p className="q-sr">{doc.summary}</p>
+        {/* Desktop (auth-b.css, 1024px and wider): the sections as a contents list on the left; a link opens its section where
+          * it reads (the browser opens a closed disclosure for the address it jumps to). Phones and tablets don't show it. */}
+        {doc.sections.length > 1 ? <nav className="q-doc__toc" aria-labelledby="legal-toc-title"><h2 id="legal-toc-title">{TOC_TITLE[doc.slug] ?? "On this page"}</h2>
+          <ul>{doc.sections.map(section => <li key={section.heading}><a href={`#legal-${slug(section.heading)}-text`}>{section.heading}</a></li>)}</ul></nav> : null}
         {action ? <div className="q-doc__action">{action}</div> : null}
         <ul className="q-list q-doc__list" aria-labelledby="legal-title">
           {doc.sections.map(section => <li key={section.heading}>
             <details className="q-details" id={`legal-${slug(section.heading)}`}>
               <summary className="q-row q-row--one"><span className="q-rt"><b>{section.heading}</b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
-              <div className="q-doc__body">{section.blocks.map((block, index) => <BlockView key={index} block={block} />)}</div>
+              <div className="q-doc__body" id={`legal-${slug(section.heading)}-text`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} />)}</div>
             </details>
           </li>)}
           {doc.slug === "privacy" ? <li><a className="q-row q-row--one" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>Questions</b></span><span className="q-rv">{SUPPORT_EMAIL}</span></a></li> : null}

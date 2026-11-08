@@ -1529,5 +1529,10 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   its card and the Clocker hint. Errors are red, notices green. Forms, actions, messages, redirects and copy are unchanged;
   the Clocker's routes and styles are untouched. Not built yet: the shared error screen (it also serves the app), the
   mobile-access variant (off in production) and the error line inside the card as the mock draws it.
+  Nov 8, 2026 (small round): on a desktop the policy pages (Privacy, Terms, Account deletion) list their sections on the
+  left as a sticky contents card beside the reading card (a link jumps to its section and opens it); Support, with no
+  sections, keeps one card; phones and tablets are unchanged. Owner payroll's Fix page says "Nothing stops this payroll"
+  in the Owner empty-state card (on the card's text edge, not centred), and on phones a payroll's totals sit on the
+  18px text edge like the People row and every other row.
 - **Clocker.** Unchanged: the approved Release 1 tablet design stays as is.
 

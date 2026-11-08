@@ -153,3 +153,23 @@
 }
 /* An alert at the top of the form card lines up with its fields. */
 :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth .q-auth__form > .q-auth__alert { margin: 0 20px 18px !important; }
+
+/* Policy pages on a desktop (Nov 8, 2026): the sections as a sticky contents list on the left, the reading card on the
+ * right, as in the mock and the in-app Employee Privacy and Terms. Phones and tablets don't show the list. */
+:is(#q-root, html) .q-doc .q-doc__toc { display: none; }
+@media (min-width: 1024px) {
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col:has(> .q-doc__toc):not(#ab-none) { display: grid !important; grid-template-columns: 280px minmax(0, 1fr) !important; column-gap: 20px !important; align-items: start !important; max-width: 1104px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col:has(> .q-doc__toc) > *:not(#ab-none) { grid-column: 2 !important; min-width: 0; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col:has(> .q-doc__toc) > :is(.q-nav, .q-hd):not(#ab-none):not(#ab-none2) { grid-column: 1 / -1 !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col > .q-doc__toc:not(#ab-none):not(#ab-none2) { display: block !important; grid-column: 1 !important; grid-row: 3 / span 6 !important; margin-top: 16px !important; position: sticky; top: 24px; z-index: 1;
+    overflow: hidden; border-radius: 22px; background: #FFFFFF; box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
+  /* Account deletion: its action stays across the top under the title; the list and the card start together below it. */
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col:has(> .q-doc__toc) > .q-doc__action:not(#ab-none):not(#ab-none2) { grid-column: 1 / -1 !important; justify-self: start; margin: 0 0 28px !important; }
+  :is(#q-root, html) :is(#q-root, body) main.q-page.q-auth.q-auth.q-doc > .q-auth__col:has(> .q-doc__action) > .q-doc__toc:not(#ab-none):not(#ab-none2):not(#ab-none3) { grid-row: 4 / span 6 !important; }
+  :is(#q-root, html) .q-doc .q-doc__toc h2 { margin: 0; padding: 18px 22px 6px; font: 700 17px/22px Inter, "Inter Fallback", sans-serif; letter-spacing: -.01em; color: #111517; }
+  :is(#q-root, html) .q-doc .q-doc__toc ul { margin: 0; padding: 4px 10px 12px; list-style: none; }
+  :is(#q-root, html) .q-doc .q-doc__toc a { display: block; padding: 9px 12px; border-radius: 10px; font-size: 14.5px; line-height: 20px; font-weight: 500; color: #3F464B; text-decoration: none; }
+  :is(#q-root, html) .q-doc .q-doc__toc a:hover { background: #F2F5F4; }
+  :is(#q-root, html) .q-doc .q-doc__toc a:focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; }
+  :is(#q-root, html) .q-doc .q-doc__body:target { scroll-margin-top: 24px; }
+}

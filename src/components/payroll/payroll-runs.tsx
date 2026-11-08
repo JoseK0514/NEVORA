@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpEmpty, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 import './payroll-home-corp.css';
 import './payroll-corp.css';
 import type { OpenPayPeriod } from '@/lib/payroll/pay-calendar.server';
@@ -455,7 +455,8 @@ function FixList({ run, capabilities, names, operation }: { run: PayrollRun; cap
     </CorpCard>;
   });
   return <>
-    {cards.length ? cards : <EmptyCard title="Nothing stops this payroll" />}
+    {/* Nov 8: the Owner empty-state card (title on the card's text edge), as on the other Owner pages. */}
+    {cards.length ? cards : <CorpEmpty title="Nothing stops this payroll" label="Payroll" />}
     {cards.length ? <p className="c-note">{cards.length === 1 ? 'Payroll can be approved once this is fixed.' : cards.length === 2 ? 'Payroll can be approved once both are fixed.' : 'Payroll can be approved once these are fixed.'}{native ? ' Then recalculate the draft.' : ''}</p> : null}
     {native ? <CorpButton kind="secondary" full disabled={locked || !capabilities.canReview} onClick={() => void operation.submit({ action: 'RECALCULATE', runId: run.id, expectedRevision: run.revision })}>Recalculate draft</CorpButton> : null}
   </>;
