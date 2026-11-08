@@ -9,6 +9,7 @@ CREATE TABLE commerce.businesses (
  trial_started_at timestamptz, trial_ends_at timestamptz,
  stripe_customer_id text UNIQUE, stripe_subscription_id text UNIQUE, subscription_status text,
  paid_through timestamptz, past_due_since timestamptz, plan_key text CHECK(plan_key IN ('small','team')),
+ checkout_id text, checkout_url text, checkout_expires_at timestamptz,
  sync_at timestamptz, employee_count integer NOT NULL CHECK(employee_count BETWEEN 1 AND 30),
  CHECK((trial_started_at IS NULL)=(trial_ends_at IS NULL))
 );
@@ -31,9 +32,5 @@ CREATE TABLE commerce.jobs (
 CREATE INDEX commerce_jobs_due ON commerce.jobs(available_at) WHERE state <> 'done';
 CREATE TABLE commerce.webhooks (id text PRIMARY KEY, received_at timestamptz NOT NULL DEFAULT clock_timestamp());
 CREATE TABLE commerce.rate_limits (key text PRIMARY KEY, count integer NOT NULL, expires_at timestamptz NOT NULL);
-CREATE TABLE commerce.operations (
- business_id uuid NOT NULL REFERENCES commerce.businesses(id), key text NOT NULL, fingerprint text NOT NULL,
- result jsonb, PRIMARY KEY(business_id,key)
-);
 CREATE TABLE commerce.audit (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, business_id uuid REFERENCES commerce.businesses(id), event text NOT NULL, created_at timestamptz NOT NULL DEFAULT clock_timestamp());
 COMMIT;

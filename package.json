@@ -40,7 +40,11 @@
     "test:passkeys:owned": "node scripts/payroll-postgres.mjs vitest.passkeys-integration.config.mts",
     "test:passkeys:network": "node scripts/payroll-postgres.mjs vitest.passkeys-network.config.mts",
     "test:ui:combined": "node scripts/payroll-postgres.mjs vitest.all-ui-browser.config.mts",
-    "test:mobile-access:owned": "node scripts/payroll-postgres.mjs vitest.mobile-access-browser.config.mts"
+    "test:mobile-access:owned": "node scripts/payroll-postgres.mjs vitest.mobile-access-browser.config.mts",
+    "commerce:api": "node --import tsx services/commerce/server.ts",
+    "commerce:worker": "node --import tsx services/commerce/worker-cli.ts",
+    "commerce:operator": "node --import tsx services/commerce/operator.ts",
+    "test:commerce:owned": "node scripts/commerce-postgres.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
@@ -56,7 +60,9 @@
     "react-dom": "19.3.0",
     "sharp": "0.35.5",
     "stripe": "23.1.0",
-    "web-push": "3.6.7"
+    "web-push": "3.6.7",
+    "pg": "8.23.1",
+    "tsx": "4.23.15"
   },
   "devDependencies": {
     "@nevora/eslint-config-next": "file:tools/eslint-config-next",
@@ -67,8 +73,6 @@
     "@types/react-dom": "^19.0.0",
     "@types/web-push": "3.6.4",
     "eslint": "^9.0.0",
-    "pg": "8.23.1",
-    "tsx": "4.23.15",
     "typescript": "^5.9.0",
     "vitest": "5.0.5"
   }
