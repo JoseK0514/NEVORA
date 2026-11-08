@@ -63,8 +63,8 @@ export async function onboardingCommandReceipt(proof:SessionMutationProof,bindin
 }
 /** Decorates only the selected canonical MUTATION transaction. Preflight reads
  * pass through untouched. Prefix/suffix are removed from domain result indices. */
-export function onboardingMutationExecutor(input:{proof:SessionMutationProof;binding:WorkspaceBinding;operationId:string;expectedVersion:string;kind:string;hash:string;matches:(s:readonly SqlStatement[])=>boolean},ex:SqlExecutor){
- const id=workspaceBindingFacts(input.binding).record.id;let commits=0;
+export function onboardingMutationExecutor(input:{proof:SessionMutationProof;binding:WorkspaceBinding;operationId:string;expectedVersion:string;kind:string;hash:string;subjectId?:string;matches:(s:readonly SqlStatement[])=>boolean},ex:SqlExecutor){
+ const id=workspaceBindingFacts(input.binding).record.id;let commits=0;let failureReason:string|null=null;
  const executor:SqlExecutor={query:(s,signal)=>ex.query(s,signal),async transaction(statements,signal){
   if(!input.matches(statements))return ex.transaction(statements,signal);
   if(commits)throw Error('onboarding_multiple_mutations');
@@ -73,10 +73,11 @@ export function onboardingMutationExecutor(input:{proof:SessionMutationProof;bin
    check('NOT EXISTS(SELECT 1 FROM onboarding_commands WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3)',[id,input.proof.employee.id,input.operationId],'onboarding_command_replay')];
   const suffix:SqlStatement[]=[...managementSessionStatements(input.proof,input.proof.employee.id,['OWNER']),
    {text:'UPDATE onboarding_progress SET version=version+1,updated_at=clock_timestamp() WHERE workspace_id=$1',values:[id]},
-   {text:`INSERT INTO onboarding_commands(workspace_id,actor_employee_id,operation_id,command_kind,command_hash,resulting_version,result) SELECT $1,$2,$3,$4,$5,p.version,jsonb_build_object('operationId',$3::uuid::text,'commandKind',$4::text,'committedAt',clock_timestamp()::text,'resultingVersion',p.version::text) FROM onboarding_progress p WHERE p.workspace_id=$1`,values:[id,input.proof.employee.id,input.operationId,input.kind,input.hash]}];
-  const result=await ex.transaction([...prefix,...statements,...suffix],signal);commits++;return result.slice(prefix.length,prefix.length+statements.length);
+   {text:`INSERT INTO onboarding_commands(workspace_id,actor_employee_id,operation_id,command_kind,command_hash,resulting_version,result) SELECT $1,$2,$3,$4,$5,p.version,jsonb_strip_nulls(jsonb_build_object('operationId',$3::uuid::text,'commandKind',$4::text,'committedAt',clock_timestamp()::text,'resultingVersion',p.version::text,'subjectId',$6::text)) FROM onboarding_progress p WHERE p.workspace_id=$1`,values:[id,input.proof.employee.id,input.operationId,input.kind,input.hash,input.subjectId??null]}];
+  try{const result=await ex.transaction([...prefix,...statements,...suffix],signal);commits++;return result.slice(prefix.length,prefix.length+statements.length);}
+  catch(error){if(error instanceof Error&&error.message.includes('onboarding_version_changed'))failureReason='version_changed';throw error;}
  }};
- return {executor,commits:()=>commits};
+ return {executor,commits:()=>commits,failureReason:()=>failureReason};
 }
 export async function saveOnboardingStep(proof:SessionMutationProof,binding:WorkspaceBinding,stepId:string,value:unknown,ex:SqlExecutor=getWorkspaceDb(binding)):Promise<OnboardingResult>{
  const command=parseSetupCommand(stepId,value);if(!command)return {state:'invalid',fieldErrors:[{field:stepId,code:'INVALID_COMMAND'}]};

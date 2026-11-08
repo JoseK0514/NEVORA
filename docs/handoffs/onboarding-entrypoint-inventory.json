@@ -933,6 +933,15 @@
       "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
+      "path": "src/app/api/onboarding/people/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Registered ACTIVE host and current Owner session, closed versioned body and bounded JSON; explicit invitation action remains separate.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
       "path": "src/app/api/onboarding/registrations/route.ts",
       "tags": [
         "request-entrypoint"
@@ -3100,6 +3109,15 @@
       ],
       "status": "CONVERTED",
       "reason": "Exact registered ACTIVE host and actual session; signup kill switch independent; current Owner enforced inside every service transaction.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/lib/onboarding/people.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current Owner plus canonical createEmployeeWithAccess validation and receipt recovery; actual profile/eligibility/qualification/scope and onboarding receipt commit atomically. No mail delivery.",
       "isolatedBehavior": "BOUND_ORIGIN"
     },
     {

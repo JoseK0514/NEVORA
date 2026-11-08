@@ -35,7 +35,7 @@ function parseUpdate(value:unknown):EmployeeCoreAccessCommand|null {
  if(!object(t,['expectedScopeRevision','expectedRoleGeneration','scope'])||!revision(t.expectedScopeRevision)||!generation(t.expectedRoleGeneration))return null;
  const scope=parseScopeSelection(t.scope);return scope?{...base,managerTransitionScope:{expectedScopeRevision:t.expectedScopeRevision,expectedRoleGeneration:t.expectedRoleGeneration,scope}}:null;
 }
-function parseCreate(value:unknown):CreateEmployeeWithAccessCommand|null {
+export function parseCreateEmployeeWithAccessCommand(value:unknown):CreateEmployeeWithAccessCommand|null {
  if(!object(value,['operationId','employee'],['initialManagerScope'])||!uuid(value.operationId))return null;
  const e=value.employee;
  if(!object(e,['id','firstName','lastName','phone','email','role','primaryLocationId','eligibleLocationIds','positionIds'])||!text(e.id,128))return null;
@@ -149,7 +149,7 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
  * receipt atomically. Account credentials/invitation delivery are separate flows;
  * retry this command with the same operation ID to resolve an uncertain outcome. */
 export async function createEmployeeWithAccess(proof:SessionMutationProof,value:CreateEmployeeWithAccessCommand,ex:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeCoreAccessResult> {
- const c=parseCreate(value);if(!c)return invalid('employee','Complete all required employee details.');
+ const c=parseCreateEmployeeWithAccessCommand(value);if(!c)return invalid('employee','Complete all required employee details.');
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');let attempted=false;
  try {
   const prior=await lookup(proof,c.operationId,ex);if(prior)return replay(prior,hash);
