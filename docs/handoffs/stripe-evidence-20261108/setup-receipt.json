@@ -23,9 +23,15 @@
       "claudeModified": false
     },
     "3_planner": {
-      "status": "not_called",
+      "status": "not_called_pending_verified_sandbox_context",
       "tool": "stripe_implementation_planner",
-      "reason": "Official Stripe chat plugin available, not confirmed installed/connected; exact tool absent from current inventory"
+      "advertised": true,
+      "chatPluginInstalled": true,
+      "chatPluginStatus": "ENABLED",
+      "userReportsAuthorizationComplete": true,
+      "sandboxAuthorizationVerified": false,
+      "reason": "list_available_accounts_or_orgs and manage_stripe_accounts fail MCP -32001 Unknown tool; documentation search works",
+      "accountContextInvented": false
     },
     "4_build": {
       "status": "pending_planner_and_secure_sandbox_credentials",

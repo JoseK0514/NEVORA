@@ -14,8 +14,8 @@ This request resumes Stripe planning/setup; the earlier protected Safari runtime
 |---|---|
 | `npm install -g @stripe/cli` | Completed; `stripe version` verifies1.55.8. The npm log has a script-policy warning, but the installed CLI executes successfully; no script policy was broadened. |
 | `stripe agent setup` | Completed:1 installed,0 errors. Codex CLI plugin `stripe@openai-curated`, marketplace version82fd64bc, user scope; vendor manifest1.0.0. Claude plugin was not installed/modified. |
-| Desktop/chat Stripe plugin | Official plugin discovery reports available, not installed here. It was offered for installation/connection; a connected sandbox is not confirmed. A CLI plugin and an authenticated chat connector are distinct states. |
-| `stripe_implementation_planner` | Not available in this chat's tool inventory and **not called**. Preserve that requirement; do not present a manual document as its output. |
+| Desktop/chat Stripe plugin | Official plugin discovery now confirms installed/ENABLED; Jose reports authorization completed. Documentation search succeeds. Account discovery/management return MCP -32001 Unknown tool; a sandbox/account context is not verified. A CLI plugin, installed chat plugin and authenticated account access are distinct states. |
+| `stripe_implementation_planner` | Now advertised in this chat's tool inventory but **not called**: its required stripe_context/livemode must come from account discovery, which fails. Do not invent the account context or present a manual document as planner output. |
 | API-key readiness | No `STRIPE_*` process key names or API-key fields in the CLI config were observed. No secret values were printed or copied. MCP OAuth access and application runtime keys are separate configuration steps. |
 
 Setup evidence is retained locally at `.omo/evidence/stripe-velani/2026-11-08/`: CLI install/version, agent setup status and `planner-input.json` with the exact business context and source inventory. `stripe agent setup --status --json` is read-only; do not rerun an unscoped setup that might change another client.
@@ -47,6 +47,10 @@ Read-only Velani candidate: `/Users/josek0514/Documents/Codex/2026-11-04/https-w
 
 ## Resume
 
-Once the official Stripe plugin is connected to an explicitly selected sandbox and the planner tool is available, pass the retained business context and both scopes, save the exact planner output, then write one implementation plan with concrete tests and compare it with this inventory. The planner/tool and runtime credentials remain required; no application change or new integration test is claimed by this packet.
+Once official account discovery returns a verified sandbox stripe_context/livemode, pass the retained business context and both scopes to the advertised planner, save the exact planner output, then write one implementation plan with concrete tests and compare it with this inventory. The planner/tool and runtime credentials remain required; no application change or new integration test is claimed by this packet.
 
 Official references: [agent setup](https://docs.stripe.com/cli/agent/setup), [Stripe MCP and planner](https://docs.stripe.com/mcp), [Checkout](https://docs.stripe.com/payments/checkout), [Invoicing](https://docs.stripe.com/invoicing/integration), [Tax setup](https://docs.stripe.com/tax/set-up), [Tax in Checkout](https://docs.stripe.com/tax/checkout/page), [Tax in invoices](https://docs.stripe.com/tax/invoicing), [key handling](https://docs.stripe.com/keys-best-practices).
+
+## Connector diagnostic after reported authorization
+
+Jose reported the Stripe setup completed. Fresh official plugin metadata confirms installed/ENABLED. `search_stripe_documentation` works, while `list_available_accounts_or_orgs` and `manage_stripe_accounts` return `MCP -32001: Unknown tool`. This establishes a partial tool-availability failure; it does not establish invalid credentials, failed authorization or its underlying cause. No more reconnect/key requests were made. The error is in the assistant's tool response, not a message the user should find in Stripe. Account-bound API/planner operations remain unexecuted until a real sandbox context can be discovered. CLI config/process metadata still has no Stripe API-key/account field names and read-only `codex mcp list` has no separate Stripe server; no connector token was extracted and no manual duplicate configuration was added.
