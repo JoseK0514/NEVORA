@@ -2,13 +2,16 @@ import {describe,it,expect,vi} from 'vitest';
 import Stripe from 'stripe';
 import {createWebhookHandler,createScheduledHandler,UNUSABLE_DATABASE_URL,type HostedRole} from './handlers';
 const secret='whsec_hosted_fixture';
-const env={NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
+const inert={PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'};
+const env={...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
 function event(live=false){return JSON.stringify({id:'evt_hosted_fixture',object:'event',type:'checkout.session.completed',livemode:live,data:{object:{id:'cs_test_hosted',object:'checkout.session'}}});}
 function webhook(raw=event(),signature=Stripe.webhooks.generateTestHeaderString({payload:raw,secret})){return new Request('https://fictional.invalid/webhooks/stripe',{method:'POST',headers:{'stripe-signature':signature},body:raw});}
 function tick(role:HostedRole='commercequeue',override:Record<string,unknown>={},headers:Record<string,string>={'x-neon-trigger-invocation-id':'fixture-run'}){
  return new Request('https://fictional.invalid/run',{method:'POST',headers,body:JSON.stringify({version:1,invocation_id:'fixture-run',trigger:{type:'schedule',id:'trigger-fixture',name:'nevora-staging-'+role},data:{scheduled_at:'2026-11-08T12:00:00Z'},...override})});
 }
 describe('Neon sandbox webhook boundary',()=>{
+ it.each(Object.keys(inert))('refuses missing required override %s before accepting signed traffic',async key=>{let writes=0;const candidate:Record<string,string|undefined>={...env};delete candidate[key];expect((await createWebhookHandler(candidate,async()=>{writes++;})(webhook())).status).toBe(503);expect(writes).toBe(0);});
+ it('refuses an unrelated PostgreSQL credential alias before accepting signed traffic',async()=>{let writes=0;expect((await createWebhookHandler({...env,POSTGRES_URL:'postgresql://fictional:private@foreign.invalid/catalog'},async()=>{writes++;})(webhook())).status).toBe(503);expect(writes).toBe(0);});
  it('acknowledges a valid unsupported event without opening enqueue capabilities',async()=>{let writes=0;const raw=JSON.stringify({...JSON.parse(event()),type:'customer.created',data:{object:{id:'cus_fixture',object:'customer'}}});expect((await createWebhookHandler(env,async()=>{writes++;})(webhook(raw))).status).toBe(200);expect(writes).toBe(0);});
  it.each(['NEVORA_CONTROL_DATABASE_URL','NEVORA_OPERATOR_CONTROL_DATABASE_URL','NEVORA_SIGNUP_SESSION_SECRET','NEON_AI_GATEWAY_TOKEN','AWS_SECRET_ACCESS_KEY','STRIPE_UNREVIEWED_KEY'])('rejects unapproved capability %s before enqueue',async key=>{let writes=0;expect((await createWebhookHandler({...env,[key]:'fictional'},async()=>{writes++;})(webhook())).status).toBe(503);expect(writes).toBe(0);});
  it.each([
@@ -46,11 +49,11 @@ describe('Neon sandbox webhook boundary',()=>{
   }finally{vi.useRealTimers();}
  });
 });
-const workerEnv={...env,STRIPE_WEBHOOK_SECRET:undefined};
+const {STRIPE_WEBHOOK_SECRET:_receiverSecret,...workerEnv}=env;
 describe('Neon scheduled worker boundary',()=>{
  it.each([
   ['commercequeue','STRIPE_WEBHOOK_SECRET'],['commercereconcile','NEVORA_COMMERCE_SMTP_PASSWORD'],['provisioner','STRIPE_SECRET_KEY'],['commercequeue','NEVORA_SIGNUP_SESSION_SECRET'],
- ] as const)('rejects %s receiving %s',async(role,key)=>{let effects=0;const clean={...env,STRIPE_WEBHOOK_SECRET:undefined,[key]:'fictional'};expect((await createScheduledHandler(role,clean,async()=>{effects++;return {state:'processed'};})(tick(role))).status).toBe(503);expect(effects).toBe(0);});
+ ] as const)('rejects %s receiving %s',async(role,key)=>{let effects=0;const clean={...workerEnv,[key]:'fictional'};expect((await createScheduledHandler(role,clean,async()=>{effects++;return {state:'processed'};})(tick(role))).status).toBe(503);expect(effects).toBe(0);});
  it('accepts a trusted platform envelope for its fixed task',async()=>{let effects=0;const r=await createScheduledHandler('commercequeue',workerEnv,async()=>{effects++;return {state:'processed'};})(tick());expect(r.status).toBe(200);expect(await r.json()).toEqual({state:'processed'});expect(effects).toBe(1);});
  it.each([
   ['missing platform header',()=>tick('commercequeue',{},{}),401],

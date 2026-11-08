@@ -377,10 +377,10 @@ export class StripeBilling implements BillingPort {
     // every business's audit history or changing any database grants.
     const rows=await this.store.transaction(async client=>{
       await client.query("SELECT pg_advisory_xact_lock(hashtextextended('commerce-reconcile-selection',0))");
-      const marker=await client.query("SELECT key FROM commerce.rate_limits WHERE key LIKE 'reconcile-cursor:%' FOR UPDATE");
+      const marker=await client.query("SELECT key,expires_at>clock_timestamp() AS active FROM commerce.rate_limits WHERE key LIKE 'reconcile-cursor:%' FOR UPDATE");
       if((marker.rowCount??0)>1)throw Error('invalid_reconcile_position');
-      const oldKey=marker.rows[0]?.key as string|undefined,cursor=oldKey?.slice('reconcile-cursor:'.length);
-      if(oldKey&&(!cursor||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(cursor)))throw Error('invalid_reconcile_position');
+      const oldKey=marker.rows[0]?.key as string|undefined,cursor=marker.rows[0]?.active?oldKey?.slice('reconcile-cursor:'.length):undefined;
+      if(marker.rows[0]?.active&&(!cursor||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(cursor)))throw Error('invalid_reconcile_position');
       let selected=await client.query("SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL"+(cursor?' AND id>$2::uuid':'')+" ORDER BY id LIMIT $1",cursor?[limit,cursor]:[limit]);
       if(cursor&&!selected.rowCount)selected=await client.query("SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL ORDER BY id LIMIT $1",[limit]);
       if(selected.rowCount){

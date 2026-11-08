@@ -471,6 +471,12 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       await expect(restricted.query('SELECT id FROM commerce.audit LIMIT 1')).rejects.toThrow('permission denied');
     }finally{await restricted.end();await pool.query(`DROP OWNED BY ${api},${enrollment}; DROP ROLE ${api},${enrollment}`);}
   });
+  it.each(['reconcile-cursor:11111111-1111-4111-8111-111111111111','reconcile-cursor:'])('restarts an expired retained cursor from the first eligible business: %s',async oldKey=>{
+    const first=await subscribed(),secondId='22222222-2222-4222-8222-222222222222';await business(secondId);await subscribed(secondId);provider.unavailableSubscriptions.add(first.subscription.id);
+    await pool.query("INSERT INTO commerce.rate_limits(key,count,expires_at) VALUES($1,1,clock_timestamp()-interval '1 second')",[oldKey]);
+    expect(await billing.reconcile({limit:1})).toEqual({checked:1,failed:1});
+    expect((await pool.query("SELECT key,expires_at>clock_timestamp() AS active FROM commerce.rate_limits WHERE key LIKE 'reconcile-cursor:%'")).rows).toEqual([{key:'reconcile-cursor:'+id,active:true}]);
+  });
   it('rejects a malformed durable reconciliation position',async()=>{await pool.query("INSERT INTO commerce.rate_limits(key,count,expires_at) VALUES('reconcile-cursor:',1,clock_timestamp()+interval '1 day')");await expect(billing.reconcile({limit:1})).rejects.toThrow('invalid_reconcile_position');});
   it("restricts operational access when a downgrade is below actual active headcount", async () => {
     provider.counts.set(id, 30);
