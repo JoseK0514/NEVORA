@@ -6,6 +6,7 @@ const server = createHttpServer(
   createCommerce({
     store: runtime.store,
     origin: runtime.config.origin,
+    uiOrigin: runtime.config.uiOrigin,
     allowedOrigins: runtime.config.allowedOrigins,
     billing: runtime.billing,
     signupEnabled: process.env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true",

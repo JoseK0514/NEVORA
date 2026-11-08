@@ -87,7 +87,7 @@ export class CommerceStore {
       );
       await this.enqueue(client, "mail", `verify:${digest(proof)}`, {
         email: input.email,
-        url: `${origin}/verify#token=${proof}`,
+        url: `${origin}#token=${proof}`,
         template: "verify",
       });
     });
@@ -115,7 +115,7 @@ export class CommerceStore {
       );
       await this.enqueue(client, "mail", `login:${digest(proof)}`, {
         email,
-        url: `${origin}/verify#token=${proof}`,
+        url: `${origin}#token=${proof}`,
         template: "signin",
       });
     });
@@ -221,10 +221,16 @@ export class CommerceStore {
     if (!result.rowCount) throw new CommerceError("unauthorized", 401);
     return this.business(result.rows[0].business_id);
   }
-  async handoff(id: string, proof: string, now: number) {
-    await this.pool.query(
-      "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'handoff',$3)",
-      [digest(proof), id, new Date(now + 120000)],
+  async handoff(
+    id: string,
+    proof: string,
+    now: number,
+    client?: PoolClient,
+    ttl = 120000,
+  ) {
+    await (client ?? this.pool).query(
+      "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'handoff',$3) ON CONFLICT(hash) DO NOTHING",
+      [digest(proof), id, new Date(now + ttl)],
     );
   }
   async webhook(id: string, subscriptionId: string) {

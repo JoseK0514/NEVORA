@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import Stripe from "stripe";
 import type { PoolClient } from "pg";
 import type { BillingPort } from "./service";
@@ -186,12 +187,22 @@ export class StripeBilling implements BillingPort {
         business.trialEnd && business.trialEnd > this.now(),
       );
       const metadata = { nevora_business_id: business.id, nevora_price: price };
+      const returnProof = createHmac("sha256", this.store.key)
+        .update(`checkout-return:${business.id}:${operation}`)
+        .digest("base64url");
+      await this.store.handoff(
+        business.id,
+        returnProof,
+        this.now(),
+        client,
+        3600000,
+      );
       const params: Stripe.Checkout.SessionCreateParams = {
         customer,
         mode: early ? "setup" : "subscription",
         currency: "usd",
-        success_url: `${this.options.origin}/billing/return`,
-        cancel_url: `${this.options.origin}/billing`,
+        success_url: `${this.options.origin}/pages/nevora-billing-return#handoff=${returnProof}`,
+        cancel_url: `${this.options.origin}/pages/nevora-billing#handoff=${returnProof}`,
         client_reference_id: business.id,
         metadata,
         expires_at: Math.floor(Date.now() / 1000) + 1800,
@@ -229,10 +240,20 @@ export class StripeBilling implements BillingPort {
     return this.locked(input.id, async (_client, business) => {
       if (!business.customerId)
         throw new CommerceError("subscription_required", 409);
+      const returnProof = createHmac("sha256", this.store.key)
+        .update(`portal-return:${business.id}:${operation}`)
+        .digest("base64url");
+      await this.store.handoff(
+        business.id,
+        returnProof,
+        this.now(),
+        _client,
+        3600000,
+      );
       const session = await this.stripe.billingPortal.sessions.create(
         {
           customer: business.customerId,
-          return_url: `${this.options.origin}/billing`,
+          return_url: `${this.options.origin}/pages/nevora-billing#handoff=${returnProof}`,
         },
         { idempotencyKey: `nevora-portal:${business.id}:${operation}` },
       );

@@ -19,6 +19,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     invoicePaid: false,
     invoiceEnd: 1799236800,
     mode: "",
+    returnUrl: "",
     trialEnd: "",
   };
   const secret = "whsec_fictional_test_only";
@@ -86,6 +87,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
         init?.method === "POST"
       ) {
         state.mode = form.get("mode") ?? "";
+        state.returnUrl = form.get("success_url") ?? "";
         value = {
           id: "cs_fixture",
           object: "checkout.session",
@@ -210,6 +212,17 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     ]);
     expect(state.mode).toBe("setup");
     expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it("restores only the same owner after Stripe redirects without treating the return as payment", async () => {
+    const returnUrl = new URL(state.returnUrl);
+    const proof = new URLSearchParams(returnUrl.hash.slice(1)).get("handoff");
+    expect(proof).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    await store.exchange(proof!, "r".repeat(43), now, true);
+    expect(await store.session("r".repeat(43), now)).toBe(id);
+    expect((await store.business(id)).paidThrough).toBeNull();
+    await expect(
+      store.exchange(proof!, "q".repeat(43), now, true),
+    ).rejects.toThrow("invalid_or_expired_link");
   });
   it("preserves the exact original trial deadline when completing an early setup checkout", async () => {
     await billing.syncJob({ sessionId: "cs_fixture" });

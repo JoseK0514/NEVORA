@@ -45,7 +45,7 @@ export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
       maxNetworkRetries: 2,
     });
     billing = new StripeBilling(store, client, {
-      origin: config.origin,
+      origin: config.uiOrigin,
       prices: { small: env.STRIPE_PRICE_SMALL, team: env.STRIPE_PRICE_TEAM },
       webhookSecret: env.STRIPE_WEBHOOK_SECRET,
       live,

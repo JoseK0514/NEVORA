@@ -10,6 +10,7 @@ export interface BillingPort {
 export type CommerceOptions = {
   store: CommerceStore;
   origin: string;
+  uiOrigin?: string;
   allowedOrigins: string[];
   billing?: BillingPort;
   signupEnabled?: boolean;
@@ -141,7 +142,7 @@ export function createCommerce(options: CommerceOptions) {
           signup,
           await hashPassword(signup.password),
           token(),
-          options.origin,
+          `${options.uiOrigin ?? options.origin}/pages/nevora-verify`,
           now,
         );
         return answer({ state: "check_email" }, 202);
@@ -155,7 +156,12 @@ export function createCommerce(options: CommerceOptions) {
           throw new CommerceError("invalid_email");
         await store.rate(`signin:${ip}`, 20, 3600, now);
         await store.rate(`signin-email:${email}`, 3, 3600, now);
-        await store.loginLink(email, token(), options.origin, now);
+        await store.loginLink(
+          email,
+          token(),
+          `${options.uiOrigin ?? options.origin}/pages/nevora-verify`,
+          now,
+        );
         return answer({ state: "check_email" }, 202);
       }
       if (

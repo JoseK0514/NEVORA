@@ -45,9 +45,14 @@ export function readCommerceConfig(env: NodeJS.ProcessEnv) {
     env.NEVORA_COMMERCE_ORIGIN ?? "",
     environment === "development",
   );
+  const uiOrigin = safeOrigin(
+    env.NEVORA_COMMERCE_UI_ORIGIN ?? "https://www.thevelani.com",
+    environment === "development",
+  );
   const allowedOrigins = [
     ...new Set([
       origin,
+      uiOrigin,
       ...(env.NEVORA_COMMERCE_ALLOWED_ORIGINS ?? "")
         .split(",")
         .filter(Boolean)
@@ -61,5 +66,13 @@ export function readCommerceConfig(env: NodeJS.ProcessEnv) {
   const port = Number(env.PORT ?? "3100");
   if (!Number.isInteger(port) || port < 1 || port > 65535)
     throw Error("invalid_port");
-  return { environment, key, origin, allowedOrigins, databaseUrl, port };
+  return {
+    environment,
+    key,
+    origin,
+    uiOrigin,
+    allowedOrigins,
+    databaseUrl,
+    port,
+  };
 }
