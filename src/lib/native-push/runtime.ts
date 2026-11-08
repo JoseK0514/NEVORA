@@ -1,3 +1,5 @@
+import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import 'server-only';
 import {sqlNativeInstallationRepository} from '../data/native-installations';
 import {sqlNativeDeliveryRepository} from '../data/native-deliveries';
@@ -41,6 +43,7 @@ export function createNativeWorkerDeps({notification, registration, providers, e
 /** All disabled/configuration gates precede even a workspace database read. */
 export async function runNativeEnvironmentWorker(env: Record<string, string | undefined>): Promise<WorkerReport> {
   const off: WorkerReport = {claimed: 0, accepted: 0, retried: 0, failed: 0, expired: 0, cancelled: 0, noSubscription: 0, disabled: true};
+  await assertWorkerWorkspace();env=await workspaceRuntimeEnvironment(env);
   const registration = readNativeRegistrationConfig(env), providers = readNativeProviderConfig(env), notification = readNotificationConfig(env);
   if (!registration || !providers.deliveryEnabled || !notification.featureEnabled || notification.environment !== registration.environment
     || notification.portalOrigin !== registration.origin || (registration.environment === 'test' && !providers.testAccountIds.length)) return off;

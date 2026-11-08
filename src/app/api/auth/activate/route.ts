@@ -1,3 +1,4 @@
+import {privateWorkspaceToken} from '@/lib/workspace-routing/token-envelope.server';
 import {claimInvitation} from '@/lib/auth/invitations/claim.server';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export async function POST(request:Request):Promise<Response>{
@@ -12,7 +13,8 @@ export async function POST(request:Request):Promise<Response>{
   proof=fields.proof;password=fields.password;
  }catch{return correctionJson({state:'invalid'},400);}
  try{
-  const result=await claimInvitation(proof,password,undefined,request.signal);
+  const inner=await privateWorkspaceToken('INVITATION',proof);if(!inner)return correctionJson({state:'invalid'},400);
+  const result=await claimInvitation(inner,password,undefined,request.signal);
   return correctionJson(result,result.state==='activated'?200:result.state==='invalid'?400:503);
  }catch{return correctionJson({state:'unavailable'},503);}
 }

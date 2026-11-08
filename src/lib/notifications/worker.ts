@@ -1,3 +1,4 @@
+import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
 import {notificationOperationalAllowedSql} from '../data/notification-operational-sql';
 import {runShiftChangeMaintenance} from '../data/shift-change-maintenance';
 import { performance } from 'node:perf_hooks';
@@ -285,6 +286,7 @@ export async function runDispatch(input: {
 }
 /** Shared invocation switch: adapters cannot substitute their own delivery policy. */
 export async function runWorker(command: WorkerCommand, deps: WorkerDeps, options:{maintenance?:boolean;cursor?:string}={}): Promise<WorkerReport> {
+    await assertWorkerWorkspace();
     if (command === 'dispatch')
         return runDispatch({ mode: 'all', deps });
     if (command !== 'reminders')

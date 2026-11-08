@@ -1,4 +1,5 @@
 'use client';
+import {isPublicAccountProof} from "@/lib/auth/public-proof";
 import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
@@ -17,7 +18,7 @@ export function takeActivationFragment(location:Pick<Location,'hash'|'pathname'>
  const fragment=location.hash.slice(1);
  try{history.replaceState(null,'',location.pathname);}catch{throw new Error('Invitation could not be opened safely.');}
  const candidate=fragment.startsWith('proof=')?fragment.slice(6):fragment;
- return /^[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$/.test(candidate)?candidate:null;
+ return isPublicAccountProof(candidate)?candidate:null;
 }
 export function readActivationResult(value:unknown):ActivationResult {
  if(!value||typeof value!=='object'||Array.isArray(value))throw new Error('Activation response unavailable.');

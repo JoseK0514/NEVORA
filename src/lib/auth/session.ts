@@ -1,8 +1,9 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createHash } from "node:crypto";
 import { prepareSession, type PreparedSession, type ReviewedLoginCredential } from "./session-issuance";
 export type { ReviewedLoginCredential } from "./session-issuance";
 import { cache } from "react";
-import { cookies } from "next/headers";
+import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
 import { redirect } from "next/navigation";
 import {queryRows} from "@/lib/db";
 import {applicationSql} from "@/lib/data/app-sql";
@@ -55,7 +56,7 @@ export async function writeSessionCookie({ token, expiresAt }: Pick<PreparedSess
 export async function destroySession() {
   const store = await cookies();
   try {
-    const config = readNotificationConfig(process.env);
+    const config = readNotificationConfig(await workspaceRuntimeEnvironment());
     const key = decodePushKey(config.subscriptionEncryptionKey, 32);
     const installation = key ? readInstallationProof(store, key, config.environment) ?? undefined : undefined;
     await terminatePortalSession({ sessionToken: store.get(SESSION_COOKIE)?.value, installation, cookies: store, deps: createLogoutDeps(config) });

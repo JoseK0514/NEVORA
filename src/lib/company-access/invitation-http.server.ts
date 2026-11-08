@@ -1,3 +1,4 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import 'server-only';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
@@ -28,6 +29,6 @@ export async function invitationHttp(request:Request,action:'status'|'command'|'
   if(action==='operation')return response(await readInvitationOperation(proof,id));
   let value:unknown;
   try {value=await readCorrectionJson(request);}catch{return correctionJson({state:'invalid',fieldErrors:[{field:'invitation',message:'Invalid invitation command.'}]},400);}
-  return response(await issueOrRevokeInvitation(proof,id,value as InvitationCommand,invitationDelivery()));
+  return response(await issueOrRevokeInvitation(proof,id,value as InvitationCommand,invitationDelivery(await workspaceRuntimeEnvironment())));
  } catch {return correctionJson({state:'unavailable',reason:'source_unavailable'},503);}
 }

@@ -1,3 +1,6 @@
+import {withWorkerWorkspace} from '@/lib/workspace-routing/worker.server';
+import {workspaceMode} from '@/lib/workspace-routing/config.server';
+import {workspaceRequestOrigin} from '@/lib/workspace-routing/runtime-config.server';
 import { readNotificationConfig, loadWorkspaceNotificationConfig } from '../../../../../lib/notifications/config';
 import { authorizeWorker } from '../../../../../lib/notifications/worker-auth';
 import { createWorkerDeps, runWorker } from '../../../../../lib/notifications/worker';
@@ -9,7 +12,7 @@ async function handle(request: Request, maintenance:boolean) {
   if (!authorizeWorker(request, config.workerSecret)) return Response.json({ error: 'unauthorized' }, { status: 401, headers });
   const cursor=new URL(request.url).searchParams.get('cursor')??undefined;
   if(cursor!==undefined && !/^(EXCHANGE|CALLOUT):[A-Za-z0-9_-]{1,128}$/.test(cursor))return Response.json({error:'invalid_cursor'},{status:400,headers});
-  try { return Response.json(await runWorker('reminders', createWorkerDeps(await loadWorkspaceNotificationConfig(process.env),undefined,{kind:'request',headers:request.headers}),{maintenance,cursor}), { headers }); }
+  try { return Response.json(await withWorkerWorkspace(workspaceMode()==='isolated'?workspaceRequestOrigin(request)??undefined:undefined,async()=>runWorker('reminders', createWorkerDeps(await loadWorkspaceNotificationConfig(process.env),undefined,{kind:'request',headers:request.headers}),{maintenance,cursor})), { headers }); }
   catch { return Response.json({ error: 'worker_unavailable' }, { status: 503, headers }); }
 }
 export const GET=(request:Request)=>handle(request,false);

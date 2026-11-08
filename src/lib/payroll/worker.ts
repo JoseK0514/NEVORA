@@ -1,3 +1,4 @@
+import {assertWorkerWorkspace} from '../workspace-routing/worker.server';
 /**
  * Leased payroll outbox processor. External preparation/rendering runs outside the
  * final transaction; workspace, source and lease guards fence the resulting writes.
@@ -20,6 +21,7 @@ export type ClaimedJob = PayrollJob & {
 /** Claim one available job with SKIP LOCKED, increment attempts and grant a 60-second
  * lease. Expired RUNNING jobs are eligible while fewer than five attempts exist. */
 export async function claimJob(ex: SqlExecutor = neonNotificationExecutor()): Promise<ClaimedJob | null> {
+  await assertWorkerWorkspace();
     enabled();
     const token = randomUUID();
     const rows = await ex.query<ClaimedJob>(q(`WITH next AS(SELECT id FROM payroll_jobs WHERE workspace_id=${ws} AND attempts<5 AND available_at<=clock_timestamp() AND (status='PENDING' OR (status='RUNNING' AND lease_until<clock_timestamp())) ORDER BY available_at,id FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE payroll_jobs j SET status='RUNNING',attempts=j.attempts+1,lease_token=$1::uuid,lease_until=clock_timestamp()+interval '60 seconds' FROM next WHERE j.id=next.id RETURNING j.id::text,j.workspace_id,j.run_id::text AS "runId",j.kind,j.status,j.attempts,j.error,j.payload,j.lease_token::text,j.business_key`, token));

@@ -1,3 +1,4 @@
+import {publicWorkspaceToken} from '../workspace-routing/token-envelope.server';
 import 'server-only';
 import type {RecoveryDelivery} from './recovery.server';
 import {validatedMailTransport} from './mail-transport.server';
@@ -30,7 +31,7 @@ export function recoveryDelivery(env:Record<string,string|undefined>=process.env
  const mail=validatedMailTransport(env);
  if(!mail)return null;
  return {async send(email,proof) {
-  const message=recoveryEmail(`${mail.origin}/reset-access#proof=${proof}`);
+  const message=recoveryEmail(`${mail.origin}/reset-access#proof=${await publicWorkspaceToken('RECOVERY',proof,Date.now()+15*60*1000)}`);
   await mail.sendRegistered(email,message.subject,message.text);
  },async notifyReset(email){
   const message=passwordChangedEmail(mail.origin);

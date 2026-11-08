@@ -1,3 +1,4 @@
+import {publicWorkspaceToken} from '../../workspace-routing/token-envelope.server';
 import 'server-only';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
 import {validatedMailTransport,validRegisteredEmail} from '../mail-transport.server';
@@ -13,7 +14,7 @@ export function invitationDelivery(env:Record<string,string|undefined>=process.e
  return {async send({registeredEmail,proof,expiresAt}) {
   if(!validRegisteredEmail(registeredEmail)||!/^[A-Za-z0-9_-]{43}$/.test(proof)||Buffer.from(proof,'base64url').toString('base64url')!==proof||!Number.isFinite(Date.parse(expiresAt)))throw new InvitationDeliveryError('FAILED');
   try {
-   const email=invitationEmail(`${mail.origin}/activate#proof=${proof}`);
+   const email=invitationEmail(`${mail.origin}/activate#proof=${await publicWorkspaceToken('INVITATION',proof,Date.parse(expiresAt))}`);
    const result=await mail.sendRegistered(registeredEmail,email.subject,email.text);
    const accepted=result.accepted;
    if(accepted?.length!==1||accepted[0]?.toLowerCase()!==registeredEmail.toLowerCase())throw new InvitationDeliveryError('UNKNOWN');

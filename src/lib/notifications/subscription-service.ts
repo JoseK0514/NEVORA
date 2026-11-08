@@ -1,3 +1,4 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createECDH, createHash, createHmac, randomUUID } from 'node:crypto';
 import { buildSelfTestNotification } from '../assistance/notification-events';
 import { decodePushKey, readNotificationConfig } from './config';
@@ -304,8 +305,8 @@ export function createPushHandlers(deps: PushHandlerDeps) {
     };
 }
 async function runtimeHandlers() {
-    const [{ cookies }, { getSession }, { sqlSubscriptionRepository }] = await Promise.all([import('next/headers'), import('../auth/session'), import('../data/push-subscriptions')]);
-    return createPushHandlers({ config: readNotificationConfig(process.env), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date(),
+    const [{ workspaceCookies: cookies }, { getSession }, { sqlSubscriptionRepository }] = await Promise.all([import('../workspace-routing/cookies.server'), import('../auth/session'), import('../data/push-subscriptions')]);
+    return createPushHandlers({ config: readNotificationConfig(await workspaceRuntimeEnvironment()), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date(),
         sessionBudget:async(employeeId,sessionTokenHash)=>{
             const [{queryRows},{getWorkspace},{applicationSql}]=await Promise.all([import('../db'),import('../data/workspaces'),import('../data/app-sql')]);
             if(!(await getWorkspace()).active)return 0;

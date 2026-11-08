@@ -1,3 +1,4 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createHash } from 'node:crypto';
 import { neonNotificationExecutor } from '../data/notification-transactions';
 import { sqlSubscriptionRepository } from '../data/push-subscriptions';
@@ -245,6 +246,6 @@ export async function prepareInstallationForAccount(employeeId: string, cookies:
     return COMPLETE;
 }
 export async function prepareInstallationForLogin(employeeId: string): Promise<CleanupResult> {
-    const { cookies } = await import('next/headers');
-    return prepareInstallationForAccount(employeeId, await cookies(), readNotificationConfig(process.env));
+    const { workspaceCookies: cookies } = await import('../workspace-routing/cookies.server');
+    return prepareInstallationForAccount(employeeId, await cookies(), readNotificationConfig(await workspaceRuntimeEnvironment()));
 }
