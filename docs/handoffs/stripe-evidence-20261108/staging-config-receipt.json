@@ -1,0 +1,43 @@
+{
+  "projectId": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "teamId": "team_Lzbw410WwXGWHTuUXuamRI1N",
+  "target": "preview",
+  "rows": [
+    {
+      "key": "NEVORA_COMMERCE_TAX_ENABLED",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted",
+      "valueMatchesExpected": true
+    },
+    {
+      "key": "STRIPE_PRICE_TEAM",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted",
+      "valueMatchesExpected": true
+    },
+    {
+      "key": "STRIPE_PRICE_SMALL",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted",
+      "valueMatchesExpected": true
+    },
+    {
+      "key": "STRIPE_ACCOUNT_ID",
+      "target": [
+        "preview"
+      ],
+      "type": "encrypted",
+      "valueMatchesExpected": true
+    }
+  ],
+  "secretValuesRead": false,
+  "deployed": false,
+  "valuesArePublicConfiguration": true,
+  "nonsecretReadback": true
+}

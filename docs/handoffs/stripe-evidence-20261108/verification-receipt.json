@@ -1,7 +1,7 @@
 {
-  "applicationCommit": "bf9573bfdad19089825fa3a2585a7b8643cf79b9",
-  "buildCheckpoint": "47b5954d43738e19acc9dccf093c11e95bd89139",
-  "buildTree": "6d0222f9c39cfd0f56a816ec088906bb0213e830",
+  "applicationCommit": "9bcc496331853f961e189b0ecaf326d42a82f29a",
+  "buildCheckpoint": "9bcc496331853f961e189b0ecaf326d42a82f29a",
+  "buildTree": "57890f0cff1ba7cd3e2bdec295bd12bfd30c9889",
   "buildSourceClean": true,
   "buildSourceUnchanged": true,
   "buildExit": 0,
@@ -15,16 +15,16 @@
     "numPassedTestSuites": 1244,
     "numFailedTestSuites": 0,
     "numPendingTestSuites": 0,
-    "numTotalTests": 12061,
+    "numTotalTests": 12067,
     "numPassedTests": 11165,
     "numFailedTests": 0,
-    "numPendingTests": 841,
+    "numPendingTests": 847,
     "numTodoTests": 0,
     "success": true
   },
-  "rootInvocation": "npm test -- --maxWorkers=1 --reporter=json --outputFile=<owned-evidence>/root-final.json",
+  "rootInvocation": "npm test -- --maxWorkers=2 --reporter=default --reporter=json --outputFile=<owned-evidence>/root-post-review.json",
   "ownedCommerce": {
-    "passed": 59,
+    "passed": 65,
     "failed": 0
   },
   "integratedOnboardingCommerce": {
@@ -123,14 +123,95 @@
       "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/build.log"
     },
     "progress.md": {
-      "sha256": "86f7e32d2ce636e646ec01477a345f55347fc3656f600a659aecb5d2da840927",
-      "bytes": 1283,
+      "sha256": "9488eb08dd271990c0ee872ed8c6c5218542ea402de90b15098b7095374564ad",
+      "bytes": 3289,
       "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/progress.md"
     },
     "stripe-runtime-tax-build-47b5954d4.json": {
       "sha256": "fa917d989c36262047f83bbb66effdabc9f5d41b7f5003c4b8c7e52dd2ff828b",
       "bytes": 3149663,
       "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/stripe-runtime-tax-build-47b5954d4.json"
+    },
+    "review-fixes-red.log": {
+      "sha256": "9edb68a6c41c4b0b1bb5a8ae25c936208dbc19d1a4ff606f400a6b73bbfd45c3",
+      "bytes": 5326,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-fixes-red.log"
+    },
+    "review-fixes-green.log": {
+      "sha256": "8af3a6763d10e5d7f50f9872f7782893491f8e9d973c01d239929eff6cf461c5",
+      "bytes": 320,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-fixes-green.log"
+    },
+    "review-saved-price-red.log": {
+      "sha256": "cd0e96bfd800cf6fe3fa7c2965fdcac6d0dbed483f69614ec4b973a33a743df2",
+      "bytes": 2251,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-saved-price-red.log"
+    },
+    "review-restricted-role-red.log": {
+      "sha256": "ffc6485694d1a8ac77f690b44ed8133777b33ef3663dbc613a126c2879ccaa3c",
+      "bytes": 3251,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-restricted-role-red.log"
+    },
+    "review-final-commerce.log": {
+      "sha256": "1b7555df5631d759cefb6de2b18297dfd45bf79a1f728a1e6eaa0813d1fb2dc9",
+      "bytes": 320,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-final-commerce.log"
+    },
+    "types-final.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/types-final.log"
+    },
+    "lint-final.log": {
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "bytes": 41,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/lint-final.log"
+    },
+    "root-post-review.log": {
+      "sha256": "d1af1535c84e47bcd6f78c786ce6b3e256d27dabb03025d0892ea80366352a51",
+      "bytes": 70865,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-post-review.log"
+    },
+    "root-post-review.json": {
+      "sha256": "093c9957884bf953b579cc2da80270b5221759c5b6891e673a5a76964b4cbcbc",
+      "bytes": 4440196,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/root-post-review.json"
+    },
+    "onboarding-commerce-final.log": {
+      "sha256": "1d060ec039aa2362c0ff47c868a211e66ab31daeeff789c9b98f8fb95d43f348",
+      "bytes": 2854,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/onboarding-commerce-final.log"
+    },
+    "build-final.log": {
+      "sha256": "c6d361f8c48492db23ccac2db04b2c4c2aa5dd8d6394dcb688a826d379bc283e",
+      "bytes": 7238,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/build-final.log"
+    },
+    "production-scan-final.log": {
+      "sha256": "6e5230cb2aa71cca0cfebfb8eac5a39ab8f035fc04066dd5a3302779e993db25",
+      "bytes": 7372,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/production-scan-final.log"
+    },
+    "review-ad7417dd9..47b5954d4.diff": {
+      "sha256": "9ebda0b42104d7f357bc3fb3d1363efd1aa7241b2ac64f222227d7d1622720aa",
+      "bytes": 83108,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/review-ad7417dd9..47b5954d4.diff"
+    },
+    "stripe-runtime-tax-build-9bcc49633.json": {
+      "sha256": "b6f3dea73762c6eaf6e33ed68bbae1e8127eaa3d459d18475b4a75c0eea719d7",
+      "bytes": 3149927,
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/verification/stripe-runtime-tax-build-9bcc49633.json"
     }
-  }
+  },
+  "previousBuildCheckpoint": "47b5954d43738e19acc9dccf093c11e95bd89139",
+  "previousApplicationCommit": "bf9573bfdad19089825fa3a2585a7b8643cf79b9",
+  "review": {
+    "importantFindings": 2,
+    "waived": 0,
+    "fixPasses": 1,
+    "regressionVerified": true,
+    "rereview": false
+  },
+  "stagingPreviewNonsecretSettingsVerified": 4,
+  "stagingDeploymentChanged": false
 }

@@ -33,15 +33,27 @@
     "4_build": {
       "status": "implemented_and_fixture_tested_hosted_pending",
       "applicationChanges": true,
-      "applicationCommit": "bf9573bfdad19089825fa3a2585a7b8643cf79b9",
-      "ownedCommerceChecksPassed": 59,
+      "applicationCommit": "9bcc496331853f961e189b0ecaf326d42a82f29a",
+      "ownedCommerceChecksPassed": 65,
       "onboardingCommerceChecksPassed": 17,
       "typecheck": "pass",
       "lint": "pass",
       "runtimeKeyConfigured": false,
       "hostedSignedWebhookVerified": false,
       "taxEnabled": false,
-      "taxRegistrationAnswer": "Not sure yet"
+      "taxRegistrationAnswer": "Not sure yet",
+      "rootPassed": 11165,
+      "rootSkipped": 847,
+      "rootFailures": 0,
+      "build": "source_pinned_pass",
+      "review": "two_important_findings_fixed_with_regressions_one_pass"
+    },
+    "5_sandbox": {
+      "status": "provider_parameters_accepted",
+      "realPaymentsCompleted": false,
+      "invoiceEmailSent": false,
+      "runtimeKeyConfigured": false,
+      "previewNonsecretSettingsVerified": 4
     }
   },
   "jira": "SCRUM-174",

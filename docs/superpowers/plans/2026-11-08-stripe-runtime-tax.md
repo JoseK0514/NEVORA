@@ -51,8 +51,8 @@
 **Files:** Update preflight handoff, tracked setup receipt and add bounded planner receipt/readiness evidence. No Velani runtime changes.
 **Interfaces:** Handoff distinguishes installed, authenticated, implemented, fixture-tested, provider-accepted and hosted-verified states.
 
-- [ ] Read sandbox catalog/settings/registrations via actual discovered API operations. Do not infer real tax status from sandbox data. Record summaries only, excluding payment secrets/hosted URLs.
-- [ ] If safe provider rehearsal is possible, create only explicitly fictional sandbox objects with collection disabled; validate setup-mode address parameters without sending email/charging. No approved real project prices exist, so use clearly marked fixtures only.
-- [ ] Run `npx tsc --noEmit`, `npm run lint`, `npm test` sequentially; owned commerce/onboarding-commerce acceptance; source-custodied build after clean commit. Expect zero failures; retain exact logs/limitations.
-- [ ] Commit implementation/handoff. Dispatch one fresh whole-change reviewer against ad7417dd938ef34da9322fd19240fc6b6b64ddae..HEAD. Fix Important/Critical findings once with RED/GREEN regression evidence; no re-review.
-- [ ] Update SCRUM-174 plus linked onboarding readiness with actual evidence and remaining runtime-key/SSO/webhook/Tax gates. No claim of hosted flow completion until actually verified.
+- [x] Read sandbox catalog/settings/registrations via actual discovered API operations. Do not infer real tax status from sandbox data. Record summaries only, excluding payment secrets/hosted URLs.
+- [x] If safe provider rehearsal is possible, create only explicitly fictional sandbox objects with collection disabled; validate setup-mode address parameters without sending email/charging. No approved real project prices exist, so use clearly marked fixtures only.
+- [x] Run `npx tsc --noEmit`, `npm run lint`, `npm test` sequentially; owned commerce/onboarding-commerce acceptance; source-custodied build after clean commit. Expect zero failures; retain exact logs/limitations.
+- [x] Commit implementation/handoff. Dispatch one fresh whole-change reviewer against ad7417dd938ef34da9322fd19240fc6b6b64ddae..HEAD. Fix Important/Critical findings once with RED/GREEN regression evidence; no re-review.
+- [x] Update SCRUM-174 plus linked onboarding readiness with actual evidence and remaining runtime-key/SSO/webhook/Tax gates. No claim of hosted flow completion until actually verified.
