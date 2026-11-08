@@ -1,3 +1,11 @@
+## No-Render staging checkpoint (current)
+
+Closed Neon Functions deployment3 uses clean source0dcf319ce514f48a490247a5fb219490bd39c95c. Actual route/forged-header probes11/11 pass; all processing remains false and all three schedules are disabled. The earlier native no-op scheduler deliveries and fixed role/status logs succeeded3/3 at sourcec333; those prove platform wakeup only. No new secret has been stored on Neon. No paid resource, upgrade, Render/native change, Vercel SSO change or alias move occurred.
+
+One fresh review found eight Important issues; one executor pass fixed them plus the source-parent symlink custody issue regraded Important. Final clean-source root11233 passed /853 skipped /55 pending /0 failed; focused75/75, owned commerce72/72, integrated onboarding-commerce17/17, artifact/path adversarial checks5/5, types/lint clean. Actual deployment ZIP extractions verify70 files including62 canonical SQL assets. See [current receipt](stripe-evidence-20261108/neon-hosting.json), [hosted receipt](stripe-evidence-20261108/neon-closed-reviewed.json) and [review dispositions](stripe-evidence-20261108/neon-review.md).
+
+Next: approve exact sandbox credential creation/storage destinations, then verify genuine signed delivery, role-specific runtime account/permissions and worker effects. Private provider/SMTP/app ingress, full A/B Owner journey, Claude UI and independent release gates remain open. The existing Vercel Stripe key is sensitive Preview storage only; it is not a verified hosted integration. The new worker-key review form is prepared (8 permissions:7 read/1 write), not submitted. Tax remains off.
+
 # Stripe integration readiness — Velani and NEVORA
 
 Jira: [SCRUM-174](https://thevelani-team.atlassian.net/browse/SCRUM-174). Codex owns logic; Claude owns UI. This continuation starts at ad7417dd938ef34da9322fd19240fc6b6b64ddae. No other chat, shared branch, production deployment or Velani theme was changed.

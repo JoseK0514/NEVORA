@@ -1,0 +1,129 @@
+{
+  "source": "0dcf319ce514f48a490247a5fb219490bd39c95c",
+  "checkedAt": "2026-11-08T21:25:32.583Z",
+  "processingEnabled": false,
+  "secretsConfigured": false,
+  "results": [
+    {
+      "slug": "stripewebhook",
+      "name": "other-route",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "not_found"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "stripewebhook",
+      "name": "closed-webhook",
+      "status": 503,
+      "body": {
+        "error": {
+          "code": "not_ready"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercequeue",
+      "name": "other-route",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "not_found"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercequeue",
+      "name": "unsigned-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercequeue",
+      "name": "forged-platform-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercereconcile",
+      "name": "other-route",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "not_found"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercereconcile",
+      "name": "unsigned-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "commercereconcile",
+      "name": "forged-platform-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "provisioner",
+      "name": "other-route",
+      "status": 404,
+      "body": {
+        "error": {
+          "code": "not_found"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "provisioner",
+      "name": "unsigned-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    },
+    {
+      "slug": "provisioner",
+      "name": "forged-platform-run",
+      "status": 401,
+      "body": {
+        "error": {
+          "code": "unauthorized"
+        }
+      },
+      "passed": true
+    }
+  ]
+}

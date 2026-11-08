@@ -35,9 +35,9 @@ Files: services/commerce/stripe-webhook.ts; services/commerce/stripe.ts; service
 
 Interfaces: parseStripeWebhook(raw, signature, secret, live) returns a verified Stripe.Event; enqueueStripeWebhook(store,event) preserves the existing durable event projection. createWebhookHandler(env,enqueue) validates a staging-only signed POST before enqueue. createScheduledHandler(role,env,run) validates a Neon schedule delivery for the fixed role, then runs one bounded callback. Disabled handlers never initialize database/provider capabilities.
 
-- [ ] Install pinned SDK. Add failing security/side-effect tests for missing/expired/tampered/live signatures, oversized bodies, bad methods/paths, unbound deployment environment, forged/inconsistent/malformed triggers, wrong task and safe errors.
-- [ ] Implement minimal handlers and extract existing webhook persistence unchanged; run focused tests and owned commerce SQL/SDK regressions.
-- [ ] Commit implementation and record commands/results.
+- [x] Install pinned SDK. Add failing security/side-effect tests for missing/expired/tampered/live signatures, oversized bodies, bad methods/paths, unbound deployment environment, forged/inconsistent/malformed triggers, wrong task and safe errors.
+- [x] Implement minimal handlers and extract existing webhook persistence unchanged; run focused tests and owned commerce SQL/SDK regressions.
+- [x] Commit implementation and record commands/results.
 
 ### Task 2: Role-specific entry points, bundle custody and closed hosted probes
 
@@ -45,11 +45,13 @@ Files: services/hosted/neon/*.entry.ts; scripts/build-neon-onboarding.mjs; servi
 
 Interfaces: four separate fetch entry points, no generic task selector. Bundle output is outside source, rooted at index.mjs with a nested bundle preserving canonical SQL relative paths. Receipt records commit/tree, all bundle/asset SHA256 values and no environment values.
 
-- [ ] Implement factories that create/close catalog pools only after authentication and use existing workerOnce/reconcile/runProvisionerOnce. Reuse source-pinned canonical SQL assets for provisioning; no migrations during build.
-- [ ] Build and exercise artifacts with all enablement off; verify SQL asset hashes and raw HTTP behavior. Run typecheck, lint, full root suite and owned onboarding-commerce regressions; perform one fresh review of this continuation, with one Important/Critical fix pass.
-- [ ] Deploy only closed staging adapters with generic database injection overridden and no real secrets. Verify actual native endpoints reject forged scheduler headers. Create schedules disabled only after source/role verification.
-- [ ] Update Jira and handoff; request the exact new secret destinations only after these artifacts are concrete. Actual credential auth, signed provider delivery, worker effects, A/B Owner journey and Claude UI remain open until observed.
+- [x] Implement factories that create/close catalog pools only after authentication and use existing workerOnce/reconcile/runProvisionerOnce. Reuse source-pinned canonical SQL assets for provisioning; no migrations during build.
+- [x] Build and exercise artifacts with all enablement off; verify SQL asset hashes and raw HTTP behavior. Run typecheck, lint, full root suite and owned onboarding-commerce regressions; perform one fresh review of this continuation, with one Important/Critical fix pass.
+- [x] Deploy only closed staging adapters with generic database injection overridden and no real secrets. Verify actual native endpoints reject forged scheduler headers. Create schedules disabled only after source/role verification.
+- [x] Update Jira and handoff; request the exact new secret destinations only after these artifacts are concrete. Actual credential auth, signed provider delivery, worker effects, A/B Owner journey and Claude UI remain open until observed.
 
 ## Evidence and decision record
 
 Provider documentation read: Neon Functions overview/runtime/environment/deploy/trigger pages and current pricing; Vercel Schedules limits and private function targets. Neon Free includes Functions capacity/invocations. Existing Vercel team remains Hobby with SSO ALL. Neon role-scoped functions avoid new Vercel projects or protection changes; account access does not prove deployed behavior.
+
+Completion scope: closed hosting preparation only. Source0dcf319ce, deployed Neon Functions3, actual boundary11/11, prior disabled native wakeups3/3, all schedules off, no credentials or processing. One review/fix pass and final green tests recorded in docs/handoffs/stripe-evidence-20261108/neon-hosting.json. Enabled runtime effects and the full onboarding/billing journey remain open acceptance gates. Detached work retained without push/merge; current branch policy forbids creating the new branch offered by the generic finishing menu.
