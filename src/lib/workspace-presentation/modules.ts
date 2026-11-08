@@ -62,7 +62,8 @@ export type ModuleBlockers = Partial<Record<ModuleId, number>>;
 export function blockerText(id: ModuleId, count: number): string {
   const n = count === 1 ? "1 request" : `${count} requests`;
   return id === "timeOff" ? `${n} for time off ${count === 1 ? "is" : "are"} waiting for a decision. Decide ${count === 1 ? "it" : "them"} first.`
-    : `${count === 1 ? "1 shift swap or cover request is" : `${count} shift swap or cover requests are`} still open. Let ${count === 1 ? "it" : "them"} finish first.`;
+    // Round 5 (Nov 7, 2026): the count includes swaps waiting on a teammate and can't-work requests, so the words say so.
+    : `${count === 1 ? "1 shift request (swap, cover or can’t work) is" : `${count} shift requests (swaps, cover and can’t work) are`} still open. Let ${count === 1 ? "it" : "them"} finish first.`;
 }
 
 /** Manager request types that belong to a module (Inbox and Home tasks). */

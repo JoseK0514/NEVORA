@@ -160,8 +160,11 @@ const ACTIVITY_ICON: Partial<Record<ManagerActionItem["type"], typeof CalendarBl
 const ACTIVITY_SHOWN = 8;
 function ActivityCorp(props: Props) {
   const dated = props.managerActions.filter(item => Boolean(item.dateTime));
-  const dayKey = (iso: string) => { try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
-  const clock = (iso: string) => { try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
+  // A coverage window's time is workspace-local with no zone ("2026-11-03T00:00"): its day is its own date, never
+  // re-read as UTC (that moved a midnight shift onto the previous day). Instants (with Z or an offset) convert.
+  const local = (iso: string) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(iso);
+  const dayKey = (iso: string) => { if (local(iso)) return iso.slice(0, 10); try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
+  const clock = (iso: string) => { if (local(iso)) { const [h, m] = iso.slice(11, 16).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; } try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
   const today = dayKey(new Date().toISOString());
   type Event = { key: string; at: string; title: string; detail: ReactNode; href?: string; label?: string; Icon: typeof CalendarBlankIcon; tint?: boolean };
   const events: Event[] = [

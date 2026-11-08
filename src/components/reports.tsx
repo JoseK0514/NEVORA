@@ -275,7 +275,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const late=report.attendance.groups.reduce((total,group)=>total+group.observations.filter(o=>o.kind==='CLOCK_IN_AFTER_SCHEDULE_START').length,0);
  const cover=report.coverageReliability;
  const lateKnown=report.attendance.state==='ready'||late>0;
- const reasons=[lateKnown?null:'Late clock-ins aren’t tracked yet.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
+ const reasons=[lateKnown?null:'Late clock-ins show once every clock-in this period can be checked against the schedule.',cover.observedCoverageRequests?null:'No cover requests this period.'].filter((line):line is string=>!!line);
  const days=wholeWeek(recordedByDay(report),report.period);
  const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
  return <>

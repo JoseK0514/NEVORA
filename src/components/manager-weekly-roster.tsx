@@ -178,7 +178,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const ended = (open: RosterOpenShift) => open.date < today
     || (open.date === today && nowClock !== null && !overnight(open) && !open.endTime.startsWith("00:00") && open.endTime.slice(0, 5) <= nowClock);
   // Quiet (v4, approved Oct 23): the week strip, then the chosen day: avatar, name, "8:00 AM – 4:00 PM · Front desk".
-  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
+  const shiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <QuietRow key={`shift-${shift.id}`} href={editHref(shift)} label={shiftLabel(shift, employee.name)} chevron={false}
     avatar={initials(employee.name).toUpperCase()} title={employee.name}
     detail={[`${clock(shift.startTime)} – ${clock(shift.endTime)}`, shift.position || shift.location || employee.role, shift.status === "PUBLISHED" ? null : statusWord(shift.status)].filter(Boolean).join(" · ")} />;
   const weekStrip = <div className="q-week" role="group" aria-label="Schedule day">
@@ -196,7 +196,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   // One list for the day: assigned and open shifts together, in time order (QA: the count, the strip and the rows agree).
   const dayRows = [
     ...dayShifts.map(entry => ({ start: entry.shift.startTime, node: shiftRow(entry) })),
-    ...dayOpen.map(open => ({ start: open.startTime, node: <QuietRow key={open.id} avatar="open"
+    ...dayOpen.map(open => ({ start: open.startTime, node: <QuietRow key={`open-${open.id}`} avatar="open"
       title={!locationId && open.location ? open.location : "Open shift"} detail={`Open · ${span(open.startTime, open.endTime)}`}
       control={<Link className="q-bs" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>Find cover</Link>} /> })),
   ].sort((a, b) => a.start.localeCompare(b.start));
@@ -259,7 +259,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
     if (live) return <span className="c-meta c-sched-state" data-tone={live.problem && redKey === shift.id ? "red" : undefined}>{live.text}</span>;
     return shift.status === "DRAFT" ? <span className="c-meta c-sched-state" data-tone="amber">Draft</span> : corp?.changedShiftIds?.includes(shift.id) ? <span className="c-meta c-sched-state" data-tone="amber">Changed</span> : null;
   };
-  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={shift.id}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
+  const corpShiftRow = ({ shift, employee }: (typeof dayShifts)[number]) => <li key={`shift-${shift.id}`}><Link className="c-row c-sched-row" href={editHref(shift)} aria-label={shiftLabel(shift, employee.name)}>
     <DayTime start={shift.startTime} end={shift.endTime} />
     <CorpAvatar name={employee.name} initials={initials(employee.name).toUpperCase()} />
     <span className="c-row__main">
@@ -283,7 +283,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
       // Nov 1 upscale: the whole row opens Find cover, with a chevron (no teal link in the list). A shift that's already
       // over (an earlier day, or one that ended earlier today in the business time zone) can't be covered, as on the
       // desktop grid: it reads "Not filled", with no action.
-      return { start: open.startTime, node: <li key={open.id}>{over
+      return { start: open.startTime, node: <li key={`open-${open.id}`}>{over
         ? <div className="c-row c-sched-row c-sched-row--open">{body}<span className="c-meta">Not filled</span></div>
         : <Link className="c-row c-sched-row c-sched-row--open" href={open.href} aria-label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}>
           {body}<CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
@@ -372,7 +372,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
                   : <>
                     {/* Today: the ones that already ended collapse to the same grey line as a past day's, with no action. */}
                     {dayOpenShifts.some(ended) ? <span className="cm-open-past"><span aria-hidden="true">{`${dayOpenShifts.filter(ended).length} not filled`}</span><span className="sr-only">{`${plural(dayOpenShifts.filter(ended).length, "open shift", "open shifts")} already over, not filled`}</span></span> : null}
-                    {dayOpenShifts.filter(open => !ended(open)).map(open => <OpenBlock key={open.id} open={open} />)}
+                    {dayOpenShifts.filter(open => !ended(open)).map(open => <OpenBlock key={`open-${open.id}`} open={open} />)}
                   </>}
               </td>;
             })}
@@ -403,10 +403,10 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   // A day's shifts at one place don't repeat it on every row (the open shifts keep theirs).
   const bPlaces = new Set(dayShifts.map(entry => entry.shift.location)).size;
   const bRows = [
-    ...dayShifts.map(({ shift, employee }) => { const live = bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={shift.id} href={editHref(shift)} label={shiftLabel(shift, employee.name)}
+    ...dayShifts.map(({ shift, employee }) => { const live = bLive(shift, employee.id); return { start: shift.startTime, node: <BRow key={`shift-${shift.id}`} href={editHref(shift)} label={shiftLabel(shift, employee.name)}
       lead={<BAvatar name={employee.name} ring={live.ring} />} title={employee.name} chip={live.chip ? <BChip tone={live.chip.tone}>{live.chip.text}</BChip> : undefined}
       sub={[range(shift.startTime, shift.endTime) === "All day" ? "All day" : compactRange(`${clock(shift.startTime)} – ${clock(shift.endTime)}`), shift.position || employee.role, !locationId && bPlaces > 1 ? shift.location : null].filter(Boolean).join(" · ")} chevron={false} /> }; }),
-    ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={open.id} lead={<BAvatar open />} title="Open shift"
+    ...dayOpen.map(open => { const over = ended(open); return { start: open.startTime, node: <BRow key={`open-${open.id}`} lead={<BAvatar open />} title="Open shift"
       sub={[range(open.startTime, open.endTime) === "All day" ? "All day" : compactRange(`${clock(open.startTime)} – ${clock(open.endTime)}`), open.location].filter(Boolean).join(" · ")}
       href={over ? undefined : open.href} label={`Find cover for the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}${open.location ? `, ${open.location}` : ""}`}
       trail={over ? <BChip>Not filled</BChip> : <BButtonLink href={open.href} kind="ghost" label={`Fill the open shift, ${compactTime(open.startTime)} to ${compactTime(open.endTime)}`}>Fill</BButtonLink>} /> }; }),

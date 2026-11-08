@@ -73,7 +73,7 @@ function dayRows(card:Timecard){
     const h=Math.floor(minutes/60),m=minutes%60;
     return {date,label:`${new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short'}).format(new Date(`${date}T12:00:00Z`))} ${Number(date.slice(8))}`,
       times:entries.map(entry=>`${time(entry.startAt)} – ${entry.endAt?time(entry.endAt):'now'}`).join(', '),
-      hours:open?'In progress':h?(m?`${h} h ${m} min`:`${h} h`):`${m} min`};
+      hours:open?'In progress':h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`};
   });
 }
 type TimecardEntryLike=Timecard['entries'][number];
@@ -552,7 +552,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {ready&&cards.length?<BCard id="b-tc-team" title="Team" count={cards.length}>
             <BList label="Timecards in this period">{rows.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),minutes=minutesOf(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds),tone=toneOf(item);
-              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${quietHours(item.card.breakNanoseconds)} breaks`:null;
+              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${compactHours(item.card.breakNanoseconds)} breaks`:null;
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
                 extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}
@@ -644,7 +644,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <th scope="col" data-col="person">Person</th>{showRole?<th scope="col" data-col="role">Role</th>:null}<th scope="col" data-col="recorded" className="c-tc-num">Recorded</th><th scope="col" data-col="breaks" className="c-tc-num">Breaks</th><th scope="col" data-col="status">Status</th>
             </tr></thead>
             <tbody>{tableItems.length||fold?tableItems.map(item=>{
-              const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),breaks=item.card.breakNanoseconds==='0'?'0h':quietHours(item.card.breakNanoseconds);
+              const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),breaks=item.card.breakNanoseconds==='0'?'0h':compactHours(item.card.breakNanoseconds);
               // Nov 1 upscale: a row opens its panel from anywhere on it (the name stays the keyboard's way in); the open
               // person's row is tinted with a teal bar.
               return <tr key={id} id={`timecard-${id}`} tabIndex={-1} data-review={needsReview(item)||undefined} data-open={openId===id||undefined}
@@ -652,7 +652,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 {selecting?<td className="c-tc-check"><label className="c-tc-hit"><input type="checkbox" className="c-tc-box" aria-label={`Select ${name}`} title={exclusionText(item)} checked={selected.includes(id)} disabled={pickDisabled(item)} onChange={e=>select(id,e.target.checked)}/></label></td>:null}
                 <td data-col="person"><button type="button" className="c-tc-person" aria-current={openId===id?'true':undefined} onClick={()=>setOpenId(id)}><CorpAvatar name={name} initials={initialsOf(name)}/><span>{name}</span></button></td>
                 {showRole?<td data-col="role" className="c-tc-muted">{roleOf(item.card)??'—'}</td>:null}
-                <td data-col="recorded" className="c-tc-num"><CorpDuration>{quietHours(item.card.recordedNanoseconds)}</CorpDuration></td>
+                <td data-col="recorded" className="c-tc-num"><CorpDuration>{compactHours(item.card.recordedNanoseconds)}</CorpDuration></td>
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
                 <td data-col="status"><span className="c-tc-cue" data-act={row.act||undefined} data-done={rowStatus(item).tone==='done'||undefined}>{row.text}</span></td>
               </tr>;
