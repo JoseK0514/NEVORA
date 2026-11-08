@@ -3,7 +3,7 @@ import Link from 'next/link';
 import {useRouter} from 'next/navigation';
 import {useEffect,useRef,useState,type MouseEvent,type ReactNode} from 'react';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
-import {useEmployeeMobile} from './use-mobile';
+import {useEmployeeBScreen} from './use-mobile';
 import {useMessageSession} from './message-session';
 import {useMessages} from './use-messages';
 import {MessageInbox,MessageDetail,MessageRecovery,type ReadyUpdate} from './messages-view';
@@ -21,7 +21,7 @@ const B_TITLE:Record<MessageView,string>={notifications:'b-notifications-title',
 /** Employee Notifications and Updates on a phone. The "Your information only · Refresh" footer is gone (Release 1):
  * reads refresh on focus and reconnect, and a failed read offers Try again. The page is aria-busy while a read is in
  * flight (the footer's "Refreshing…" used to say so). */
-export function ResponsiveEmployeeMessages({children,...props}:Props&{children:ReactNode}){const mobile=useEmployeeMobile();return mobile?<div className="em-requests-mobile"><EmployeeMessagesPage {...props}/></div>:<>{children}<div className="em-requests-mobile"><LoadingB view={props.view}/><p className="em-request-loading" role="status">Loading your {props.view==='notifications'?'notifications':'updates'}…</p></div></>;}
+export function ResponsiveEmployeeMessages({children,...props}:Props&{children:ReactNode}){const mobile=useEmployeeBScreen();return mobile?<div className="em-requests-mobile"><EmployeeMessagesPage {...props}/></div>:<>{children}<div className="em-requests-mobile"><LoadingB view={props.view}/><p className="em-request-loading" role="status">Loading your {props.view==='notifications'?'notifications':'updates'}…</p></div></>;}
 const LOADING:Record<MessageView,{title:string;back:{href:string;label:string;close?:boolean}}>={notifications:{title:'Notifications',back:{href:'/app',label:'Home'}},updates:{title:'Updates',back:{href:'/app/more',label:'More'}},detail:{title:'Team update',back:{href:'/app/updates',label:'Updates'}},compose:{title:'Write an update',back:{href:'/app/updates',label:'Cancel',close:true}}};
 /** Before the phone page takes over (server render, hydration): the phone screen's hero over the loading line. */
 function LoadingB({view}:{view:MessageView}){const {title,back}=LOADING[view];return <BHost><BScreen back>{view==='notifications'?<NoHeaderActions/>:null}<BHero back={back} title={title}/><BStack><BCard><p className="b-state">Loading your {view==='notifications'?'notifications':'updates'}…</p></BCard></BStack></BScreen></BHost>;}

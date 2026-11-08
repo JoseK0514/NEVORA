@@ -14,7 +14,7 @@ import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/priv
 import {parseEmployeeRequests,type EmployeeRequestsSnapshot,type OpenEmployeeShift,type OwnRequest} from '@/lib/employee-requests';
 import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {shiftChangeFeedback} from '../shift-change-form-state';
-import {useEmployeeMobile} from './use-mobile';
+import {useEmployeeBScreen} from './use-mobile';
 import {PickupOperation} from './pickup-operation';
 import {formatTime,addDays,weekStartFor} from '@/lib/date-utils';
 
@@ -81,7 +81,7 @@ function PickupStatusB(props:{operation:PickupOperation;onRefresh:()=>void;canSu
  return usePickupStatus(props.operation)?<Pickup look="b" effects={false} part="status" {...props}/>:null;
 }
 export function ResponsiveEmployeeRequests({authority,mode,selected,children}:{authority:string;mode:Mode;selected?:string;children:ReactNode}){
- const mobile=useEmployeeMobile();
+ const mobile=useEmployeeBScreen();
  return mobile?<div className="em-requests-mobile"><EmployeeMobileRequests key={authority} authority={authority} mode={mode} selected={selected}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p>
   {/* Direction B: the phone's first frame is this page's hero, checking (phones only). */}
   <RequestsWaitB page={mode==='hub'?'hub':'open'} text="Checking your current requests…"/></div></>;
@@ -145,7 +145,8 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
    b={<RequestsHubB sub={requestsSubtitle(modules)} newHref={modules?.timeOff?'/app/requests?tab=new':null}
     waiting={snapshot?waitingB:null} decided={snapshot?decidedB:null} forManager={waitingB.every(row=>waitsOnManager(row.chip))}
     decidedHref={modules?.timeOff?'/app/requests?filter=decided':modules?.marketplace?'/app/exchange?tab=requests':null}
-    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} extraCount={incomingB&&snapshot!.incoming?1:0} state={stateB}/>}
+    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} extraCount={incomingB&&snapshot!.incoming?1:0} state={stateB}
+    answer={modules?.marketplace&&snapshot?snapshot.incoming:null} shiftRequests={!!modules?.marketplace}/>}
    sub={requestsSubtitle(modules)}
    newHref={modules?.timeOff?'/app/requests?tab=new':null}
    waiting={snapshot?waiting:null} decided={snapshot?decided:null}

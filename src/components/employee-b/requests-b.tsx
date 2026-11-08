@@ -9,7 +9,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, type BTone} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, type BLiveItem, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
 import './employee-b.css';
 import './requests.css';
@@ -84,12 +84,22 @@ export type RequestsHubBProps = {
   /** How many of those swaps there are (counted in the Waiting card's pill). */
   extraCount?: number;
   state?: ReactNode;
+  /** Desktop: swaps waiting on your answer (the band's second figure), when shift requests are on. */
+  answer?: number | null;
+  /** Desktop: the Shift requests card (Pick up and swap, My schedule), when shift requests are on. */
+  shiftRequests?: boolean;
 };
 
-export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, extraCount = 0, state}: RequestsHubBProps) {
+export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, extraCount = 0, state, answer, shiftRequests}: RequestsHubBProps) {
+  const figures: BLiveItem[] = waiting ? [{label: 'Waiting', dot: 'warn', value: waiting.length + extraCount, meta: 'on your manager or a teammate'},
+    ...(typeof answer === 'number' ? [{label: 'Needs your answer', value: answer, meta: answer === 1 ? 'a swap from a teammate' : 'swaps from teammates'}] : [])] : [];
   return <BScreen>
-    <BHero title="Requests" titleId="b-requests-title" sub={sub}>
-      {newHref ? <div className="b-hpad"><BButtonLink href={newHref} kind="white" full><PlusIcon size={18} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></div> : null}
+    {/* Desktop: Request time off is the band's white action and the band counts what's waiting (eb-desk); the phone keeps
+      * its full-width button (eb-phone). */}
+    <BHero title="Requests" titleId="b-requests-title" sub={sub}
+      right={newHref ? <span className="eb-desk"><BButtonLink href={newHref} kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></span> : undefined}>
+      {newHref ? <div className="b-hpad eb-phone"><BButtonLink href={newHref} kind="white" full><PlusIcon size={18} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></div> : null}
+      {figures.length ? <div className="eb-desk"><BLive label="Your requests at a glance" items={figures}/></div> : null}
     </BHero>
     <BStack>
       {state ?? null}
@@ -101,6 +111,10 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
       </BCard> : null}
+      {shiftRequests ? <div className="eb-desk eb-shiftreq"><BCard title="Shift requests"><BList>
+        <BRow href="/app/exchange" lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
+        <BRow href="/app/schedule" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="My schedule" sub="Start a swap or cover offer"/>
+      </BList></BCard></div> : null}
     </BStack>
   </BScreen>;
 }

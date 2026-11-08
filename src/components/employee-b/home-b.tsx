@@ -34,6 +34,9 @@ export type HomeBExtras = {
 type Ready = Extract<EmployeeTime, {state: 'ready'}>;
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
 const shortDay = (date: string) => fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(date));
+const longDay = (date: string) => fmt('UTC', {weekday: 'long', month: 'short', day: 'numeric'}).format(utcDay(date));
+/** "8 h" or "7.5 h": the shift's length from its own start and end. */
+const lengthOf = (shift: PublishedAssignment) => { const minutes = Math.round((Date.parse(shift.endAt) - Date.parse(shift.startAt)) / 60_000); return minutes > 0 ? `${hoursNumber(minutes)} h` : null; };
 const dateKey = (at: string, zone: string) => new Intl.DateTimeFormat('en-CA', {timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(new Date(at));
 const minutesOf = (time: string) => { const [h, m] = time.split(':').map(Number); return h * 60 + m; };
 /** "24" or "24.5": hours with at most one decimal. */
@@ -51,6 +54,11 @@ export function workedMinutes(data: Ready): number | null {
   return Math.floor(seconds / 60);
 }
 
+function daysAway(payday: string, today: string) {
+  const days = Math.round((utcDay(payday).getTime() - utcDay(today).getTime()) / 86_400_000);
+  return days === 0 ? 'today' : days === 1 ? 'tomorrow' : days > 1 ? `in ${days} days` : null;
+}
+
 function paydayWord(payday: string, today: string) {
   const days = Math.round((utcDay(payday).getTime() - utcDay(today).getTime()) / 86_400_000);
   return days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 7 ? fmt('UTC', {weekday: 'short'}).format(utcDay(payday)) : fmt('UTC', {month: 'short', day: 'numeric'}).format(utcDay(payday));
@@ -60,10 +68,12 @@ function Figures({week, payday, worked}: {week: HomeWeek | null; payday?: string
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
   const items: BLiveItem[] = [];
   // Worked time reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours ("/56 h").
-  if (worked !== null && scheduled) items.push({label: 'This week', value: compactDuration(worked * 60), small: `/${hoursNumber(scheduled)} h`, href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled hours`});
+  if (worked !== null && scheduled) items.push({label: 'This week', value: compactDuration(worked * 60), small: `/${hoursNumber(scheduled)} h`, meta: 'hours worked of scheduled', href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled hours`});
   else if (worked !== null) items.push({label: 'This week', value: compactDuration(worked * 60), href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked`});
   else if (scheduled !== null) items.push({label: 'This week', value: `${hoursNumber(scheduled)} h`, href: '/app/schedule', aria: `This week, ${hoursNumber(scheduled)} hours scheduled`});
-  if (payday && week) items.push({label: 'Next payday', value: paydayWord(payday, week.today), href: '/app/my-pay', aria: `Next payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
+  // Desktop has room for the date ("Fri, Nov 13") and how far off it is; the phone keeps the short word.
+  if (payday && week) items.push({label: 'Next payday', value: <><span className="eb-phone">{paydayWord(payday, week.today)}</span><span className="eb-desk">{fmt('UTC', {weekday: 'short', month: 'short', day: 'numeric'}).format(utcDay(payday))}</span></>,
+    meta: daysAway(payday, week.today), href: '/app/my-pay', aria: `Next payday, ${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(utcDay(payday))}`});
   return items.length ? <BLive label="This week at a glance" items={items}/> : null;
 }
 
@@ -97,7 +107,9 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
       <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>
-      <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink>
+      {/* On desktop the button sits in the card's footer beside the day and length (eb-desk is desktop only). */}
+      <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{keepWhole([longDay(shift.date), lengthOf(shift)].filter(Boolean).join(' · '))}</span>
+        <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink></div>
     </div>
   </BCard>;
 }
@@ -145,6 +157,13 @@ export type HomeBProps = HomeBExtras & {
 
 export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
+  const todoRow = ({key, item, week: confirm}: HomeTodo) => {
+    const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
+    const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
+    return item.required
+      ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub} label={`${title}, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+      : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
+  };
   return <BScreen>
     <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
       {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday}/> : <Figures week={weekShown} payday={payday} worked={null}/> : null}
@@ -156,13 +175,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
         {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
           link={todos.length > 3 ? {href: '/app/notifications', label: 'See all', aria: `See all ${todos.length} things to do`} : undefined}>
           <BList>
-            {todos.slice(0, 3).map(({key, item, week: confirm}) => {
-              const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
-              const sub = confirm ? weekTodo(item).detail : item.deadlineAt ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
-              return item.required
-                ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub} label={`${title}, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
-                : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
-            })}
+            {todos.slice(0, 3).map(todoRow)}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
               const source = snapshot.sources[key];
               const state = source.state === 'unavailable' ? (source.reason === 'review_unavailable' ? 'A changed schedule needs review' : 'Couldn’t be checked')
@@ -170,6 +183,8 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
               return <BRow key={key} href={sourceDestinations[key]} title={sourceNames[key]} sub={state} label={`Open ${sourceNames[key].toLowerCase()}, ${state.toLowerCase()}`}/>;
             }) : null}
           </BList>
+          {/* Desktop shows two more (the phone keeps three). */}
+          {todos.length > 3 ? <ul className="b-list eb-desk">{todos.slice(3, 5).map(todoRow)}</ul> : null}
         </BCard> : null}
         {weekShown ? <ComingUp week={weekShown} snapshot={snapshot}/> : null}
         {!todos.length && !partial ? <BNote>You’re all set. Nothing needs you right now.</BNote> : null}

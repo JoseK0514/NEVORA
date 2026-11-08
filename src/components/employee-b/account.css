@@ -9,15 +9,13 @@
 .eb-keep, .eb-confirm { display: contents; }
 .eb-confirm__h { display: none; }
 
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   /* ---------- hosts, kept pieces and the header ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .c-page.c-embed.eb-host { display: block; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page.c-embed.eb-host:has(> .b-screen) ~ :not(.b-keep) { display: none !important; }
   /* Before the phone page takes over (server render): the loading screen replaces the tablet and desktop page. */
   :is(#c-root, html) .app-shell[data-nv-b] .page-frame:has(> .em-requests-mobile > .eb-host) > .c-page { display: none !important; }
   /* More and Notifications: no bell or avatar over the hero (your face is in More's hero; Notifications is the bell). */
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile]:has(.c-page > .b-screen > .eb-noacts) .mobile-header .mobile-header-actions { display: none !important; }
-
   /* ---------- More ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id { margin: 16px 20px 0; border-radius: 18px; overflow: hidden; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__me { display: flex; align-items: center; gap: 12px; padding: 14px 14px 12px; }
@@ -34,7 +32,6 @@
     transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:active { background-color: rgb(16 24 32 / 0.04); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:focus-visible { outline-offset: -3px; }
-
   /* ---------- shared pieces ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para { font-size: 14.5px; line-height: 21px; color: var(--b-ink2); text-wrap: pretty; overflow-wrap: break-word; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pad { padding: 4px 18px 14px; }
@@ -86,7 +83,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.eb-cardnote, .eb-para) a { color: #0B6E69; font-weight: 600; overflow-wrap: anywhere; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-list-top { box-shadow: inset 0 1px 0 #ECEEEF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-row-plain { min-height: 56px; }
-
   /* ---------- Notifications ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-when { align-self: center; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-when > span { font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -96,7 +92,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-unread { display: block; width: 9px; height: 9px; border-radius: 5px; background: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { color: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-notif--busy { background-color: rgb(16 24 32 / 0.04); }
-
   /* ---------- Updates ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools { display: flex; gap: 8px; margin: 16px 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search { flex: 1; min-width: 0; margin: 0; }
@@ -118,7 +113,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__head h2 { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: break-word; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__meta { margin-top: 4px; font-size: 13.5px; line-height: 18px; color: var(--b-grey); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-update__body { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--b-ink2); white-space: pre-line; overflow-wrap: break-word; }
-
   /* ---------- Profile ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field { min-height: 60px; padding: 10px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-field .b-row__t { overflow-wrap: anywhere; }
@@ -129,7 +123,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button[aria-pressed="true"] { background: #FFFFFF; color: var(--b-ink); box-shadow: 0 1px 3px rgb(16 40 38 / 0.18); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button:focus-visible { outline-offset: -2px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-danger .b-row__t { color: #B42318; }
-
   /* ---------- Add to calendar ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand { width: 100%; text-align: left; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-expand__caret { transition-property: rotate; transition-duration: 150ms; transition-timing-function: ease-out; }
@@ -140,7 +133,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-steps li + li { margin-top: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 2px 0 0; text-align: center; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-manage .b-note { margin-top: -6px; padding-bottom: 4px; }
-
   /* ---------- Help and the policy pages ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note { padding: 12px 18px 16px; box-shadow: inset 0 1px 0 #ECEEEF; font-size: 13.5px; line-height: 1.5; color: var(--b-grey); text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note b { font-weight: 600; color: var(--b-ink2); }
@@ -172,7 +164,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links a { color: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-doc__links [aria-current="page"] { color: var(--b-ink2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .legal-unresolved { padding: 0 2px; border-radius: 4px; background: #FDF3E4; color: #8A4B00; }
-
   /* ---------- kept pieces under a screen: Delete account's form, Write an update's form, Passkeys ---------- */
   /* The prefix carries the page layer's weight (owner-b-pages.css colours field labels with it), so the mock's values win. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) {
@@ -180,7 +171,6 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen > .b-hero:only-child) > .b-keep,
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.eb-host:has(> .b-screen > .b-hero:only-child) ~ .b-keep { margin-top: -40px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-keep { display: flex; flex-direction: column; gap: 12px; }
-
   /* Delete account: "Confirm it's you" as one card under the screen's two. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-desk { display: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm {
@@ -202,13 +192,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm > .c-note--center { margin-top: -6px; font-size: 13.5px; line-height: 18px; color: #6A7176; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-outcome { padding: 14px 16px; border-radius: 22px; font-size: 14px; line-height: 20px;
     box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-
   /* Write an update: its form as one lifted card under the screen's hero (the page's own header is the hero). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-heading { display: none !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-compose > .em-request-body {
     margin: 0 !important; padding: 18px !important; border-radius: 22px; background: #FFFFFF !important;
     box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
-
   /* Passkeys: the kit's cards under the screen's hero. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card { border: 0; border-radius: 22px; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__head { min-height: 44px; padding: 12px 18px 2px; box-shadow: none; }
@@ -216,6 +204,9 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: 16px; background: #0B6E69; color: #FFFFFF; font-size: 16px; font-weight: 600; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:is(.c-btn--secondary, .c-btn--danger) { border-radius: 22px; background: #F0F2F3; box-shadow: none; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep > .em-account-stack > .c-note { padding: 0 6px; font-size: 13px; line-height: 18px; color: #6A7176; }
+}
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile]:has(.c-page > .b-screen > .eb-noacts) .mobile-header .mobile-header-actions { display: none !important; }
 }
 
 /* Narrow phones (320–359px): the language switch drops under its words rather than cutting them. */
@@ -225,20 +216,20 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pref .b-row__s { display: block; overflow: visible; -webkit-line-clamp: unset; }
 }
 
-@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { animation: eb-spin 800ms linear infinite; }
   @keyframes eb-spin { to { rotate: 360deg; } }
   /* The kept pieces enter with the cards above them. */
   :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-enter 300ms ease-out 300ms both; }
   @keyframes eb-keep-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-fade 200ms linear both; }
   @keyframes eb-keep-fade { from { opacity: 0; } to { opacity: 1; } }
 }
 
 /* Inspection round 1 (Account). */
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   /* The language switch keeps the mock's 34px thumbs (the app's 44px button floor doesn't apply inside a segment). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .eb-lseg button { min-height: 34px !important; height: 34px !important; }
   /* Label-over-value rows are 63px like the mock. */
@@ -254,12 +245,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { top: 50% !important; transform: translateY(-50%) !important; }
 }
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: 15px; line-height: 22.5px; }
 }
 
 /* Inspection round 2 (Account). */
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   /* Updates search: the hidden clear button doesn't reserve space while the field is empty; the placeholder is 15px (the
    * typed text stays 16px so iPhones don't zoom). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
@@ -270,12 +261,12 @@
 }
 
 /* Inspection round 3: Confirm it's you has the same 19px inset as every card; the eye sits 26px from the field's edge. */
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm { border: 1px solid transparent !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { right: 6px !important; }
 }
 
 /* More's place line breaks between places, never inside one ("Northside QA Workforce" stays whole). */
-@media (max-width: 767px) {
+@media (max-width: 767px), (min-width: 1024px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 }

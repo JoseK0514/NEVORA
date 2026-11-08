@@ -1480,6 +1480,14 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   Requests, More: Updates, Notifications). A shift opens as a right-hand panel (like Owner timecards); Schedule has a
   seven-day week card; the Notifications sidebar count is teal (not urgent); the Requests band shows Waiting and Needs your
   answer counts. Pay statements show no amounts.
+  Built Nov 8, 2026: from 1024px an Employee page shows its Direction B screen (the phone's `BScreen`, same reads, links,
+  actions and states), laid out by `src/app/app/employee-b-desktop.css` over the Owner desktop shell (`owner-b-desktop.css`
+  now serves every `data-nv-b` role). Pages whose B screen lives in the phone presentation (Requests, Pick up and swap,
+  Time off, Availability, the request forms, Updates, Notifications) take it there too (`useEmployeeBScreen`), and the
+  shift sheet and weekly confirmation mount on the B side (`employee-b/viewport.tsx`). Desktop-only pieces are marked
+  `eb-desk` (the seven-day week card, band actions, the Requests figures and Shift requests card); phones and tablets are
+  unchanged. Not built yet: top-bar Search for Employees (needs a decision on what they can search), the Past timecards
+  and For you list-and-detail splits, the Pay history table, Availability's hour bars and the legal pages' contents list.
 - **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
   touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
   layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).

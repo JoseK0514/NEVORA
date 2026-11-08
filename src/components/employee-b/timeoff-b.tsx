@@ -4,7 +4,7 @@ import Link from 'next/link';
 import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
-import {BAvatar, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
+import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
 import {BAddRow, BCardNote, Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
@@ -42,7 +42,9 @@ const listHref = (filter: string) => filter === 'decided' ? '/app/requests?filte
 /** The hero: the list has Waiting and Decided on glass; the form closes with Cancel; a request goes back to Requests. */
 function TimeOffHero({page, filter, tabs}: {page: TimeOffPage; filter: string; tabs: boolean}) {
   if (page === 'new') return <BHero back={{href: listHref(filter), label: 'Cancel', close: true}} title="Request time off" titleId="b-timeoff-title"/>;
-  return <BHero back={{href: '/app/requests/hub', label: 'Requests'}} title="Time off" titleId="b-timeoff-title">
+  // Desktop: Request time off is the band's white action (the list's own row is the phone's).
+  return <BHero back={{href: '/app/requests/hub', label: 'Requests'}} title="Time off" titleId="b-timeoff-title"
+    right={page === 'list' ? <span className="eb-desk"><BButtonLink href="/app/requests?tab=new" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></span> : undefined}>
     {page === 'list' && tabs ? <BSeg label="Time-off requests" items={[
       {key: 'waiting', label: 'Waiting', href: '/app/requests', current: filter !== 'decided'},
       {key: 'decided', label: 'Decided', href: '/app/requests?filter=decided', current: filter === 'decided'},

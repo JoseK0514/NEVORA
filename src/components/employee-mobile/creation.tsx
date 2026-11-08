@@ -5,11 +5,11 @@ import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/priv
 import {creationKey,creationPayload,parseEmployeeCreation,type CreationDraft,type CreationMode,type EmployeeCreationSnapshot} from '@/lib/employee-creation';
 import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {EmployeeCreationOperation} from './creation-operation';
-import {useEmployeeMobile} from './use-mobile';
+import {useEmployeeBScreen} from './use-mobile';
 import {CreationView} from './creation-view';
 import {RequestsWaitB} from '../employee-b/requests-b';
 export function ResponsiveEmployeeCreation({authority,mode,sourceId,children}:{authority:string;mode:CreationMode;sourceId:string;children:ReactNode}){
- const mobile=useEmployeeMobile();return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your shift…</p>
+ const mobile=useEmployeeBScreen();return mobile?<div className="em-requests-mobile"><EmployeeMobileCreation key={authority+'|'+mode+'|'+sourceId} authority={authority} mode={mode} sourceId={sourceId}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading your shift…</p>
   {/* Direction B: the phone's first frame is this form's hero, checking (phones only). */}
   <RequestsWaitB page={mode} text="Checking your current shift and options…"/></div></>;
 }

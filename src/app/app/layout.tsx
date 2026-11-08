@@ -40,6 +40,8 @@ import "./owner-b-pages.css";
 import "@/components/employee-b/employee-b.css";
 // Direction B on desktop (Owner and Manager, 1024px and wider). Last, so it wins over every older layer.
 import "./owner-b-desktop.css";
+// Employee desktop, Direction B (Jose approved Nov 8, 2026): the Employee screens on desktop. After the desktop layer.
+import "./employee-b-desktop.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies} from "next/headers";
 import {createHash} from "node:crypto";

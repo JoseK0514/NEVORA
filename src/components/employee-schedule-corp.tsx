@@ -15,7 +15,7 @@ import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
 import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
-import { BChip } from './owner-b/b-kit';
+import { BChip, compactRange } from './owner-b/b-kit';
 import { BDay, Dotted } from './employee-b/parts';
 import { NotPhone, PhoneOnly } from './employee-b/viewport';
 
@@ -165,7 +165,19 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           <ShiftSheetCorpRow shift={sheetShift(shift)} title={hours(shift)} detail={rowDetail(shift)} href={`${listHref}&shift=${encodeURIComponent(shift.id)}`} closeHref={listHref} initiallyOpen={props.selectedShift === shift.id}
             b={{ lead: bLead(shift), chip: bChip(shift), label: rowLabel(shift) }} />
         </PhoneOnly>) }}
-      unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null} />
+      unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null}
+      // Employee desktop, Direction B (Nov 8, 2026): the whole week as seven days; each day opens as the strip's chosen day.
+      weekCard={state === 'unavailable' ? null : {
+        summary: [shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts',
+          state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null].filter(Boolean).join(' · '),
+        days: dates.map(date => ({ date, short: dayFmt(date, { weekday: 'short' }), day: Number(date.slice(8)), today: date === today, selected: chosen ? date === chosen : date === today,
+          href: date === chosen ? `/app/schedule?week=${weekStart}${keep}` : dayHref(date),
+          label: `${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${date === chosen ? ', selected day, show the whole week' : ''}`,
+          shifts: shifts.filter(shift => shift.date === date).map(shift => {
+            const kind = shift.date < today || (shift.date === today && !hasNotEnded(shift, observedAt, timeZone)) ? 'past' as const : shift.date === today ? 'now' as const : 'up' as const;
+            return { key: shift.id, time: compactRange(hours(shift)), position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+              kind, chip: kind === 'past' ? null : bChip(shift) ?? null, label: rowLabel(shift) };
+          }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
       : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>}
       actions={<CorpButtonLink href="/app/availability" kind="neutral" size="sm">Availability</CorpButtonLink>} />

@@ -6,6 +6,7 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {FileTextIcon} from '@phosphor-icons/react/dist/ssr/FileText';
 import {ReceiptIcon} from '@phosphor-icons/react/dist/ssr/Receipt';
 import {BEmpty} from './requests-b';
+import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {BButtonLink, BCard, BChip, BHero, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
 import type {PayView} from '../employee-mobile/pay';
 import {BAddRow} from './parts';
@@ -113,7 +114,8 @@ export function PayB(props: PayBProps) {
   const showPayday = !!nextPay && listed && daysUntil !== null && daysUntil >= 0;
   const when = daysUntil === 0 ? 'Today' : daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`;
   return <BScreen ink>
-    <BHero title="Pay" titleId="b-pay-title">
+    {/* Desktop: Pay history is the band's glass action (eb-desk); the phone reaches it from the Earlier card. */}
+    <BHero title="Pay" titleId="b-pay-title" right={<span className="eb-desk"><BButtonLink href="/app/my-pay?view=history" kind="glass"><ClockCounterClockwiseIcon size={16} weight="bold" aria-hidden="true"/>Pay history</BButtonLink></span>}>
       {showPayday ? <div className="b-hpad ep-next">
         <p className="ep-next__k">Next payday · {when}</p>
         <p className="ep-next__v">{payday(nextPay!.payday)}</p>

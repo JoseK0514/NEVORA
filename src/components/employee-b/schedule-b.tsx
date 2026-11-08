@@ -34,7 +34,27 @@ export type ScheduleBProps = {
   unavailable: {retryHref: string} | null;
   list: {label: string; wholeWeekHref: string | null; rows: ReactNode; empty: string | null};
   unpublished: ReactNode;
+  /** Desktop only: the whole week as seven days, each with its shifts, and the week's summary line. */
+  weekCard?: {days: WeekCardDay[]; summary: ReactNode} | null;
 };
+export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string};
+export type WeekCardDay = {date: string; short: string; day: number; today: boolean; selected: boolean; href: string; label: string; shifts: WeekCardShift[]};
+
+/** Desktop: "Your week", seven columns; a day opens as the chosen day (the strip's own link). The week's changes sit in the
+ * card's footer beside its summary. */
+function WeekCard({days, summary, changes}: {days: WeekCardDay[]; summary: ReactNode; changes: ReactNode}) {
+  return <section className="b-card eb-desk eb-wkc" aria-labelledby="b-week-card-h">
+    <div className="b-card__h"><h2 id="b-week-card-h">Your week</h2></div>
+    <ol className="eb-wk">{days.map(day => <li key={day.date} className={['eb-wd', day.today ? 'is-today' : '', day.selected ? 'is-on' : ''].filter(Boolean).join(' ')}>
+      <span className="eb-wd__h" aria-hidden="true"><span>{day.short}</span><b>{day.day}</b></span>
+      {/* One stop per shift (a day off is one stop too), each opening that day. */}
+      {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
+        <b>{shift.time}</b>{shift.position ? <span>{shift.position}</span> : null}<span>{shift.place}</span>{shift.chip}
+      </Link>) : <Link className="eb-wsh eb-wsh--off" href={day.href} scroll={false} aria-label={day.label}/>}
+    </li>)}</ol>
+    <div className="eb-wkc__foot"><p className="eb-wkc__sum">{summary}</p>{changes ? <div className="eb-wkc__changes">{changes}</div> : null}</div>
+  </section>;
+}
 
 function Week({range, confirmed, todayHref, prevHref, nextHref, days}: Pick<ScheduleBProps, 'range' | 'confirmed' | 'todayHref' | 'prevHref' | 'nextHref' | 'days'>) {
   return <div className="b-week b-glass">
@@ -56,13 +76,14 @@ function Week({range, confirmed, todayHref, prevHref, nextHref, days}: Pick<Sche
 }
 
 export function ScheduleB(props: ScheduleBProps) {
-  const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished} = props;
+  const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished, weekCard} = props;
   return <BScreen>
     <BHero title="Schedule" titleId="b-schedule-title" sub={sub}
       right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
       <Week {...props}/>
     </BHero>
     <BStack>
+      {weekCard ? <WeekCard days={weekCard.days} summary={weekCard.summary} changes={changes}/> : null}
       {celebration}
       {confirm ? <BCard id="b-my-review" label={confirm.title}>
         <div className="b-row es-confirm" role="group" aria-labelledby="b-my-review-title">

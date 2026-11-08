@@ -34,13 +34,13 @@ export const HoursBContext=createContext<HoursBContextValue|null>(null);
 export const B_TITLE_ID='b-hours-title';
 
 /** A Time page's Direction B screen: the hero from the page's header, then the cards. */
-export function HoursBScreen({hero,children,sub,backLabel}:{hero?:ReactNode;children?:ReactNode;/** Replaces the header's line (null: none). */sub?:string|null;backLabel?:string}){
+export function HoursBScreen({hero,children,sub,backLabel,right}:{hero?:ReactNode;children?:ReactNode;/** Replaces the header's line (null: none). */sub?:string|null;backLabel?:string;/** Replaces the header's action. */right?:ReactNode}){
  const context=useContext(HoursBContext);
  if(!context)return null;
  const {head,notice}=context,back=head.back?{...head.back,label:backLabel??head.back.label}:undefined;
  const stack=!!notice||(children!==undefined&&children!==null&&children!==false);
  return <BScreen back={!!back}>
-  <BHero title={head.title} titleId={B_TITLE_ID} sub={sub===undefined?head.sub:sub??undefined} right={head.right} back={back}>{hero}</BHero>
+  <BHero title={head.title} titleId={B_TITLE_ID} sub={sub===undefined?head.sub:sub??undefined} right={right??head.right} back={back}>{hero}</BHero>
   {stack?<BStack>{notice??null}{children}</BStack>:null}
  </BScreen>;
 }
@@ -99,6 +99,10 @@ export function TimeTabB({data}:{data:Ready}){
    <BCardNote>Hours include breaks.</BCardNote>
   </BCard>
   {context?<LastWeekB authority={context.authority} date={data.date}/>:null}
+  {/* Desktop: the corrections sit under last week in the right column (the phone reaches them from Past timecards). */}
+  <div className="eb-desk"><BCard label="Your corrections"><BList>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your corrections" sub="Fixes you asked your manager for"/>
+  </BList></BCard></div>
  </HoursBScreen>;
 }
 
@@ -192,7 +196,8 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
 const correctionChip=(status:PublicCorrectionItem['status'])=>chip(correctionStatus(status));
 export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;decided:boolean}){
  const zone=snapshot.timeZone,rows=snapshot.requests.filter(r=>decided?r.status!=='PENDING':r.status==='PENDING');
- return <HoursBScreen hero={<BSeg label="Correction requests" items={[{key:'waiting',label:'Waiting',href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:'Decided',href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
+ // Desktop: Fix a missed punch is the band's white action (the card's own row is the phone's).
+ return <HoursBScreen right={<span className="eb-desk"><BButtonLink href="/app/my-time?view=corrections&edit=new" kind="white"><PencilSimpleIcon size={17} weight="bold" aria-hidden="true"/>Fix a missed punch</BButtonLink></span>} hero={<BSeg label="Correction requests" items={[{key:'waiting',label:'Waiting',href:'/app/my-time?view=corrections',current:!decided},{key:'decided',label:'Decided',href:'/app/my-time?view=corrections&filter=decided',current:decided}]}/>}>
   <BCard label={decided?'Decisions':'Waiting for review'}>
    <BList label={decided?'Decisions':'Waiting for review'}>
     {rows.map(r=>{const day=dateKey(r.proposedStartAt,zone),times=clockRange(r.proposedStartAt,r.proposedEndAt,zone),word=correctionStatus(r.status).word;

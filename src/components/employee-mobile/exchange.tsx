@@ -5,7 +5,7 @@ import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/priv
 import {parseEmployeeExchange,type EmployeeExchangeSnapshot,type EmployeeResponseKind} from '@/lib/employee-exchange';
 import {shiftChangeAction,reconcileShiftChangeAction} from '@/app/app/exchange/actions';
 import {EmployeeRequestOperation} from './request-operation';
-import {useEmployeeMobile} from './use-mobile';
+import {useEmployeeBScreen} from './use-mobile';
 import {EmployeeExchangeView,type ExchangeMode} from './exchange-view';
 import {RequestsWaitB} from '../employee-b/requests-b';
 import {focusShown} from '../employee-b/focus';
@@ -20,7 +20,7 @@ function Recovery({operation,onRetry,onRefresh,look='corp',effects=true}:{operat
  return <section className="em-request-notice" aria-label="Unconfirmed response"><p role="status">{text}</p>{operation.state.uncertain?<button type="button" className="em-request-secondary" disabled={operation.state.pending} onClick={()=>onRetry(operation)}>Check previous response</button>:null}</section>;
 }
 export function ResponsiveEmployeeExchange({authority,mode,selection=null,children}:{authority:string;mode:ExchangeMode;selection?:string|null;children:ReactNode}){
- const mobile=useEmployeeMobile();
+ const mobile=useEmployeeBScreen();
  return mobile?<div className="em-requests-mobile"><EmployeeMobileExchange key={authority} authority={authority} mode={mode} selection={selection}/></div>:<>{children}<div className="em-requests-mobile"><p className="em-request-loading" role="status">Loading requests…</p>
   {/* Direction B: the phone's first frame is this page's hero, checking (phones only). */}
   <RequestsWaitB page={selection?mode==='incoming'?'detail-foryou':'detail-mine':mode==='incoming'?'foryou':'mine'} text="Checking your current requests…"/></div></>;

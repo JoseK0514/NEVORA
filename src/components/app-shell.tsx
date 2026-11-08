@@ -6,7 +6,7 @@ import {NavigationLink as Link} from './navigation-link';
 import {useLinkStatus} from 'next/link';
 import {EmployeeMessageProvider,EmployeeMessageReturn} from './employee-mobile/message-session';
 import {AppNavigationProvider,useIdentityReload} from './app-navigation';
-import { NotificationBell } from "./notification-bell";
+import { NotificationBell, NotificationCount } from "./notification-bell";
 import { useInboxCount } from "./use-inbox-count";
 import { isMobileKeyboardVisible } from "../lib/mobile-keyboard";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
@@ -425,6 +425,9 @@ function AppShellView({
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
                 {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
+                {/* Employee desktop, Direction B (Nov 8, 2026): Notifications carries its unread count (teal, not urgent), from
+                  the bell's own private snapshot. Shown on desktop only; the entry's label stays its name. */}
+                {employee && user.role === "EMPLOYEE" && item.href === "/app/notifications" && notificationAuthority ? <NotificationCount authority={notificationAuthority} /> : null}
               </Link>
             );
           })}</div>)}
