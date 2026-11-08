@@ -80,6 +80,24 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/onboarding-manifest.mjs",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "SOURCE_MANIFEST",
+      "reason": "Bounded disabled-by-default provisioner invocation, or explicit check-only canonical source manifest producer; no legacy company fallback."
+    },
+    {
+      "path": "scripts/onboarding-worker.mts",
+      "tags": [
+        "non-request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "VERIFIED_PROVISIONER",
+      "reason": "Bounded disabled-by-default provisioner invocation, or explicit check-only canonical source manifest producer; no legacy company fallback."
+    },
+    {
       "path": "scripts/payroll-exports-ui-qa.mjs",
       "tags": [
         "direct-transport"
@@ -888,6 +906,15 @@
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
     },
     {
+      "path": "src/app/api/onboarding/operations/[operationId]/route.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
       "path": "src/app/api/onboarding/registrations/route.ts",
       "tags": [
         "request-entrypoint"
@@ -904,6 +931,15 @@
       "status": "CONVERTED",
       "isolatedBehavior": "CONTROL_PLANE",
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
+    },
+    {
+      "path": "src/app/api/onboarding/workspaces/route.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
     },
     {
       "path": "src/app/api/owner/advisor/route.ts",
@@ -2353,6 +2389,24 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/lib/company-bootstrap/manifest.generated.ts",
+      "tags": [
+        "verified-provisioning"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "VERIFIED_PROVISIONER",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/company-bootstrap/server.ts",
+      "tags": [
+        "verified-provisioning"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "VERIFIED_PROVISIONER",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
       "path": "src/lib/data/acknowledgements.ts",
       "tags": [
         "direct-transport",
@@ -2984,6 +3038,78 @@
       "status": "CONVERTED",
       "isolatedBehavior": "CONTROL_PLANE",
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/connection.server.ts",
+      "tags": [
+        "verified-provisioning"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "VERIFIED_PROVISIONER",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/http.server.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/model.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/neon-provider.server.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/orchestrator.server.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/provider.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/runtime.server.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/store.server.ts",
+      "tags": [
+        "control-plane"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "CONTROL_PLANE",
+      "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
     },
     {
       "path": "src/lib/payroll-export/service.ts",

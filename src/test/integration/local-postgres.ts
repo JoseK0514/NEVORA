@@ -45,6 +45,7 @@ export const CURRENT_MIGRATIONS = [
   '0045_owner_coverage_actions.sql',
   '0046_native_push.sql',
   '0047_isolated_workspace_runtime.sql',
+  '0048_self_service_onboarding.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

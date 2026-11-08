@@ -14,7 +14,7 @@ export function readOnboardingConfig(env:Environment=process.env):DisabledConfig
  const retentionDays=integer(env.NEVORA_ONBOARDING_RETENTION_DAYS,1,365),verificationPlatformLimit=integer(env.NEVORA_ONBOARDING_VERIFICATION_PLATFORM_LIMIT_15M,1,100000),maxNewProjectsPerDay=integer(env.NEVORA_ONBOARDING_MAX_NEW_PROJECTS_PER_DAY??'0',0,100000);
  const providerValue=env.NEVORA_ONBOARDING_PROVIDER_ENABLED??'false';if(!['false','true'].includes(providerValue)||retentionDays===null||verificationPlatformLimit===null||maxNewProjectsPerDay===null)return invalid;
  const providerEnabled=providerValue==='true',providerAccountRef=env.NEVORA_ONBOARDING_PROVIDER_ACCOUNT_REF??null,resourcePolicyVersion=env.NEVORA_ONBOARDING_RESOURCE_POLICY_VERSION??null;
- if(providerEnabled&&(!maxNewProjectsPerDay||!ref(providerAccountRef??undefined)||!ref(resourcePolicyVersion??undefined)))return invalid;
+ if(providerEnabled&&(env.NEVORA_WORKSPACE_MODE!=='isolated'||!maxNewProjectsPerDay||!ref(providerAccountRef??undefined)||!ref(resourcePolicyVersion??undefined)))return invalid;
  const portalBaseDomain=env.NEVORA_PORTAL_BASE_DOMAIN,operatorRef=env.NEVORA_ONBOARDING_OPERATOR_REF,region=env.NEVORA_ONBOARDING_REGION;
  const termsVersion=env.NEVORA_ONBOARDING_TERMS_VERSION,privacyVersion=env.NEVORA_ONBOARDING_PRIVACY_VERSION;
  if(!ref(termsVersion)||!ref(privacyVersion)||termsVersion.length>100||privacyVersion.length>100)return invalid;

@@ -111,7 +111,7 @@ No tests/install/build ran for this documentation-only plan. Before implementati
 
 ### Task 5: First-Owner credential activation and recovery
 
-**Files:** create src/lib/onboarding/owner-activation.server.ts and tests; API bootstrap-grants/route.ts and owner-activation/route.ts; use the0047 tables/manifest installed by Task4.
+**Files:** create src/lib/onboarding/owner-activation.server.ts and tests; API bootstrap-grants/route.ts and owner-activation/route.ts; use the0048 tables/manifest installed by Task4; add0049 for tested activation functions.
 **Consumes:** proven provisioned company, verified registration ownership, existing hashing and guarded session issuance.
 **Produces:** issueOwnerBootstrapGrant(signupProof,operationId): Promise<BootstrapRedirect>; activateInitialOwner(binding,command): Promise<OnboardingResult>. A bootstrap grant is distinct from an employee invitation.
 

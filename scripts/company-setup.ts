@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import type { Client } from 'pg';
-import { BASE_MIGRATIONS, FINAL_MIGRATIONS } from '../db/migrations/order';
+import {canonicalCompanyManifest,lockFreshCompany,installCompanyBase,insertOwnerProfile,installCompanyFinal} from '../src/lib/company-bootstrap/server';
+export {migrationBody} from '../src/lib/company-bootstrap/server';
 import { hashPassword } from '../src/lib/auth/password';
 import { normalizePhoneNumber } from '../src/lib/phone';
 import { validateWorkspaceProfile } from '../src/lib/workspace/validation';
@@ -90,12 +90,7 @@ export function readSetupTarget(env: Environment): string {
 }
 
 async function insertOwner(client: Client, owner: OwnerInput, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
-  await client.query(`INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id)
-    VALUES($1,$2,$3,$4,$5,'OWNER',$6)`, [owner.id, owner.firstName, owner.lastName, owner.phone, owner.email, primaryLocationId]);
-  await client.query(`INSERT INTO employee_location_eligibility(employee_id,location_id)
-    SELECT $1, unnest($2::text[])`, [owner.id, eligibleLocationIds]);
-  await client.query(`INSERT INTO employee_credentials(employee_id,password_hash,must_change_password)
-    VALUES($1,$2,false)`, [owner.id, passwordHash]);
+  return insertOwnerProfile(client,owner,primaryLocationId,eligibleLocationIds,{active:true,passwordHash});
 }
 
 export async function bootstrapOwner(client: Client, owner: OwnerInput, locations: ReturnType<typeof readOwnerLocations>) {
@@ -123,42 +118,17 @@ export async function bootstrapOwner(client: Client, owner: OwnerInput, location
 
 /** Historical migrations remain the schema authority. Strip only their outer
  * transaction markers so the entire fresh install has one atomic boundary. */
-export function migrationBody(source: string): string {
-  const begins = [...source.matchAll(/^BEGIN;\s*$/gm)];
-  const commits = [...source.matchAll(/^COMMIT;\s*$/gm)];
-  if (begins.length !== commits.length || begins.length > 1) throw new Error('Unexpected migration transaction boundaries.');
-  return source.replace(/^BEGIN;\s*$/m, '').replace(/^COMMIT;\s*$/m, '');
-}
-
 export async function setupCompany(client: Client, input: CompanyInput) {
-  // One authoritative order: duplicate numeric prefixes make filename sorting
-  // wrong, and the held tenant files must never run. See db/migrations/order.ts.
-  const read = (file: string) => readFile(new URL(`../db/migrations/${file}`, import.meta.url), 'utf8');
-  const migrations = await Promise.all(BASE_MIGRATIONS.map(async file => migrationBody(await read(file))));
-  const currentMigrations = await Promise.all(FINAL_MIGRATIONS.map(async file => migrationBody(await read(file))));
+  const manifest=await canonicalCompanyManifest();
   const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
   await client.query('BEGIN');
   try {
-    await client.query("SELECT pg_advisory_xact_lock(hashtextextended('nevora.company.setup',0))");
-    const existing = await client.query(`SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-      WHERE n.nspname='public' UNION ALL SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-      WHERE n.nspname='public' UNION ALL SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace
-      WHERE n.nspname='public' LIMIT 1`);
-    if (existing.rowCount) throw new Error('Company setup requires an empty public schema; existing databases are never reset.');
-    await client.query('SET LOCAL search_path TO public, pg_catalog');
-    for (const migration of migrations) await client.query(migration);
-    // These rows were created by the historical migrations in THIS transaction
-    // on a proven empty schema. No existing customer configuration is touched.
-    await client.query('DELETE FROM location_staffing_settings');
-    await client.query('DELETE FROM locations');
-    await client.query('DELETE FROM workspaces');
-    await client.query('INSERT INTO workspaces(id,name,time_zone) VALUES($1,$2,$3)', [workspaceId, input.name, input.timeZone]);
-    await client.query(`INSERT INTO locations(id,workspace_id,clocker_key,name,short_name)
-      VALUES($1,$2,$3,$4,$5)`, [locationId, workspaceId, input.locationKey, input.locationName, input.locationShortName]);
+    await lockFreshCompany(client);
+    await installCompanyBase(client,manifest,{workspaceId,name:input.name,timeZone:input.timeZone,locationId,locationName:input.locationName,locationShortName:input.locationShortName,locationKey:input.locationKey});
     await insertOwner(client, input.owner, passwordHash, locationId, [locationId]);
     // Immutable access adoption must bind the configured company and real employees.
-    for (const migration of currentMigrations) await client.query(migration);
+    await installCompanyFinal(client,manifest);
     await client.query('COMMIT');
     return { workspaceId, locationId };
   } catch (error) {
