@@ -3,6 +3,7 @@ type Metadata = Record<string, string>;
 type Price = {
   id: string;
   livemode: boolean;
+  tax_behavior?: string;
   active: boolean;
   unit_amount: number;
   currency: string;
@@ -90,6 +91,10 @@ export class StripeFixture {
   loseCheckoutResponse = false;
   accountId = "acct_fictional";
   unavailableAccount = false;
+  taxLocationValid = true;
+  readonly products = new Map([
+    ["prod_nevora", { id: "prod_nevora", object: "product", tax_code: "txcd_10103000" }],
+  ]);
   readonly client: Stripe;
   constructor() {
     this.client = new Stripe("sk_test_fictional", {
@@ -227,19 +232,24 @@ export class StripeFixture {
       value = this.customers.get(url.pathname.split("/").at(-1)!);
     else if (url.pathname.startsWith("/v1/prices/"))
       value = this.prices.get(url.pathname.split("/").at(-1)!);
+    else if (url.pathname.startsWith("/v1/products/"))
+      value = this.products.get(url.pathname.split("/").at(-1)!);
     else if (url.pathname === "/v1/subscriptions" && method === "GET")
       value = this.list(
         [...this.subscriptions.values()].filter(
           (s) => s.customer === url.searchParams.get("customer"),
         ),
       );
-    else if (url.pathname === "/v1/subscriptions" && method === "POST")
+    else if (url.pathname === "/v1/subscriptions" && method === "POST") {
+      if (form.get("automatic_tax[enabled]") === "true" && !this.taxLocationValid)
+        return this.response({error:{type:"invalid_request_error",code:"customer_tax_location_invalid",message:"Fixture tax location missing"}},400);
       value = this.createSubscription(
         form.get("customer")!,
         form.get("items[0][price]")!,
         this.metadata(form),
         Number(form.get("trial_end")) || undefined,
       );
+    }
     else if (url.pathname.startsWith("/v1/subscriptions/")) {
       const id = url.pathname.split("/").at(-1)!;
       if (this.unavailableSubscriptions.has(id))

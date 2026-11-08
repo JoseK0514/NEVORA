@@ -128,6 +128,82 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     await expect(checkout()).rejects.toThrow("invalid_billing_price");
     expect(provider.customers.size).toBe(0);
   });
+  function enableTax() {
+    billing.options.tax = { code: "txcd_10103000", behavior: "exclusive" };
+    provider.prices.get("price_small")!.tax_behavior = "exclusive";
+    provider.prices.get("price_team")!.tax_behavior = "exclusive";
+  }
+  it("enables Tax for immediate subscription Checkout with a persisted billing address", async () => {
+    enableTax();
+    await pool.query("UPDATE commerce.businesses SET trial_ends_at=$2 WHERE id=$1", [id, new Date(now - 1)]);
+    await checkout();
+    const form = provider.requests.find((r) => r.path === "/v1/checkout/sessions" && r.method === "POST")!.form;
+    expect(form.get("mode")).toBe("subscription");
+    expect(form.get("automatic_tax[enabled]")).toBe("true");
+    expect(form.get("billing_address_collection")).toBe("required");
+    expect(form.get("customer_update[address]")).toBe("auto");
+    expect(form.get("tax_id_collection[enabled]")).toBe("true");
+  });
+  it("preserves authorized Tax across a setup checkout and changed runtime configuration", async () => {
+    enableTax();
+    const session = await checkout();
+    const form = provider.requests.find((r) => r.path === "/v1/checkout/sessions" && r.method === "POST")!.form;
+    expect(form.get("automatic_tax[enabled]")).toBeNull();
+    expect(form.get("billing_address_collection")).toBe("required");
+    expect(form.get("customer_update[address]")).toBe("auto");
+    expect(form.get("tax_id_collection[enabled]")).toBeNull();
+    expect(form.get("custom_text[submit][message]")).toContain("plus applicable tax");
+    billing.options.tax = undefined;
+    session.metadata.nevora_tax_terms = "provider-metadata-is-not-authority";
+    provider.complete(session.id);
+    await billing.syncJob({ sessionId: session.id });
+    await billing.syncJob({ sessionId: session.id });
+    const requests = provider.requests.filter((r) => r.path === "/v1/subscriptions" && r.method === "POST");
+    expect(requests).toHaveLength(1);
+    expect(requests[0].form.get("automatic_tax[enabled]")).toBe("true");
+    expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it("does not enable Tax for an older Tax-off intent when runtime configuration changes", async () => {
+    const session = await checkout();
+    enableTax();
+    provider.complete(session.id);
+    await billing.syncJob({ sessionId: session.id });
+    const form = provider.requests.find((r) => r.path === "/v1/subscriptions" && r.method === "POST")!.form;
+    expect(form.get("automatic_tax[enabled]")).not.toBe("true");
+  });
+  it.each(["classification", "behavior"])("rejects incorrect Tax %s before checkout", async (kind) => {
+    enableTax();
+    if (kind === "classification") provider.products.get("prod_nevora")!.tax_code = "txcd_10000000";
+    else provider.prices.get("price_small")!.tax_behavior = "inclusive";
+    await expect(checkout()).rejects.toThrow("stripe_tax_price_mismatch");
+    expect(provider.customers.size).toBe(0);
+    expect(provider.sessions.size).toBe(0);
+  });
+  it("blocks delayed subscription creation when authorized Tax classification changes", async () => {
+    enableTax();
+    const session = await checkout();
+    provider.products.get("prod_nevora")!.tax_code = "txcd_10000000";
+    provider.complete(session.id);
+    await expect(billing.syncJob({ sessionId: session.id })).rejects.toThrow("stripe_tax_price_mismatch");
+    expect(provider.subscriptions.size).toBe(0);
+    expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it("retains the Tax requirement after missing location, then retries exactly once", async () => {
+    enableTax();
+    const session = await checkout();
+    provider.complete(session.id);
+    provider.taxLocationValid = false;
+    await expect(billing.syncJob({ sessionId: session.id })).rejects.toThrow();
+    expect(provider.subscriptions.size).toBe(0);
+    expect((await store.business(id)).paidThrough).toBeNull();
+    provider.taxLocationValid = true;
+    await billing.syncJob({ sessionId: session.id });
+    const requests = provider.requests.filter((r) => r.path === "/v1/subscriptions" && r.method === "POST");
+    expect(requests).toHaveLength(2);
+    expect(requests.every((r) => r.form.get("automatic_tax[enabled]") === "true")).toBe(true);
+    expect(requests[0].form.toString()).toBe(requests[1].form.toString());
+    expect(provider.subscriptions.size).toBe(1);
+  });
   it("restores the same owner after a hosted redirect without treating return as payment", async () => {
     await checkout();
     const request = provider.requests.find(

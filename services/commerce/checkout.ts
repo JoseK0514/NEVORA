@@ -5,6 +5,8 @@ import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError, planFor, type PlanKey } from "./model";
 import { seal, unseal } from "./security";
+import type { StripeTaxConfig } from "./stripe-config";
+import { assertTaxPrice, taxTerms } from "./stripe-tax";
 import {
   assertOwnedSubscription,
   terminalSubscription,
@@ -16,6 +18,7 @@ type Ports = {
   now: () => number;
   prices: Record<PlanKey, string>;
   live: boolean;
+  tax?: StripeTaxConfig;
   headcount: (business: Business, client: PoolClient) => Promise<number>;
 };
 type Intent = {
@@ -94,6 +97,7 @@ async function prepare(
       price.recurring.interval_count !== 1
     )
       throw new CommerceError("invalid_billing_price", 503);
+    if (ports.tax) await assertTaxPrice(ports.stripe, price, ports.tax);
     const customerId = await customer(ports, client, business),
       existing = (
         await ports.stripe.subscriptions.list({
@@ -129,6 +133,7 @@ async function prepare(
         nevora_business_id: id,
         nevora_price: price.id,
         nevora_checkout_operation: operation,
+        ...(ports.tax ? { nevora_tax_terms: taxTerms(ports.tax) } : {}),
       },
       expiresAt = Math.floor(Date.now() / 1000) + 2700;
     const params: Stripe.Checkout.SessionCreateParams = {
@@ -141,16 +146,25 @@ async function prepare(
       metadata,
       expires_at: expiresAt,
     };
+    if (ports.tax) {
+      params.billing_address_collection = "required";
+      params.customer_update = { address: "auto" };
+    }
     if (early) {
       params.setup_intent_data = { metadata };
       params.custom_text = {
         submit: {
-          message: `Authorize USD ${(plan.amount / 100).toFixed(2)} per month starting ${new Date(chargeStart).toISOString().slice(0, 10)}. Cancel through billing settings.`,
+          message: `Authorize USD ${(plan.amount / 100).toFixed(2)} per month${ports.tax ? (ports.tax.behavior === "exclusive" ? " plus applicable tax" : " including applicable tax") : ""} starting ${new Date(chargeStart).toISOString().slice(0, 10)}. Cancel through billing settings.`,
         },
       };
     } else {
       params.line_items = [{ price: price.id, quantity: 1 }];
       params.subscription_data = { metadata };
+      if (ports.tax) {
+        params.automatic_tax = { enabled: true };
+        params.tax_id_collection = { enabled: true };
+        params.customer_update = { address: "auto", name: "auto" };
+      }
     }
     const result = await client.query<Intent>(
       "INSERT INTO commerce.checkout_intents(business_id,operation,previous_subscription_id,params_secret,employee_count,plan_key,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *",

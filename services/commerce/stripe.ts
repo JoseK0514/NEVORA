@@ -7,6 +7,8 @@ import { CommerceStore, type Business } from "./store";
 import { CommerceError, type PlanKey } from "./model";
 import { createCheckout, recoverCheckouts } from "./checkout";
 import type { StripeTaxConfig } from "./stripe-config";
+import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
+import { unseal } from "./security";
 import {
   applyInstallationCapacity,
   readInstallationHeadcount,
@@ -57,6 +59,7 @@ export class StripeBilling implements BillingPort {
       origin: this.options.origin,
       prices: this.options.prices,
       live: this.options.live,
+      tax: this.options.tax,
       now: () => this.now(),
       headcount: (business: Business, client: PoolClient) =>
         this.options.facts
@@ -221,9 +224,19 @@ export class StripeBilling implements BillingPort {
           business.trialEnd ?? 0,
           business.paidThrough ?? 0,
         );
-        const subscription =
-          previous[0] ??
-          (await this.stripe.subscriptions.create(
+        let subscription = previous[0];
+        if (!subscription) {
+          const originalParams = JSON.parse(unseal(intent.params_secret, this.store.key, `intent:${businessId}:${intent.operation}`)) as Stripe.Checkout.SessionCreateParams;
+          const tax = readTaxTerms(originalParams);
+          if (tax) {
+            const price = await this.stripe.prices.retrieve(this.options.prices[intent.plan_key as PlanKey]);
+            if (!price.active || price.livemode !== this.options.live || price.currency !== "usd" ||
+                price.unit_amount !== (intent.plan_key === "small" ? 1900 : 2900) ||
+                price.recurring?.interval !== "month" || price.recurring.interval_count !== 1)
+              throw new CommerceError("invalid_billing_price", 503);
+            await assertTaxPrice(this.stripe, price, tax);
+          }
+          subscription = await this.stripe.subscriptions.create(
             {
               customer: business.customerId!,
               items: [
@@ -233,6 +246,7 @@ export class StripeBilling implements BillingPort {
                 },
               ],
               default_payment_method: stripeObjectId(setup.payment_method)!,
+              automatic_tax: { enabled: Boolean(tax) },
               metadata: {
                 nevora_business_id: businessId,
                 nevora_checkout_session: id,
@@ -243,7 +257,8 @@ export class StripeBilling implements BillingPort {
                 : {}),
             },
             { idempotencyKey: `nevora-subscription:${id}` },
-          ));
+          );
+        }
         return subscription.id;
       },
     );
