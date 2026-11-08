@@ -1519,5 +1519,15 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   white card. Desktop: teal brand panel (the app's own product line) beside a 440px form card; policy, 404 and error pages
   use the band with an 860px reading card. Keep the time-of-day greeting on phones. The decorative "404" goes ("Page not
   found · Error 404" stays). Status colours: red stops you, amber means wait, green is done.
+  Built Nov 8, 2026: the Quiet sign-in shell (`QuietAuthShell`: sign in, Forgot access, New password, Activate account,
+  Welcome and Access help) and the policy pages (Privacy, Terms, Support, Account deletion) take
+  `src/components/auth-premium/auth-b.css`. Below 1024px (phones, tablets and phones held sideways) the top bar, the back
+  link and the title paint a teal band and the form is a lifted white card; from 1024px a teal brand panel (wordmark,
+  "NEVORA Workforce", the brand line and its support line in EN or ES, Powered by VELANI LLC) sits beside the 440px form
+  card, with Español as a pill at the top right and the links under the card. Policy pages are the band with an 860px
+  reading card on every width. 404 drops the decorative "404" and reads "Page not found" over "Error 404" on the band with
+  its card and the Clocker hint. Errors are red, notices green. Forms, actions, messages, redirects and copy are unchanged;
+  the Clocker's routes and styles are untouched. Not built yet: the shared error screen (it also serves the app), the
+  mobile-access variant (off in production) and the error line inside the card as the mock draws it.
 - **Clocker.** Unchanged: the approved Release 1 tablet design stays as is.
 

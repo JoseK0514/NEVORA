@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import "@/components/auth-premium/auth-b.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthBrand } from "@/components/auth-brand";

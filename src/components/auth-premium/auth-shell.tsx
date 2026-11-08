@@ -1,6 +1,8 @@
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileAccessHeader} from "@/components/mobile-access/chrome";
 import "@/components/mobile-access/mobile-access.css";
+import "./auth-b.css";
+import { NUVORA_BRAND } from "@/lib/brand";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
@@ -126,6 +128,13 @@ export function QuietAuthShell({ lang, t, back, backLabel, helpFrom="login", chi
   const mobile=mobileAccessEnabled();
   return (
     <main id={mobile ? "mobile-access-page" : undefined} className="q-page q-auth" data-nv-page="" data-mobile-access={mobile ? "true" : undefined} lang={lang}>
+      {/* Direction B (Jose, Nov 8, 2026): on a desktop the teal brand panel with the app's own product line sits beside the
+        * form card (auth-b.css shows it from 1024px); phones and tablets carry the brand in the band above the card. */}
+      <aside className="q-auth__brand" aria-label="NEVORA">
+        <span className="q-auth__brandmark"><BrandWordmark /></span>
+        <div className="q-auth__brandcopy"><p className="q-auth__eyebrow">{t.panelEyebrow}</p><p className="q-auth__line"><TwoLines text={t.bandLine} /></p><p className="q-auth__support">{t.panelSupport}</p></div>
+        <small className="q-auth__powered">{NUVORA_BRAND.poweredBy}</small>
+      </aside>
       <div className="q-auth__col">
         {mobile ? <MobileAccessHeader lang={lang} back={back} backLabel={backLabel}/> : null}
         <div className={mobile ? "ma-desktop" : undefined}>{back ? <QuietNav back={{ href: back, label: t.signInPill }} />

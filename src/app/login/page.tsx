@@ -38,10 +38,11 @@ export default async function LoginPage({
     <QuietAuthShell lang={lang} t={t}>
       <AccessCard mobile={mobile}>
         <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" mobileTitle={mobile ? mt.signInTitle : undefined}/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>
-        {params.error ? <p className="q-error q-auth__alert" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p> : null}
-        {params.activated ? <p className="q-help q-auth__alert" role="status">{t.activated}</p> : null}
         <form action={login} className="q-auth__form" data-invalid={params.error ? "" : undefined}>
           {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+          {/* Direction B (Nov 8, 2026): the error and the activated notice read at the top of the form card. */}
+          {params.error ? <p className="q-error q-auth__alert" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p> : null}
+          {params.activated ? <p className="q-help q-auth__alert" role="status">{t.activated}</p> : null}
           <PasswordSignInMarker />
           <div className="q-fl">
             <label htmlFor="login-employee-id">{t.employeeId}</label>
