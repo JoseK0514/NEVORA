@@ -1,4 +1,5 @@
 import 'server-only';
+import {mutationTransaction} from '../data/transaction-composition';
 import {createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
@@ -141,7 +142,7 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
    ...batch.writes,
    ...(c.managerTransitionScope?[scopeAppend(batch.workspace.id,c.employeeId,proof,c.operationId,c.managerTransitionScope.expectedScopeRevision,c.managerTransitionScope.scope)]:[]),
    receiptStatement(batch.workspace.id,proof,c.operationId,c.employeeId,hash),batch.finalAuthority];
-  attempted=true;const result=await ex.transaction(statements),receipt=cleanReceipt((result[statements.length-2]?.[0] as {receipt:unknown}|undefined)?.receipt);
+  attempted=true;const result=await mutationTransaction(ex,statements),receipt=cleanReceipt((result[statements.length-2]?.[0] as {receipt:unknown}|undefined)?.receipt);
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
 }
@@ -161,7 +162,7 @@ export async function createEmployeeWithAccess(proof:SessionMutationProof,value:
    ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),...batch.writes,
    ...(c.initialManagerScope?[scopeAppend(batch.workspace.id,c.employee.id,proof,c.operationId,0,c.initialManagerScope)]:[]),receiptStatement(batch.workspace.id,proof,c.operationId,c.employee.id,hash),...batch.finalAuthority];
   const index=statements.length-batch.finalAuthority.length-1;
-  attempted=true;const result=await ex.transaction(statements),receipt=cleanReceipt((result[index]?.[0] as {receipt:unknown}|undefined)?.receipt);
+  attempted=true;const result=await mutationTransaction(ex,statements),receipt=cleanReceipt((result[index]?.[0] as {receipt:unknown}|undefined)?.receipt);
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
 }

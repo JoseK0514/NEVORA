@@ -1,4 +1,8 @@
 import 'server-only';
+import {mutationTransaction} from '../data/transaction-composition';
+import {invitationDelivery} from '../auth/invitations/delivery.server';
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
+import {withWorkspaceBinding} from '../workspace-routing/context.server';
 import {createHash} from 'node:crypto';
 import type {Workspace,Location,Position,Employee} from '../domain';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -50,7 +54,7 @@ export async function readOnboardingSetup(proof:SessionMutationProof,binding:Wor
  if(!locations.length)issues.push('LOCATION_INACTIVE');
  let businessValid=false;try{validateWorkspaceProfile(c.workspace);businessValid=c.workspace.active;}catch{/* Invalid canonical data is never ready. */}
  const team=c.people.filter(e=>e.active&&e.id!==proof.employee.id),uninvited=team.filter(e=>e.email&&!e.hasCredentials&&!e.invitationPending);
- const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:process.env.NEVORA_PAYROLL_ENABLED==='true',timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured});
+ const sections=deriveReadiness({businessValid,activeLocations:locations.length,activePositions:c.positions.filter(p=>p.active).length,schedulingIssues:issues,teamCount:team.length,uninvitedCount:uninvited.length,missingEmailCount:team.filter(e=>!e.email&&!e.hasCredentials).length,payrollEnabled:process.env.NEVORA_PAYROLL_ENABLED==='true',timekeepingConfigured:c.timekeepingConfigured,payrollConfigured:c.payrollConfigured,invitationSenderAvailable:await withWorkspaceBinding(binding,async()=>invitationDelivery(await workspaceRuntimeEnvironment())!==null)});
  const coreReady=sections.filter(s=>['BUSINESS','LOCATIONS','SCHEDULING'].includes(s.id)).every(s=>s.state==='READY');
  return {snapshot:{schemaVersion:1,version:row.version,registrationState:coreReady?'READY':'SETUP_IN_PROGRESS',workspace:{id:c.workspace.id,displayName:c.workspace.name,portalUrl:f.record.canonicalOrigin+'/'},sections,nextStep:sections.find(s=>s.state==='BLOCKED'||s.state==='IN_PROGRESS')?.id??null},configuration:c,destinations:{...onboardingDestinations}};
 }
@@ -63,16 +67,15 @@ export async function onboardingCommandReceipt(proof:SessionMutationProof,bindin
 }
 /** Decorates only the selected canonical MUTATION transaction. Preflight reads
  * pass through untouched. Prefix/suffix are removed from domain result indices. */
-export function onboardingMutationExecutor(input:{proof:SessionMutationProof;binding:WorkspaceBinding;operationId:string;expectedVersion:string;kind:string;hash:string;subjectId?:string;matches:(s:readonly SqlStatement[])=>boolean},ex:SqlExecutor){
+export function onboardingMutationExecutor(input:{proof:SessionMutationProof;binding:WorkspaceBinding;operationId:string;expectedVersion:string;kind:string;hash:string;subjectId?:string},ex:SqlExecutor){
  const id=workspaceBindingFacts(input.binding).record.id;let commits=0;let failureReason:string|null=null;
- const executor:SqlExecutor={query:(s,signal)=>ex.query(s,signal),async transaction(statements,signal){
-  if(!input.matches(statements))return ex.transaction(statements,signal);
+ const executor:SqlExecutor={query:(s,signal)=>ex.query(s,signal),transaction:async()=>{throw Error('onboarding_unclassified_transaction');},readTransaction:(s,signal)=>ex.transaction(s,signal),async mutationTransaction(statements,signal){
   if(commits)throw Error('onboarding_multiple_mutations');
   const prefix:SqlStatement[]=[{text:'SELECT id FROM workspaces WHERE id=$1 AND singleton ORDER BY id FOR UPDATE',values:[id]},{text:'SELECT workspace_id FROM onboarding_progress WHERE workspace_id=$1 FOR UPDATE',values:[id]},
    check('EXISTS(SELECT 1 FROM onboarding_progress WHERE workspace_id=$1 AND version=$2::bigint)',[id,input.expectedVersion],'onboarding_version_changed'),
    check('NOT EXISTS(SELECT 1 FROM onboarding_commands WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3)',[id,input.proof.employee.id,input.operationId],'onboarding_command_replay')];
   const suffix:SqlStatement[]=[...managementSessionStatements(input.proof,input.proof.employee.id,['OWNER']),
-   {text:'UPDATE onboarding_progress SET version=version+1,updated_at=clock_timestamp() WHERE workspace_id=$1',values:[id]},
+   {text:'UPDATE onboarding_progress SET version=version+CASE WHEN canonical_transaction IS DISTINCT FROM pg_current_xact_id() THEN 1 ELSE 0 END,canonical_transaction=pg_current_xact_id(),updated_at=clock_timestamp() WHERE workspace_id=$1',values:[id]},
    {text:`INSERT INTO onboarding_commands(workspace_id,actor_employee_id,operation_id,command_kind,command_hash,resulting_version,result) SELECT $1,$2,$3,$4,$5,p.version,jsonb_strip_nulls(jsonb_build_object('operationId',$3::uuid::text,'commandKind',$4::text,'committedAt',clock_timestamp()::text,'resultingVersion',p.version::text,'subjectId',$6::text)) FROM onboarding_progress p WHERE p.workspace_id=$1`,values:[id,input.proof.employee.id,input.operationId,input.kind,input.hash,input.subjectId??null]}];
   try{const result=await ex.transaction([...prefix,...statements,...suffix],signal);commits++;return result.slice(prefix.length,prefix.length+statements.length);}
   catch(error){if(error instanceof Error&&error.message.includes('onboarding_version_changed'))failureReason='version_changed';throw error;}
@@ -86,8 +89,7 @@ export async function saveOnboardingStep(proof:SessionMutationProof,binding:Work
  try{
   const prior=await recover();if(prior)return prior;
   const c=command.payload;
-  const marker:Record<typeof c.kind,string>={BUSINESS:'UPDATE workspaces SET name=',LOCATION_CREATE:'INSERT INTO locations(',LOCATION_UPDATE:'UPDATE locations SET name=',POSITION_CREATE:'INSERT INTO positions(',POSITION_UPDATE:'UPDATE positions SET name=',STAFFING:'INSERT INTO location_staffing_settings(',COVERAGE_CREATE:'INSERT INTO location_coverage_windows(',COVERAGE_DELETE:'DELETE FROM location_coverage_windows ',COVERAGE_POSITIONS:'DELETE FROM coverage_window_position_requirements ',SKIP:'SELECT 1 AS onboarding_explicit_skip'};
-  const composed=onboardingMutationExecutor({proof,binding,operationId:command.operationId,expectedVersion:command.expectedVersion,kind,hash,matches:statements=>statements.some(s=>s.text.startsWith(marker[c.kind])||(c.kind==='STAFFING'&&s.text.startsWith('INSERT INTO employee_scheduling_settings(')))},ex);
+  const composed=onboardingMutationExecutor({proof,binding,operationId:command.operationId,expectedVersion:command.expectedVersion,kind,hash},ex);
   const actor={proof,actorEmployeeId:proof.employee.id},sql=composed.executor;started=true;
   switch(c.kind){
    case 'BUSINESS':await saveWorkspaceProfile({...actor,name:c.name,timeZone:c.timeZone},sql);break;
@@ -99,7 +101,7 @@ export async function saveOnboardingStep(proof:SessionMutationProof,binding:Work
    case 'COVERAGE_CREATE':await createCoverageWindow({...c,...actor},sql);break;
    case 'COVERAGE_DELETE':await deleteCoverageWindow(c.windowId,proof,sql);break;
    case 'COVERAGE_POSITIONS':await replaceCoverageWindowPositionRequirements({...c,...actor},sql);break;
-   case 'SKIP':await sql.transaction([...onboardingOwnerGuards(proof,workspaceBindingFacts(binding).record.id,true),{text:marker.SKIP,values:[]}]);break;
+   case 'SKIP':await mutationTransaction(sql,[...onboardingOwnerGuards(proof,workspaceBindingFacts(binding).record.id,true),{text:'SELECT 1 AS onboarding_explicit_skip',values:[]}]);break;
   }
   if(composed.commits()!==1)return {state:'unavailable',reasonCode:'MUTATION_NOT_CONFIRMED'};
   return await recover()??{state:'outcome_unknown',operationId:command.operationId};

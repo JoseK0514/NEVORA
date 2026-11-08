@@ -42,3 +42,16 @@ it('serves current Owner state on the registered host and rejects cross-origin w
 it('keeps the canonical timezone conversion lock once operational records exist',async()=>{
  const f=await ready();try{await f.c.resource.db.pool.query("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES($1,$2,'2026-11-09','DRAFT','OWNER-1')",[randomUUID(),f.actor.employee.primaryLocationId]);expect((await saveOnboardingStep(f.actor,f.binding,'BUSINESS',command('1',{name:'Fictional studio',timeZone:'America/New_York'}))).state).toBe('invalid');expect((await readOnboardingSetup(f.actor,f.binding)).configuration.workspace.timeZone).toBe('America/Chicago');expect((await readOnboardingSetup(f.actor,f.binding)).snapshot.version).toBe('1');}finally{await f.close();}
 });
+
+it('fences stale onboarding forms after the established workspace, staffing and coverage settings writers commit',async()=>{
+ const {saveWorkspaceProfile}=await import('@/lib/data/workspaces'),{saveScheduleHealthSettings,createCoverageWindow}=await import('@/lib/data/schedule-health'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server');const f=await ready();try{
+  const ex=getWorkspaceDb(f.binding);let old=await readOnboardingSetup(f.actor,f.binding);
+  await saveWorkspaceProfile({proof:f.actor,actorEmployeeId:f.actor.employee.id,name:'Newer canonical name',timeZone:'America/Chicago'},ex);
+  expect((await saveOnboardingStep(f.actor,f.binding,'BUSINESS',command(old.snapshot.version,{name:'Stale onboarding name',timeZone:'America/Chicago'}))).state).toBe('conflict');expect((await readOnboardingSetup(f.actor,f.binding)).configuration.workspace.name).toBe('Newer canonical name');
+  old=await readOnboardingSetup(f.actor,f.binding);const locationId=old.configuration.locations[0].id;
+  await saveScheduleHealthSettings({proof:f.actor,staffingSettings:[{locationId,minimumStaffPerShift:4,requiresDesignatedLead:false}],hourTargets:[]},ex);
+  expect((await saveOnboardingStep(f.actor,f.binding,'SCHEDULING',command(old.snapshot.version,{action:'STAFFING',staffingSettings:[{locationId,minimumStaffPerShift:1,requiresDesignatedLead:false}],hourTargets:[]}))).state).toBe('conflict');expect((await readOnboardingSetup(f.actor,f.binding)).configuration.staffing[0].minimumStaffPerShift).toBe(4);
+  old=await readOnboardingSetup(f.actor,f.binding);const id=await createCoverageWindow({proof:f.actor,actorEmployeeId:f.actor.employee.id,locationId,dayOfWeek:1,startTime:'09:00',endTime:'17:00',minimumStaff:2,positionRequirements:[]},ex);
+  expect((await saveOnboardingStep(f.actor,f.binding,'SCHEDULING',command(old.snapshot.version,{action:'COVERAGE_DELETE',windowId:id}))).state).toBe('conflict');expect((await readOnboardingSetup(f.actor,f.binding)).configuration.coverage.map(c=>c.id)).toContain(id);
+ }finally{await f.close();}
+});

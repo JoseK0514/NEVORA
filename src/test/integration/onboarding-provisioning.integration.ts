@@ -32,6 +32,13 @@ it('atomically installs only canonical migrations, a pending Owner without crede
    await expect(appClient.query('UPDATE onboarding_workspace_identity SET incarnation=2')).rejects.toMatchObject({code:'42501'});
    expect((await appClient.query("SELECT has_database_privilege(current_user,current_database(),'TEMP') AS temporary")).rows[0].temporary).toBe(false);
   }finally{await appClient.end();}
+
+  const workerUrl=new URL(db.connectionUrl);workerUrl.username=spec.worker.name;workerUrl.password=spec.worker.password;const workerClient=new Client({connectionString:workerUrl.href});await workerClient.connect();try{
+   await expect(workerClient.query("INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES('OWNER-1','attacker',false)")).rejects.toMatchObject({code:'42501'});
+   await expect(workerClient.query("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER-1',clock_timestamp()+interval '1 hour')",['a'.repeat(64)])).rejects.toMatchObject({code:'42501'});
+   await expect(workerClient.query("UPDATE employees SET role='EMPLOYEE' WHERE id='OWNER-1'")).rejects.toMatchObject({code:'42501'});
+   await expect(workerClient.query('SELECT password_hash FROM employee_credentials')).rejects.toMatchObject({code:'42501'});
+  }finally{await workerClient.end();}
   await admin.query('UPDATE onboarding_workspace_identity SET incarnation=incarnation+1');
   await expect(bootstrapPendingCompany(client,spec)).rejects.toThrow();
  }finally{
@@ -83,6 +90,15 @@ describe('verified control-plane provisioning commands',()=>{
  });
  it('enforces the daily reservation allowance before a second resource is queued',async()=>{
   const a=await verified('owner-a@example.invalid'),b=await verified('owner-b@example.invalid'),limited={...config,maxNewProjectsPerDay:1};expect((await requestWorkspace(a.session,command(a.snapshot.version,'alpha'),store,limited)).state).toBe('pending');expect((await requestWorkspace(b.session,command(b.snapshot.version,'beta'),store,limited)).state).toBe('limited');
+ });
+
+ it('enforces the dispatch-day ceiling against prior-day backlog, concurrent jobs and a lowered cap',async()=>{
+  const a=await verified('backlog-a@example.invalid'),b=await verified('backlog-b@example.invalid'),limited={...config,maxNewProjectsPerDay:1};
+  await db.pool.query("CREATE FUNCTION nevora_onboarding.fixture_prior_day() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN NEW.created_at:=clock_timestamp()-interval '1 day'; RETURN NEW; END $$; CREATE TRIGGER fixture_prior_day BEFORE INSERT ON nevora_onboarding.provisioning_operations FOR EACH ROW EXECUTE FUNCTION nevora_onboarding.fixture_prior_day()");
+  await requestWorkspace(a.session,command(a.snapshot.version,'backlog-alpha'),store,limited);await db.pool.query('DROP TRIGGER fixture_prior_day ON nevora_onboarding.provisioning_operations; DROP FUNCTION nevora_onboarding.fixture_prior_day()');expect((await requestWorkspace(b.session,command(b.snapshot.version,'backlog-beta'),store,limited)).state).toBe('pending');
+  const provider=new OwnedProvisioningProvider();try{const leases=await Promise.all([claimProvisioningJob(store,limited),claimProvisioningJob(store,limited)]);expect(leases.every(Boolean)).toBe(true);const result=await Promise.all(leases.map(l=>runProvisioningJob(l!,{store,config:limited,provider,connect:provider.connect})));expect(result.map(x=>x.state).sort()).toEqual(['complete','pending']);expect(provider.createCalls).toBe(1);expect((await db.pool.query("SELECT count(*)::int n FROM nevora_onboarding.provisioning_attempts WHERE outcome<>'REJECTED'")).rows[0].n).toBe(1);
+   await db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');const retry=await claimProvisioningJob(store,limited);expect(retry).not.toBeNull();expect((await runProvisioningJob(retry!,{store,config:limited,provider,connect:provider.connect})).state).toBe('pending');expect(provider.createCalls).toBe(1);
+  }finally{await provider.close();}
  });
  it('recovers a lost create response using the original owned resource without another POST',async()=>{
   const a=await verified('owner-a@example.invalid'),c=command(a.snapshot.version);await requestWorkspace(a.session,c,store,config);const provider=new OwnedProvisioningProvider();provider.loseNextCreateResponse=true;

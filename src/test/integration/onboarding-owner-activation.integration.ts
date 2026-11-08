@@ -65,3 +65,14 @@ it('uses real HTTP grant and activation boundaries without issuing an assumed br
 it('adds activation support to a legacy schema without adopting its existing active Owner',async()=>{
  const {freshOnboardingDatabase}=await import('./onboarding-fixture');const {Client}=await import('pg');const {canonicalCompanyManifest,installCompanyBase,insertOwnerProfile,installCompanyFinal}=await import('@/lib/company-bootstrap/server');const db=await freshOnboardingDatabase(),client=new Client({connectionString:db.connectionUrl});await client.connect();try{const manifest=await canonicalCompanyManifest(),old={...manifest,base:manifest.base.filter(m=>m.file!=='0049_initial_owner_activation.sql')},workspaceId=randomUUID(),locationId=randomUUID();await client.query('BEGIN');await installCompanyBase(client,old,{workspaceId,name:'Fictional existing company',timeZone:'America/Chicago',locationId,locationName:'Main',locationShortName:'Main',locationKey:'main'});const hash=await passwords.hashPassword(password);await insertOwnerProfile(client,{id:'EXISTING-OWNER',firstName:'Fictional',lastName:'Existing',phone:'787-555-0101',email:'existing@example.invalid'},locationId,[locationId],{active:true,passwordHash:hash});await installCompanyFinal(client,old);await client.query('COMMIT');await client.query(manifest.base.find(m=>m.file==='0049_initial_owner_activation.sql')!.body);expect((await client.query('SELECT count(*)::int n FROM onboarding_initial_owner')).rows[0].n).toBe(0);expect((await client.query('SELECT password_hash FROM employee_credentials')).rows[0].password_hash).toBe(hash);expect((await client.query('SELECT active FROM employees')).rows[0].active).toBe(true);}finally{await client.end();await db.close();}
 });
+
+it('skips ten expired pending registrations and fairly rotates live activation work',async()=>{
+ const f=await onboardingJourneyFixture();try{
+  Object.assign(f.config,{maxNewProjectsPerDay:20,verificationBucketLimit:50});
+  for(let i=0;i<10;i++){const c=await f.createCompany('abandoned-'+i,'abandoned-'+i+'@example.invalid');await f.db.pool.query("UPDATE nevora_onboarding.registrations SET expires_at=clock_timestamp()-interval '1 second' WHERE id=$1",[c.row.registration_id]);}
+  const a=await f.createCompany('live-alpha','live-alpha@example.invalid'),b=await f.createCompany('live-beta','live-beta@example.invalid');
+  const first=await runOwnerActivationWorker({store:f.store,config:f.config,connect:f.provider.connect});expect(first.state).toBe('pending');expect([a.command.operationId,b.command.operationId]).toContain(first.operationId);
+  await f.db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');
+  const second=await runOwnerActivationWorker({store:f.store,config:f.config,connect:f.provider.connect});expect(second.state).toBe('pending');expect(second.operationId).not.toBe(first.operationId);
+ }finally{await f.close();}
+});

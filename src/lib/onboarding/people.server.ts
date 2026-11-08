@@ -24,7 +24,7 @@ export async function saveOnboardingPerson(proof:SessionMutationProof,binding:Wo
  };
  try{
   const prior=await recover();if(prior)return prior;
-  const composed=onboardingMutationExecutor({proof,binding,operationId:envelope.operationId,expectedVersion:envelope.expectedVersion,kind,hash,subjectId:command.employee.id,matches:statements=>statements.some(s=>s.text.startsWith('INSERT INTO employees('))},sql);
+  const composed=onboardingMutationExecutor({proof,binding,operationId:envelope.operationId,expectedVersion:envelope.expectedVersion,kind,hash,subjectId:command.employee.id},sql);
   const result=await createEmployeeWithAccess(proof,command,composed.executor);
   const saved=await recover();if(saved)return saved;
   if(composed.failureReason()==='version_changed')return {state:'conflict',reason:'version_changed'};

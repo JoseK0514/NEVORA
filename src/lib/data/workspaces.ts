@@ -1,3 +1,4 @@
+import {mutationTransaction} from './transaction-composition';
 import { cache } from "react";
 import type { Workspace } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
@@ -78,7 +79,7 @@ export async function saveWorkspaceProfile(input: { name: string; timeZone: stri
       { text: `SELECT (CASE WHEN EXISTS (SELECT 1 FROM workspaces WHERE singleton=true AND time_zone IS DISTINCT FROM $1) AND (${operationalRecords}) THEN 'workspace_timezone_locked' ELSE '1' END)::integer`, values: [profile.timeZone] },
       { text: `UPDATE workspaces SET name=$1,time_zone=$2,updated_at=GREATEST(clock_timestamp(),updated_at+interval '1 microsecond') WHERE singleton=true AND active=true RETURNING ${fields}`, values: [profile.name, profile.timeZone] },
     ];
-    const result = await executor.transaction([...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])]);
+    const result = await mutationTransaction(executor,[...statements, ...managementSessionStatements(input.proof, input.actorEmployeeId, ['OWNER'])]);
     const workspace = result[statements.length - 1]?.[0] as Workspace | undefined;
     if (!workspace) throw new WorkspaceUnavailableError();
     return workspace;

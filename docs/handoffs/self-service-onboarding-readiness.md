@@ -25,7 +25,7 @@ The broad Company Access run exposed36 prerequisite rejections because its shift
 | Security | Host/incarnation/purpose envelopes, least-privilege role templates tested locally, no web access to bootstrap custody, role-generation fences, one-use activation and explicit delivery uncertainty. | Verify actual hosted role grants, secrets, account/region/DNS/TLS, retention/legal pages and independent source-specific dispositions. |
 | Delivery/governance | Local artifacts and Jira remain the handoff record; no private approval is converted into release authority. | UI/hosted/release gates stay open; no independent finding is self-closed. |
 
-These are implementation positions, not independent security/QA/UI certifications. The required fresh whole-branch review is recorded separately against the exact candidate, with open findings preserved.
+These are implementation positions, not independent security/QA/UI certifications. The fresh whole-branch review and author fix dispositions are recorded in [review custody](self-service-onboarding-backend-review.md), with the historical BLOCK result preserved. [All implementation decisions and deferred findings](self-service-onboarding-decisions.md) remain part of the handoff. The author verifies fixes with regression tests; there is no second-review approval or independent certification.
 
 ## Open integration and release gates
 
@@ -38,3 +38,7 @@ These are implementation positions, not independent security/QA/UI certification
 ## Resume
 
 Finish current-source backend acceptance and fresh whole-branch review, preserving all findings/rulings. Integrate Claude's actual UI only through an authorized development assembly after source drift is reconciled. Run real hosted checks only under their separate authority. Jira SCRUM-166 remains In Progress while those gates are open; backend preparation is not a Done claim for the full live self-service product.
+
+## Dependency review
+
+The local audit at high/critical threshold passes;9 inherited moderate findings remain, including1 production Nodemailer finding. No forced dependency upgrade was made. Review the exact deployed dependency set before enabling mail/public onboarding; an audit exit0 at the high threshold does not mean zero findings.

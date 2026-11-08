@@ -1,4 +1,5 @@
 import 'server-only';
+import {readTransaction} from '../data/transaction-composition';
 import {cache} from 'react';
 import {createHash} from 'node:crypto';
 import type {Workspace,UserRole} from '@/lib/domain';
@@ -46,7 +47,7 @@ export async function assertOperationalAccess(proof:SessionMutationProof,footpri
  if(view.state!=='ready'||!view.scope||!['OWNER','MANAGER'].includes(view.role))throw new OperationalAuthorizationError();
  const actual=footprint??(view.scope.mode==='COMPANY'?{kind:'COMPANY'} as const:{kind:'LOCATIONS',locationIds:view.scope.locationIds} as const);
  const workspace=await getWorkspace(executor);
- await executor.transaction([...workspaceReadGuard(workspace),
+ await readTransaction(executor,[...workspaceReadGuard(workspace),
   {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
   ...operationalScopeStatements(proof,workspace,actual,view.authority)]);
  return {workspace,authority:view.authority,scope:view.scope,observedAt:view.observedAt,validForMs:view.validForMs};
@@ -56,7 +57,7 @@ export async function assertOperationalAccess(proof:SessionMutationProof,footpri
 export async function assertOriginalOperationalAccess(proof:SessionMutationProof,original:Readonly<Awaited<ReturnType<typeof assertOperationalAccess>>>,executor:SqlExecutor=neonNotificationExecutor()):Promise<void>{
  if(!/^[a-f0-9]{64}$/.test(original?.authority))throw new OperationalAuthorizationError();
  try{
-  await executor.transaction([...workspaceReadGuard(original.workspace),
+  await readTransaction(executor,[...workspaceReadGuard(original.workspace),
    {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
    ...operationalScopeStatements(proof,original.workspace,original.scope.mode==='COMPANY'?{kind:'COMPANY'}:{kind:'LOCATIONS',locationIds:original.scope.locationIds},original.authority)]);
  }catch(error){
@@ -123,7 +124,7 @@ async function readAuthority(proof:SessionMutationProof,executor:SqlExecutor):Pr
  try{assertManagementProof(proof,proof?.employee?.id);}catch{return {state:'unavailable',reason:'access_denied'};}
  try {
   const workspace=await getWorkspace(executor),start=locks(proof,workspace,[]);
-  const result=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),...managementSessionStatements(proof,proof.employee.id,['OWNER','MANAGER','LEAD','EMPLOYEE'])]);
+  const result=await readTransaction(executor,[...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),...managementSessionStatements(proof,proof.employee.id,['OWNER','MANAGER','LEAD','EMPLOYEE'])]);
   const row=result[start.length]?.[0] as Row|undefined;
   if(!row||row.validForMs<=0)return {state:'unavailable',reason:'access_denied'};
   const grant=effective(row);
@@ -143,7 +144,7 @@ export async function readOwnerOperationalScope(proof:SessionMutationProof,emplo
  if(!safeId(employeeId))return {state:'unavailable',reason:'access_denied'};
  try {
   const workspace=await getWorkspace(executor),start=locks(proof,workspace,[employeeId],true);
-  const rows=await executor.transaction([...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),
+  const rows=await readTransaction(executor,[...start,currentRow(workspace.id,proof.employee.id,proof.sessionTokenHash),
    {text:`SELECT e.id AS "employeeId",e.updated_at::text AS "employeeUpdatedAt",e.role,e.active,v.generation::text AS "roleGeneration",COALESCE(g.revision,0) AS "scopeRevision",
      g.role_generation::text AS "grantGeneration",g.action,g.mode,COALESCE(g.location_ids,'{}') AS "locationIds",${validSelectionSql} AS "selectionValid"
      FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
@@ -194,7 +195,7 @@ export async function assignOperationalScope(proof:SessionMutationProof,employee
  try {
   workspace=await getWorkspace(executor);
   const start=locks(proof,workspace,[employeeId],true);
-  const prior=await executor.transaction([...start,operation(workspace.id,proof.employee.id,command.operationId),...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
+  const prior=await readTransaction(executor,[...start,operation(workspace.id,proof.employee.id,command.operationId),...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
   const old=prior[start.length]?.[0] as {hash:string;kind:string;receipt:unknown}|undefined;
   if(old){const saved=scopeReceipt(old.receipt);return old.kind!=='SCOPE'||old.hash!==hash?{state:'conflict',reason:'changed_replay'}:saved?{state:'saved',receipt:saved}:{state:'unavailable'};}
   const scope=command.action==='ASSIGN'?command.scope:null;
@@ -217,7 +218,7 @@ export async function assignOperationalScope(proof:SessionMutationProof,employee
   if(message.includes('company_access_scope_replay')&&workspace){
    try{
     const guards=locks(proof,workspace,[employeeId],true);
-    const result=await executor.transaction([...guards,operation(workspace.id,proof.employee.id,command.operationId),...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
+    const result=await readTransaction(executor,[...guards,operation(workspace.id,proof.employee.id,command.operationId),...managementSessionStatements(proof,proof.employee.id,['OWNER'])]);
     const row=result[guards.length]?.[0] as {hash:string;kind:string;receipt:unknown}|undefined;
     if(row){const saved=scopeReceipt(row.receipt);return row.kind!=='SCOPE'||row.hash!==hash?{state:'conflict',reason:'changed_replay'}:saved?{state:'saved',receipt:saved}:{state:'unavailable'};}
    }catch{}
@@ -241,7 +242,7 @@ export async function withOperationalCompany<T>(proof:SessionMutationProof,load:
   if(view.state!=='ready')return view;
   if(view.scope?.mode!=='COMPANY')return {state:'unavailable',reason:'access_denied'};
   const data=await load();
-  await executor.transaction([...workspaceReadGuard(workspace),
+  await readTransaction(executor,[...workspaceReadGuard(workspace),
    {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[proof.employee.id]},
    ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},view.authority)]);
   return {state:'ready',data,coverage:{kind:'COMPANY',locationIds:[]},authority:view.authority,observedAt:view.observedAt,validForMs:view.validForMs};

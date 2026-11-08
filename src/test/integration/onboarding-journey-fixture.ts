@@ -36,7 +36,10 @@ export async function onboardingJourneyFixture(options:{restrictedControl?:boole
   for(const s of secrets){const uri=openOnboardingValue(s.ciphertext,'workspace-secret:test:'+row.workspace_id+':1:'+s.role_kind+':'+s.id,config.encryptionKey);if(!uri)throw Error('Owned runtime URI unavailable');const url=new URL(resource.db.connectionUrl);url.username=new URL(uri).username;url.password=new URL(uri).password;const pool=new Pool({connectionString:url.href,max:4});pools.push(pool);map.set(uri,pool);if(s.role_kind==='APP')appPool=pool;}
   const origin='https://'+slug+'.'+config.portalBaseDomain,binding=await resolveWorkspaceBinding({origin},store,routing,'BOOTSTRAP');
   const grantCommand={schemaVersion:1,operationId:randomUUID()};
-  async function work(){await db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');return runOwnerActivationWorker({store:provisionerStore,config,connect:provider.connect});}
+  async function work(){
+   for(let i=0;i<20;i++){await db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');const result=await runOwnerActivationWorker({store:provisionerStore,config,connect:provider.connect});if(result.state==='idle'||result.operationId===c.operationId)return result;}
+   throw Error('Owned fair activation worker did not reach requested company');
+  }
   async function grant(){const requested=await requestOwnerBootstrapGrant(signupSession,grantCommand,store,config);if(!['pending','ready'].includes(requested.state))throw Error('Owned grant request failed:'+requested.state);await work();const ready=await requestOwnerBootstrapGrant(signupSession,grantCommand,store,config);if(ready.state!=='ready')throw Error('Owned grant publication failed:'+ready.state);return {ready,proof:new URLSearchParams(new URL(ready.url).hash.slice(1)).get('proof')!};}
   return {actor,command:c,row,resource,origin,binding,grantCommand,work,grant,appPool:appPool!};
  }

@@ -83,12 +83,16 @@ export async function activateInitialOwner(binding:WorkspaceBinding,value:unknow
 export async function runOwnerActivationWorker(deps:{store:ControlStore;config:EnabledConfig;connect?:BootstrapConnector}):Promise<{state:'idle'|'pending'|'complete';operationId?:string}>{
  const {store,config}=deps;
  const job=await store.transaction(async client=>{
-  const candidates=await client.query(`SELECT p.operation_id,p.registration_id FROM nevora_onboarding.provisioning_operations p WHERE p.environment=$1 AND p.account_ref=$2 AND p.region=$3 AND p.resource_policy_version=$4 AND p.state='OWNER_ACTIVATION_REQUIRED' AND p.not_before<=clock_timestamp() AND (p.lease_expires_at IS NULL OR p.lease_expires_at<=clock_timestamp()) ORDER BY p.updated_at,p.operation_id LIMIT 10`,[config.environment,config.providerAccountRef,config.region,config.resourcePolicyVersion]);
-  for(const c of candidates.rows){
-   const r=(await client.query("SELECT * FROM nevora_onboarding.registrations WHERE id=$1 AND environment=$2 AND verified_at IS NOT NULL AND expires_at>clock_timestamp() FOR UPDATE SKIP LOCKED",[c.registration_id,config.environment])).rows[0];if(!r)continue;
-   const token=randomUUID();const p=(await client.query(`UPDATE nevora_onboarding.provisioning_operations p SET lease_token=$2,lease_expires_at=clock_timestamp()+interval '120 seconds' FROM nevora_onboarding.workspace_registry w WHERE p.operation_id=$1 AND p.state='OWNER_ACTIVATION_REQUIRED' AND (p.lease_expires_at IS NULL OR p.lease_expires_at<=clock_timestamp()) AND w.id=p.workspace_id AND w.incarnation=p.incarnation AND w.environment=p.environment AND w.lifecycle='OWNER_ACTIVATION_REQUIRED' RETURNING p.*,p.incarnation::text AS incarnation`,[c.operation_id,token])).rows[0];
-   if(p)return {...p,token,email_ciphertext:r.email_ciphertext};
-  }return null;
+  const row=(await client.query(`SELECT p.*,p.incarnation::text AS incarnation,r.email_ciphertext FROM nevora_onboarding.provisioning_operations p
+   JOIN nevora_onboarding.registrations r ON r.id=p.registration_id AND r.environment=p.environment
+   JOIN nevora_onboarding.workspace_registry w ON w.id=p.workspace_id AND w.incarnation=p.incarnation AND w.environment=p.environment
+   WHERE p.environment=$1 AND p.account_ref=$2 AND p.region=$3 AND p.resource_policy_version=$4 AND p.state='OWNER_ACTIVATION_REQUIRED'
+    AND r.verified_at IS NOT NULL AND r.expires_at>clock_timestamp() AND w.lifecycle='OWNER_ACTIVATION_REQUIRED'
+    AND p.not_before<=clock_timestamp() AND (p.lease_expires_at IS NULL OR p.lease_expires_at<=clock_timestamp())
+   ORDER BY p.updated_at,p.operation_id LIMIT 1 FOR UPDATE OF r,p,w SKIP LOCKED`,[config.environment,config.providerAccountRef,config.region,config.resourcePolicyVersion])).rows[0];
+  if(!row)return null;const token=randomUUID();
+  await client.query("UPDATE nevora_onboarding.provisioning_operations SET lease_token=$2,lease_expires_at=clock_timestamp()+interval '120 seconds' WHERE operation_id=$1",[row.operation_id,token]);
+  return {...row,token};
  });
  if(!job)return {state:'idle'};
  const alive=async()=>{const q=await store.query(`UPDATE nevora_onboarding.provisioning_operations p SET lease_expires_at=clock_timestamp()+interval '120 seconds' FROM nevora_onboarding.workspace_registry w,nevora_onboarding.registrations r WHERE p.operation_id=$1 AND p.lease_token=$2 AND p.lease_expires_at>clock_timestamp() AND p.state='OWNER_ACTIVATION_REQUIRED' AND w.id=p.workspace_id AND w.environment=p.environment AND w.incarnation=p.incarnation AND w.lifecycle='OWNER_ACTIVATION_REQUIRED' AND r.id=p.registration_id AND r.environment=p.environment AND r.verified_at IS NOT NULL AND r.expires_at>clock_timestamp() RETURNING p.operation_id`,[job.operation_id,job.token]);if(q.rowCount!==1)throw Error('Initial Owner lease unavailable');};
@@ -140,7 +144,7 @@ export async function runOwnerActivationWorker(deps:{store:ControlStore;config:E
  }
  finally{
   await connection?.close().catch(()=>{});
-  await store.query("UPDATE nevora_onboarding.provisioning_operations SET lease_token=NULL,lease_expires_at=NULL,not_before=clock_timestamp()+interval '2 seconds' WHERE operation_id=$1 AND lease_token=$2",[job.operation_id,job.token]).catch(()=>{});
+  await store.query("UPDATE nevora_onboarding.provisioning_operations SET lease_token=NULL,lease_expires_at=NULL,not_before=clock_timestamp()+interval '2 seconds',updated_at=clock_timestamp() WHERE operation_id=$1 AND lease_token=$2",[job.operation_id,job.token]).catch(()=>{});
  }
  return {state:'pending',operationId:job.operation_id};
 }

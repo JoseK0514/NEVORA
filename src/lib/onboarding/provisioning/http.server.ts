@@ -1,7 +1,7 @@
 import 'server-only';
 import {readOnboardingConfig,type EnabledConfig,type DisabledConfig} from '../config.server';
 import {runtimeControlStore,type ControlStore} from '../control-store.server';
-import {readVerifiedSignupSession,type VerifiedSignupSession} from '../registration.server';
+import {readVerifiedSignupSession,readRegistration,type VerifiedSignupSession} from '../registration.server';
 import {SIGNUP_COOKIE} from '../registration-http.server';
 import {onboardingHttpStatus} from '../contracts';
 import {validOnboardingToken} from '../crypto.server';
@@ -14,6 +14,13 @@ export async function signupSessionFromRequest(request:Request,store:ControlStor
 }
 export function provisioningHttpHandlers(deps:{config:EnabledConfig|DisabledConfig;store?:ControlStore}){
  return {
+  async current(request:Request):Promise<Response>{
+   const c=deps.config;if(!c.enabled)return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
+   const u=new URL(request.url),origin=request.headers.get('origin'),host=request.headers.get('host');
+   if(request.method!=='GET'||u.origin!==c.signupOrigin||u.search||(origin!==null&&origin!==c.signupOrigin)||request.headers.get('sec-fetch-site')==='cross-site'||(host!==null&&host!==u.host))return onboardingJson({state:'unavailable',reasonCode:'ACCESS_DENIED'},403);
+   if(!deps.store)return onboardingJson({state:'unavailable',reasonCode:'SOURCE_UNAVAILABLE'},503);
+   try{const actor=await signupSessionFromRequest(request,deps.store,c);if(!actor)return onboardingJson({state:'unavailable',reasonCode:'ACCESS_DENIED'},401);const snapshot=await readRegistration(actor,deps.store);return snapshot?onboardingJson({schemaVersion:1,state:'ready',snapshot}):onboardingJson({state:'unavailable',reasonCode:'ACCESS_DENIED'},401);}catch(error){return onboardingHttpFailure(error);}
+  },
   async request(request:Request):Promise<Response>{
    const c=deps.config;if(!c.enabled)return onboardingJson({state:'unavailable',reasonCode:'ONBOARDING_DISABLED'},503);
    const boundary=validateOnboardingWrite(request,c.signupOrigin);if(boundary)return boundary;

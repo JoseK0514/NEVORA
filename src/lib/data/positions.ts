@@ -1,3 +1,4 @@
+import {mutationTransaction} from './transaction-composition';
 import { randomUUID } from 'node:crypto';
 import type { Position } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
@@ -23,7 +24,7 @@ function permission(actorEmployeeId: string, catalog: boolean): SqlStatement {
   return { text: `SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role IN (${catalog ? "'OWNER'" : "'OWNER','MANAGER'"})) THEN '1' ELSE 'position_permission_denied' END)::integer`, values: [actorEmployeeId] };
 }
 async function transaction(statements: SqlStatement[], sql: SqlExecutor): Promise<unknown[][]> {
-  try { return await sql.transaction(statements); }
+  try { return await mutationTransaction(sql,statements); }
   catch (error) {
     if (error instanceof Error && 'code' in error && error.code === '22P02' && error.message === 'invalid input syntax for type integer: "position_version_conflict"') throw new PositionConcurrencyError();
     if (error instanceof Error && error.message.includes('position_permission_denied')) throw new PositionPermissionError();

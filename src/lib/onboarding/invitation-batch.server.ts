@@ -1,4 +1,5 @@
 import 'server-only';
+import {mutationTransaction} from '../data/transaction-composition';
 import {createHash} from 'node:crypto';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
@@ -64,8 +65,8 @@ export async function issueInvitationBatch(proof:SessionMutationProof,binding:Wo
   if(prior&&(prior.kind!==kind||prior.hash!==hash))return {state:'conflict',reason:'changed_replay'};
   if(!prior){
    if(!delivery)return {state:'unavailable',reasonCode:'DELIVERY_NOT_CONFIGURED'};
-   const {record}=workspaceBindingFacts(binding),composed=onboardingMutationExecutor({proof,binding,operationId:command.operationId,expectedVersion:command.expectedVersion,kind,hash,matches:s=>s.some(q=>q.text.startsWith('INSERT INTO onboarding_invitation_batches'))},sql);
-   await composed.executor.transaction([...onboardingOwnerGuards(proof,record.id,true),
+   const {record}=workspaceBindingFacts(binding),composed=onboardingMutationExecutor({proof,binding,operationId:command.operationId,expectedVersion:command.expectedVersion,kind,hash},sql);
+   await mutationTransaction(composed.executor,[...onboardingOwnerGuards(proof,record.id,true),
     {text:'INSERT INTO onboarding_invitation_batches(workspace_id,actor_employee_id,operation_id,command_hash,owner_generation) SELECT $1,$2,$3,$4,v.generation FROM operational_subject_versions v WHERE v.workspace_id=$1 AND v.employee_id=$2 RETURNING operation_id',values:[record.id,proof.employee.id,command.operationId,hash]},
     ...command.payload.targets.map(t=>({text:'INSERT INTO onboarding_invitation_items(workspace_id,actor_employee_id,operation_id,employee_id,child_operation_id,expected_employee_version,expected_invitation_revision,target_generation) SELECT $1,$2,$3,$4,$5,$6,$7,v.generation FROM operational_subject_versions v WHERE v.workspace_id=$1 AND v.employee_id=$4',values:[record.id,proof.employee.id,command.operationId,t.employeeId,invitationChildOperationId(record.id,proof.employee.id,command.operationId,t.employeeId),t.expectedEmployeeVersion,t.expectedInvitationRevision]})),
     {text:`SELECT(CASE WHEN EXISTS(SELECT 1 FROM onboarding_invitation_batches b WHERE b.workspace_id=$1 AND b.actor_employee_id=$2 AND b.operation_id=$3 AND b.owner_generation>0) AND (SELECT count(*) FROM onboarding_invitation_items WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3)=$4 THEN '1' ELSE 'onboarding_batch_targets_missing' END)::integer`,values:[record.id,proof.employee.id,command.operationId,command.payload.targets.length]}]);

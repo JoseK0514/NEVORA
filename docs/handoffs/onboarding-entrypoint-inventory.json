@@ -47,6 +47,33 @@
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
     },
     {
+      "path": "scripts/bootstrap-owner.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Explicit operator-only single-company CLI/helper using NEVORA_SETUP_DATABASE_URL and exact named environment/database; not a public web/worker entrypoint or self-service provisioning transport. Empty-schema/second-run refusal and existing CLI behavior are regression tested.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "scripts/company-setup-qa.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "scripts/company-setup.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Explicit operator-only single-company CLI/helper using NEVORA_SETUP_DATABASE_URL and exact named environment/database; not a public web/worker entrypoint or self-service provisioning transport. Empty-schema/second-run refusal and existing CLI behavior are regression tested.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/employee-mobile-closure-verification.mjs",
       "tags": [
         "direct-transport"
@@ -70,6 +97,15 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
+    },
+    {
+      "path": "scripts/native-owned.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "scripts/nevora-navigation-ui-qa.mjs",
@@ -189,12 +225,39 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/phase-e-attention-browser-scenarios.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/phase-e-calendar-browser-scenarios.mjs",
       "tags": [
         "non-request-entrypoint"
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "scripts/phase-e-home-browser-scenarios.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "scripts/phase-e-navigation-browser-scenarios.mjs",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "scripts/phase-e-owned-startup.check.mjs",
@@ -221,6 +284,24 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/rehearsal/database-rehearsal.mts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "scripts/rehearsal/fixture-diagnostics.setup.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/release-mirror-custody-qa.mjs",
       "tags": [
         "direct-transport"
@@ -237,6 +318,15 @@
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
     },
     {
+      "path": "scripts/setup-company.mts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Explicit operator-only single-company CLI/helper using NEVORA_SETUP_DATABASE_URL and exact named environment/database; not a public web/worker entrypoint or self-service provisioning transport. Empty-schema/second-run refusal and existing CLI behavior are regression tested.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "scripts/ui-checks/owned-preview-app-dev.mts",
       "tags": [
         "direct-transport"
@@ -251,6 +341,15 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
+    },
+    {
+      "path": "scripts/ui-checks/seed-extra.mts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned QA/rehearsal fixture or scenario tooling, not a deployed application entrypoint; caller must provide the invocation-owned disposable target. Never used as public company routing.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "src/app/access-help/[[...topic]]/page.tsx",
@@ -976,6 +1075,15 @@
       "status": "CONVERTED",
       "reason": "Registered ACTIVE host and current Owner session, closed versioned body and bounded JSON; explicit invitation action remains separate.",
       "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/app/api/onboarding/registrations/current/route.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "CONVERTED",
+      "reason": "Signup-origin no-store current-registration GET; exact single HttpOnly signup cookie and live store-bound proof, no email or provider custody in response. Cross-origin, missing/duplicate cookie and refreshed/stale-tab recovery tested.",
+      "isolatedBehavior": "SIGNUP_COOKIE"
     },
     {
       "path": "src/app/api/onboarding/registrations/route.ts",
@@ -2288,12 +2396,48 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/lib/auth/portal-credential-session.postgres-adapter.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/auth/portal-credential-session.postgres-cases.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "src/lib/auth/portal-credential-session.postgres-fixture.ts",
       "tags": [
         "direct-transport"
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/auth/portal-credential-session.postgres-observer.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/auth/portal-credential-session.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "src/lib/auth/portal-request.server.ts",
@@ -2368,6 +2512,15 @@
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
       "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/lib/clocker/photo-server/platform-worker.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "CONVERTED",
+      "reason": "Ingress invocation validation and bounded pure cleanup callback; deployed functions/clocker-photo-cleanup.ts denies isolated mode before reading a legacy target. No independent database transport.",
+      "isolatedBehavior": "CALLBACK_SCOPED"
     },
     {
       "path": "src/lib/clocker/photo-server/runtime.server.ts",
@@ -3084,6 +3237,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/lib/native-push/worker.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "CONVERTED",
+      "reason": "Pure native delivery processor receives scoped repositories from the guarded notification worker; no independent global database or origin. Existing job/lease/generation checks retained.",
+      "isolatedBehavior": "BOUND_DEPENDENCIES"
+    },
+    {
       "path": "src/lib/notifications/logout.ts",
       "tags": [
         "shared-executor"
@@ -3283,6 +3445,15 @@
       "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
     },
     {
+      "path": "src/lib/onboarding/registration.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "CONVERTED",
+      "reason": "ControlStore-bound verified signup, not a company application transport. Input/consent/proof/session authority and final expiry checks are actual PostgreSQL tested. pg import is a type only.",
+      "isolatedBehavior": "CONTROL_ONLY"
+    },
+    {
       "path": "src/lib/onboarding/setup.server.ts",
       "tags": [
         "onboarding-entrypoint"
@@ -3398,6 +3569,24 @@
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
     },
     {
+      "path": "src/lib/tenancy/migrations/capture.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/employee-number-enrollment-binding.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "src/lib/tenancy/migrations/expand.test.ts",
       "tags": [
         "direct-transport"
@@ -3414,12 +3603,48 @@
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
     },
     {
+      "path": "src/lib/tenancy/migrations/guarded-backfill.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "src/lib/tenancy/migrations/journal-storage.test.ts",
       "tags": [
         "direct-transport"
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/tenancy/migrations/key-comparator-capture.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/key-comparator-recheck.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/portal-legacy-access-enrollment.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts",
@@ -3436,6 +3661,24 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-guarded-backfill.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-journal-binding.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "src/lib/tenancy/migrations/typed-journal-storage.test.ts",
@@ -3551,12 +3794,39 @@
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
     },
     {
+      "path": "src/lib/tenancy/runtime/portal-current-source-enrollment.postgres-cases.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-held-control-grant-reconciliation.postgres-cases.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
+    },
+    {
       "path": "src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts",
       "tags": [
         "direct-transport"
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/tenancy/runtime/portal-native-installation-producer.server.ts",
+      "tags": [
+        "runtime-boundary-audit"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Held, local-only tenancy/catalog/installer verifier and PostgreSQL fixture support. Inspected module custody and app/functions import scan: no deployed app/functions importer. Does not supply isolated workspace or PortalProof authority; held work remains held.",
+      "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
       "path": "src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts",
@@ -3744,5 +4014,6 @@
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
-  "authenticationEvidence": "Task3: owned A/B session/actual HTTP/worker/file negatives; native core tests. Hosted provider/browser and native UI integration remain separate obligations."
+  "authenticationEvidence": "Task3: owned A/B session/actual HTTP/worker/file negatives; native core tests. Hosted provider/browser and native UI integration remain separate obligations.",
+  "enforcement": "scripts/onboarding-inventory.mjs covers all routes, server-action modules, worker boundaries, functions and direct PostgreSQL/Neon imports; bounded test directory/suffix exemptions. Unseen paths fail acceptance."
 }

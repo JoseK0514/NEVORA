@@ -1,3 +1,4 @@
+import {workerReadRelations,workerInsertRelations,workerUpdateColumns} from './worker-privileges';
 // Node-only shared bootstrap primitives. The CLI deliberately uses its existing
 // Node loader; web entrypoints never receive a privileged database client.
 import {readFile} from 'node:fs/promises';
@@ -60,8 +61,16 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
  for(const role of [spec.app,spec.worker]){
   await client.query(`GRANT CONNECT ON DATABASE ${spec.databaseName} TO ${role.name}; GRANT USAGE ON SCHEMA public TO ${role.name}`);
   if(role===spec.app)await client.query(`GRANT EXECUTE ON FUNCTION onboarding_owner_claim(text,text,bigint,text,uuid,text,text) TO ${role.name}`);
-  if(quoted)await client.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON ${quoted} TO ${role.name}`);
-  await client.query(`GRANT USAGE,SELECT,UPDATE ON ALL SEQUENCES IN SCHEMA public TO ${role.name}; GRANT SELECT ON onboarding_workspace_identity,onboarding_runtime_roles TO ${role.name}; GRANT UPDATE(lock_token) ON onboarding_workspace_identity TO ${role.name}`);
+  if(role===spec.app&&quoted)await client.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON ${quoted} TO ${role.name}`);
+  if(role===spec.worker){
+   await client.query(`GRANT SELECT ON ${workerReadRelations.join(',')} TO ${role.name}`);
+   await client.query(`GRANT INSERT ON ${workerInsertRelations.join(',')} TO ${role.name}`);
+   for(const [table,columns] of Object.entries(workerUpdateColumns))await client.query(`GRANT UPDATE(${columns.join(',')}) ON ${table} TO ${role.name}`);
+   await client.query(`GRANT DELETE ON native_push_challenges TO ${role.name}`);
+   await client.query(`GRANT UPDATE(onboarding_worker_lock) ON workspaces,employees,locations,positions,employee_sessions,native_push_challenges TO ${role.name}`);
+   await client.query(`GRANT EXECUTE ON FUNCTION onboarding_worker_table_lock(text,text) TO ${role.name}`);
+  }
+  await client.query(`GRANT USAGE,SELECT${role===spec.app?',UPDATE':''} ON ALL SEQUENCES IN SCHEMA public TO ${role.name}; GRANT SELECT ON onboarding_workspace_identity,onboarding_runtime_roles TO ${role.name}; GRANT UPDATE(lock_token) ON onboarding_workspace_identity TO ${role.name}`);
  }
 }
 /** One fresh database, one inactive initial Owner, no reusable Owner credential.

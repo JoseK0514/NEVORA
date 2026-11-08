@@ -49,7 +49,7 @@ export type SqlStatement = { text: string; values: readonly unknown[] };
 /** transaction executes ordered statements atomically and returns matching result
  * arrays by statement index. Abort signals bound I/O waits; an aborted caller must
  * still treat an uncertain commit as unknown and use durable receipt/lease recovery. */
-export type SqlExecutor = { query<T>(statement: SqlStatement, signal?: AbortSignal): Promise<T[]>; transaction(statements: readonly SqlStatement[], signal?: AbortSignal): Promise<unknown[][]> };
+export type SqlExecutor = { mutationTransaction?(statements:readonly SqlStatement[],signal?:AbortSignal):Promise<unknown[][]>; readTransaction?(statements:readonly SqlStatement[],signal?:AbortSignal):Promise<unknown[][]>; query<T>(statement: SqlStatement, signal?: AbortSignal): Promise<T[]>; transaction(statements: readonly SqlStatement[], signal?: AbortSignal): Promise<unknown[][]> };
 export type SourceCheck = { deliverable: boolean; reason: string; effectiveVersion: string; expiresAt: string; destination?: string };
 export type ProviderResult = { kind: 'accepted' } | { kind: 'retry'; errorClass: string; retryAfterSeconds?: number } | { kind: 'invalid_subscription' } | { kind: 'failed'; errorClass: string };
 export type WorkerReport = { maintenance?:import('../data/shift-change-maintenance').MaintenanceReport; claimed: number; accepted: number; retried: number; failed: number; expired: number; cancelled: number; noSubscription: number; disabled: boolean };

@@ -53,3 +53,9 @@ From a clean committed source, run `node scripts/onboarding-acceptance.mjs` with
 Also run the root suite, typecheck, lint, source-bound production build and applicable existing CI/regression checks. Keep every failure/skip and independent finding visible. Preserve evidence outside tracked application source. An absent Claude onboarding surface cannot be tested as a finished UI; do not substitute a fake wizard or count HTTP tests as browser acceptance.
 
 Rollback disables new signup/provider work and pauses affected jobs; existing active company access remains independent. Preserve durable operations/resources and reconcile unknown outcomes under the recorded source. Never force-reset credentials, clear business data, drop projects or publish production to make a rollback appear successful.
+
+### Post-review backend controls
+
+Reservation throttling and provider dispatch are separate: an account-wide UTC-day lock journals the dispatch slot with its attempt before POST. Pending/unknown/accepted attempts occupy a slot; only a confirmed rejection releases it. Backlogs and lowering a nonzero cap do not bypass the dispatch ceiling. No unknown create is automatically repeated.
+
+Company WORKER capabilities are enumerated in `worker-privileges.ts`; credentials, session creation and employee role/profile writes are denied. Fixed source-table lock functions and checked, immutable non-authority lock columns preserve existing job lock protocols without granting those writes. Hosted role capabilities must be checked from the actual deployed candidate; existing runtime roles are not silently upgraded by local bootstrap changes. Defaults remain disabled.
