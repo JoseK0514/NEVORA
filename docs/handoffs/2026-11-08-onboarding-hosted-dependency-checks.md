@@ -4,7 +4,11 @@
 
 ## Current disposition
 
-Dependency remediation and provider-delivery checks are complete. Vercel metadata access is resolved; Render still rejects its connection after the reported reconnect. Hosted application readiness remains BLOCKED by the absence of an onboarding staging environment and its deployment/configuration evidence. Domain/provider connection metadata is not an application deployment, runtime permission test, or end-to-end activation result. Keep SCRUM-166 In Progress.
+The earlier dependency/provider-only packet below is superseded for integration and staging status by [the integrated onboarding/commerce handoff](2026-11-08-integrated-onboarding-commerce.md), application source `81d3d1d0723d99ce534f7b16a992642d6755b3be`. Dedicated Free Neon control/catalog schemas, four restricted roles, private Vercel staging configuration and three exact GoDaddy CNAMEs now exist. Actual external endpoint TLS and role denials pass. Local integration/root/acceptance/build/audits pass; deployment is blocked by connector403 even for explicit preview. No deployed signup/mail/Stripe end-to-end acceptance is claimed. Private worker/provider/SMTP and Stripe sandbox credentials remain outstanding. Keep SCRUM-166 In Progress and Claude responsible for UI.
+
+## Earlier dependency-only check snapshot
+
+The following records the preceding31702fee7 packet, before creation of the dedicated staging resources. Its provider observations and counts are historical where the integrated handoff supersedes them.
 
 ## Dependencies
 

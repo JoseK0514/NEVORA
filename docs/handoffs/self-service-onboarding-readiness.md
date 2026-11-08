@@ -1,5 +1,9 @@
 # Self-service onboarding backend readiness
 
+## Latest integrated candidate — November8,2026
+
+Onboarding and commerce are locally integrated at `81d3d1d0723d99ce534f7b16a992642d6755b3be`:11,158 root passes/831 existing skips,135+496+36 owned onboarding/access checks and42 total commerce runner checks; types/lint/build/production-marker/audits pass. See [integrated source, hosted state and remaining gates](2026-11-08-integrated-onboarding-commerce.md). A dedicated Free Neon control/catalog, four restricted roles, private Vercel staging project and three exact DNS CNAMEs are now created/configured; actual external driver endpoint TLS and role denials pass. The Vercel deployment connector returns403 even for explicit preview, so there is no deployed candidate or hosted end-to-end claim. Private worker/provider/SMTP and Stripe sandbox authentication remain open. Claude owns UI; original independent BLOCK verdicts remain preserved. The older packet below is historical where superseded by this source-specific handoff.
+
 ## Scope and ownership
 
 Jose approved the plan with “lets do it.” Codex owns backend logic; Claude owns onboarding rendering. Implementation is isolated in a detached worktree from developmente2872f30, with local incremental commits and no branch push, development assembly or deployment. Existing customer deployments stay `single_company`. New signup/provider/mail/worker/operator actions are disabled by default.
@@ -31,13 +35,13 @@ These are implementation positions, not independent security/QA/UI certification
 
 - Claude onboarding/signup page surfaces are absent from this checkout and the inspected current collab tree. There is no honest browser wizard acceptance yet. Do not add a fake page/test or count in-process HTTP tests as rendered UI evidence. Integrate the actual UI against the contract and test320/390/tablet/desktop, EN/ES, keyboard/focus, loading/empty/invalid/error/success, refresh/back, two tabs, lost responses, cookie failure, optional skips and partial/unknown invitations.
 - Fresh origin fetch kept development at the baseline; `claude-codex-collab-nevora` advancedd21ad918d. `check:development-sources` correctly reports drift. No assembly occurs here; do not update its recorded head/disposition without reviewing the collab work and rerunning the required inventory check.
-- No hosted project, real recipient email, actual DNS/TLS route, secret-manager grant, provider entitlement/capacity, remote CI result or installed native release is verified by the local packet. Existing metered AI allowances do not authorize hosted resource creation or a real email test. Obtain the separate environment, owned-resource/recipient and spending authority before those checks.
+- The isolated staging resources, restricted hosted roles, external endpoint TLS and DNS CNAMEs are verified separately in the latest integration handoff. Actual deployed Vercel runtime, automatic A/B company provisioning, application SMTP/approved-inbox journeys, hosted restore, Stripe sandbox lifecycle, remote CI and native release acceptance remain unverified. Existing metered AI allowances do not authorize new AI spend.
 - Source-specific security/QA/UI findings, required CI jobs, branch protection, actual release authorization and deployed-SHA mapping remain distinct. Public enablement/production is blocked until they are verified and Jose explicitly authorizes release.
 - Restore retirement deliberately leaves SUSPENDED and disables old logins/secrets. Owner/channel/contact/payroll/Clocker review, fresh roles and a separately reviewed reactivation are required. Backups do not prove that facts changed after the backup are still current.
 
 ## Resume
 
-Finish current-source backend acceptance and fresh whole-branch review, preserving all findings/rulings. Integrate Claude's actual UI only through an authorized development assembly after source drift is reconciled. Run real hosted checks only under their separate authority. Jira SCRUM-166 remains In Progress while those gates are open; backend preparation is not a Done claim for the full live self-service product.
+Current-source backend acceptance and the single fresh integration whole-change review are complete; the review returned BLOCK and the author fix pass has regression evidence. Preserve all findings/rulings without claiming a second independent approval. Finish the hosted gates in the latest integration handoff. Integrate Claude's actual UI only through an authorized development assembly after source drift is reconciled. Run real hosted checks only under their separate authority. Jira SCRUM-166 remains In Progress while those gates are open; backend preparation is not a Done claim for the full live self-service product.
 
 ## Dependency review
 
