@@ -4,3 +4,10 @@ it('admits HTTPS links with a development loopback SMTP transport while remote S
  const env={NODE_ENV:'test',NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:'23232',NEVORA_RECOVERY_FROM:'fictional@example.invalid',FUEL_PORTAL_ORIGIN:'https://alpha.portal.example.invalid'};
  expect(validatedMailTransport(env)?.origin).toBe(env.FUEL_PORTAL_ORIGIN);expect(validatedMailTransport({...env,NEVORA_RECOVERY_SMTP_HOST:'smtp.example.invalid'})).toBeNull();expect(validatedMailTransport({...env,NODE_ENV:'production'})).toBeNull();expect(validatedMailTransport({...env,FUEL_PORTAL_ORIGIN:'ftp://alpha.portal.example.invalid'})).toBeNull();
 });
+
+it('the installed mailer preserves the approved envelope recipient through nested address comments',async()=>{
+ const nodemailer=(await import('nodemailer')).default;
+ const transport=nodemailer.createTransport({streamTransport:true,buffer:true});
+ const result=await transport.sendMail({from:'sender@example.invalid',to:'Approved (outer(inner) <other@example.invalid>) <approved@example.invalid>',subject:'Fictional dependency regression',text:'Fictional verification content'});
+ expect(result.envelope.to).toEqual(['approved@example.invalid']);
+});

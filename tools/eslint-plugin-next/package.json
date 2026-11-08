@@ -61,7 +61,7 @@
   "_nodeVersion": "24.21.0",
   "dependencies": {
     "@eslint-community/eslint-utils": "4.9.1",
-    "glob": "13.0.6"
+    "glob": "14.0.4"
   },
   "_hasShrinkwrap": false,
   "_npmOperationalInternal": {

@@ -41,4 +41,4 @@ Finish current-source backend acceptance and fresh whole-branch review, preservi
 
 ## Dependency review
 
-The local audit at high/critical threshold passes;9 inherited moderate findings remain, including1 production Nodemailer finding. No forced dependency upgrade was made. Review the exact deployed dependency set before enabling mail/public onboarding; an audit exit0 at the high threshold does not mean zero findings.
+The2026-11-08 follow-up removes the9 inherited moderate findings with reviewed dependency updates, a failing-then-passing mail-envelope regression and clean-install verification. Full and production audits now report0 findings. See [hosted and dependency checks](2026-11-08-onboarding-hosted-dependency-checks.md) for exact versions, provider-delivery evidence, access blockers and the required hosted rehearsal. No forced audit downgrade, lint-rule suppression or production enablement was performed.
