@@ -1,5 +1,7 @@
 # Staging webhook and private scheduling decision
 
+**Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
+
 Status: the Render proposal below is superseded by Jose's direction to finish using the existing accounts. No paid hosting budget was approved. Neon Functions/Triggers are now verified available on the existing Free staging project; four closed adapters have been deployed and native no-op schedule delivery observed. See docs/superpowers/plans/2026-11-08-neon-staging-hosting.md and stripe-evidence-20261108/neon-hosting.json for current code, review and test evidence. Actual payment, mail and provisioning effects remain unverified. All new schedules are disabled.
 
 Historical Render proposal, retained for decision provenance: Codex owns backend and hosting; Claude owns UI. Jira SCRUM-174 / SCRUM-166 remain open. User approved the sandbox runtime key and its sensitive Vercel Preview destination; that approval does not authorize a new paid hosting plan or copying it into another service.

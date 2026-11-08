@@ -1,5 +1,7 @@
 # Onboarding hosted-service and dependency checks
 
+**Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
+
 2026-11-08, America/Puerto_Rico. Follow-up to SCRUM-166 and local onboarding candidate6b4af1cf2. Codex owns logic/infrastructure verification; Claude owns UI. Existing companies/production and the Shopify store were not modified.
 
 ## Current disposition

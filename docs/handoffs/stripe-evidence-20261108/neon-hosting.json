@@ -1,5 +1,5 @@
 {
-  "status": "closed hosted preparation verified; credentials and real business effects pending",
+  "status": "Historical closed preparation; current sandbox credential/hosting state is in neon-credential-acceptance.json",
   "plan": "docs/superpowers/plans/2026-11-08-neon-staging-hosting.md",
   "base": "c3a64722d8cb3825bb2a198d90c0fff3a374724d",
   "provider": {
@@ -336,5 +336,6 @@
         "nevora-onboarding-staging Vercel Preview"
       ]
     }
-  }
+  },
+  "latestReceipt": "neon-credential-acceptance.json"
 }

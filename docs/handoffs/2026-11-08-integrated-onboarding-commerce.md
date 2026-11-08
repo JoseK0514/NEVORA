@@ -1,5 +1,7 @@
 # Integrated onboarding and subscription backend
 
+**Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
+
 November8,2026. Codex owns logic and staging; Claude owns all rendering. Current implementation work is detached/local. Read the source-specific verification packet before treating a checkpoint as accepted.
 
 Stripe continuation: [Payments/Invoicing/Tax readiness](2026-11-08-stripe-integration-readiness.md) supersedes the earlier Stripe-connection deferral. Official sandbox/planner and provider-parameter acceptance now work; local restricted-key/account and optional Tax logic is implemented. Tax remains off, and runtime-key/signed hosted-webhook/full-journey acceptance remain open. This does not update the deployed81d3d1d07 application or close independent/Claude UI gates.
