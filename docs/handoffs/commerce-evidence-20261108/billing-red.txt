@@ -1,0 +1,95 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+ ❯ services/commerce/stripe.integration.test.ts (12 tests | 5 failed) 858ms
+   ❯ Stripe lifecycle with real catalog and SDK (12)
+     × does not restart failed-renewal grace on repeated events 65ms
+     × recovers a lost checkout response using stable provider parameters and one remote checkout 56ms
+     × allows a verified successor after cancellation and ignores delayed predecessor events 59ms
+     × continues reconciling healthy businesses after an earlier business fails 61ms
+     × restricts operational access when a downgrade is below actual active headcount 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > does not restart failed-renewal grace on repeated events
+AssertionError: expected 'trial' to be 'grace' // Object.is equality
+
+Expected: "grace"
+Received: "trial"
+
+ ❯ services/commerce/stripe.integration.test.ts:47:482
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > recovers a lost checkout response using stable provider parameters and one remote checkout
+Error: Parameters changed for the same operation
+ ❯ generateV1Error node_modules/stripe/src/Error.ts:27:14
+ ❯ node_modules/stripe/src/RequestSender.ts:227:23
+ ❯ SessionResource._makeRequest node_modules/stripe/src/StripeResource.ts:108:27
+ ❯ SessionResource.create node_modules/stripe/src/resources/Checkout/Sessions.ts:139:17
+ ❯ services/commerce/stripe.ts:221:59
+    219|         params.subscription_data = { metadata };
+    220|       }
+    221|       const session = await this.stripe.checkout.sessions.create(param…
+       |                                                           ^
+    222|         idempotencyKey: `nevora-checkout:${business.id}:${operation}`,
+    223|       });
+ ❯ CommerceStore.transaction services/commerce/store.ts:40:21
+ ❯ services/commerce/stripe.integration.test.ts:52:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > allows a verified successor after cancellation and ignores delayed predecessor events
+Error: use_billing_portal
+ ❯ services/commerce/stripe.ts:156:15
+    154|     return this.locked(input.id, async (client, business) => {
+    155|       if (business.subscriptionId)
+    156|         throw new CommerceError("use_billing_portal", 409);
+       |               ^
+    157|       const pending = await client.query(
+    158|         "SELECT checkout_id,checkout_url,checkout_expires_at FROM comm…
+ ❯ services/commerce/stripe.ts:44:14
+ ❯ CommerceStore.transaction services/commerce/store.ts:40:21
+ ❯ checkout services/commerce/stripe.integration.test.ts:24:64
+ ❯ services/commerce/stripe.integration.test.ts:56:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > continues reconciling healthy businesses after an earlier business fails
+Error: Fixture subscription temporarily unavailable
+ ❯ generateV1Error node_modules/stripe/src/Error.ts:44:10
+ ❯ node_modules/stripe/src/RequestSender.ts:227:23
+ ❯ SubscriptionResource._makeRequest node_modules/stripe/src/StripeResource.ts:108:27
+ ❯ SubscriptionResource.retrieve node_modules/stripe/src/resources/Subscriptions.ts:164:17
+ ❯ StripeBilling.syncSubscription services/commerce/stripe.ts:395:53
+    393|   }
+    394|   async syncSubscription(id: string) {
+    395|     const initial = await this.stripe.subscriptions.retrieve(id),
+       |                                                     ^
+    396|       businessId = initial.metadata.nevora_business_id;
+    397|     if (!businessId || !/^[0-9a-f-]{36}$/i.test(businessId))
+ ❯ StripeBilling.reconcile services/commerce/stripe.ts:474:20
+ ❯ services/commerce/stripe.integration.test.ts:60:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  services/commerce/stripe.integration.test.ts > Stripe lifecycle with real catalog and SDK > restricts operational access when a downgrade is below actual active headcount
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ services/commerce/stripe.integration.test.ts:66:211
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  5 failed | 34 passed (39)
+   Start at  23:55:17
+   Duration  1.07s (tests 84%, import 10%, transform 6%, worker 1%)

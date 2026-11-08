@@ -43,7 +43,11 @@
     "test:mobile-access:owned": "node scripts/payroll-postgres.mjs vitest.mobile-access-browser.config.mts",
     "onboarding:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/onboarding-worker.mts --once",
     "check:onboarding-manifest": "node scripts/onboarding-manifest.mjs",
-    "onboarding:operator": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/onboarding-operator.mts"
+    "onboarding:operator": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/onboarding-operator.mts",
+    "commerce:api": "node --import tsx services/commerce/server.ts",
+    "commerce:worker": "node --import tsx services/commerce/worker-cli.ts",
+    "commerce:operator": "node --import tsx services/commerce/operator.ts",
+    "test:commerce:owned": "node scripts/commerce-postgres.mjs"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
@@ -58,7 +62,10 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sharp": "0.35.5",
-    "web-push": "3.6.7"
+    "web-push": "3.6.7",
+    "stripe": "23.1.0",
+    "pg": "8.23.1",
+    "tsx": "4.23.15"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
@@ -68,8 +75,6 @@
     "@types/react-dom": "^19.0.0",
     "@types/web-push": "3.6.4",
     "eslint": "^9.0.0",
-    "pg": "8.23.1",
-    "tsx": "4.23.15",
     "typescript": "^5.9.0",
     "vitest": "5.0.5",
     "@nevora/eslint-config-next": "file:tools/eslint-config-next",

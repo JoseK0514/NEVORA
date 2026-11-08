@@ -1,0 +1,15 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run --maxWorkers=4
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+
+ Test Files  728 passed | 31 skipped (759)
+      Tests  10999 passed | 831 skipped (11885)
+   Start at  00:18:19
+   Duration  115.62s (tests 84%, import 15%, transform 1%)
+
+    Isolate  759 workers spawned · ~51ms startup each (spawn + environment, per file)
+             at least ~9.56s faster with isolate: false — reuses workers across files instead of one per file

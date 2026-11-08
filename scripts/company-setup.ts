@@ -1,3 +1,4 @@
+import {parsePostgresUrl} from "../src/lib/postgres-url";
 import { randomUUID } from 'node:crypto';
 import type { Client } from 'pg';
 import {canonicalCompanyManifest,lockFreshCompany,installCompanyBase,insertOwnerProfile,installCompanyFinal} from '../src/lib/company-bootstrap/server';
@@ -75,7 +76,7 @@ export function readSetupTarget(env: Environment): string {
   const value = env.NEVORA_SETUP_DATABASE_URL;
   if (!value) throw new Error('NEVORA_SETUP_DATABASE_URL is required; DATABASE_URL is never used for setup.');
   let url: URL;
-  try { url = new URL(value); } catch { throw new Error('Invalid setup database URL.'); }
+  try { url = parsePostgresUrl(value); } catch { throw new Error('Invalid setup database URL.'); }
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || !url.hostname || url.hash) {
     throw new Error('Invalid setup database URL.');
   }
@@ -89,7 +90,7 @@ export function readSetupTarget(env: Environment): string {
   return value;
 }
 
-async function insertOwner(client: Client, owner: OwnerInput, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
+async function insertOwner(client: Client, owner: Omit<OwnerInput, "password">, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
   return insertOwnerProfile(client,owner,primaryLocationId,eligibleLocationIds,{active:true,passwordHash});
 }
 
@@ -116,19 +117,36 @@ export async function bootstrapOwner(client: Client, owner: OwnerInput, location
   }
 }
 
+/** Fresh catalog/company targets must contain no other application objects, in any user schema. */
+export async function assertEmptyDatabase(client: Pick<Client,'query'>) {
+  const identity=await client.query('SELECT current_database() AS name');
+  if(['postgres','template0','template1'].includes(identity.rows[0]?.name))throw Error('A maintenance database cannot be initialized.');
+  const existing=await client.query(`SELECT 1 FROM pg_namespace n
+    WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%'
+    AND (n.nspname='commerce' OR EXISTS(SELECT 1 FROM pg_class c WHERE c.relnamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_proc p WHERE p.pronamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_type t WHERE t.typnamespace=n.oid)) LIMIT 1`);
+  if(existing.rowCount)throw Error('Company setup requires an empty database; existing databases are never reset.');
+}
+
 /** Historical migrations remain the schema authority. Strip only their outer
  * transaction markers so the entire fresh install has one atomic boundary. */
+type CredentialCompanyInput = Omit<CompanyInput, 'owner'> & { owner: Omit<OwnerInput, 'password'> };
 export async function setupCompany(client: Client, input: CompanyInput) {
+  return setupCompanyWithCredential(client,input,await hashPassword(input.owner.password));
+}
+export async function setupCompanyWithCredential(client: Client, input: CredentialCompanyInput, passwordHash: string,
+  afterInstall?: (client: Client, ids: { workspaceId: string; locationId: string }) => Promise<void>) {
+  if (!/^scrypt\$[a-f0-9]{32}\$[a-f0-9]{128}$/i.test(passwordHash)) throw Error('Invalid owner credential hash.');
   const manifest=await canonicalCompanyManifest();
-  const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
   await client.query('BEGIN');
   try {
     await lockFreshCompany(client);
+    await assertEmptyDatabase(client);
     await installCompanyBase(client,manifest,{workspaceId,name:input.name,timeZone:input.timeZone,locationId,locationName:input.locationName,locationShortName:input.locationShortName,locationKey:input.locationKey});
     await insertOwner(client, input.owner, passwordHash, locationId, [locationId]);
     // Immutable access adoption must bind the configured company and real employees.
     await installCompanyFinal(client,manifest);
+    if (afterInstall) await afterInstall(client,{workspaceId,locationId});
     await client.query('COMMIT');
     return { workspaceId, locationId };
   } catch (error) {

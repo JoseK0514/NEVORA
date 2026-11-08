@@ -1,0 +1,393 @@
+import { createHmac } from "node:crypto";
+import Stripe from "stripe";
+import type { PoolClient } from "pg";
+import type { BillingPort } from "./service";
+import { CommerceStore, type Business } from "./store";
+import { CommerceError, type PlanKey } from "./model";
+import { createCheckout, recoverCheckouts } from "./checkout";
+import {
+  applyInstallationCapacity,
+  readInstallationHeadcount,
+} from "./installation";
+import {
+  assertOwnedSubscription,
+  stripeObjectId,
+  terminalSubscription,
+} from "./stripe-identity";
+type BillingOptions = {
+  origin: string;
+  prices: Record<PlanKey, string>;
+  webhookSecret: string;
+  live: boolean;
+  now?: () => number;
+  facts?: (business: Business) => Promise<number>;
+  policy?: (business: Business, limit: number) => Promise<void>;
+};
+export class StripeBilling implements BillingPort {
+  constructor(
+    readonly store: CommerceStore,
+    readonly stripe: Stripe,
+    readonly options: BillingOptions,
+  ) {}
+  now() {
+    return this.options.now?.() ?? Date.now();
+  }
+  private checkoutPorts() {
+    return {
+      store: this.store,
+      stripe: this.stripe,
+      origin: this.options.origin,
+      prices: this.options.prices,
+      now: () => this.now(),
+      headcount: (business: Business, client: PoolClient) =>
+        this.options.facts
+          ? this.options.facts(business)
+          : readInstallationHeadcount(this.store, business, client),
+    };
+  }
+  checkout(business: Business, operation: string) {
+    return createCheckout(this.checkoutPorts(), business, operation);
+  }
+  async portal(input: Business, operation: string) {
+    return this.store.withBusinessLock(input.id, async (client, business) => {
+      if (!business.customerId)
+        throw new CommerceError("subscription_required", 409);
+      const proof = createHmac("sha256", this.store.key)
+        .update(`portal-return:${business.id}:${operation}`)
+        .digest("base64url");
+      await this.store.handoff(business.id, proof, this.now(), client, 3600000);
+      const session = await this.stripe.billingPortal.sessions.create(
+        {
+          customer: business.customerId,
+          return_url: `${this.options.origin}/pages/nevora-billing#handoff=${proof}`,
+        },
+        { idempotencyKey: `nevora-portal:${business.id}:${operation}` },
+      );
+      return session.url;
+    });
+  }
+  async webhook(raw: string, signature: string) {
+    let event: Stripe.Event;
+    try {
+      event = this.stripe.webhooks.constructEvent(
+        raw,
+        signature,
+        this.options.webhookSecret,
+      );
+    } catch {
+      throw new CommerceError("invalid_signature");
+    }
+    if (event.livemode !== this.options.live)
+      throw new CommerceError("mode_mismatch");
+    const object = event.data.object as unknown as Record<string, unknown>;
+    if (
+      event.type === "checkout.session.completed" ||
+      event.type === "checkout.session.async_payment_succeeded"
+    ) {
+      const id = stripeObjectId(object);
+      if (!id) return;
+      await this.store.transaction(async (client) => {
+        const r = await client.query(
+          "INSERT INTO commerce.webhooks(id) VALUES($1) ON CONFLICT DO NOTHING RETURNING id",
+          [event.id],
+        );
+        if (r.rowCount)
+          await this.store.enqueue(client, "stripe", `stripe:${event.id}`, {
+            sessionId: id,
+          });
+      });
+      return;
+    }
+    let subscriptionId: string | null = null;
+    if (event.type.startsWith("customer.subscription."))
+      subscriptionId = stripeObjectId(object);
+    else if (event.type.startsWith("invoice.")) {
+      const parent = object.parent as
+        | { subscription_details?: { subscription?: unknown } }
+        | undefined;
+      subscriptionId = stripeObjectId(
+        parent?.subscription_details?.subscription,
+      );
+    }
+    if (subscriptionId) await this.store.webhook(event.id, subscriptionId);
+  }
+  async syncJob(payload: Record<string, string>) {
+    if (payload.sessionId) await this.syncCheckout(payload.sessionId);
+    else if (payload.subscriptionId)
+      await this.syncSubscription(payload.subscriptionId);
+    else throw Error("invalid_stripe_job");
+  }
+  private async syncCheckout(id: string) {
+    const session = await this.stripe.checkout.sessions.retrieve(id, {
+      expand: ["setup_intent"],
+    });
+    if (session.status !== "complete") return;
+    const businessId = session.metadata?.nevora_business_id;
+    if (!businessId || !/^[0-9a-f-]{36}$/i.test(businessId))
+      throw Error("subscription_identity_mismatch");
+    const subscriptionId = await this.store.withBusinessLock(
+      businessId,
+      async (client, business) => {
+        if (stripeObjectId(session.customer) !== business.customerId)
+          throw Error("subscription_identity_mismatch");
+        const intent = (
+          await client.query(
+            "SELECT * FROM commerce.checkout_intents WHERE business_id=$1 AND operation=$2",
+            [businessId, session.metadata?.nevora_checkout_operation ?? ""],
+          )
+        ).rows[0];
+        if (!intent) return null;
+        if (intent.session_id && intent.session_id !== session.id)
+          throw Error("checkout_identity_mismatch");
+        if (
+          session.metadata?.nevora_price !==
+          this.options.prices[intent.plan_key as PlanKey]
+        )
+          throw Error("invalid_billing_price");
+        if (session.mode === "subscription") {
+          const incoming = stripeObjectId(session.subscription);
+          if (!incoming) return null;
+          if (business.subscriptionId === incoming) return incoming;
+          if (business.subscriptionId !== intent.previous_subscription_id)
+            return null;
+          if (business.subscriptionId) {
+            const current = await this.stripe.subscriptions.retrieve(
+              business.subscriptionId,
+            );
+            assertOwnedSubscription(current, business);
+            if (!terminalSubscription(current.status))
+              throw Error("subscription_reconciliation_required");
+          }
+          return incoming;
+        }
+        if (session.mode !== "setup") return null;
+        if (business.subscriptionId) {
+          const current = await this.stripe.subscriptions.retrieve(
+            business.subscriptionId,
+          );
+          assertOwnedSubscription(current, business);
+          if (current.metadata.nevora_checkout_session === id)
+            return current.id;
+          if (business.subscriptionId !== intent.previous_subscription_id)
+            return null;
+          if (!terminalSubscription(current.status))
+            throw Error("subscription_reconciliation_required");
+        }
+        const setup = session.setup_intent;
+        if (
+          !setup ||
+          typeof setup === "string" ||
+          setup.status !== "succeeded" ||
+          stripeObjectId(setup.customer) !== business.customerId ||
+          !stripeObjectId(setup.payment_method)
+        )
+          throw Error("subscription_identity_mismatch");
+        const previous = (
+          await this.stripe.subscriptions.list({
+            customer: business.customerId!,
+            status: "all",
+            limit: 100,
+          })
+        ).data.filter(
+          (s) =>
+            s.metadata.nevora_business_id === businessId &&
+            s.metadata.nevora_checkout_session === id,
+        );
+        if (previous.length > 1)
+          throw Error("subscription_reconciliation_required");
+        const chargeStart = Math.max(
+          business.trialEnd ?? 0,
+          business.paidThrough ?? 0,
+        );
+        const subscription =
+          previous[0] ??
+          (await this.stripe.subscriptions.create(
+            {
+              customer: business.customerId!,
+              items: [
+                {
+                  price: this.options.prices[intent.plan_key as PlanKey],
+                  quantity: 1,
+                },
+              ],
+              default_payment_method: stripeObjectId(setup.payment_method)!,
+              metadata: {
+                nevora_business_id: businessId,
+                nevora_checkout_session: id,
+                nevora_checkout_operation: intent.operation,
+              },
+              ...(chargeStart > this.now()
+                ? { trial_end: Math.floor(chargeStart / 1000) }
+                : {}),
+            },
+            { idempotencyKey: `nevora-subscription:${id}` },
+          ));
+        return subscription.id;
+      },
+    );
+    if (subscriptionId) await this.syncSubscription(subscriptionId);
+  }
+  async syncSubscription(id: string) {
+    const initial = await this.stripe.subscriptions.retrieve(id),
+      businessId = initial.metadata.nevora_business_id;
+    if (!businessId || !/^[0-9a-f-]{36}$/i.test(businessId))
+      throw Error("subscription_identity_mismatch");
+    await this.store.withBusinessLock(businessId, async (client, business) => {
+      const subscription = await this.stripe.subscriptions.retrieve(id, {
+        expand: ["latest_invoice"],
+      });
+      assertOwnedSubscription(subscription, business);
+      if (business.subscriptionId !== id) {
+        if (
+          business.subscriptionId &&
+          terminalSubscription(subscription.status)
+        )
+          return;
+        const intent = (
+          await client.query(
+            "SELECT previous_subscription_id FROM commerce.checkout_intents WHERE business_id=$1 AND operation=$2",
+            [businessId, subscription.metadata.nevora_checkout_operation ?? ""],
+          )
+        ).rows[0];
+        if (
+          !intent ||
+          intent.previous_subscription_id !== business.subscriptionId
+        )
+          throw Error("subscription_identity_mismatch");
+        if (business.subscriptionId) {
+          const current = await this.stripe.subscriptions.retrieve(
+            business.subscriptionId,
+          );
+          assertOwnedSubscription(current, business);
+          if (!terminalSubscription(current.status))
+            throw Error("subscription_reconciliation_required");
+        }
+      }
+      const item = subscription.items.data[0],
+        key = Object.entries(this.options.prices).find(
+          ([, price]) => price === item?.price.id,
+        )?.[0] as PlanKey | undefined;
+      if (
+        subscription.items.data.length !== 1 ||
+        !key ||
+        item.quantity !== 1 ||
+        item.price.unit_amount !== (key === "small" ? 1900 : 2900) ||
+        item.price.currency !== "usd" ||
+        item.price.recurring?.interval !== "month" ||
+        item.price.recurring.interval_count !== 1
+      )
+        throw Error("invalid_subscription_price");
+      const invoices = await this.stripe.invoices.list({
+        subscription: id,
+        status: "paid",
+        limit: 100,
+      });
+      let matchingPaidThrough = 0;
+      for (const invoice of invoices.data) {
+        if (
+          invoice.status !== "paid" ||
+          invoice.amount_paid <= 0 ||
+          invoice.currency !== "usd"
+        )
+          continue;
+        for (const line of invoice.lines.data)
+          if (
+            stripeObjectId(line.pricing?.price_details?.price) ===
+              item.price.id &&
+            Number.isFinite(line.period.end)
+          )
+            matchingPaidThrough = Math.max(
+              matchingPaidThrough,
+              line.period.end * 1000,
+            );
+      }
+      const paidThrough =
+        Math.max(business.paidThrough ?? 0, matchingPaidThrough) || null;
+      // Preserve previously paid capacity until a replacement price has paid coverage.
+      const confirmedPlan =
+        business.planKey &&
+        business.paidThrough &&
+        matchingPaidThrough <= this.now()
+          ? business.planKey
+          : key;
+      const latest = subscription.latest_invoice,
+        failed = ["past_due", "unpaid"].includes(subscription.status),
+        failureAt =
+          latest && typeof latest !== "string"
+            ? latest.created * 1000
+            : (paidThrough ?? this.now()),
+        pastDue = failed
+          ? (business.pastDueSince ?? Math.min(this.now(), failureAt))
+          : null;
+      if (this.options.policy)
+        await this.options.policy(
+          business,
+          confirmedPlan === "small" ? 15 : 30,
+        );
+      else
+        await applyInstallationCapacity(
+          this.store,
+          business,
+          confirmedPlan === "small" ? 15 : 30,
+          client,
+        );
+      await client.query(
+        "UPDATE commerce.businesses SET stripe_subscription_id=$2,subscription_status=$3,paid_through=$4,past_due_since=$5,plan_key=$6,sync_at=clock_timestamp() WHERE id=$1",
+        [
+          businessId,
+          id,
+          subscription.status,
+          paidThrough ? new Date(paidThrough) : null,
+          pastDue ? new Date(pastDue) : null,
+          confirmedPlan,
+        ],
+      );
+    });
+  }
+  async reconcile() {
+    const rows = await this.store.pool.query(
+      "SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL ORDER BY id",
+    );
+    let failed = 0;
+    for (const row of rows.rows) {
+      try {
+        let business = await this.store.business(row.id);
+        await recoverCheckouts(this.checkoutPorts(), business);
+        const checkout = (
+          await this.store.pool.query(
+            "SELECT checkout_id FROM commerce.businesses WHERE id=$1",
+            [row.id],
+          )
+        ).rows[0]?.checkout_id;
+        if (checkout) await this.syncCheckout(checkout);
+        business = await this.store.business(row.id);
+        if (business.subscriptionId)
+          await this.syncSubscription(business.subscriptionId);
+        else {
+          const subscriptions = (
+            await this.stripe.subscriptions.list({
+              customer: business.customerId!,
+              status: "all",
+              limit: 100,
+            })
+          ).data.filter(
+            (s) =>
+              s.metadata.nevora_business_id === business.id &&
+              !terminalSubscription(s.status),
+          );
+          if (subscriptions.length > 1)
+            throw Error("subscription_reconciliation_required");
+          if (subscriptions[0])
+            await this.syncSubscription(subscriptions[0].id);
+        }
+      } catch {
+        failed++;
+        await this.store.pool.query(
+          "INSERT INTO commerce.audit(business_id,event) VALUES($1,'billing_reconcile_retry_required')",
+          [row.id],
+        );
+      }
+    }
+    return { checked: rows.rowCount ?? 0, failed };
+  }
+}

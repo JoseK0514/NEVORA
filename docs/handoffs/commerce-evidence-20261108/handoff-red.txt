@@ -1,0 +1,49 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+ ❯ src/app/api/commerce/routes.test.ts (7 tests | 2 failed | 4 skipped) 11ms
+   × does not mint or return another installation billing session when its local binding disagrees 3ms
+   × keeps a staging billing handoff on its configured trusted frontend 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/api/commerce/routes.test.ts > does not mint or return another installation billing session when its local binding disagrees
+AssertionError: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ src/app/api/commerce/routes.test.ts:157:27
+    155|     }),
+    156|   );
+    157|   expect(response.status).toBe(403);
+       |                           ^
+    158| });
+    159|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/app/api/commerce/routes.test.ts > keeps a staging billing handoff on its configured trusted frontend
+AssertionError: expected 'https://www.thevelani.com/pages/plans…' to be 'https://staging.example.test/pages/pl…' // Object.is equality
+
+Expected: "https://staging.example.test/pages/plans#handoff=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+Received: "https://www.thevelani.com/pages/plans#handoff=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+
+ ❯ src/app/api/commerce/routes.test.ts:184:39
+    182|     }),
+    183|   );
+    184|   expect((await response.json()).url).toBe(
+       |                                       ^
+    185|     `https://staging.example.test/pages/plans#handoff=${"b".repeat(43)…
+    186|   );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 4 skipped (7)
+   Start at  00:13:01
+   Duration  91ms (transform 45%, tests 30%, import 20%, worker 4%)
