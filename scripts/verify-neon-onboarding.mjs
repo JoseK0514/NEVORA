@@ -25,7 +25,7 @@ for(const artifact of receipt.artifacts){
  }
  const artifactModule=await import(pathToFileURL(join(dir,'index.mjs')).href);
  const h=artifactModule.default.fetch;
- assert.equal((await h(new Request('https://owned.invalid/other'))).status,404);
+ assert.equal((await h(new Request('https://owned.invalid/other?private=fictional-private-value',{headers:{authorization:'Bearer fictional-private-value'}}))).status,404);
  if(artifact.slug==='stripewebhook')assert.equal((await h(new Request('https://owned.invalid/webhooks/stripe',{method:'POST'}))).status,503);
  else{
   assert.equal((await h(new Request('https://owned.invalid/run',{method:'POST'}))).status,401);

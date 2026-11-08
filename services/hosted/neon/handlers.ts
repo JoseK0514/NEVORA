@@ -7,6 +7,10 @@ export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner';
 type Env=Readonly<Record<string,string|undefined>>;
 const answer=(value:unknown,status=200)=>Response.json(value,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const fail=(code:string,status:number)=>answer({error:{code}},status);
+/** Fixed role/status only: no paths, bodies, IDs, credentials or personal data. */
+export function observedFetch(role:HostedRole|'stripewebhook',handler:(request:Request)=>Promise<Response>){
+ return async(request:Request)=>{const response=await handler(request);console.info(JSON.stringify({event:'nevora_staging_http',role,status:response.status}));return response;};
+}
 function bound(env:Env,role:HostedRole|'stripewebhook'){
  if(!/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??'')||env.NEVORA_NEON_BRANCH_ID!==env.NEON_BRANCH_ID||env.NEVORA_COMMERCE_ENVIRONMENT!=='staging'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||env.NEVORA_WORKSPACE_MODE!=='isolated')return false;
  // Neon automatically injects a default database capability. It must be overridden

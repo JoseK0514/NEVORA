@@ -1,5 +1,5 @@
-import {createScheduledHandler} from './handlers';
+import {createScheduledHandler,observedFetch} from './handlers';
 import {runCommerceTask} from './tasks';
-const handler={fetch:createScheduledHandler('commercequeue',process.env,()=>runCommerceTask('queue'))};
+const handler={fetch:observedFetch('commercequeue',createScheduledHandler('commercequeue',process.env,()=>runCommerceTask('queue')))};
 
 export default handler;
