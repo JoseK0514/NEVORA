@@ -13,7 +13,7 @@ const output=resolve(paths[0]),receipt=JSON.parse(await readFile(join(output,'re
 assert.equal(receipt.sourceUnchanged,true);
 if(!allowDirty)assert.equal(receipt.deployable,true,'Only clean source bundles are deployable');
 // This child process never inherits an application capability for artifact checks.
-for(const key of Object.keys(process.env))if(!['PATH','HOME','HOSTNAME','NODE_ENV','NODE_OPTIONS','NODE_VERSION','LANG','LC_ALL','PWD','SHLVL','_','TZ'].includes(key))delete process.env[key];
+for(const key of Object.keys(process.env))if(!['PATH','HOME','HOSTNAME','NODE_ENV','NODE_OPTIONS','NODE_VERSION','LANG','LC_ALL','PWD','SHLVL','_','TZ','TERM'].includes(key))delete process.env[key];
 Object.assign(process.env,{PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid',NEVORA_NEON_HOST_ENABLED:'false',NEVORA_NEON_BRANCH_ID:'br-owned-local',NEON_BRANCH_ID:'br-owned-local',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:'postgresql://disabled.invalid/disabled',DATABASE_URL_UNPOOLED:'postgresql://disabled.invalid/disabled'});
 const expected=['stripewebhook','commercequeue','commercereconcile','provisioner'];
 assert.deepEqual(receipt.artifacts.map(x=>x.slug),expected);

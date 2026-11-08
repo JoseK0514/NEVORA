@@ -20,7 +20,7 @@ export function deploymentCapabilitiesAllowed(role:FunctionRole,env:HostedEnviro
  const allowed=approvedCapabilityNames(role);
  return Object.keys(env).every(key=>allowed.has(key))&&roleCapabilitiesAllowed(role,env);
 }
-const ordinaryRuntime=new Set(['PATH','HOME','HOSTNAME','NODE_ENV','NODE_OPTIONS','NODE_VERSION','LANG','LC_ALL','PWD','SHLVL','_','TZ']);
+const ordinaryRuntime=new Set(['PATH','HOME','HOSTNAME','NODE_ENV','NODE_OPTIONS','NODE_VERSION','LANG','LC_ALL','PWD','SHLVL','_','TZ','TERM']);
 function unapprovedRuntimeNames(role:FunctionRole,env:HostedEnvironment){
  const allowed=new Set([...approvedCapabilityNames(role),...nativeRuntime,...ordinaryRuntime]);
  return Object.keys(env).filter(key=>!allowed.has(key));
