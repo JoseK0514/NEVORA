@@ -181,8 +181,8 @@
         "sha256": "15e9bae56a2959e7f35b38d190c1ec71a6950fbb9988a67960c3f388e11ee109"
       },
       "progress.md": {
-        "bytes": 7116,
-        "sha256": "f9ee3c26dce5627051cbcffe96bb07c6284c8212d3931eb208fdcb7d24d82d28"
+        "bytes": 8503,
+        "sha256": "44e4d8a45c5a725bf29630071ef32139534df62d818e74954f5c07b6f45cd197"
       },
       "reviewed-build.log": {
         "bytes": 1284,
@@ -243,6 +243,10 @@
       "archive-review-red.log": {
         "bytes": 3370,
         "sha256": "758273be67633fbecb904dc9211e3517098c9eee35c03bf538977072ef5ee015"
+      },
+      "task-2-tests.log": {
+        "bytes": 1666,
+        "sha256": "fffb703dc869685c1714c56111d43ad8b00a4e3be35de557fcf7732421d44858"
       },
       "review-fix-green.log": {
         "bytes": 250,
@@ -308,6 +312,29 @@
         "bytes": 58,
         "sha256": "23e0d746395f654dd8d79a741906c170062f20bfeb5f886de6ec87d21e3ad2cf"
       }
+    }
+  },
+  "credentialApproval": {
+    "status": "requested, no response yet",
+    "stripeKeyName": "NEVORA Neon staging billing worker",
+    "stripeKeyCreated": false,
+    "newNeonSecretStored": false,
+    "temporaryLocalTransferProposed": "~/.codex/tmp/nevora-neon-transfer; owner-only and erased after transfer",
+    "reviewScreenshot": "/Users/josek0514/.codex/visualizations/2026/11/01/01a1996a-6fe1-7600-8e90-09a319655a96/stripe-neon-worker-key-review.png",
+    "destinations": {
+      "workerKey": [
+        "Neon commercequeue",
+        "Neon commercereconcile"
+      ],
+      "catalogApiDsnAndEncryptionKey": [
+        "Neon commercequeue",
+        "Neon commercereconcile",
+        "Neon stripewebhook"
+      ],
+      "newTestEndpointSigningSecret": [
+        "Neon stripewebhook",
+        "nevora-onboarding-staging Vercel Preview"
+      ]
     }
   }
 }
