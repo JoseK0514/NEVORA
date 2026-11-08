@@ -2,7 +2,7 @@ import {parsePostgresUrl} from '../../../src/lib/postgres-url';
 import {databaseTarget} from '../../commerce/config';
 export type HostedEnvironment=Readonly<Record<string,string|undefined>>;
 export type FunctionRole='stripewebhook'|'commercequeue'|'commercereconcile'|'provisioner';
-const common=['NEVORA_NEON_HOST_ENABLED','NEVORA_NEON_BRANCH_ID','NEVORA_NEON_SOURCE_SHA','NEVORA_COMMERCE_ENVIRONMENT','NEVORA_ONBOARDING_ENVIRONMENT','NEVORA_WORKSPACE_MODE','DATABASE_URL','DATABASE_URL_UNPOOLED','NEON_BRANCH','NEON_BRANCH_ID','NEON_FUNCTION_HOST_SUFFIX'];
+const common=['NEVORA_NEON_HOST_ENABLED','NEVORA_NEON_BRANCH_ID','NEVORA_NEON_SOURCE_SHA','NEVORA_NEON_DIAGNOSTICS','NEVORA_COMMERCE_ENVIRONMENT','NEVORA_ONBOARDING_ENVIRONMENT','NEVORA_WORKSPACE_MODE','DATABASE_URL','DATABASE_URL_UNPOOLED','NEON_BRANCH','NEON_BRANCH_ID','NEON_FUNCTION_HOST_SUFFIX'];
 const catalog=['NEVORA_COMMERCE_DATABASE_URL','NEVORA_COMMERCE_ENCRYPTION_KEY'];
 const billing=['STRIPE_SECRET_KEY','STRIPE_ACCOUNT_ID','STRIPE_PRICE_SMALL','STRIPE_PRICE_TEAM','NEVORA_COMMERCE_TAX_ENABLED','NEVORA_COMMERCE_TAX_CODE','NEVORA_COMMERCE_TAX_BEHAVIOR','NEVORA_COMMERCE_ORIGIN','NEVORA_COMMERCE_UI_ORIGIN','NEVORA_COMMERCE_PROVISIONING_MODE'];
 const mail=['NEVORA_COMMERCE_MAIL_ENABLED','NEVORA_COMMERCE_MAIL_FROM','NEVORA_COMMERCE_SMTP_HOST','NEVORA_COMMERCE_SMTP_PORT','NEVORA_COMMERCE_SMTP_USER','NEVORA_COMMERCE_SMTP_PASSWORD'];
@@ -21,6 +21,13 @@ export function roleCapabilitiesAllowed(role:FunctionRole,env:HostedEnvironment)
   if(env.NEVORA_PROVISIONER_CONTROL_DATABASE_URL)provisionerEnvironment(env);
   return true;
  }catch{return false;}
+}
+/** Operator opt-in, name-only diagnostics. No environment values or request
+ * fields leave this function; cap count and name format before logging. */
+export function configurationDiagnostics(role:FunctionRole,env:HostedEnvironment){
+ const allowed=approvedCapabilityNames(role);
+ const unapprovedNames=Object.entries(env).filter(([key,value])=>value&&!allowed.has(key)&&(/^(NEVORA_|STRIPE_|NEON_|DATABASE_|PG[A-Z_]|AWS_)/.test(key)||/(?:_KEY|_TOKEN|_SECRET|_PASSWORD|_CREDENTIALS?|_CONNECTION_STRING)$/.test(key))).map(([key])=>/^[A-Z][A-Z0-9_]{0,79}$/.test(key)?key:'[nonstandard_name]').sort().slice(0,32);
+ return {unapprovedNames,roleAllowed:roleCapabilitiesAllowed(role,env),branchMatches:env.NEVORA_NEON_BRANCH_ID===env.NEON_BRANCH_ID,branchValid:/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??''),stagingBound:env.NEVORA_COMMERCE_ENVIRONMENT==='staging'&&env.NEVORA_ONBOARDING_ENVIRONMENT==='test'&&env.NEVORA_WORKSPACE_MODE==='isolated',defaultDatabaseDisabled:env.DATABASE_URL==='postgresql://disabled.invalid/disabled'&&env.DATABASE_URL_UNPOOLED==='postgresql://disabled.invalid/disabled',hostFlagValid:['true','false'].includes(env.NEVORA_NEON_HOST_ENABLED??'')};
 }
 /** The hosted provisioner gets no usable application password. The existing
  * runtime compares identities against this passwordless, same-target URL, and

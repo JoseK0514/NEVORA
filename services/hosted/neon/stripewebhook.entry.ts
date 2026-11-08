@@ -3,6 +3,9 @@ import {readCommerceConfig} from '../../commerce/config';
 import {CommerceStore} from '../../commerce/store';
 import {enqueueStripeWebhook} from '../../commerce/stripe-webhook';
 import {createWebhookHandler,observedFetch} from './handlers';
+import {configurationDiagnostics} from './capabilities';
+
+if(process.env.NEVORA_NEON_DIAGNOSTICS==='true')console.info(JSON.stringify({event:'nevora_staging_configuration',role:'stripewebhook',...configurationDiagnostics('stripewebhook',process.env)}));
 
 const handler={fetch:observedFetch('stripewebhook',createWebhookHandler(process.env,async event=>{
  const config=readCommerceConfig(process.env);
