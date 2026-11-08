@@ -552,7 +552,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {ready&&cards.length?<BCard id="b-tc-team" title="Team" count={cards.length}>
             <BList label="Timecards in this period">{rows.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),minutes=minutesOf(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds),tone=toneOf(item);
-              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${compactHours(item.card.breakNanoseconds)} breaks`:null;
+              // Round 5 (Nov 8): "2 h 30 breaks" is one unit; non-breaking spaces keep it whole when the sub line wraps.
+              const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${compactHours(item.card.breakNanoseconds)} breaks`.replaceAll(' ','\u00a0'):null;
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
                 extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}

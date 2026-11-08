@@ -490,3 +490,42 @@
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-nv-b]:not([data-corp-root]):not([data-employee-mobile]):has(.c-page > .b-screen:not(.b-screen--back)) .mobile-header .login-brand-lockup { flex-direction: column !important; align-items: flex-start !important; justify-content: center !important; gap: 0 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-nv-b]:not([data-corp-root]):not([data-employee-mobile]):has(.c-page > .b-screen:not(.b-screen--back)) .mobile-header .login-brand-lockup .brand-wordmark { margin: 0 !important; }
 }
+
+/* ---------- Round 5 (Nov 8): polish from the filled-data pass ---------- */
+@media (max-width: 767px) {
+  /* Round 5 (Nov 8): Time exports' Week field is a white card like the page's other blocks (it sat on the bare canvas). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.c-exp > .c-field { box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; padding: 18px !important; border: 1px solid transparent !important; border-radius: 22px !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important; }
+  /* Round 5 (Nov 8): Clocker PIN has one title: the band's "Clocker PIN", with the person's name as a quiet line under it
+   * (it was a second, 28px title). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin[data-q-sheet] > .q-nav:has(+ .q-hd.wa-pin__hd) { padding-bottom: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin[data-q-sheet] > .q-hd.wa-pin__hd { padding-top: 0 !important; padding-bottom: 14px !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin[data-q-sheet] > .q-hd.wa-pin__hd :is(.wa-pin__title, h1) { width: 100% !important; margin: 0 !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin[data-q-sheet] > .q-hd.wa-pin__hd h1 { padding: 0 !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: rgb(255 255 255 / 0.8) !important; }
+  /* Round 5 (Nov 8): its closed state ("PIN setup is unavailable", Try again) is a white card like the PIN fields. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin > div:not(.q-nav, .q-hd) > section:has(> .q-empty) { margin: 16px 16px 0 !important; padding: 18px !important; border-radius: 22px !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin > div:not(.q-nav, .q-hd) > section > .q-empty { margin: 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page.wa-pin > div:not(.q-nav, .q-hd) > section > .q-btn { width: 100% !important; margin: 14px 0 0 !important; }
+  /* Round 5 (Nov 8): Notifications' closed states ("Couldn’t load notifications", Try again) are a white card, as on
+   * other pages (they sat on the canvas). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-hold > .q-emptyblock { margin: 0 16px !important; padding: 18px !important; border-radius: 22px !important; background: #FFFFFF !important; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18) !important; text-align: left !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-hold > .q-emptyblock > :is(.q-emptyblock__title, .q-empty) { margin: 0 !important; padding: 0 !important; text-align: left !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-hold > .q-emptyblock > .q-empty { margin-top: 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-hold > .q-emptyblock > .q-emptyblock__action { margin: 14px 0 0 !important; padding: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-notif-hold > .q-emptyblock > .q-emptyblock__action > .q-btn { width: 100% !important; margin: 0 !important; }
+  /* Round 5 (Nov 8): on payroll pages the hero ends above the content, so a first section label right under it
+   * ("Oct 12 – 18 · Payday Fri, Oct 23" on People) is the grey canvas label, not the white band label (it was white on
+   * the canvas and could not be read). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.c-pay > :is(.c-nav--phone, .c-phone-sub, .c-title--wide) + .c-pay__group > .c-sec-label :is(h2, span, a) { color: var(--c-grey, #6A7176) !important; }
+  /* Round 5 (Nov 8): a Manager's "Payroll is open to Owners…" and "Only Owners can open Settings" pages have one title on
+   * phones, the hero's (the desktop title repeated under it in dark ink); the card keeps the usual 16px under the hero
+   * (4px plus the page's 12px gap). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.cm-owner-only > .c-nav--phone ~ header.c-title { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-page.cm-owner-only > .c-nav--phone ~ header.c-title + * { margin-top: 4px !important; }
+  /* Round 5 (Nov 8): Locations: a long business name ("Northside Bakery — Condado") stays on one line under the
+   * location and ends in an ellipsis instead of wrapping the row; the count beside it never shrinks. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-row:has(> .wc-meta) > .q-rt { min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-row:has(> .wc-meta) > .q-rt > i { display: block !important; overflow: hidden !important; white-space: nowrap !important; text-overflow: ellipsis !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .q-page .q-row > .q-rt + .wc-meta { flex: none !important; white-space: nowrap !important; }
+  /* Round 5 (Nov 8): Time corrections' count chip follows its title, as on every other card header. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-tcx .manager-corrections-header:not(.sr-only) { display: flex !important; justify-content: flex-start !important; align-items: center !important; gap: 8px !important; }
+}

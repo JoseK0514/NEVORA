@@ -114,12 +114,13 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
     {state ?? (data && <PayHistory data={data} names={names} operation={operation} />)}
   </CorpPage>;
   if (view === 'fix') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-fix-title">
-    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="Fix before payroll" id="payroll-fix-title" />
+    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll' }} title="Fix before payroll" id="payroll-fix-title" />
     <Feedback operation={operation} />
     {state ?? missingRun ?? (run && data && <FixList run={run} capabilities={data.capabilities} names={names} operation={operation} />)}
   </CorpPage>;
   if (view === 'people') return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-people-title">
-    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: 'Review payroll' }} title="People" id="payroll-people-title" />
+    {/* Round 5 (Nov 8): the way back is named like the page it returns to ("Payroll details" once approved). */}
+    <Pushed back={{ href: runId ? reviewHref(runId) : '/app/payroll', label: run?.status === 'APPROVED' ? 'Payroll details' : 'Review payroll' }} title="People" id="payroll-people-title" />
     {state ?? missingRun ?? (run && <PeopleAmounts run={run} />)}
   </CorpPage>;
   return <CorpPage className="c-payroll c-pay c-page--narrow" labelledBy="payroll-review-title">

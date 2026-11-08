@@ -229,7 +229,9 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   const corpWeek = corp ? <div className="c-sched-weekcard"><CorpCard as="div" ariaLabel="Week">
     <div className="c-card__head c-sched-week__head">
       {weekNav}
-      {corp.status ?? null}
+      {/* Round 5 (Nov 8): the week's state is a server-built element beside weekNav; its own fragment keeps React's list
+        check quiet (it reached this client list unvalidated and warned about a missing key). */}
+      <>{corp.status ?? null}</>
     </div>
     <div className="c-sched-days" role="group" aria-label="Schedule day">
       {dates.map(date => {
@@ -342,7 +344,7 @@ export function ManagerWeeklyRoster({ employees, dates, today, reviewDay, timeZo
   };
   // R11: on desktop the week bar (‹ week › and the week's state) is the grid card's head.
   const grid = <div className="cm-grid-wrap">
-    {corp ? <div className="c-sched-gridbar">{weekNav}{corp.status ?? null}</div> : null}
+    {corp ? <div className="c-sched-gridbar">{weekNav}<>{corp.status ?? null}</></div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">
       <span>{`${longWeekday(focus)}, ${formatDayLabel(focus).day}`}</span>
       <button type="button" className="cm-kbtn" onClick={() => setFocus("all")}>Full week</button>
