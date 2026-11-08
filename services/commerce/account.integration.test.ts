@@ -1,3 +1,4 @@
+import { verifyPassword } from "../../src/lib/auth/password";
 import { workerOnce } from "./worker";
 import { createHttpServer } from "./http";
 import { dropTestDatabase } from "./test-database";
@@ -63,6 +64,7 @@ describe.skipIf(!enabled)("commerce accounts on owned PostgreSQL", () => {
       }),
       "127.0.0.1",
     );
+  let ownerSession = "";
   const signup = {
     email: "owner@example.test",
     password: "fictional-owner-pass123",
@@ -93,7 +95,7 @@ describe.skipIf(!enabled)("commerce accounts on owned PostgreSQL", () => {
       ).rows[0].n,
     ).toBe(1);
   });
-  it("consumes verification once, creates one provisioning job and authorizes only the owner", async () => {
+  it("verifies email once without accepting credentials or provisioning from unverified signup", async () => {
     const jobs = await pool.query(
       "SELECT * FROM commerce.jobs WHERE kind='mail'",
     );
@@ -105,6 +107,7 @@ describe.skipIf(!enabled)("commerce accounts on owned PostgreSQL", () => {
     ]);
     expect(responses.map((r) => r.status).sort()).toEqual([200, 400]);
     const session = await responses.find((r) => r.status === 200)!.json();
+    ownerSession = session.accessToken;
     expect(
       (await request("/v1/status", undefined, session.accessToken)).status,
     ).toBe(200);
@@ -116,11 +119,49 @@ describe.skipIf(!enabled)("commerce accounts on owned PostgreSQL", () => {
           "SELECT count(*)::int n FROM commerce.jobs WHERE kind='provision'",
         )
       ).rows[0].n,
-    ).toBe(1);
+    ).toBe(0);
     expect(
       (await pool.query("SELECT password_hash FROM commerce.accounts")).rows[0]
         .password_hash,
-    ).toMatch(/^scrypt\$/);
+    ).toBeNull();
+  });
+  it("accepts business credentials only from the verified owner and deduplicates setup", async () => {
+    const setup = {
+      ...signup,
+      password: "verified-owner-secret456",
+      businessName: "Verified Owner Shop",
+    };
+    const responses = await Promise.all([
+      request("/v1/setup", setup, ownerSession),
+      request("/v1/setup", setup, ownerSession),
+    ]);
+    expect(responses.map((r) => r.status)).toEqual([202, 202]);
+    expect(
+      (
+        await pool.query(
+          "SELECT count(*)::int n FROM commerce.jobs WHERE kind='provision'",
+        )
+      ).rows[0].n,
+    ).toBe(1);
+    const account = (
+      await pool.query("SELECT password_hash,profile FROM commerce.accounts")
+    ).rows[0];
+    expect(await verifyPassword(signup.password, account.password_hash)).toBe(
+      false,
+    );
+    expect(
+      await verifyPassword("verified-owner-secret456", account.password_hash),
+    ).toBe(true);
+    expect(account.profile.businessName).toBe("Verified Owner Shop");
+    expect(
+      (
+        await request(
+          "/v1/setup",
+          { ...setup, businessName: "Different Shop" },
+          ownerSession,
+        )
+      ).status,
+    ).toBe(409);
   });
   it("rejects foreign origins and oversized transport before processing signup", async () => {
     expect(

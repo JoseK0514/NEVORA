@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { CommerceError, DAY, type Signup, type PlanKey } from "./model";
 import { digest, seal, unseal } from "./security";
@@ -13,7 +13,7 @@ export type Business = {
   id: string;
   state: string;
   email: string;
-  profile: Omit<Signup, "password">;
+  profile: Partial<Omit<Signup, "password">> & { email: string };
   trialEnd: number | null;
   trialStart: number | null;
   paidThrough: number | null;
@@ -63,32 +63,70 @@ export class CommerceStore {
     return JSON.parse(unseal(job.payload, this.key, job.id));
   }
   async signup(
-    input: Signup,
-    passwordHash: string,
+    email: string,
     proof: string,
-    origin: string,
+    verificationUrl: string,
     now: number,
   ) {
     return this.transaction(async (client) => {
       const id = randomUUID();
-      const { password: _password, ...profile } = input;
       const created = await client.query(
-        "INSERT INTO commerce.accounts(id,email,password_hash,profile) VALUES($1,$2,$3,$4) ON CONFLICT(email) DO NOTHING RETURNING id",
-        [id, input.email, passwordHash, profile],
+        "INSERT INTO commerce.accounts(id,email,profile) VALUES($1,$2,$3) ON CONFLICT(email) DO NOTHING RETURNING id",
+        [id, email, { email }],
       );
       if (!created.rowCount) return;
       await client.query(
-        "INSERT INTO commerce.businesses(id,employee_count) VALUES($1,$2)",
-        [id, input.employeeCount],
+        "INSERT INTO commerce.businesses(id,employee_count) VALUES($1,1)",
+        [id],
       );
       await client.query(
         "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'verify',$3)",
         [digest(proof), id, new Date(now + DAY)],
       );
       await this.enqueue(client, "mail", `verify:${digest(proof)}`, {
-        email: input.email,
-        url: `${origin}#token=${proof}`,
+        email,
+        url: `${verificationUrl}#token=${proof}`,
         template: "verify",
+      });
+    });
+  }
+  async submitSetup(id: string, input: Signup, passwordHash: string) {
+    const fingerprint = createHmac("sha256", this.key)
+      .update(`setup:${JSON.stringify(input)}`)
+      .digest("hex");
+    await this.transaction(async (client) => {
+      const business = await client.query(
+        "SELECT state FROM commerce.businesses WHERE id=$1 FOR UPDATE",
+        [id],
+      );
+      const account = await client.query(
+        "SELECT email,verified_at,setup_fingerprint FROM commerce.accounts WHERE id=$1 FOR UPDATE",
+        [id],
+      );
+      if (
+        !business.rowCount ||
+        !account.rowCount ||
+        !account.rows[0].verified_at ||
+        account.rows[0].email !== input.email
+      )
+        throw new CommerceError("unauthorized", 401);
+      if (account.rows[0].setup_fingerprint) {
+        if (account.rows[0].setup_fingerprint === fingerprint) return;
+        throw new CommerceError("setup_already_submitted", 409);
+      }
+      if (business.rows[0].state !== "required")
+        throw new CommerceError("setup_already_submitted", 409);
+      const { password: _password, ...profile } = input;
+      await client.query(
+        "UPDATE commerce.accounts SET password_hash=$2,profile=$3,setup_fingerprint=$4 WHERE id=$1",
+        [id, passwordHash, profile, fingerprint],
+      );
+      await client.query(
+        "UPDATE commerce.businesses SET state='pending',employee_count=$2 WHERE id=$1",
+        [id, input.employeeCount],
+      );
+      await this.enqueue(client, "provision", `provision:${id}`, {
+        businessId: id,
       });
     });
   }
@@ -140,9 +178,6 @@ export class CommerceStore {
         "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',$3)",
         [digest(session), id, new Date(now + 8 * 3600000)],
       );
-      await this.enqueue(client, "provision", `provision:${id}`, {
-        businessId: id,
-      });
       return id as string;
     });
   }

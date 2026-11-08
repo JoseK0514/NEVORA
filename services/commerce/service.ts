@@ -1,5 +1,11 @@
 import { hashPassword } from "../../src/lib/auth/password";
-import { accessAt, CommerceError, parseSignup, planFor } from "./model";
+import {
+  accessAt,
+  CommerceError,
+  parseSignup,
+  parseEmail,
+  planFor,
+} from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
 export interface BillingPort {
@@ -136,11 +142,10 @@ export function createCommerce(options: CommerceOptions) {
         if (options.signupEnabled === false)
           throw new CommerceError("signup_unavailable", 503);
         await store.rate(`signup:${ip}`, 10, 3600, now);
-        const signup = parseSignup(input);
-        await store.rate(`signup-email:${signup.email}`, 3, 3600, now);
+        const email = parseEmail(input.email);
+        await store.rate(`signup-email:${email}`, 3, 3600, now);
         await store.signup(
-          signup,
-          await hashPassword(signup.password),
+          email,
           token(),
           `${options.uiOrigin ?? options.origin}/pages/nevora-verify`,
           now,
@@ -189,10 +194,16 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "signed_out" });
       }
       const business = await store.business(id);
+      if (path === "/v1/setup" && request.method === "POST") {
+        await store.rate(`setup:${id}`, 10, 3600, now);
+        const setup = parseSignup({ ...input, email: business.email });
+        await store.submitSetup(id, setup, await hashPassword(setup.password));
+        return answer({ state: "setup_accepted" }, 202);
+      }
       if (path === "/v1/status" && request.method === "GET")
         return answer({
           businessId: id,
-          businessName: business.profile.businessName,
+          businessName: business.profile.businessName ?? null,
           setup: business.state,
           applicationUrl: business.state === "ready" ? business.origin : null,
           ownerEmployeeId: "OWNER",

@@ -40,6 +40,13 @@ export function accessAt(record: AccessRecord, now = Date.now()) {
     export: true,
   };
 }
+export function parseEmail(value: unknown) {
+  if (typeof value !== "string") throw new CommerceError("invalid_email");
+  const email = value.trim().toLowerCase();
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    throw new CommerceError("invalid_email");
+  return email;
+}
 export type Signup = {
   email: string;
   password: string;

@@ -10,9 +10,9 @@ See `services/commerce/README.md` for configuration, verified-vs-unconfigured bo
 
 ## Customer flow and page contract
 
-1. Velani Plans → **Start 30-day free trial** → signup/business form.
-2. Verify email via a single-use link. Set up pending → provisioning → ready.
-3. Show the business's own application URL, Owner employee ID `OWNER`, and trial deadline. The owner signs into NEVORA with that ID and the password chosen during signup. Employees join through the company; they do not purchase subscriptions.
+1. Velani Plans → **Start 30-day free trial** → email signup form.
+2. Verify email via a single-use link, then collect the business details and chosen password in an authenticated setup form. Submit `/v1/setup`; pending → provisioning → ready. No password or company configuration from an unverified request is used to provision an account.
+3. Show the business's own application URL, Owner employee ID `OWNER`, and trial deadline. The owner signs into NEVORA with that ID and the password chosen during verified setup. Employees join through the company; they do not purchase subscriptions.
 4. Owner's in-app Subscribe action calls the company handoff endpoint, opening Velani Plans with `#handoff=...`. Exchange it once for a billing session.
 5. Create Stripe Checkout and navigate to its returned URL. An early subscriber keeps the original trial deadline. No card is required to start a trial.
 6. On return, exchange the new `#handoff=...` and poll status. A return or checkout session ID is **never** proof of payment. Pending updates should remain an honest processing state.
@@ -22,8 +22,8 @@ Reserved frontend routes on `NEVORA_COMMERCE_UI_ORIGIN` (default Velani):
 
 | Route | UI responsibility |
 |---|---|
-| `/pages/nevora-start` | Signup and company setup form. Plans may link here. |
-| `/pages/nevora-verify#token=…` | Consume verification/sign-in link, scrub fragment, show pending/ready status. |
+| `/pages/nevora-start` | Email signup; after verification, authenticated company/credential setup. Plans may link here. |
+| `/pages/nevora-verify#token=…` | Consume verification/sign-in link, scrub fragment; if setup is required, collect the authenticated setup form before polling pending/ready status. |
 | `/pages/plans#handoff=…` | Existing Plans page: exchange owner handoff, then show the applicable monthly package/subscribe action. |
 | `/pages/nevora-billing` | Recover billing session from fragment or request a sign-in email; show status and portal action. |
 | `/pages/nevora-billing-return` | Restore billing session from fragment and poll authoritative status. |
@@ -41,18 +41,18 @@ Errors: `{ "error": { "code": "…" } }`. Render a bounded friendly message, pre
 | Method/path | Request | Success |
 |---|---|---|
 | `GET /v1/plans` | none | `{currency:"usd",trialDays:30,plans:[{key:"small",employees:15,amount:1900},{key:"team",employees:30,amount:2900}]}`. Amounts are cents per business/month. |
-| `POST /v1/signup` | Signup JSON below | 202 `{state:"check_email"}` for both new and existing addresses; intentionally no account enumeration. |
+| `POST /v1/signup` | `{email}` only | 202 `{state:"check_email"}` for both new and existing addresses; intentionally no account enumeration. |
 | `POST /v1/login-link` | `{email}` | 202 `{state:"check_email"}` whether or not that account exists. |
 | `POST /v1/verify` | `{token}` from email fragment | `{accessToken,expiresIn:28800}`. Link is single-use, signup verification expires in 24h; a requested sign-in link expires in 30m. |
 | `POST /v1/handoff/exchange` | `{token}` from `#handoff` | `{accessToken,expiresIn:28800}`. Company handoff expires in 2m; a Stripe-return handoff in 1h. Single-use. |
 | `GET /v1/status` | Bearer accessToken | Status JSON below. Poll boundedly (suggest 3 seconds while setup/payment is pending), pause when hidden/offline, stop on terminal/auth errors. |
+| `POST /v1/setup` | Bearer plus verified setup JSON below | 202 `{state:"setup_accepted"}`. Same payload is idempotent; a different payload after acceptance returns 409 `setup_already_submitted`. |
 | `POST /v1/logout` | Bearer, `{}` | `{state:"signed_out"}`. Clear private client state. |
 
-Signup example, **fictional data only**:
+Verified setup example for `POST /v1/setup`, **fictional data only**. The server supplies the email from the verified session; the browser cannot select another billing owner:
 
 ```json
 {
-  "email": "owner@example.test",
   "password": "a-user-chosen-secret-not-a-shared-example",
   "firstName": "Taylor",
   "lastName": "Example",
@@ -85,7 +85,7 @@ Status example:
 }
 ```
 
-`setup`: pending, provisioning, ready. A pending setup has no application URL and no running trial. No capacity is a recoverable pending state, not success. `state`: trial, paid, grace, restricted. Show the returned deadline in the owner's timezone. Billing/export fields describe entitlement only; original role/data authorization is still enforced. Do not display an application-ready CTA before `setup=ready`.
+`setup`: required, pending, provisioning, ready. `required` means show the verified business/credential setup form; it is not a running trial. A pending setup has no application URL and no running trial. No capacity is a recoverable pending state, not success. `state`: trial, paid, grace, restricted. Show the returned deadline in the owner's timezone. Billing/export fields describe entitlement only; original role/data authorization is still enforced. Do not display an application-ready CTA before `setup=ready`.
 
 ### Billing endpoints
 
@@ -109,7 +109,7 @@ One complete package: USD 19/month for 1–15 employees, USD 29/month for 16–3
 - 400: invalid signup/email/password/phone/timezone, assisted_quote_required, invalid_or_expired_link, invalid_json, idempotency_key_required.
 - 401: unauthorized/expired billing session → obtain a new link; do not loop retries.
 - 403: origin_denied/origin_required or company owner_required.
-- 409: setup_pending, subscription_sync_pending, use_billing_portal, subscription_required, customer_reconciliation_required. Keep pending state or offer the appropriate portal/support action.
+- 409: setup_pending, setup_already_submitted, subscription_sync_pending, use_billing_portal, subscription_required, customer_reconciliation_required. Keep pending state or offer the appropriate portal/support action.
 - 413/415: body_too_large/json_required.
 - 429: rate_limited → pause and allow a later retry; no automatic retry storm.
 - 503: signup_unavailable, billing_unavailable, installation_unavailable, invalid_billing_price, temporarily_unavailable → explain unavailability and retry the **same** operation when safe.

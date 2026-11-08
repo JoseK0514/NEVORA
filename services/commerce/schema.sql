@@ -2,10 +2,10 @@ BEGIN;
 CREATE SCHEMA IF NOT EXISTS commerce;
 CREATE TABLE commerce.accounts (
  id uuid PRIMARY KEY, email text NOT NULL UNIQUE, password_hash text,
- profile jsonb NOT NULL, verified_at timestamptz, created_at timestamptz NOT NULL DEFAULT clock_timestamp()
+ profile jsonb NOT NULL, setup_fingerprint text, verified_at timestamptz, created_at timestamptz NOT NULL DEFAULT clock_timestamp()
 );
 CREATE TABLE commerce.businesses (
- id uuid PRIMARY KEY REFERENCES commerce.accounts(id), state text NOT NULL DEFAULT 'pending' CHECK(state IN ('pending','provisioning','ready')),
+ id uuid PRIMARY KEY REFERENCES commerce.accounts(id), state text NOT NULL DEFAULT 'required' CHECK(state IN ('required','pending','provisioning','ready')),
  trial_started_at timestamptz, trial_ends_at timestamptz,
  stripe_customer_id text UNIQUE, stripe_subscription_id text UNIQUE, subscription_status text,
  paid_through timestamptz, past_due_since timestamptz, plan_key text CHECK(plan_key IN ('small','team')),

@@ -33,7 +33,7 @@ export async function registerSlot(
   await client.connect();
   try {
     const found = await client.query(
-      "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' LIMIT 1",
+      "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%' LIMIT 1",
     );
     if (found.rowCount) throw Error("empty_installation_required");
   } finally {

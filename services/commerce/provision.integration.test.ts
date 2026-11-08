@@ -34,6 +34,16 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
     );
     store = new CommerceStore(catalog, key);
     await store.signup(
+      "owner@example.test",
+      "v".repeat(43),
+      "https://accounts.example.test/pages/nevora-verify",
+      Date.now(),
+    );
+    await store.exchange("v".repeat(43), "s".repeat(43), Date.now());
+    businessId = (await catalog.query("SELECT id FROM commerce.businesses"))
+      .rows[0].id;
+    await store.submitSetup(
+      businessId,
       {
         email: "owner@example.test",
         password: "fictional-owner-pass123",
@@ -46,13 +56,7 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
         employeeCount: 10,
       },
       await hashPassword("fictional-owner-pass123"),
-      "v".repeat(43),
-      "https://accounts.example.test",
-      Date.now(),
     );
-    await store.exchange("v".repeat(43), "s".repeat(43), Date.now());
-    businessId = (await catalog.query("SELECT id FROM commerce.businesses"))
-      .rows[0].id;
   });
   afterAll(async () => {
     await catalog?.end();
@@ -62,6 +66,20 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
         await dropTestDatabase(admin, name);
       await admin.end();
     }
+  });
+  it("refuses to use the commerce catalog itself as company capacity", async () => {
+    await expect(
+      registerSlot(
+        store,
+        {
+          id: "catalog-slot",
+          origin: "https://catalog-slot.example.test",
+          databaseUrl: catalogUrl,
+          instanceSecret: "c".repeat(43),
+        },
+        "development",
+      ),
+    ).rejects.toThrow("empty_installation_required");
   });
   it("keeps a verified signup pending when approved capacity is unavailable", async () => {
     await expect(provisionBusiness(store, businessId)).rejects.toThrow(
