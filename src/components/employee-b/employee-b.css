@@ -3,11 +3,11 @@
  * screens need. Phones, and since Nov 8, 2026 desktop (1024px and wider, laid out by src/app/app/employee-b-desktop.css):
  * the look rules below serve both; the shell's phone header and tab bar rules stay phone-only. Tablets keep the
  * employee's own layout. */
-@media (min-width: 768px) and (max-width: 1023px) {
+@media (min-width: 768px) and (max-width: 1023px) and (max-height: 500px) and (pointer: coarse) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen { display: none !important; }
 }
 
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* The next shift: a 26px time range, where, the tablet note on a soft tint, then Shift details. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift { display: flex; flex-direction: column; gap: 14px; padding: 6px 18px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__time { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
@@ -45,7 +45,7 @@
 }
 
 /* An unread count beside a row's title (More › Notifications) reads as the kit's teal pill. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__t .q-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
 }
 
@@ -54,12 +54,12 @@
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg { margin-left: 16px; margin-right: 16px; }
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-seg:has(> :nth-child(3)) > * { font-size: 13px; letter-spacing: -0.01em; padding: 0 4px; }
 }
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .es-empty-state__a { display: flex; justify-content: center; margin: -8px 0 10px; }
 }
 
 /* Inspection round 1: notes under cards line up with the cards' text (18px in from the card edge). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen .b-note { padding: 2px 18px; }
   /* The unread count beside a title: the kit's teal pill (the corporate shell forces its own grey with ids). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-row__t .q-count { background: #E8F3F1 !important; color: #0B6E69 !important; min-width: 22px !important; height: 22px !important; padding: 0 7px !important; border-radius: 11px !important; font: 700 12px/22px Inter, "Inter Fallback", sans-serif !important; }
@@ -68,7 +68,7 @@
 /* Inspection round 1, measured in the browser: the hero's rhythm and the page's ends match the mock on every Employee
  * screen. Older phone layers add an 8px margin above a hero subtitle, a 4px gap above some screens, 17px links and 76px of
  * padding under the page; the mock has 2px, none, the text's own size and the stack's 22px over the tab bar. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen { margin-top: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-sub { margin-top: 2px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(p, li, .eb-read, .b-row__s) a:not(.b-btn, .b-row, .b-row__hit, .b-add) { font-size: inherit !important; line-height: inherit !important; }
@@ -79,12 +79,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile]:has(.c-page > .b-screen) .page-frame { padding-bottom: 0 !important; }
 }
 /* The Owner page layer spaces every block after a page's phone bar (4px); a phone screen is never spaced. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen.b-screen.b-screen.b-screen.b-screen { margin-top: 0 !important; }
 }
 
 /* Inspection round 2 (shared by every Employee phone screen). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* One empty state everywhere: a 48px grey circle with a 22px glyph, then the title and its line. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { width: 48px; height: 48px; margin-bottom: 4px; border-radius: 24px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico svg { width: 22px; height: 22px; }
@@ -113,7 +113,7 @@
 }
 
 /* Inspection round 2 (tabs and Time). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-shift { padding-top: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .b-add { padding: 12px 18px 16px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l { line-height: 19px; }
@@ -127,12 +127,12 @@
   :is(#c-root, html) .app-shell[data-nv-b][data-employee-mobile] .b-screen.b-screen .b-seg { margin-left: 20px; margin-right: 20px; }
 }
 /* (The Owner layer's "block after the phone bar" rule carries two ids and fourteen classes; this one carries four ids.) */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-employee-mobile] .c-page > .b-screen:not(#nvd-none):not(#nvd-none2) { margin-top: 0 !important; }
 }
 
 /* Inspection round 3. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* The link under an empty state ("Get alerts on this phone"), wherever that empty state shows. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-empty-state__a { display: inline-flex; align-items: center; gap: 2px; min-height: 44px; font-size: 14px; font-weight: 600; color: #0B6E69; }
   /* Glass segment labels centred like the mock's (line height 1.4). */
@@ -145,7 +145,7 @@
 
 /* Inspection round 3 (Account): the empty state's divider and line height wherever it shows (not only where Requests' sheet
  * is loaded). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty + .b-list > .b-li:first-child .b-add { box-shadow: inset 0 1px 0 #ECEEEF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-empty .b-ico { margin-bottom: 5px; color: #3F464B; }
@@ -153,7 +153,7 @@
 
 /* Inspection round 3 (tabs and Time): the week strip's day tiles at the mock's 1.4 line height (61px), its header 8px over
  * them; the tab bar's pill 8px under the bar's top and 6px over its label; "What changed" and narrow-phone subtitles balance. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__d { line-height: 1.4; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-week__h { padding-bottom: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary { text-wrap: balance; }
@@ -176,14 +176,14 @@
 /* Employee desktop, Direction B (Nov 8, 2026): pieces only the desktop layout shows (src/app/app/employee-b-desktop.css
  * shows them from 1024px). On a phone the shift card's footer is just its full-width button. */
 :is(#c-root, html) .app-shell .b-screen .eb-desk { display: none; }
-@media (max-width: 1023px) {
+@media (max-width: 767px), (max-width: 1023px) and (max-height: 500px) and (pointer: coarse) {
   :is(#c-root, html) .app-shell .b-screen .eb-shift__bar { display: contents; }
 }
 /* A figure's short line under it (BLive meta) is for the desktop's wider glass. */
 :is(#c-root, html) .app-shell .b-screen .b-live__m { display: none; }
 
 /* A Lead (Direction B, Nov 8, 2026): "Shift lead" under the shift they lead, then the words. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-leadline { display: flex; align-items: center; gap: 10px; margin-top: -4px; font-size: 14.5px; line-height: 20px; color: var(--b-ink2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-home-team .b-card__meta { font-size: 14px; color: var(--b-grey); }
 }

@@ -7,7 +7,7 @@
 :is(#c-root, html) .c-page .eb-fix-send { display: none; }
 :is(#c-root, html) .c-page .eb-avail-lead { display: inline; }
 
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* ---------- the shell around a pushed Time page ---------- */
   /* /app/my-time is a tab root for the shell even with ?view= or ?entry=, which hides a screen's back link and shows the
    * wordmark; a pushed Time page keeps its back link in the wordmark's place, as on every other pushed screen. */
@@ -155,17 +155,17 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-wide { display: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep) { animation: b-enter 300ms ease-out 100ms both; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:not(:disabled):not([aria-disabled="true"]):active,
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:not(:disabled):active { scale: 0.96; }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep) { animation: b-fade 200ms linear both; }
 }
 
 /* Inspection round 2 (Time). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-now { align-items: center; }
   /* Fix my time: grey 600 labels and the mock's bold caret on selects (the Owner page layer darkens labels with ids). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix .c-field__label { color: #6A7176 !important; }
@@ -185,6 +185,6 @@
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 1 1 0; white-space: normal; overflow: visible; text-overflow: clip; text-wrap: balance; }
 }
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:has(input:checked) { background: #E8F3F1; box-shadow: inset 0 0 0 1.5px #0B6E69; }
 }

@@ -1,6 +1,7 @@
 /* Direction B on desktop (Jose approved the "Owner desktop, Direction B" mock, Nov 5, 2026). Owner and Manager, and since
  * Nov 8, 2026 Employees ("Employee desktop, Direction B"; their screens are laid out in employee-b-desktop.css): every role
- * with data-nv-b, 1024px and wider; tablets and phones keep their own rules. `:not([data-nv-b-off])` (an attribute nothing
+ * with data-nv-b, 1024px and wider, and since Nov 8, 2026 tablets from 768px (Option B, a touch screen under 501px tall
+ * excepted: a phone held sideways); phones keep their own rules. `:not([data-nv-b-off])` (an attribute nothing
  * sets) keeps the rules' weight now that they no longer skip [data-employee-mobile]. Loaded last; !important and the 3-id prefix
  * follow owner-b-pages.css, because the corporate and Quiet layers use both for the same properties.
  *
@@ -9,7 +10,7 @@
  * script measure anything. Content starts 24px under the band on a calm canvas; cards are white with 22px corners and
  * layered shadows. Server reads, links, actions and counts are the pages' own. */
 
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :root { --nvd-teal: #0C726C; --nvd-band: linear-gradient(180deg, #0C726C 0, #0C726C 236px, #08504C 100%); --nvd-canvas: #F2F5F4; --nvd-line: #ECEEEF; --nvd-card: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
 
   /* ---------- canvas ---------- */
@@ -532,7 +533,7 @@
    * the old 992px cap. Timecards keeps its own narrower column while the sheet is open. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) main.page-frame .c-page:is(.c-sched, .c-tc, .c-ins):not(:has(dialog.q-sheet[data-inspector][open])):not(#nvd-none):not(#nvd-none2) { max-width: 1152px !important; width: 100% !important; margin-left: 0 !important; padding-left: 24px !important; padding-right: 24px !important; }
 
-  @container c-sched (min-width: 760px) {
+  @container c-sched (min-width: 560px) {
     /* Round 5 (Nov 7) D2: a 180px person column gives the days their room, and a long range wraps between its two times
      * ("12:30p –" / "8:30p") instead of ending in "…". Times are never cut. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner:not(#nvd-none) { width: 180px !important; }
@@ -744,7 +745,7 @@
 }
 
 /* ---------- Round 5 verification fixes (Nov 7) ---------- */
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* Timecards table: an approved card ("Ready to finalize") or a finalized one reads green, as on phones. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-tc-cue[data-done]:not(#nvd-none):not(#nvd-none2) { color: #1D6B45 !important; }
   /* Settings hub: the title keeps the usual 24px to the first cards (the columns dropped the first card's top margin). */
@@ -756,14 +757,14 @@
 }
 
 /* Round 5 (Nov 7): Insights' figures, bars, links and notes sit on the 22px card inset like its titles (they kept 16). */
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-ins :is(.c-ins__labor, .c-ins__chart, .c-ins__custom, .c-ins__link, .c-ins__counted summary, .c-ins__reason, .c-stats):not(#nvd-none):not(#nvd-none2) { padding-left: 22px !important; padding-right: 22px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-ins .c-ins__counted ul:not(#nvd-none):not(#nvd-none2) { padding-left: 38px !important; padding-right: 22px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-ins .c-ins__bar:not(#nvd-none):not(#nvd-none2) { margin-left: 22px !important; margin-right: 22px !important; }
 }
 
 /* ---------- Round 5 (Nov 8): polish from the filled-data pass ---------- */
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* Round 5 (Nov 8): Time exports' Week field is a white card like the page's other blocks (it sat on the bare canvas). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) main.page-frame .c-page.c-exp > .c-field:not(#nvd-none):not(#nvd-none2) { box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; padding: 22px !important; border: 1px solid transparent !important; border-radius: 22px !important; background: #fff !important; box-shadow: var(--nvd-card) !important; }
   /* Round 5 (Nov 8): Features' notes ("5 requests for time off are waiting…") start at the rows' 22px text edge (they
@@ -803,4 +804,26 @@
   /* Round 5 (Nov 8): a segmented control on the canvas keeps its 20px to the list when a screen-reader status line
    * comes between them (Notifications' All / Unread touched its card). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title ~ *, .q-page > .q-hd + *, .updates-inbox > .q-seg, .b-screen *) + :is(.q-sr, .c-sr) + *:not(#nvd-none) { margin-top: 20px !important; }
+}
+
+/* ---------- Tablets, Option B "small desktop" (Jose, Nov 8, 2026) ----------
+ * 768–1023px (not a phone held sideways: a touch screen under 501px tall keeps the phone layout). The desktop Direction B
+ * above applies from 768px; the sidebar is the collapsed icon rail. This block only adapts spacing and the two-column
+ * screens to the narrower column. */
+@media (min-width: 768px) and (max-width: 1023px) and (min-height: 501px), (min-width: 768px) and (max-width: 1023px) and (pointer: fine) {
+  /* The page sits 28px from the rail and the top bar's controls 28px from the edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) main.page-frame:not(#nvd-none):not(#nvd-none2) { padding: 24px 4px 56px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) header.mobile-header:not(#nvd-none):not(#nvd-none2) { padding: 0 28px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) header.mobile-header .command-finder-trigger:not(#nvd-none):not(#nvd-none2) { min-width: 0 !important; width: 240px !important; }
+  /* Home: Needs you across the page, Payday and This week side by side, Finish setting up across. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-page.c-home > .b-screen .b-stack:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-page.c-home > .b-screen .b-stack > *:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { grid-column: 1 / -1 !important; grid-row: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-page.c-home > .b-screen .b-stack > .b-ink:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { grid-column: 1 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-page.c-home > .b-screen .b-stack > .b-ink + .b-card:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { grid-column: 2 !important; }
+  /* Things to do: one column. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) .c-page.c-todo > .b-screen .b-stack:not(#nvd-none):not(#nvd-none2):not(#nvd-none3) { display: flex !important; flex-direction: column !important; align-items: stretch !important; }
+  /* Nothing pushes the page sideways (Team's screen-reader line measured wider than the column). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) main.page-frame:not(#nvd-none):not(#nvd-none3) { overflow-x: clip !important; }
+  /* The rail: 48px touch targets. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b]:not([data-nv-b-off]) aside.sidebar #desktop-primary-navigation .nav-link:not(#nvd-none):not(#nvd-none2) { height: 48px !important; min-height: 48px !important; }
 }

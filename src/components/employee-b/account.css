@@ -9,7 +9,7 @@
 .eb-keep, .eb-confirm { display: contents; }
 .eb-confirm__h { display: none; }
 
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* ---------- hosts, kept pieces and the header ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .c-page.c-embed.eb-host { display: block; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page.c-embed.eb-host:has(> .b-screen) ~ :not(.b-keep) { display: none !important; }
@@ -216,20 +216,20 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pref .b-row__s { display: block; overflow: visible; -webkit-line-clamp: unset; }
 }
 
-@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-spin { animation: eb-spin 800ms linear infinite; }
   @keyframes eb-spin { to { rotate: 360deg; } }
   /* The kept pieces enter with the cards above them. */
   :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-enter 300ms ease-out 300ms both; }
   @keyframes eb-keep-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.c-page:has(> .b-screen) > .b-keep, .c-page.eb-host:has(> .b-screen) ~ .b-keep) { animation: eb-keep-fade 200ms linear both; }
   @keyframes eb-keep-fade { from { opacity: 0; } to { opacity: 1; } }
 }
 
 /* Inspection round 1 (Account). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* The language switch keeps the mock's 34px thumbs (the app's 44px button floor doesn't apply inside a segment). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .eb-lseg button { min-height: 34px !important; height: 34px !important; }
   /* Label-over-value rows are 63px like the mock. */
@@ -245,12 +245,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check input:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { top: 50% !important; transform: translateY(-50%) !important; }
 }
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-para.eb-para--lg { font-size: 15px; line-height: 22.5px; }
 }
 
 /* Inspection round 2 (Account). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* Updates search: the hidden clear button doesn't reserve space while the field is empty; the placeholder is 15px (the
    * typed text stays 16px so iPhones don't zoom). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tools .b-search input:placeholder-shown::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
@@ -261,12 +261,12 @@
 }
 
 /* Inspection round 3: Confirm it's you has the same 19px inset as every card; the eye sits 26px from the field's edge. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm { border: 1px solid transparent !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-eye { right: 6px !important; }
 }
 
 /* More's place line breaks between places, never inside one ("Northside QA Workforce" stays whole). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 }

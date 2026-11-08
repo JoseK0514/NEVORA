@@ -12,7 +12,7 @@
 
 /* The kit's look also serves the desktop screens that show it (Home and Things to do, owner-b-desktop.css), which set their
  * own layout on top. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen {
     --b-teal: #0B6E69; --b-teal-50: #E8F3F1; --b-ink: #111517; --b-ink2: #3F464B; --b-grey: #6A7176; --b-line: #ECEEEF; --b-canvas: #F2F5F4;
     --b-amber: #8A4B00; --b-amber-50: #FDF3E4; --b-red: #B42318; --b-red-50: #FDECEA; --b-green: #1D6B45; --b-green-50: #E7F4EC; --b-quiet: #F0F2F3;
@@ -329,7 +329,7 @@
   /* Round 5 (Nov 7) P7: on narrow phones the four labels are 13px so all of them fit with room to breathe. */
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 4px; font-size: 13px; letter-spacing: -0.01em; }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-btn, .b-ink__btn, .b-live__a, .b-back):not(:disabled):active { scale: 0.96; }
   /* A view's first load: the hero, then each card, 100ms apart (opacity, 4px blur, 12px rise over 300ms). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero > .b-title, :is(#c-root, html) .app-shell[data-nv-b] .b-stack > * { animation: b-enter 300ms ease-out both; }
@@ -338,7 +338,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-stack > :nth-child(n + 3) { animation-delay: 300ms; }
   @keyframes b-enter { from { opacity: 0; translate: 0 12px; filter: blur(4px); } to { opacity: 1; translate: 0 0; filter: blur(0); } }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero > .b-title, :is(#c-root, html) .app-shell[data-nv-b] .b-stack > * { animation: b-fade 200ms linear both; }
   @keyframes b-fade { from { opacity: 0; } to { opacity: 1; } }
 }

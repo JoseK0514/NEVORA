@@ -1,5 +1,5 @@
 /* Employee Schedule and Open shifts on the phone, Direction B. Values are the approved mock's. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* The week strip: the selected day (the chosen one, else today) is the white tile; today keeps a soft ring when another
    * day is chosen; past days go quiet. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__h > span { gap: 6px; }
@@ -64,7 +64,7 @@
 
 /* Inspection round 1: the confirmation's button is the kit's 36px teal pill (the corporate button rules carry ids, so this
  * matches their weight); on narrow phones it drops under the words. Past days in the week strip stay full white, as in the mock. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-height: 36px !important; height: 36px !important; padding: 0 14px !important; border-radius: 18px !important; border: 0 !important;
     background: #0B6E69 !important; color: #FFFFFF !important; font: 600 14px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55) !important; width: auto !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .b-week__d.is-past:not(.is-on) > :is(span, b) { opacity: 1; }
@@ -78,7 +78,7 @@
 /* Round 4. While the confirmation checks or answers, its line takes the row's full width under the words, so the title
  * keeps one line and the card doesn't jump. Why other shifts aren't available: the corporate summary's own inset goes, so
  * its words line up with the rows' text and its chevron with theirs. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) { flex-basis: 100%; padding-left: 48px; justify-content: flex-start; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) .employee-weekly-confirmation { align-items: flex-start; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) p { text-align: left; }

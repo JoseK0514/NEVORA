@@ -1506,6 +1506,15 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
 - **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
   touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
   layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).
+  Built Nov 8, 2026: the desktop Direction B layers (`owner-b-desktop.css`, `employee-b-desktop.css`, the kit and Employee
+  look rules, and the Employee B-screen hooks) now start at 768px, except on a phone held sideways: a touch screen
+  (`pointer: coarse`) under 501px tall keeps today's phone presentation (media `(min-width: 1024px), (min-width: 768px) and
+  (min-height: 501px), (min-width: 768px) and (pointer: fine)`). The sidebar is the existing icon rail (48px targets, labels
+  as tooltips and aria-labels, a red Things to do badge, a teal Notifications badge, the workspace tile on top); a tablet
+  block at the end of each layer moves the page 28px from the rail, keeps Owner Home's Needs you across with Payday and This
+  week side by side, keeps the Employee and Lead Home's two columns, and stacks the other two-column screens in the phone's
+  order. The Owner week grid holds from 560px of content (it was 760), so it stays a week grid at 768. The shift panel and
+  the timecard panel are right-hand panels as on desktop.
 - **Sign-in and public pages.** Phone: teal brand area (wordmark, Español, greeting, workspace) with the form as a lifted
   white card. Desktop: teal brand panel (the app's own product line) beside a 440px form card; policy, 404 and error pages
   use the band with an 860px reading card. Keep the time-of-day greeting on phones. The decorative "404" goes ("Page not

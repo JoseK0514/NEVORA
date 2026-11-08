@@ -1,5 +1,5 @@
 /* Employee Pay on the phone, Direction B (dark ink hero). Values are the approved mock's. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* The next payday on the hero: "Next payday · Tomorrow", the date large, then the period chip and See your hours. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: rgb(255 255 255 / 0.72); }

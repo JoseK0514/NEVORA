@@ -91,7 +91,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query), [role, payroll, remote.data, query, context]);
 
   // Employee desktop (Nov 8, 2026): an Employee's finder lists their own pages only, so it reads nothing and opens only
-  // where its top-bar button shows (desktop, 1024px and wider).
+  // where its top-bar button shows (desktop and tablets, not a phone held sideways).
   const own = role === "EMPLOYEE" || role === "LEAD";
   function load() {
     if (own) { setRemote({ state: "ready", data: null, at: Date.now() }); return; }
@@ -105,7 +105,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   function open(from?: HTMLElement | null) {
     const element = dialog.current;
     if (!element || element.open) return;
-    if (own && !window.matchMedia("(min-width: 1024px)").matches) return;
+    if (own && !window.matchMedia("(min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine)").matches) return;
     returnTo.current = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setQuery(""); setActive(0); setKeyboard(false);
     setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? "Search" : own ? "Search your pages" : DESKTOP_PLACEHOLDER);

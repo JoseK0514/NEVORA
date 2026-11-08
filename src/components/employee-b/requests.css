@@ -9,7 +9,7 @@
  * the phone's private read starts) is not shown anywhere else. */
 :is(#c-root, html) .c-page.eb-sib { display: none; }
 
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   /* ---------- pages that only hold a B screen ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .c-page.eb-sib { display: block; }
   /* Its corporate siblings (the page's own layout, the "Loading…" line) give way to it. */
@@ -92,7 +92,7 @@
  * state in the page's own layout, so they render once: on a phone they stay beside the B screen (b-keep) and take its
  * card look here. The Owner pages layer (owner-b-pages.css) styles kit pieces with three ids and !important, so these
  * rules carry the same weight. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.b-keep:not(.c-avail--phone) {
     position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; margin: -10px 14px 22px !important; padding: 18px !important;
     border: 1px solid transparent !important; border-radius: 22px !important; background: #FFFFFF !important;
@@ -193,7 +193,7 @@
 
 /* Narrow phones (320–359px): From and To stack so "Choose date" is never cut; the All day / Part of day labels keep their
  * size (the Owner pages' narrow rule shrinks every segmented control); the approval title never leaves one word alone. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b { text-wrap: balance; }
 }
 @media (max-width: 359px) {
@@ -202,7 +202,7 @@
 }
 
 /* Inspection round 2 (Requests and shifts). */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty__s { line-height: 19px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-empty .b-ico { margin-bottom: 5px; }
   /* Send request: the mock's in-card big button (56px, 18px corners, 17px bold, flat). */
@@ -214,7 +214,7 @@
 }
 
 /* Inspection round 3: the form's 13.5px lines sit on 19px, like the mock. */
-@media (max-width: 767px), (min-width: 1024px) {
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .eb-tof-approve b + span { line-height: 19px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .tof-form.b-keep .c-field__label { line-height: 19px !important; }
 }
