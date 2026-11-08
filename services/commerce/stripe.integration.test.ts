@@ -452,6 +452,26 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     const resumed=new StripeBilling(store,billing.stripe,billing.options);
     expect(await resumed.reconcile({limit:1})).toEqual({checked:1,failed:0});expect((await store.business(secondId)).paidThrough).toBe(Date.parse('2027-01-06T12:00:00Z'));
   });
+  it("reconciles with the real API grants while audit remains write-only and failed businesses do not starve later ticks",async()=>{
+    const suffix=randomUUID().replaceAll('-','').slice(0,24),api='nv_commerce_api_'+suffix,enrollment='nv_commerce_enroll_'+suffix;
+    await pool.query(`CREATE ROLE ${api} NOLOGIN; CREATE ROLE ${enrollment} NOLOGIN`);
+    for(const statement of commercePrincipalGrants(api,enrollment))await pool.query(statement);
+    const url=new URL(process.env.NEVORA_COMMERCE_TEST_URL!);url.pathname='/'+name;
+    const restricted=new Pool({connectionString:url.href,options:`-c role=${api}`,max:1});
+    try{
+      expect((await restricted.query("SELECT has_table_privilege(current_user,'commerce.audit','SELECT') AS allowed")).rows[0].allowed).toBe(false);
+      const scoped=new StripeBilling(new CommerceStore(restricted,store.key),provider.client,billing.options);
+      expect(await scoped.reconcile({limit:1})).toEqual({checked:0,failed:0});
+      const first=await subscribed(),secondId='22222222-2222-4222-8222-222222222222';await business(secondId);const second=await subscribed(secondId);provider.markPaid(second.subscription.id);provider.unavailableSubscriptions.add(first.subscription.id);
+      expect(await scoped.reconcile({limit:1})).toEqual({checked:1,failed:1});
+      const resumed=new StripeBilling(new CommerceStore(restricted,store.key),provider.client,billing.options);
+      expect(await resumed.reconcile({limit:1})).toEqual({checked:1,failed:0});
+      expect((await store.business(secondId)).paidThrough).toBe(Date.parse('2027-01-06T12:00:00Z'));
+      expect(await resumed.reconcile({limit:1})).toEqual({checked:1,failed:1});
+      await expect(restricted.query('SELECT id FROM commerce.audit LIMIT 1')).rejects.toThrow('permission denied');
+    }finally{await restricted.end();await pool.query(`DROP OWNED BY ${api},${enrollment}; DROP ROLE ${api},${enrollment}`);}
+  });
+  it('rejects a malformed durable reconciliation position',async()=>{await pool.query("INSERT INTO commerce.rate_limits(key,count,expires_at) VALUES('reconcile-cursor:',1,clock_timestamp()+interval '1 day')");await expect(billing.reconcile({limit:1})).rejects.toThrow('invalid_reconcile_position');});
   it("restricts operational access when a downgrade is below actual active headcount", async () => {
     provider.counts.set(id, 30);
     const { subscription } = await subscribed();

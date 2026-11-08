@@ -371,12 +371,24 @@ export class StripeBilling implements BillingPort {
   async reconcile({limit=25}:{limit?:number}={}) {
     if(!Number.isSafeInteger(limit)||limit<1||limit>25)throw Error('invalid_reconcile_limit');
     await this.verifyAccount();
-    // Commit attempt order before any provider call. A crashed or failing first
-    // business therefore cannot starve later ticks, including fresh runtimes.
+    // Commit a single admission cursor before provider work. The existing
+    // admission table is writable by this principal; audit stays write-only.
+    // A failed or crashed business advances the next tick, without scanning
+    // every business's audit history or changing any database grants.
     const rows=await this.store.transaction(async client=>{
       await client.query("SELECT pg_advisory_xact_lock(hashtextextended('commerce-reconcile-selection',0))");
-      const selected=await client.query("SELECT b.id FROM commerce.businesses b WHERE stripe_customer_id IS NOT NULL ORDER BY (SELECT max(a.id) FROM commerce.audit a WHERE a.business_id=b.id AND a.event='billing_reconcile_attempt') NULLS FIRST,b.id LIMIT $1",[limit]);
-      for(const row of selected.rows)await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'billing_reconcile_attempt')",[row.id]);
+      const marker=await client.query("SELECT key FROM commerce.rate_limits WHERE key LIKE 'reconcile-cursor:%' FOR UPDATE");
+      if((marker.rowCount??0)>1)throw Error('invalid_reconcile_position');
+      const oldKey=marker.rows[0]?.key as string|undefined,cursor=oldKey?.slice('reconcile-cursor:'.length);
+      if(oldKey&&(!cursor||!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(cursor)))throw Error('invalid_reconcile_position');
+      let selected=await client.query("SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL"+(cursor?' AND id>$2::uuid':'')+" ORDER BY id LIMIT $1",cursor?[limit,cursor]:[limit]);
+      if(cursor&&!selected.rowCount)selected=await client.query("SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL ORDER BY id LIMIT $1",[limit]);
+      if(selected.rowCount){
+        const nextKey='reconcile-cursor:'+selected.rows.at(-1)!.id;
+        if(oldKey)await client.query("UPDATE commerce.rate_limits SET key=$1,count=1,expires_at=clock_timestamp()+interval '7 days' WHERE key=$2",[nextKey,oldKey]);
+        else await client.query("INSERT INTO commerce.rate_limits(key,count,expires_at) VALUES($1,1,clock_timestamp()+interval '7 days')",[nextKey]);
+        for(const row of selected.rows)await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'billing_reconcile_attempt')",[row.id]);
+      }
       return selected;
     });
     let failed = 0;
