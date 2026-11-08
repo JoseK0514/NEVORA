@@ -2,6 +2,7 @@ import Stripe from "stripe";
 type Metadata = Record<string, string>;
 type Price = {
   id: string;
+  livemode: boolean;
   active: boolean;
   unit_amount: number;
   currency: string;
@@ -48,6 +49,7 @@ export class StripeFixture {
       "price_small",
       {
         id: "price_small",
+        livemode: false,
         active: true,
         unit_amount: 1900,
         currency: "usd",
@@ -60,6 +62,7 @@ export class StripeFixture {
       "price_team",
       {
         id: "price_team",
+        livemode: false,
         active: true,
         unit_amount: 2900,
         currency: "usd",
@@ -85,6 +88,8 @@ export class StripeFixture {
     [];
   readonly cache = new Map<string, { body: string; value: unknown }>();
   loseCheckoutResponse = false;
+  accountId = "acct_fictional";
+  unavailableAccount = false;
   readonly client: Stripe;
   constructor() {
     this.client = new Stripe("sk_test_fictional", {
@@ -199,7 +204,11 @@ export class StripeFixture {
           );
     }
     let value: unknown;
-    if (url.pathname === "/v1/customers" && method === "GET")
+    if (url.pathname === "/v1/account") {
+      if (this.unavailableAccount)
+        return this.response({error:{type:"api_error",message:"Fixture account unavailable"}},503);
+      value = { id: this.accountId, object: "account" };
+    } else if (url.pathname === "/v1/customers" && method === "GET")
       value = this.list(
         [...this.customers.values()].filter(
           (c) => c.email === url.searchParams.get("email"),

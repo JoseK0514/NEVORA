@@ -6,6 +6,7 @@ import type { BillingPort } from "./service";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError, type PlanKey } from "./model";
 import { createCheckout, recoverCheckouts } from "./checkout";
+import type { StripeTaxConfig } from "./stripe-config";
 import {
   applyInstallationCapacity,
   readInstallationHeadcount,
@@ -20,11 +21,14 @@ type BillingOptions = {
   prices: Record<PlanKey, string>;
   webhookSecret: string;
   live: boolean;
+  expectedAccountId?: string;
+  tax?: StripeTaxConfig;
   now?: () => number;
   facts?: (business: Business) => Promise<number>;
   policy?: (business: Business, limit: number) => Promise<void>;
 };
 export class StripeBilling implements BillingPort {
+  private accountCheck?: Promise<string>;
   constructor(
     readonly store: CommerceStore,
     readonly stripe: Stripe,
@@ -33,12 +37,26 @@ export class StripeBilling implements BillingPort {
   now() {
     return this.options.now?.() ?? Date.now();
   }
+  private async verifyAccount() {
+    const expected = this.options.expectedAccountId;
+    if (!expected) return; // Loopback development fixtures may omit a binding.
+    this.accountCheck ??= this.stripe.accounts.retrieve().then((account) => account.id);
+    try {
+      if (await this.accountCheck !== expected)
+        throw new CommerceError("stripe_account_mismatch", 503);
+    } catch (error) {
+      this.accountCheck = undefined;
+      if (error instanceof CommerceError) throw error;
+      throw new CommerceError("stripe_account_unavailable", 503);
+    }
+  }
   private checkoutPorts() {
     return {
       store: this.store,
       stripe: this.stripe,
       origin: this.options.origin,
       prices: this.options.prices,
+      live: this.options.live,
       now: () => this.now(),
       headcount: (business: Business, client: PoolClient) =>
         this.options.facts
@@ -46,10 +64,12 @@ export class StripeBilling implements BillingPort {
           : readInstallationHeadcount(this.store, business, client),
     };
   }
-  checkout(business: Business, operation: string,owner?:BillingOwner|null) {
+  async checkout(business: Business, operation: string,owner?:BillingOwner|null) {
+    await this.verifyAccount();
     return createCheckout(this.checkoutPorts(), business, operation,owner);
   }
   async portal(input: Business, operation: string,owner?:BillingOwner|null) {
+    await this.verifyAccount();
     return this.store.withBusinessLock(input.id, async (client, business) => {
       if (!business.customerId)
         throw new CommerceError("subscription_required", 409);
@@ -113,6 +133,7 @@ export class StripeBilling implements BillingPort {
     if (subscriptionId) await this.store.webhook(event.id, subscriptionId);
   }
   async syncJob(payload: Record<string, string>) {
+    await this.verifyAccount();
     if (payload.sessionId) await this.syncCheckout(payload.sessionId);
     else if (payload.subscriptionId)
       await this.syncSubscription(payload.subscriptionId);
@@ -229,6 +250,7 @@ export class StripeBilling implements BillingPort {
     if (subscriptionId) await this.syncSubscription(subscriptionId);
   }
   async syncSubscription(id: string) {
+    await this.verifyAccount();
     const initial = await this.stripe.subscriptions.retrieve(id),
       businessId = initial.metadata.nevora_business_id;
     if (!businessId || !/^[0-9a-f-]{36}$/i.test(businessId))
@@ -270,6 +292,7 @@ export class StripeBilling implements BillingPort {
         )?.[0] as PlanKey | undefined;
       if (
         subscription.items.data.length !== 1 ||
+        item?.price.livemode !== this.options.live ||
         !key ||
         item.quantity !== 1 ||
         item.price.unit_amount !== (key === "small" ? 1900 : 2900) ||
@@ -346,6 +369,7 @@ export class StripeBilling implements BillingPort {
     });
   }
   async reconcile() {
+    await this.verifyAccount();
     const rows = await this.store.pool.query(
       "SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL ORDER BY id",
     );

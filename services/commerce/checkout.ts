@@ -15,6 +15,7 @@ type Ports = {
   origin: string;
   now: () => number;
   prices: Record<PlanKey, string>;
+  live: boolean;
   headcount: (business: Business, client: PoolClient) => Promise<number>;
 };
 type Intent = {
@@ -86,6 +87,7 @@ async function prepare(
       price = await ports.stripe.prices.retrieve(ports.prices[plan.key]);
     if (
       !price.active ||
+      price.livemode !== ports.live ||
       price.currency !== "usd" ||
       price.unit_amount !== plan.amount ||
       price.recurring?.interval !== "month" ||

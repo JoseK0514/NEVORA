@@ -4,9 +4,16 @@ import nodemailer from "nodemailer";
 import { readCommerceConfig } from "./config";
 import { CommerceStore } from "./store";
 import { StripeBilling } from "./stripe";
+import { readStripeConfig } from "./stripe-config";
 import type { MailDelivery } from "./worker";
 export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
   const config = readCommerceConfig(env);
+  const stripeConfig = readStripeConfig(env, config.environment);
+  if (
+    config.environment === "production" &&
+    env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true" &&
+    env.NEVORA_COMMERCE_MAIL_ENABLED !== "true"
+  ) throw Error("signup_requires_mail_delivery");
   const pool = new Pool({
     connectionString: config.databaseUrl,
     max: 10,
@@ -17,38 +24,17 @@ export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
     console.error("Commerce catalog connection unavailable.");
   });
   const store = new CommerceStore(pool, config.key,config.provisioningMode);
-  if (
-    config.environment === "production" &&
-    env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true" &&
-    env.NEVORA_COMMERCE_MAIL_ENABLED !== "true"
-  )
-    throw Error("signup_requires_mail_delivery");
   let billing: StripeBilling | undefined;
-  if (env.STRIPE_SECRET_KEY) {
-    const live = env.STRIPE_SECRET_KEY.startsWith("sk_live_");
-    if (
-      (!live && !env.STRIPE_SECRET_KEY.startsWith("sk_test_")) ||
-      (live &&
-        (config.environment !== "production" ||
-          env.NEVORA_COMMERCE_STRIPE_LIVE_ENABLED !== "true"))
-    )
-      throw Error("stripe_environment_mismatch");
-    if (
-      !env.STRIPE_PRICE_SMALL ||
-      !env.STRIPE_PRICE_TEAM ||
-      !env.STRIPE_WEBHOOK_SECRET
-    )
-      throw Error("stripe_configuration_incomplete");
-    const client = new Stripe(env.STRIPE_SECRET_KEY, {
+  if (stripeConfig) {
+    const { key, ...billingConfig } = stripeConfig;
+    const client = new Stripe(key, {
       apiVersion: "2026-10-28.endive",
       timeout: 10000,
       maxNetworkRetries: 2,
     });
     billing = new StripeBilling(store, client, {
       origin: config.uiOrigin,
-      prices: { small: env.STRIPE_PRICE_SMALL, team: env.STRIPE_PRICE_TEAM },
-      webhookSecret: env.STRIPE_WEBHOOK_SECRET,
-      live,
+      ...billingConfig,
     });
   }
   let sendMail: MailDelivery = async () => {

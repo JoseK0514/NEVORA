@@ -101,6 +101,33 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect([...provider.sessions.values()][0].mode).toBe("setup");
     expect((await store.business(id)).paidThrough).toBeNull();
   });
+  it("rejects the wrong merchant before checkout, portal or reconciliation", async () => {
+    Object.assign(billing.options, { expectedAccountId: "acct_wrong" });
+    const stored = await store.business(id);
+    for (const action of [
+      () => checkout(),
+      () => billing.portal({ ...stored, customerId: "cus_unknown" }, randomUUID()),
+      () => billing.syncJob({ subscriptionId: "sub_unknown" }),
+      () => billing.reconcile(),
+    ]) await expect(action()).rejects.toThrow("stripe_account_mismatch");
+    expect(provider.requests.filter((r) => r.method === "POST")).toHaveLength(0);
+    expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it("retries a failed account check and shares a successful check across concurrent calls", async () => {
+    Object.assign(billing.options, { expectedAccountId: provider.accountId });
+    provider.unavailableAccount = true;
+    await expect(checkout()).rejects.toThrow();
+    expect(provider.sessions.size).toBe(0);
+    provider.unavailableAccount = false;
+    await Promise.all([checkout(), checkout()]);
+    expect(provider.requests.filter((r) => r.path === "/v1/account")).toHaveLength(2);
+    expect(provider.sessions.size).toBe(1);
+  });
+  it("rejects a price from another mode before creating a customer", async () => {
+    provider.prices.get("price_small")!.livemode = true;
+    await expect(checkout()).rejects.toThrow("invalid_billing_price");
+    expect(provider.customers.size).toBe(0);
+  });
   it("restores the same owner after a hosted redirect without treating return as payment", async () => {
     await checkout();
     const request = provider.requests.find(
