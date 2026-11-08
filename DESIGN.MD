@@ -1469,3 +1469,23 @@ layers are the Owner's, plus `src/components/employee-b/` (one screen file and s
   shifts say "Next week" on the place line, not as a chip. Help, Calendar and Privacy open with the same grey down caret.
   A phone held sideways keeps the corporate page (unchanged; an 844x390 full-page screenshot loses touch emulation and
   draws the desktop rail, which is a capture artifact).
+
+## Direction B for the remaining surfaces (Jose, Nov 8, 2026: decisions on the mocks)
+Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-in/public pages + Clocker.
+- **Lead.** Leads use the Employee's Direction B screens and tab bar (Home, Schedule, Time, Pay when statements are on,
+  Requests; More on the avatar). Their extras live where they belong: "Today's team" (Message today's team) on Home and the
+  "Shift lead" marker on shifts and in Schedule. Desktop: the Owner desktop shell with Lead's entries; Home's white action
+  is "Message today's team"; desktop Profile adds a small "Calendar and alerts" card.
+- **Employee desktop.** The Owner desktop Direction B system for Employee pages (sidebar Home, Schedule, Time, Pay,
+  Requests, More: Updates, Notifications). A shift opens as a right-hand panel (like Owner timecards); Schedule has a
+  seven-day week card; the Notifications sidebar count is teal (not urgent); the Requests band shows Waiting and Needs your
+  answer counts. Pay statements show no amounts.
+- **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
+  touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
+  layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).
+- **Sign-in and public pages.** Phone: teal brand area (wordmark, Español, greeting, workspace) with the form as a lifted
+  white card. Desktop: teal brand panel (the app's own product line) beside a 440px form card; policy, 404 and error pages
+  use the band with an 860px reading card. Keep the time-of-day greeting on phones. The decorative "404" goes ("Page not
+  found · Error 404" stays). Status colours: red stops you, amber means wait, green is done.
+- **Clocker.** Unchanged: the approved Release 1 tablet design stays as is.
+
