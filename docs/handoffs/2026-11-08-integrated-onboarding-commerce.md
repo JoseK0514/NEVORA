@@ -71,6 +71,10 @@ Staging rollback/closed state: keep SSO ALL, resource allowance0 and all provide
 
 Keep main/shared branches, native staging, production and Claude UI unchanged. No actual application emails, Stripe charges or metered AI runs occurred in this integration. The prior provider-only two-message test remains historical evidence, not a full signup/employee invitation acceptance result.
 
-## Latest user decisions
+## Previous check deferrals
 
 Jose explicitly deferred both the protected Safari/runtime check and Stripe sandbox testing. These remain open acceptance gates, not failures, completed checks or accepted release risks. Independent setup work may continue within existing authority; public enablement stays off. Private provisioner/provider management and send-only SMTP credentials plus a bounded worker host/schedule are still unconfigured, so the actual A/B company/invitation/restore journey cannot be certified. No additional runtime changes, tests, network sends, payments or deployments were made when recording these deferrals.
+
+## Stripe setup resumed for both businesses
+
+Jose subsequently requested Stripe CLI -> `stripe agent setup` -> official `stripe_implementation_planner` -> integration work, and confirmed BOTH Velani client projects and NEVORA. This resumes Stripe planning/testing authority while the protected Safari check remains deferred. [SCRUM-174](https://thevelani-team.atlassian.net/browse/SCRUM-174) and [the pre-planner inventory](2026-11-08-stripe-payments-invoicing-tax-preflight.md) own the new Payments/Invoicing/Tax scope. CLI1.55.8 and Codex CLI plugin82fd64bc are installed. The official chat plugin/sandbox connection is not yet confirmed; Jose is completing it. Planner not called; application implementation/key configuration not started. Existing source/SSO/default-off configuration is unchanged.
