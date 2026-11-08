@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import { createRuntime } from "./runtime";
 
 const base = {
+  NODE_ENV: "test" as const,
   NEVORA_COMMERCE_ENVIRONMENT: "development",
   NEVORA_COMMERCE_ENCRYPTION_KEY: Buffer.alloc(32, 8).toString("base64"),
   NEVORA_COMMERCE_ORIGIN: "http://localhost:3100",
@@ -11,7 +12,7 @@ const base = {
   STRIPE_PRICE_TEAM: "price_team",
   STRIPE_WEBHOOK_SECRET: "whsec_fictional_only",
 };
-function runtime(overrides: NodeJS.ProcessEnv = {}) {
+function runtime(overrides: Record<string, string | undefined> = {}) {
   const result = createRuntime({ ...base, ...overrides });
   void result.pool.end();
   return result;

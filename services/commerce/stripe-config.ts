@@ -6,7 +6,7 @@ export type StripeTaxConfig = {
 };
 export function readStripeConfig(
   env: Readonly<Record<string, string | undefined>>,
-  environment: "development" | "staging" | "production",
+  environment: string,
 ) {
   const flag = env.NEVORA_COMMERCE_TAX_ENABLED;
   let tax: StripeTaxConfig | undefined;

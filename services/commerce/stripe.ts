@@ -40,7 +40,7 @@ export class StripeBilling implements BillingPort {
   private async verifyAccount() {
     const expected = this.options.expectedAccountId;
     if (!expected) return; // Loopback development fixtures may omit a binding.
-    this.accountCheck ??= this.stripe.accounts.retrieve().then((account) => account.id);
+    this.accountCheck ??= this.stripe.accounts.retrieveCurrent().then((account) => account.id);
     try {
       if (await this.accountCheck !== expected)
         throw new CommerceError("stripe_account_mismatch", 503);
