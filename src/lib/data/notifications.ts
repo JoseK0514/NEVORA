@@ -1,6 +1,7 @@
 import {notificationCompanySql} from './notification-operational-sql';
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "../db";
+import {queryRows} from "../db";
+import {applicationSql} from "@/lib/data/app-sql";
 import type { NotificationIntent, SourceRef, SqlStatement } from "../notifications/types";
 import type { NotificationEvent } from "../assistance/notification-events";
 
@@ -34,7 +35,7 @@ function mapNotification(row: Record<string, unknown>): NotificationListItem {
 
 /** Legacy inbox insertion with its own null-environment dedupe key; versioned worker intents use notificationIntentStatements. */
 export async function createNotification(event: NotificationEvent) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ id: string }>(
     await sql.query(
       `INSERT INTO notifications (
@@ -69,7 +70,7 @@ export async function listNotifications(
   employeeId: string,
   limit = 20,
 ): Promise<NotificationListItem[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const safeLimit = Math.max(1, Math.min(50, Math.trunc(limit)));
   const rows = queryRows(
     await sql.query(
@@ -94,7 +95,7 @@ export async function listNotifications(
 }
 
 export async function countUnreadNotifications(employeeId: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ unread_count: string | number }>(
     await sql.query(
       `SELECT count(*) AS unread_count
@@ -113,7 +114,7 @@ export async function markNotificationRead(
   notificationId: string,
   employeeId: string,
 ) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ id: string }>(
     await sql.query(
       `UPDATE notifications
@@ -129,7 +130,7 @@ export async function markNotificationRead(
 }
 
 export async function markAllNotificationsRead(employeeId: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ id: string }>(
     await sql.query(
       `UPDATE notifications

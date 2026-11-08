@@ -1,5 +1,6 @@
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import type { Employee, UserRole } from "@/lib/domain";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { neonNotificationExecutor } from "./notification-transactions";
@@ -60,7 +61,7 @@ export async function listEmployees(executor?: SqlExecutor): Promise<Employee[]>
      ORDER BY e.active DESC, e.first_name, e.last_name`;
   const rows = executor
     ? await executor.query<EmployeeRow>({ text, values: [] })
-    : (await getDb().query(text)) as EmployeeRow[];
+    : (await applicationSql().query(text)) as EmployeeRow[];
 
   return rows.map((row) => ({
     id: row.id,
@@ -79,7 +80,7 @@ export async function listEmployees(executor?: SqlExecutor): Promise<Employee[]>
 export { listLocations } from './locations';
 
 export async function findEmployeeCredential(employeeId: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{
     id: string;
     first_name: string;
@@ -175,7 +176,7 @@ export async function activateEmployeeCredential(_input: {employeeId:string;phon
 }
 
 export async function getEmployeeActivationState(employeeId: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{
     id: string;
     active: boolean;
@@ -231,7 +232,7 @@ export async function getEmployeeManagementProfile(
     LIMIT 1`;
   const rows = executor
     ? await executor.query<EmployeeManagementRow>({ text, values: [employeeId] })
-    : queryRows<EmployeeManagementRow>(await getDb().query(text, [employeeId]));
+    : queryRows<EmployeeManagementRow>(await applicationSql().query(text, [employeeId]));
   const row = rows[0];
   if (!row) return null;
   return {

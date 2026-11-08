@@ -4,7 +4,8 @@ import { neonNotificationExecutor } from './notification-transactions';
 import type { SqlExecutor } from '../notifications/types';
 import {currentCalloutReleaseSql} from './shift-change-release';
 import { heldShiftEditSql } from './held-edits-sql';
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 
 export type CalloutReasonCode =
   | "ILLNESS"
@@ -174,7 +175,7 @@ export async function createCallout(input:{shiftId:string;employeeId:string;reas
 }
 
 export async function listPendingCallouts(): Promise<CalloutRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `${CALLOUT_SELECT}
@@ -189,7 +190,7 @@ export async function listEmployeeCallouts(
   employeeId: string,
   executor?: SqlExecutor,
 ): Promise<CalloutRecord[]> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
       `${EMPLOYEE_CALLOUT_SELECT}
@@ -220,7 +221,7 @@ export async function cancelPendingCallout(input:{calloutId:string;employeeId:st
  const result=await executeShiftChangeAdapter(input,'CANCEL_CALLOUT',executor);return ['completed','closed'].includes(result.status);
 }
 export async function listTeamCalloutHistory(): Promise<CalloutRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   return queryRows(await sql.query(`${CALLOUT_SELECT}
     WHERE c.status <> 'PENDING' ORDER BY c.created_at DESC LIMIT 30`)).map(mapCallout);
 }

@@ -1,5 +1,6 @@
 import { randomBytes, randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { dummyPasswordHash, verifyPassword } from "@/lib/auth/password";
 import { neonNotificationExecutor } from "@/lib/data/notification-transactions";
 
@@ -43,7 +44,7 @@ const toRequest = (row: Row): DeletionRequest => ({ reference: row.reference, st
 /** The person's request that is still open, or null. Before migration 0034 is applied there are none. */
 export async function activeDeletionRequest(employeeId: string): Promise<DeletionRequest | null> {
   try {
-    const rows = queryRows<Row>(await getDb().query(
+    const rows = queryRows<Row>(await applicationSql().query(
       `SELECT reference, status, confirmed_at::text AS confirmed_at FROM account_deletion_requests
         WHERE employee_id = $1 AND status IN ('received', 'processing') LIMIT 1`, [employeeId]));
     return rows[0] ? toRequest(rows[0]) : null;
@@ -59,7 +60,7 @@ export async function activeDeletionRequest(employeeId: string): Promise<Deletio
 export async function submitDeletionRequest(input: {
   employeeId: string; sessionTokenHash: string; password: string; channel: DeletionChannel; policyVersion: string;
 }): Promise<SubmitResult> {
-  const credential = queryRows<{ password_hash: string; password_updated_at: string }>(await getDb().query(
+  const credential = queryRows<{ password_hash: string; password_updated_at: string }>(await applicationSql().query(
     `SELECT c.password_hash, c.password_updated_at::text AS password_updated_at FROM employee_credentials c JOIN employees e ON e.id = c.employee_id
       WHERE c.employee_id = $1 AND e.active LIMIT 1`, [input.employeeId]))[0];
   if (!input.sessionTokenHash || !credential || !input.password || !(await verifyPassword(input.password, credential.password_hash))) return { outcome: "wrong_password" };
@@ -114,14 +115,14 @@ export async function submitDeletionRequest(input: {
  * The person proves it is them with the password again, exactly as sign-in does (the caller counts the attempt
  * first), and learns only their own open request. Sign-in already reveals the same fact after the same proof. */
 export async function checkDeletionRequest(input: { employeeId: string; password: string }): Promise<CheckResult> {
-  const credential = queryRows<{ password_hash: string }>(await getDb().query(
+  const credential = queryRows<{ password_hash: string }>(await applicationSql().query(
     `SELECT c.password_hash FROM employee_credentials c JOIN employees e ON e.id = c.employee_id
       WHERE c.employee_id = $1 AND e.active LIMIT 1`, [input.employeeId]))[0];
   // Unknown IDs take as long as known ones, so the answer never says whether an account exists.
   const matches = await verifyPassword(input.password, credential?.password_hash ?? await dummyPasswordHash());
   if (!credential || !input.password || !matches) return { outcome: "wrong_password" };
   try {
-    const rows = queryRows<Row>(await getDb().query(
+    const rows = queryRows<Row>(await applicationSql().query(
       `SELECT reference, status, confirmed_at::text AS confirmed_at FROM account_deletion_requests
         WHERE employee_id = $1 AND status IN ('received', 'processing') LIMIT 1`, [input.employeeId]));
     return rows[0] ? { outcome: "found", request: toRequest(rows[0]) } : { outcome: "none" };

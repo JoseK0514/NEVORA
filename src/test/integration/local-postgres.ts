@@ -44,6 +44,7 @@ export const CURRENT_MIGRATIONS = [
   '0044_owner_advisor_notebook.sql',
   '0045_owner_coverage_actions.sql',
   '0046_native_push.sql',
+  '0047_isolated_workspace_runtime.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

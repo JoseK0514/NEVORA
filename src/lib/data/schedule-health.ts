@@ -6,7 +6,8 @@ import { neonNotificationExecutor } from "./notification-transactions";
 import { timeMinutes } from "../scheduling/periods";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 
 export type LocationStaffingSetting = {
   locationId: string;
@@ -37,7 +38,7 @@ export type EmployeeHourTarget = {
 };
 
 export async function listLocationStaffingSettings(): Promise<LocationStaffingSetting[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -65,7 +66,7 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
 }
 
 export async function listEmployeeHourTargets(): Promise<EmployeeHourTarget[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -179,7 +180,7 @@ export async function saveEmployeeHourTargets(targets: readonly HourTargetInput[
 }
 
 export async function listCoverageWindows(): Promise<CoverageWindow[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT

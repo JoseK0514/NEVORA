@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { cookies } from 'next/headers';
-import { getDb } from '@/lib/db';
+import {applicationSql} from "@/lib/data/app-sql";
 import { destroySession } from '@/lib/auth/session';
 import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
 import { clockerSecurity, handleClockerSetup } from '@/lib/clocker/setup.server';
@@ -17,7 +17,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ loc
       if (!portalToken) return;
       // Unlike best-effort logout, shared-tablet handover requires confirmed revocation.
       // Revoke only this tablet's session, never the Owner's session on another device.
-      await getDb().query('DELETE FROM employee_sessions WHERE token_hash=$1', [createHash('sha256').update(portalToken).digest('hex')]);
+      await applicationSql().query('DELETE FROM employee_sessions WHERE token_hash=$1', [createHash('sha256').update(portalToken).digest('hex')]);
       await destroySession();
     },
   });

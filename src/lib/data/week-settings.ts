@@ -5,7 +5,8 @@ import type { Workspace } from '../domain';
 import type {SqlExecutor,SqlStatement} from "../notifications/types";
 import {neonNotificationExecutor} from "./notification-transactions";
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 
 import { readAvailabilityInputs } from "./availability-inputs";
 import { resolveAvailabilityWeek, type AvailabilityHours } from "../scheduling/availability";
@@ -22,7 +23,7 @@ export type WeekSettings = {
 export async function getWeekSettings(
   weekStart: string,
 ): Promise<WeekSettings | null> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT week_start, availability_deadline
@@ -60,30 +61,19 @@ export async function setAvailabilityDeadline(input: {
 }) {
   assertManagementProof(input.proof,input.updatedBy);
   const {workspace:accessWorkspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'});
-  const sql = getDb();
+  const sql = applicationSql();
 
   const workspace = input.conversionWorkspace ?? accessWorkspace;
-  const seedQueries = [
-    ...workspaceReadGuard(workspace).map(statement => sql.query(statement.text, [...statement.values])),
-    sql`SELECT pg_advisory_xact_lock(hashtextextended(${"availability:" + input.weekStart}, 0))`,
-    sql.query("SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE", [input.updatedBy]),
-    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}).map(statement => sql.query(statement.text,[...statement.values])),
-    sql`INSERT INTO schedule_week_settings (
-      week_start,
-      availability_deadline,
-      updated_by,
-      updated_at
-    ) VALUES (
-      ${input.weekStart},
-      ${input.deadlineIso ?? null},
-      ${input.updatedBy},
-      now()
-    )
-    ON CONFLICT (week_start)
-    DO UPDATE SET
-      availability_deadline = EXCLUDED.availability_deadline,
-      updated_by = EXCLUDED.updated_by,
-      updated_at = now()`,
+  const executor=neonNotificationExecutor();
+  const seedQueries:SqlStatement[] = [
+    ...workspaceReadGuard(workspace),
+    {text:'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',values:['availability:'+input.weekStart]},
+    {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE',values:[input.updatedBy]},
+    ...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}),
+    {text:`INSERT INTO schedule_week_settings(week_start,availability_deadline,updated_by,updated_at)
+      VALUES($1,$2,$3,now()) ON CONFLICT(week_start) DO UPDATE SET
+      availability_deadline=EXCLUDED.availability_deadline,updated_by=EXCLUDED.updated_by,updated_at=now()`,
+      values:[input.weekStart,input.deadlineIso??null,input.updatedBy]},
   ];
 
   if (input.deadlineIso) {
@@ -127,33 +117,18 @@ export async function setAvailabilityDeadline(input: {
 
       for (const window of normal) {
         seedQueries.push(
-          sql`INSERT INTO weekly_availability_windows (
-            id,
-            week_start,
-            employee_id,
-            day_of_week,
-            start_time,
-            end_time,
-            updated_at
-          ) VALUES (
-            ${randomUUID()},
-            ${input.weekStart},
-            ${employee.id},
-            ${window.day_of_week},
-            ${String(window.start_time).slice(0, 5)},
-            ${String(window.end_time).slice(0, 5)},
-            now()
-          )`,
+          {text:`INSERT INTO weekly_availability_windows(id,week_start,employee_id,day_of_week,start_time,end_time,updated_at)
+            VALUES($1,$2,$3,$4,$5,$6,now())`,values:[randomUUID(),input.weekStart,employee.id,window.day_of_week,String(window.start_time).slice(0,5),String(window.end_time).slice(0,5)]},
         );
       }
     }
   }
 
   const cancellation = availabilityCancellation(input.weekStart, null, input.deadlineIso ? new Date(input.deadlineIso).toISOString() : null);
-  seedQueries.push(sql.query(cancellation.text, cancellation.values));
-  seedQueries.push(...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}).map(statement => sql.query(statement.text,[...statement.values])));
+  seedQueries.push(cancellation);
+  seedQueries.push(...operationalScopeStatements(input.proof,workspace,{kind:'COMPANY'}));
   try {
-    await sql.transaction(seedQueries);
+    await executor.transaction(seedQueries);
   } catch (error) {
     if (error instanceof Error && error.message.includes('workspace_version_conflict')) {
       throw new WorkspaceConcurrencyError();
@@ -232,7 +207,7 @@ export async function replaceWeeklyAvailability(
 export async function getUpcomingAvailabilityWeek(
   currentWeekStart: string,
 ): Promise<WeekSettings | null> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT week_start, availability_deadline

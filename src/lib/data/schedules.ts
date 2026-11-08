@@ -7,7 +7,8 @@ import type { GenerationClaims } from '../scheduling/generation-claims';
 import { normalizeAssignmentOrigin } from '../scheduling/generation-provenance';
 import { deleteGeneratedDraftShift } from './generation-exclusions';
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { commitPublishedWeekChange, neonNotificationExecutor, type GuardedWeekState } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 import { addDays, weekStartFor } from "../date-utils";
@@ -64,7 +65,7 @@ export async function listWeekShifts({
   publishedOnly?: boolean;
   byBusinessWorkweek?: boolean;
 }, executor?: SqlExecutor): Promise<ScheduleShiftRow[]> {
-  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : applicationSql();
 
   const conditions = byBusinessWorkweek
     ? ["s.status <> 'ARCHIVED'", "((sh.date >= $1 AND sh.date < $2) OR (sh.date = $3 AND sh.end_time < sh.start_time))"]
@@ -134,7 +135,7 @@ export async function listWeekShifts({
 }
 
 export async function listScheduleStatuses(weekStart: string): Promise<LocationScheduleStatus[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT id, location_id, status
@@ -174,7 +175,7 @@ export async function getShiftValidationContext({
   weekStart: string;
   endDate?: string;
 }, executor?: SqlExecutor) {
-  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : applicationSql();
   const firstWeek = weekStartFor(date),
     lastWeek = weekStartFor(endDate ?? addDays(date, 1));
   const [employeeRaw, shiftsRaw, leaveRaw, inputs, factsRaw] = await Promise.all([
@@ -378,7 +379,7 @@ export async function getShiftForManagement(
   shiftId: string,
   executor?: SqlExecutor,
 ): Promise<ManagementShift | null> {
-  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT

@@ -1,4 +1,5 @@
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import {
   buildAvailabilitySubmissionState,
   type AvailabilitySubmissionStatus,
@@ -24,7 +25,7 @@ export async function getAvailabilitySubmissionStatus(
   employeeId: string,
   weekStart: string,
 ): Promise<AvailabilitySubmissionStatus> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<SubmissionStatusRow>(
     await sql.query(
       `SELECT
@@ -78,7 +79,7 @@ export async function getAvailabilitySubmissionStatus(
 }
 
 export async function getAvailabilitySubmissionSummary(weekStart: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const [active, statuses] = await Promise.all([
     sql.query(
       `SELECT count(*) AS active_employees FROM employees WHERE active = true`,
@@ -109,7 +110,7 @@ export type AvailabilitySubmissionListItem = AvailabilitySubmissionStatus & {
 export async function listAvailabilitySubmissionStatuses(
   weekStart: string,
 ): Promise<AvailabilitySubmissionListItem[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{
     uses_normal_availability?: boolean;
     employee_id: string;

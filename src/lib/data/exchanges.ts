@@ -6,7 +6,8 @@ import type {ShiftTerms} from '../shift-changes/types';
 import { executeShiftChangeAdapter, type ShiftChangeAdapterInput } from './shift-change-adapters';
 import { currentShiftTermsSql,currentCalloutReleaseSql } from './shift-change-release';
 
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { neonNotificationExecutor, type GuardedShift } from './notification-transactions';
 import type { SqlExecutor } from '../notifications/types';
 import type { ExchangeKind, UserRole } from "@/lib/domain";
@@ -208,7 +209,7 @@ function mapExchange(row: unknown): ExchangeRecord {
 }
 
 export async function getPublishedShift(shiftId: string, executor?: SqlExecutor): Promise<ExchangeShift | null> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -273,7 +274,7 @@ export function calloutShiftFromRow(row: Record<string, unknown>): (ExchangeShif
 }
 
 export async function getCalloutShift(shiftId: string, executor?: SqlExecutor): Promise<(ExchangeShift & {held: boolean}) | null> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -331,7 +332,7 @@ export async function listEmployeePublishedShifts(
   executor?: SqlExecutor,
   includeParticipating = false,
 ): Promise<ExchangeShift[]> {
-  const sql = executor ? { query: (text:string,values:readonly unknown[]) => executor.query({text,values}) } : getDb();
+  const sql = executor ? { query: (text:string,values:readonly unknown[]) => executor.query({text,values}) } : applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -385,7 +386,7 @@ export async function listSwapTargets(
   requesterEmployeeId: string,
   executor?: SqlExecutor,
 ): Promise<ExchangeShift[]> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -435,7 +436,7 @@ export async function listOpenCoverage(
   fromDate: string,
   executor?: SqlExecutor,
 ): Promise<ExchangeRecord[]> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -456,7 +457,7 @@ export async function listOpenCoverage(
 }
 
 export async function listIncomingSwaps(employeeId: string, executor?: SqlExecutor): Promise<ExchangeRecord[]> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -475,7 +476,7 @@ export async function listEmployeeExchangeActivity(
   employeeId: string,
   executor?: SqlExecutor,
 ): Promise<ExchangeRecord[]> {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -491,7 +492,7 @@ export async function listEmployeeExchangeActivity(
 }
 
 export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
     `${EXCHANGE_SELECT}
@@ -553,7 +554,7 @@ export function exchangeShiftFromGuarded(shift: GuardedShift): ExchangeShift {
 }
 
 export async function listManagementCoverage(fromDate: string): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   return queryRows(await sql.query(`${EXCHANGE_SELECT}
     WHERE x.kind = 'COVERAGE' AND x.status = 'OPEN'
       AND source.date >= $1 AND source_schedule.status = 'PUBLISHED'
@@ -561,7 +562,7 @@ export async function listManagementCoverage(fromDate: string): Promise<Exchange
 }
 
 export async function listTeamExchangeActivity(completedOnly = false): Promise<ExchangeRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   return queryRows(await sql.query(`${EXCHANGE_SELECT}
     ${completedOnly ? "WHERE x.status IN ('APPROVED', 'DENIED', 'CANCELLED', 'EXPIRED')" : ""}
     ORDER BY x.created_at DESC LIMIT 30`)).map(mapExchange);

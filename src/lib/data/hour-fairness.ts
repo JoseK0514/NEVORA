@@ -1,6 +1,7 @@
 import { databaseDate as dateValue } from './database-date';
 import { currentCalloutReleaseSql } from './shift-change-release';
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { addDays } from "../date-utils";
 import { minutesInWorkweek, shiftPeriod } from "../scheduling/periods";
 
@@ -25,7 +26,7 @@ export async function listHourFairness(
   currentWeekStart: string,
   weeks = 3,
 ): Promise<HourFairnessRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const earliest = addDays(currentWeekStart, -(weeks * 7));
 
   const [employeesRaw, hoursRaw] = await Promise.all([

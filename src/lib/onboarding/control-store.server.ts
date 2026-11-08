@@ -12,7 +12,7 @@ export function createControlStore(pool:Pool):ControlStore{
 }
 const runtimeStores=new Map<string,ControlStore>();
 /** Cache only immutable control transport configuration, never signup/workspace authority. */
-export function runtimeControlStore(config:EnabledConfig):ControlStore{
+export function runtimeControlStore(config:Pick<EnabledConfig,'environment'|'controlDatabaseUrl'>):ControlStore{
  const key=config.environment+'\0'+config.controlDatabaseUrl;const cached=runtimeStores.get(key);if(cached)return cached;
  if(runtimeStores.size>=2)throw Error('Onboarding transport configuration changed; restart the runtime.');
  const store=createControlStore(new Pool({connectionString:config.controlDatabaseUrl,max:4,connectionTimeoutMillis:5000,idleTimeoutMillis:30000,allowExitOnIdle:true}));runtimeStores.set(key,store);return store;

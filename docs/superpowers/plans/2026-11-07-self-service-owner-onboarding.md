@@ -37,7 +37,7 @@
 
 ## Execution boundaries and file map
 
-New code belongs in focused src/lib/onboarding/ modules, src/lib/workspace-routing/ modules and route adapters under src/app/api/onboarding/. A separate db/control-migrations/ history must never enter the application database migration manifest. Proposed new business migration0047_self_service_onboarding.sql is unused at this baseline; recheck its name against freshly fetched development before allocating it. Do not renumber existing migrations.
+New code belongs in focused src/lib/onboarding/ modules, src/lib/workspace-routing/ modules and route adapters under src/app/api/onboarding/. A separate db/control-migrations/ history must never enter the application database migration manifest. Proposed new business migration0048_self_service_onboarding.sql is unused at this baseline; recheck its name against freshly fetched development before allocating it. Do not renumber existing migrations.
 
 Reuse actual existing functions, not similarly named shift-exchange code:
 - scripts/company-setup.ts: setupCompany, readCompanyInput, readSetupTarget; extract narrow reusable bootstrap primitives while preserving existing public CLI behavior.
@@ -99,13 +99,13 @@ No tests/install/build ran for this documentation-only plan. Before implementati
 
 ### Task 4: Idempotent resource provisioning and seed-free company bootstrap
 
-**Files:** create src/lib/onboarding/provisioning/{model,orchestrator.server,neon-provider.server,store.server}.ts and tests; scripts/onboarding-worker.mts; API workspaces/route.ts and operations/[operationId]/route.ts; create db/migrations/0047_self_service_onboarding.sql and update db/migrations/order.ts; extract scripts/company-setup.ts primitives into src/lib/company-bootstrap/server.ts with compatibility tests.
+**Files:** create src/lib/onboarding/provisioning/{model,orchestrator.server,neon-provider.server,store.server}.ts and tests; scripts/onboarding-worker.mts; API workspaces/route.ts and operations/[operationId]/route.ts; create db/migrations/0048_self_service_onboarding.sql and update db/migrations/order.ts; extract scripts/company-setup.ts primitives into src/lib/company-bootstrap/server.ts with compatibility tests.
 **Consumes:** verified signup session, canonical manifest, current control store and separate provisioner principal.
 **Produces:** requestWorkspace(proof,command): Promise<OnboardingResult>; runProvisioningJob(job,provider): Promise<ProvisioningReceipt>; reconcileProvisioningOperation(operationId): Promise<OnboardingResult>.
 
 - [ ] Add tests for simultaneous slug reservation, duplicate submits, worker crash after each receipt, provider429/transient failures, create response lost after actual resource creation, migration commit unknown and wrong/foreign resource recovery. Assert one owned resource and no existing company mutation.
 - [ ] Run focused orchestrator tests; observe failures.
-- [ ] Implement durable versioned reservations/leases, restricted resource tags/receipts, no customer-derived SQL identifiers, restricted runtime roles/secrets and canonical checksum migration receipts. The new0047 migration establishes company-side provisioning/activation receipts, initial-Owner grant custody, setup command/progress records and invitation-batch/item receipts for Tasks5–8 before any bootstrap depends on them. Start from an empty database; never branch/copy another customer's data.
+- [ ] Implement durable versioned reservations/leases, restricted resource tags/receipts, no customer-derived SQL identifiers, restricted runtime roles/secrets and canonical checksum migration receipts. The new0048 migration establishes company-side provisioning/activation receipts, initial-Owner grant custody, setup command/progress records and invitation-batch/item receipts for Tasks5–8 before any bootstrap depends on them. Start from an empty database; never branch/copy another customer's data.
 - [ ] Add a narrow pending-Owner bootstrap function with no reusable Owner password in the control store. Preserve existing setupCompany CLI's empty-schema/atomic/second-run refusal. Persist company-side receipts before publishing control-plane progress; reconcile both stores explicitly.
 - [ ] Run `node scripts/onboarding-owned.mjs --suite provisioning` using fake provider and actual fresh control/company PostgreSQL databases. Require crash/replay/unknown-response and old fresh-company setup regressions. No live Neon API write occurs before separate hosted authority; commit.
 
