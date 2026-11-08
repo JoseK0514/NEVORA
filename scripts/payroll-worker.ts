@@ -3,11 +3,12 @@
  * This entry point does not register a daemon/scheduler. It can create jobs and
  * documents in the configured database, so it is not a read-only health check.
  */
+import { requireOperationalCommerce } from "../src/lib/commerce/access";
 import { schedulePayroll } from "../src/lib/payroll/schedule";
 import { workerOnce } from "../src/lib/payroll/worker";
 if (process.env.NEVORA_PAYROLL_ENABLED !== "true")
   throw Error("PAYROLL_DISABLED");
-schedulePayroll()
+requireOperationalCommerce().then(() => schedulePayroll())
   .then(() => workerOnce())
   .then((result) => console.log(JSON.stringify(result)))
   .catch(() => {

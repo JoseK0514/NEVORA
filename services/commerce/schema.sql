@@ -18,7 +18,7 @@ CREATE TABLE commerce.tokens (
  expires_at timestamptz NOT NULL, used_at timestamptz
 );
 CREATE TABLE commerce.slots (
- id text PRIMARY KEY, origin text NOT NULL UNIQUE, database_secret text NOT NULL,
+ id text PRIMARY KEY, origin text NOT NULL UNIQUE, database_fingerprint text NOT NULL UNIQUE, database_secret text NOT NULL,
  instance_secret_hash text NOT NULL UNIQUE, instance_secret text NOT NULL,
  business_id uuid UNIQUE REFERENCES commerce.businesses(id), approved_at timestamptz NOT NULL DEFAULT clock_timestamp()
 );

@@ -89,7 +89,7 @@ export function readSetupTarget(env: Environment): string {
   return value;
 }
 
-async function insertOwner(client: Client, owner: OwnerInput, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
+async function insertOwner(client: Client, owner: Omit<OwnerInput, "password">, passwordHash: string, primaryLocationId: string, eligibleLocationIds: string[]) {
   await client.query(`INSERT INTO employees(id,first_name,last_name,phone,email,role,primary_location_id)
     VALUES($1,$2,$3,$4,$5,'OWNER',$6)`, [owner.id, owner.firstName, owner.lastName, owner.phone, owner.email, primaryLocationId]);
   await client.query(`INSERT INTO employee_location_eligibility(employee_id,location_id)
@@ -130,13 +130,21 @@ export function migrationBody(source: string): string {
   return source.replace(/^BEGIN;\s*$/m, '').replace(/^COMMIT;\s*$/m, '');
 }
 
+type CredentialCompanyInput = Omit<CompanyInput, 'owner'> & { owner: Omit<OwnerInput, 'password'> };
 export async function setupCompany(client: Client, input: CompanyInput) {
+  return setupCompanyWithCredential(client, input, await hashPassword(input.owner.password));
+}
+
+/** Server/operator capability only. Reuses the signup hash without storing a plaintext owner password.
+ * The optional binding is installed in the same transaction as the new company. */
+export async function setupCompanyWithCredential(client: Client, input: CredentialCompanyInput, passwordHash: string,
+  afterInstall?: (client: Client, ids: { workspaceId: string; locationId: string }) => Promise<void>) {
+  if (!/^scrypt\$[a-f0-9]{32}\$[a-f0-9]{128}$/i.test(passwordHash)) throw Error('Invalid owner credential hash.');
   // One authoritative order: duplicate numeric prefixes make filename sorting
   // wrong, and the held tenant files must never run. See db/migrations/order.ts.
   const read = (file: string) => readFile(new URL(`../db/migrations/${file}`, import.meta.url), 'utf8');
   const migrations = await Promise.all(BASE_MIGRATIONS.map(async file => migrationBody(await read(file))));
   const currentMigrations = await Promise.all(FINAL_MIGRATIONS.map(async file => migrationBody(await read(file))));
-  const passwordHash = await hashPassword(input.owner.password);
   const workspaceId = randomUUID(), locationId = randomUUID();
   await client.query('BEGIN');
   try {
@@ -159,6 +167,7 @@ export async function setupCompany(client: Client, input: CompanyInput) {
     await insertOwner(client, input.owner, passwordHash, locationId, [locationId]);
     // Immutable access adoption must bind the configured company and real employees.
     for (const migration of currentMigrations) await client.query(migration);
+    if (afterInstall) await afterInstall(client, { workspaceId, locationId });
     await client.query('COMMIT');
     return { workspaceId, locationId };
   } catch (error) {
