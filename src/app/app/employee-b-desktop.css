@@ -438,3 +438,42 @@
   /* Home's two columns share the tablet width evenly, so Things to do rows keep their titles on one line. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:not(#e-none):not(#e-none2):not(#e-none3) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
 }
+
+/* ---------- Final round (Nov 8, 2026) ---------- */
+@media (min-width: 1024px) {
+  /* A Lead's role line under the workspace name. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role):not(#e-none) { display: grid !important; grid-template-columns: auto minmax(0, 1fr) !important; column-gap: 10px !important; row-gap: 0 !important; align-items: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__mark:not(#e-none) { grid-row: 1 / span 2 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] aside.sidebar .cm-org > .cm-org__role:not(#e-none) { grid-column: 2 !important; font-size: 12px !important; line-height: 15px !important; font-weight: 500 !important; color: #6A7176 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__name:not(#e-none) { line-height: 18px !important; align-self: end !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] aside.sidebar .cm-org:has(> .cm-org__role) > .cm-org__role:not(#e-none) { align-self: start !important; }
+}
+/* The role line goes with the workspace name: not on the icon rail. */
+@media (max-width: 1279px) { :is(#c-root, html) .app-shell[data-sidebar-tablet="rail"] aside.sidebar .cm-org__role { display: none !important; } }
+@media (min-width: 1280px) { :is(#c-root, html) .app-shell[data-sidebar-desktop="rail"] aside.sidebar .cm-org__role { display: none !important; } }
+@media (max-width: 767px) { :is(#c-root, html) aside.sidebar .cm-org__role { display: none !important; } }
+/* A Lead's "Shift lead" marker on the week's day blocks; a tablet's narrow day says "Lead". */
+:is(#c-root, html) .app-shell .b-screen .eb-wsh__lead-s { display: none; }
+@media (min-width: 768px) and (max-width: 1023px) {
+  :is(#c-root, html) .app-shell .b-screen .eb-wsh__lead-l { display: none; }
+  :is(#c-root, html) .app-shell .b-screen .eb-wsh__lead-s { display: inline; }
+}
+
+/* For you, 1024px and wider: the list on the left and the chosen request's details in the pane on the right. The pane is
+ * the request page's cards; its "Back to the list" control shows when it has keyboard focus. */
+.eb-xpane__back { display: none; }
+@media (min-width: 1024px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-stack:has(> .eb-xpane):not(#e-none):not(#e-none2):not(#e-none3) { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) !important; grid-auto-flow: row !important; align-items: start !important; row-gap: 0 !important; column-gap: 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-stack:has(> .eb-xpane) > *:not(#e-none):not(#e-none2) { grid-column: 1 !important; grid-row: auto !important; margin-bottom: 20px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-stack:has(> .eb-xpane) > .eb-xpane:not(#e-none):not(#e-none2) { grid-column: 2 !important; grid-row: 1 / span 8 !important; margin-bottom: 0 !important; display: flex !important; flex-direction: column !important; gap: 20px !important; min-width: 0 !important; position: sticky !important; top: 24px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .eb-xpane:focus { outline: none; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .eb-xpane:focus-visible { outline: 2px solid #0B6E69; outline-offset: 4px; border-radius: 22px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .eb-xpane > .eb-xpane__back { position: absolute; left: -10000px; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 0; border-radius: 20px; background: #FFFFFF; color: #0B6E69; font: inherit; font-size: 14.5px; font-weight: 600; box-shadow: 0 0 0 1px rgb(16 40 38 / .08), 0 8px 18px -10px rgb(16 40 38 / .3); cursor: pointer; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .eb-xpane > .eb-xpane__back:focus-visible { position: static; align-self: flex-start; outline: 2px solid #0B6E69; outline-offset: 2px; }
+  /* Rows lay out without gaps (the list's cards keep 20px under each), so the pane's span adds no height. */
+  /* The request on show in the pane. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-row--link[aria-current="true"]:not(#e-none) { background-color: #E8F3F1 !important; box-shadow: inset 3px 0 0 #0B6E69 !important; }
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-stack:has(> .eb-xpane):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+}

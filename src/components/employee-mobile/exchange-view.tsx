@@ -13,7 +13,7 @@ import type {EmployeeRequestOperation} from './request-operation';
 import type {ShiftChangeResult} from '@/lib/shift-changes/types';
 import {shiftRequestStatus} from './request-status';
 import {shiftPill} from '../employee-requests-corp';
-import {ExchangeDetailB,ExchangeListB,exchangeChip,type ExchangeRowB} from '../employee-b/exchange-b';
+import {ExchangeDetailB,ExchangeListB,ExchangePaneB,exchangeChip,type ExchangeRowB,type ExchangeSplitB} from '../employee-b/exchange-b';
 import {BStateCard,bTone} from '../employee-b/requests-b';
 export type ExchangeMode='incoming'|'mine';
 export const requestListHref=(mode:ExchangeMode)=>'/app/exchange?tab='+(mode==='incoming'?'foryou':'requests');
@@ -70,23 +70,30 @@ function Detail({detail,timeZone,operation,onRespond,onRetry,onRefresh}:{detail:
 function List({rows,mode}:{rows:RequestSummary[];mode:ExchangeMode}){
  return <ul className="em-request-list em-response-list">{rows.map(row=><li key={row.id}><Link id={'exchange-request-'+row.id} className="em-request-entry" href={requestListHref(mode)+'&requestId='+encodeURIComponent(row.id)}><span className="em-request-icon" aria-hidden="true"><ArrowsLeftRightIcon/></span><span><strong>{row.kind==='swap'&&mode==='incoming'?`Swap with ${row.counterparty??'a teammate'}`:requestKind(row)}</strong><small>{day(row.date)} · {requestStatus(row)}</small></span><CaretRightIcon aria-hidden="true"/></Link></li>)}</ul>;
 }
-export function EmployeeExchangeView({state,authority,mode,selection,operation,onRefresh,onRespond,onRetry,recoveries,recoveriesB}:{state:PrivatePanelState<EmployeeExchangeSnapshot>;authority:string;mode:ExchangeMode;selection:string|null;operation:EmployeeRequestOperation|null;onRefresh:()=>void;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;recoveries?:React.ReactNode;
+/** The read's state card while it isn't shown (checking, paused, denied, failed), for the Direction B screens. */
+function readStateB(state:PrivatePanelState<EmployeeExchangeSnapshot>,denied:boolean,onRefresh:()=>void){
+ return <BStateCard label="Request access" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'Your requests couldn’t be checked. Try again.'}
+  denied={denied} retry={state.paused?null:onRefresh} busy={state.refreshing}/>;
+}
+const readyFor=(state:PrivatePanelState<EmployeeExchangeSnapshot>,authority:string,selection:string|null)=>!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority&&state.snapshot.selection===selection?state.snapshot:null;
+export function EmployeeExchangeView({state,authority,mode,selection,operation,onRefresh,onRespond,onRetry,recoveries,recoveriesB,split}:{state:PrivatePanelState<EmployeeExchangeSnapshot>;authority:string;mode:ExchangeMode;selection:string|null;operation:EmployeeRequestOperation|null;onRefresh:()=>void;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;recoveries?:React.ReactNode;
  /** The same recoveries drawn for the Direction B phone screen. */
- recoveriesB?:React.ReactNode}){
- const read=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority&&state.snapshot.selection===selection?state.snapshot:null;
+ recoveriesB?:React.ReactNode;
+ /** Desktop For you: the chosen request beside the list (ExchangeListB's split). */
+ split?:ExchangeSplitB|null}){
+ const read=readyFor(state,authority,selection);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied',detail=read?.detail;
  const title=selection?(detail?requestKind(detail.summary):'Request details'):mode==='incoming'?'Swaps for you':'My shift requests';
  const rows=mode==='incoming'?read?.incoming:read?.activity;
  const back=selection?requestListHref(mode)+'#exchange-request-'+encodeURIComponent(selection):'/app/requests/hub';
- const stateB=!read?<BStateCard label="Request access" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'Your requests couldn’t be checked. Try again.'}
-  denied={denied} retry={state.paused?null:onRefresh} busy={state.refreshing}/>:null;
+ const stateB=!read?readStateB(state,denied,onRefresh):null;
  const enabled=read?read.enabled:null;
  const rowB=(row:RequestSummary):ExchangeRowB=>{const pill=shiftPill(row.status,row.kind==='callout');
   return {row,href:requestListHref(mode)+'&requestId='+encodeURIComponent(row.id),title:row.kind==='swap'&&mode==='incoming'?`Swap with ${row.counterparty??'a teammate'}`:row.kind==='callout'?'Can’t work':requestKind(row),
    sub:row.counterparty&&mode==='mine'?`${row.viewer==='requester'?'With':'From'} ${row.counterparty} · ${day(row.date)}`:day(row.date),chip:exchangeChip(row,{tone:bTone(pill.tone),text:pill.text}),status:requestStatus(row)};};
  const b=selection?<ExchangeDetailB mode={mode} title={title} back={back} state={stateB} enabled={enabled} recoveries={recoveriesB} detail={read?.enabled?detail??null:undefined} timeZone={read?.timeZone??'UTC'} status={detail?requestStatus(detail.summary):''}
    controls={detail?<ResponseControls look="b" effects={false} detail={detail} operation={operation} onRespond={onRespond} onRetry={onRetry} onRefresh={onRefresh}/>:null}/>
-  :<ExchangeListB mode={mode} state={stateB} enabled={enabled} recoveries={recoveriesB} rows={read?.enabled?rows===null||rows===undefined?null:rows.map(rowB):[]}/>;
+  :<ExchangeListB mode={mode} state={stateB} enabled={enabled} recoveries={recoveriesB} rows={read?.enabled?rows===null||rows===undefined?null:rows.map(rowB):[]} split={split}/>;
  return <>
  {/* Direction B (phones only): Pick up and swap, or the request's own page. Tablets and phones turned sideways keep the page below. */}
  <div className="c-page eb-sib" data-corp="">{b}</div>
@@ -102,4 +109,14 @@ export function EmployeeExchangeView({state,authority,mode,selection,operation,o
   </div>
  </div>
  </>;
+}
+/** Desktop For you: one request's details and response in the pane beside the list (the request page's B cards). */
+export function ExchangePaneView({state,authority,selection,operation,onRefresh,onRespond,onRetry,recoveries,onBack}:{state:PrivatePanelState<EmployeeExchangeSnapshot>;authority:string;selection:string;operation:EmployeeRequestOperation|null;onRefresh:()=>void;onRespond:(kind:EmployeeResponseKind)=>void;onRetry:()=>void;recoveries:React.ReactNode;onBack:()=>void}){
+ const read=readyFor(state,authority,selection),detail=read?.detail;
+ const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
+ // A newly chosen request reads as "checking" until its own read arrives (the previous one's is still in hand).
+ const stale=state.snapshot?.state==='ready'&&state.snapshot.selection!==selection;
+ return <ExchangePaneB title={detail?requestKind(detail.summary):'Request details'} state={!read?readStateB(stale?{...state,refreshing:true}:state,denied,onRefresh):null} enabled={read?read.enabled:null} recoveries={recoveries}
+  detail={read?.enabled?detail??null:undefined} timeZone={read?.timeZone??'UTC'} status={detail?requestStatus(detail.summary):''} onBack={onBack}
+  controls={detail?<ResponseControls look="b" detail={detail} operation={operation} onRespond={onRespond} onRetry={onRetry} onRefresh={onRefresh}/>:null}/>;
 }

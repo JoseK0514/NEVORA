@@ -14,3 +14,9 @@ function employeeB(){return window.matchMedia(EMPLOYEE_MOBILE_QUERY).matches||(w
 function subscribeB(changed:()=>void){const media=[window.matchMedia(EMPLOYEE_MOBILE_QUERY),window.matchMedia(EMPLOYEE_DESKTOP_B_QUERY)];media.forEach(query=>query.addEventListener('change',changed));return()=>media.forEach(query=>query.removeEventListener('change',changed));}
 /** True where an Employee sees the Direction B presentation: a phone, or an Employee's desktop. */
 export function useEmployeeBScreen(){return useSyncExternalStore(subscribeB,employeeB,()=>false);}
+/* Employee desktop, Direction B (Nov 8, 2026): 1024px and wider, where For you shows the list and the chosen request side
+ * by side. Tablets and phones keep opening a request's own page. */
+const EMPLOYEE_WIDE_QUERY = '(min-width: 1024px)';
+function wide(){return window.matchMedia(EMPLOYEE_WIDE_QUERY).matches&&employeeB();}
+function subscribeWide(changed:()=>void){const media=[window.matchMedia(EMPLOYEE_WIDE_QUERY),window.matchMedia(EMPLOYEE_MOBILE_QUERY)];media.forEach(query=>query.addEventListener('change',changed));return()=>media.forEach(query=>query.removeEventListener('change',changed));}
+export function useEmployeeWideScreen(){return useSyncExternalStore(subscribeWide,wide,()=>false);}

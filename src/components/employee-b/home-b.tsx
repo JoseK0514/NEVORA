@@ -6,7 +6,7 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, type BLiveItem} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
 import {unpublishedNote} from '../../lib/publication-note';
@@ -66,9 +66,11 @@ function paydayWord(payday: string, today: string) {
   return days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 7 ? fmt('UTC', {weekday: 'short'}).format(utcDay(payday)) : fmt('UTC', {month: 'short', day: 'numeric'}).format(utcDay(payday));
 }
 
-function Figures({week, payday, worked}: {week: HomeWeek | null; payday?: string | null; worked: number | null}) {
+/** A Lead's current shift as the first figure ("On shift now", the range, "Shift lead · Barista"). */
+export type OnShiftFigure = {range: string; line: string | null; aria: string};
+function Figures({week, payday, worked, onShift}: {week: HomeWeek | null; payday?: string | null; worked: number | null; onShift?: OnShiftFigure | null}) {
   const scheduled = week ? week.shifts.reduce((sum, shift) => { const a = minutesOf(shift.startTime), b = minutesOf(shift.endTime); return sum + (b > a ? b - a : b + 1440 - a); }, 0) : null;
-  const items: BLiveItem[] = [];
+  const items: BLiveItem[] = onShift ? [{label: 'On shift now', dot: 'live', value: onShift.range, meta: onShift.line ?? undefined, href: '#b-home-shift', aria: onShift.aria}] : [];
   // Worked time reads as the Time tab writes it ("43 h 34"); the scheduled total stays in hours ("/56 h").
   if (worked !== null && scheduled) items.push({label: 'This week', value: compactDuration(worked * 60), small: `/${hoursNumber(scheduled)} h`, meta: 'hours worked of scheduled', href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked of ${hoursNumber(scheduled)} scheduled hours`});
   else if (worked !== null) items.push({label: 'This week', value: compactDuration(worked * 60), href: '/app/my-time', aria: `This week, ${boardDuration(worked * 60)} worked`});
@@ -80,10 +82,10 @@ function Figures({week, payday, worked}: {week: HomeWeek | null; payday?: string
 }
 
 /** Hours worked come from the Time tab's own private read; without it the figures show scheduled hours. */
-function HoursFigures({authority, week, payday}: {authority: string; week: HomeWeek | null; payday?: string | null}) {
+function HoursFigures({authority, week, payday, onShift}: {authority: string; week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null}) {
   const panel = useHours(authority, 'records', 'overview', null);
   const data = panel.read?.view === 'records' && panel.read.data.state === 'ready' ? panel.read.data as Ready : null;
-  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null}/>;
+  return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift}/>;
 }
 
 /** "Starts in 2 h" or "Starts in 45 min" today; otherwise "Tomorrow" or the weekday. */
@@ -171,6 +173,11 @@ export type HomeBProps = HomeBExtras & {
 
 export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
+  // A Lead's hero adds the shift they're on now (Direction B, Nov 8, 2026); Employees' figures are unchanged.
+  const now = lead && snapshot ? snapshot.currentShift : null;
+  const onShift: OnShiftFigure | null = now && snapshot ? {range: compactRange(`${clock(now.startAt, snapshot.timeZone)} – ${clock(now.endAt, snapshot.timeZone)}`),
+    line: now.designatedLead ? ['Shift lead', now.positionLabel].filter(Boolean).join(' · ') : now.positionLabel || null,
+    aria: `On shift now, ${clock(now.startAt, snapshot.timeZone)} to ${clock(now.endAt, snapshot.timeZone)}${now.designatedLead ? ', shift lead' : ''}`} : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
     const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
@@ -181,7 +188,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
   return <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
     <BHero big right={team && snapshot ? <span className="eb-desk"><BButtonLink href="/app/updates/compose" kind="white"><MegaphoneSimpleIcon size={17} weight="bold" aria-hidden="true"/>Message today’s team</BButtonLink></span> : undefined} eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
-      {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday}/> : <Figures week={weekShown} payday={payday} worked={null}/> : null}
+      {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday} onShift={onShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift}/> : null}
     </BHero>
     <BStack>
       {snapshot ? <>

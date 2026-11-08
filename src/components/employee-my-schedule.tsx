@@ -55,6 +55,8 @@ export type EmployeeMyScheduleProps = {
   error?: boolean | string;
   receipt?: boolean;
   changes?: ReactNode;
+  /** The signed-in person is a Lead: the desktop week marks the shifts they lead (Direction B, Nov 8, 2026). */
+  lead?: boolean;
 };
 
 export function hasNotEnded(shift: Shift, observedAt: string, timeZone: string) {

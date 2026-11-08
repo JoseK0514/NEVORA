@@ -202,6 +202,7 @@ export default async function SchedulePage({
     ) : undefined;
     return <EmployeeMySchedule
       corporate={session.role === 'EMPLOYEE' || session.role === 'LEAD'}
+      lead={session.role === 'LEAD'}
       modules={modules}
       view={params.view === 'open' ? 'open' : 'mine'}
       intent={params.intent === 'swap' ? 'swap' : undefined}

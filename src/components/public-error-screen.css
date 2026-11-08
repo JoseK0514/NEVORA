@@ -1,0 +1,14 @@
+/* Public error screen (Direction B, Nov 8, 2026): the 404's band and reading card (src/app/not-found.css), with two ways
+ * on: Try again (teal) and Go to sign in (white). global-error.tsx renders without the root layout, so Inter is declared here. */
+@font-face { font-family: "Inter"; src: url("/fonts/typeface/inter/variable.woff2") format("woff2"), url("/fonts/typeface/inter/variable.ttf") format("truetype"); font-style: normal; font-weight: 100 900; font-display: swap; }
+.pe-page .pe-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.pe-page .nf-band h1 { text-wrap: balance; }
+.pe-page .pe-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.pe-page .pe-actions > .nf-cta { width: 100%; margin: 0; gap: 8px; box-sizing: border-box; }
+.pe-page .pe-retry { border: 0; font-family: inherit; line-height: 1; cursor: pointer; }
+.pe-page .pe-signin { background: #FFFFFF; color: #0B6E69; box-shadow: inset 0 0 0 1px #D3DCDA; }
+.pe-page .pe-signin:hover { background: #F2F5F4; }
+@media (min-width: 768px) {
+  .pe-page .pe-actions { flex-direction: row; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+  .pe-page .pe-actions > .nf-cta { width: fit-content; }
+}

@@ -1485,7 +1485,8 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   alerts" card on desktop Profile. Tablets (768–1023px) show what an Employee's tablet shows (Today's team waits for the
   tablet layout). Not matched: the mock's third glass figure (On shift now), the sidebar's role line and profile footer and
   the top bar's breadcrumb (the Employee desktop shell is kept, with its Search), a Shift lead chip in the Schedule week
-  card, and the single-column desktop More (the Employee's two columns are kept).
+  card, and the single-column desktop More (the Employee's two columns are kept). The On shift now figure, a role line
+  and the week card's Shift lead chip were built in the final round (below).
 - **Employee desktop.** The Owner desktop Direction B system for Employee pages (sidebar Home, Schedule, Time, Pay,
   Requests, More: Updates, Notifications). A shift opens as a right-hand panel (like Owner timecards); Schedule has a
   seven-day week card; the Notifications sidebar count is teal (not urgent); the Requests band shows Waiting and Needs your
@@ -1501,8 +1502,8 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   the other band actions sit on the band, tabs carry their counts, and the shift panel says what changing it means.
   Search (a default until Jose decides): Employees get the top bar's Search on desktop, listing only their own pages
   (Home, Schedule, Time, Pay, Pay history, Requests, Time off, Pick up and swap, Availability, Notifications, Profile,
-  Help); no actions, people or places, and no manager read. Still open: For you as a list and its detail side by side
-  (a swap's details are their own read, so the list page can't show them without a second read).
+  Help); no actions, people or places, and no manager read. For you as a list and its detail side by side was built in the
+  final round (below), with the request's own read fetched when it is chosen.
 - **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
   touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
   layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).
@@ -1527,12 +1528,37 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   card, with Español as a pill at the top right and the links under the card. Policy pages are the band with an 860px
   reading card on every width. 404 drops the decorative "404" and reads "Page not found" over "Error 404" on the band with
   its card and the Clocker hint. Errors are red, notices green. Forms, actions, messages, redirects and copy are unchanged;
-  the Clocker's routes and styles are untouched. Not built yet: the shared error screen (it also serves the app), the
-  mobile-access variant (off in production) and the error line inside the card as the mock draws it.
+  the Clocker's routes and styles are untouched. The shared error screen and the mobile-access variant were done in the
+  final round (below); not built: the error line inside the card as the mock draws it.
   Nov 8, 2026 (small round): on a desktop the policy pages (Privacy, Terms, Account deletion) list their sections on the
   left as a sticky contents card beside the reading card (a link jumps to its section and opens it); Support, with no
   sections, keeps one card; phones and tablets are unchanged. Owner payroll's Fix page says "Nothing stops this payroll"
   in the Owner empty-state card (on the card's text edge, not centred), and on phones a payroll's totals sit on the
   18px text edge like the People row and every other row.
 - **Clocker.** Unchanged: the approved Release 1 tablet design stays as is.
+- **Final round (Nov 8, 2026; decisions taken for Jose by the coordinator).**
+  Decisions: (1) Search: Employees and Leads keep the desktop Search listing only their own pages (the default recorded
+  under Employee desktop is now the decision). (2) Lead desktop shell: it stays the Employee shell; the only addition is
+  a role line under the workspace tile, "Lead · <their location>" from data the shell already has. The shell has no
+  location in hand, so it reads "Lead"; Employees show nothing new. The line shows with the workspace name only (not on
+  the icon rail, not on phones).
+  Built: For you on a desktop (1024px and wider) is the list with the chosen swap or offer beside it: the right-hand pane
+  shows the first request until one is chosen (the My schedule card when the list is empty) and holds the request
+  page's own cards (status, the shifts, Your response, history). Its details come from the same per-request read the
+  request page uses, fetched in the browser when it is chosen; the list read, the endpoints and the response handlers are
+  unchanged, and a response is sent only while the pane still shows that request. Enter on a row shows it and moves focus
+  to the pane's heading; Escape (or the Back to the list control, shown on keyboard focus) returns focus to the row; a
+  click keeps focus on the row; a row's address still opens the request page in a new tab. Phones and tablets keep
+  opening the request's page. Lead Home: with a current shift the hero's first glass figure is the green dot with "On
+  shift now", the time range and "Shift lead · <role>" when they lead it (from the snapshot's current shift); on a phone
+  it takes the first row and This week and Next payday share the second, so it fits at 320; tablets and desktops keep
+  three across. Employee Home is unchanged. Schedule week card (desktop and tablet), Lead only: a "Shift lead" chip on
+  the day block of each shift they lead ("Lead" on a tablet's narrow day), from the existing designated-lead flag; the
+  block's status chip no longer repeats it. Public error screen: the root and global error boundaries show the 404's
+  Direction B band ("This page could not be loaded" over "Something went wrong") and reading card with the same words,
+  Try again (the same retry) and Go to sign in, for every address outside /app; /app addresses keep the in-app screen
+  exactly. Mobile Access (off in production) on a phone: its header and back link paint the teal band and its form card
+  (or Welcome's and Access help's content) is the lifted white card with the title in ink and the passkey button at the
+  card's foot; tablets and desktops were already the Direction B sign-in. The Clocker is unchanged (captured before and
+  after, pixel-identical).
 

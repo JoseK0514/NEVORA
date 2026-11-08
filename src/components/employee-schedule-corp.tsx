@@ -175,8 +175,12 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           label: `${dayFmt(date, { weekday: 'long', month: 'long', day: 'numeric' })}${date === today ? ', today' : ''}${date === chosen ? ', selected day, show the whole week' : ''}`,
           shifts: shifts.filter(shift => shift.date === date).map(shift => {
             const kind = shift.date < today || (shift.date === today && !hasNotEnded(shift, observedAt, timeZone)) ? 'past' as const : shift.date === today ? 'now' as const : 'up' as const;
+            // A Lead's shift lead marker is its own chip (Direction B, Nov 8, 2026), so the status chip doesn't repeat it.
+            const leads = props.lead === true && shift.isDesignatedLead === true;
+            const chip = kind === 'past' ? null : bChip(shift) ?? null;
             return { key: shift.id, time: compactRange(hours(shift)), position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
-              kind, chip: kind === 'past' ? null : bChip(shift) ?? null, label: rowLabel(shift) };
+              kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
+              label: leads ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
       : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>}

@@ -399,7 +399,7 @@ function AppShellView({
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
           in the rail it is the 32px initials avatar. */}
-        <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p>
+        <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : null}</p>
 
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>

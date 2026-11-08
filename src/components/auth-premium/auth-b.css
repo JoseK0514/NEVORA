@@ -173,3 +173,44 @@
   :is(#q-root, html) .q-doc .q-doc__toc a:focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; }
   :is(#q-root, html) .q-doc .q-doc__body:target { scroll-margin-top: 24px; }
 }
+
+/* ---------- Mobile Access on a phone (Nov 8, 2026): its header in the Direction B band, its content as the card ----------
+ * With mobile Access on (off in production), phones and phones held sideways show Access's own header (the wordmark and
+ * Español) and back link, then the form on a card (.ma-card) with its help below, or a help page's content. Here the header
+ * and the back link paint the teal band; the card (or, on Welcome and Access help, the page's content) is the lifted
+ * white card with the title in ink; the form inside is part of the card and the passkey button sits at its foot.
+ * Tablets and desktops show the same pages as without Access and are styled above. */
+@media (max-width: 767px), (max-height: 500px) and (orientation: landscape) and (pointer: coarse) {
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth { background: #F2F5F4 !important; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col { padding: 0 16px !important; }
+  /* The band: the header and the back link, reaching under the card's top. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-only { position: relative; z-index: 0; padding: 0 4px 56px; border-image: linear-gradient(#0C726C, #0C726C) fill 0 / 0 / 400px 100vw 0 100vw; color: #FFFFFF; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-header { min-height: 64px !important; padding: 12px 0 4px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-brand { color: #FFFFFF !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-brand :is(img, span, svg) { filter: brightness(0) invert(1); }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-language { min-height: 36px !important; height: 36px !important; padding: 0 14px !important; border: 0 !important; border-radius: 18px !important; background: rgb(255 255 255 / .12) !important;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / .18) !important; color: #FFFFFF !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-back { margin: 4px 0 0 -8px !important; color: #FFFFFF !important; font-weight: 600 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .q-auth__col > .ma-only :focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: 2px !important; }
+  /* The card: Access's form card, or the whole content of a page without one (Welcome, Access help). */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content { position: relative; z-index: 1; margin-top: -40px; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth :is(.ma-card, #access-content:not(:has(> .ma-card))) { margin: 0 !important; padding: 24px 20px 22px !important; border: 0 !important; border-radius: 22px !important; background: #FFFFFF !important;
+    box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18) !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content form { margin: 0 !important; padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+  /* The title reads in ink on the card (no band behind it). */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd { position: static !important; border-image-source: none !important; border-image-outset: 0 !important; border-image-width: 0 !important; margin: 0 0 20px !important; padding: 0 !important; color: #111517 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 { font-size: 24px !important; line-height: 30px !important; font-weight: 700 !important; letter-spacing: -0.025em !important; color: #111517 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome .q-hd h1 { font-size: 28px !important; line-height: 34px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd > :is(p, span, b, a) { color: #6A7176 !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd h1 * { color: inherit !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-hd p { margin-top: 6px !important; font-size: 15px !important; line-height: 21px !important; }
+  /* Sign in: the workspace is a grey chip under the title, as on the desktop card. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .q-auth__hd > p { display: inline-flex !important; width: fit-content !important; align-items: center !important; height: 32px !important; margin: 8px auto 0 !important; padding: 0 12px !important; border-radius: 16px !important;
+    background: #F0F2F3 !important; box-shadow: none !important; color: #3F464B !important; font-size: 14px !important; font-weight: 600 !important; }
+  /* The passkey button joins the card's foot. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card > .q-passkey { margin: 12px 0 0 !important; padding: 0 !important; background: none !important; box-shadow: none !important; clip-path: none !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth .ma-card .q-passkey .q-btn { margin: 0 !important; }
+  /* Welcome's picture and Access help's lists sit inside the card's padding. */
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-welcome-art { margin: 0 0 16px !important; }
+  :is(#q-root, html) :is(#q-root, body) main#mobile-access-page.q-page.q-auth.q-auth #access-content .ma-choices { margin: 0 !important; padding: 0 !important; border: 0 !important; }
+}

@@ -4,11 +4,13 @@ import { expect, it, vi } from "vitest";
 import { AppErrorScreen } from "./app-error-screen";
 import RootError from "../app/error";
 import GlobalError from "../app/global-error";
-const router=vi.hoisted(()=>({refresh:vi.fn()}));
-vi.mock('next/navigation',()=>({useRouter:()=>router}));
+const router=vi.hoisted(()=>({refresh:vi.fn(),path:'/app/schedule'}));
+vi.mock('next/navigation',()=>({useRouter:()=>router,usePathname:()=>router.path}));
 
 vi.mock("./app-error-screen.css", () => ({}));
 vi.mock("@/components/kit/kit.css", () => ({}));
+vi.mock("@/app/not-found.css", () => ({}));
+vi.mock("./public-error-screen.css", () => ({}));
 
 it("uses the portal's own error words, with a retry and a full-load link home", () => {
   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
@@ -30,6 +32,26 @@ it("the root boundary and the global boundary render the same screen", () => {
   expect(global).toMatch(/^<html lang="en">(<head><\/head>)?<body/);
   expect(global).toContain("This page could not be loaded");
   for (const html of [root, global]) expect(html).not.toContain("4074344408");
+});
+
+it("signed-out and public addresses get the public screen: same words, Try again and Go to sign in", () => {
+  const error = new Error("fictional failure");
+  try {
+    for (const path of ['/login', '/privacy', '/activate']) {
+      router.path = path;
+      for (const html of [renderToStaticMarkup(createElement(RootError, { error, reset: () => {} })), renderToStaticMarkup(createElement(GlobalError, { error, reset: () => {} }))]) {
+        expect(html).toContain('class="nf-page pe-page"');
+        expect(html).toContain("This page could not be loaded");
+        expect(html).toContain("Something went wrong");
+        expect(html).toContain('role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>');
+        expect(html).toMatch(/<button type="button" class="nf-cta pe-retry"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
+        expect(html).toContain('href="/login">Go to sign in</a>');
+        expect(html).not.toContain('href="/app"');
+      }
+    }
+    router.path = '/app';
+    expect(renderToStaticMarkup(createElement(RootError, { error, reset: () => {} }))).toContain('href="/app"');
+  } finally { router.path = '/app/schedule'; }
 });
 
 it("UI Try again asks Next to refetch (retry), not just re-render the failed result (reset)", async () => {

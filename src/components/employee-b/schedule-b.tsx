@@ -37,7 +37,7 @@ export type ScheduleBProps = {
   /** Desktop only: the whole week as seven days, each with its shifts, and the week's summary line. */
   weekCard?: {days: WeekCardDay[]; summary: ReactNode} | null;
 };
-export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string};
+export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string; lead?: boolean};
 export type WeekCardDay = {date: string; short: string; day: number; today: boolean; selected: boolean; href: string; label: string; shifts: WeekCardShift[]};
 
 /** Desktop: "Your week", seven columns; a day opens as the chosen day (the strip's own link). The week's changes sit in the
@@ -50,6 +50,8 @@ function WeekCard({days, summary, changes}: {days: WeekCardDay[]; summary: React
       {/* One stop per shift (a day off is one stop too), each opening that day. */}
       {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
         <b>{shift.time}</b>{shift.position ? <span>{shift.position}</span> : null}<span>{shift.place}</span>{shift.chip}
+        {/* A Lead's marker on the shifts they lead; "Lead" where a tablet's day is narrow. */}
+        {shift.lead ? <span className="b-chip b-chip--grey eb-wsh__lead"><span className="eb-wsh__lead-l">Shift lead</span><span className="eb-wsh__lead-s">Lead</span></span> : null}
       </Link>) : <Link className="eb-wsh eb-wsh--off" href={day.href} scroll={false} aria-label={day.label}/>}
     </li>)}</ol>
     <div className="eb-wkc__foot"><p className="eb-wkc__sum">{summary}</p>{changes ? <div className="eb-wkc__changes">{changes}</div> : null}</div>

@@ -114,15 +114,20 @@ export function exchangeChip(row: RequestSummary, pill: {tone: BTone; text: stri
 }
 
 export type ExchangeRowB = {row: RequestSummary; href: string; title: string; sub: string; chip: {tone: BTone; text: string}; status: string};
+/** Desktop For you (Direction B, Nov 8, 2026): the chosen request's details beside the list. Choosing a row shows it in the
+ * pane; Enter also moves focus into the pane. */
+export type ExchangeSplitB = {chosen: string; onChoose: (id: string, keyboard: boolean) => void; pane: ReactNode};
 
-export function ExchangeListB({mode, state, enabled, recoveries, rows}: {
+export function ExchangeListB({mode, state, enabled, recoveries, rows, split}: {
   mode: 'incoming' | 'mine'; state: ReactNode; enabled: boolean | null; recoveries: ReactNode;
   /** null: couldn't be checked. */
   rows: ExchangeRowB[] | null;
+  split?: ExchangeSplitB | null;
 }) {
   const tab: ExchangeTab = mode === 'incoming' ? 'foryou' : 'mine';
   const waiting = mode === 'incoming' && rows ? rows.length : null;
-  const list = rows?.length ? <BList>{rows.map(item => <li key={item.row.id} className="b-li"><BRowLink item={item}/></li>)}</BList> : null;
+  const paned = split && rows?.length ? split : null;
+  const list = rows?.length ? <BList>{rows.map(item => <li key={item.row.id} className="b-li"><BRowLink item={item} split={paned}/></li>)}</BList> : null;
   return <BScreen back>
     <ExchangeHeroB tab={tab} tabs={enabled !== false} counts={{foryou: waiting}}/>
     <BStack>
@@ -132,15 +137,19 @@ export function ExchangeListB({mode, state, enabled, recoveries, rows}: {
           : mode === 'incoming' ? <BCard label="Needs your answer">{list ?? <BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No swaps need your answer" sub="A request addressed to you will appear here."/>}</BCard>
           : rows.length ? <BCard id="b-exchange-activity" title="Recent activity">{list}</BCard>
           : <BCard><BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No recent shift requests" sub="Start a swap or cover offer from your own schedule."/></BCard>}
-        <MyScheduleCardB/>
+        {paned ? paned.pane : <MyScheduleCardB/>}
       </>)}
     </BStack>
   </BScreen>;
 }
 
-/** A request row as one link with its own id, so the list can return focus to it after its page closes. */
-function BRowLink({item}: {item: ExchangeRowB}) {
-  return <Link className="b-row b-row--link" id={`b-exchange-request-${item.row.id}`} href={item.href} aria-label={`${item.title}, ${item.sub}, ${item.status}`}>
+/** A request row as one link with its own id, so the list can return focus to it after its page closes. Beside the
+ * desktop pane, choosing it shows the request there instead (its address still opens the page in a new tab). */
+function BRowLink({item, split}: {item: ExchangeRowB; split?: ExchangeSplitB | null}) {
+  const chosen = split?.chosen === item.row.id;
+  return <Link className="b-row b-row--link" id={`b-exchange-request-${item.row.id}`} href={item.href} aria-label={`${item.title}, ${item.sub}, ${item.status}`}
+    aria-current={chosen ? 'true' : undefined} aria-controls={split ? 'b-xpane' : undefined}
+    onClick={split ? event => { if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); split.onChoose(item.row.id, event.detail === 0); } : undefined}>
     <RequestTypeIcon kind={item.row.kind === 'callout' ? 'callout' : 'shift'}/>
     <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={item.sub}/></span></span>
     <span className="b-row__end"><BChip tone={item.chip.tone}>{item.chip.text}</BChip></span>
@@ -168,14 +177,37 @@ export function ExchangeDetailB({mode, title, back, state, enabled, recoveries, 
   /** The response controls (the same operation as the corporate view). */
   controls: ReactNode;
 }) {
-  const row = detail?.summary, incoming = !!row && row.kind === 'swap' && row.viewer === 'recipient' && row.status === 'EMPLOYEE_PENDING';
   return <BScreen back>
     <BHero back={{href: back, label: mode === 'incoming' ? 'For you' : 'My requests'}} title={title} titleId="b-exchange-detail-title"/>
     <BStack>
+      <DetailCardsB state={state} enabled={enabled} recoveries={recoveries} detail={detail} timeZone={timeZone} status={status} controls={controls}/>
+    </BStack>
+  </BScreen>;
+}
+
+type DetailCardsProps = {state: ReactNode; enabled: boolean | null; recoveries: ReactNode; detail: EmployeeRequestDetail | null | undefined; timeZone: string; status: string; controls: ReactNode};
+
+/** The desktop For you pane: the request page's cards beside the list. Its first card carries the request's name (the
+ * page's title); Escape, or the Back to the list control, returns to the row. */
+export function ExchangePaneB({title, onBack, ...cards}: DetailCardsProps & {title: string; onBack: () => void}) {
+  const named = !!cards.detail && cards.enabled !== false && !cards.state;
+  return <section className="eb-xpane" id="b-xpane" tabIndex={-1} aria-labelledby={named ? 'b-xpane-s-h' : undefined} aria-label={named ? undefined : title}
+    onKeyDown={event => { if (event.key === 'Escape' && !event.defaultPrevented) { event.preventDefault(); onBack(); } }}>
+    <button type="button" className="eb-xpane__back" onClick={onBack}>Back to the list</button>
+    <DetailCardsB {...cards} title={title}/>
+  </section>;
+}
+
+function DetailCardsB({state, enabled, recoveries, detail, timeZone, status, controls, title}: DetailCardsProps & {
+  /** In the desktop pane, the status card's heading. */
+  title?: string;
+}) {
+  const row = detail?.summary, incoming = !!row && row.kind === 'swap' && row.viewer === 'recipient' && row.status === 'EMPLOYEE_PENDING';
+  return <>
       {state ?? (enabled === false ? <BCard><BText status>Shift requests are turned off for your company.</BText></BCard> : <>
         {recoveries}
         {detail && row ? <>
-          <BCard label="Current request status"><BList><BRow lead={<RequestTypeIcon kind={row.kind === 'callout' ? 'callout' : 'shift'}/>} title={status}
+          <BCard label={title ? undefined : 'Current request status'} title={title} id={title ? 'b-xpane-s' : undefined}><BList><BRow lead={<RequestTypeIcon kind={row.kind === 'callout' ? 'callout' : 'shift'}/>} title={status}
             sub={<Dotted text={[row.counterparty ? `${row.viewer === 'requester' ? 'With' : 'From'} ${row.counterparty}` : null, `Submitted ${keepWhole(stamp(row.createdAt, timeZone))}`].filter(Boolean).join(' · ')}/>}/></BList></BCard>
           {detail.notice ? <BCard><BText status>{detail.notice}</BText></BCard> : null}
           {incoming ? <><SlotCard title="Your current shift" slot={detail.requested}/><SlotCard title="You would work" slot={detail.offered}/></>
@@ -192,6 +224,5 @@ export function ExchangeDetailB({mode, title, back, state, enabled, recoveries, 
             : <BCard><BText>No recorded history is available for this request.</BText></BCard>}
         </> : <BCard><BText status>This request isn’t available to your current account. Return to your requests to see what is available.</BText></BCard>}
       </>)}
-    </BStack>
-  </BScreen>;
+  </>;
 }
