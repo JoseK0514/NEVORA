@@ -1,0 +1,78 @@
+import { hashPassword } from '../../src/lib/auth/password';
+import { accessAt, CommerceError, parseSignup, planFor } from './model';
+import { token } from './security';
+import { CommerceStore, type Business } from './store';
+export interface BillingPort {
+  checkout(business: Business, operation: string): Promise<string>;
+  portal(business: Business, operation: string): Promise<string>;
+  webhook(raw: string, signature: string): Promise<void>;
+}
+export type CommerceOptions = { store: CommerceStore; origin: string; allowedOrigins: string[]; billing?: BillingPort; now?: () => number };
+async function body(request: Request, maximum=16384) {
+  const reader=request.body?.getReader(); if (!reader) return '';
+  const chunks: Uint8Array[]=[]; let length=0;
+  while (true) { const part=await reader.read(); if (part.done) break; length+=part.value.length; if (length>maximum) { await reader.cancel(); throw new CommerceError('body_too_large',413); } chunks.push(part.value); }
+  return Buffer.concat(chunks).toString('utf8');
+}
+export function createCommerce(options: CommerceOptions) {
+  const {store}=options;
+  return async (request: Request, ip: string): Promise<Response> => {
+    const origin=request.headers.get('origin'), path=new URL(request.url).pathname;
+    const headers: Record<string,string>={'content-type':'application/json','cache-control':'no-store','referrer-policy':'no-referrer','x-content-type-options':'nosniff','vary':'Origin'};
+    const answer=(value: unknown,status=200)=>new Response(JSON.stringify(value),{status,headers});
+    try {
+      if (origin && !options.allowedOrigins.includes(origin)) throw new CommerceError('origin_denied',403);
+      if (origin) headers['access-control-allow-origin']=origin;
+      if (request.method==='OPTIONS') { headers['access-control-allow-methods']='GET, POST, OPTIONS'; headers['access-control-allow-headers']='Authorization, Content-Type, Idempotency-Key'; return new Response(null,{status:204,headers}); }
+      if (path==='/health' && request.method==='GET') return answer({state:'ready'});
+      if (path==='/v1/plans' && request.method==='GET') return answer({currency:'usd',trialDays:30,plans:[planFor(1),planFor(16)]});
+      const now=options.now?.()??Date.now();
+      const bearer=request.headers.get('authorization')?.replace(/^Bearer /,'')??'';
+      if (path==='/webhooks/stripe' && request.method==='POST') {
+        if (!options.billing) throw new CommerceError('billing_unavailable',503);
+        await options.billing.webhook(await body(request,262144),request.headers.get('stripe-signature')??''); return answer({received:true});
+      }
+      if (path.startsWith('/internal/')) {
+        const business=await store.installation(request.headers.get('x-nevora-installation')??'',bearer);
+        if (path==='/internal/access' && request.method==='GET') return answer({businessId:business.id,...accessAt(business,now),employeeLimit:business.planKey==='team'?30:15,validUntil:Math.min(now+60000,...[business.trialEnd,business.paidThrough,business.pastDueSince?business.pastDueSince+7*86400000:null].filter((v):v is number=>v!==null&&v>now))});
+        if (path==='/internal/handoff' && request.method==='POST') { const proof=token(); await store.handoff(business.id,proof,now); return answer({handoff:proof,expiresIn:120}); }
+        throw new CommerceError('not_found',404);
+      }
+      if (request.method==='POST' && !origin) throw new CommerceError('origin_required',403);
+      if (request.method==='POST' && request.headers.get('content-type')?.split(';')[0]!=='application/json') throw new CommerceError('json_required',415);
+      let input: Record<string,unknown>={};
+      if (request.method==='POST') { try { input=JSON.parse(await body(request)); } catch(error) { if (error instanceof CommerceError) throw error; throw new CommerceError('invalid_json'); } if (!input||typeof input!=='object'||Array.isArray(input)) throw new CommerceError('invalid_json'); }
+      if (path==='/v1/signup' && request.method==='POST') {
+        await store.rate(`signup:${ip}`,10,3600,now); const signup=parseSignup(input);
+        await store.rate(`signup-email:${signup.email}`,3,3600,now);
+        await store.signup(signup,await hashPassword(signup.password),token(),options.origin,now);
+        return answer({state:'check_email'},202);
+      }
+      if (path==='/v1/login-link' && request.method==='POST') {
+        const email=typeof input.email==='string'?input.email.trim().toLowerCase():'';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>254) throw new CommerceError('invalid_email');
+        await store.rate(`signin:${ip}`,20,3600,now); await store.rate(`signin-email:${email}`,3,3600,now);
+        await store.loginLink(email,token(),options.origin,now); return answer({state:'check_email'},202);
+      }
+      if ((path==='/v1/verify'||path==='/v1/handoff/exchange') && request.method==='POST') {
+        await store.rate(`verify:${ip}`,30,60,now);
+        if (typeof input.token!=='string'||!/^[A-Za-z0-9_-]{43}$/.test(input.token)) throw new CommerceError('invalid_or_expired_link');
+        const session=token(); await store.exchange(input.token,session,now,path.includes('handoff'));
+        return answer({accessToken:session,expiresIn:28800});
+      }
+      const id=await store.session(bearer,now);
+      if (path==='/v1/logout' && request.method==='POST') { await store.logout(bearer); return answer({state:'signed_out'}); }
+      const business=await store.business(id);
+      if (path==='/v1/status' && request.method==='GET') return answer({businessId:id,businessName:business.profile.businessName,setup:business.state,applicationUrl:business.state==='ready'?business.origin:null,ownerEmployeeId:'OWNER',trialEndsAt:business.trialEnd?new Date(business.trialEnd).toISOString():null,paidThrough:business.paidThrough?new Date(business.paidThrough).toISOString():null,plan:business.planKey,...accessAt(business,now)});
+      if ((path==='/v1/checkout'||path==='/v1/portal') && request.method==='POST') {
+        if (business.state!=='ready') throw new CommerceError('setup_pending',409);
+        if (!options.billing) throw new CommerceError('billing_unavailable',503);
+        const operation=request.headers.get('idempotency-key')??'';
+        if (!/^[0-9a-f]{8}-[0-9a-f-]{27,40}$/i.test(operation)) throw new CommerceError('idempotency_key_required');
+        await store.rate(`billing:${id}`,20,3600,now);
+        return answer({url:path==='/v1/checkout'?await options.billing.checkout(business,operation):await options.billing.portal(business,operation)});
+      }
+      throw new CommerceError('not_found',404);
+    } catch(error) { return answer({error:{code:error instanceof CommerceError?error.code:'temporarily_unavailable'}},error instanceof CommerceError?error.status:503); }
+  };
+}
