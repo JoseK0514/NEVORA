@@ -1,5 +1,7 @@
 # Stripe setup and pre-planner inventory
 
+**Superseded setup status:** The connector now works and official planner guide iguide_61ViylNn83ZdXlB0f41HT1nhEuOJ2 was accepted for the verified Velani LLC sandbox. Runtime/account and conditional Tax implementation, provider sandbox receipts and remaining hosted gates are recorded in [Stripe integration readiness](2026-11-08-stripe-integration-readiness.md). Jose is unsure of tax registrations; collection stays disabled. The historical diagnostics below are preserved, not current blockers.
+
 2026-11-08. Jira: [SCRUM-174](https://thevelani-team.atlassian.net/browse/SCRUM-174). This is an evidence inventory and input for the requested Stripe MCP planner. It is not a planner-generated integration plan or a completed implementation.
 
 ## Authorized scope and order

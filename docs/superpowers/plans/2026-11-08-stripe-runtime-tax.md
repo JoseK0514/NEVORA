@@ -30,21 +30,21 @@
 ### Task 1: Restricted-key and account validation
 
 **Files:** Create `services/commerce/stripe-config.ts`, `services/commerce/runtime.test.ts`; modify `runtime.ts`, `stripe.ts`, `checkout.ts`, `stripe-fixture.ts`, `stripe.integration.test.ts`.
-**Interfaces:** `readStripeConfig(env, environment)` returns undefined or `{key,live,expectedAccountId?,prices,webhookSecret,tax?}`. `StripeBilling` accepts expectedAccountId and verifies `stripe.accounts.retrieve().id` before checkout/portal/reconciliation; rejected checks can retry. Checkout ports carry `live` and optional Tax config. No network work for unsigned webhooks.
+**Interfaces:** `readStripeConfig(env, environment)` returns undefined or `{key,live,expectedAccountId?,prices,webhookSecret,tax?}`. `StripeBilling` accepts expectedAccountId and verifies `stripe.accounts.retrieveCurrent().id` before checkout/portal/reconciliation; rejected checks can retry. Checkout ports carry `live` and optional Tax config. No network work for unsigned webhooks.
 
-- [ ] Add runtime tests: rk_test accepted, rk_live rejected in staging, missing/invalid staging account rejected, malformed Tax flags rejected even when billing disabled; execute `npx vitest run services/commerce/runtime.test.ts`, expect behavioral failures against current runtime.
-- [ ] Add owned-SDK scenarios for wrong account before mutations, transient account failure retry and mismatched price mode; run `npm run test:commerce:owned` with owned PG binary, expect failures for missing guards.
-- [ ] Implement parser before Pool allocation and bounded shared account check; validate price mode at checkout and subscription reconciliation.
-- [ ] Run focused runtime tests and owned commerce suite, expect all pass; commit `feat: bind Stripe runtime to explicit merchant account`.
+- [x] Add runtime tests: rk_test accepted, rk_live rejected in staging, missing/invalid staging account rejected, malformed Tax flags rejected even when billing disabled; execute `npx vitest run services/commerce/runtime.test.ts`, expect behavioral failures against current runtime.
+- [x] Add owned-SDK scenarios for wrong account before mutations, transient account failure retry and mismatched price mode; run `npm run test:commerce:owned` with owned PG binary, expect failures for missing guards.
+- [x] Implement parser before Pool allocation and bounded shared account check; validate price mode at checkout and subscription reconciliation.
+- [x] Run focused runtime tests and owned commerce suite, expect all pass; commit `feat: bind Stripe runtime to explicit merchant account`.
 
 ### Task 2: Conditional Tax with immutable checkout terms
 
 **Files:** Create `services/commerce/stripe-tax.ts`; modify `checkout.ts`, `stripe.ts`, fixture/integration tests and `services/commerce/README.md`.
 **Interfaces:** `StripeTaxConfig={code:string,behavior:"inclusive"|"exclusive"}`; Tax snapshot is a namespaced server-owned metadata field inside encrypted SessionCreateParams. Helpers validate/read it and verify Price tax_behavior/Product tax_code. Old intents without snapshot stay Tax-off. Delayed subscription creation uses the persisted snapshot, never the current flag.
 
-- [ ] Add failing owned-SDK scenarios for immediate automatic_tax, setup address collection without unsupported automatic_tax, delayed automatic_tax despite changed runtime flag, old Tax-off intent despite later enablement, and mismatched classification/price behavior rejection. Assert no subscriptions/access grant on invalid Tax state. Run owned commerce suite; expect new failures only.
-- [ ] Implement typed helpers, correct supported Checkout fields, delayed price/product revalidation and tax-aware authorization text. No tax-ID collection in setup mode without confirmed support. No retroactive migration.
-- [ ] Run owned commerce suite and runtime tests; expect all pass. Update runbook with explicit opt-in gates, restricted-key capabilities and account ID. Commit `feat: prepare optional Stripe Tax for subscription checkout`.
+- [x] Add failing owned-SDK scenarios for immediate automatic_tax, setup address collection without unsupported automatic_tax, delayed automatic_tax despite changed runtime flag, old Tax-off intent despite later enablement, and mismatched classification/price behavior rejection. Assert no subscriptions/access grant on invalid Tax state. Run owned commerce suite; expect new failures only.
+- [x] Implement typed helpers, correct supported Checkout fields, delayed price/product revalidation and tax-aware authorization text. No tax-ID collection in setup mode without confirmed support. No retroactive migration.
+- [x] Run owned commerce suite and runtime tests; expect all pass. Update runbook with explicit opt-in gates, restricted-key capabilities and account ID. Commit `feat: prepare optional Stripe Tax for subscription checkout`.
 
 ### Task 3: Provider readiness, verification and handoff
 

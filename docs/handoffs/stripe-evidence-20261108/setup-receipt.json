@@ -23,28 +23,34 @@
       "claudeModified": false
     },
     "3_planner": {
-      "status": "not_called_pending_verified_sandbox_context",
-      "tool": "stripe_implementation_planner",
-      "advertised": true,
-      "chatPluginInstalled": true,
-      "chatPluginStatus": "ENABLED",
-      "userReportsAuthorizationComplete": true,
-      "sandboxAuthorizationVerified": false,
-      "reason": "list_available_accounts_or_orgs and manage_stripe_accounts fail MCP -32001 Unknown tool; documentation search works",
-      "accountContextInvented": false
+      "status": "accepted",
+      "guideId": "iguide_61ViylNn83ZdXlB0f41HT1nhEuOJ2",
+      "account": "acct_1UZZK1HT1nhEuOJ2",
+      "livemode": false,
+      "sandboxAuthorizationVerified": true,
+      "tool": "stripe_implementation_planner"
     },
     "4_build": {
-      "status": "pending_planner_and_secure_sandbox_credentials",
-      "applicationChanges": false
+      "status": "implemented_and_fixture_tested_hosted_pending",
+      "applicationChanges": true,
+      "applicationCommit": "bf9573bfdad19089825fa3a2585a7b8643cf79b9",
+      "ownedCommerceChecksPassed": 59,
+      "onboardingCommerceChecksPassed": 17,
+      "typecheck": "pass",
+      "lint": "pass",
+      "runtimeKeyConfigured": false,
+      "hostedSignedWebhookVerified": false,
+      "taxEnabled": false,
+      "taxRegistrationAnswer": "Not sure yet"
     }
   },
   "jira": "SCRUM-174",
   "sourceBeforeDocumentation": "8538baaaee44aa6103c963d1129728f514ce5ff0",
   "reviewedVelaniSource": "e4f9d74065511b2c36824aeae013581426813565",
   "privateKeysPrinted": false,
-  "providerWrites": false,
+  "providerWrites": true,
   "liveCharges": false,
-  "newApplicationTestsRun": false,
+  "newApplicationTestsRun": true,
   "evidence": {
     "cli-install.log": {
       "sha256": "ed5fbd09cadddffb97af50124f06eb0584e9c42b99af4f597eb94089b3fcb768",
@@ -61,6 +67,26 @@
     "planner-input.json": {
       "sha256": "883f67378f121526bd07bcce5994c60d5aa597a1faf88e47545ca26c249a9da0",
       "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-input.json"
+    },
+    "planner-initial.json": {
+      "sha256": "92dc53a3ef630e1b9d1682a8d605be9370d94a397d684d854cb809ac87301c3c",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-initial.json"
+    },
+    "planner-accepted.json": {
+      "sha256": "1a7290dac408855e3d26edd713e8c3e23c13a94d1ba48cb4a760dbd2ff554da7",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-accepted.json"
     }
-  }
+  },
+  "historicalPlannerDiagnostic": {
+    "status": "not_called_pending_verified_sandbox_context",
+    "tool": "stripe_implementation_planner",
+    "advertised": true,
+    "chatPluginInstalled": true,
+    "chatPluginStatus": "ENABLED",
+    "userReportsAuthorizationComplete": true,
+    "sandboxAuthorizationVerified": false,
+    "reason": "list_available_accounts_or_orgs and manage_stripe_accounts fail MCP -32001 Unknown tool; documentation search works",
+    "accountContextInvented": false
+  },
+  "providerEnvironment": "sandbox_only"
 }

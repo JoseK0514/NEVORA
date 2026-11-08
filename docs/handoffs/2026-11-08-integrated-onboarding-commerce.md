@@ -2,6 +2,8 @@
 
 November8,2026. Codex owns logic and staging; Claude owns all rendering. Current implementation work is detached/local. Read the source-specific verification packet before treating a checkpoint as accepted.
 
+Stripe continuation: [Payments/Invoicing/Tax readiness](2026-11-08-stripe-integration-readiness.md) supersedes the earlier Stripe-connection deferral. Official sandbox/planner and provider-parameter acceptance now work; local restricted-key/account and optional Tax logic is implemented. Tax remains off, and runtime-key/signed hosted-webhook/full-journey acceptance remain open. This does not update the deployed81d3d1d07 application or close independent/Claude UI gates.
+
 ## Canonical journey and Claude contract
 
 The existing self-service onboarding API is the ONLY integrated signup/setup/company-creation path. Continue using `2026-11-07-onboarding-backend-ui-contract.md`: verified consent and email -> registered provisioning operation -> pending initial Owner -> one-use Owner activation -> normal company login -> canonical resumable setup -> team -> explicit invitations. Do not call commerce `/v1/signup`, `/v1/setup`, `/v1/login-link` or `/v1/verify` from the integrated UI: they return409/use_onboarding. All registration/recovery uses the company/onboarding authority, including normal company Owner sign-in before billing. Mailbox possession is not billing authority; old outstanding contact proofs cannot exchange for onboarding accounts.
