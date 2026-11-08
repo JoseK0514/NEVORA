@@ -36,12 +36,12 @@ export default async function MyTimePage({searchParams}:{searchParams:Promise<{v
   const today=businessDate(new Date(),zone);let period={startDate:addDays(today,-6),endDate:today};try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{}
   const view=params.view==='cards'?'cards':params.view==='corrections'?'corrections':'records';
   // Corporate (board E-PastTimecards): an Employee's Past timecards open on last week, Monday to Sunday.
-  if(session.role==='EMPLOYEE'&&view==='cards'&&!(params.start&&params.end)){const monday=addDays(weekStartFor(today),-7);period={startDate:monday,endDate:addDays(monday,6)};}
+  if(corporate&&view==='cards'&&!(params.start&&params.end)){const monday=addDays(weekStartFor(today),-7);period={startDate:monday,endDate:addDays(monday,6)};}
   // Hours belongs to the Pay tab when Pay is shown (back to Pay); otherwise Hours is its own tab (no back link). Same rules as the layout.
   const [payroll,brand]=await Promise.all([payrollFeatureEnabled()?readPayrollCapabilities(proof):Promise.resolve(undefined),currentBrand()]);
   // Corporate (Release 1): an Employee's Time is its own tab; a Lead's Hours still sits under Pay.
   const parent=session.role==='LEAD'&&mobileTabsForRole(session.role,payroll,{modules:brand.modules}).some(tab=>tab.href==='/app/my-pay')?{href:'/app/my-pay',label:'Pay'}:null;
   // Corporate (Release 1): an Employee sees the kit page on every screen, so the older desktop panel isn't rendered.
-  const panel=session.role==='EMPLOYEE'?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:paidLine}} />;
-  return <ResponsiveEmployeeHours today={today} corporate={session.role==='EMPLOYEE'} tabTitle={session.role==='EMPLOYEE'?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'} chosen={!!(params.start&&params.end)}>{panel}</ResponsiveEmployeeHours>;
+  const panel=corporate?null:<EmployeeTimePanel key={authority} authority={authority} corporate={corporate} signature={{todayLabel,payLine:paidLine}} />;
+  return <ResponsiveEmployeeHours today={today} corporate={corporate} tabTitle={corporate?'Time':'Hours'} authority={employeeViewAuthority(proof,'hours')} parent={parent} view={view} period={period} entryId={hoursRecordId(params.entry)?params.entry:null} requestId={hoursRequestId(params.requestId)?params.requestId:null} edit={params.edit&&params.edit.length<=500?params.edit:null} filter={params.filter==='decided'?'decided':'waiting'} fromCards={params.from==='cards'} chosen={!!(params.start&&params.end)}>{panel}</ResponsiveEmployeeHours>;
 }

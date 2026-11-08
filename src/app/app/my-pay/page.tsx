@@ -32,5 +32,5 @@ export default async function MyPayPage({ searchParams }: { searchParams: Promis
   }
   // Quiet: Owners and Managers get My pay (v4); Employees and Leads get the Pay tab (v5).
   if (isManagerRole(session.role)) return <QuietMyPay key={session.id} nextPay={nextPay} />;
-  return <MyPay key={session.id} nextPay={nextPay} statement={statement} document={document} corporate={session.role === 'EMPLOYEE'} />;
+  return <MyPay key={session.id} nextPay={nextPay} statement={statement} document={document} corporate={session.role === 'EMPLOYEE' || session.role === 'LEAD'} />;
 }

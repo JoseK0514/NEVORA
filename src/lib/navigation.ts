@@ -67,14 +67,14 @@ const EMPLOYEE_SIDEBAR_HOLDERS: Record<string, string> = {
 /** Entries reached from the desktop account menu instead; their pages light no sidebar entry. */
 const ACCOUNT_MENU_ENTRIES = new Set(["/app/my-pay", "/app/profile"]);
 const EMPLOYEE_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
-const LEAD_ACCOUNT_MENU_ENTRIES = new Set(["/app/profile"]);
 /** Release 1 (board C-Employee): an Employee's desktop sidebar uses the phone tabs' names and order. */
 const EMPLOYEE_SIDEBAR_LABELS: Record<string, string> = { "/app/schedule": "Schedule", "/app/my-time": "Time", "/app/my-pay": "Pay" };
 const EMPLOYEE_SIDEBAR_ORDER = ["/app", "/app/schedule", "/app/my-time", "/app/my-pay", "/app/requests/hub"];
 
 // An Employee's Schedule holds Availability (its title action). A Lead's Schedule and Requests pages have no Availability
 // link, so a Lead keeps the sidebar entry.
-function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" ? EMPLOYEE_SIDEBAR_HOLDERS : role === "LEAD" ? {} as Record<string, string> : SIDEBAR_HOLDERS; }
+// Direction B for Leads (Jose, Nov 8, 2026): a Lead has the Employee's sidebar, tabs and current-page rules.
+function sidebarHolders(role: UserRole) { return role === "EMPLOYEE" || role === "LEAD" ? EMPLOYEE_SIDEBAR_HOLDERS : SIDEBAR_HOLDERS; }
 
 /** The holder that is present: Time exports falls back to Time when there is no Payroll entry. */
 function holderFor(role: UserRole, href: string, present: Set<string>): string | undefined {
@@ -86,10 +86,10 @@ function holderFor(role: UserRole, href: string, present: Set<string>): string |
 export function sidebarNavigation(role: UserRole, items: NavigationItem[]): NavigationItem[] {
   const present = new Set(items.map(item => item.href)), management = role !== "EMPLOYEE" && role !== "LEAD";
   const rank = (href: string) => { const index = EMPLOYEE_SIDEBAR_ORDER.indexOf(href); return index < 0 ? EMPLOYEE_SIDEBAR_ORDER.length : index; };
-  // A Lead (on hold) keeps the earlier sidebar.
-  const employee = role === "EMPLOYEE";
+  // A Lead has the Employee's sidebar (Direction B, Nov 8, 2026).
+  const employee = role === "EMPLOYEE" || role === "LEAD";
   const ordered = employee ? [...items].sort((a, b) => rank(a.href) - rank(b.href)) : items;
-  const accountMenu = management ? ACCOUNT_MENU_ENTRIES : employee ? EMPLOYEE_ACCOUNT_MENU_ENTRIES : LEAD_ACCOUNT_MENU_ENTRIES;
+  const accountMenu = management ? ACCOUNT_MENU_ENTRIES : EMPLOYEE_ACCOUNT_MENU_ENTRIES;
   return ordered
     .filter(item => !holderFor(role, item.href, present) && !accountMenu.has(item.href))
     .map(item => !employee || !EMPLOYEE_SIDEBAR_LABELS[item.href] ? item : { ...item, label: EMPLOYEE_SIDEBAR_LABELS[item.href] })
@@ -172,9 +172,9 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
   const pathname = path.split(/[?#]/, 1)[0];
   const matches = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
   // Release 1 (boards E-Availability, E-SwapSheet, E-CoverSheet, E-CantWorkSheet, E-OpenShifts): an Employee opens these
-  // from Schedule, so Schedule stays current on them. A Lead keeps Requests (Lead is on hold).
+  // from Schedule, so Schedule stays current on them. A Lead too (Direction B, Nov 8, 2026).
   const query = new URLSearchParams(path.split("?")[1]?.split("#")[0] ?? "");
-  if (role === "EMPLOYEE" && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
+  if ((role === "EMPLOYEE" || role === "LEAD") && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
       (pathname === "/app/exchange" && query.get("tab") === "available"))) return "/app/schedule";
   if ((role === "EMPLOYEE" || role === "LEAD") &&
       (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
@@ -244,8 +244,9 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
   const home: MobileTab = { href: "/app", label: "Home", icon: "dashboard", owns: ["/app"] };
   const schedule: MobileTab = { href: "/app/schedule", label: "Schedule", icon: "schedule", owns: ["/app/schedule", "/app/schedule/templates", "/app/schedule/settings"] };
   const requests: MobileTab = { href: "/app/requests/hub", label: "Requests", icon: "requests", owns: ["/app/requests/hub", "/app/requests", "/app/exchange", "/app/exchange/swap", "/app/exchange/callout", "/app/availability"] };
-  if (role === "EMPLOYEE") {
+  if (role === "EMPLOYEE" || role === "LEAD") {
     // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Pay and Requests; More opens from the header avatar.
+    // A Lead has the same tabs (Direction B, Nov 8, 2026).
     // Upscale (Nov 1): pages opened from the avatar or the bell (More, Updates, Profile, Notifications), Help and unknown
     // addresses light no tab; Home owns Home only.
     // Direction B (Nov 6, 2026): shift swaps, open shifts and Availability go back to Schedule, so they light Schedule.
@@ -253,13 +254,6 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
     const tabs: MobileTab[] = [home, { ...schedule, owns: [...schedule.owns, ...shiftPages] }, { href: "/app/my-time", label: "Time", icon: "clock", owns: ["/app/my-time", "/app/timecards"] }];
     if (payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements) tabs.push({ href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay"] });
     return [...tabs, { ...requests, owns: requests.owns.filter(href => !shiftPages.includes(href)) }];
-  }
-  if (role === "LEAD") {
-    const pay: MobileTab = payroll?.enabled && (context.modules ?? ALL_MODULES_ON).payStatements
-      ? { href: "/app/my-pay", label: "Pay", icon: "receipt", owns: ["/app/my-pay", "/app/my-time", "/app/timecards"] }
-      : { href: "/app/my-time", label: "Hours", icon: "clock", owns: ["/app/my-time", "/app/timecards"] };
-    // v5 One look (approved Oct 24): Notifications opens from Home's bell, and every request page sits under Requests.
-    return [{ ...home, owns: ["/app", "/app/notifications"] }, schedule, requests, pay];
   }
   const authorized = new Set(navigationForRole(role, payroll, context).map(item=>item.href));
   // Corporate (Release 1, approved Oct 26): Home, Schedule, Time, Payroll and Team; More opens from the header avatar.
@@ -291,7 +285,7 @@ export const MORE_FAMILY = /^\/app\/(more|profile|help|account|notifications|upd
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {
   // Direction B (Employee phones, Nov 6, 2026): a page a tab owns lights that tab (shift swaps and Availability light
   // Schedule, where their back link goes), whatever the sidebar entry it belongs to.
-  if (role === "EMPLOYEE") {
+  if (role === "EMPLOYEE" || role === "LEAD") {
     const bare = path.split(/[?#]/)[0];
     const own = mobileTabsForRole(role, payroll, context).find(tab => tab.owns.some(owned => owned !== "/app" && (bare === owned || bare.startsWith(`${owned}/`))));
     if (own) return own.href;

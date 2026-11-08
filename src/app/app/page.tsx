@@ -71,14 +71,14 @@ export default async function DashboardPage({
     // Upscale M7: the following week too (same read), so "Coming up" can list the next shifts across the week boundary.
     const followingWeek=addDays(currentWeek,7);
     const [review,following]=await Promise.all([readEmployeeWeeklyReview(proof,currentWeek),readEmployeeWeeklyReview(proof,followingWeek)]);
-    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName})=>({id,date,startTime,endTime,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
+    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName,isDesignatedLead})=>({id,date,startTime,endTime,lead:isDesignatedLead,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
     const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
     // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
     const presentation=await currentPresentation();
     const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
-    // Direction B (phones): hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees only.
-    const b=session.role==='EMPLOYEE'?{hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
-    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'}/>;
+    // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
+    const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
   const proof=await requireSessionMutationProof();

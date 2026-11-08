@@ -181,3 +181,9 @@
 }
 /* A figure's short line under it (BLive meta) is for the desktop's wider glass. */
 :is(#c-root, html) .app-shell .b-screen .b-live__m { display: none; }
+
+/* A Lead (Direction B, Nov 8, 2026): "Shift lead" under the shift they lead, then the words. */
+@media (max-width: 767px), (min-width: 1024px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-leadline { display: flex; align-items: center; gap: 10px; margin-top: -4px; font-size: 14.5px; line-height: 20px; color: var(--b-ink2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-home-team .b-card__meta { font-size: 14px; color: var(--b-grey); }
+}

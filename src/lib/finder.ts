@@ -64,7 +64,7 @@ const EMPLOYEE_PAGES: { href: string; label: string; keywords?: string }[] = [
 ];
 
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
-  if (role === 'EMPLOYEE') {
+  if (role === 'EMPLOYEE' || role === 'LEAD') {
     const pay = navigationForRole(role, payroll, context).some(item => item.href === '/app/my-pay');
     return EMPLOYEE_PAGES.filter(page => (pay || !page.href.startsWith('/app/my-pay')) && pathEnabled(page.href, context.modules))
       .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, href: page.href, keywords: page.keywords }));

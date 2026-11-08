@@ -37,12 +37,12 @@ it('withholds the clean team view when Company authority is denied',async()=>{
  expect(html).not.toContain('cm-timecards');
  expect(html).not.toContain('data-manager');
 });
-it('retains the Lead rolling period without requesting Company management authority',async()=>{
+// Direction B for Leads (Nov 8, 2026): a Lead's timecards open as Time's Past timecards too, still without Company
+// management authority.
+it('opens a Lead’s timecards as Time’s Past timecards without requesting Company management authority',async()=>{
  fixture.role='LEAD';
- const html=renderToStaticMarkup(await TimecardsPage({searchParams:Promise.resolve({})}));
- expect(html).toContain('2026-10-14 / 2026-10-20');
- expect(html).toContain('data-manager="false"');
- expect(html).not.toContain('data-company-frame');
+ const page=await TimecardsPage({searchParams:Promise.resolve({})}) as ReactElement<{corporate:boolean;children:unknown}>;
+ expect(page.props.corporate).toBe(true);expect(page.props.children).toBeNull();
  expect(fixture.company).not.toHaveBeenCalled();
 });
 it('opens an Employee’s timecards as Time’s Past timecards on every screen (Release 1)',async()=>{

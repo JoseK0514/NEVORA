@@ -92,7 +92,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
 
   // Employee desktop (Nov 8, 2026): an Employee's finder lists their own pages only, so it reads nothing and opens only
   // where its top-bar button shows (desktop, 1024px and wider).
-  const own = role === "EMPLOYEE";
+  const own = role === "EMPLOYEE" || role === "LEAD";
   function load() {
     if (own) { setRemote({ state: "ready", data: null, at: Date.now() }); return; }
     if (remote.state === "loading" || (remote.state === "ready" && Date.now() - remote.at < FRESH_MS)) return;

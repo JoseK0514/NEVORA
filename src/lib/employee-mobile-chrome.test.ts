@@ -15,8 +15,9 @@ it('follows the real Pay/Hours tab and preserves Hours sub-tabs and redirect con
 it('keeps Schedule sheets and Pay statement disclosures attached to their root',()=>{
  expect(chrome('/app/schedule','week=2026-10-26&day=2026-10-27&shift=own-shift&intent=swap')).toBe('root');expect(chrome('/app/my-pay','statement=12345678-1234-4123-8123-123456789abc',paid)).toBe('root');
 });
-it('retains Lead headers and does not classify management pages',()=>{
- for(const path of ['/app','/app/schedule','/app/my-time','/app/timecards','/app/my-pay','/app/requests/hub','/app/requests','/app/availability','/app/exchange','/app/exchange/swap'])expect(employeeMobileChrome('LEAD',path,paid,new URLSearchParams('entry=own-entry'))).toBe('root');
- for(const path of ['/app/more','/app/profile','/app/updates'])expect(employeeMobileChrome('LEAD',path,hours,null)).toBe('detail');
+// Direction B for Leads (Nov 8, 2026): a Lead has the Employee's header set.
+it('gives Leads the Employee headers and does not classify management pages',()=>{
+ for(const path of ['/app','/app/schedule','/app/my-time','/app/timecards','/app/my-pay','/app/requests/hub','/app/requests','/app/availability','/app/exchange','/app/exchange/swap','/app/more','/app/profile','/app/updates'])
+  for(const tabs of [paid,hours])expect(employeeMobileChrome('LEAD',path,tabs,null)).toBe(employeeMobileChrome('EMPLOYEE',path,tabs,null));
  for(const role of ['OWNER','MANAGER'] as const)expect(employeeMobileChrome(role,'/app',hours,null)).toBeUndefined();
 });

@@ -26,7 +26,7 @@ import {keepWhole} from '../lib/keep-whole';
  * Schedule page uses and shows only while Home's own data is released. */
 
 /** This week's own published shifts, read on the server for the glance. */
-export type HomeWeekShift = {id?: string; date: string; startTime: string; endTime: string; where?: string};
+export type HomeWeekShift = {id?: string; date: string; startTime: string; endTime: string; where?: string; /** The person is this shift's designated lead. */ lead?: boolean};
 /** `next`: the following week's own published shifts, for the corporate Home's "Coming up" and its confirm rows. */
 export type HomeWeek = {weekStart: string; today: string; dates: readonly string[]; shifts: readonly HomeWeekShift[]; next?: {weekStart: string; shifts: readonly HomeWeekShift[]} | null};
 

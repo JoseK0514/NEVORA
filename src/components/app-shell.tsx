@@ -198,7 +198,7 @@ function AppShellView({
   // Release 1 ("don't overwhelm"): the team tools have no sidebar group; the entry that holds each one lights instead.
   const toolHolder = activeTool ? teamToolHolder(activeTool.href) : undefined;
   const sidebarActive = toolHolder ?? sidebarActiveHref(user.role, pathname, sidebarItems, payrollCapabilities, context);
-  const navGroups = employee ? user.role === "EMPLOYEE" ? employeeNavigationGroups(sidebarItems) : [{ label: "", items: sidebarItems }] : managementNavigationGroups(sidebarItems);
+  const navGroups = employee ? employeeNavigationGroups(sidebarItems) : managementNavigationGroups(sidebarItems);
   // Top-bar location (D1): section, then page. The page links back when you are deeper in it.
   const activeGroup = navGroups.find(group => group.items.some(item => item.href === sidebarActive));
   // A page reached from the account menu (Profile, My pay) has no sidebar entry; the trail still names it.
@@ -371,25 +371,24 @@ function AppShellView({
       id={employee ? "employee-mobile" : undefined}
       data-employee-mobile={employee ? "true" : undefined}
       data-employee-mobile-active={employeeMobile ? "true" : undefined}
-      data-employee-mobile-chrome={rootChrome && user.role === "EMPLOYEE" ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
+      data-employee-mobile-chrome={rootChrome && employee ? "root" : employeeMobileChrome(user.role,pathname,mobileTabs,search)}
       data-employee-mobile-page={employee ? pathname === "/app" ? "home" : pathname === "/app/schedule" ? "schedule" : pathname === "/app/my-time" || pathname === "/app/timecards" ? "hours" : pathname === "/app/my-pay" ? "pay" : (pathname === "/app/requests/hub" || pathname === "/app/requests" || pathname === "/app/availability") || (pathname === "/app/exchange" || pathname.startsWith("/app/exchange/")) ? "requests" : "other" : undefined}
       data-nv-clean={employee ? undefined : ""}
       // Quiet (v4, Jose approved Oct 23, docs/product/specs/owner-v4-quiet): the Owner and Manager pages and their tab bar.
       data-nv-quiet=""
       // Employee app, new style (Jose approved Oct 20, docs/product/specs/employee-style): employee-style.css applies only under this attribute.
-      data-nv-e5={user.role === "LEAD" ? "" : undefined}
       style={brand?.style as CSSProperties | undefined} data-company-brand={brand?.style ? "custom" : undefined}
       // One phone shell on every tab, Home included, for every role (Phase 7 WR-03; employees since Phase 3, P3-ST-01).
       data-mobile-workforce={pathname ? "true" : undefined}
       data-employee-corporate={employee && (pathname === "/app/my-time" || pathname === "/app/timecards") ? "true" : undefined}
       // Corporate (Release 1, approved Oct 26): Owner and Manager. A tab's own page shows the white header (logo, bell, avatar).
-      // Employees joined in Phase 6; a Lead keeps the v5 look while that role is on hold.
+      // Employees joined in Phase 6, Leads on Nov 8, 2026 (Direction B).
       // Owner premium (A7): a page that is itself a sidebar entry needs no "‹ Back" line on tablets and desktop.
       data-nav-root={!employee && !toolView && sidebarItems.some(item => item.href === pathname) ? "" : undefined}
       // Direction B (Jose approved Nov 5, 2026): the Owner and Manager phone screens draw a teal hero; see owner-b-shell.css.
-      // Employees joined Nov 6, 2026 (phones only; their desktop is unchanged, see owner-b-desktop.css). A Lead stays on hold.
-      data-nv-b={user.role !== "LEAD" ? "" : undefined}
-      data-nv-corp={user.role === "LEAD" ? undefined : ""} data-corp-root={user.role !== "LEAD" && (rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") && !(pathname === "/app/my-pay" && (search?.get("view") || search?.get("paycheck"))) ? "" : undefined}>
+      // Employees joined Nov 6, 2026 (phones only; their desktop is unchanged, see owner-b-desktop.css). Leads joined Nov 8, 2026 with the Employee's screens (desktop included).
+      data-nv-b=""
+      data-nv-corp="" data-corp-root={(rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") && !(pathname === "/app/my-pay" && (search?.get("view") || search?.get("paycheck"))) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>
@@ -400,7 +399,7 @@ function AppShellView({
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
           in the rail it is the 32px initials avatar. */}
-        {user.role !== "LEAD" ? <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p> : null}
+        <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span></p>
 
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>
@@ -427,7 +426,7 @@ function AppShellView({
                 {item.href === "/app/inbox" && inboxCount ? <span className="nav-count" aria-hidden="true">{inboxCount > 99 ? "99+" : inboxCount}</span> : null}
                 {/* Employee desktop, Direction B (Nov 8, 2026): Notifications carries its unread count (teal, not urgent), from
                   the bell's own private snapshot. Shown on desktop only; the entry's label stays its name. */}
-                {employee && user.role === "EMPLOYEE" && item.href === "/app/notifications" && notificationAuthority ? <NotificationCount authority={notificationAuthority} /> : null}
+                {employee && item.href === "/app/notifications" && notificationAuthority ? <NotificationCount authority={notificationAuthority} /> : null}
               </Link>
             );
           })}</div>)}
@@ -479,16 +478,13 @@ function AppShellView({
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
           {/* Employee desktop (Nov 8, 2026): Employees search their own pages (desktop only; see employee-b-desktop.css). */}
-          {(!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY")) || user.role === "EMPLOYEE" ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
-          {/* A Lead (v5 look, on hold) keeps its header: the avatar first, then a round "+" for a new request, then the bell. */}
-          {user.role === "LEAD" ? accountMenu : null}
-          {user.role === "LEAD" ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}
+          {(!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY")) || employee ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {notificationAuthority ? <NotificationBell key={operationalAuthority?.state==='ready'?operationalAuthority.authority:'unavailable'} authority={notificationAuthority} /> : null}
           {/* Upscale B2: one desktop top bar for every role, Search · bell · avatar. The Employee "+" retired (New request
             lives on Requests). */}
-          {user.role !== "LEAD" ? accountMenu : null}
+          {accountMenu}
           {/* Corporate phone header: the avatar opens More (profile, settings and the rest). Desktop keeps the account menu. */}
-          {user.role !== "LEAD" ? <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link> : null}
+          <Link href="/app/more" prefetch className="c-top-avatar" aria-label={`More, ${user.firstName} ${user.lastName}`} aria-current={pathname === "/app/more" ? "page" : undefined}><span aria-hidden="true">{initials}</span></Link>
           </div>
         </header>
         {/* Owner premium P7 and P11: the thin progress bar while a page is on its way, and the offline line over the page. */}
@@ -497,7 +493,7 @@ function AppShellView({
 
         <main className="page-frame" id="main-content" tabIndex={-1} data-focused-review={focusedReview || undefined}>{sectionTabs ? <SectionTabs group={sectionTabs} pathname={pathname ?? ""} /> : null}<PresentationProvider modules={context.modules} words={context.words}>{user.role==='MANAGER'&&operational.view?.state==='unavailable'&&!operational.refreshing&&<section className="portal-route-state" role="status"><h2>Management menu unavailable</h2><p>Your current management access could not be checked. Reconnect and refresh before opening another management page.</p><button className="button secondary" type="button" disabled={operational.paused} onClick={operational.retry}>Refresh management access</button></section>}<EmployeeMessageReturn/>{children}</PresentationProvider></main>
 
-        <nav className="mobile-nav" aria-label="Mobile navigation" style={user.role !== "LEAD"?{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}:undefined}>
+        <nav className="mobile-nav" aria-label="Mobile navigation" style={{gridTemplateColumns:`repeat(${mobileTabs.length},minmax(0,1fr))`}}>
           {/* v5 One look (approved Oct 24): one Quiet tab bar for every role; More is a page. */}
             <>
               {mobileTabs.map((item) => {
@@ -524,22 +520,15 @@ function AppShellView({
                     }}
                   >
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
-                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead keeps the v5 tab bar. */}
-                    <NavIcon name={user.role === "LEAD" ? (item.icon === "employees" ? "team" : item.icon) : tabIcon(item.icon, employee)} size={24}
-                      weight={user.role === "LEAD" ? (!employeeMobile && active ? "fill" : "regular") : active ? "fill" : "regular"} />
+                      tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead has the Employee's tab bar. */}
+                    <NavIcon name={tabIcon(item.icon, employee)} size={24} weight={active ? "fill" : "regular"} />
                     <span>{item.label}</span>
                     {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
-                    {needsYou !== null && user.role !== "LEAD" && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
+                    {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}
                     <TabPending />
                   </Link>
                 );
               })}
-              {/* A Lead: More is a tab-bar page. Every other role opens More from the header avatar. */}
-              {user.role === "LEAD" ? <Link href="/app/more" prefetch className={activeTab === "more" || pathname === "/app/more" ? "mobile-nav-link manager-more-trigger active" : "mobile-nav-link manager-more-trigger"}
-                aria-current={pathname === "/app/more" ? "page" : undefined}>
-                <NavIcon name="moreCircle" size={24} weight={!employeeMobile && (activeTab === "more" || pathname === "/app/more") ? "fill" : "regular"} /><span>More</span>
-                <TabPending />
-              </Link> : null}
             </>
         </nav>
       </div>

@@ -1476,6 +1476,16 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   Requests; More on the avatar). Their extras live where they belong: "Today's team" (Message today's team) on Home and the
   "Shift lead" marker on shifts and in Schedule. Desktop: the Owner desktop shell with Lead's entries; Home's white action
   is "Message today's team"; desktop Profile adds a small "Calendar and alerts" card.
+  Built Nov 8, 2026: the shell sets `data-nv-b` and `data-nv-corp` for every role, so a Lead gets the Employee's
+  Direction B screens, tab bar (Home, Schedule, Time, Pay when statements are on, Requests; More on the avatar), sidebar,
+  desktop layout and finder (`navigation.ts`, `app-shell.tsx`, and each page's `corporate` choice now include LEAD). The
+  Lead's own pieces are small additions to the Employee screens: Today's team on Home (Message today's team opens the
+  existing Updates compose; shown when Updates is on, as before) and, on desktop, the band's white "Message today's team";
+  "Shift lead" with "You're the shift lead today" on the shift card and a Shift lead chip in Coming up; a "Calendar and
+  alerts" card on desktop Profile. Tablets (768–1023px) show what an Employee's tablet shows (Today's team waits for the
+  tablet layout). Not matched: the mock's third glass figure (On shift now), the sidebar's role line and profile footer and
+  the top bar's breadcrumb (the Employee desktop shell is kept, with its Search), a Shift lead chip in the Schedule week
+  card, and the single-column desktop More (the Employee's two columns are kept).
 - **Employee desktop.** The Owner desktop Direction B system for Employee pages (sidebar Home, Schedule, Time, Pay,
   Requests, More: Updates, Notifications). A shift opens as a right-hand panel (like Owner timecards); Schedule has a
   seven-day week card; the Notifications sidebar count is teal (not urgent); the Requests band shows Waiting and Needs your

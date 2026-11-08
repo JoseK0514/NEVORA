@@ -30,9 +30,9 @@ it('current company denial withholds management communication, attendance, expor
 });
 it.each(['EMPLOYEE','LEAD'])('retains %s self timecards and recipient communications without company management authority',async role=>{
  fixture.role=role;fixture.denied=true;
- // Release 1: an Employee's timecards open Time's Past timecards; a Lead keeps the own Timecards view.
+ // Release 1: an Employee's timecards open Time's Past timecards; a Lead's too since Direction B (Nov 8, 2026).
  const own=renderToStaticMarkup(await Timecards(query));
- expect(own).toContain(role==='EMPLOYEE'?'Opening your timecards':'Own timecards');expect(own).not.toContain('Team timecards');
+ expect(own).toContain('Opening your timecards');expect(own).not.toContain('Team timecards');
  expect(renderToStaticMarkup(await Updates())).toContain('Updates: employee');
  expect(renderToStaticMarkup(await Detail({params:Promise.resolve({id:'fictional'})}))).toContain('Detail: employee');
  expect(renderToStaticMarkup(await Compose(query))).toContain('Compose: employee');

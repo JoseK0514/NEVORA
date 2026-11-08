@@ -31,5 +31,7 @@ export default async function TimecardsPage({searchParams}:{searchParams:Promise
   }
   // Signature (phase 1): the employee page is the Timecards component's own band and sheet.
   // Corporate (Release 1): an Employee's timecards open as Time's Past timecards on every screen.
-  return <ResponsiveEmployeeTimecards period={period} corporate={session.role==='EMPLOYEE'} explicit={!!(params.start&&params.end)}>{session.role==='EMPLOYEE'?null:<Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='LEAD'} signature/>}</ResponsiveEmployeeTimecards>;
+  // A Lead's timecards are Time's Past timecards too (Direction B, Nov 8, 2026).
+  const own=session.role==='EMPLOYEE'||session.role==='LEAD';
+  return <ResponsiveEmployeeTimecards period={period} corporate={own} explicit={!!(params.start&&params.end)}>{own?null:<Timecards key={session.id} initialPeriod={period} manager={false} actorId={session.id} employeeCorporate={session.role==='LEAD'} signature/>}</ResponsiveEmployeeTimecards>;
 }

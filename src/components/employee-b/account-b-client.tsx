@@ -8,6 +8,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {LockSimpleIcon} from '@phosphor-icons/react/dist/ssr/LockSimple';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
+import {CalendarPlusIcon} from '@phosphor-icons/react/dist/ssr/CalendarPlus';
 import {SignOutIcon} from '@phosphor-icons/react/dist/ssr/SignOut';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {BriefcaseIcon} from '@phosphor-icons/react/dist/ssr/Briefcase';
@@ -37,8 +38,10 @@ function Field({label, value}: {label: string; value: string}) {
 
 /** Profile and settings (board E-Profile): Personal info as label-over-value rows, Display with the language switch,
  * Security. The read is the page's own (one controller for both presentations). */
-export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending}: {
+export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead}: {
   state: PrivatePanelState<EmployeeViewSnapshot>; onRetry: () => void; lang: AuthLang; passkeys: boolean; policies: boolean; ending: boolean;
+  /** A Lead's desktop adds a small Calendar and alerts card (eb-desk; Direction B, Nov 8, 2026). */
+  lead?: boolean;
 }) {
   const ready = !state.paused && state.snapshot?.state === 'ready' && state.snapshot.kind === 'profile' ? state.snapshot : null;
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
@@ -67,6 +70,12 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
             </div>
           </div></li></ul>
         </BCard>
+        {lead ? <div className="eb-desk eb-calalerts"><BCard title="Calendar and alerts" id="b-profile-calendar"><ul className="b-list">
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/calendar"><BIcon tone="grey"><CalendarPlusIcon weight="bold" /></BIcon>
+            <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Add to calendar</span></span><span className="b-row__s">Apple, Google or Outlook</span></span><Chev /></Link></li>
+          <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon>
+            <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">Settings for this browser</span></span><Chev /></Link></li>
+        </ul></BCard></div> : null}
         {passkeys || policies ? <BCard title="Security" id="b-profile-security">
           <ul className="b-list">
             {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><KeyIcon weight="bold" /></BIcon>

@@ -133,7 +133,7 @@ function weekTodo(item: AttentionItem, week?: HomeWeek | null) {
   return {title: own ? `Confirm ${own.when} schedule` : 'Confirm your schedule', detail: <><time dateTime={item.ref.id}>{weekRange(item.ref.id)}</time>{count}</>};
 }
 
-export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, displayName, timeZone, workspaceName, week, b}: EmployeeHomeQuietViewProps & {b?: HomeBExtras}) {
+export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, displayName, timeZone, workspaceName, week, b, teamMessage = false}: EmployeeHomeQuietViewProps & {b?: HomeBExtras}) {
   const online = typeof navigator === 'undefined' || navigator.onLine !== false;
   const paused = status === 'paused';
   const denied = !paused && (status === 'unauthorized' || home?.state === 'unauthorized');
@@ -162,7 +162,7 @@ export function EmployeeHomeCorpView({home, status, refreshing, onRetry, intro, 
   return <CorpPage className="c-ehome c-page--narrow">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the cards below). */}
     <EmployeeHomeB snapshot={snapshot ?? null} partial={partial} todos={todos} week={week} name={name} date={dateB} place={(snapshot?.currentShift ?? snapshot?.nextShift)?.locationLabel || workspaceName}
-      waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} {...b}/>
+      waiting={waiting} loading={loading} paused={paused} denied={denied} refreshing={refreshing} onRetry={onRetry} weekTodo={item => weekTodo(item, week)} team={teamMessage} {...b}/>
     <div data-home-state={viewState} aria-busy={refreshing || loading} className="c-ehome__body">
       <CorpTitle title={name ? `Welcome back, ${name}` : 'Home'} sub={<>{date}{workspaceName ? <> · {workspaceName}</> : null}</>}/>
       {snapshot ? <>

@@ -78,8 +78,8 @@ export function EmployeeHomeReviewedRenderer({state,timeAuthority,onRetry,author
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
  const loading=!state.paused&&(!state.snapshot||replaced);
  const status=state.paused?'paused':snapshot?home!.state:denied?'unauthorized':loading?'loading':'unavailable';
- // Corporate (Release 1): an Employee's Home on the corporate kit; a Lead keeps the v5 view.
- if(corporate)return <EmployeeHomeCorpView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} intro={intro} ownTimeSlot={null} b={b}/>;
+ // Corporate (Release 1): an Employee's Home on the corporate kit; a Lead's too since Direction B (Nov 8, 2026), with Today's team.
+ if(corporate)return <EmployeeHomeCorpView teamMessage={teamMessage} home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} intro={intro} ownTimeSlot={null} b={b}/>;
  return <EmployeeHomeQuietView home={home} status={status} refreshing={state.refreshing} onRetry={onRetry} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro} ownTimeSlot={snapshot?<EmployeeTimePanel key={timeAuthority} compact authority={timeAuthority}/>:null}/>;
 }
 // TC-P3-08: the signed-in first name reaches Home's band ("Hi, Alexandra."); the view shows it only once Home is read.

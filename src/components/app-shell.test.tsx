@@ -81,14 +81,13 @@ it("gives EMPLOYEE Home, Schedule, Time and Requests tabs, with More behind the 
   expect(html).toContain('href="/app/more"');
   expect(html).toContain('class="c-top-avatar"');
 });
-it.each(["LEAD"] as const)("gives %s Home, Schedule, Requests, Hours and More tabs, with More as a page", (role) => {
+// Direction B for Leads (Jose, Nov 8, 2026): a Lead has the Employee's tab bar (Home, Schedule, Time, Requests here, without
+// payroll); More opens from the header avatar, so there is no More tab.
+it.each(["LEAD"] as const)("gives %s the Employee tabs, with More on the avatar", (role) => {
   const { html, mobile } = render(role);
-  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([
-    "/app", "/app/schedule", "/app/requests/hub", "/app/my-time", "/app/more",
-  ]);
-  expect(mobile).toContain('<span>Hours</span>');
-  expect(mobile).toContain('<span>More</span>');
-  expect(html).not.toContain('employee-more-navigation');
+  expect([...mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1])).toEqual([...render("EMPLOYEE").mobile.matchAll(/href="([^"]+)"/g)].map((match) => match[1]));
+  expect(mobile).not.toContain('<span>More</span>');
+  expect(html).toContain('class="c-top-avatar"');
 });
 
 // Corporate (Release 1, approved Oct 26): five tabs and no More tab; More opens from the header avatar. Without payroll
@@ -222,7 +221,7 @@ it.each(['MANAGER','OWNER'] as const)('gives %s one More link (the header avatar
  expect(header).not.toContain('role-chip');
 });
 
-it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','/app/inbox'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/requests/hub']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
+it.each([['MANAGER','/app/exchange','/app/inbox'],['OWNER','/app/availability','/app/inbox'],['MANAGER','/app/inbox','/app/inbox'],['OWNER','/app/requests','/app/inbox'],['MANAGER','/app/employees/AUDIT-E','/app/employees'],['EMPLOYEE','/app/exchange','/app/schedule'],['EMPLOYEE','/app/requests','/app/requests/hub'],['LEAD','/app/availability','/app/schedule']] as const)('lights the %s tab that owns %s',(role,pathname,tab)=>{
  const {mobile}=render(role,pathname);
  expect(mobile).toContain(`href="${tab}" class="mobile-nav-link active" aria-current="page"`);
 });
@@ -246,10 +245,10 @@ it.each(['/app/updates/own-update','/app/updates','/app/more','/app/profile','/a
  expect(mobile.match(/mobile-nav-link active/g)).toHaveLength(1);
  expect(mobile).not.toContain('aria-current="page"');
 });
-it.each(['LEAD'] as const)('keeps the %s Updates destination under the More tab',role=>{
+// Direction B for Leads (Nov 8, 2026): Updates opens from More, which goes back to Home, so Home is lit (as for Employees).
+it.each(['LEAD'] as const)('lights Home for the %s Updates destination',role=>{
  const {mobile}=render(role,'/app/updates/own-update');
- // v5: Updates opens from the More page, so the More tab is the active one.
- expect(mobile).toContain('href="/app/more" class="mobile-nav-link manager-more-trigger active"');
+ expect(mobile).toContain('href="/app" class="mobile-nav-link active" aria-current="true"');
 });
 it('D1: the desktop top bar shows workspace and page; a primary section has no group name',()=>{
  const {html}=render('OWNER','/app/timecards');
@@ -299,10 +298,12 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
  expect(html).toContain('<div class="c-rail-tip" aria-hidden="true"></div>');
 });
 
-it('keeps a Lead (on hold) out of the corporate shell changes',()=>{
+// Direction B for Leads (Nov 8, 2026): a Lead has the corporate Direction B shell (workspace tile, no round "+" button).
+it('gives a Lead the corporate Direction B shell',()=>{
  const {html}=render('LEAD','/app');
- expect(html).not.toContain('class="cm-org"');
- expect(html).toContain('class="e5-new"');
+ expect(html).toContain('class="cm-org"');
+ expect(html).not.toContain('class="e5-new"');
+ expect(html).toContain('data-nv-b=""');
 });
 
 it.each(['EMPLOYEE','OWNER'] as const)('orders the %s top bar Search · bell · avatar, with no "+" button',role=>{
@@ -341,8 +342,8 @@ it.each(['OWNER','MANAGER'] as const)('lights Home on a %s phone for Help, with 
  expect(sidebar).not.toContain('nav-link active');
 });
 it.each(['EMPLOYEE','LEAD','OWNER','MANAGER'] as const)('lights no %s tab or sidebar entry on Help or an unknown address',role=>{
- // Help lights Home on Employee, Owner and Manager phones (it opens from More); an unknown address lights nothing for anyone.
- for(const pathname of role==='LEAD'?['/app/help','/app/no-such-page','/app/nothing/here']:['/app/no-such-page','/app/nothing/here']){
+ // Help lights Home on every role's phone (it opens from More; Leads too since Nov 8, 2026); an unknown address lights nothing.
+ for(const pathname of ['/app/no-such-page','/app/nothing/here']){
   const {html,mobile}=render(role,pathname);
   expect(mobile).not.toContain('mobile-nav-link active');
   expect(mobile).not.toContain('aria-current');

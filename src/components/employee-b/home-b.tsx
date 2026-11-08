@@ -29,6 +29,8 @@ export type HomeBExtras = {
   hoursAuthority?: string;
   /** The next payday from the workspace's pay schedule (YYYY-MM-DD), when pay statements are on. */
   payday?: string | null;
+  /** A Lead: shifts they lead carry the "Shift lead" marker (Direction B, Nov 8, 2026). */
+  lead?: boolean;
 };
 
 type Ready = Extract<EmployeeTime, {state: 'ready'}>;
@@ -91,13 +93,22 @@ function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot) {
   return minutes < 60 ? `Starts in ${minutes} min` : `Starts in ${Math.round(minutes / 60)} h`;
 }
 
-function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
+/** A Lead's Today's team: message everyone on today's published team, through the existing Updates compose. */
+function TeamCard({place}: {place?: string}) {
+  return <BCard title="Today’s team" id="b-home-team" meta={place}>
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><MegaphoneSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
+      label="Message today’s team, everyone on shift today" trail={<BButtonLink href="/app/updates/compose" kind="ghost" label="Write to today’s team" prefetch={false}>Write</BButtonLink>}/></BList>
+    <p className="eb-cardnote eb-desk">Your message goes to today’s published team. Reading it is optional for them.</p>
+  </BCard>;
+}
+
+function ShiftCard({snapshot, lead}: {snapshot: HomeSnapshot; lead?: boolean}) {
   const zone = snapshot.timeZone;
   if (snapshot.publicationState === 'unavailable') return <BCard title="Next shift" id="b-home-shift"><p className="b-state" role="status">Your schedule couldn’t be checked.</p></BCard>;
   const now = snapshot.currentShift, shift = now ?? snapshot.nextShift;
   if (!shift) return <BCard title="Next shift" id="b-home-shift"><p className="b-state">No upcoming shift. New shifts show here once they’re published.</p></BCard>;
   const today = dayWord(shift, snapshot) === 'Today';
-  const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead ? 'Shift lead' : null].filter(Boolean).join(' · ');
+  const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead && !lead ? 'Shift lead' : null].filter(Boolean).join(' · ');
   const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.shiftId)}`;
   const ends = businessDate(shift.endAt, zone);
   return <BCard id="b-home-shift" title={now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
@@ -105,6 +116,7 @@ function ShiftCard({snapshot}: {snapshot: HomeSnapshot}) {
     <div className="eb-shift">
       <p className="eb-shift__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
+      {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{now || today ? 'You’re the shift lead today' : 'You’re the shift lead'}</p> : null}
       <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>
       {/* On desktop the button sits in the card's footer beside the day and length (eb-desk is desktop only). */}
@@ -125,7 +137,7 @@ const ahead = (shift: {date: string; startTime: string; endTime: string}, at: st
   return end > wallNow(at, zone);
 };
 
-function ComingUp({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
+function ComingUp({week, snapshot, lead}: {week: HomeWeek; snapshot: HomeSnapshot; lead?: boolean}) {
   const shown = snapshot.currentShift ?? snapshot.nextShift;
   const shownStart = shown ? fmt(snapshot.timeZone, {hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(new Date(shown.startAt)) : null;
   const all: WeekShift[] = [...week.shifts.map(shift => ({...shift, weekStart: week.weekStart})), ...(week.next?.shifts ?? []).map(shift => ({...shift, weekStart: week.next!.weekStart}))];
@@ -136,7 +148,7 @@ function ComingUp({week, snapshot}: {week: HomeWeek; snapshot: HomeSnapshot}) {
     <BList>{rows.slice(0, 3).map(shift => {
       const at = utcDay(shift.date);
       const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}${shift.id ? `&shift=${encodeURIComponent(shift.id)}` : ''}`;
-      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)} sub={shift.where ? <Dotted text={shift.where}/> : undefined}
+      return <BRow key={`${shift.date}-${shift.startTime}`} href={href} lead={<BDay date={shift.date}/>} chip={lead && shift.lead ? <BChip tone="grey">Shift lead</BChip> : undefined} title={keepWhole(`${wallTime(shift.startTime)} – ${wallTime(shift.endTime)}`)} sub={shift.where ? <Dotted text={shift.where}/> : undefined}
         label={keepWhole(`${fmt('UTC', {weekday: 'long', month: 'long', day: 'numeric'}).format(at)}, ${wallTime(shift.startTime)} to ${wallTime(shift.endTime)}${shift.where ? `, ${shift.where}` : ''}`)}/>;
     })}</BList>
   </BCard>;
@@ -150,12 +162,14 @@ function TodoIcon({item, confirm}: {item: AttentionItem; confirm: boolean}) {
 
 export type HomeTodo = {key: string; item: AttentionItem; week: boolean};
 export type HomeBProps = HomeBExtras & {
+  /** A Lead's Today's team: message everyone on today's team (the Updates compose), when Updates is on. */
+  team?: boolean;
   snapshot: HomeSnapshot | null; partial: boolean; todos: HomeTodo[]; week?: HomeWeek | null; name?: string; date: ReactNode; place?: string;
   waiting: ReactNode; loading: boolean; paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void;
   weekTodo: (item: AttentionItem) => {title: string; detail: ReactNode};
 };
 
-export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday}: HomeBProps) {
+export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place, waiting, loading, paused, denied, refreshing, onRetry, weekTodo, hoursAuthority, payday, team, lead}: HomeBProps) {
   const weekShown = snapshot && week && week.dates.length === 7 ? week : null;
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
@@ -165,15 +179,17 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
   };
   return <BScreen>
-    <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
+    {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
+    <BHero big right={team && snapshot ? <span className="eb-desk"><BButtonLink href="/app/updates/compose" kind="white"><MegaphoneSimpleIcon size={17} weight="bold" aria-hidden="true"/>Message today’s team</BButtonLink></span> : undefined} eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
       {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday}/> : <Figures week={weekShown} payday={payday} worked={null}/> : null}
     </BHero>
     <BStack>
       {snapshot ? <>
-        <ShiftCard snapshot={snapshot}/>
+        <ShiftCard snapshot={snapshot} lead={lead}/>
         {snapshot.publicationState === 'partial' ? <BNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</BNote> : null}
+        {team ? <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/> : null}
         {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
-          link={todos.length > 3 ? {href: '/app/notifications', label: <>See all<span className="eb-desk"> {todos.length}</span></>, aria: `See all ${todos.length} things to do`} : undefined}>
+          link={todos.length > 3 ? {href: '/app/notifications', label: <>See all<span className="eb-desk">{'\u00a0'}{todos.length}</span></>, aria: `See all ${todos.length} things to do`} : undefined}>
           <BList>
             {todos.slice(0, 3).map(todoRow)}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
@@ -186,7 +202,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
           {/* Desktop shows two more (the phone keeps three). */}
           {todos.length > 3 ? <ul className="b-list eb-desk">{todos.slice(3, 5).map(todoRow)}</ul> : null}
         </BCard> : null}
-        {weekShown ? <ComingUp week={weekShown} snapshot={snapshot}/> : null}
+        {weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead}/> : null}
         {!todos.length && !partial ? <BNote>You’re all set. Nothing needs you right now.</BNote> : null}
       </> : <BCard title="Next shift" id="b-home-shift">
         <div className="eb-status">

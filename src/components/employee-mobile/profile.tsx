@@ -34,10 +34,10 @@ export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
 
 const subscribeNothing=()=>()=>{};
 
-type Props={authority:string;lang:AuthLang;policies:boolean};
+type Props={authority:string;lang:AuthLang;policies:boolean;/** A Lead (desktop adds Calendar and alerts). */lead?:boolean};
 /** Board E-Profile: Personal info, Display and Security cards under "‹ More · Profile and settings", on every width.
  * Calendar, passkeys and device alerts are their own pages; Help, Privacy and Sign out live on More. */
-export function EmployeeProfilePage({authority,lang,policies}:Props){
+export function EmployeeProfilePage({authority,lang,policies,lead}:Props){
  const router=useRouter(),[ending,setEnding]=useState(false);
  const passkeys=useSyncExternalStore(subscribeNothing,passkeysFlagOn,passkeysFlagOn);
  useEffect(()=>{const end=()=>setEnding(true);window.addEventListener('nevora:signout',end);return()=>window.removeEventListener('nevora:signout',end);},[]);
@@ -54,16 +54,16 @@ export function EmployeeProfilePage({authority,lang,policies}:Props){
   <CorpNav phoneOnly back={{href:'/app/more',label:'More'}} title="Profile and settings" titleId="profile-title"/>
   <CorpTitle wide title="Profile and settings"/>
   <noscript><p className="c-note">Enable JavaScript to view your profile and account settings.</p></noscript>
-  <ProfileBody key={authority} authority={authority} lang={lang} passkeys={passkeys} policies={policies} security={security} ending={ending}/>
+  <ProfileBody key={authority} authority={authority} lang={lang} passkeys={passkeys} policies={policies} security={security} ending={ending} lead={lead}/>
  </CorpPage>;
 }
 
 /** One own read for both presentations: the phone screen (Direction B) and the cards tablets and desktop show. Keyed by
  * the authority, as the panel was. */
-function ProfileBody({authority,lang,passkeys,policies,security,ending}:{authority:string;lang:AuthLang;passkeys:boolean;policies:boolean;security:boolean;ending:boolean}){
+function ProfileBody({authority,lang,passkeys,policies,security,ending,lead}:{authority:string;lang:AuthLang;passkeys:boolean;policies:boolean;security:boolean;ending:boolean;lead?:boolean}){
  const {state,refresh}=useEmployeeAccountRead('profile',authority);
  return <>
-  <EmployeeProfileB state={state} onRetry={refresh} lang={lang} passkeys={passkeys} policies={policies} ending={ending}/>
+  <EmployeeProfileB state={state} onRetry={refresh} lang={lang} passkeys={passkeys} policies={policies} ending={ending} lead={lead}/>
   {ending?<p className="c-note" role="status">Signing out…</p>:<>
    <EmployeeAccountView kind="profile" state={state} onRetry={refresh} quiet employeeMobile/>
    <EmployeeProfilePreferences lang={lang}/>
