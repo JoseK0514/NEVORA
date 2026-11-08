@@ -1,5 +1,6 @@
+import {applicationSql} from "../data/app-sql";
 import { createHash } from "node:crypto";
-import { getDb, queryRows } from "../db";
+import { queryRows } from "../db";
 export type BillingOwnerProof = {
   sessionTokenHash: string;
   employee: { id: string };
@@ -8,7 +9,7 @@ type Query = (text: string, values: unknown[]) => Promise<unknown>;
 export async function readBillingOwnerBinding(
   proof: BillingOwnerProof,
   connection: { installationId: string; secret: string },
-  query: Query = (text, values) => getDb().query(text, values),
+  query: Query = (text, values) => applicationSql().query(text, values),
 ) {
   const hash = createHash("sha256").update(connection.secret).digest("hex");
   const rows = queryRows<{

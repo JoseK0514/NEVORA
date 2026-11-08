@@ -16,7 +16,7 @@ export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
   pool.on("error", () => {
     console.error("Commerce catalog connection unavailable.");
   });
-  const store = new CommerceStore(pool, config.key);
+  const store = new CommerceStore(pool, config.key,config.provisioningMode);
   if (
     config.environment === "production" &&
     env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true" &&

@@ -18,6 +18,7 @@ export async function registerSlot(
   input: SlotInput,
   environment: string,
 ) {
+  if(store.provisioningMode!=="slots")throw Error("legacy_provisioning_disabled");
   if (
     !["development", "production"].includes(environment) ||
     !/^[a-zA-Z0-9_-]{1,80}$/.test(input.id) ||
@@ -85,6 +86,7 @@ export async function provisionBusiness(
   businessId: string,
   options: { probe?: (input: ProbeInput) => Promise<void> } = {},
 ) {
+  if(store.provisioningMode!=="slots")throw Error("legacy_provisioning_disabled");
   const slot = await store.transaction(async (client) => {
     const b = await client.query(
       "SELECT state FROM commerce.businesses WHERE id=$1 FOR UPDATE",
@@ -163,26 +165,9 @@ export async function provisionBusiness(
           },
         },
         account.rows[0].password_hash,
-        async (client) => {
-          await client.query(
-            `CREATE TABLE public.nevora_commerce_installation(singleton boolean PRIMARY KEY CHECK(singleton),business_id uuid NOT NULL UNIQUE,installation_id text NOT NULL UNIQUE,instance_secret_hash text NOT NULL,employee_limit integer NOT NULL DEFAULT 30 CHECK(employee_limit IN (15,30)))`,
-          );
-          await client.query(
-            "INSERT INTO public.nevora_commerce_installation(singleton,business_id,installation_id,instance_secret_hash) VALUES(true,$1,$2,$3)",
-            [businessId, slot.id, slot.instance_secret_hash],
-          );
-          await client.query(`CREATE FUNCTION public.nevora_commerce_employee_capacity() RETURNS trigger LANGUAGE plpgsql AS $$
-          DECLARE capacity integer; existing integer;
-          BEGIN
-            IF NOT NEW.active OR NEW.role='OWNER' THEN RETURN NEW; END IF;
-            IF TG_OP='UPDATE' THEN IF OLD.active AND OLD.role<>'OWNER' THEN RETURN NEW; END IF; END IF;
-            SELECT employee_limit INTO capacity FROM public.nevora_commerce_installation WHERE singleton FOR UPDATE;
-            IF capacity IS NULL THEN RAISE EXCEPTION 'commerce_capacity_unavailable'; END IF;
-            SELECT count(*) INTO existing FROM public.employees WHERE active AND role<>'OWNER';
-            IF existing>=capacity THEN RAISE EXCEPTION 'commerce_employee_limit' USING ERRCODE='23514'; END IF;
-            RETURN NEW;
-          END $$;
-          CREATE TRIGGER nevora_commerce_employee_capacity BEFORE INSERT OR UPDATE OF active,role ON public.employees FOR EACH ROW EXECUTE FUNCTION public.nevora_commerce_employee_capacity();`);
+        async (client,ids) => {
+          const environment=['127.0.0.1','localhost','[::1]'].includes(new URL(databaseUrl).hostname)?'development':'production';
+          await client.query("INSERT INTO public.nevora_commerce_installation(singleton,workspace_id,business_id,installation_id,environment,incarnation,canonical_origin,instance_secret_hash) VALUES(true,$1,$2,$3,$4,1,$5,$6)",[ids.workspaceId,businessId,slot.id,environment,slot.origin,slot.instance_secret_hash]);
         },
       );
     }

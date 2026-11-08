@@ -19,3 +19,11 @@ it("rejects driver target overrides, duplicate TLS modes and maintenance databas
     ),
   ).toThrow();
 });
+
+it('permits explicit remote staging only with verified TLS and keeps provisioning on the canonical onboarding path',async()=>{
+ const {readCommerceConfig}=await import('./config');
+ const env={NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_COMMERCE_ENCRYPTION_KEY:Buffer.alloc(32,8).toString('base64'),NEVORA_COMMERCE_ORIGIN:'https://billing-staging.example.test',NEVORA_COMMERCE_DATABASE_URL:'postgresql://catalog@ep-stage.neon.tech/catalog?sslmode=verify-full'};
+ expect(readCommerceConfig(env).provisioningMode).toBe('onboarding');
+ expect(()=>readCommerceConfig({...env,NEVORA_COMMERCE_DATABASE_URL:'postgresql://catalog@ep-stage.neon.tech/catalog?sslmode=require'})).toThrow('database_tls_required');
+ expect(()=>readCommerceConfig({...env,NEVORA_COMMERCE_PROVISIONING_MODE:'slots'})).toThrow('legacy_provisioning_development_only');
+});

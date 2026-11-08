@@ -22,7 +22,7 @@ export function safeOrigin(value: string, development: boolean) {
   return url.origin;
 }
 export function databaseTarget(value: string, environment: string) {
-  if (!["development", "production"].includes(environment))
+  if (!["development", "staging", "production"].includes(environment))
     throw Error("explicit_database_environment_required");
   const url = parsePostgresUrl(value);
   if (
@@ -32,7 +32,7 @@ export function databaseTarget(value: string, environment: string) {
   )
     throw Error("application_database_required");
   if (
-    environment === "production" &&
+    environment !== "development" &&
     url.searchParams.get("sslmode") !== "verify-full"
   )
     throw Error("database_tls_required");
@@ -43,10 +43,13 @@ export function databaseTarget(value: string, environment: string) {
     throw Error("development_database_must_be_loopback");
   return value;
 }
-export function readCommerceConfig(env: NodeJS.ProcessEnv) {
+export function readCommerceConfig(env: Readonly<Record<string,string|undefined>>) {
   const environment = env.NEVORA_COMMERCE_ENVIRONMENT;
-  if (environment !== "development" && environment !== "production")
+  if (environment !== "development" && environment !== "staging" && environment !== "production")
     throw Error("explicit_commerce_environment_required");
+  const provisioningMode=env.NEVORA_COMMERCE_PROVISIONING_MODE??'onboarding';
+  if(!['onboarding','slots'].includes(provisioningMode))throw Error('explicit_provisioning_mode_required');
+  if(provisioningMode==='slots'&&environment!=='development')throw Error('legacy_provisioning_development_only');
   const key = Buffer.from(env.NEVORA_COMMERCE_ENCRYPTION_KEY ?? "", "base64");
   if (key.length !== 32) throw Error("commerce_encryption_key_required");
   const origin = safeOrigin(
@@ -76,6 +79,7 @@ export function readCommerceConfig(env: NodeJS.ProcessEnv) {
     throw Error("invalid_port");
   return {
     environment,
+    provisioningMode:provisioningMode as "onboarding"|"slots",
     key,
     origin,
     uiOrigin,

@@ -9,6 +9,7 @@ const server = createHttpServer(
     uiOrigin: runtime.config.uiOrigin,
     allowedOrigins: runtime.config.allowedOrigins,
     billing: runtime.billing,
+    provisioningMode:runtime.config.provisioningMode,
     signupEnabled: process.env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true",
   }),
   runtime.config.origin,

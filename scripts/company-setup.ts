@@ -124,7 +124,7 @@ export async function assertEmptyDatabase(client: Pick<Client,'query'>) {
   const existing=await client.query(`SELECT 1 FROM pg_namespace n
     WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%'
     AND (n.nspname='commerce' OR EXISTS(SELECT 1 FROM pg_class c WHERE c.relnamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_proc p WHERE p.pronamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_type t WHERE t.typnamespace=n.oid)) LIMIT 1`);
-  if(existing.rowCount)throw Error('Company setup requires an empty database; existing databases are never reset.');
+  if(existing.rowCount)throw Error('Company setup requires an empty public schema and empty database; existing databases are never reset.');
 }
 
 /** Historical migrations remain the schema authority. Strip only their outer

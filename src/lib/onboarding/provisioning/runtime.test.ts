@@ -8,3 +8,7 @@ it('requires explicit separate worker enablement and matching approved account/r
 it('never falls back to application control credentials, DATABASE_URL or a different control database',()=>{
  for(const override of [{NEVORA_PROVISIONER_CONTROL_DATABASE_URL:undefined},{NEVORA_PROVISIONER_CONTROL_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL},{NEVORA_PROVISIONER_CONTROL_DATABASE_URL:'postgresql://provisioner:fictional@foreign.invalid/other_control'},{NEVORA_WORKSPACE_MODE:'single_company'}])expect(readProvisionerRuntime({...env,...override,DATABASE_URL:'postgresql://legacy:fictional@foreign.invalid/legacy'})).toBeNull();
 });
+it('refuses billing-enabled provisioning before any resource creation when its separate enrollment custody is missing or aliases control',()=>{
+ expect(readProvisionerRuntime({...env,NEVORA_ONBOARDING_COMMERCE_ENABLED:'true'})).toBeNull();
+ expect(readProvisionerRuntime({...env,NEVORA_ONBOARDING_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,11).toString('base64url'),NEVORA_COMMERCE_ENCRYPTION_KEY:Buffer.alloc(32,12).toString('base64'),NEVORA_COMMERCE_ENROLLMENT_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL})).toBeNull();
+});

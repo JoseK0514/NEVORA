@@ -14,7 +14,9 @@ export type CommerceOptions = {
   uiOrigin?: string;
   allowedOrigins: string[];
   billing?: BillingPort;
+  pathPrefix?:string;
   signupEnabled?: boolean;
+  provisioningMode?: "onboarding"|"slots";
   now?: () => number;
   headcount?: (business: Business) => Promise<number>;
 };
@@ -39,7 +41,8 @@ export function createCommerce(options: CommerceOptions) {
   const { store } = options;
   return async (request: Request, ip: string): Promise<Response> => {
     const origin = request.headers.get("origin"),
-      path = new URL(request.url).pathname;
+      pathname = new URL(request.url).pathname,
+      path=options.pathPrefix&&pathname.startsWith(options.pathPrefix+'/')?pathname.slice(options.pathPrefix.length):pathname;
     const headers: Record<string, string> = {
       "content-type": "application/json",
       "cache-control": "no-store",
@@ -75,6 +78,7 @@ export function createCommerce(options: CommerceOptions) {
           trialDays: 30,
           plans: [planFor(1), planFor(16)],
         });
+      if(options.provisioningMode==='onboarding'&&['/v1/signup','/v1/setup'].includes(path))throw new CommerceError('use_onboarding',409);
       const now = options.now?.() ?? Date.now();
       const bearer =
         request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
@@ -95,6 +99,7 @@ export function createCommerce(options: CommerceOptions) {
         if (path === "/internal/access" && request.method === "GET")
           return answer({
             businessId: business.id,
+            installationId: business.slotId,
             ...(await businessAccess(store, business, now, options.headcount)),
             validUntil: Math.min(
               now + 60000,
@@ -108,6 +113,7 @@ export function createCommerce(options: CommerceOptions) {
             ),
           });
         if (path === "/internal/handoff" && request.method === "POST") {
+          await businessAccess(store,business,now,options.headcount);
           const proof = token();
           await store.handoff(business.id, proof, now);
           return answer({
@@ -166,6 +172,7 @@ export function createCommerce(options: CommerceOptions) {
           token(),
           `${options.uiOrigin ?? options.origin}/pages/nevora-verify`,
           now,
+          typeof input.businessId==='string'&&/^[a-f0-9-]{36}$/i.test(input.businessId)?input.businessId:undefined,
         );
         return answer({ state: "check_email" }, 202);
       }
@@ -206,7 +213,7 @@ export function createCommerce(options: CommerceOptions) {
           businessName: business.profile.businessName ?? null,
           setup: business.state,
           applicationUrl: business.state === "ready" ? business.origin : null,
-          ownerEmployeeId: "OWNER",
+          ownerEmployeeId: business.profile.ownerEmployeeId ?? "OWNER",
           trialEndsAt: business.trialEnd
             ? new Date(business.trialEnd).toISOString()
             : null,
@@ -224,6 +231,7 @@ export function createCommerce(options: CommerceOptions) {
           throw new CommerceError("setup_pending", 409);
         if (!options.billing)
           throw new CommerceError("billing_unavailable", 503);
+        await businessAccess(store,business,now,options.headcount);
         const operation = request.headers.get("idempotency-key") ?? "";
         if (!/^[0-9a-f]{8}-[0-9a-f-]{27,40}$/i.test(operation))
           throw new CommerceError("idempotency_key_required");

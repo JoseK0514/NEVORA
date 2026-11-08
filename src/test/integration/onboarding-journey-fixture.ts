@@ -1,4 +1,5 @@
 import {Pool} from 'pg';
+import type {ProvisioningDependencies} from '@/lib/onboarding/provisioning/orchestrator.server';
 import {restrictedOnboardingControl} from './onboarding-control-principals-fixture';
 import {neonConfig} from '@neondatabase/serverless';
 import {randomUUID,createHash} from 'node:crypto';
@@ -13,7 +14,7 @@ import {requestWorkspace,claimProvisioningJob} from '@/lib/onboarding/provisioni
 import {runProvisioningJob} from '@/lib/onboarding/provisioning/orchestrator.server';
 import {requestOwnerBootstrapGrant,runOwnerActivationWorker,activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
-export async function onboardingJourneyFixture(options:{restrictedControl?:boolean}={}){
+export async function onboardingJourneyFixture(options:{restrictedControl?:boolean;commerce?:ProvisioningDependencies['commerce']}={}){
  const db=await freshOnboardingControl(),principals=options.restrictedControl?await restrictedOnboardingControl(db):null,store=principals?.store??createControlStore(db.pool),provisionerStore=principals?.provisionerStore??store,provider=new OwnedProvisioningProvider(),pools:Pool[]=[],map=new Map<string,Pool>();
  const config=onboardingTestConfig({NEVORA_CONTROL_DATABASE_URL:principals?.appUrl??db.connectionUrl,NEVORA_ONBOARDING_PROVIDER_ENABLED:'true',NEVORA_ONBOARDING_MAX_NEW_PROJECTS_PER_DAY:'10',NEVORA_ONBOARDING_PROVIDER_ACCOUNT_REF:'fictional-org',NEVORA_ONBOARDING_RESOURCE_POLICY_VERSION:'fictional-policy-1'}),routing={...config,tokenKey:config.workspaceTokenKey};
  const errors:string[]=[];const original=neonConfig.fetchFunction;let loseNextRuntimeCommit=false;
@@ -28,7 +29,7 @@ export async function onboardingJourneyFixture(options:{restrictedControl?:boole
   const actor=await verifyRegistration({operationId:randomUUID(),proof},store,config);if(actor.state!=='verified')throw Error('Owned verification failed');const signupSession=actor.session;
   const c={schemaVersion:1,operationId:randomUUID(),expectedVersion:actor.snapshot.version,payload:{businessName:'Fictional '+slug,timeZone:'America/Chicago',requestedSlug:slug,initialLocation:{name:'Main Studio',shortName:'Main',key:'main'},ownerProfile:{id:'OWNER-1',firstName:'Fictional',lastName:'Owner',phone:'787-555-0101'}}};
   if((await requestWorkspace(actor.session,c,store,config)).state!=='pending')throw Error('Owned reservation failed');
-  if((await runProvisioningJob((await claimProvisioningJob(provisionerStore,config))!,{store:provisionerStore,config,provider,connect:provider.connect})).state!=='complete')throw Error('Owned bootstrap failed');
+  if((await runProvisioningJob((await claimProvisioningJob(provisionerStore,config))!,{store:provisionerStore,config,provider,connect:provider.connect,commerce:options.commerce})).state!=='complete')throw Error('Owned bootstrap failed');
   const until=Date.now()+5000;while((await db.pool.query('SELECT state FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1',[c.operationId])).rows[0]?.state!=='OWNER_ACTIVATION_REQUIRED'){if(Date.now()>until)throw Error('Owned concurrent bootstrap did not publish its operation');await new Promise(r=>setTimeout(r,10));}
   const row=(await db.pool.query('SELECT * FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1',[c.operationId])).rows[0],resource=provider.resources.get(row.resource.projectId)!;
   const secrets=(await db.pool.query('SELECT * FROM nevora_onboarding.workspace_secrets WHERE workspace_id=$1',[row.workspace_id])).rows;

@@ -1,3 +1,4 @@
+import {enrollmentIdentity,type WorkspaceEnrollment} from "./workspace-enrollment";
 import { createHmac, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
 import { CommerceError, DAY, type Signup, type PlanKey } from "./model";
@@ -13,7 +14,7 @@ export type Business = {
   id: string;
   state: string;
   email: string;
-  profile: Partial<Omit<Signup, "password">> & { email: string };
+  profile: Partial<Omit<Signup, "password">> & { email: string; ownerEmployeeId?:string };
   trialEnd: number | null;
   trialStart: number | null;
   paidThrough: number | null;
@@ -32,6 +33,7 @@ export class CommerceStore {
   constructor(
     readonly pool: Pool,
     readonly key: Buffer,
+    readonly provisioningMode:"onboarding"|"slots"="slots",
   ) {}
   async transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
@@ -75,6 +77,20 @@ export class CommerceStore {
   openJob(job: Pick<Job, "id" | "payload">): Record<string, string> {
     return JSON.parse(unseal(job.payload, this.key, job.id));
   }
+  /** Private provisioner capability. No public handler calls this method. */
+  async enrollWorkspace(input:WorkspaceEnrollment) {
+    const identity=enrollmentIdentity(input,this.key);
+    return this.transaction(async client=>{
+      await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1,0))",['commerce-enrollment:'+input.workspaceId]);
+      const old=await client.query('SELECT identity_hash FROM commerce.external_installations WHERE business_id=$1',[input.workspaceId]);
+      if(old.rowCount){if(old.rowCount!==1||old.rows[0].identity_hash!==identity)throw new CommerceError('enrollment_identity_mismatch',503);return;}
+      if((await client.query('SELECT id FROM commerce.accounts WHERE id=$1',[input.workspaceId])).rowCount)throw new CommerceError('enrollment_identity_mismatch',503);
+      await client.query("INSERT INTO commerce.accounts(id,email,profile,verified_at,enrollment_source) VALUES($1,$2,$3,$4,'onboarding')",[input.workspaceId,input.verifiedEmail,{email:input.verifiedEmail,businessName:input.businessName,ownerEmployeeId:input.ownerEmployeeId},input.provisionedAt]);
+      await client.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,$2::timestamptz,$2::timestamptz+interval '30 days')",[input.workspaceId,input.provisionedAt]);
+      await client.query('INSERT INTO commerce.external_installations(business_id,id,origin,environment,incarnation,provider_project_id,manifest_hash,identity_hash,instance_secret_hash,instance_secret) VALUES($1::uuid,$1::text,$2,$3,$4::bigint,$5,$6,$7,$8,$9)',[input.workspaceId,input.origin,input.environment,input.incarnation,input.providerProjectId,input.manifestHash,identity,digest(input.instanceSecret),seal(input.instanceSecret,this.key,'instance:'+input.workspaceId)]);
+      await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'onboarding_enrolled')",[input.workspaceId]);
+    });
+  }
   async signup(
     email: string,
     proof: string,
@@ -84,7 +100,7 @@ export class CommerceStore {
     return this.transaction(async (client) => {
       const id = randomUUID();
       const created = await client.query(
-        "INSERT INTO commerce.accounts(id,email,profile) VALUES($1,$2,$3) ON CONFLICT(email) DO NOTHING RETURNING id",
+        "INSERT INTO commerce.accounts(id,email,profile) VALUES($1,$2,$3) ON CONFLICT(email) WHERE enrollment_source='slots' DO NOTHING RETURNING id",
         [id, email, { email }],
       );
       if (!created.rowCount) return;
@@ -143,13 +159,13 @@ export class CommerceStore {
       });
     });
   }
-  async loginLink(email: string, proof: string, origin: string, now: number) {
+  async loginLink(email: string, proof: string, origin: string, now: number, businessId?:string) {
     await this.transaction(async (client) => {
       const account = await client.query(
-        "SELECT id,verified_at FROM commerce.accounts WHERE email=$1 FOR UPDATE",
-        [email],
+        "SELECT id,verified_at FROM commerce.accounts WHERE email=$1 AND ($2::uuid IS NULL OR id=$2) FOR UPDATE",
+        [email,businessId??null],
       );
-      if (!account.rowCount) return;
+      if (account.rowCount!==1) return;
       const row = account.rows[0];
       await client.query(
         "UPDATE commerce.tokens SET used_at=$2 WHERE account_id=$1 AND purpose IN ('verify','signin') AND used_at IS NULL",
@@ -212,7 +228,7 @@ export class CommerceStore {
   }
   async business(id: string, client?: PoolClient): Promise<Business> {
     const r = await (client ?? this.pool).query(
-      "SELECT b.*,a.email,a.profile,s.id slot_id,s.origin FROM commerce.businesses b JOIN commerce.accounts a ON a.id=b.id LEFT JOIN commerce.slots s ON s.business_id=b.id WHERE b.id=$1",
+      "SELECT b.*,a.email,a.profile,COALESCE(x.id,s.id) slot_id,COALESCE(x.origin,s.origin) origin FROM commerce.businesses b JOIN commerce.accounts a ON a.id=b.id LEFT JOIN commerce.slots s ON s.business_id=b.id LEFT JOIN commerce.external_installations x ON x.business_id=b.id WHERE b.id=$1",
       [id],
     );
     if (!r.rowCount) throw new CommerceError("not_found", 404);
@@ -263,10 +279,10 @@ export class CommerceStore {
   }
   async installation(id: string, secret: string) {
     const result = await this.pool.query(
-      "SELECT s.business_id FROM commerce.slots s JOIN commerce.businesses b ON b.id=s.business_id WHERE s.id=$1 AND s.instance_secret_hash=$2 AND b.state='ready'",
+      "SELECT s.business_id FROM (SELECT id,business_id,instance_secret_hash FROM commerce.slots UNION ALL SELECT id,business_id,instance_secret_hash FROM commerce.external_installations) s JOIN commerce.businesses b ON b.id=s.business_id WHERE s.id=$1 AND s.instance_secret_hash=$2 AND b.state='ready'",
       [id, digest(secret)],
     );
-    if (!result.rowCount) throw new CommerceError("unauthorized", 401);
+    if (result.rowCount!==1) throw new CommerceError("unauthorized", 401);
     return this.business(result.rows[0].business_id);
   }
   async handoff(

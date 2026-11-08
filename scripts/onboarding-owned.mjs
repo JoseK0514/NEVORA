@@ -7,7 +7,7 @@ import {randomBytes} from 'node:crypto';
 
 // This runner owns a NEW loopback server; it cannot accept application targets.
 if(process.env.DATABASE_URL||process.env.NEVORA_CONTROL_DATABASE_URL||process.env.FUEL_TEST_DATABASE_URL)throw Error('Unset existing application/test database targets before owned onboarding tests.');
-const args=process.argv.slice(2),suites=['registration','isolation-routing','isolation-auth','provisioning','owner-activation','setup','people','invitations','journey','operations','all'];
+const args=process.argv.slice(2),suites=['registration','isolation-routing','isolation-auth','provisioning','owner-activation','setup','people','invitations','journey','operations','commerce','all'];
 const suite=args.length===0?'all':args.length===2&&args[0]==='--suite'?args[1]:null;
 if(!suite||!suites.includes(suite))throw Error('Use --suite with a documented onboarding suite.');
 const localBinary=resolve('.superpowers/sdd/2026-11-07-self-service-owner-onboarding/tools/postgres17/package/native/bin');

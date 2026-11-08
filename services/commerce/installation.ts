@@ -8,7 +8,7 @@ async function installation(
   client?: PoolClient,
 ) {
   const result = await (client ?? store.pool).query(
-    "SELECT id,origin,instance_secret FROM commerce.slots WHERE business_id=$1",
+    "SELECT id,origin,instance_secret FROM (SELECT id,origin,instance_secret,business_id FROM commerce.slots UNION ALL SELECT id,origin,instance_secret,business_id FROM commerce.external_installations) s WHERE business_id=$1",
     [business.id],
   );
   if (result.rowCount !== 1)

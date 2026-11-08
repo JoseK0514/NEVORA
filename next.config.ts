@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // Keep production artifacts free of that source material as well as bundles.
   experimental: { turbopackFileSystemCacheForBuild: false },
   logging: {incomingRequests: {ignore: [/^\/api\/calendar\//, /^\/(?:api\/auth\/)?activate(?:[/?]|$)/]}},
+  async rewrites(){
+    return [{source:'/v1/:path*',destination:'/api/billing/v1/:path*'},{source:'/internal/:path*',destination:'/api/billing/internal/:path*'},{source:'/webhooks/stripe',destination:'/api/billing/webhooks/stripe'}];
+  },
   async headers() {
     const portal = ["/fuel-portal-sw.js", "/fuel-portal.webmanifest"].map((source) => ({
       source,

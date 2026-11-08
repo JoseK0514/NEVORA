@@ -1,6 +1,6 @@
 import { readSessionMutationProof } from "@/lib/auth/session";
 import { readBillingOwnerBinding } from "@/lib/commerce/owner-binding";
-import { commerceConnection, commerceEnabled } from "@/lib/commerce/access";
+import { currentCommerceConnection, commerceEnabled } from "@/lib/commerce/access";
 export async function POST(request: Request) {
   const reply = (code: string, status: number) =>
     Response.json(
@@ -8,15 +8,12 @@ export async function POST(request: Request) {
       { status, headers: { "cache-control": "no-store" } },
     );
   if (!commerceEnabled()) return reply("not_enabled", 404);
-  if (
-    !process.env.FUEL_PORTAL_ORIGIN ||
-    request.headers.get("origin") !== process.env.FUEL_PORTAL_ORIGIN
-  )
-    return reply("origin_denied", 403);
-  const proof = await readSessionMutationProof();
-  if (proof?.employee.role !== "OWNER") return reply("owner_required", 403);
   try {
-    const c = commerceConnection();
+    const c=await currentCommerceConnection();
+    const companyOrigin=c.companyOrigin??process.env.FUEL_PORTAL_ORIGIN;
+    if(!companyOrigin||request.headers.get('origin')!==companyOrigin)return reply('origin_denied',403);
+    const proof=await readSessionMutationProof();
+    if(proof?.employee.role!=='OWNER')return reply('owner_required',403);
     const readBinding = () => readBillingOwnerBinding(proof, c);
     const binding = await readBinding();
     if (!binding) return reply("owner_required", 403);
@@ -56,6 +53,7 @@ export async function POST(request: Request) {
       destination.hash !== `#handoff=${result.handoff}`
     )
       throw Error("invalid_handoff_destination");
+    await c.assertCurrent?.();
     const current = await readBinding();
     if (!current || current.business_id !== binding.business_id)
       return reply("owner_required", 403);

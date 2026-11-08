@@ -1,11 +1,12 @@
+import {applicationSql} from "@/lib/data/app-sql";
 import { createHash, timingSafeEqual } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
-import { commerceConnection, commerceEnabled } from "@/lib/commerce/access";
+import { queryRows } from "@/lib/db";
+import { currentCommerceConnection, commerceEnabled } from "@/lib/commerce/access";
 export async function GET(request: Request) {
   if (!commerceEnabled())
     return Response.json({ error: { code: "not_enabled" } }, { status: 404 });
   try {
-    const c = commerceConnection(),
+    const c = await currentCommerceConnection(),
       supplied = createHash("sha256")
         .update(request.headers.get("authorization") ?? "")
         .digest(),
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
       installation_id: string;
       employee_count: number;
     }>(
-      await getDb().query(
+      await applicationSql().query(
         `SELECT i.business_id,i.installation_id,(SELECT count(*)::int FROM employees WHERE active AND role<>'OWNER') employee_count FROM public.nevora_commerce_installation i JOIN workspaces w ON w.singleton AND w.active WHERE i.singleton AND i.installation_id=$1 AND i.instance_secret_hash=$2`,
         [c.installationId, hash],
       ),

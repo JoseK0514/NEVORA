@@ -21,7 +21,7 @@ async function main() {
       console.log("Commerce catalog installed.");
     } else if (process.argv[2] === "register-slot") {
       await registerSlot(
-        new CommerceStore(pool, config.key),
+        new CommerceStore(pool, config.key,config.provisioningMode),
         {
           id: process.env.NEVORA_SLOT_ID ?? "",
           origin: process.env.NEVORA_SLOT_ORIGIN ?? "",

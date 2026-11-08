@@ -352,6 +352,123 @@
       "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
+      "path": "services/commerce/catalog.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/checkout.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/enrollment-runtime.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/installation.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/operator.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/provision.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/runtime.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/server.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/store.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/stripe.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/test-database.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Owned-loopback test fixture imported only by explicitly scoped commerce integration tests.",
+      "isolatedBehavior": "TEST_ONLY"
+    },
+    {
+      "path": "services/commerce/worker-cli.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/commerce/worker.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
+      "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
       "path": "src/app/access-help/[[...topic]]/page.tsx",
       "tags": [
         "request-entrypoint"
@@ -469,6 +586,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/billing/[...path]/route.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
+      "isolatedBehavior": "SCOPED"
+    },
+    {
       "path": "src/app/api/calendar/[token]/schedule.ics/route.ts",
       "tags": [
         "request-entrypoint"
@@ -544,6 +670,33 @@
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
       "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/commerce/facts/route.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
+      "isolatedBehavior": "SCOPED"
+    },
+    {
+      "path": "src/app/api/commerce/handoff/route.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
+      "isolatedBehavior": "SCOPED"
+    },
+    {
+      "path": "src/app/api/commerce/policy/route.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
+      "isolatedBehavior": "SCOPED"
     },
     {
       "path": "src/app/api/company-access/employee-operations/[operationId]/route.ts",
@@ -1331,6 +1484,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/app/[...missing]/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/app/@sheet/(.)exchange/callout/page.tsx",
       "tags": [
         "request-entrypoint"
@@ -1359,15 +1521,6 @@
     },
     {
       "path": "src/app/app/@sheet/page.tsx",
-      "tags": [
-        "request-entrypoint"
-      ],
-      "status": "CONVERTED",
-      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
-      "isolatedBehavior": "BOUND_APPLICATION"
-    },
-    {
-      "path": "src/app/app/[...missing]/page.tsx",
       "tags": [
         "request-entrypoint"
       ],
@@ -3954,6 +4107,15 @@
       "status": "CONVERTED",
       "isolatedBehavior": "BOUND_APPLICATION",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required."
+    },
+    {
+      "path": "src/proxy.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "CONVERTED",
+      "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
+      "isolatedBehavior": "SCOPED"
     },
     {
       "path": "src/test/integration/foundation.integration.ts",

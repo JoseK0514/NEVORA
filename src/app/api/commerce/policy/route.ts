@@ -1,11 +1,12 @@
+import {applicationSql} from "@/lib/data/app-sql";
 import { createHash, timingSafeEqual } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
-import { commerceConnection, commerceEnabled } from "@/lib/commerce/access";
+import { queryRows } from "@/lib/db";
+import { currentCommerceConnection, commerceEnabled } from "@/lib/commerce/access";
 export async function POST(request: Request) {
   if (!commerceEnabled())
     return Response.json({ error: { code: "not_enabled" } }, { status: 404 });
   try {
-    const c = commerceConnection(),
+    const c = await currentCommerceConnection(),
       expected = createHash("sha256").update(`Bearer ${c.secret}`).digest(),
       provided = createHash("sha256")
         .update(request.headers.get("authorization") ?? "")
@@ -42,7 +43,10 @@ export async function POST(request: Request) {
       );
     const hash = createHash("sha256").update(c.secret).digest("hex");
     const result = queryRows(
-      await getDb().query(
+      c.businessId ? await applicationSql().query(
+        "SELECT $1::text business_id WHERE nevora_commerce_apply_capacity($1,$2,$3,$4)",
+        [body.businessId,c.installationId,c.secret,body.employeeLimit]
+      ) : await applicationSql().query(
         "UPDATE public.nevora_commerce_installation SET employee_limit=$1 WHERE singleton AND business_id=$2 AND installation_id=$3 AND instance_secret_hash=$4 RETURNING business_id",
         [body.employeeLimit, body.businessId, c.installationId, hash],
       ),

@@ -17,3 +17,6 @@ test('server actions after comments, without semicolons, or inline in a page sti
   assert.throws(()=>validateOnboardingInventory(['src/app/new/page.tsx'],{entries:[]},()=>source),/Unclassified runtime entrypoint/);
  }
 });
+test('commerce server/catalog/worker boundaries cannot evade the runtime inventory',()=>{
+ for(const [path,source] of [['services/commerce/server.ts','export function serve(){}'],['services/commerce/enrollment-runtime.ts',"import {Pool} from 'pg'"],['services/commerce/worker.ts','export function once(){}']])assert.throws(()=>validateOnboardingInventory([path],{entries:[]},()=>source),/Unclassified runtime entrypoint/);
+});

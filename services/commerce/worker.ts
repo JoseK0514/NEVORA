@@ -28,8 +28,10 @@ export async function workerOnce(
           url: payload.url,
           template: payload.template,
         });
-    } else if (job.kind === "provision")
+    } else if (job.kind === "provision"){
+      if(store.provisioningMode!=="slots")throw Error("legacy_provisioning_disabled");
       await provisionBusiness(store, payload.businessId);
+    }
     else if (job.kind === "stripe") {
       if (!billing) throw Error("billing_not_configured");
       await billing.syncJob(payload);
