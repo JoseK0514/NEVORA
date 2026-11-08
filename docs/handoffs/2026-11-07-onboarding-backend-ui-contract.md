@@ -1,6 +1,6 @@
 # Proposed onboarding backend/UI contract — November 7, 2026
 
-Status: planning contract, not implemented endpoints. Backend: Codex. UI: Claude.
+Status: contract/configuration and verified registration endpoints implemented locally; later workspace/setup/invitation endpoints remain planned. Backend: Codex. UI: Claude. Public/hosted signup is disabled by default.
 Baseline e2872f30ea8548b1310ea4a9b25813352decf82a.
 Spec: ../superpowers/specs/2026-11-07-self-service-owner-onboarding-design.md
 
@@ -14,6 +14,7 @@ Freeze and implement versioned schemas/fixtures first. Claude may build against 
 
 | Route | Allowed caller | Request / result |
 | --- | --- | --- |
+| GET /api/onboarding/config | Public | schemaVersion, signupEnabled, locales and current reviewed terms/privacy version+URL only; no private configuration |
 | POST /api/onboarding/registrations | Public, abuse-limited | email, locale, termsVersion, privacyVersion, operationId -> generic verification_requested |
 | POST /api/onboarding/verification | Possessor of verification proof | proof in POST body -> verified signup cookie and registration snapshot |
 | POST /api/onboarding/workspaces | Verified signup session | operationId, expectedVersion, businessName, timeZone, requestedSlug, initialLocation, ownerProfile -> operation receipt |
@@ -45,6 +46,10 @@ HTTP: saved200/201; pending202; invalid400; missing/expired authority401; authen
 Idempotency scope includes actor/registration or actor/workspace plus operation ID and command kind. Keep the same ID when recovering that command. A user-confirmed changed command gets a new ID after a fresh source read.
 
 ## UI behavior
+
+Implemented registration details: fetch current published policy versions from GET config. Registration body is {schemaVersion:1,operationId,email,locale,termsVersion,privacyVersion}; verification body is {schemaVersion:1,operationId,proof}. Keep the verification operation ID stable for receipt recovery; it is not an authority token. Successful verification sets an HttpOnly host-only nevora_signup cookie; neither raw token nor private proof is in JSON. A reissued verification resumes the same unfinished signup, preserving business provisioning progress. Fresh verification of an expired signup revokes its old signup sessions. Public registration outcome_unknown recovers by replaying the exact original POST; protected operation polling requires the signup/Owner authority, not just a guessed UUID.
+
+Sender outcome remains separate from the generic public verification_requested acknowledgement. Identical accepted cooldown requests are also durably idempotent. New commands require current configured reviewed policy versions; replaying an already committed request retains its historical receipt. Do not present this as a new policy acceptance.
 
 - Persist progress on the server; refresh/resume from GET state. No PII/password/proof storage in localStorage.
 - Preserve entered non-secret form values for invalid/conflict where safe; never silently overwrite another tab's newer settings.

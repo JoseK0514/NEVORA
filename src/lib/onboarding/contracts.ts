@@ -27,6 +27,7 @@ export type RegistrationCommand={schemaVersion:1;operationId:string;email:string
 export type InitialOwnerProfile={id:string;firstName:string;lastName:string;phone:string};
 export type WorkspacePayload={businessName:string;timeZone:string;requestedSlug:string;initialLocation:{name:string;shortName:string;key:string};ownerProfile:InitialOwnerProfile};
 export type WorkspaceCommand=OnboardingCommand<WorkspacePayload>;
+export type PublicOnboardingConfig={schemaVersion:1;signupEnabled:false;locales:('en'|'es')[]}|{schemaVersion:1;signupEnabled:true;locales:('en'|'es')[];terms:{version:string;url:string};privacy:{version:string;url:string}};
 
 /** Closed JSON records only; accessors and shaped authority objects are not input data. */
 export function isClosedRecord(value:unknown,required:readonly string[],optional:readonly string[]=[]):value is Record<string,unknown>{

@@ -1,6 +1,6 @@
 # Self-service Owner onboarding design
 
-Status: proposed for Jose's review on November 7, 2026. Planning only.
+Status: approved for backend implementation by Jose on November 7, 2026. Hosted/production enablement and actual policy/resource settings remain separately gated.
 Backend owner: Codex. UI owner: Claude. Production authorization remains separate.
 
 ## Goal and customer journey

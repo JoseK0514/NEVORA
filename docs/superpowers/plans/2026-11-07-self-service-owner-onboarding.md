@@ -177,7 +177,7 @@ An actual new Owner can complete registration, automated provisioning, business 
 
 Coverage: registration0/1, isolation2/3, provisioning4, first Owner5, settings6, people7, invitations8, integrated operations9. Five Review Focus failure modes are pinned to owning test tasks. New functions/types are defined in their producer task or the UI contract. Migration filenames are reserved only against the baseline and rechecked before execution. No independent Phase F or production finding is self-closed.
 
-Plan review is Jose's next step because he explicitly requested the plan before implementation. After scope/design agreement, Codex executes backend tasks and Claude implements the UI against the versioned contract. This plan creates no application code, API, resource, provider send or production authorization by itself.
+Jose approved implementation on November7 with “lets do it”. Codex executes backend tasks; Claude owns UI against the versioned contract. The per-plan ledger records current task evidence. Hosted resource creation, real test messages and production release remain separately gated.
 
-Planning artifact state: three new uncommitted Markdown documents in the attached detached worktree based on e2872f30. No application code, dependency installation, database operation, app test/build, deployment or remote branch change was performed. Source/path/link and documentation checks are the verification for this planning deliverable.
+Execution state: attached detached worktree based on e2872f30. Plan/contracts and verified-registration increments are local commits; no remote branch/deployment change. Verification uses invocation-owned loopback PostgreSQL, fake provider/mail channels and the existing application suite. See .superpowers/sdd/2026-11-07-self-service-owner-onboarding/progress.md and the backend readiness handoff for source-specific results.
 

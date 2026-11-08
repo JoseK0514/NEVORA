@@ -15,7 +15,7 @@ The approved design is in ../superpowers/specs/2026-11-07-self-service-owner-onb
 
 ## Current implementation
 
-Task0 introduces version1 contract/configuration validators. docs/handoffs/onboarding-entrypoint-inventory.json is the initial routing audit: every production entry remains unconverted until Task2/3 implementation and evidence classify it. Do not enable multi-company mode from the presence of these files.
+Task0 introduces version1 contract/configuration validators. Task1 adds a separate control schema, verified-email registration, encrypted short-lived delivery/claim custody, actor-bound signup sessions, final transaction authority guards and registration/config/verification routes. docs/handoffs/onboarding-entrypoint-inventory.json remains the initial routing audit: production business entries are unconverted until Task2/3 implementation and evidence classify them. Do not enable multi-company mode from the presence of registration files.
 
 Test data uses example.invalid names, fake delivery, loopback PostgreSQL and simulated provider operations. No production database credentials are copied into this worktree.
 
@@ -27,4 +27,4 @@ Keys and connection strings are server configuration, never UI fixtures/DTOs. Se
 
 ## Release state
 
-Local contracts/configuration are an implementation increment. Actual registration persistence, request isolation, provisioning, Owner activation, canonical setup, people, invitation orchestration, integrated UI and hosted operating acceptance are subsequent plan tasks. Their readiness must be evidenced individually.
+Local contracts/configuration and control-database registration are implementation increments. Request isolation, provisioning, Owner activation, canonical setup, people, invitation orchestration, integrated UI and hosted operating acceptance are subsequent plan tasks. Their readiness must be evidenced individually. Signup configuration additionally requires reviewed NEVORA_ONBOARDING_TERMS_VERSION and NEVORA_ONBOARDING_PRIVACY_VERSION matching the actual served legal documents; fixture versions are not production policy approval.
