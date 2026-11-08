@@ -1,3 +1,4 @@
+import type {BillingOwner} from "./owner-authority";
 import { createHmac } from "node:crypto";
 import type Stripe from "stripe";
 import type { PoolClient } from "pg";
@@ -55,6 +56,7 @@ async function prepare(
   ports: Ports,
   id: string,
   operation: string,
+  owner?:BillingOwner|null,
 ): Promise<Intent | { pending: true }> {
   return ports.store.withBusinessLock(id, async (client, business) => {
     if (business.subscriptionId) {
@@ -120,7 +122,7 @@ async function prepare(
     const proof = createHmac("sha256", ports.store.key)
       .update(`checkout-return:${id}:${operation}`)
       .digest("base64url");
-    await ports.store.handoff(id, proof, ports.now(), client, 3600000);
+    await ports.store.handoff(id, proof, ports.now(), client, 3600000,owner);
     const metadata = {
         nevora_business_id: id,
         nevora_price: price.id,
@@ -206,8 +208,9 @@ export async function createCheckout(
   ports: Ports,
   business: Business,
   operation: string,
+  owner?:BillingOwner|null,
 ) {
-  const prepared = await prepare(ports, business.id, operation);
+  const prepared = await prepare(ports, business.id, operation,owner);
   if ("pending" in prepared)
     throw new CommerceError("subscription_sync_pending", 409);
   return ports.store.withBusinessLock(business.id, async (client) => {

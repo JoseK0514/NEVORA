@@ -22,10 +22,9 @@ export async function lockFreshCompany(client:BootstrapClient){
  await client.query("SELECT pg_advisory_xact_lock(hashtextextended('nevora.company.setup',0))");
 }
 export async function assertEmptyCompanySchema(client:BootstrapClient){
- const existing=await client.query(`SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public'
-  UNION ALL SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public'
-  UNION ALL SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='public' LIMIT 1`);
- if(existing.rowCount)throw Error('Company setup requires an empty public schema; existing databases are never reset.');
+ const existing=await client.query(`SELECT 1 FROM pg_namespace n WHERE n.nspname NOT IN('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%'
+ AND (EXISTS(SELECT 1 FROM pg_class c WHERE c.relnamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_proc p WHERE p.pronamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_type t WHERE t.typnamespace=n.oid)) LIMIT 1`);
+ if(existing.rowCount)throw new BootstrapOccupiedTarget();
 }
 export async function installCompanyBase(client:BootstrapClient,manifest:CompanyManifest,input:{workspaceId:string;name:string;timeZone:string;locationId:string;locationName:string;locationShortName:string;locationKey:string}){
  await assertEmptyCompanySchema(client);await client.query('SET LOCAL search_path TO public, pg_catalog');
@@ -41,13 +40,14 @@ export async function insertOwnerProfile(client:BootstrapClient,owner:{id:string
  if(options.passwordHash)await client.query('INSERT INTO employee_credentials(employee_id,password_hash,must_change_password) VALUES($1,$2,false)',[owner.id,options.passwordHash]);
 }
 export async function installCompanyFinal(client:BootstrapClient,manifest:CompanyManifest){for(const migration of manifest.final)await client.query(migration.body);}
-export type PendingCompanySpec={operationId:string;workspaceId:string;registrationId:string;environment:'test'|'development'|'production';incarnation:string;providerProjectId:string;resourceName:string;commandHash:string;payload:WorkspacePayload;verifiedEmail:string;databaseName:string;provisionerRole:string;app:{name:string;password:string};worker:{name:string;password:string};commerce?:{origin:string;instanceSecretHash:string}};
+export type PendingCompanySpec={operationId:string;workspaceId:string;registrationId:string;environment:'test'|'development'|'production';incarnation:string;providerProjectId:string;resourceName:string;commandHash:string;payload:WorkspacePayload;verifiedEmail:string;databaseName:string;provisionerRole:string;app:{name:string;password:string};worker:{name:string;password:string};commerce?:{origin:string;instanceSecretHash:string;workerSecretHash:string}};
+export class BootstrapOccupiedTarget extends Error{constructor(){super('Company setup requires an empty public schema and empty database; existing databases are never reset.');}}
 export class BootstrapCommitUnknown extends Error{constructor(){super('Company bootstrap acknowledgement unavailable');}}
 function validate(spec:PendingCompanySpec):PendingCompanySpec{
  const parsed=parseWorkspaceCommand({schemaVersion:1,operationId:spec.operationId,expectedVersion:'0',payload:spec.payload});
  const validRole=(role:{name:string;password:string},kind:string)=>new RegExp('^nv_'+kind+'_[a-f0-9]{24}$').test(role.name)&&/^[A-Za-z0-9_-]{43}$/.test(role.password)&&Buffer.from(role.password,'base64url').toString('base64url')===role.password;
  if(!isOperationId(spec.operationId)||!isOperationId(spec.workspaceId)||!isOperationId(spec.registrationId)||!isRevision(spec.incarnation)||spec.incarnation==='0'||!['test','development','production'].includes(spec.environment)||!registeredEmail(spec.verifiedEmail)||!/^nv_app_[a-f0-9]{32}$/.test(spec.databaseName)||!/^nv_provision_[a-f0-9]{24}$/.test(spec.provisionerRole)||!/^nv-[tdp]-[a-f0-9]{32}-[a-f0-9]{16}$/.test(spec.resourceName)||!/^[a-z0-9-]{1,60}$/.test(spec.providerProjectId)||!/^[a-f0-9]{64}$/.test(spec.commandHash)||!validRole(spec.app,'app')||!validRole(spec.worker,'worker')||spec.app.name===spec.worker.name||!parsed)throw Error('Invalid pending company bootstrap');
- if(spec.commerce){const u=new URL(spec.commerce.origin);if(u.origin!==spec.commerce.origin||u.protocol!=='https:'||!/^[a-f0-9]{64}$/.test(spec.commerce.instanceSecretHash))throw Error('Invalid commerce binding');}
+ if(spec.commerce){const u=new URL(spec.commerce.origin);if(u.origin!==spec.commerce.origin||u.protocol!=='https:'||!/^[a-f0-9]{64}$/.test(spec.commerce.instanceSecretHash)||!/^[a-f0-9]{64}$/.test(spec.commerce.workerSecretHash)||spec.commerce.workerSecretHash===spec.commerce.instanceSecretHash)throw Error('Invalid commerce binding');}
  return {...spec,payload:parsed!.payload};
 }
 async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
@@ -100,7 +100,7 @@ export async function bootstrapPendingCompany(client:BootstrapClient,spec:Pendin
   const locationId=randomUUID();await installCompanyBase(client,manifest,{workspaceId:spec.workspaceId,name:spec.payload.businessName,timeZone:spec.payload.timeZone,locationId,locationName:spec.payload.initialLocation.name,locationShortName:spec.payload.initialLocation.shortName,locationKey:spec.payload.initialLocation.key});
   await insertOwnerProfile(client,{...spec.payload.ownerProfile,email:spec.verifiedEmail},locationId,[locationId],{active:false});await installCompanyFinal(client,manifest);
   await client.query("INSERT INTO onboarding_workspace_identity(workspace_id,environment,incarnation,provider_project_id,lifecycle) VALUES($1,$2,$3::bigint,$4,'OWNER_ACTIVATION_REQUIRED')",[spec.workspaceId,spec.environment,spec.incarnation,spec.providerProjectId]);
-  if(spec.commerce)await client.query('INSERT INTO nevora_commerce_installation(workspace_id,business_id,installation_id,environment,incarnation,canonical_origin,instance_secret_hash) VALUES($1,$1,$1,$2,$3::bigint,$4,$5)',[spec.workspaceId,spec.environment,spec.incarnation,spec.commerce.origin,spec.commerce.instanceSecretHash]);
+  if(spec.commerce)await client.query('INSERT INTO nevora_commerce_installation(workspace_id,business_id,installation_id,environment,incarnation,canonical_origin,instance_secret_hash,worker_secret_hash) VALUES($1,$1,$1,$2,$3::bigint,$4,$5,$6)',[spec.workspaceId,spec.environment,spec.incarnation,spec.commerce.origin,spec.commerce.instanceSecretHash,spec.commerce.workerSecretHash]);
   await client.query('INSERT INTO onboarding_initial_owner(workspace_id,employee_id,registration_id) VALUES($1,$2,$3)',[spec.workspaceId,spec.payload.ownerProfile.id,spec.registrationId]);
   await client.query('INSERT INTO onboarding_progress(workspace_id) VALUES($1)',[spec.workspaceId]);
   await runtimeRoles(client,spec);
@@ -110,8 +110,8 @@ export async function bootstrapPendingCompany(client:BootstrapClient,spec:Pendin
 }
 
 async function verifyCommerceBinding(client:BootstrapClient,spec:PendingCompanySpec):Promise<string|undefined>{
- const r=await client.query('SELECT workspace_id,business_id,installation_id,environment,incarnation::text,canonical_origin,instance_secret_hash,provisioned_at FROM nevora_commerce_installation WHERE singleton');
+ const r=await client.query('SELECT workspace_id,business_id,installation_id,environment,incarnation::text,canonical_origin,instance_secret_hash,worker_secret_hash,provisioned_at FROM nevora_commerce_installation WHERE singleton');
  if(!spec.commerce){if(r.rowCount)throw Error('Company commerce receipt mismatch');return;}
- const row=r.rows[0];if(r.rowCount!==1||row.workspace_id!==spec.workspaceId||row.business_id!==spec.workspaceId||row.installation_id!==spec.workspaceId||row.environment!==spec.environment||row.incarnation!==spec.incarnation||row.canonical_origin!==spec.commerce.origin||row.instance_secret_hash!==spec.commerce.instanceSecretHash)throw Error('Company commerce receipt mismatch');
+ const row=r.rows[0];if(r.rowCount!==1||row.workspace_id!==spec.workspaceId||row.business_id!==spec.workspaceId||row.installation_id!==spec.workspaceId||row.environment!==spec.environment||row.incarnation!==spec.incarnation||row.canonical_origin!==spec.commerce.origin||row.instance_secret_hash!==spec.commerce.instanceSecretHash||row.worker_secret_hash!==spec.commerce.workerSecretHash)throw Error('Company commerce receipt mismatch');
  return new Date(row.provisioned_at).toISOString();
 }

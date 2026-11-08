@@ -1,7 +1,7 @@
 import 'server-only';
 import {randomUUID,createHash} from 'node:crypto';
 import {workspaceInstanceSecret,type WorkspaceEnrollment} from '../../../../services/commerce/workspace-enrollment';
-import {bootstrapPendingCompany,canonicalCompanyManifest,BootstrapCommitUnknown} from '../../company-bootstrap/server';
+import {bootstrapPendingCompany,canonicalCompanyManifest,BootstrapCommitUnknown,BootstrapOccupiedTarget} from '../../company-bootstrap/server';
 import {bootstrapManifest} from '../../company-bootstrap/manifest.generated';
 import type {EnabledConfig} from '../config.server';
 import type {ControlStore} from '../control-store.server';
@@ -12,7 +12,7 @@ import {classifyProviderFailure,resourceIdentity,resourceMatches,sameProvisioned
 import {connectBootstrap,runtimeWorkspaceUri} from './connection.server';
 import type {ProvisioningProvider,BootstrapConnector} from './provider';
 export type ProvisioningReport={state:'complete'|'pending'|'quarantined'|'lease_lost';operationId?:string;stage?:string};
-export type ProvisioningDependencies={store:ControlStore;config:EnabledConfig;provider:ProvisioningProvider;connect?:BootstrapConnector;commerce?:{key:string;enroll:(input:WorkspaceEnrollment)=>Promise<void>}};
+export type ProvisioningDependencies={store:ControlStore;config:EnabledConfig;provider:ProvisioningProvider;connect?:BootstrapConnector;commerce?:{key:string;workerKey:string;enroll:(input:WorkspaceEnrollment)=>Promise<void>}};
 class LeaseLost extends Error{}
 class ResourceRejected extends Error{}
 const stateReport=(state:ProvisioningReport['state'],operationId:string,stage:string):ProvisioningReport=>({state,operationId,stage});
@@ -37,7 +37,7 @@ export async function runProvisioningJob(lease:ProvisioningLease,deps:Provisioni
   const raw=openOnboardingValue(row.payload_ciphertext,'workspace-command:'+row.operation_id+':'+row.workspace_id,config.encryptionKey),command=raw?parseWorkspaceCommand(JSON.parse(raw)):null;
   const email=openOnboardingValue(row.registration_email_ciphertext,'registration-email:'+row.registration_id,config.encryptionKey);
   if(!command||command.operationId!==row.operation_id||!registeredEmail(email))return await quarantine('REGISTRATION_SOURCE_UNAVAILABLE');
-  const commerce=deps.commerce?{origin:'https://'+command.payload.requestedSlug+'.'+config.portalBaseDomain,instanceSecret:workspaceInstanceSecret(deps.commerce.key,{workspaceId:row.workspace_id,environment:row.environment,incarnation:String(row.incarnation)})}:null;
+  const commerce=deps.commerce?{origin:'https://'+command.payload.requestedSlug+'.'+config.portalBaseDomain,instanceSecret:workspaceInstanceSecret(deps.commerce.key,{workspaceId:row.workspace_id,environment:row.environment,incarnation:String(row.incarnation)}),workerSecret:workspaceInstanceSecret(deps.commerce.workerKey,{workspaceId:row.workspace_id,environment:row.environment,incarnation:String(row.incarnation)})}:null;
   let attempt=(await store.query(`SELECT *,dispatched_at::text AS dispatched_text FROM nevora_onboarding.provisioning_attempts WHERE operation_id=$1 ORDER BY attempt DESC LIMIT 1`,[row.operation_id])).rows[0];
   let request=requestIdentity(row,attempt?new Date(attempt.dispatched_text).toISOString():undefined);
   const matches=(r:ProvisionedResource)=>resourceMatches(r,request,identity);
@@ -89,9 +89,9 @@ export async function runProvisioningJob(lease:ProvisioningLease,deps:Provisioni
   row=await alive();await store.query("UPDATE nevora_onboarding.provisioning_operations SET state='BOOTSTRAPPING',version=version+1 WHERE operation_id=$1 AND lease_token=$2",[row.operation_id,facts.token]);row=await alive();
   const connection=await (deps.connect??connectBootstrap)(resource,bootstrap);
   let installed:{workspaceId:string;locationId:string;manifestHash:string;commerceProvisionedAt?:string};
-  try{installed=await bootstrapPendingCompany(connection.client,{operationId:row.operation_id,workspaceId:row.workspace_id,registrationId:row.registration_id,environment:row.environment,incarnation:String(row.incarnation),providerProjectId:resource.projectId,resourceName:identity.name,commandHash:row.command_hash,payload:command.payload,verifiedEmail:email,databaseName:identity.databaseName,provisionerRole:identity.provisionerRole,app:{name:identity.appRole,password:appPassword},worker:{name:identity.workerRole,password:workerPassword},...(commerce?{commerce:{origin:commerce.origin,instanceSecretHash:createHash('sha256').update(commerce.instanceSecret).digest('hex')}}:{})});}finally{await connection.close();}
+  try{installed=await bootstrapPendingCompany(connection.client,{operationId:row.operation_id,workspaceId:row.workspace_id,registrationId:row.registration_id,environment:row.environment,incarnation:String(row.incarnation),providerProjectId:resource.projectId,resourceName:identity.name,commandHash:row.command_hash,payload:command.payload,verifiedEmail:email,databaseName:identity.databaseName,provisionerRole:identity.provisionerRole,app:{name:identity.appRole,password:appPassword},worker:{name:identity.workerRole,password:workerPassword},...(commerce?{commerce:{origin:commerce.origin,instanceSecretHash:createHash('sha256').update(commerce.instanceSecret).digest('hex'),workerSecretHash:createHash('sha256').update(commerce.workerSecret).digest('hex')}}:{})});}finally{await connection.close();}
   if(installed.workspaceId!==row.workspace_id||installed.manifestHash!==row.manifest_hash)throw new ResourceRejected();
-  if(commerce){if(!installed.commerceProvisionedAt)throw new ResourceRejected();await alive();await deps.commerce!.enroll({workspaceId:row.workspace_id,environment:row.environment,incarnation:String(row.incarnation),origin:commerce.origin,providerProjectId:resource.projectId,manifestHash:row.manifest_hash,verifiedEmail:email,businessName:command.payload.businessName,ownerEmployeeId:command.payload.ownerProfile.id,instanceSecret:commerce.instanceSecret,provisionedAt:installed.commerceProvisionedAt});}
+  if(commerce){if(!installed.commerceProvisionedAt)throw new ResourceRejected();await alive();await deps.commerce!.enroll({workspaceId:row.workspace_id,environment:row.environment,incarnation:String(row.incarnation),origin:commerce.origin,providerProjectId:resource.projectId,manifestHash:row.manifest_hash,verifiedEmail:email,businessName:command.payload.businessName,ownerEmployeeId:command.payload.ownerProfile.id,instanceSecret:commerce.instanceSecret,workerSecret:commerce.workerSecret,provisionedAt:installed.commerceProvisionedAt});}
   row=await alive();
   await store.transaction(async client=>{
    const current=await client.query("SELECT p.operation_id FROM nevora_onboarding.provisioning_operations p JOIN nevora_onboarding.registrations r ON r.id=p.registration_id JOIN nevora_onboarding.workspace_registry w ON w.id=p.workspace_id WHERE p.operation_id=$1 AND p.lease_token=$2 AND p.lease_expires_at>clock_timestamp() AND r.expires_at>clock_timestamp() AND w.environment=p.environment AND w.incarnation=p.incarnation AND w.lifecycle='PROVISIONING' FOR UPDATE OF p,r,w",[row.operation_id,facts.token]);if(current.rowCount!==1)throw new LeaseLost();
@@ -105,6 +105,7 @@ export async function runProvisioningJob(lease:ProvisioningLease,deps:Provisioni
   if(error instanceof LeaseLost)return report('lease_lost','LEASE_UNAVAILABLE');
   // Recover only durable completed publication after an uncertain control commit.
   try{const done=await store.query("SELECT state FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1 AND state='OWNER_ACTIVATION_REQUIRED'",[facts.operationId]);if(done.rows.length===1)return report('complete','OWNER_ACTIVATION_REQUIRED');}catch{/* No read acknowledgement is not evidence of a commit. */}
+  if(error instanceof BootstrapOccupiedTarget)return await quarantine('BOOTSTRAP_REQUIRES_REVIEW');
   if(error instanceof ResourceRejected)return await quarantine('BOOTSTRAP_CUSTODY_CHANGED');
   if(error instanceof BootstrapCommitUnknown)return await defer('BOOTSTRAP_COMMIT_UNCONFIRMED');
   const code=error&&typeof error==='object'&&'code'in error?String(error.code):'';

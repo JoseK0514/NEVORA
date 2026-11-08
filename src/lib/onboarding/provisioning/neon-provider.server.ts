@@ -3,10 +3,12 @@ import {isClosedRecord,isOperationId} from '../contracts';
 import {checkedBootstrapUri} from './connection.server';
 import {sameProvisionedResource,type ResourceRequest,type ResourceIdentity,type ProvisionedResource} from './model';
 import type {ProvisioningProvider} from './provider';
-export type ProvisionerPolicy={accountRef:string;region:string;version:string;maxComputeUnits:number;suspendSeconds:number;historySeconds:number;quota:{active_time_seconds:number;compute_time_seconds:number;written_data_bytes:number;data_transfer_bytes:number;logical_size_bytes:number}};
+export type ProvisionerPolicy={accountRef:string;region:string;version:string;maxComputeUnits:number;suspendSeconds:number;suspensionMode?:'explicit'|'provider_default';historySeconds:number;quota:{active_time_seconds:number;compute_time_seconds:number;written_data_bytes:number;data_transfer_bytes:number;logical_size_bytes:number}};
 const policyFields=['accountRef','region','version','maxComputeUnits','suspendSeconds','historySeconds','quota'],quotaFields=['active_time_seconds','compute_time_seconds','written_data_bytes','data_transfer_bytes','logical_size_bytes'];
 function policyValue(value:unknown):ProvisionerPolicy|null{
- if(!isClosedRecord(value,policyFields))return null;
+ if(!isClosedRecord(value,policyFields,['suspensionMode']))return null;
+ if(value.suspensionMode!==undefined&&!['explicit','provider_default'].includes(String(value.suspensionMode)))return null;
+ if(value.suspensionMode==='provider_default'&&(value.maxComputeUnits!==0.25||value.suspendSeconds!==300||typeof value.historySeconds!=='number'||value.historySeconds>21600))return null;
  const quota=value.quota;if(!isClosedRecord(quota,quotaFields))return null;
  if(typeof value.accountRef!=='string'||!/^[a-z0-9-]{1,60}$/.test(value.accountRef)||typeof value.region!=='string'||!/^[a-z0-9-]{1,60}$/.test(value.region)||typeof value.version!=='string'||!/^[A-Za-z0-9._:-]{1,120}$/.test(value.version)||typeof value.maxComputeUnits!=='number'||![0.25,0.5,1].includes(value.maxComputeUnits)||typeof value.suspendSeconds!=='number'||!Number.isInteger(value.suspendSeconds)||value.suspendSeconds<60||value.suspendSeconds>600||typeof value.historySeconds!=='number'||!Number.isInteger(value.historySeconds)||value.historySeconds<1||value.historySeconds>2592000||!quotaFields.every(k=>typeof quota[k]==='number'&&Number.isSafeInteger(quota[k])&&Number(quota[k])>0))return null;
  return Object.freeze({...value,quota:Object.freeze({...quota})}) as ProvisionerPolicy;
@@ -46,6 +48,10 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
   if(branchRows.length!==1||!id(branchRows[0].id))throw new NeonProviderUnavailable();const branchId=branchRows[0].id;
   const endpoints=rows(await this.call(base+'/endpoints'),'endpoints').filter(e=>e.branch_id===branchId&&e.project_id===projectId&&e.type==='read_write');
   if(endpoints.length!==1||!id(endpoints[0].id)||typeof endpoints[0].host!=='string'||!endpoints[0].host.startsWith(endpoints[0].id+'.')||!/^[a-z0-9.-]+\.neon\.tech$/.test(endpoints[0].host))throw new NeonProviderUnavailable();
+  if(this.policy.suspensionMode==='provider_default'){
+   const settings=p.default_endpoint_settings,q=object(p.settings)?p.settings.quota:null,e=endpoints[0];
+   if(!object(settings)||settings.suspend_timeout_seconds!==0||settings.autoscaling_limit_min_cu!==0.25||settings.autoscaling_limit_max_cu!==0.25||e.suspend_timeout_seconds!==0||e.autoscaling_limit_min_cu!==0.25||e.autoscaling_limit_max_cu!==0.25||p.history_retention_seconds!==this.policy.historySeconds||!object(q)||!quotaFields.every(k=>q[k]===this.policy.quota[k as keyof ProvisionerPolicy['quota']]))throw new NeonProviderUnavailable();
+  }
   const databases=rows(await this.call(base+'/branches/'+branchId+'/databases'),'databases').filter(d=>d.name===identity.databaseName&&d.owner_name===identity.provisionerRole&&d.branch_id===branchId);if(databases.length!==1)throw new NeonProviderUnavailable();
   const operations=await this.call(base+'/operations?limit=1000');if(cursor(operations)||rows(operations,'operations').some(o=>o.status!=='finished'))throw new NeonProviderUnavailable();
   return {projectId,branchId,endpointId:endpoints[0].id,endpointHost:endpoints[0].host,accountRef:this.policy.accountRef,region:this.policy.region,name:identity.name,databaseName:identity.databaseName,provisionerRole:identity.provisionerRole,createdAt:p.created_at};
@@ -65,7 +71,7 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
   // Region/entitlement readiness is an enablement check. Keep this method's
   // first network request the journaled POST, so a preflight read failure can
   // never masquerade as an ambiguous create attempt.
-  const p=this.policy,body=await this.call('/projects','POST',{project:{name:identity.name,org_id:p.accountRef,region_id:p.region,pg_version:17,store_passwords:true,branch:{name:'onboarding',role_name:identity.provisionerRole,database_name:identity.databaseName},default_endpoint_settings:{autoscaling_limit_min_cu:p.maxComputeUnits,autoscaling_limit_max_cu:p.maxComputeUnits,suspend_timeout_seconds:p.suspendSeconds},history_retention_seconds:p.historySeconds,settings:{quota:{...p.quota}}}});
+  const p=this.policy,body=await this.call('/projects','POST',{project:{name:identity.name,org_id:p.accountRef,region_id:p.region,pg_version:17,store_passwords:true,branch:{name:'onboarding',role_name:identity.provisionerRole,database_name:identity.databaseName},default_endpoint_settings:{autoscaling_limit_min_cu:p.maxComputeUnits,autoscaling_limit_max_cu:p.maxComputeUnits,...(p.suspensionMode==='provider_default'?{}:{suspend_timeout_seconds:p.suspendSeconds})},history_retention_seconds:p.historySeconds,settings:{quota:{...p.quota}}}});
   const project=body.project;if(!object(project)||!id(project.id)||project.name!==identity.name||project.org_id!==p.accountRef||project.region_id!==p.region)throw new NeonProviderUnavailable();
   try{return await this.inspect(project.id,identity);}catch(error){throw new NeonProviderUnavailable(503,error instanceof NeonProviderUnavailable?error.retryAfterSeconds:30);}
  }

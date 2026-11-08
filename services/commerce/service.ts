@@ -1,11 +1,13 @@
+import {parseBillingOwner,type BillingOwner} from "./owner-authority";
+import {verifyInstallationOwner} from "./installation";
 import { businessAccess } from "./access";
 import { hashPassword } from "../../src/lib/auth/password";
 import { CommerceError, parseSignup, parseEmail, planFor } from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
 export interface BillingPort {
-  checkout(business: Business, operation: string): Promise<string>;
-  portal(business: Business, operation: string): Promise<string>;
+  checkout(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
+  portal(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
   webhook(raw: string, signature: string): Promise<void>;
 }
 export type CommerceOptions = {
@@ -66,7 +68,7 @@ export function createCommerce(options: CommerceOptions) {
         return answer({ state: "alive" });
       if (path === "/ready" && request.method === "GET") {
         const schema = await store.pool.query(
-          "SELECT to_regclass('commerce.accounts') installed",
+          "SELECT CASE WHEN to_regclass('commerce.accounts') IS NOT NULL AND to_regclass('commerce.external_installations') IS NOT NULL AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='tokens' AND column_name='owner_binding') AND EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema='commerce' AND table_name='external_installations' AND column_name='worker_secret_hash') THEN true ELSE false END installed",
         );
         if (!schema.rows[0].installed)
           throw new CommerceError("catalog_not_ready", 503);
@@ -78,7 +80,7 @@ export function createCommerce(options: CommerceOptions) {
           trialDays: 30,
           plans: [planFor(1), planFor(16)],
         });
-      if(options.provisioningMode==='onboarding'&&['/v1/signup','/v1/setup'].includes(path))throw new CommerceError('use_onboarding',409);
+      if(options.provisioningMode==='onboarding'&&['/v1/signup','/v1/setup','/v1/login-link','/v1/verify'].includes(path))throw new CommerceError('use_onboarding',409);
       const now = options.now?.() ?? Date.now();
       const bearer =
         request.headers.get("authorization")?.replace(/^Bearer /, "") ?? "";
@@ -95,6 +97,7 @@ export function createCommerce(options: CommerceOptions) {
         const business = await store.installation(
           request.headers.get("x-nevora-installation") ?? "",
           bearer,
+          path==='/internal/access'&&request.method==='GET',
         );
         if (path === "/internal/access" && request.method === "GET")
           return answer({
@@ -115,7 +118,12 @@ export function createCommerce(options: CommerceOptions) {
         if (path === "/internal/handoff" && request.method === "POST") {
           await businessAccess(store,business,now,options.headcount);
           const proof = token();
-          await store.handoff(business.id, proof, now);
+          let owner:BillingOwner|null=null;
+          if(business.enrollmentSource==='onboarding'){
+            try{owner=parseBillingOwner(JSON.parse(await body(request,2048)).owner);}catch{throw new CommerceError('owner_required',403);}
+            if(!owner||!await verifyInstallationOwner(store,business,owner))throw new CommerceError('owner_required',403);
+          }
+          await store.handoff(business.id, proof, now,undefined,120000,owner);
           return answer({
             handoff: proof,
             businessId: business.id,
@@ -192,10 +200,12 @@ export function createCommerce(options: CommerceOptions) {
           session,
           now,
           path.includes("handoff"),
+          (business,owner,client)=>verifyInstallationOwner(store,business,owner,client),
         );
         return answer({ accessToken: session, expiresIn: 28800 });
       }
-      const id = await store.session(bearer, now);
+      const id = await store.session(bearer, now,(business,owner,client)=>verifyInstallationOwner(store,business,owner,client));
+      const owner=await store.tokenOwner(bearer);
       if (path === "/v1/logout" && request.method === "POST") {
         await store.logout(bearer);
         return answer({ state: "signed_out" });
@@ -239,8 +249,8 @@ export function createCommerce(options: CommerceOptions) {
         return answer({
           url:
             path === "/v1/checkout"
-              ? await options.billing.checkout(business, operation)
-              : await options.billing.portal(business, operation),
+              ? await options.billing.checkout(business, operation,owner)
+              : await options.billing.portal(business, operation,owner),
         });
       }
       throw new CommerceError("not_found", 404);

@@ -13,7 +13,7 @@ beforeEach(async()=>{
  catalog=await freshOnboardingDatabase();
  await catalog.pool.query(await readFile(new URL('../../../services/commerce/schema.sql',import.meta.url),'utf8'));
  store=new CommerceStore(catalog.pool,Buffer.alloc(32,19));
- f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),async enroll(input){enrolled.push(input);await store.enrollWorkspace(input);}}});
+ f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),workerKey:Buffer.alloc(32,24).toString('base64url'),async enroll(input){enrolled.push(input);await store.enrollWorkspace(input);}}});
 });
 afterEach(async()=>{await f?.close();await catalog?.close();});
 it('enrolls the actual provisioned company once before publishing activation, without a second Owner credential or provisioning job',async()=>{
@@ -30,7 +30,7 @@ it('enrolls the actual provisioned company once before publishing activation, wi
 });
 it('refuses the competing public signup and setup paths in integrated mode before writing a second account',async()=>{
  const app=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://signup.example.test'],signupEnabled:true,provisioningMode:'onboarding'});
- for(const path of ['/v1/signup','/v1/setup']){
+ for(const path of ['/v1/signup','/v1/setup','/v1/login-link','/v1/verify']){
   const reply=await app(new Request('https://billing.example.test'+path,{method:'POST',headers:{origin:'https://signup.example.test','content-type':'application/json'},body:JSON.stringify({email:'second-path@example.invalid'})}),'127.0.0.1');
   expect(reply.status).toBe(409);expect(await reply.json()).toEqual({error:{code:'use_onboarding'}});
  }
@@ -86,13 +86,13 @@ it('recovers a committed enrollment with a lost acknowledgement before publishin
  const {claimProvisioningJob}=await import('@/lib/onboarding/provisioning/store.server');
  const {runProvisioningJob}=await import('@/lib/onboarding/provisioning/orchestrator.server');
  await f.close();let lose=true;
- f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),async enroll(input){await store.enrollWorkspace(input);if(lose){lose=false;throw Error('Owned catalog commit acknowledgement lost');}}}});
+ f=await onboardingJourneyFixture({commerce:{key:Buffer.alloc(32,23).toString('base64url'),workerKey:Buffer.alloc(32,24).toString('base64url'),async enroll(input){await store.enrollWorkspace(input);if(lose){lose=false;throw Error('Owned catalog commit acknowledgement lost');}}}});
  await expect(f.createCompany('billing-lost-reply')).rejects.toThrow('Owned bootstrap failed');
  const original=(await catalog.pool.query('SELECT id,trial_started_at,trial_ends_at FROM commerce.businesses')).rows[0];
  expect(original).toBeTruthy();
  expect((await f.db.pool.query('SELECT lifecycle FROM nevora_onboarding.workspace_registry')).rows[0].lifecycle).toBe('PROVISIONING');
  await f.db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');
- const result=await runProvisioningJob((await claimProvisioningJob(f.provisionerStore,f.config))!,{store:f.provisionerStore,config:f.config,provider:f.provider,connect:f.provider.connect,commerce:{key:Buffer.alloc(32,23).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});
+ const result=await runProvisioningJob((await claimProvisioningJob(f.provisionerStore,f.config))!,{store:f.provisionerStore,config:f.config,provider:f.provider,connect:f.provider.connect,commerce:{key:Buffer.alloc(32,23).toString('base64url'),workerKey:Buffer.alloc(32,24).toString('base64url'),enroll:input=>store.enrollWorkspace(input)}});
  expect(result.state).toBe('complete');expect(f.provider.createCalls).toBe(1);
  const final=(await catalog.pool.query('SELECT id,trial_started_at,trial_ends_at FROM commerce.businesses')).rows;
  expect(final).toEqual([original]);expect((await f.db.pool.query('SELECT lifecycle FROM nevora_onboarding.workspace_registry')).rows[0].lifecycle).toBe('OWNER_ACTIVATION_REQUIRED');
@@ -144,11 +144,13 @@ it('connects the provisioned Owner to one Stripe checkout and signed lifecycle e
  Object.assign(process.env,{NEVORA_WORKSPACE_MODE:'isolated',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,23).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing.example.test'});
  globalThis.fetch=async(url,init)=>{
   const r=new Request(url,init);if(new URL(r.url).origin!==c.origin)throw Error('Non-owned HTTP target');
-  return withWorkspaceBinding(active.binding,()=>r.method==='POST'?policy(r):facts(r));
+  return withWorkspaceBinding(active.binding,async()=>new URL(r.url).pathname==='/api/commerce/owner'?(await import('@/app/api/commerce/owner/route')).POST(r):r.method==='POST'?policy(r):facts(r));
  };
  const request=(path:string,body?:unknown,token?:string,operation?:string)=>app(new Request('https://billing.example.test'+path,{method:body===undefined?'GET':'POST',headers:{origin:'https://signup.example.test',...(body!==undefined?{'content-type':'application/json'}:{}),...(token?{authorization:'Bearer '+token}:{}),...(operation?{'idempotency-key':operation}:{})},...(body!==undefined?{body:JSON.stringify(body)}:{})}),'127.0.0.1');
  try{
-  const internal=await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{authorization:'Bearer '+input.instanceSecret,'x-nevora-installation':input.workspaceId}}),'127.0.0.1');
+  const generation=String((await c.resource.db.pool.query('SELECT generation FROM operational_subject_versions WHERE employee_id=$1',[active.actor.employee.id])).rows[0].generation);
+  const owner={businessId:input.workspaceId,installationId:input.workspaceId,incarnation:'1',employeeId:active.actor.employee.id,sessionTokenHash:active.actor.sessionTokenHash,generation};
+  const internal=await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{authorization:'Bearer '+input.instanceSecret,'x-nevora-installation':input.workspaceId,'content-type':'application/json'},body:JSON.stringify({owner})}),'127.0.0.1');
   expect(internal.status).toBe(200);const handoff=await internal.json();
   const session=await request('/v1/handoff/exchange',{token:handoff.handoff});expect(session.status).toBe(200);const bearer=(await session.json()).accessToken;
   expect((await request('/v1/handoff/exchange',{token:handoff.handoff})).status).toBe(400);
@@ -168,6 +170,13 @@ it('connects the provisioned Owner to one Stripe checkout and signed lifecycle e
   const access=await app(new Request('https://billing.example.test/internal/access',{headers:{authorization:'Bearer '+input.instanceSecret,'x-nevora-installation':input.workspaceId}}),'127.0.0.1');
   expect(access.status).toBe(200);expect(await access.json()).toMatchObject({businessId:input.workspaceId,state:'paid',operational:true,employeeLimit:15});
   expect((await c.appPool.query('SELECT employee_limit FROM nevora_commerce_installation')).rows[0].employee_limit).toBe(15);
+  now=Date.now();const portal=await request('/v1/portal',{},bearer,randomUUID());expect(portal.status).toBe(200);
+  const checkoutForm=provider.requests.find(r=>r.method==='POST'&&r.path==='/v1/checkout/sessions')!.form,portalForm=provider.requests.find(r=>r.path==='/v1/billing_portal/sessions')!.form;
+  const proofs=[checkoutForm.get('success_url'),portalForm.get('return_url')].map(u=>new URLSearchParams(new URL(u!).hash.slice(1)).get('handoff')!);
+  await c.resource.db.pool.query('DELETE FROM employee_sessions WHERE token_hash=$1',[active.actor.sessionTokenHash]);
+  for(const token of proofs)expect((await request('/v1/handoff/exchange',{token})).status).toBe(400);
+  expect((await request('/v1/status',undefined,bearer)).status).toBe(401);
+
  }finally{globalThis.fetch=originalFetch;process.env=prior;}
 });
 
@@ -181,6 +190,8 @@ it('uses separate real catalog logins so billing cannot reset a trial and enroll
   for(const statement of commercePrincipalGrants(api,enrollment))await catalog.pool.query(statement);
   const connect=async(role:string)=>{const url=new URL(catalog.connectionUrl);url.username=role;url.password='owned-fictional-password';const c=new Client({connectionString:url.href});await c.connect();clients.push(c);return c;};
   const apiDb=await connect(api),enrollmentDb=await connect(enrollment);
+  await expect(apiDb.query('SELECT database_secret FROM commerce.slots')).rejects.toMatchObject({code:'42501'});
+  expect((await apiDb.query('SELECT id,origin FROM commerce.slots')).rows).toEqual([]);
   await expect(apiDb.query("UPDATE commerce.businesses SET trial_ends_at=clock_timestamp()+interval '1 year'")).rejects.toMatchObject({code:'42501'});
   await expect(apiDb.query("INSERT INTO commerce.accounts(id,email,profile) VALUES('11111111-1111-4111-8111-111111111111','other@example.invalid','{}')")).rejects.toMatchObject({code:'42501'});
   await expect(enrollmentDb.query("UPDATE commerce.businesses SET subscription_status='active'")).rejects.toMatchObject({code:'42501'});
@@ -199,4 +210,75 @@ it('cannot mint a billing handoff with a retired company instance while its regi
   const reply=await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{authorization:'Bearer '+input.instanceSecret,'x-nevora-installation':input.workspaceId}}),'127.0.0.1');
   expect(reply.status).toBe(503);expect((await catalog.pool.query('SELECT count(*)::int n FROM commerce.tokens')).rows[0].n).toBe(0);
  }finally{globalThis.fetch=originalFetch;process.env=prior;}
+});
+
+it('never substitutes B authority when A cache validation is interleaved with a B request',async()=>{
+ const {withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server');const {resolveWorkspaceBinding}=await import('@/lib/workspace-routing/resolver.server');const {readCommerceAuthority,resetCommerceAccessCache}=await import('@/lib/commerce/access');
+ const a=await f.createCompany('cache-interleave-a','cache-a@example.invalid'),aa=await f.activateCompany(a),b=await f.createCompany('cache-interleave-b','cache-b@example.invalid'),bb=await f.activateCompany(b);
+ let armed=false,reads=0,release!:()=>void,reached!:()=>void;const gate=new Promise<void>(r=>release=r),waiting=new Promise<void>(r=>reached=r);
+ const trap=new Proxy(f.store,{get(t,k){if(k==='query')return async(text:string,values:unknown[]=[])=>{if(armed&&text.includes('WHERE id=$1 AND environment=$2')&&values[0]===a.row.workspace_id&&++reads===3){reached();await gate;}return t.query(text,values);};return Reflect.get(t,k);}});
+ const bound=await resolveWorkspaceBinding({origin:a.origin},trap,f.routing),prior={...process.env};Object.assign(process.env,{NEVORA_WORKSPACE_MODE:'isolated',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,23).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing.example.test'});
+ const fetcher:typeof fetch=async(_url,init)=>{const id=new Headers(init?.headers).get('x-nevora-installation')!;return Response.json({businessId:id,installationId:id,state:id===a.row.workspace_id?'restricted':'paid',operational:id!==a.row.workspace_id,validUntil:Date.now()+60000});};
+ try{resetCommerceAccessCache();await withWorkspaceBinding(aa.binding,()=>readCommerceAuthority(fetcher));armed=true;const pending=withWorkspaceBinding(bound,()=>readCommerceAuthority(fetcher));await waiting;await withWorkspaceBinding(bb.binding,()=>readCommerceAuthority(fetcher));release();expect(await pending).toMatchObject({businessId:a.row.workspace_id,state:'restricted',operational:false});}
+ finally{release();resetCommerceAccessCache();process.env=prior;}
+});
+
+it('rejects previously issued mailbox proofs for an onboarding business even when a caller omits integrated API configuration',async()=>{
+ const c=await f.createCompany('old-mailbox-proof');const now=Date.now(),proof='m'.repeat(43);const {digest}=await import('../../../services/commerce/security');
+ await store.loginLink('fictional-owner@example.invalid',proof,'https://signup.example.test/pages/nevora-verify',now,c.row.workspace_id);
+ expect((await catalog.pool.query('SELECT count(*)::int n FROM commerce.jobs')).rows[0].n).toBe(0);
+ await catalog.pool.query("INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'signin',$3)",[digest(proof),c.row.workspace_id,new Date(now+60000)]);
+ await expect(store.exchange(proof,'n'.repeat(43),now)).rejects.toThrow('invalid_or_expired_link');
+});
+
+it('rejects preexisting handoffs and billing sessions after Owner authority is revoked',async()=>{
+ const {withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server');const {GET:facts}=await import('@/app/api/commerce/facts/route');
+ const c=await f.createCompany('billing-owner-revoked'),a=await f.activateCompany(c),input=enrolled[0] as Parameters<CommerceStore['enrollWorkspace']>[0];
+ const generation=String((await c.resource.db.pool.query('SELECT generation FROM operational_subject_versions WHERE employee_id=$1',[a.actor.employee.id])).rows[0].generation);
+ const owner={businessId:input.workspaceId,installationId:input.workspaceId,incarnation:'1',employeeId:a.actor.employee.id,sessionTokenHash:a.actor.sessionTokenHash,generation};
+ const originalFetch=globalThis.fetch,prior={...process.env};Object.assign(process.env,{NEVORA_WORKSPACE_MODE:'isolated',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,23).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing.example.test'});
+ globalThis.fetch=async(url,init)=>withWorkspaceBinding(a.binding,async()=>new URL(String(url)).pathname==='/api/commerce/owner'?(await import('@/app/api/commerce/owner/route')).POST(new Request(url,init)):facts(new Request(url,init)));
+ const app=createCommerce({store,origin:'https://billing.example.test',uiOrigin:'https://signup.example.test',allowedOrigins:['https://signup.example.test'],provisioningMode:'onboarding'});
+ const mint=async()=>{const r=await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{authorization:'Bearer '+input.instanceSecret,'x-nevora-installation':input.workspaceId,'content-type':'application/json'},body:JSON.stringify({owner})}),'127.0.0.1');expect(r.status).toBe(200);return (await r.json()).handoff as string;};
+ const exchange=(proof:string)=>app(new Request('https://billing.example.test/v1/handoff/exchange',{method:'POST',headers:{origin:'https://signup.example.test','content-type':'application/json'},body:JSON.stringify({token:proof})}),'127.0.0.1');
+ try{
+  const handoff=await mint(),session=await exchange(await mint());expect(session.status).toBe(200);const bearer=(await session.json()).accessToken;
+  await c.resource.db.pool.query("UPDATE employees SET role='EMPLOYEE' WHERE id=$1",[a.actor.employee.id]);
+  expect((await exchange(handoff)).status).toBe(400);
+  const status=await app(new Request('https://billing.example.test/v1/status',{headers:{authorization:'Bearer '+bearer}}),'127.0.0.1');expect(status.status).toBe(401);
+  await c.resource.db.pool.query("UPDATE employees SET role='OWNER' WHERE id=$1",[a.actor.employee.id]);
+  expect((await exchange(handoff)).status).toBe(400);
+  owner.generation=String((await c.resource.db.pool.query('SELECT generation FROM operational_subject_versions WHERE employee_id=$1',[a.actor.employee.id])).rows[0].generation);
+  const beforeRestore=await mint(),live=await exchange(await mint());expect(live.status).toBe(200);const liveBearer=(await live.json()).accessToken;
+  await catalog.pool.query('UPDATE commerce.external_installations SET incarnation=2 WHERE business_id=$1',[input.workspaceId]);
+  expect((await exchange(beforeRestore)).status).toBe(400);
+  expect((await app(new Request('https://billing.example.test/v1/status',{headers:{authorization:'Bearer '+liveBearer}}),'127.0.0.1')).status).toBe(401);
+ }finally{globalThis.fetch=originalFetch;process.env=prior;}
+});
+it('refuses a correctly named provisioning target occupied in another user schema without changing its sentinel',async()=>{
+ const original=f.provider.create.bind(f.provider);f.provider.create=async(request,identity)=>{const resource=await original(request,identity);const owned=f.provider.resources.get(resource.projectId)!;await owned.db.pool.query('CREATE SCHEMA preexisting_private; CREATE TABLE preexisting_private.sentinel(value text); INSERT INTO preexisting_private.sentinel VALUES(\'keep\')');return resource;};
+ await expect(f.createCompany('occupied-private-target')).rejects.toThrow('Owned bootstrap failed');
+ expect((await catalog.pool.query('SELECT count(*)::int n FROM commerce.accounts')).rows[0].n).toBe(0);
+ const db=[...f.provider.resources.values()][0].db;
+ expect((await db.pool.query('SELECT value FROM preexisting_private.sentinel')).rows).toEqual([{value:'keep'}]);
+ expect((await db.pool.query("SELECT to_regclass('public.workspaces') AS company")).rows[0].company).toBeNull();
+});
+it('reports not ready when the required billing authority schema revision is absent',async()=>{
+ await catalog.pool.query('ALTER TABLE commerce.tokens DROP COLUMN owner_binding');
+ const app=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:[],provisioningMode:'onboarding'});
+ expect((await app(new Request('https://billing.example.test/ready'),'127.0.0.1')).status).toBe(503);
+});
+
+it('gives a WORKER a read-only entitlement credential that cannot mint Owner billing authority even with readable session hashes',async()=>{
+ const {resolveWorkspaceBinding}=await import('@/lib/workspace-routing/resolver.server');const {withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server');const {currentCommerceConnection}=await import('@/lib/commerce/access');
+ const c=await f.createCompany('billing-worker-read'),a=await f.activateCompany(c),input=enrolled[0] as Parameters<CommerceStore['enrollWorkspace']>[0];
+ const worker=await resolveWorkspaceBinding({origin:c.origin},f.store,f.routing,'WORKER'),prior={...process.env};Object.assign(process.env,{NEVORA_WORKSPACE_MODE:'isolated',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_WORKER_BINDING_KEY:Buffer.alloc(32,24).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing.example.test'});delete process.env.NEVORA_COMMERCE_BINDING_KEY;
+ try{
+  const connection=await withWorkspaceBinding(worker,()=>currentCommerceConnection());expect(connection.secret).not.toBe(input.instanceSecret);
+  const app=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:[],provisioningMode:'onboarding',headcount:async()=>0});
+  const headers={authorization:'Bearer '+connection.secret,'x-nevora-installation':input.workspaceId};
+  expect((await app(new Request('https://billing.example.test/internal/access',{headers}),'127.0.0.1')).status).toBe(200);
+  const generation=String((await c.resource.db.pool.query('SELECT generation FROM operational_subject_versions WHERE employee_id=$1',[a.actor.employee.id])).rows[0].generation);
+  expect((await app(new Request('https://billing.example.test/internal/handoff',{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({owner:{businessId:input.workspaceId,installationId:input.workspaceId,incarnation:'1',employeeId:a.actor.employee.id,sessionTokenHash:a.actor.sessionTokenHash,generation}})}),'127.0.0.1')).status).toBe(401);
+ }finally{process.env=prior;}
 });

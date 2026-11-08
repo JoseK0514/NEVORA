@@ -16,7 +16,7 @@ CREATE TABLE commerce.businesses (
 CREATE TABLE commerce.tokens (
  hash text PRIMARY KEY, account_id uuid NOT NULL REFERENCES commerce.accounts(id),
  purpose text NOT NULL CHECK(purpose IN ('verify','signin','session','handoff')),
- expires_at timestamptz NOT NULL, used_at timestamptz
+ expires_at timestamptz NOT NULL, owner_binding text, used_at timestamptz
 );
 CREATE TABLE commerce.slots (
  id text PRIMARY KEY, origin text NOT NULL UNIQUE, database_fingerprint text NOT NULL UNIQUE, database_secret text NOT NULL,
@@ -48,6 +48,6 @@ CREATE TABLE commerce.external_installations(
  business_id uuid PRIMARY KEY REFERENCES commerce.businesses(id), id text NOT NULL UNIQUE,
  origin text NOT NULL UNIQUE, environment text NOT NULL CHECK(environment IN('test','development','production')),
  incarnation bigint NOT NULL CHECK(incarnation>0), provider_project_id text NOT NULL, manifest_hash text NOT NULL,
- identity_hash text NOT NULL, instance_secret_hash text NOT NULL UNIQUE, instance_secret text NOT NULL
+ identity_hash text NOT NULL, worker_secret_hash text CHECK(worker_secret_hash IS NULL OR worker_secret_hash~'^[a-f0-9]{64}$'), instance_secret_hash text NOT NULL UNIQUE, instance_secret text NOT NULL
 );
 COMMIT;

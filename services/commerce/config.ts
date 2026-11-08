@@ -25,6 +25,8 @@ export function databaseTarget(value: string, environment: string) {
   if (!["development", "staging", "production"].includes(environment))
     throw Error("explicit_database_environment_required");
   const url = parsePostgresUrl(value);
+  if(environment!=='development'&&(!url.username||!url.password))throw Error('explicit_database_credentials_required');
+  if(environment==='staging'&&!/^nv_commerce_(api|enroll)_[a-f0-9]{24}$/.test(decodeURIComponent(url.username)))throw Error('staging_principal_required');
   if (
     ["postgres", "template0", "template1"].includes(
       decodeURIComponent(url.pathname.slice(1)),
@@ -56,6 +58,7 @@ export function readCommerceConfig(env: Readonly<Record<string,string|undefined>
     env.NEVORA_COMMERCE_ORIGIN ?? "",
     environment === "development",
   );
+  if(environment==='staging'&&(!env.NEVORA_COMMERCE_UI_ORIGIN||env.NEVORA_COMMERCE_UI_ORIGIN!==origin))throw Error('staging_ui_origin_required');
   const uiOrigin = safeOrigin(
     env.NEVORA_COMMERCE_UI_ORIGIN ?? "https://www.thevelani.com",
     environment === "development",

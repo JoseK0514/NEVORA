@@ -17,9 +17,10 @@ export async function readBillingOwnerBinding(
     business_id: string;
     installation_id: string;
     instance_secret_hash: string;
+    owner_generation?:string;
   }>(
     await query(
-      `SELECT e.id,i.business_id,i.installation_id,i.instance_secret_hash FROM employee_sessions s JOIN employees e ON e.id=s.employee_id CROSS JOIN public.nevora_commerce_installation i JOIN workspaces w ON w.singleton AND w.active WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active AND e.role='OWNER' AND e.id=$2 AND i.singleton AND i.installation_id=$3 AND i.instance_secret_hash=$4`,
+      `SELECT e.id,i.business_id,i.installation_id,i.instance_secret_hash,v.generation::text owner_generation FROM employee_sessions s JOIN employees e ON e.id=s.employee_id JOIN operational_subject_versions v ON v.employee_id=e.id CROSS JOIN public.nevora_commerce_installation i JOIN workspaces w ON w.singleton AND w.active WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active AND e.role='OWNER' AND e.id=$2 AND i.singleton AND i.installation_id=$3 AND i.instance_secret_hash=$4`,
       [
         proof.sessionTokenHash,
         proof.employee.id,

@@ -22,7 +22,9 @@ export async function POST(request: Request) {
       headers: {
         authorization: `Bearer ${c.secret}`,
         "x-nevora-installation": c.installationId,
+        ...(c.businessId?{"content-type":"application/json"}:{}),
       },
+      ...(c.businessId?{body:JSON.stringify({owner:{businessId:c.businessId,installationId:c.installationId,incarnation:c.incarnation,employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash,generation:binding.owner_generation}})}:{}),
       signal: AbortSignal.timeout(5000),
       redirect: "error",
       cache: "no-store",

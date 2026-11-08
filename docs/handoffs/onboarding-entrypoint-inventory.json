@@ -397,6 +397,14 @@
       "isolatedBehavior": "SEPARATE_CATALOG"
     },
     {
+      "path": "services/commerce/owner-authority.ts",
+      "tags": [
+        "commerce-integration"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Type-only pg import plus closed BillingOwner parser; no database client creation, network request or process entrypoint. Runtime consumers enforce current company Owner authority."
+    },
+    {
       "path": "services/commerce/provision.ts",
       "tags": [
         "commerce-integration"
@@ -688,6 +696,16 @@
       "status": "CONVERTED",
       "reason": "Current private workspace routing, canonical scoped transport and existing actor/instance/role guards are retained; hosted billing API owns its separate catalog authority and exact ingress.",
       "isolatedBehavior": "SCOPED"
+    },
+    {
+      "path": "src/app/api/commerce/owner/route.ts",
+      "tags": [
+        "commerce-integration",
+        "owner-authority"
+      ],
+      "status": "CONVERTED",
+      "isolatedBehavior": "BOUND_APPLICATION",
+      "reason": "Private APP-instance authentication uses the current scoped workspace/incarnation; revalidates current unexpired Owner session and operational generation. A worker entitlement secret cannot authenticate this route. Returns bounded validity metadata only."
     },
     {
       "path": "src/app/api/commerce/policy/route.ts",
@@ -1484,15 +1502,6 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
-      "path": "src/app/app/[...missing]/page.tsx",
-      "tags": [
-        "request-entrypoint"
-      ],
-      "status": "CONVERTED",
-      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
-      "isolatedBehavior": "BOUND_APPLICATION"
-    },
-    {
       "path": "src/app/app/@sheet/(.)exchange/callout/page.tsx",
       "tags": [
         "request-entrypoint"
@@ -1521,6 +1530,15 @@
     },
     {
       "path": "src/app/app/@sheet/page.tsx",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/app/[...missing]/page.tsx",
       "tags": [
         "request-entrypoint"
       ],

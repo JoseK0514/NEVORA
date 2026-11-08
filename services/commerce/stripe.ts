@@ -1,3 +1,4 @@
+import type {BillingOwner} from "./owner-authority";
 import { createHmac } from "node:crypto";
 import Stripe from "stripe";
 import type { PoolClient } from "pg";
@@ -45,17 +46,17 @@ export class StripeBilling implements BillingPort {
           : readInstallationHeadcount(this.store, business, client),
     };
   }
-  checkout(business: Business, operation: string) {
-    return createCheckout(this.checkoutPorts(), business, operation);
+  checkout(business: Business, operation: string,owner?:BillingOwner|null) {
+    return createCheckout(this.checkoutPorts(), business, operation,owner);
   }
-  async portal(input: Business, operation: string) {
+  async portal(input: Business, operation: string,owner?:BillingOwner|null) {
     return this.store.withBusinessLock(input.id, async (client, business) => {
       if (!business.customerId)
         throw new CommerceError("subscription_required", 409);
       const proof = createHmac("sha256", this.store.key)
         .update(`portal-return:${business.id}:${operation}`)
         .digest("base64url");
-      await this.store.handoff(business.id, proof, this.now(), client, 3600000);
+      await this.store.handoff(business.id, proof, this.now(), client, 3600000,owner);
       const session = await this.stripe.billingPortal.sessions.create(
         {
           customer: business.customerId,

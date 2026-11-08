@@ -52,6 +52,7 @@ export const CURRENT_MIGRATIONS = [
   '0052_onboarding_canonical_revision.sql',
   '0053_onboarding_worker_capabilities.sql',
   '0054_onboarding_commerce_binding.sql',
+  '0055_onboarding_commerce_worker_scope.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

@@ -39,3 +39,17 @@ it('permits only the pinned endpoint default PostgreSQL port for bootstrap crede
  const raw=`postgresql://${identity.provisionerRole}:fictional-secret@${resource.endpointHost}:5432/${identity.databaseName}?sslmode=require`;
  expect(new URL(checkedBootstrapUri(raw,resource)).port).toBe('');expect(()=>checkedBootstrapUri(raw.replace(':5432/',':4444/'),resource)).toThrow();
 });
+it('supports an explicitly selected Free provider-default suspension policy without sending an unsupported override or dropping quotas',async()=>{
+ const selected={...policy,suspensionMode:'provider_default' as const,suspendSeconds:300,historySeconds:21600};
+ expect(readProvisionerPolicy({NEVORA_PROVISIONER_RESOURCE_POLICY:JSON.stringify(selected)})).toMatchObject(selected);
+ const f=fixture();let sent:Record<string,unknown>|undefined;
+ const fetcher:typeof fetch=async(input,init={})=>{
+  const response=await f.fetcher(input,init),data=await response.json(),path=new URL(String(input)).pathname;
+  if(init.method==='POST'){sent=JSON.parse(String(init.body)).project;expect((sent!.default_endpoint_settings as object)).not.toHaveProperty('suspend_timeout_seconds');expect(sent!.settings).toEqual({quota:policy.quota});}
+  if(path==='/api/v2/projects/fictional-project')Object.assign(data.project,{default_endpoint_settings:{autoscaling_limit_min_cu:0.25,autoscaling_limit_max_cu:0.25,suspend_timeout_seconds:0},history_retention_seconds:21600,settings:{quota:policy.quota}});
+  if(path.endsWith('/endpoints'))Object.assign(data.endpoints[0],{autoscaling_limit_min_cu:0.25,autoscaling_limit_max_cu:0.25,suspend_timeout_seconds:0});
+  return Response.json(data,{status:response.status});
+ };
+ const provider=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy:selected,fetch:fetcher});expect((await provider.create(request,identity)).databaseName).toBe(identity.databaseName);expect(sent).toBeTruthy();
+ expect(readProvisionerPolicy({NEVORA_PROVISIONER_RESOURCE_POLICY:JSON.stringify({...selected,maxComputeUnits:1})})).toBeNull();
+});

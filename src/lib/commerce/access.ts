@@ -25,7 +25,7 @@ export function commerceConnection() {
     throw Error("commerce_not_configured");
   return { origin, installationId, secret };
 }
-export async function currentCommerceConnection():Promise<{origin:string;installationId:string;secret:string;businessId?:string;companyOrigin?:string;assertCurrent?:()=>Promise<void>}> {
+export async function currentCommerceConnection():Promise<{origin:string;installationId:string;secret:string;businessId?:string;role?:'APP'|'WORKER';companyOrigin?:string;incarnation?:string;assertCurrent?:()=>Promise<void>}> {
  const mode=process.env.NEVORA_WORKSPACE_MODE??'single_company';
  if(mode==='single_company')return commerceConnection();
  if(mode!=='isolated')throw Error('commerce_not_configured');
@@ -39,7 +39,8 @@ export async function readCommerceAuthority(
 ): Promise<CommerceAuthority> {
   const c = await currentCommerceConnection(),
     key = `${c.origin}:${c.installationId}:${c.secret}`;
-  if (cached?.key === key && cached.authority.validUntil > Date.now()){await c.assertCurrent?.();return cached.authority;}
+  const entry=cached;
+  if (entry?.key === key && entry.authority.validUntil > Date.now()){await c.assertCurrent?.();return entry.authority;}
   const response = await fetcher(`${c.origin}/internal/access`, {
     headers: {
       authorization: `Bearer ${c.secret}`,
@@ -61,7 +62,7 @@ export async function readCommerceAuthority(
   )
     throw Error("invalid_commerce_authority");
   await c.assertCurrent?.();
-  cached = { key, authority: value };
+  cached = { key, authority: Object.freeze(value) };
   return value;
 }
 export async function requireOperationalCommerce() {

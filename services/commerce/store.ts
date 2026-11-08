@@ -1,3 +1,4 @@
+import {parseBillingOwner,type BillingOwner,type OwnerAuthorityCheck} from "./owner-authority";
 import {enrollmentIdentity,type WorkspaceEnrollment} from "./workspace-enrollment";
 import { createHmac, randomUUID } from "node:crypto";
 import type { Pool, PoolClient } from "pg";
@@ -24,6 +25,8 @@ export type Business = {
   subscriptionId: string | null;
   planKey: PlanKey | null;
   employeeCount: number;
+  enrollmentSource:"slots"|"onboarding";
+  incarnation:string|null;
   slotId: string | null;
   origin: string | null;
 };
@@ -87,7 +90,7 @@ export class CommerceStore {
       if((await client.query('SELECT id FROM commerce.accounts WHERE id=$1',[input.workspaceId])).rowCount)throw new CommerceError('enrollment_identity_mismatch',503);
       await client.query("INSERT INTO commerce.accounts(id,email,profile,verified_at,enrollment_source) VALUES($1,$2,$3,$4,'onboarding')",[input.workspaceId,input.verifiedEmail,{email:input.verifiedEmail,businessName:input.businessName,ownerEmployeeId:input.ownerEmployeeId},input.provisionedAt]);
       await client.query("INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',1,$2::timestamptz,$2::timestamptz+interval '30 days')",[input.workspaceId,input.provisionedAt]);
-      await client.query('INSERT INTO commerce.external_installations(business_id,id,origin,environment,incarnation,provider_project_id,manifest_hash,identity_hash,instance_secret_hash,instance_secret) VALUES($1::uuid,$1::text,$2,$3,$4::bigint,$5,$6,$7,$8,$9)',[input.workspaceId,input.origin,input.environment,input.incarnation,input.providerProjectId,input.manifestHash,identity,digest(input.instanceSecret),seal(input.instanceSecret,this.key,'instance:'+input.workspaceId)]);
+      await client.query('INSERT INTO commerce.external_installations(business_id,id,origin,environment,incarnation,provider_project_id,manifest_hash,identity_hash,instance_secret_hash,instance_secret,worker_secret_hash) VALUES($1::uuid,$1::text,$2,$3,$4::bigint,$5,$6,$7,$8,$9,$10)',[input.workspaceId,input.origin,input.environment,input.incarnation,input.providerProjectId,input.manifestHash,identity,digest(input.instanceSecret),seal(input.instanceSecret,this.key,'instance:'+input.workspaceId),digest(input.workerSecret)]);
       await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'onboarding_enrolled')",[input.workspaceId]);
     });
   }
@@ -162,7 +165,7 @@ export class CommerceStore {
   async loginLink(email: string, proof: string, origin: string, now: number, businessId?:string) {
     await this.transaction(async (client) => {
       const account = await client.query(
-        "SELECT id,verified_at FROM commerce.accounts WHERE email=$1 AND ($2::uuid IS NULL OR id=$2) FOR UPDATE",
+        "SELECT id,verified_at FROM commerce.accounts WHERE email=$1 AND enrollment_source='slots' AND ($2::uuid IS NULL OR id=$2) FOR UPDATE",
         [email,businessId??null],
       );
       if (account.rowCount!==1) return;
@@ -187,10 +190,10 @@ export class CommerceStore {
       });
     });
   }
-  async exchange(proof: string, session: string, now: number, handoff = false) {
+  async exchange(proof: string, session: string, now: number, handoff = false,checkOwner?:OwnerAuthorityCheck) {
     return this.transaction(async (client) => {
       const result = await client.query(
-        `UPDATE commerce.tokens SET used_at=$2 WHERE hash=$1 AND used_at IS NULL AND expires_at>$2 AND purpose=ANY($3::text[]) RETURNING account_id`,
+        `UPDATE commerce.tokens SET used_at=$2 WHERE hash=$1 AND used_at IS NULL AND expires_at>$2 AND purpose=ANY($3::text[]) RETURNING account_id,owner_binding`,
         [
           digest(proof),
           new Date(now),
@@ -198,27 +201,36 @@ export class CommerceStore {
         ],
       );
       if (!result.rowCount) throw new CommerceError("invalid_or_expired_link");
-      const id = result.rows[0].account_id;
+      const id = result.rows[0].account_id,business=await this.business(id,client),owner=this.openOwner(result.rows[0].owner_binding,digest(proof));
+      if(business.enrollmentSource==='onboarding'&&(!handoff||!owner||!checkOwner||!await checkOwner(business,owner,client)))throw new CommerceError('invalid_or_expired_link');
       await client.query(
         "UPDATE commerce.accounts SET verified_at=COALESCE(verified_at,$2) WHERE id=$1",
         [id, new Date(now)],
       );
       await client.query(
-        "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',$3)",
-        [digest(session), id, new Date(now + 8 * 3600000)],
+        "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at,owner_binding) VALUES($1,$2,'session',$3,$4)",
+        [digest(session), id, new Date(now + 8 * 3600000),owner?seal(JSON.stringify(owner),this.key,'billing-owner:'+digest(session)):null],
       );
       return id as string;
     });
   }
-  async session(proof: string, now: number) {
+  async session(proof: string, now: number,checkOwner?:OwnerAuthorityCheck) {
     if (!/^[A-Za-z0-9_-]{43}$/.test(proof))
       throw new CommerceError("unauthorized", 401);
     const result = await this.pool.query(
-      "SELECT account_id FROM commerce.tokens WHERE hash=$1 AND purpose='session' AND used_at IS NULL AND expires_at>$2",
+      "SELECT account_id,owner_binding FROM commerce.tokens WHERE hash=$1 AND purpose='session' AND used_at IS NULL AND expires_at>$2",
       [digest(proof), new Date(now)],
     );
     if (!result.rowCount) throw new CommerceError("unauthorized", 401);
-    return result.rows[0].account_id as string;
+    const id=result.rows[0].account_id,business=await this.business(id),owner=this.openOwner(result.rows[0].owner_binding,digest(proof));
+    if(business.enrollmentSource==='onboarding'&&(!owner||!checkOwner||!await checkOwner(business,owner)))throw new CommerceError('unauthorized',401);
+    return id as string;
+  }
+  private openOwner(value:unknown,hash:string){
+    if(typeof value!=='string')return null;try{return parseBillingOwner(JSON.parse(unseal(value,this.key,'billing-owner:'+hash)));}catch{return null;}
+  }
+  async tokenOwner(proof:string):Promise<BillingOwner|null>{
+    const r=await this.pool.query("SELECT owner_binding FROM commerce.tokens WHERE hash=$1 AND used_at IS NULL AND expires_at>clock_timestamp()",[digest(proof)]);return r.rowCount===1?this.openOwner(r.rows[0].owner_binding,digest(proof)):null;
   }
   async logout(proof: string) {
     await this.pool.query(
@@ -228,7 +240,7 @@ export class CommerceStore {
   }
   async business(id: string, client?: PoolClient): Promise<Business> {
     const r = await (client ?? this.pool).query(
-      "SELECT b.*,a.email,a.profile,COALESCE(x.id,s.id) slot_id,COALESCE(x.origin,s.origin) origin FROM commerce.businesses b JOIN commerce.accounts a ON a.id=b.id LEFT JOIN commerce.slots s ON s.business_id=b.id LEFT JOIN commerce.external_installations x ON x.business_id=b.id WHERE b.id=$1",
+      "SELECT b.*,a.email,a.profile,a.enrollment_source,x.incarnation::text installation_incarnation,COALESCE(x.id,s.id) slot_id,COALESCE(x.origin,s.origin) origin FROM commerce.businesses b JOIN commerce.accounts a ON a.id=b.id LEFT JOIN commerce.slots s ON s.business_id=b.id LEFT JOIN commerce.external_installations x ON x.business_id=b.id WHERE b.id=$1",
       [id],
     );
     if (!r.rowCount) throw new CommerceError("not_found", 404);
@@ -247,6 +259,8 @@ export class CommerceStore {
       subscriptionId: b.stripe_subscription_id,
       planKey: b.plan_key,
       employeeCount: b.employee_count,
+      enrollmentSource:b.enrollment_source,
+      incarnation:b.installation_incarnation,
       slotId: b.slot_id,
       origin: b.origin,
     };
@@ -277,10 +291,10 @@ export class CommerceStore {
       ],
     );
   }
-  async installation(id: string, secret: string) {
+  async installation(id: string, secret: string,readOnly=false) {
     const result = await this.pool.query(
-      "SELECT s.business_id FROM (SELECT id,business_id,instance_secret_hash FROM commerce.slots UNION ALL SELECT id,business_id,instance_secret_hash FROM commerce.external_installations) s JOIN commerce.businesses b ON b.id=s.business_id WHERE s.id=$1 AND s.instance_secret_hash=$2 AND b.state='ready'",
-      [id, digest(secret)],
+      "SELECT s.business_id FROM (SELECT id,business_id,instance_secret_hash,NULL::text worker_secret_hash FROM commerce.slots UNION ALL SELECT id,business_id,instance_secret_hash,worker_secret_hash FROM commerce.external_installations) s JOIN commerce.businesses b ON b.id=s.business_id WHERE s.id=$1 AND (s.instance_secret_hash=$2 OR ($3::boolean AND s.worker_secret_hash=$2)) AND b.state='ready'",
+      [id, digest(secret),readOnly],
     );
     if (result.rowCount!==1) throw new CommerceError("unauthorized", 401);
     return this.business(result.rows[0].business_id);
@@ -291,10 +305,13 @@ export class CommerceStore {
     now: number,
     client?: PoolClient,
     ttl = 120000,
+    owner?:BillingOwner|null,
   ) {
+    const business=await this.business(id,client);
+    if(business.enrollmentSource==='onboarding'&&(!owner||owner.businessId!==id||owner.installationId!==business.slotId||owner.incarnation!==business.incarnation))throw new CommerceError('owner_required',403);
     await (client ?? this.pool).query(
-      "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'handoff',$3) ON CONFLICT(hash) DO NOTHING",
-      [digest(proof), id, new Date(now + ttl)],
+      "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at,owner_binding) VALUES($1,$2,'handoff',$3,$4) ON CONFLICT(hash) DO NOTHING",
+      [digest(proof), id, new Date(now + ttl),owner?seal(JSON.stringify(owner),this.key,'billing-owner:'+digest(proof)):null],
     );
   }
   async webhook(id: string, subscriptionId: string) {
