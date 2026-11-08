@@ -4,7 +4,7 @@ import {resolve,join} from 'node:path';
 import {randomUUID,createHash} from 'node:crypto';
 // Backend acceptance only. UI, hosted capacity/email and production authority
 // are distinct evidence gates; never infer them from these local tests.
-const git=(...args)=>{const r=spawnSync('git',args,{encoding:'utf8'});if(r.status!==0)throw Error('Source custody unavailable');return r.stdout.trim();};
+const git=(...args)=>{const r=spawnSync('git',args,{encoding:'utf8',maxBuffer:32*1024*1024});if(r.status!==0)throw Error('Source custody unavailable');return r.stdout.trim();};
 const sha=git('rev-parse','HEAD'),tree=git('rev-parse','HEAD^{tree}'),expected=process.env.NEVORA_ONBOARDING_EXPECTED_SHA??sha;
 if(expected!==sha||git('status','--porcelain','--untracked-files=normal'))throw Error('Onboarding acceptance requires the exact committed clean source.');
 if(process.env.DATABASE_URL||process.env.NEVORA_CONTROL_DATABASE_URL||process.env.FUEL_TEST_DATABASE_URL)throw Error('Unset application/test targets before owned acceptance.');
