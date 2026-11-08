@@ -66,6 +66,8 @@ describe("signup validation", () => {
       "owner@example.test",
     );
     expect(() => parseSignup({ ...input, timeZone: "Not/AZone" })).toThrow();
+    expect(() => parseSignup({ ...input, timeZone: "+05:00" })).toThrow();
+    expect(() => parseSignup({ ...input, timeZone: "Etc/GMT+5" })).toThrow();
   });
   it("rejects oversized credentials and control characters before password hashing", () => {
     expect(() =>

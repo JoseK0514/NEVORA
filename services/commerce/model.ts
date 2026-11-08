@@ -1,3 +1,4 @@
+import { validateWorkspaceProfile } from "../../src/lib/workspace/validation";
 export const DAY = 86_400_000;
 export class CommerceError extends Error {
   constructor(
@@ -81,7 +82,7 @@ export function parseSignup(value: unknown): Signup {
   if (!/^\d{10}$/.test(phone)) throw new CommerceError("invalid_phone");
   const timeZone = text("timeZone", 100);
   try {
-    new Intl.DateTimeFormat("en", { timeZone }).format();
+    validateWorkspaceProfile({ name: text("businessName", 160), timeZone });
   } catch {
     throw new CommerceError("invalid_timezone");
   }
