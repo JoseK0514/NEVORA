@@ -29,3 +29,6 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__title { font-weight: 600 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__done { font-weight: 600 !important; color: #0B6E69 !important; }
 }
+
+/* Employee desktop (Nov 8, 2026): the note under the actions shows only there (employee-b-desktop.css). */
+:is(#c-root, html) .c-sheet.c-esheet .c-esheet__note { display: none; }

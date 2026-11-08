@@ -113,6 +113,8 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
             {shift.canSwap ? <li><Link className="c-row c-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="c-row__icon" aria-hidden="true"><UserPlusIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">Offer for cover</span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
             {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ProhibitIcon className="c-ic"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
           </ul>
+          {/* Employee desktop (Nov 8, 2026): the panel says what changing it means; shown only there (employee-b-desktop.css). */}
+          <p className="c-esheet__note">It stays your shift until a swap completes or your manager approves Unable to work.</p>
         </> : null}
       </div>
     </QuietSheet>

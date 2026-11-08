@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {useEffect, useRef, type ReactNode} from 'react';
+import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
@@ -61,7 +62,7 @@ function WhyNot({refused}: {refused: OpenEmployeeShift[]}) {
   </BCard>;
 }
 
-export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, results, rows, unconfirmed, refused, note}: {
+export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, results, rows, unconfirmed, refused, note, forYou}: {
   /** The read's state card while it isn't shown (checking, paused, denied, failed). */
   state: ReactNode;
   /** Shift requests are on for the company; null while unknown. */
@@ -74,9 +75,11 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
   rows: OpenRowB[]; unconfirmed: OpenEmployeeShift[]; refused: OpenEmployeeShift[];
   /** What a pickup does here (yours right away, or your manager confirms). */
   note: string | null;
+  /** Desktop: swaps waiting on your answer, for the For you tab's count. */
+  forYou?: number | null;
 }) {
   return <BScreen back>
-    <ExchangeHeroB tab="open" tabs={enabled !== false}/>
+    <ExchangeHeroB tab="open" tabs={enabled !== false} counts={{open: failed ? null : rows.length, foryou: forYou}}/>
     <BStack>
       {state ?? (enabled === false ? <BCard><BText status>Shift pickup is turned off for your company.</BText></BCard> : <>
         {results}
@@ -90,6 +93,8 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
           {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="Eligibility unavailable"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
+          {/* Desktop: the way to more shifts sits beside them (eb-desk). */}
+          <div className="eb-desk eb-moreshifts"><BCard label="Want more shifts?"><BList><BRow href="/app/availability" lead={<BIcon tone="grey"><CalendarCheckIcon weight="bold"/></BIcon>} title="Want more shifts?" sub="Update when you can work"/></BList></BCard></div>
         </>}
       </>)}
     </BStack>
@@ -116,9 +121,10 @@ export function ExchangeListB({mode, state, enabled, recoveries, rows}: {
   rows: ExchangeRowB[] | null;
 }) {
   const tab: ExchangeTab = mode === 'incoming' ? 'foryou' : 'mine';
+  const waiting = mode === 'incoming' && rows ? rows.length : null;
   const list = rows?.length ? <BList>{rows.map(item => <li key={item.row.id} className="b-li"><BRowLink item={item}/></li>)}</BList> : null;
   return <BScreen back>
-    <ExchangeHeroB tab={tab} tabs={enabled !== false}/>
+    <ExchangeHeroB tab={tab} tabs={enabled !== false} counts={{foryou: waiting}}/>
     <BStack>
       {state ?? (enabled === false ? <BCard><BText status>Shift requests are turned off for your company.</BText></BCard> : <>
         {recoveries}

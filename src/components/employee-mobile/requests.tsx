@@ -166,7 +166,7 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
    rows={eligible.flatMap(shift=>{const operation=operations.get(shift.id);if(!operation)return [];return [{shift,hours:shiftHours(shift),nextWeek:!!nextWeekStart&&shift.date>=nextWeekStart,selected:selected===shift.id||hash==='request-'+shift.id,
     action:<Pickup look="b" part="action" operation={operation} onRefresh={refresh} canSubmit={operation.revision===shift.revision} isCurrent={isCurrent} canRecover={canRecover} label={`Pick up ${day(shift.date)}, ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`}/>,
     status:<PickupStatusB operation={operation} onRefresh={refresh} canSubmit={operation.revision===shift.revision} isCurrent={isCurrent} canRecover={canRecover}/>} satisfies OpenRowB];})}
-   unconfirmed={unconfirmed} refused={refused} note={note}/>
+   unconfirmed={unconfirmed} refused={refused} note={note} forYou={snapshot?.state==='ready'?snapshot.incoming:null}/>
   <div className="c-ereq__body" data-requests-state={viewState}>
    <CorpNav back={{href:'/app/schedule',label:'Schedule'}} title="Open shifts"/>
    {unavailable??(snapshot!.modules.marketplace?<>

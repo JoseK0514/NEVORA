@@ -68,7 +68,9 @@ describe('Updates', () => {
     for (const value of ['Updates', 'To confirm', 'Holiday hours', 'Must read', 'Management · Wed, Nov 4', 'Fictional store hours for the week.', 'Open', 'Confirm', 'Earlier', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
     expect(html).toContain('placeholder="Search update titles"');expect(html).toMatch(/<select id="b-updates-filter"/);expect(html).toContain('href="/app/updates/compose"');expect(html).toContain('href="/app/more"');
     expect(html).toContain('href="/app/updates/u1"');expect(html).toContain('href="/app/updates/u2"');
-    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Earlier'));expect(plain.indexOf('Break room rules')).toBeLessThan(plain.indexOf('Write an update'));
+    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Earlier'));// Employee desktop (Nov 8, 2026) also draws Write an update as the band's action (desktop only, eb-desk); the phone's row
+    // is the last one, at the foot of the list.
+    expect(plain.indexOf('Break room rules')).toBeLessThan(plain.lastIndexOf('Write an update'));
   });
   it('a search with no match, an empty page and a confirm in flight', () => {
     expect(text(renderToStaticMarkup(<EmployeeUpdatesB list={list({search: 'nothing like this'})} />))).toContain('No matches on this page');

@@ -150,7 +150,9 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
   const confirm = matches.filter(row => row.required), earlier = matches.filter(row => !row.required);
   const narrowed = !!list && (!!list.search || list.filter !== 'all');
   return <BScreen back>
-    <BHero back={{href: '/app/more', label: 'More'}} title="Updates" titleId="b-updates-title">
+    {/* Desktop: Write an update is the band's white action (eb-desk); the phone's row sits at the foot of the list. */}
+    <BHero back={{href: '/app/more', label: 'More'}} title="Updates" titleId="b-updates-title"
+      right={list ? <span className="eb-desk"><Link className="b-btn b-btn--white" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={17} weight="bold" aria-hidden="true" />Write an update</Link></span> : undefined}>
       {list ? <div className="eb-tools">
         <label className="b-search b-glass eb-tools__search"><MagnifyingGlassIcon size={19} weight="bold" aria-hidden="true" /><span className="b-sr">Search this page</span>
           <input id="b-updates-search" type="search" maxLength={120} value={list.search} onChange={event => list.onSearch(event.target.value)} autoComplete="off" placeholder="Search update titles" /></label>

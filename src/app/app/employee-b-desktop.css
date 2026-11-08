@@ -295,6 +295,11 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > form.tof-form.b-keep > :is(button[type="submit"], .q-btn, .b-btn):last-of-type:not(#e-none):not(#e-none2):not(#e-none3) { width: auto !important; align-self: flex-end !important; margin-left: auto !important; min-height: 48px !important; padding: 0 24px !important; border-radius: 24px !important; }
   /* Availability: the week is the screen's card (its own inner card goes). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail :is(.c-card, .q-list):not(#e-none):not(#e-none2) { margin: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: transparent !important; }
+  /* Availability: the form is the one card; the wrapper's own card skin (from the back-screen rule) goes. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.c-avail--phone:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { padding: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+  /* …and it carries its "Your usual week" heading, as in the mock; the hero already offers Change one week. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > .c-card > .c-card__head:not(#e-none):not(#e-none2):not(#e-none3) { display: flex !important; align-items: center !important; min-height: 52px !important; padding: 16px 18px 4px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone[data-availability-status="Usual hours"] > .c-avail__form > .c-card > .c-card__head .c-link:not(#e-none):not(#e-none2):not(#e-none3) { display: none !important; }
   /* Fix my time: the reminder beside Send reads left. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .eb-fix .c-form > .c-note:last-child :is(span, p):not(#e-none):not(#e-none2) { text-align: left !important; }
 }
@@ -305,4 +310,90 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-field > .b-row__tx:not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: 180px minmax(0, 1fr) !important; align-items: center !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-field .b-row__s:not(#e-none) { font-size: 15px !important; color: #6A7176 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-field .b-row__t:not(#e-none) { font-size: 15px !important; font-weight: 600 !important; }
+}
+
+/* ---------- Round 3 (Nov 8): the remaining differences from the mock ---------- */
+@media (min-width: 1024px) {
+  /* What changed in your schedule: the history glyph in front, no caret (as in the mock's footer link). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes summary::before { content: ""; flex: none; width: 17px; height: 17px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M140,80v41.21l34.17,20.5a12,12,0,1,1-12.34,20.58l-40-24A12,12,0,0,1,116,128V80a12,12,0,0,1,24,0ZM128,28A99.38,99.38,0,0,0,57.24,57.34c-4.69,4.74-9,9.37-13.24,14V64a12,12,0,0,0-24,0v40a12,12,0,0,0,12,12H72a12,12,0,0,0,0-24H57.77C63,86,68.37,80.22,74.26,74.26a76,76,0,1,1,1.58,109,12,12,0,0,0-16.48,17.46A100,100,0,1,0,128,28Z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M140,80v41.21l34.17,20.5a12,12,0,1,1-12.34,20.58l-40-24A12,12,0,0,1,116,128V80a12,12,0,0,1,24,0ZM128,28A99.38,99.38,0,0,0,57.24,57.34c-4.69,4.74-9,9.37-13.24,14V64a12,12,0,0,0-24,0v40a12,12,0,0,0,12,12H72a12,12,0,0,0,0-24H57.77C63,86,68.37,80.22,74.26,74.26a76,76,0,1,1,1.58,109,12,12,0,0,0-16.48,17.46A100,100,0,1,0,128,28Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wkc__changes summary svg:not(#e-none):not(#e-none2) { display: none !important; }
+  /* Glass tabs carry their count ("Open shifts · 2"). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero .b-seg > * > .eb-desk:not(#e-none) { margin-left: -3px !important; }
+  /* Rows the band's white action replaces (Write an update), and a card left with nothing else. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:has(.b-hero .b-title__right .eb-desk) .b-li:has(> a.b-add[href="/app/updates/compose"]):not(#e-none) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen:has(.b-hero .b-title__right .eb-desk) .b-card[aria-label="Write an update"]:not(#e-none) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-moreshifts:not(#e-none) { display: block !important; }
+  /* The shift panel's note under its actions. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] dialog.q-sheet .c-esheet .c-esheet__note:not(#e-none):not(#e-none2) { display: block !important; margin: -4px 0 0 !important; padding: 0 4px !important; font-size: 13.5px !important; line-height: 19px !important; color: #6A7176 !important; }
+  /* Delete account: the red button spans its card. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.eb-delete-keep :is(button[type="submit"], .q-btn):not(#e-none):not(#e-none2):not(#e-none3) { width: 100% !important; box-sizing: border-box !important; min-height: 48px !important; border-radius: 24px !important; }
+
+  /* Past timecards: the weeks on the left, the week shown on the right. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-weeks):not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) !important; grid-auto-flow: row dense !important; align-items: start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-weeks) > *:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { grid-column: 1 !important; max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-hours > .b-screen .b-stack:has(> #b-hours-weeks) > :is(#b-hours-timecard, .eb-tcdetail):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { grid-column: 2 !important; grid-row: 1 / span 6 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-tcdetail:not(#e-none) { display: block !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen #b-hours-timecard .eb-sum:not(#e-none) { padding: 4px 22px 10px !important; }
+
+  /* Pay history: one table grouped by month, no amounts. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-stack:has(> .eb-paytable) > .b-card:not(.eb-paytable):not(#e-none) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable:not(#e-none) { display: block !important; max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable table:not(#e-none) { width: 100% !important; border-collapse: collapse !important; font-size: 14.5px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable thead th:not(#e-none) { padding: 10px 14px !important; background: #F7F9F9 !important; font-size: 12.5px !important; font-weight: 600 !important; color: #6A7176 !important; text-align: left !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable :is(th, td):first-child:not(#e-none) { width: 220px !important; padding-left: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable :is(th, td):last-child:not(#e-none) { width: 200px !important; padding-right: 22px !important; text-align: right !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable :is(th, td):nth-child(3):not(#e-none) { width: 160px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable tbody :is(th, td):not(#e-none) { height: 60px !important; padding: 12px 14px !important; box-shadow: inset 0 1px 0 #ECEEEF !important; vertical-align: middle !important; text-align: left !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable tbody th[scope="row"]:not(#e-none) { font-weight: 600 !important; color: #111517 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable tbody td:nth-child(2):not(#e-none) { color: #6A7176 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable tbody td:last-child:not(#e-none) { text-align: right !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable .eb-paytable__m th:not(#e-none):not(#e-none2):not(#e-none3) { text-align: left !important; height: 40px !important; padding: 14px 22px 6px !important; background: #FBFCFC !important; font-size: 13px !important; font-weight: 700 !important; color: #3F464B !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable__a:not(#e-none) { font-size: 14.5px !important; font-weight: 600 !important; color: #0B6E69 !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-paytable__a:focus-visible:not(#e-none) { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; border-radius: 4px !important; }
+
+  /* Availability: each day's hours as bars on a 6 AM – 12 AM line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis:not(#e-none) { display: block !important; position: relative !important; height: 22px !important; margin: 0 218px 0 156px !important; font-size: 12px !important; font-weight: 600 !important; color: #8C9397 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis > span:not(#e-none) { position: absolute !important; top: 2px !important; transform: translateX(-50%) !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis > span:nth-child(1) { left: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis > span:nth-child(2) { left: 33.33% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis > span:nth-child(3) { left: 66.67% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis > span:nth-child(4) { left: 100% !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__day:not(#e-none):not(#e-none2) { display: flex !important; align-items: center !important; gap: 14px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__name:not(#e-none) { flex: none !important; width: 120px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__line:not(#e-none) { display: block !important; position: relative !important; flex: 1 !important; min-width: 0 !important; height: 10px !important; border-radius: 5px !important; background: #EEF1F1 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__line > i:not(#e-none) { position: absolute !important; top: 0 !important; bottom: 0 !important; border-radius: 5px !important; background: #0B6E69 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__hours:not(#e-none) { flex: none !important; width: 150px !important; text-align: right !important; }
+
+  /* Privacy and Terms: the contents list on the left, the reading on the right. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-embed > .b-screen .b-stack:has(> .eb-toc):not(#e-none):not(#e-none2) { display: grid !important; grid-template-columns: 280px minmax(0, 1fr) !important; grid-auto-flow: row dense !important; align-items: start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-embed > .b-screen .b-stack:has(> .eb-toc) > *:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { grid-column: 2 !important; max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-embed > .b-screen .b-stack:has(> .eb-toc) > .eb-toc:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { display: block !important; grid-column: 1 !important; grid-row: 1 / span 6 !important; position: sticky !important; top: 88px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-toc ul:not(#e-none) { margin: 0 !important; padding: 4px 10px 12px !important; list-style: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-toc a:not(#e-none) { display: block !important; padding: 9px 12px !important; border-radius: 10px !important; font-size: 14.5px !important; line-height: 20px !important; font-weight: 500 !important; color: #3F464B !important; text-decoration: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-toc a:hover:not(#e-none) { background: #F2F5F4 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-toc a:focus-visible:not(#e-none) { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-doc__body:target, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-read:target { scroll-margin-top: 96px; }
+}
+
+/* Employees search their own pages on desktop only. */
+@media (max-width: 1023px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-employee-mobile][data-employee-mobile] .command-finder-trigger:not(#e-none):not(#e-none2) { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+  /* Desktop-only side cards (a contents list, a week's detail) show at once: their enter animation could replay when the
+   * window's height changed (seen in full-page captures), fading them. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-stack > :is(.eb-desk, .eb-toc):not(#e-none):not(#e-none2) { animation: none !important; }
+}
+
+@media (min-width: 1024px) {
+  /* Privacy and Terms: the contents list names the sections, so their card drops its repeated heading. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-embed > .b-screen .b-stack:has(> .eb-toc) > #b-doc-sections > .b-card__h:not(#e-none) { display: none !important; }
+}
+
+@media (min-width: 1024px) {
+  /* Notifications (a sidebar entry) has no way back while it loads or fails either. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] main.page-frame > .em-requests-mobile .b-screen .b-back[href="/app"]:not(#e-none):not(#e-none2):not(#e-none3) { display: none !important; }
+  /* Offline is one dark pill over the page, as on the phone (it was a white strip under the top bar). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-offline:not(#e-none):not(#e-none2) { position: relative !important; z-index: 31 !important; display: block !important; width: fit-content !important; margin: 12px auto -36px !important; padding: 8px 16px !important; border: 0 !important; border-radius: 18px !important; background: #111517 !important; color: #FFFFFF !important; font-size: 13.5px !important; font-weight: 600 !important; box-shadow: 0 10px 24px -10px rgb(0 0 0 / .5) !important; }
 }

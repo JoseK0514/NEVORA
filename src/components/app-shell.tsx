@@ -478,7 +478,8 @@ function AppShellView({
           <div className="mobile-header-actions">
           {/* v3: the desktop top bar's one action (Owner and Manager); phones add shifts from Schedule. */}
           {!employee && navigation.some(item => item.href === "/app/schedule") ? <Link href="/app/schedule/new" className="cm-add-shift"><PlusIcon size={14} weight="bold" aria-hidden="true" />Add shift</Link> : null}
-          {!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY") ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
+          {/* Employee desktop (Nov 8, 2026): Employees search their own pages (desktop only; see employee-b-desktop.css). */}
+          {(!employee && (user.role === "OWNER" || operational.view?.state === "ready" && operational.view.scope?.mode === "COMPANY")) || user.role === "EMPLOYEE" ? <CommandFinder role={user.role} payroll={payrollCapabilities} context={context} /> : null}
           {/* A Lead (v5 look, on hold) keeps its header: the avatar first, then a round "+" for a new request, then the bell. */}
           {user.role === "LEAD" ? accountMenu : null}
           {user.role === "LEAD" ? <Link href="/app/requests" className="e5-new" aria-label="New request"><PlusIcon size={20} aria-hidden="true" /></Link> : null}

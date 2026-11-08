@@ -173,7 +173,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
         <ShiftCard snapshot={snapshot}/>
         {snapshot.publicationState === 'partial' ? <BNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</BNote> : null}
         {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
-          link={todos.length > 3 ? {href: '/app/notifications', label: 'See all', aria: `See all ${todos.length} things to do`} : undefined}>
+          link={todos.length > 3 ? {href: '/app/notifications', label: <>See all<span className="eb-desk"> {todos.length}</span></>, aria: `See all ${todos.length} things to do`} : undefined}>
           <BList>
             {todos.slice(0, 3).map(todoRow)}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {

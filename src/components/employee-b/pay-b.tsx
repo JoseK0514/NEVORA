@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import type {ReactNode, RefObject} from 'react';
 import {ArrowSquareOutIcon} from '@phosphor-icons/react/dist/ssr/ArrowSquareOut';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
@@ -95,15 +97,25 @@ export function PayB(props: PayBProps) {
   }
 
   if (view === 'history') {
+    const monthName = (month: string) => fmt({month: 'long', ...(month.slice(0, 4) === thisYear ? {} : {year: 'numeric'})}).format(utc(`${month}-15`));
     const months = new Map<string, Statement[]>();
     for (const item of ordered) { const key = item.payday.slice(0, 7); months.set(key, [...(months.get(key) ?? []), item]); }
     return <BScreen ink back>
       <BHero back={{href: '/app/my-pay', label: 'Pay'}} title="Pay history" titleId="b-pay-page-title" sub={ready ? 'Your published pay statements, newest first' : undefined}/>
       <BStack>
         {!ready ? fallback : <>
-          {[...months].map(([month, items]) => <BCard key={month} title={fmt({month: 'long', ...(month.slice(0, 4) === thisYear ? {} : {year: 'numeric'})}).format(utc(`${month}-15`))}>
+          {[...months].map(([month, items]) => <BCard key={month} title={monthName(month)}>
             <BList>{items.map(item => <Row key={item.id} item={item}/>)}</BList>
           </BCard>)}
+          {/* Desktop: one table grouped by month (eb-desk); the month cards above are the phone's. No amounts, as on the phone. */}
+          {months.size ? <section className="b-card eb-desk eb-paytable" aria-labelledby="b-pay-page-title"><table>
+            <thead><tr><th scope="col">Payday</th><th scope="col">For work</th><th scope="col"><span className="b-sr">Kind</span></th><th scope="col"><span className="b-sr">Statement</span></th></tr></thead>
+            {[...months].map(([month, items]) => <tbody key={month}>
+              <tr className="eb-paytable__m"><th scope="rowgroup" colSpan={4}>{monthName(month)}</th></tr>
+              {items.map(item => <tr key={item.id}><th scope="row">{payday(item.payday)}</th><td>{period(item.period.startDate, item.period.endDate)}</td><td>{tag(item)}</td>
+                <td><Link className="eb-paytable__a" href={paycheckHref(item.id)} aria-label={`View statement, ${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}>View statement</Link></td></tr>)}
+            </tbody>)}
+          </table></section> : null}
           <BNote>Open a statement to download its PDF. Downloaded files may contain personal pay information.</BNote>
         </>}
       </BStack>

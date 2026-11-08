@@ -174,7 +174,8 @@ function ChosenWeekB({data,period}:{data:Extract<TimecardsResult,{state:'ready'}
 export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCount,onMore}:{data:Extract<TimecardsResult,{state:'ready'}>;period:Period;today:string;chosen:boolean;weeks:Record<string,WeekState>;earlier:Period[];earlierCount:number;onMore:()=>void}){
  const monday=weekStartFor(period.startDate),later=weekOf(addDays(monday,7)),key=(week:Period)=>week.startDate+'_'+week.endDate;
  return <HoursBScreen>
-  {chosen?<ChosenWeekB data={data} period={period}/>:null}
+  {/* Desktop is a list and its detail: the week shown opens beside the list even before one is chosen (eb-desk). */}
+  {chosen?<ChosenWeekB data={data} period={period}/>:<div className="eb-desk eb-tcdetail"><ChosenWeekB data={data} period={period}/></div>}
   <BCard title="Weeks" id="b-hours-weeks">
    <BList label="Weeks">
     {later.startDate<=today?<WeekRowB period={later} state={weeks[key(later)]}/>:null}

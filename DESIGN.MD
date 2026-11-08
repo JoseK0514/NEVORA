@@ -1486,8 +1486,13 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   Time off, Availability, the request forms, Updates, Notifications) take it there too (`useEmployeeBScreen`), and the
   shift sheet and weekly confirmation mount on the B side (`employee-b/viewport.tsx`). Desktop-only pieces are marked
   `eb-desk` (the seven-day week card, band actions, the Requests figures and Shift requests card); phones and tablets are
-  unchanged. Not built yet: top-bar Search for Employees (needs a decision on what they can search), the Past timecards
-  and For you list-and-detail splits, the Pay history table, Availability's hour bars and the legal pages' contents list.
+  unchanged. Round 2 (Nov 8): Past timecards opens the week beside the list, Pay history is one table, Availability draws
+  each day's hours as bars on a 6 AM – 12 AM line, Privacy and Terms list their sections on the left, Write an update and
+  the other band actions sit on the band, tabs carry their counts, and the shift panel says what changing it means.
+  Search (a default until Jose decides): Employees get the top bar's Search on desktop, listing only their own pages
+  (Home, Schedule, Time, Pay, Pay history, Requests, Time off, Pick up and swap, Availability, Notifications, Profile,
+  Help); no actions, people or places, and no manager read. Still open: For you as a list and its detail side by side
+  (a swap's details are their own read, so the list page can't show them without a second read).
 - **Tablets (768–1023px), all roles: Option B "small desktop"** — the desktop Direction B with the collapsed icon rail (48px
   touch targets), as workforce web apps do on tablets; phones keep the bottom tab bar, landscape phones keep the phone
   layout. The Schedule week grid stays a week grid at 768 (long times may take two lines).

@@ -90,7 +90,11 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
 
   const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query), [role, payroll, remote.data, query, context]);
 
+  // Employee desktop (Nov 8, 2026): an Employee's finder lists their own pages only, so it reads nothing and opens only
+  // where its top-bar button shows (desktop, 1024px and wider).
+  const own = role === "EMPLOYEE";
   function load() {
+    if (own) { setRemote({ state: "ready", data: null, at: Date.now() }); return; }
     if (remote.state === "loading" || (remote.state === "ready" && Date.now() - remote.at < FRESH_MS)) return;
     setRemote(previous => ({ ...previous, state: "loading" }));
     fetch("/api/manager/finder", { credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json", "X-Nevora-Finder": "1" } })
@@ -101,10 +105,11 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   function open(from?: HTMLElement | null) {
     const element = dialog.current;
     if (!element || element.open) return;
+    if (own && !window.matchMedia("(min-width: 1024px)").matches) return;
     returnTo.current = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setQuery(""); setActive(0); setKeyboard(false);
-    setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? "Search" : DESKTOP_PLACEHOLDER);
-    if (navigator.onLine === false) setRemote({ state: "offline", data: null, at: 0 });
+    setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? "Search" : own ? "Search your pages" : DESKTOP_PLACEHOLDER);
+    if (navigator.onLine === false && !own) setRemote({ state: "offline", data: null, at: 0 });
     else load();
     element.showModal();
     // Focus inside the same tap, so iOS raises the keyboard.
@@ -135,7 +140,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); if (dialog.current?.open) close(); else open(); }
     };
     const fromElsewhere = (event: Event) => open((event as CustomEvent<OpenFinderDetail>).detail?.returnFocusTo);
-    const offline = () => { if (dialog.current?.open) setRemote({ state: "offline", data: null, at: 0 }); };
+    const offline = () => { if (dialog.current?.open && !own) setRemote({ state: "offline", data: null, at: 0 }); };
     const online = () => { if (dialog.current?.open) load(); };
     window.addEventListener("keydown", shortcut);
     window.addEventListener(OPEN_FINDER_EVENT, fromElsewhere);

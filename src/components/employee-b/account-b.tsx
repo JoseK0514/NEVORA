@@ -115,18 +115,21 @@ export function EmployeeDocumentB({doc, sub, back, documents}: {doc: PolicyDocum
   return <BScreen back>
     <BHero back={{href: back, label: 'Profile'}} title={doc.title} titleId="b-doc-title" sub={sub} />
     <BStack>
+      {/* Desktop: the sections as a contents list on the left (eb-desk); a link opens its section where it reads. */}
+      {doc.sections.length > 1 ? <nav className="b-card eb-desk eb-toc" aria-labelledby="b-doc-toc-h"><div className="b-card__h"><h2 id="b-doc-toc-h">{SECTIONS_TITLE[doc.slug] ?? 'On this page'}</h2></div>
+        <ul>{doc.sections.map((section, index) => <li key={section.heading}><a href={`#b-doc-s${index}`}>{section.heading}</a></li>)}</ul></nav> : null}
       <article className="b-card eb-doc" aria-labelledby="b-doc-title">
         <p className="eb-doc__intro">{doc.summary}</p>
         {first ? <details className="eb-doc__first" open>
           <summary><h2>{first.heading}</h2><CaretDownIcon className="eb-doc__caret" size={18} weight="bold" aria-hidden="true" /></summary>
-          <div className="eb-read">{first.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
+          <div className="eb-read" id="b-doc-s0">{first.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
         </details> : null}
       </article>
       {rest.length ? <BCard title={SECTIONS_TITLE[doc.slug] ?? 'On this page'} id="b-doc-sections">
-        <ul className="b-list">{rest.map(section => <li className="b-li" key={section.heading}><details className="eb-doc__sec">
+        <ul className="b-list">{rest.map((section, index) => <li className="b-li" key={section.heading}><details className="eb-doc__sec">
           <summary className="b-row b-row--link"><span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{section.heading}</span></span></span>
             <CaretDownIcon className="b-chev eb-doc__caret" size={18} weight="bold" aria-hidden="true" /></summary>
-          <div className="eb-read eb-doc__body">{section.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
+          <div className="eb-read eb-doc__body" id={`b-doc-s${index + 1}`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
         </details></li>)}</ul>
       </BCard> : null}
       {doc.slug === 'account-deletion' ? <BButtonLink href="/app/account/delete" kind="quiet" full>Review deletion request</BButtonLink> : null}

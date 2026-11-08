@@ -67,7 +67,7 @@ export function BStack({ children }: { children: ReactNode }) {
   return <div className="b-stack">{children}</div>;
 }
 
-export function BCard({ title, count, link, meta, children, id, label, chip }: { title?: ReactNode; count?: ReactNode; link?: { href: string; label: string; aria?: string }; meta?: ReactNode; children?: ReactNode; id?: string; label?: string; chip?: ReactNode }) {
+export function BCard({ title, count, link, meta, children, id, label, chip }: { title?: ReactNode; count?: ReactNode; link?: { href: string; label: ReactNode; aria?: string }; meta?: ReactNode; children?: ReactNode; id?: string; label?: string; chip?: ReactNode }) {
   const headId = id && title ? `${id}-h` : undefined;
   return <section className="b-card" id={id} aria-labelledby={headId} aria-label={headId ? undefined : label}>
     {title ? <div className="b-card__h"><h2 id={headId}>{title}{count !== undefined && count !== null ? <span className="b-pill">{count}</span> : null}</h2>

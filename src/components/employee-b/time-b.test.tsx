@@ -66,9 +66,12 @@ describe('Past timecards (e-timecards)',()=>{
   const html=inPage(head,<CorpPastTimecards authority="a" data={data} period={period} today="2026-10-27" entryId={null} onRefresh={noop} chosen={false}/>),b=onlyB(html),plain=text(b);
   expect(plain).toContain('Weeks');expect(plain).toContain('Oct 19 – 25');expect(plain).toContain('1 shift · Approved');expect(plain).toContain('8 h 02');
   expect(b).toContain('href="/app/my-time?view=cards&amp;start=2026-10-19&amp;end=2026-10-25"');
-  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your corrections'].map(range=>plain.indexOf(range));
+  // Employee desktop (Nov 8, 2026) draws the week shown as a detail card before the list (desktop only, eb-desk), so the
+  // list's order is read from its own card on.
+  const list=plain.slice(plain.indexOf('Weeks'));
+  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your corrections'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
-  expect(plain).toContain('Loading…');expect(plain).toContain('Fixes you asked your manager for');expect(plain).not.toContain('Tue 20');
+  expect(plain).toContain('Loading…');expect(plain).toContain('Fixes you asked your manager for');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.
   expect(text(withoutB(html))).toContain('Tue 20');
  });

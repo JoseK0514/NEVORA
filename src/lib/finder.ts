@@ -45,7 +45,30 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
 ];
 
+/** Employee desktop, Direction B (Nov 8, 2026; default until Jose decides): an Employee searches only their own places.
+ * No actions, people or locations (the finder route is the manager's). Pay pages follow the Pay entry, the rest their
+ * module. */
+const EMPLOYEE_PAGES: { href: string; label: string; keywords?: string }[] = [
+  { href: '/app', label: 'Home', keywords: 'today dashboard start' },
+  { href: '/app/schedule', label: 'Schedule', keywords: 'shifts week roster' },
+  { href: '/app/my-time', label: 'Time', keywords: 'hours timecard punches clock' },
+  { href: '/app/my-pay', label: 'Pay', keywords: 'paycheck statement payday' },
+  { href: '/app/my-pay?view=history', label: 'Pay history', keywords: 'statements paychecks past pay' },
+  { href: '/app/requests/hub', label: 'Requests', keywords: 'requests waiting decided' },
+  { href: '/app/requests', label: 'Time off', keywords: 'vacation leave day off pto' },
+  { href: '/app/exchange', label: 'Pick up and swap', keywords: 'open shifts swap cover trade' },
+  { href: '/app/availability', label: 'Availability', keywords: 'when i can work hours usual week' },
+  { href: '/app/notifications', label: 'Notifications', keywords: 'alerts inbox' },
+  { href: '/app/profile', label: 'Profile', keywords: 'account settings language' },
+  { href: '/app/help', label: 'Help', keywords: 'support contact questions' },
+];
+
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
+  if (role === 'EMPLOYEE') {
+    const pay = navigationForRole(role, payroll, context).some(item => item.href === '/app/my-pay');
+    return EMPLOYEE_PAGES.filter(page => (pay || !page.href.startsWith('/app/my-pay')) && pathEnabled(page.href, context.modules))
+      .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, href: page.href, keywords: page.keywords }));
+  }
   const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
     { id: 'action:shift', group: 'Actions', label: 'Add shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },

@@ -143,9 +143,14 @@ export const EXCHANGE_TABS: {key: ExchangeTab; label: string; href: string}[] = 
 
 /** The hero of Pick up and swap: back to Schedule, the title, and its three places on glass (left out when shift requests
  * are off for the company). */
-export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule'}: {tab: ExchangeTab; tabs?: boolean; back?: string}) {
+export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}: {tab: ExchangeTab; tabs?: boolean; back?: string;
+  /** Desktop: what each place holds, where this page's read knows it ("Open shifts · 2"); phones show the names alone. */
+  counts?: Partial<Record<ExchangeTab, number | null>>}) {
   return <BHero back={{href: back, label: 'Schedule'}} title="Pick up and swap" titleId="b-exchange-title">
-    {tabs ? <BSeg label="Pick up and swap" items={EXCHANGE_TABS.map(item => ({key: item.key, label: item.label, href: item.href, current: item.key === tab}))}/> : null}
+    {tabs ? <BSeg label="Pick up and swap" items={EXCHANGE_TABS.map(item => {
+      const count = counts?.[item.key];
+      return {key: item.key, label: typeof count === 'number' && count > 0 ? <>{item.label}<span className="eb-desk"> · {count}</span></> : item.label, href: item.href, current: item.key === tab};
+    })}/> : null}
   </BHero>;
 }
 
