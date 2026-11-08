@@ -35,7 +35,7 @@ it("blocks operations after expiry while allowing authenticated export and billi
   ).toBeNull();
   expect(await commerceGate("/api/payroll-export", "GET", fetcher)).toBeNull();
   expect(
-    (await commerceGate("/api/payroll-export", "POST", fetcher))?.status,
+    (await commerceGate("/api/timecards/finalize", "POST", fetcher))?.status,
   ).toBe(402);
 });
 it("fails closed on invalid, expired or unavailable billing authority", async () => {
@@ -57,4 +57,26 @@ it("fails closed on invalid, expired or unavailable billing authority", async ()
       )
     )?.status,
   ).toBe(503);
+});
+it("permits the actual expired-account export workflow and still blocks operational writes", async () => {
+  enable();
+  const restricted = async () =>
+    Response.json({
+      state: "restricted",
+      operational: false,
+      validUntil: Date.now() + 1000,
+    });
+  for (const [path, method] of [
+    ["/api/timecards", "POST"],
+    ["/api/payroll-export/profiles", "GET"],
+    ["/api/payroll-export", "POST"],
+  ])
+    expect(await commerceGate(path, method, restricted)).toBeNull();
+  expect(
+    (await commerceGate("/api/timecards/finalize", "POST", restricted))?.status,
+  ).toBe(402);
+  expect(
+    (await commerceGate("/api/payroll-export/profiles", "POST", restricted))
+      ?.status,
+  ).toBe(402);
 });

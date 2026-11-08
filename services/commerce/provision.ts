@@ -1,5 +1,8 @@
 import { Client } from "pg";
-import { setupCompanyWithCredential } from "../../scripts/company-setup";
+import {
+  assertEmptyDatabase,
+  setupCompanyWithCredential,
+} from "../../scripts/company-setup";
 import { CommerceStore } from "./store";
 import { databaseTarget, safeOrigin } from "./config";
 import { DAY } from "./model";
@@ -32,10 +35,11 @@ export async function registerSlot(
   });
   await client.connect();
   try {
-    const found = await client.query(
-      "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%' LIMIT 1",
-    );
-    if (found.rowCount) throw Error("empty_installation_required");
+    try {
+      await assertEmptyDatabase(client);
+    } catch {
+      throw Error("empty_installation_required");
+    }
   } finally {
     await client.end();
   }

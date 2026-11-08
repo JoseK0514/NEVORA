@@ -71,11 +71,14 @@ export async function commerceGate(
   )
     return null;
   if (
-    method === "GET" &&
-    (path === "/api/payroll-export" ||
-      path.startsWith("/api/payroll/documents/") ||
-      path === "/app/payroll-export" ||
-      path === "/app/pay")
+    (method === "POST" &&
+      ["/api/payroll-export", "/api/timecards"].includes(path)) ||
+    (method === "GET" &&
+      (path === "/api/payroll-export" ||
+        path === "/api/payroll-export/profiles" ||
+        path.startsWith("/api/payroll/documents/") ||
+        path === "/app/payroll-export" ||
+        path === "/app/pay"))
   )
     return null;
   try {

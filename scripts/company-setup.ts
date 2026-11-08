@@ -1,3 +1,4 @@
+import {parsePostgresUrl} from "../src/lib/postgres-url";
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import type { Client } from 'pg';
@@ -75,7 +76,7 @@ export function readSetupTarget(env: Environment): string {
   const value = env.NEVORA_SETUP_DATABASE_URL;
   if (!value) throw new Error('NEVORA_SETUP_DATABASE_URL is required; DATABASE_URL is never used for setup.');
   let url: URL;
-  try { url = new URL(value); } catch { throw new Error('Invalid setup database URL.'); }
+  try { url = parsePostgresUrl(value); } catch { throw new Error('Invalid setup database URL.'); }
   if (!['postgres:', 'postgresql:'].includes(url.protocol) || !url.hostname || url.hash) {
     throw new Error('Invalid setup database URL.');
   }
@@ -121,6 +122,16 @@ export async function bootstrapOwner(client: Client, owner: OwnerInput, location
   }
 }
 
+/** Fresh catalog/company targets must contain no other application objects, in any user schema. */
+export async function assertEmptyDatabase(client: Pick<Client,'query'>) {
+  const identity=await client.query('SELECT current_database() AS name');
+  if(['postgres','template0','template1'].includes(identity.rows[0]?.name))throw Error('A maintenance database cannot be initialized.');
+  const existing=await client.query(`SELECT 1 FROM pg_namespace n
+    WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%'
+    AND (n.nspname='commerce' OR EXISTS(SELECT 1 FROM pg_class c WHERE c.relnamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_proc p WHERE p.pronamespace=n.oid) OR EXISTS(SELECT 1 FROM pg_type t WHERE t.typnamespace=n.oid)) LIMIT 1`);
+  if(existing.rowCount)throw Error('Company setup requires an empty database; existing databases are never reset.');
+}
+
 /** Historical migrations remain the schema authority. Strip only their outer
  * transaction markers so the entire fresh install has one atomic boundary. */
 export function migrationBody(source: string): string {
@@ -149,11 +160,7 @@ export async function setupCompanyWithCredential(client: Client, input: Credenti
   await client.query('BEGIN');
   try {
     await client.query("SELECT pg_advisory_xact_lock(hashtextextended('nevora.company.setup',0))");
-    const existing = await client.query(`SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
-      WHERE n.nspname='public' UNION ALL SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-      WHERE n.nspname='public' UNION ALL SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace
-      WHERE n.nspname='public' LIMIT 1`);
-    if (existing.rowCount) throw new Error('Company setup requires an empty public schema; existing databases are never reset.');
+    await assertEmptyDatabase(client);
     await client.query('SET LOCAL search_path TO public, pg_catalog');
     for (const migration of migrations) await client.query(migration);
     // These rows were created by the historical migrations in THIS transaction

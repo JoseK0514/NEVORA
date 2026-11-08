@@ -8,7 +8,7 @@ Run from the repository root with Node 24 and `npm ci`:
 
 - `npm run commerce:api`: standalone API. Public signup is off unless explicitly enabled.
 - `npm run commerce:worker -- once`: process one durable job. A scheduler must invoke this repeatedly; it is not a daemon.
-- `npm run commerce:worker -- reconcile`: refresh known subscriptions from Stripe. Schedule separately, suggested every 15 minutes.
+- `npm run commerce:worker -- reconcile`: recover missing checkout responses and refresh subscriptions from Stripe. Schedule separately, suggested every 15 minutes. Prints `{checked,failed}` and exits 1 on partial failure after attempting every business; alert and retry failures.
 - `npm run commerce:operator -- migrate`: initialize an explicitly selected **empty, dedicated** catalog. This is not an application migration and never uses `DATABASE_URL`.
 - `npm run commerce:operator -- register-slot`: register an approved, empty company database and its already prepared application deployment.
 - `NEVORA_TEST_PG_BIN=/path/to/postgres/bin npm run test:commerce:owned`: create a fresh loopback PostgreSQL cluster, run commerce integration tests, then stop and remove only that cluster. Refuses application/catalog database environment variables. The default suite skips these SQL tests without its explicit owned runner.
@@ -44,17 +44,20 @@ Provisioning follows `docs/product/multi-company-database-per-company-20261021.m
 
 Registration reads `NEVORA_SLOT_ID`, `NEVORA_SLOT_ORIGIN`, `NEVORA_SLOT_DATABASE_URL`, `NEVORA_SLOT_INSTANCE_SECRET`. The instance secret is an independent 32-byte base64url token from the approved secrets store. Do not reuse it across slots. Registration verifies the target is empty, stores its connection and instance secret encrypted, and prevents duplicate database identities and origins. No production slot was registered here.
 
+Catalog creation, slot registration and company installation reject PostgreSQL maintenance databases and objects in any non-system schema. The installer repeats the check inside its transaction, because a previously empty slot may have changed. Connection URLs reject target-overriding query parameters such as `host` or `dbname`; production requires certificate verification and development remains loopback-only.
+
 The company deployment must use this release and its assigned database and have:
 
 - `NEVORA_COMMERCE_ENABLED=true` (leave absent for every existing unenrolled installation).
 - `NEVORA_COMMERCE_API_ORIGIN`, `NEVORA_COMMERCE_INSTALLATION_ID`, `NEVORA_COMMERCE_INSTANCE_SECRET` matching the registered slot.
+- `NEVORA_COMMERCE_UI_ORIGIN` matching the trusted Velani frontend for this environment. Set the staging origin explicitly; do not send staging handoffs to production.
 - Its own `FUEL_PORTAL_ORIGIN` and normal per-company runtime configuration, selected from the release runbook. Do not copy another company's credentials.
 
 Email-only signup and one-time verification do not accept a provisioning credential. Only the verified owner can submit the business details and credential through `/v1/setup`; repeated identical submissions queue one job, and conflicting replacements are refused. This prevents an earlier unverified signup from choosing a later verified owner's password.
 
 A worker claims capacity under catalog locks, installs the canonical migration chain and Owner credential, and creates a durable installation binding in the **same company transaction**. Its authenticated readiness probe must confirm the deployment's business/installation binding before the trial starts. A failed probe retries the same installation; it never resets a database or extends the trial. The temporary owner password hash is removed from the catalog after readiness. With no approved capacity, setup stays pending and retries with backoff.
 
-The application gate enforces access on operational HTTP requests and the supported payroll/notification worker entrypoints. Existing auth, role checks and export checks remain mandatory. Expired access still permits sign-in/recovery, billing handoff and listed read-only payroll export/document paths. Protected app responses are 402 `subscription_required` or 503 `billing_status_unavailable`; Claude implements their presentation. Capacity triggers serialize new employee activation within an enrolled database and do not deactivate existing staff when a plan changes.
+The application gate enforces access on operational HTTP requests and the supported payroll/notification worker entrypoints. Existing auth, role checks and export checks remain mandatory. Restricted access still permits sign-in/recovery, billing handoff and payroll record recovery, including `POST /api/timecards`, `GET /api/payroll-export/profiles` and `POST /api/payroll-export`. Payroll finalization and export-profile mutation stay gated. Protected app responses are 402 `subscription_required` or 503 `billing_status_unavailable`; Claude implements their presentation. Capacity triggers serialize new employee activation within an enrolled database and do not deactivate existing staff when a plan changes. The authority also reads actual active non-Owner headcount: an ineligible lower band restricts operations with `reason=employee_limit_exceeded` while preserving billing/export recovery. No automatic charge or staff deletion resolves a mismatch.
 
 ## Billing operations
 
@@ -62,7 +65,7 @@ Stripe API and webhook endpoint version: `2026-10-28.endive`, SDK 23.1.0. Subscr
 
 For an owner subscribing during the trial, Checkout setup mode collects and authorizes the payment method, then the worker creates the subscription with the **original** trial deadline. This avoids Checkout subscription mode's minimum 48-hour trial constraint. After trial expiry, normal subscription Checkout charges immediately. Only supported-price paid invoice periods grant paid access; zero-value trial invoices do not.
 
-Subscribe/portal calls require an owner commerce bearer and an idempotency UUID. A business has at most one current open checkout. Invoice/customer/subscription ownership is checked against persisted business identity, not buyer-supplied email or redirect parameters. Stripe return URLs contain a one-time, one-hour billing handoff in the fragment so Claude can restore the same billing session; the handoff itself conveys no payment proof.
+Subscribe/portal calls require an owner commerce bearer and an idempotency UUID. A business has at most one current open checkout. Its encrypted request parameters and 45-minute expiry are committed before calling Stripe; retrying a lost response reuses exactly those parameters and the provider key. Reconciliation can recover the provider-created session. An expired operation returns `checkout_expired`; start a new operation rather than changing an uncertain one. Invoice/customer/subscription ownership is checked against persisted business identity, not buyer-supplied email or redirect parameters. A verified successor may replace a canceled or `incomplete_expired` subscription; late predecessor events cannot replace it. Previously paid capacity is retained until the replacement price has paid coverage. Stripe return URLs contain a one-time, one-hour billing handoff in the fragment so Claude can restore the same billing session; the handoff itself conveys no payment proof.
 
 Configure Stripe Customer Portal for the two approved prices, quantity one, payment methods/invoices, and end-of-paid-period cancellation. Do not enable arbitrary quantity/other price changes, pause policies or unapproved discounts. Configure collection retries to allow the seven-day recovery window. Refund/dispute decisions remain operator procedures; this release does not automatically delete records, issue refunds, or invent retention policy.
 
@@ -74,4 +77,4 @@ Before any real launch: verify Stripe account/test-mode checkout, approved SMTP 
 
 Start with isolated owned fixtures, then an authorized non-production pilot. Existing customers are not automatically enrolled. Stop new signup with `NEVORA_COMMERCE_SIGNUP_ENABLED=false` if needed while retaining billing webhooks and recovery workers. Do not disable the application billing gate to bypass an incident; restore the verified release/configuration or use an explicitly approved entitlement correction. Back up the catalog and encryption key before migrations. No billing action deletes company databases. Restore code and catalog together if rolling back; never reassign an occupied slot.
 
-API contracts and Claude's UI handoff: `docs/handoffs/2026-11-07-commerce-backend.md`.
+API contracts and Claude's UI handoff: `docs/handoffs/2026-11-07-commerce-backend.md`. Local verification and the review-fix record: `docs/handoffs/2026-11-07-commerce-verification.md`.

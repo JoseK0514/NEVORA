@@ -1,3 +1,4 @@
+import { readBillingOwnerBinding } from "../../src/lib/commerce/owner-binding";
 import { dropTestDatabase } from "./test-database";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Pool } from "pg";
@@ -106,6 +107,9 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
       }),
     ).rejects.toThrow("installation_not_ready");
     expect((await store.business(businessId)).trialEnd).toBeNull();
+    await expect(store.installation("slot-a", secret)).rejects.toThrow(
+      "unauthorized",
+    );
     const probe = async () => {
       expect(
         (
@@ -146,6 +150,34 @@ describe.skipIf(!enabled)("isolated company provisioning", () => {
       "unauthorized",
     );
   }, 120000);
+  it("binds a real Owner session to its installation before exposing billing", async () => {
+    await target.query(
+      "INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,'OWNER',$2)",
+      ["f".repeat(64), new Date(Date.now() + 86400000)],
+    );
+    const proof = {
+        sessionTokenHash: "f".repeat(64),
+        employee: { id: "OWNER" },
+      },
+      query = async (text: string, values: unknown[]) =>
+        (await target.query(text, values)).rows;
+    expect(
+      (
+        await readBillingOwnerBinding(
+          proof,
+          { installationId: "slot-a", secret },
+          query,
+        )
+      )?.business_id,
+    ).toBe(businessId);
+    expect(
+      await readBillingOwnerBinding(
+        proof,
+        { installationId: "other-slot", secret: "z".repeat(43) },
+        query,
+      ),
+    ).toBeNull();
+  });
   it("enforces employee capacity in the company database without disabling existing employees", async () => {
     await target.query(
       "UPDATE nevora_commerce_installation SET employee_limit=15",

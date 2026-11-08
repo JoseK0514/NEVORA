@@ -81,26 +81,31 @@ Status example:
   "state": "trial",
   "operational": true,
   "billing": true,
-  "export": true
+  "export": true,
+  "employeeLimit": 30,
+  "activeEmployees": 10,
+  "reason": null
 }
 ```
 
-`setup`: required, pending, provisioning, ready. `required` means show the verified business/credential setup form; it is not a running trial. A pending setup has no application URL and no running trial. No capacity is a recoverable pending state, not success. `state`: trial, paid, grace, restricted. Show the returned deadline in the owner's timezone. Billing/export fields describe entitlement only; original role/data authorization is still enforced. Do not display an application-ready CTA before `setup=ready`.
+`setup`: required, pending, provisioning, ready. `required` means show the verified business/credential setup form; it is not a running trial. A pending setup has no application URL and no running trial. No capacity is a recoverable pending state, not success. `state`: trial, paid, grace, restricted. Show the returned deadline in the owner's timezone. Billing/export fields describe entitlement only; original role/data authorization is still enforced. Do not display an application-ready CTA before `setup=ready`. `employeeLimit` is the current band limit (30 during an unpurchased trial). If actual staff exceeds the band, `state=restricted`, `operational=false`, `reason=employee_limit_exceeded`; keep billing and record-export recovery available and explain the required plan/population adjustment. Never imply the system removed employees or charged an upgrade.
 
 ### Billing endpoints
 
-Both require `Authorization: Bearer accessToken`, JSON `{}`, and a client-generated UUID in `Idempotency-Key`. Retain the same key when retrying an uncertain request. The backend selects customer, company and price; do not submit Stripe IDs, amounts or a business ID.
+Both require `Authorization: Bearer accessToken`, JSON `{}`, and a client-generated UUID in `Idempotency-Key`. Retain the same key when retrying an uncertain request. The backend selects customer, company and price; do not submit Stripe IDs, amounts or a business ID. Checkout parameters are durable and a session lasts 45 minutes. On explicit `checkout_expired`, let the owner start a fresh operation with a new UUID; network uncertainty alone is not a reason to change keys.
 
 | Method/path | Success |
 |---|---|
 | `POST /v1/checkout` | `{url}` for Stripe-hosted checkout. Navigate only to the returned Stripe URL. Repeated/concurrent requests reuse the open checkout. |
 | `POST /v1/portal` | `{url}` for Stripe Customer Portal. |
 
-One complete package: USD 19/month for 1–15 employees, USD 29/month for 16–30; Owner accounts excluded. No annual plan at launch. Current staff is not deactivated on downgrade; activating additional staff beyond the selected cap is rejected in the database until the owner changes plan. Explain cancellation as access through the paid period. Renewal grace is seven days. No charge/payment/tax-filing promises beyond subscription billing; NEVORA payroll still calculates statements, not employee payments or payroll tax filing.
+One complete package: USD 19/month for 1–15 employees, USD 29/month for 16–30; Owner accounts excluded. No annual plan at launch. Current staff is not deactivated on downgrade; actual staff above the paid limit restricts operations and new activations beyond the cap are rejected. Previously paid capacity remains until a replacement price has paid coverage. Explain cancellation as access through the paid period; a terminal canceled/expired subscription can start a new checkout without a second free trial. Renewal grace is seven days. No charge/payment/tax-filing promises beyond subscription billing; NEVORA payroll still calculates statements, not employee payments or payroll tax filing.
 
 ### Company-side bridge
 
-`POST /api/commerce/handoff` on the **company's own application origin** uses its existing authenticated Owner session and same-origin header. It returns `{url:"https://www.thevelani.com/pages/plans#handoff=…"}`. Employees/Managers cannot mint it; authority is rechecked after the network call. This is the only in-app step needed to open Velani billing; no integration secrets appear in client code.
+`POST /api/commerce/handoff` on the **company's own application origin** uses its existing authenticated Owner session and same-origin header. It returns `{url:"https://www.thevelani.com/pages/plans#handoff=…"}` in production, or the explicitly configured trusted `NEVORA_COMMERCE_UI_ORIGIN` in staging. Employees/Managers cannot mint it; the current Owner and matching local installation, secret hash and business binding are checked before and after the network call. Catalog admission requires a ready installation. This is the only in-app step needed to open Velani billing; no integration secrets appear in client code.
+
+Restricted accounts retain the existing payroll export flow: `POST /api/timecards`, `GET /api/payroll-export/profiles`, then `POST /api/payroll-export`, plus record/document reads. Existing role and scope checks still apply. Creating export profiles or finalizing payroll requires operational access.
 
 `GET /api/commerce/facts`, `POST /api/commerce/policy`, and catalog `/internal/*` are authenticated server-to-server APIs. **Never call them from the UI or embed their secrets.**
 
@@ -109,7 +114,7 @@ One complete package: USD 19/month for 1–15 employees, USD 29/month for 16–3
 - 400: invalid signup/email/password/phone/timezone, assisted_quote_required, invalid_or_expired_link, invalid_json, idempotency_key_required.
 - 401: unauthorized/expired billing session → obtain a new link; do not loop retries.
 - 403: origin_denied/origin_required or company owner_required.
-- 409: setup_pending, setup_already_submitted, subscription_sync_pending, use_billing_portal, subscription_required, customer_reconciliation_required. Keep pending state or offer the appropriate portal/support action.
+- 409: setup_pending, setup_already_submitted, subscription_sync_pending, use_billing_portal, subscription_required, customer_reconciliation_required, checkout_expired. Keep pending state or offer the appropriate portal/support/new-checkout action.
 - 413/415: body_too_large/json_required.
 - 429: rate_limited → pause and allow a later retry; no automatic retry storm.
 - 503: signup_unavailable, billing_unavailable, installation_unavailable, invalid_billing_price, temporarily_unavailable → explain unavailability and retry the **same** operation when safe.

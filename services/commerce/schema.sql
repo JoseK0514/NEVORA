@@ -30,6 +30,13 @@ CREATE TABLE commerce.jobs (
  lease_id uuid, lease_until timestamptz, last_error text
 );
 CREATE INDEX commerce_jobs_due ON commerce.jobs(available_at) WHERE state <> 'done';
+CREATE TABLE commerce.checkout_intents (
+ business_id uuid NOT NULL REFERENCES commerce.businesses(id), operation text NOT NULL,
+ previous_subscription_id text, params_secret text NOT NULL, employee_count integer NOT NULL,
+ plan_key text NOT NULL CHECK(plan_key IN ('small','team')), expires_at timestamptz NOT NULL,
+ session_id text UNIQUE, result_secret text, created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ PRIMARY KEY(business_id,operation)
+);
 CREATE TABLE commerce.webhooks (id text PRIMARY KEY, received_at timestamptz NOT NULL DEFAULT clock_timestamp());
 CREATE TABLE commerce.rate_limits (key text PRIMARY KEY, count integer NOT NULL, expires_at timestamptz NOT NULL);
 CREATE TABLE commerce.audit (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, business_id uuid REFERENCES commerce.businesses(id), event text NOT NULL, created_at timestamptz NOT NULL DEFAULT clock_timestamp());

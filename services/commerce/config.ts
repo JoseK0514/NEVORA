@@ -1,6 +1,12 @@
+import { parsePostgresUrl } from "../../src/lib/postgres-url";
 import { CommerceError } from "./model";
 export function safeOrigin(value: string, development: boolean) {
-  const url = new URL(value);
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new CommerceError("invalid_origin", 503);
+  }
   if (
     url.origin !== value ||
     url.username ||
@@ -16,13 +22,15 @@ export function safeOrigin(value: string, development: boolean) {
   return url.origin;
 }
 export function databaseTarget(value: string, environment: string) {
-  const url = new URL(value);
+  if (!["development", "production"].includes(environment))
+    throw Error("explicit_database_environment_required");
+  const url = parsePostgresUrl(value);
   if (
-    !["postgres:", "postgresql:"].includes(url.protocol) ||
-    !url.pathname.slice(1) ||
-    url.hash
+    ["postgres", "template0", "template1"].includes(
+      decodeURIComponent(url.pathname.slice(1)),
+    )
   )
-    throw Error("invalid_database_target");
+    throw Error("application_database_required");
   if (
     environment === "production" &&
     url.searchParams.get("sslmode") !== "verify-full"

@@ -1,221 +1,114 @@
-import { dropTestDatabase } from "./test-database";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Stripe from "stripe";
 import { Pool } from "pg";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { CommerceStore } from "./store";
 import { StripeBilling } from "./stripe";
+import { StripeFixture } from "./stripe-fixture";
+import { dropTestDatabase } from "./test-database";
 import { accessAt } from "./model";
-const enabled = Boolean(process.env.NEVORA_COMMERCE_TEST_URL);
+import { createCommerce } from "./service";
+import { digest } from "./security";
+const enabled = Boolean(process.env.NEVORA_COMMERCE_TEST_URL),
+  id = "11111111-1111-4111-8111-111111111111",
+  now = Date.parse("2026-11-07T12:00:00Z"),
+  secret = "whsec_fictional_test_only";
 describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
-  let admin: Pool, pool: Pool, store: CommerceStore, billing: StripeBilling;
-  const id = randomUUID(),
-    name = `commerce_test_${randomUUID().replaceAll("-", "")}`,
-    now = Date.parse("2026-11-07T12:00:00Z");
-  const state = {
-    status: "active",
-    customer: "cus_fixture",
-    invoicePaid: false,
-    invoiceEnd: 1799236800,
-    mode: "",
-    returnUrl: "",
-    trialEnd: "",
-  };
-  const secret = "whsec_fictional_test_only";
-  beforeAll(async () => {
+  let admin: Pool,
+    pool: Pool,
+    store: CommerceStore,
+    billing: StripeBilling,
+    provider: StripeFixture,
+    name: string;
+  async function business(businessId = id) {
+    await pool.query(
+      "INSERT INTO commerce.accounts(id,email,profile,verified_at) VALUES($1,$2,$3,clock_timestamp())",
+      [
+        businessId,
+        `${businessId}@example.test`,
+        { businessName: "Example Shop", email: `${businessId}@example.test` },
+      ],
+    );
+    await pool.query(
+      "INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',10,$2,$3)",
+      [businessId, new Date(now), new Date("2026-12-07T12:00:00Z")],
+    );
+    return store.business(businessId);
+  }
+  beforeEach(async () => {
     const url = new URL(process.env.NEVORA_COMMERCE_TEST_URL!);
-    if (url.hostname !== "127.0.0.1" || process.env.DATABASE_URL)
+    if (url.hostname !== "127.0.0.1" || url.search || process.env.DATABASE_URL)
       throw Error("owned cluster required");
     admin = new Pool({ connectionString: url.href });
+    name = `commerce_test_${randomUUID().replaceAll("-", "")}`;
     await admin.query(`CREATE DATABASE "${name}"`);
     url.pathname = `/${name}`;
     pool = new Pool({
       connectionString: url.href,
       max: 2,
-      statement_timeout: 1000,
+      statement_timeout: 2000,
     });
     await pool.query(
       await readFile(new URL("./schema.sql", import.meta.url), "utf8"),
     );
     store = new CommerceStore(pool, Buffer.alloc(32, 3));
-    await pool.query(
-      "INSERT INTO commerce.accounts(id,email,profile,verified_at) VALUES($1,$2,$3,clock_timestamp())",
-      [
-        id,
-        "owner@example.test",
-        { businessName: "Example Shop", email: "owner@example.test" },
-      ],
-    );
-    await pool.query(
-      "INSERT INTO commerce.businesses(id,state,employee_count,trial_started_at,trial_ends_at) VALUES($1,'ready',10,$2,$3)",
-      [id, new Date(now), new Date("2026-12-07T12:00:00Z")],
-    );
-    const http = Stripe.createFetchHttpClient(async (input, init) => {
-      const url = new URL(
-          typeof input === "string" ? input : (input as Request).url,
-        ),
-        form = new URLSearchParams(String(init?.body ?? ""));
-      let value: unknown;
-      if (url.pathname === "/v1/customers" && init?.method === "GET")
-        value = { object: "list", data: [], has_more: false };
-      else if (url.pathname === "/v1/customers" && init?.method === "POST")
-        value = {
-          id: "cus_fixture",
-          object: "customer",
-          metadata: { nevora_business_id: id },
-        };
-      else if (url.pathname === "/v1/customers/cus_fixture")
-        value = {
-          id: "cus_fixture",
-          object: "customer",
-          metadata: { nevora_business_id: id },
-        };
-      else if (url.pathname === "/v1/prices/price_small")
-        value = {
-          id: "price_small",
-          active: true,
-          unit_amount: 1900,
-          currency: "usd",
-          type: "recurring",
-          recurring: { interval: "month", interval_count: 1 },
-        };
-      else if (url.pathname === "/v1/subscriptions" && init?.method === "GET")
-        value = { object: "list", data: [], has_more: false };
-      else if (
-        url.pathname === "/v1/checkout/sessions" &&
-        init?.method === "POST"
-      ) {
-        state.mode = form.get("mode") ?? "";
-        state.returnUrl = form.get("success_url") ?? "";
-        value = {
-          id: "cs_fixture",
-          object: "checkout.session",
-          url: "https://checkout.stripe.com/c/pay/cs_fixture",
-          expires_at: Math.floor(Date.now() / 1000) + 1800,
-        };
-      } else if (url.pathname === "/v1/checkout/sessions/cs_fixture")
-        value = {
-          id: "cs_fixture",
-          object: "checkout.session",
-          status: "complete",
-          mode: "setup",
-          customer: "cus_fixture",
-          setup_intent: {
-            id: "seti_fixture",
-            status: "succeeded",
-            payment_method: "pm_fixture",
-            customer: "cus_fixture",
-          },
-          metadata: { nevora_business_id: id, nevora_price: "price_small" },
-        };
-      else if (
-        url.pathname === "/v1/subscriptions" &&
-        init?.method === "POST"
-      ) {
-        state.trialEnd = form.get("trial_end") ?? "";
-        value = {
-          id: "sub_fixture",
-          object: "subscription",
-          customer: "cus_fixture",
-          metadata: { nevora_business_id: id },
-        };
-      } else if (url.pathname === "/v1/subscriptions/sub_fixture")
-        value = {
-          id: "sub_fixture",
-          object: "subscription",
-          customer: state.customer,
-          status: state.status,
-          metadata: { nevora_business_id: id },
-          items: {
-            data: [
-              {
-                quantity: 1,
-                price: {
-                  id: "price_small",
-                  unit_amount: 1900,
-                  currency: "usd",
-                  recurring: { interval: "month", interval_count: 1 },
-                },
-                current_period_start: 1794052800,
-                current_period_end: 1799236800,
-              },
-            ],
-          },
-          latest_invoice: { id: "in_current", created: 1794052800 },
-        };
-      else if (url.pathname === "/v1/invoices")
-        value = {
-          object: "list",
-          data: state.invoicePaid
-            ? [
-                {
-                  id: "in_paid",
-                  object: "invoice",
-                  status: "paid",
-                  amount_paid: 1900,
-                  currency: "usd",
-                  lines: {
-                    data: [
-                      {
-                        period: { start: 1794052800, end: state.invoiceEnd },
-                        pricing: { price_details: { price: "price_small" } },
-                      },
-                    ],
-                  },
-                },
-              ]
-            : [],
-          has_more: false,
-        };
-      else
-        throw Error(
-          `Unexpected Stripe test endpoint ${init?.method} ${url.pathname}`,
-        );
-      return new Response(JSON.stringify(value), {
-        headers: {
-          "content-type": "application/json",
-          "request-id": "req_fixture",
-        },
-      });
-    });
-    const client = new Stripe("sk_test_fictional", {
-      httpClient: http,
-      maxNetworkRetries: 0,
-    });
-    billing = new StripeBilling(store, client, {
+    provider = new StripeFixture();
+    billing = new StripeBilling(store, provider.client, {
       origin: "https://accounts.example.test",
       prices: { small: "price_small", team: "price_team" },
       webhookSecret: secret,
       live: false,
       now: () => now,
-      facts: async () => 10,
+      facts: async (b) => provider.counts.get(b.id) ?? 10,
       policy: async () => {},
     });
+    await business();
   });
-  afterAll(async () => {
+  afterEach(async () => {
+    vi.restoreAllMocks();
     await pool?.end();
     if (admin) {
-      await dropTestDatabase(admin, name);
+      if (name) await dropTestDatabase(admin, name);
       await admin.end();
     }
   });
-  it("reuses one open checkout under concurrent operation IDs without charging during the trial", async () => {
-    const business = await store.business(id);
-    const urls = await Promise.all([
-      billing.checkout(business, randomUUID()),
-      billing.checkout(business, randomUUID()),
-    ]);
+  async function checkout(businessId = id, operation = randomUUID()) {
+    await billing.checkout(await store.business(businessId), operation);
+    return [...provider.sessions.values()].at(-1)!;
+  }
+  async function subscribed(businessId = id) {
+    const session = await checkout(businessId);
+    provider.complete(session.id);
+    await billing.syncJob({ sessionId: session.id });
+    const b = await store.business(businessId);
+    return {
+      session,
+      subscription: provider.subscriptions.get(b.subscriptionId!)!,
+    };
+  }
+  it("reuses one open checkout under concurrent operation IDs without charging during trial", async () => {
+    const b = await store.business(id),
+      urls = await Promise.all([
+        billing.checkout(b, randomUUID()),
+        billing.checkout(b, randomUUID()),
+      ]);
     expect(urls).toEqual([
-      "https://checkout.stripe.com/c/pay/cs_fixture",
-      "https://checkout.stripe.com/c/pay/cs_fixture",
+      "https://checkout.stripe.com/c/pay/cs_fixture_1",
+      "https://checkout.stripe.com/c/pay/cs_fixture_1",
     ]);
-    expect(state.mode).toBe("setup");
+    expect(provider.sessions.size).toBe(1);
+    expect([...provider.sessions.values()][0].mode).toBe("setup");
     expect((await store.business(id)).paidThrough).toBeNull();
   });
-  it("restores only the same owner after Stripe redirects without treating the return as payment", async () => {
-    const returnUrl = new URL(state.returnUrl);
-    const proof = new URLSearchParams(returnUrl.hash.slice(1)).get("handoff");
+  it("restores the same owner after a hosted redirect without treating return as payment", async () => {
+    await checkout();
+    const request = provider.requests.find(
+      (r) => r.path === "/v1/checkout/sessions" && r.method === "POST",
+    )!;
+    const proof = new URLSearchParams(
+      new URL(request.form.get("success_url")!).hash.slice(1),
+    ).get("handoff");
     expect(proof).toMatch(/^[A-Za-z0-9_-]{43}$/);
     await store.exchange(proof!, "r".repeat(43), now, true);
     expect(await store.session("r".repeat(43), now)).toBe(id);
@@ -224,27 +117,30 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       store.exchange(proof!, "q".repeat(43), now, true),
     ).rejects.toThrow("invalid_or_expired_link");
   });
-  it("preserves the exact original trial deadline when completing an early setup checkout", async () => {
-    await billing.syncJob({ sessionId: "cs_fixture" });
-    expect(state.trialEnd).toBe("1796644800");
-    expect((await store.business(id)).subscriptionId).toBe("sub_fixture");
+  it("preserves the original trial deadline when completing an early setup checkout", async () => {
+    await subscribed();
+    expect(
+      provider.requests
+        .find((r) => r.path === "/v1/subscriptions" && r.method === "POST")!
+        .form.get("trial_end"),
+    ).toBe("1796644800");
   });
   it("deduplicates signed events and rejects signatures or live-mode mismatch", async () => {
     const event = JSON.stringify({
-      id: "evt_fixture",
-      object: "event",
-      type: "invoice.paid",
-      livemode: false,
-      data: {
-        object: {
-          parent: { subscription_details: { subscription: "sub_fixture" } },
+        id: "evt_fixture",
+        object: "event",
+        type: "invoice.paid",
+        livemode: false,
+        data: {
+          object: {
+            parent: { subscription_details: { subscription: "sub_fixture_1" } },
+          },
         },
-      },
-    });
-    const signature = Stripe.webhooks.generateTestHeaderString({
-      payload: event,
-      secret,
-    });
+      }),
+      signature = Stripe.webhooks.generateTestHeaderString({
+        payload: event,
+        secret,
+      });
     await Promise.all([
       billing.webhook(event, signature),
       billing.webhook(event, signature),
@@ -264,38 +160,39 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       ),
     ).rejects.toThrow("mode_mismatch");
   });
-  it("grants paid access only from an authoritative paid invoice and keeps it through cancellation", async () => {
+  it("grants access only from a paid invoice and retains paid-through coverage after cancellation", async () => {
+    const { subscription } = await subscribed();
     await pool.query(
       "UPDATE commerce.businesses SET trial_ends_at=$2 WHERE id=$1",
       [id, new Date(now - 1)],
     );
-    state.invoicePaid = false;
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+    await billing.syncJob({ subscriptionId: subscription.id });
     expect(accessAt(await store.business(id), now).state).toBe("restricted");
-    state.invoicePaid = true;
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
     expect((await store.business(id)).paidThrough).toBe(
       Date.parse("2027-01-06T12:00:00Z"),
     );
-    state.status = "canceled";
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+    subscription.status = "canceled";
+    await billing.syncJob({ subscriptionId: subscription.id });
     expect(accessAt(await store.business(id), now).state).toBe("paid");
   });
-  it("does not let an old failure event overwrite the subscription current state", async () => {
-    state.status = "active";
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+  it("uses current provider state instead of a delayed failure event", async () => {
+    const { subscription } = await subscribed();
+    subscription.status = "active";
+    await billing.syncJob({ subscriptionId: subscription.id });
     expect((await store.business(id)).subscriptionStatus).toBe("active");
   });
-  it("does not restart failed-renewal grace on a repeated event", async () => {
+  it("does not restart failed-renewal grace on repeated events", async () => {
+    const { subscription } = await subscribed();
     await pool.query(
-      "UPDATE commerce.businesses SET paid_through=$2,past_due_since=NULL WHERE id=$1",
+      "UPDATE commerce.businesses SET paid_through=$2,trial_ends_at=$2,past_due_since=NULL WHERE id=$1",
       [id, new Date(now - 1)],
     );
-    state.status = "past_due";
-    state.invoicePaid = false;
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+    subscription.status = "past_due";
+    await billing.syncJob({ subscriptionId: subscription.id });
     const first = (await store.business(id)).pastDueSince;
-    await billing.syncJob({ subscriptionId: "sub_fixture" });
+    await billing.syncJob({ subscriptionId: subscription.id });
     expect((await store.business(id)).pastDueSince).toBe(first);
     expect(accessAt(await store.business(id), now + 6 * 86400000).state).toBe(
       "grace",
@@ -304,11 +201,98 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
       "restricted",
     );
   });
-  it("rejects subscription ownership changes without altering the business entitlement", async () => {
-    state.customer = "cus_other";
+  it("rejects a subscription belonging to a different customer", async () => {
+    const { subscription } = await subscribed();
+    const customer = subscription.customer;
+    subscription.customer = "cus_other";
     await expect(
-      billing.syncJob({ subscriptionId: "sub_fixture" }),
+      billing.syncJob({ subscriptionId: subscription.id }),
     ).rejects.toThrow("subscription_identity_mismatch");
-    expect((await store.business(id)).customerId).toBe("cus_fixture");
+    expect((await store.business(id)).customerId).toBe(customer);
+  });
+  it("recovers a lost checkout response using stable provider parameters and one remote checkout", async () => {
+    const operation = randomUUID();
+    provider.loseCheckoutResponse = true;
+    await expect(checkout(id, operation)).rejects.toThrow();
+    const realNow = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(realNow + 2000);
+    expect(await billing.checkout(await store.business(id), operation)).toBe(
+      "https://checkout.stripe.com/c/pay/cs_fixture_1",
+    );
+    expect(provider.sessions.size).toBe(1);
+  });
+  it("recovers provider-created checkout from the reconciliation sweep after an ambiguous response", async () => {
+    const operation = randomUUID();
+    provider.loseCheckoutResponse = true;
+    await expect(checkout(id, operation)).rejects.toThrow();
+    expect(await billing.reconcile()).toEqual({ checked: 1, failed: 0 });
+    expect(await billing.checkout(await store.business(id), operation)).toBe(
+      "https://checkout.stripe.com/c/pay/cs_fixture_1",
+    );
+    expect(provider.sessions.size).toBe(1);
+  });
+  it("allows a verified successor after cancellation and ignores delayed predecessor events", async () => {
+    const { subscription: old } = await subscribed();
+    old.status = "canceled";
+    await billing.syncJob({ subscriptionId: old.id });
+    await pool.query(
+      "UPDATE commerce.businesses SET trial_ends_at=$2,paid_through=$2 WHERE id=$1",
+      [id, new Date(now - 1)],
+    );
+    const next = await checkout();
+    provider.complete(next.id);
+    await billing.syncJob({ sessionId: next.id });
+    const current = await store.business(id);
+    expect(current.subscriptionId).not.toBe(old.id);
+    await billing.syncJob({ subscriptionId: old.id });
+    expect((await store.business(id)).subscriptionId).toBe(
+      current.subscriptionId,
+    );
+  });
+  it("continues reconciling healthy businesses after an earlier business fails", async () => {
+    const first = await subscribed(),
+      secondId = "22222222-2222-4222-8222-222222222222";
+    await business(secondId);
+    const second = await subscribed(secondId);
+    provider.markPaid(second.subscription.id);
+    provider.unavailableSubscriptions.add(first.subscription.id);
+    await billing.reconcile();
+    expect((await store.business(secondId)).paidThrough).toBe(
+      Date.parse("2027-01-06T12:00:00Z"),
+    );
+  });
+  it("restricts operational access when a downgrade is below actual active headcount", async () => {
+    provider.counts.set(id, 30);
+    const { subscription } = await subscribed();
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    expect((await store.business(id)).planKey).toBe("team");
+    subscription.items.data[0].price = provider.prices.get("price_small")!;
+    await billing.syncJob({ subscriptionId: subscription.id });
+    expect((await store.business(id)).planKey).toBe("team");
+    provider.markPaid(subscription.id);
+    await billing.syncJob({ subscriptionId: subscription.id });
+    expect((await store.business(id)).planKey).toBe("small");
+    await pool.query(
+      "INSERT INTO commerce.tokens(hash,account_id,purpose,expires_at) VALUES($1,$2,'session',$3)",
+      [digest("k".repeat(43)), id, new Date(now + 86400000)],
+    );
+    const app = createCommerce({
+      store,
+      origin: "https://accounts.example.test",
+      allowedOrigins: ["https://accounts.example.test"],
+      now: () => now,
+      headcount: async (b) => provider.counts.get(b.id) ?? 10,
+    });
+    const response = await app(
+      new Request("https://accounts.example.test/v1/status", {
+        headers: { authorization: `Bearer ${"k".repeat(43)}` },
+      }),
+      "127.0.0.1",
+    );
+    const status = await response.json();
+    expect(status.operational).toBe(false);
+    expect(status.reason).toBe("employee_limit_exceeded");
+    expect(status.export).toBe(true);
   });
 });

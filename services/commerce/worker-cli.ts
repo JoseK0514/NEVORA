@@ -5,8 +5,14 @@ async function main() {
   try {
     if (process.argv[2] === "reconcile") {
       if (!runtime.billing) throw Error("billing_not_configured");
-      await runtime.billing.reconcile();
-      console.log("Subscription reconciliation completed.");
+      const summary = await runtime.billing.reconcile();
+      console.log(
+        JSON.stringify({
+          state: summary.failed ? "partial" : "completed",
+          ...summary,
+        }),
+      );
+      if (summary.failed) process.exitCode = 1;
     } else if (process.argv[2] === "once")
       console.log(
         JSON.stringify(

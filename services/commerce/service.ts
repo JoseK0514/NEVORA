@@ -1,11 +1,6 @@
+import { businessAccess } from "./access";
 import { hashPassword } from "../../src/lib/auth/password";
-import {
-  accessAt,
-  CommerceError,
-  parseSignup,
-  parseEmail,
-  planFor,
-} from "./model";
+import { CommerceError, parseSignup, parseEmail, planFor } from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
 export interface BillingPort {
@@ -21,6 +16,7 @@ export type CommerceOptions = {
   billing?: BillingPort;
   signupEnabled?: boolean;
   now?: () => number;
+  headcount?: (business: Business) => Promise<number>;
 };
 async function body(request: Request, maximum = 16384) {
   const reader = request.body?.getReader();
@@ -99,8 +95,7 @@ export function createCommerce(options: CommerceOptions) {
         if (path === "/internal/access" && request.method === "GET")
           return answer({
             businessId: business.id,
-            ...accessAt(business, now),
-            employeeLimit: business.planKey === "small" ? 15 : 30,
+            ...(await businessAccess(store, business, now, options.headcount)),
             validUntil: Math.min(
               now + 60000,
               ...[
@@ -115,7 +110,12 @@ export function createCommerce(options: CommerceOptions) {
         if (path === "/internal/handoff" && request.method === "POST") {
           const proof = token();
           await store.handoff(business.id, proof, now);
-          return answer({ handoff: proof, expiresIn: 120 });
+          return answer({
+            handoff: proof,
+            businessId: business.id,
+            url: `${options.uiOrigin ?? options.origin}/pages/plans#handoff=${proof}`,
+            expiresIn: 120,
+          });
         }
         throw new CommerceError("not_found", 404);
       }
@@ -214,7 +214,7 @@ export function createCommerce(options: CommerceOptions) {
             ? new Date(business.paidThrough).toISOString()
             : null,
           plan: business.planKey,
-          ...accessAt(business, now),
+          ...(await businessAccess(store, business, now, options.headcount)),
         });
       if (
         (path === "/v1/checkout" || path === "/v1/portal") &&

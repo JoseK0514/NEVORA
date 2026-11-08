@@ -47,6 +47,19 @@ export class CommerceStore {
       client.release();
     }
   }
+  async withBusinessLock<T>(
+    id: string,
+    fn: (client: PoolClient, business: Business) => Promise<T>,
+  ): Promise<T> {
+    return this.transaction(async (client) => {
+      const result = await client.query(
+        "SELECT id FROM commerce.businesses WHERE id=$1 FOR UPDATE",
+        [id],
+      );
+      if (!result.rowCount) throw new CommerceError("not_found", 404);
+      return fn(client, await this.business(id, client));
+    });
+  }
   async enqueue(
     client: PoolClient,
     kind: Job["kind"],
@@ -250,7 +263,7 @@ export class CommerceStore {
   }
   async installation(id: string, secret: string) {
     const result = await this.pool.query(
-      "SELECT business_id FROM commerce.slots WHERE id=$1 AND instance_secret_hash=$2 AND business_id IS NOT NULL",
+      "SELECT s.business_id FROM commerce.slots s JOIN commerce.businesses b ON b.id=s.business_id WHERE s.id=$1 AND s.instance_secret_hash=$2 AND b.state='ready'",
       [id, digest(secret)],
     );
     if (!result.rowCount) throw new CommerceError("unauthorized", 401);

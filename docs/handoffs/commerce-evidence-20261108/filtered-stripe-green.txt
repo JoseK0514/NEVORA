@@ -1,0 +1,8 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+
+ Test Files  1 passed | 6 skipped (7)
+      Tests  1 passed | 39 skipped (40)
+   Start at  00:19:32
+   Duration  833ms (import 46%, tests 42%, transform 9%, worker 2%)

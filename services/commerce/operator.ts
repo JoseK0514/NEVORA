@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { readFile } from "node:fs/promises";
+import { installCatalog } from "./catalog";
 import { readCommerceConfig } from "./config";
 import { CommerceStore } from "./store";
 import { registerSlot } from "./provision";
@@ -17,13 +17,7 @@ async function main() {
   });
   try {
     if (process.argv[2] === "migrate") {
-      const rows = await pool.query(
-        "SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('r','p') LIMIT 1",
-      );
-      if (rows.rowCount) throw Error("dedicated_empty_catalog_required");
-      await pool.query(
-        await readFile(new URL("./schema.sql", import.meta.url), "utf8"),
-      );
+      await installCatalog(pool);
       console.log("Commerce catalog installed.");
     } else if (process.argv[2] === "register-slot") {
       await registerSlot(

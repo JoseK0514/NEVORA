@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const deps = vi.hoisted(() => ({ query: vi.fn(), session: vi.fn() }));
 vi.mock("@/lib/db", () => ({
@@ -87,9 +88,20 @@ it("requires a current Owner and same-origin request for the Velani billing hand
   expect((await handoff(req("https://other.example.test"))).status).toBe(403);
   expect((await handoff(req("https://company.example.test"))).status).toBe(403);
   deps.session.mockResolvedValue({ id: "OWNER", role: "OWNER" });
-  deps.query.mockResolvedValue([{ id: "OWNER" }]);
+  deps.query.mockResolvedValue([
+    {
+      id: "OWNER",
+      business_id: id,
+      installation_id: "slot-a",
+      instance_secret_hash: createHash("sha256").update(secret).digest("hex"),
+    },
+  ]);
   vi.stubGlobal("fetch", async () =>
-    Response.json({ handoff: "b".repeat(43) }),
+    Response.json({
+      handoff: "b".repeat(43),
+      businessId: id,
+      url: `https://www.thevelani.com/pages/plans#handoff=${"b".repeat(43)}`,
+    }),
   );
   const response = await handoff(req("https://company.example.test"));
   expect((await response.json()).url).toBe(
@@ -98,9 +110,22 @@ it("requires a current Owner and same-origin request for the Velani billing hand
 });
 it("does not return a billing handoff if Owner authority is revoked during the network request", async () => {
   deps.session.mockResolvedValue({ id: "OWNER", role: "OWNER" });
-  deps.query.mockResolvedValue([]);
+  deps.query
+    .mockResolvedValueOnce([
+      {
+        id: "OWNER",
+        business_id: id,
+        installation_id: "slot-a",
+        instance_secret_hash: createHash("sha256").update(secret).digest("hex"),
+      },
+    ])
+    .mockResolvedValue([]);
   vi.stubGlobal("fetch", async () =>
-    Response.json({ handoff: "b".repeat(43) }),
+    Response.json({
+      handoff: "b".repeat(43),
+      businessId: id,
+      url: `https://www.thevelani.com/pages/plans#handoff=${"b".repeat(43)}`,
+    }),
   );
   const response = await handoff(
     new Request("https://company.example.test/api/commerce/handoff", {
@@ -109,4 +134,54 @@ it("does not return a billing handoff if Owner authority is revoked during the n
     }),
   );
   expect(response.status).toBe(403);
+});
+it("does not mint or return another installation billing session when its local binding disagrees", async () => {
+  deps.session.mockResolvedValue({ id: "OWNER", role: "OWNER" });
+  deps.query.mockResolvedValue([
+    {
+      id: "OWNER",
+      business_id: id,
+      installation_id: "slot-b",
+      instance_secret_hash: "mismatch",
+    },
+  ]);
+  vi.stubGlobal("fetch", async () =>
+    Response.json({ handoff: "b".repeat(43), businessId: id }),
+  );
+  const response = await handoff(
+    new Request("https://company.example.test/api/commerce/handoff", {
+      method: "POST",
+      headers: { origin: "https://company.example.test" },
+    }),
+  );
+  expect(response.status).toBe(403);
+});
+
+it("keeps a staging billing handoff on its configured trusted frontend", async () => {
+  vi.stubEnv("NEVORA_COMMERCE_UI_ORIGIN", "https://staging.example.test");
+  deps.session.mockResolvedValue({ id: "OWNER", role: "OWNER" });
+  deps.query.mockResolvedValue([
+    {
+      id: "OWNER",
+      business_id: id,
+      installation_id: "slot-a",
+      instance_secret_hash: createHash("sha256").update(secret).digest("hex"),
+    },
+  ]);
+  vi.stubGlobal("fetch", async () =>
+    Response.json({
+      handoff: "b".repeat(43),
+      businessId: id,
+      url: `https://staging.example.test/pages/plans#handoff=${"b".repeat(43)}`,
+    }),
+  );
+  const response = await handoff(
+    new Request("https://company.example.test/api/commerce/handoff", {
+      method: "POST",
+      headers: { origin: "https://company.example.test" },
+    }),
+  );
+  expect((await response.json()).url).toBe(
+    `https://staging.example.test/pages/plans#handoff=${"b".repeat(43)}`,
+  );
 });
