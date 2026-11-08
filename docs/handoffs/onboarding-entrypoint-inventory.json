@@ -915,6 +915,24 @@
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
     },
     {
+      "path": "src/app/api/onboarding/invitation-batches/[operationId]/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Actor-scoped current Owner read/reconciliation only; never sends mail.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/app/api/onboarding/invitation-batches/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit Owner batch command; same reviewed operation may process up to five still-PREPARED targets; UNKNOWN is never dispatched again.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
       "path": "src/app/api/onboarding/operations/[operationId]/route.ts",
       "tags": [
         "control-plane"
@@ -3083,6 +3101,24 @@
       "status": "CONVERTED",
       "isolatedBehavior": "CONTROL_PLANE",
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
+    },
+    {
+      "path": "src/lib/onboarding/invitation-batch-http.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Exact ACTIVE company host/current Owner, configured existing delivery adapter with registry-derived origin, no-store per-person status.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/lib/onboarding/invitation-batch.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit bounded reviewed targets, immutable actor/target generations, deterministic child operations and pre-dispatch UNKNOWN fence. Canonical invitation service/receipt reads only; no bearer queue or blind unknown resend.",
+      "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
       "path": "src/lib/onboarding/owner-activation-http.server.ts",

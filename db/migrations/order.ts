@@ -54,6 +54,7 @@ export const BASE_MIGRATIONS = [
   '0047_isolated_workspace_runtime.sql',
   '0048_self_service_onboarding.sql',
   '0049_initial_owner_activation.sql',
+  '0050_onboarding_invitation_batch_authority.sql',
 ] as const;
 
 /** Applied last, in exactly this order, once the company and Owner exist:
