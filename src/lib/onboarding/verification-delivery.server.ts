@@ -1,5 +1,5 @@
 import 'server-only';
-import {validatedMailTransport} from '../auth/mail-transport.server';
+import {validatedMailTransport,StagingRecipientDenied} from '../auth/mail-transport.server';
 import {registeredEmail} from './contracts';
 import {validOnboardingToken} from './crypto.server';
 import type {EnabledConfig} from './config.server';
@@ -16,6 +16,6 @@ export function verificationDelivery(env:Record<string,string|undefined>,config:
   const subject=locale==='es'?'Verifica tu correo para NEVORA':'Verify your email for NEVORA';
   const text=locale==='es'?'Verifica tu correo para comenzar la configuración de tu negocio.\n\n'+url+'\n\nSi no solicitaste este enlace, ignora este mensaje.':'Verify your email to begin setting up your business.\n\n'+url+'\n\nIf you did not request this link, ignore this message.';
   try{const r=await transport.sendRegistered(email,subject,text);if(r.accepted?.length!==1||String(r.accepted[0]).toLowerCase()!==email.toLowerCase())throw new VerificationDeliveryError('UNKNOWN');return {providerAccepted:true};}
-  catch(error){if(error instanceof VerificationDeliveryError)throw error;const e=error as {command?:unknown;responseCode?:unknown};const definite=['EHLO','HELO','AUTH','MAIL FROM','RCPT TO'].includes(String(e?.command))||(typeof e?.responseCode==='number'&&e.responseCode>=400);throw new VerificationDeliveryError(definite?'FAILED':'UNKNOWN');}
+  catch(error){if(error instanceof VerificationDeliveryError)throw error;if(error instanceof StagingRecipientDenied)throw new VerificationDeliveryError('FAILED');const e=error as {command?:unknown;responseCode?:unknown};const definite=['EHLO','HELO','AUTH','MAIL FROM','RCPT TO'].includes(String(e?.command))||(typeof e?.responseCode==='number'&&e.responseCode>=400);throw new VerificationDeliveryError(definite?'FAILED':'UNKNOWN');}
  }};
 }

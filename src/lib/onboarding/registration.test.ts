@@ -17,3 +17,12 @@ describe('verification delivery uses the actual registered channel',()=>{
  it('sends a verification link with proof only in a fragment through owned SMTP',async()=>{const smtp=await fakeInvitationSmtp();try{const c=onboardingTestConfig({NEVORA_SIGNUP_ORIGIN:smtp.env.FUEL_PORTAL_ORIGIN});const sender=verificationDelivery({...smtp.env,NEVORA_ONBOARDING_EMAIL_ENABLED:'true'},c);expect(sender).not.toBeNull();await sender!.send({email:'owner@example.invalid',proof:newOnboardingToken(),locale:'es',expiresAt:new Date(Date.now()+1800000).toISOString()});expect(smtp.messages.length).toBe(1);const body=smtp.messages[0].replace(/=\r\n/g,'').replace(/=3D/g,'=');const link=body.match(/http:\/\/127\.0\.0\.1:\d+\/onboarding\/verify[^\s]+/)?.[0];expect(!!link).toBe(true);const u=new URL(link!);expect(u.search).toBe('');expect(u.hash.startsWith('#proof=')).toBe(true);expect(body.includes('Verifica')).toBe(true);}finally{await smtp.close();}});
  it.each([['reject_before_data','FAILED'],['drop_after_data','UNKNOWN']] as const)('retains truthful %s SMTP outcome',async(mode,state)=>{const smtp=await fakeInvitationSmtp(mode);try{const c=onboardingTestConfig({NEVORA_SIGNUP_ORIGIN:smtp.env.FUEL_PORTAL_ORIGIN});const sender=verificationDelivery({...smtp.env,NEVORA_ONBOARDING_EMAIL_ENABLED:'true'},c)!;await expect(sender.send({email:'owner@example.invalid',proof:newOnboardingToken(),locale:'en',expiresAt:new Date(Date.now()+1800000).toISOString()})).rejects.toMatchObject({deliveryState:state});}finally{await smtp.close();}});
 });
+
+it('classifies a staging verification recipient refusal as definite without SMTP',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  const c=onboardingTestConfig({NEVORA_SIGNUP_ORIGIN:smtp.env.FUEL_PORTAL_ORIGIN});
+  const sender=verificationDelivery({...smtp.env,NEVORA_ONBOARDING_EMAIL_ENABLED:'true',NEVORA_STAGING_EMAIL_RECIPIENT:'approved@example.invalid'},c)!;
+  await expect(sender.send({email:'other@example.invalid',proof:newOnboardingToken(),locale:'en',expiresAt:new Date(Date.now()+900000).toISOString()})).rejects.toMatchObject({deliveryState:'FAILED'});
+  expect(smtp.connections).toBe(0);expect(smtp.messages.length).toBe(0);
+ }finally{await smtp.close();}
+});

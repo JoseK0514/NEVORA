@@ -12,6 +12,8 @@ The web service receives only its restricted control principal, onboarding/signu
 
 Inspect `.env.example` and the configuration readers for the exact variables; keep secrets in the approved secret store, never the browser, Git, Jira, commands or logs. The three32byte keys must be distinct. Set region/account/policy/operator/environment explicitly. Run the disabled worker/operator commands first and observe `disabled`; configuration is not authentication, a successful local test is not hosted validation, and a deployment record is not release approval.
 
+Remote SMTP in the onboarding test environment also requires NEVORA_STAGING_EMAIL_RECIPIENT, set to the explicitly approved mailbox. The shared verification/invitation/recovery transport refuses another recipient before opening SMTP. Missing/invalid configuration reports unavailable delivery; a blocked recipient is a definite failure, never an unknown provider outcome. Local owned SMTP remains available without real-network credentials.
+
 ## Runtime and recovery
 
 `npm run onboarding:worker` executes one bounded private invocation. Schedule it only after the hosted controls are verified. It performs bounded expired-proof maintenance, claims durable provisioning work, or processes pending first-Owner grant/finalization work. Keep account resource/cost alerts, lease heartbeat/failure alerts and per-company migration monitoring connected to an actual observed sink before enabling. Never log email proofs, redirects, passwords, connection strings, encrypted private payloads or management keys.

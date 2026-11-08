@@ -1,7 +1,7 @@
 import {publicWorkspaceToken} from '../../workspace-routing/token-envelope.server';
 import 'server-only';
 import type {InvitationDelivery} from '@/lib/company-access/contracts';
-import {validatedMailTransport,validRegisteredEmail} from '../mail-transport.server';
+import {validatedMailTransport,validRegisteredEmail,StagingRecipientDenied} from '../mail-transport.server';
 import {invitationEmail} from '../account-email-copy';
 class InvitationDeliveryError extends Error {
  constructor(readonly deliveryState:'FAILED'|'UNKNOWN') {super('Invitation email outcome unavailable.');}
@@ -21,6 +21,7 @@ export function invitationDelivery(env:Record<string,string|undefined>=process.e
    return {providerAccepted:true};
   } catch(error) {
    if(error instanceof InvitationDeliveryError)throw error;
+   if(error instanceof StagingRecipientDenied)throw new InvitationDeliveryError('FAILED');
    const e=error as {command?:unknown;responseCode?:unknown};
    const definite=['EHLO','HELO','AUTH','MAIL FROM','RCPT TO'].includes(String(e?.command))
     ||(typeof e?.responseCode==='number'&&e.responseCode>=400);
