@@ -55,9 +55,11 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sharp": "0.35.5",
+    "stripe": "23.1.0",
     "web-push": "3.6.7"
   },
   "devDependencies": {
+    "@nevora/eslint-config-next": "file:tools/eslint-config-next",
     "@types/node": "^24.0.0",
     "@types/nodemailer": "8.0.2",
     "@types/pg": "8.23.1",
@@ -68,7 +70,6 @@
     "pg": "8.23.1",
     "tsx": "4.23.15",
     "typescript": "^5.9.0",
-    "vitest": "5.0.5",
-    "@nevora/eslint-config-next": "file:tools/eslint-config-next"
+    "vitest": "5.0.5"
   }
 }
