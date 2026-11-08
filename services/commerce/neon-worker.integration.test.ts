@@ -5,6 +5,7 @@ import {readFile} from 'node:fs/promises';
 import {createRuntime} from './runtime';
 import {dropTestDatabase} from './test-database';
 import {runCommerceTask} from '../hosted/neon/tasks';
+import {randomBytes} from 'node:crypto';
 describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Neon bounded worker catalog lifecycle',()=>{
  let admin:Pool,fixture:Pool,name:string,url:URL;let opened:ReturnType<typeof createRuntime>[]=[];
  beforeEach(async()=>{
@@ -17,4 +18,5 @@ describe.skipIf(!process.env.NEVORA_COMMERCE_TEST_URL)('Neon bounded worker cata
  it('returns an idle result and releases the real connection pool',async()=>{const r=runtime();expect(await runCommerceTask('queue',()=>r)).toEqual({state:'idle'});await expect(r.pool.query('SELECT 1')).rejects.toThrow('Cannot use a pool after calling end');});
  it('closes its pool when reconciliation has no Stripe configuration',async()=>{const r=runtime();await expect(runCommerceTask('reconcile',()=>r)).rejects.toThrow('billing_not_configured');await expect(r.pool.query('SELECT 1')).rejects.toThrow('Cannot use a pool after calling end');});
  it('preserves a durable retry when a billing job cannot run',async()=>{const r=runtime();await r.store.transaction(c=>r.store.enqueue(c,'stripe','neon-worker-fixture',{sessionId:'cs_test_fixture'}));expect((await runCommerceTask('queue',()=>r)).state).toBe('retry_scheduled');const rows=await fixture.query('SELECT attempts,last_error,state FROM commerce.jobs');expect(rows.rows).toEqual([{attempts:1,last_error:'retry_required',state:'pending'}]);await expect(r.pool.query('SELECT 1')).rejects.toThrow('Cannot use a pool after calling end');});
+ it.each([['support@thevelani.com',1,'processed'],['unapproved@example.invalid',0,'retry_scheduled']] as const)('restricts queued staging mail to the approved inbox: %s',async(email,count,state)=>{const r=runtime(),delivered:string[]=[];r.sendMail=async m=>{delivered.push(m.email);};await r.store.signup(email,randomBytes(32).toString('base64url'),'https://fictional.invalid/verify',Date.now());expect((await runCommerceTask('queue',()=>r)).state).toBe(state);expect(delivered).toHaveLength(count);});
 });

@@ -1,6 +1,6 @@
 import {build} from 'esbuild';
-import {mkdir,writeFile,readFile,readdir,copyFile} from 'node:fs/promises';
-import {resolve,relative,join,isAbsolute,dirname,sep} from 'node:path';
+import {mkdir,writeFile,readFile,readdir,copyFile,realpath} from 'node:fs/promises';
+import {resolve,relative,join,isAbsolute,dirname,basename,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
@@ -13,6 +13,8 @@ if(destination.length!==1||!isAbsolute(destination[0]))throw Error('Supply one a
 const output=resolve(destination[0]);
 const relation=relative(root,output);
 if(!(relation==='..'||relation.startsWith('..'+sep))||output===dirname(root))throw Error('Output must be outside the source tree.');
+const actualRoot=await realpath(root),actualOutput=join(await realpath(dirname(output)),basename(output)),actualRelation=relative(actualRoot,actualOutput);
+if(!(actualRelation==='..'||actualRelation.startsWith('..'+sep))||actualOutput===dirname(actualRoot))throw Error('Output must be outside the source tree after resolving symlinks.');
 const git=(...a)=>{const r=spawnSync('git',a,{cwd:root,encoding:'utf8'});if(r.status!==0)throw Error('Source custody unavailable');return r.stdout.trim();};
 const before={commit:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}'),status:git('status','--porcelain')};
 if(before.status&&!allowDirty)throw Error('Refuse deployable bundles from a dirty checkout; --allow-dirty is local-only.');
@@ -31,7 +33,8 @@ for(const slug of ['stripewebhook','commercequeue','commercereconcile','provisio
  const files=[];
  async function inventory(path){for(const item of await readdir(path,{withFileTypes:true})){const file=join(path,item.name);if(item.isDirectory())await inventory(file);else files.push({path:relative(dir,file),sha256:createHash('sha256').update(await readFile(file)).digest('hex')});}}
  await inventory(dir);
- const zip=join(output,slug+'.zip');const packed=spawnSync('zip',['-q','-r',zip,'.'],{cwd:dir,encoding:'utf8',timeout:30000});if(packed.status!==0)throw Error('Bundle ZIP failed');
+ const zip=join(output,slug+'.zip');const zipEnv={...process.env};delete zipEnv.ZIPOPT;
+ const packed=spawnSync('zip',['-q','-X',zip,...files.map(f=>f.path)],{cwd:dir,env:zipEnv,encoding:'utf8',timeout:30000});if(packed.status!==0)throw Error('Bundle ZIP failed');
  const sourceInputs=Object.keys(bundled.metafile.inputs).map(x=>resolve(x));
  if(sourceInputs.some(x=>/(^|\/)\.env(?:\.|$)/.test(x)))throw Error('Environment file in build input');
  artifacts.push({slug,zip,zipSha256:createHash('sha256').update(await readFile(zip)).digest('hex'),files,inputs:sourceInputs.map(x=>relative(root,x))});

@@ -49,3 +49,7 @@ it("defaults Tax off and carries an explicit Tax choice only when enabled", () =
   expect(runtime().billing?.options).not.toHaveProperty("tax");
   expect(runtime({ NEVORA_COMMERCE_TAX_ENABLED: "true", NEVORA_COMMERCE_TAX_CODE: "txcd_10103000", NEVORA_COMMERCE_TAX_BEHAVIOR: "exclusive" }).billing?.options).toMatchObject({ tax: { code: "txcd_10103000", behavior: "exclusive" } });
 });
+it("opens billing workers without giving them the receiver signing secret", async () => {
+ const result=createRuntime({...base,...staging,STRIPE_ACCOUNT_ID:'acct_fictional',STRIPE_WEBHOOK_SECRET:undefined},'worker');
+ try{expect(result.billing?.options).toMatchObject({live:false});expect(result.billing?.options.webhookSecret).toBeUndefined();await expect(result.billing!.webhook('{}','fixture')).rejects.toThrow('webhook_not_configured');}finally{await result.pool.end();}
+});

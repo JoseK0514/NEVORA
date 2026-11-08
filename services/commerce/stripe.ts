@@ -22,7 +22,7 @@ import {
 type BillingOptions = {
   origin: string;
   prices: Record<PlanKey, string>;
-  webhookSecret: string;
+  webhookSecret?: string;
   live: boolean;
   expectedAccountId?: string;
   tax?: StripeTaxConfig;
@@ -92,6 +92,7 @@ export class StripeBilling implements BillingPort {
     });
   }
   async webhook(raw: string, signature: string) {
+    if(!this.options.webhookSecret)throw new CommerceError('webhook_not_configured',503);
     await enqueueStripeWebhook(this.store,parseStripeWebhook(raw,signature,this.options.webhookSecret,this.options.live));
   }
   async syncJob(payload: Record<string, string>) {
@@ -367,11 +368,17 @@ export class StripeBilling implements BillingPort {
     // A paid provider invoice is irreversible here; this gate does not undo a charge.
     if (taxReviewRequired) throw new CommerceError("stripe_tax_review_required", 503);
   }
-  async reconcile() {
+  async reconcile({limit=25}:{limit?:number}={}) {
+    if(!Number.isSafeInteger(limit)||limit<1||limit>25)throw Error('invalid_reconcile_limit');
     await this.verifyAccount();
-    const rows = await this.store.pool.query(
-      "SELECT id FROM commerce.businesses WHERE stripe_customer_id IS NOT NULL ORDER BY id",
-    );
+    // Commit attempt order before any provider call. A crashed or failing first
+    // business therefore cannot starve later ticks, including fresh runtimes.
+    const rows=await this.store.transaction(async client=>{
+      await client.query("SELECT pg_advisory_xact_lock(hashtextextended('commerce-reconcile-selection',0))");
+      const selected=await client.query("SELECT b.id FROM commerce.businesses b WHERE stripe_customer_id IS NOT NULL ORDER BY (SELECT max(a.id) FROM commerce.audit a WHERE a.business_id=b.id AND a.event='billing_reconcile_attempt') NULLS FIRST,b.id LIMIT $1",[limit]);
+      for(const row of selected.rows)await client.query("INSERT INTO commerce.audit(business_id,event) VALUES($1,'billing_reconcile_attempt')",[row.id]);
+      return selected;
+    });
     let failed = 0;
     for (const row of rows.rows) {
       try {

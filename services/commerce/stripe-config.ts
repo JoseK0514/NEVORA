@@ -7,6 +7,7 @@ export type StripeTaxConfig = {
 export function readStripeConfig(
   env: Readonly<Record<string, string | undefined>>,
   environment: string,
+  usage:'application'|'worker'='application',
 ) {
   const flag = env.NEVORA_COMMERCE_TAX_ENABLED;
   let tax: StripeTaxConfig | undefined;
@@ -28,8 +29,9 @@ export function readStripeConfig(
   const expectedAccountId = env.STRIPE_ACCOUNT_ID;
   if ((environment !== "development" || expectedAccountId !== undefined) && !/^acct_[A-Za-z0-9]+$/.test(expectedAccountId ?? ""))
     throw Error("stripe_account_required");
-  if (!env.STRIPE_PRICE_SMALL || !env.STRIPE_PRICE_TEAM || !env.STRIPE_WEBHOOK_SECRET)
+  if (!env.STRIPE_PRICE_SMALL || !env.STRIPE_PRICE_TEAM || (usage==='application'&&!env.STRIPE_WEBHOOK_SECRET))
     throw Error("stripe_configuration_incomplete");
+  if(usage==='worker'&&env.STRIPE_WEBHOOK_SECRET)throw Error('worker_webhook_credential_forbidden');
   const prices: Record<PlanKey, string> = { small: env.STRIPE_PRICE_SMALL, team: env.STRIPE_PRICE_TEAM };
   return { key, live, expectedAccountId, prices, webhookSecret: env.STRIPE_WEBHOOK_SECRET, ...(tax ? { tax } : {}) };
 }

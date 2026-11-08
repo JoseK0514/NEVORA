@@ -4,6 +4,8 @@ import {resolve,join,isAbsolute} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
+import {extractNeonArchive} from './neon-archive.mjs';
+import {BASE_MIGRATIONS,FINAL_MIGRATIONS} from '../db/migrations/order.ts';
 
 const args=process.argv.slice(2),allowDirty=args.includes('--allow-dirty'),paths=args.filter(x=>x!=='--allow-dirty');
 assert.equal(paths.length,1,'Supply the owned bundle directory');
@@ -11,14 +13,19 @@ const output=resolve(paths[0]),receipt=JSON.parse(await readFile(join(output,'re
 assert.equal(receipt.sourceUnchanged,true);
 if(!allowDirty)assert.equal(receipt.deployable,true,'Only clean source bundles are deployable');
 // This child process never inherits an application capability for artifact checks.
-for(const key of Object.keys(process.env))if(/^(NEVORA_|STRIPE_|DATABASE_URL)/.test(key))delete process.env[key];
+for(const key of Object.keys(process.env))if(/^(NEVORA_|STRIPE_|DATABASE_|NEON_|AWS_|PG[A-Z_])/.test(key))delete process.env[key];
 Object.assign(process.env,{NEVORA_NEON_HOST_ENABLED:'false',NEVORA_NEON_BRANCH_ID:'br-owned-local',NEON_BRANCH_ID:'br-owned-local',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:'postgresql://disabled.invalid/disabled',DATABASE_URL_UNPOOLED:'postgresql://disabled.invalid/disabled'});
 const expected=['stripewebhook','commercequeue','commercereconcile','provisioner'];
 assert.deepEqual(receipt.artifacts.map(x=>x.slug),expected);
 let verifiedFiles=0;
+const extracted=await mkdtemp(join(tmpdir(),'nv-neon-archive-verified-'));
+try{
 for(const artifact of receipt.artifacts){
- const dir=join(output,artifact.slug),archive=await readFile(join(output,artifact.slug+'.zip'));
+ const dir=join(extracted,artifact.slug),archivePath=join(output,artifact.slug+'.zip'),archive=await readFile(archivePath);
  assert.equal(createHash('sha256').update(archive).digest('hex'),artifact.zipSha256);
+ const expectedFiles=['index.mjs','src/lib/company-bootstrap/bundle.mjs',...(artifact.slug==='provisioner'?[...BASE_MIGRATIONS,...FINAL_MIGRATIONS].map(x=>'db/migrations/'+x):[])];
+ assert.deepEqual(artifact.files.map(f=>f.path).sort(),expectedFiles.sort(),'archive manifest inventory mismatch');
+ extractNeonArchive(archivePath,expectedFiles,dir);
  for(const file of artifact.files){
   assert(!isAbsolute(file.path)&&!file.path.split(/[\\/]/).includes('..'),'Unsafe artifact path');
   assert.equal(createHash('sha256').update(await readFile(join(dir,file.path))).digest('hex'),file.sha256);verifiedFiles++;
@@ -44,4 +51,5 @@ for(const artifact of receipt.artifacts){
   }finally{await rm(owned,{recursive:true,force:true});}
  }
 }
-console.log(JSON.stringify({state:'passed',source:receipt.source,verifiedFiles,functions:expected,canonicalSqlTamperingRejected:true,localTriggerSimulationOnly:true}));
+}finally{await rm(extracted,{recursive:true,force:true});}
+console.log(JSON.stringify({state:'passed',source:receipt.source,verifiedFiles,functions:expected,actualZipExtractionVerified:true,canonicalSqlTamperingRejected:true,localTriggerSimulationOnly:true}));

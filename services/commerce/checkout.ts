@@ -289,7 +289,7 @@ export async function createCheckout(
 export async function recoverCheckouts(ports: Ports, business: Business) {
   if (!business.customerId) return;
   const intents = await ports.store.pool.query<Intent>(
-    "SELECT * FROM commerce.checkout_intents WHERE business_id=$1 AND session_id IS NULL ORDER BY created_at",
+    "SELECT * FROM (SELECT * FROM commerce.checkout_intents WHERE business_id=$1 AND session_id IS NULL ORDER BY created_at DESC LIMIT 100) recent ORDER BY created_at",
     [business.id],
   );
   if (!intents.rowCount) return;

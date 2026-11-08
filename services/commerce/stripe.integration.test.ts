@@ -316,6 +316,7 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
         livemode: false,
         data: {
           object: {
+            id: 'in_fixture', object: 'invoice',
             parent: { subscription_details: { subscription: "sub_fixture_1" } },
           },
         },
@@ -443,6 +444,13 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect((await store.business(secondId)).paidThrough).toBe(
       Date.parse("2027-01-06T12:00:00Z"),
     );
+  });
+  it("durably advances bounded ticks past a failing first business", async () => {
+    const first=await subscribed(),secondId='22222222-2222-4222-8222-222222222222';await business(secondId);const second=await subscribed(secondId);provider.markPaid(second.subscription.id);provider.unavailableSubscriptions.add(first.subscription.id);
+    expect(await billing.reconcile({limit:1})).toEqual({checked:1,failed:1});
+    // A fresh object has no in-memory cursor. Its next tick must reach the later business.
+    const resumed=new StripeBilling(store,billing.stripe,billing.options);
+    expect(await resumed.reconcile({limit:1})).toEqual({checked:1,failed:0});expect((await store.business(secondId)).paidThrough).toBe(Date.parse('2027-01-06T12:00:00Z'));
   });
   it("restricts operational access when a downgrade is below actual active headcount", async () => {
     provider.counts.set(id, 30);

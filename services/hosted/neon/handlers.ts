@@ -1,7 +1,8 @@
 import type Stripe from 'stripe';
 import {parseTriggerDelivery} from '@neon/functions/triggers';
-import {parseStripeWebhook} from '../../commerce/stripe-webhook';
+import {parseStripeWebhook,projectsStripeEvent} from '../../commerce/stripe-webhook';
 import {CommerceError} from '../../commerce/model';
+import {roleCapabilitiesAllowed} from './capabilities';
 export const UNUSABLE_DATABASE_URL = 'postgresql://disabled.invalid/disabled';
 export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner';
 type Env=Readonly<Record<string,string|undefined>>;
@@ -17,12 +18,7 @@ function bound(env:Env,role:HostedRole|'stripewebhook'){
  // in every deployment, even when disabled; only named role-specific DSNs are used.
  if(env.DATABASE_URL!==UNUSABLE_DATABASE_URL||env.DATABASE_URL_UNPOOLED!==UNUSABLE_DATABASE_URL)return false;
  if(env.NEVORA_NEON_HOST_ENABLED!=='true'&&env.NEVORA_NEON_HOST_ENABLED!=='false')return false;
- if(role!=='provisioner'&&env.NEVORA_COMMERCE_DATABASE_URL){
-  try{if(!/^nv_commerce_api_[a-f0-9]{24}$/.test(decodeURIComponent(new URL(env.NEVORA_COMMERCE_DATABASE_URL).username)))return false;}catch{return false;}
- }
- if(role!=='provisioner'&&Object.entries(env).some(([k,v])=>v&&(k.startsWith('NEVORA_PROVISIONER_')||['NEVORA_COMMERCE_ENROLLMENT_DATABASE_URL','NEVORA_COMMERCE_BINDING_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY'].includes(k))))return false;
- if(role==='stripewebhook'&&Object.entries(env).some(([k,v])=>v&&(k==='STRIPE_SECRET_KEY'||k.startsWith('NEVORA_COMMERCE_SMTP_'))))return false;
- return true;
+ return roleCapabilitiesAllowed(role,env);
 }
 async function body(request:Request,max:number){
  const reader=request.body?.getReader();if(!reader)return '';
@@ -31,7 +27,7 @@ async function body(request:Request,max:number){
  const deadline=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{reject(new CommerceError('request_timeout',408));void reader.cancel().catch(()=>{});},5000);});
  try{
   for(;;){const part=await Promise.race([reader.read(),deadline]);if(part.done)break;bytes+=part.value.byteLength;if(bytes>max){void reader.cancel().catch(()=>{});throw new CommerceError('body_too_large',413);}chunks.push(part.value);}
-  return Buffer.concat(chunks).toString('utf8');
+  try{return new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(Buffer.concat(chunks));}catch{throw new CommerceError('invalid_encoding',400);}
  }finally{clearTimeout(timer!);}
 }
 export function createWebhookHandler(env:Env,enqueue:(event:Stripe.Event)=>Promise<void>){
@@ -40,8 +36,8 @@ export function createWebhookHandler(env:Env,enqueue:(event:Stripe.Event)=>Promi
   if(request.method!=='POST'||path!=='/webhooks/stripe')return fail('not_found',404);
   if(!bound(env,'stripewebhook')||env.NEVORA_NEON_HOST_ENABLED!=='true'||!env.STRIPE_WEBHOOK_SECRET)return fail('not_ready',503);
   const signature=request.headers.get('stripe-signature');if(!signature||signature.length>4096)return fail('invalid_signature',400);
-  try{const event=parseStripeWebhook(await body(request,262144),signature,env.STRIPE_WEBHOOK_SECRET,false);await enqueue(event);return answer({received:true});}
-  catch(error){if(error instanceof CommerceError&&['invalid_signature','mode_mismatch','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
+  try{const event=parseStripeWebhook(await body(request,262144),signature,env.STRIPE_WEBHOOK_SECRET,false);if(projectsStripeEvent(event))await enqueue(event);return answer({received:true});}
+  catch(error){if(error instanceof CommerceError&&['invalid_signature','invalid_event','invalid_encoding','mode_mismatch','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
  };
 }
 /** Only use behind Neon's native proxy, which strips client x-neon-* headers.
@@ -60,6 +56,6 @@ export function createScheduledHandler(role:HostedRole,env:Env,run:()=>Promise<{
    const result=await run();
    if(!['idle','processed','completed','complete'].includes(result.state))return fail('retry_required',503);
    return answer({state:result.state});
-  }catch(error){if(error instanceof CommerceError&&['body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
+  }catch(error){if(error instanceof CommerceError&&['invalid_encoding','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
  };
 }

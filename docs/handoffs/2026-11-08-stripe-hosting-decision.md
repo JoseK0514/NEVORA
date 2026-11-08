@@ -1,6 +1,6 @@
 # Staging webhook and private scheduling decision
 
-Status: the Render proposal below is superseded by Jose's direction to finish using the existing accounts. No paid hosting budget was approved. Neon Functions/Triggers are now verified available on the existing Free staging project; bounded adapters are being implemented under docs/superpowers/plans/2026-11-08-neon-staging-hosting.md. Actual hosted effects remain unverified.
+Status: the Render proposal below is superseded by Jose's direction to finish using the existing accounts. No paid hosting budget was approved. Neon Functions/Triggers are now verified available on the existing Free staging project; four closed adapters have been deployed and native no-op schedule delivery observed. See docs/superpowers/plans/2026-11-08-neon-staging-hosting.md and stripe-evidence-20261108/neon-hosting.json for current code, review and test evidence. Actual payment, mail and provisioning effects remain unverified. All new schedules are disabled.
 
 Historical Render proposal, retained for decision provenance: Codex owns backend and hosting; Claude owns UI. Jira SCRUM-174 / SCRUM-166 remain open. User approved the sandbox runtime key and its sensitive Vercel Preview destination; that approval does not authorize a new paid hosting plan or copying it into another service.
 
@@ -13,7 +13,7 @@ Historical Render proposal, retained for decision provenance: Codex owns backend
 - Render Free web services sleep after 15 minutes, share 750 workspace hours and block SMTP ports 465/587. Private background/cron services have no Free compute tier. Free sleeping web services are unsuitable as the durable worker host.
 - Vercel Schedules has just entered public beta with included Hobby usage; it remains an alternative to investigate, not a verified private-worker integration or reason to add provisioner credentials to the public application project.
 
-## Recommended bounded hosted arrangement
+## Historical Render arrangement (superseded)
 
 Use a new isolated Render staging deployment with one webhook-only web service and three private scheduled jobs. No changes to the existing native staging service, real production, Shopify, Claude UI or Vercel SSO.
 
@@ -26,7 +26,7 @@ Use a new isolated Render staging deployment with one webhook-only web service a
 
 Each service uses Node 24, the exact reviewed source snapshot, no application build/migration startup side effects, no automatic deploy on unrelated commits, no autoscaling, no paid datastore and no Redis. The existing PostgreSQL durable queues remain the source of truth. The receiver must be implemented and regression-tested before any external exposure. Configure fresh endpoint-specific signing secret and approved service-specific secret destinations securely; keep no keys in source/logs. Key creation or materially broader access through browser still needs the action-time confirmation required by that tool.
 
-## Cost decision
+## Historical cost proposal (not approved)
 
 Current Render pricing lists 0.5c-512mb at USD7/month for a continuously running web service. Each cron has a USD1/month minimum and bills for active execution. Expected minimum is about USD10/month for the four services, before applicable tax or excess bandwidth/build usage. This is not a USD10 hard cap. Four fixed smallest plans bound continuous compute to approximately USD28/month; actual cron compute should be much lower. A proposed additional staging budget is USD30/month. Verify workspace included usage, spend controls, command timeouts and pricing again before activation; do not enable paid extras or continue past the approved budget. No resource or charge has been created by this proposal.
 

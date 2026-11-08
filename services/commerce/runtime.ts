@@ -6,9 +6,9 @@ import { CommerceStore } from "./store";
 import { StripeBilling } from "./stripe";
 import { readStripeConfig } from "./stripe-config";
 import type { MailDelivery } from "./worker";
-export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
+export function createRuntime(env: NodeJS.ProcessEnv = process.env,usage:'application'|'worker'='application') {
   const config = readCommerceConfig(env);
-  const stripeConfig = readStripeConfig(env, config.environment);
+  const stripeConfig = readStripeConfig(env, config.environment,usage);
   if (
     config.environment === "production" &&
     env.NEVORA_COMMERCE_SIGNUP_ENABLED === "true" &&
@@ -16,9 +16,10 @@ export function createRuntime(env: NodeJS.ProcessEnv = process.env) {
   ) throw Error("signup_requires_mail_delivery");
   const pool = new Pool({
     connectionString: config.databaseUrl,
-    max: 10,
+    max: usage==='worker'?2:10,
     connectionTimeoutMillis: 10000,
     idleTimeoutMillis: 30000,
+    ...(usage==='worker'?{statement_timeout:15000,query_timeout:20000,lock_timeout:5000}:{}),
   });
   pool.on("error", () => {
     console.error("Commerce catalog connection unavailable.");
