@@ -2,17 +2,17 @@ import type Stripe from 'stripe';
 import {parseTriggerDelivery} from '@neon/functions/triggers';
 import {parseStripeWebhook,projectsStripeEvent} from '../../commerce/stripe-webhook';
 import {CommerceError} from '../../commerce/model';
-import {roleCapabilitiesAllowed} from './capabilities';
+import {roleCapabilitiesAllowed,type FunctionRole} from './capabilities';
 export const UNUSABLE_DATABASE_URL = 'postgresql://disabled.invalid/disabled';
 export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner';
 type Env=Readonly<Record<string,string|undefined>>;
 const answer=(value:unknown,status=200)=>Response.json(value,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const fail=(code:string,status:number)=>answer({error:{code}},status);
 /** Fixed role/status only: no paths, bodies, IDs, credentials or personal data. */
-export function observedFetch(role:HostedRole|'stripewebhook',handler:(request:Request)=>Promise<Response>){
+export function observedFetch(role:FunctionRole,handler:(request:Request)=>Promise<Response>){
  return async(request:Request)=>{const response=await handler(request);console.info(JSON.stringify({event:'nevora_staging_http',role,status:response.status}));return response;};
 }
-function bound(env:Env,role:HostedRole|'stripewebhook'){
+export function hostedEnvironmentBound(env:Env,role:FunctionRole){
  if(!/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??'')||env.NEVORA_NEON_BRANCH_ID!==env.NEON_BRANCH_ID||env.NEVORA_COMMERCE_ENVIRONMENT!=='staging'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||env.NEVORA_WORKSPACE_MODE!=='isolated')return false;
  // Neon automatically injects a default database capability. It must be overridden
  // in every deployment, even when disabled; only named role-specific DSNs are used.
@@ -20,7 +20,7 @@ function bound(env:Env,role:HostedRole|'stripewebhook'){
  if(env.NEVORA_NEON_HOST_ENABLED!=='true'&&env.NEVORA_NEON_HOST_ENABLED!=='false')return false;
  return roleCapabilitiesAllowed(role,env);
 }
-async function body(request:Request,max:number){
+export async function readHostedBody(request:Pick<Request,'body'>,max:number){
  const reader=request.body?.getReader();if(!reader)return '';
  const chunks:Uint8Array[]=[];let bytes=0;
  let timer:ReturnType<typeof setTimeout>;
@@ -34,9 +34,9 @@ export function createWebhookHandler(env:Env,enqueue:(event:Stripe.Event)=>Promi
  return async(request:Request):Promise<Response>=>{
   const path=new URL(request.url).pathname;
   if(request.method!=='POST'||path!=='/webhooks/stripe')return fail('not_found',404);
-  if(!bound(env,'stripewebhook')||env.NEVORA_NEON_HOST_ENABLED!=='true'||!env.STRIPE_WEBHOOK_SECRET)return fail('not_ready',503);
+  if(!hostedEnvironmentBound(env,'stripewebhook')||env.NEVORA_NEON_HOST_ENABLED!=='true'||!env.STRIPE_WEBHOOK_SECRET)return fail('not_ready',503);
   const signature=request.headers.get('stripe-signature');if(!signature||signature.length>4096)return fail('invalid_signature',400);
-  try{const event=parseStripeWebhook(await body(request,262144),signature,env.STRIPE_WEBHOOK_SECRET,false);if(projectsStripeEvent(event))await enqueue(event);return answer({received:true});}
+  try{const event=parseStripeWebhook(await readHostedBody(request,262144),signature,env.STRIPE_WEBHOOK_SECRET,false);if(projectsStripeEvent(event))await enqueue(event);return answer({received:true});}
   catch(error){if(error instanceof CommerceError&&['invalid_signature','invalid_event','invalid_encoding','mode_mismatch','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}
  };
 }
@@ -47,13 +47,14 @@ export function createScheduledHandler(role:HostedRole,env:Env,run:()=>Promise<{
   if(request.method!=='POST'||new URL(request.url).pathname!=='/run')return fail('not_found',404);
   if(!request.headers.has('x-neon-trigger-invocation-id'))return fail('unauthorized',401);
   try{
-   let data:unknown;try{data=JSON.parse(await body(request,16384));}catch(error){if(error instanceof CommerceError)throw error;return fail('invalid_body',400);}
+   let data:unknown;try{data=JSON.parse(await readHostedBody(request,16384));}catch(error){if(error instanceof CommerceError)throw error;return fail('invalid_body',400);}
    const parsed=parseTriggerDelivery({headers:request.headers,body:data});
    if(!parsed.ok)return fail('invalid_trigger',parsed.error==='invalid_body'?400:401);
    if(parsed.invocation.type!=='schedule'||parsed.invocation.trigger.name!=='nevora-staging-'+role)return fail('wrong_trigger',403);
-   if(!bound(env,role))return fail('not_ready',503);
-   if(env.NEVORA_NEON_HOST_ENABLED==='false')return answer({state:'disabled'});
+   if(!hostedEnvironmentBound(env,role))return fail('not_ready',503);
+   if(env.NEVORA_NEON_HOST_ENABLED==='false'){console.info(JSON.stringify({event:'nevora_staging_task',role,state:'disabled'}));return answer({state:'disabled'});}
    const result=await run();
+   console.info(JSON.stringify({event:'nevora_staging_task',role,state:['idle','processed','completed','complete'].includes(result.state)?result.state:'retry_required'}));
    if(!['idle','processed','completed','complete'].includes(result.state))return fail('retry_required',503);
    return answer({state:result.state});
   }catch(error){if(error instanceof CommerceError&&['invalid_encoding','body_too_large','request_timeout'].includes(error.code))return fail(error.code,error.status);return fail('temporarily_unavailable',503);}

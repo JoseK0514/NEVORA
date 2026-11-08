@@ -1,3 +1,4 @@
+import {installationFetch} from './installation-transport';
 import type {BillingOwner} from "./owner-authority";
 import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
@@ -26,7 +27,7 @@ export async function readInstallationHeadcount(
   client?: PoolClient,
 ) {
   const slot = await installation(store, business, client);
-  const response = await fetch(`${slot.origin}/api/commerce/facts`, {
+  const response = await installationFetch(slot.origin,'/api/commerce/facts', {
     headers: { authorization: `Bearer ${slot.secret}` },
     signal: AbortSignal.timeout(5000),
     redirect: "error",
@@ -50,7 +51,7 @@ export async function applyInstallationCapacity(
   client?: PoolClient,
 ) {
   const slot = await installation(store, business, client);
-  const response = await fetch(`${slot.origin}/api/commerce/policy`, {
+  const response = await installationFetch(slot.origin,'/api/commerce/policy', {
     method: "POST",
     headers: {
       authorization: `Bearer ${slot.secret}`,
@@ -67,7 +68,7 @@ export async function applyInstallationCapacity(
 export async function verifyInstallationOwner(store:CommerceStore,business:Business,owner:BillingOwner,client?:PoolClient){
  if(owner.businessId!==business.id||owner.installationId!==business.slotId||owner.incarnation!==business.incarnation)return false;
  const slot=await installation(store,business,client);
- const reply=await fetch(slot.origin+'/api/commerce/owner',{method:'POST',headers:{authorization:'Bearer '+slot.secret,'content-type':'application/json'},body:JSON.stringify(owner),signal:AbortSignal.timeout(5000),redirect:'error',cache:'no-store'});
+ const reply=await installationFetch(slot.origin,'/api/commerce/owner',{method:'POST',headers:{authorization:'Bearer '+slot.secret,'content-type':'application/json'},body:JSON.stringify(owner),signal:AbortSignal.timeout(5000),redirect:'error',cache:'no-store'});
  if(reply.status===401||reply.status===403||reply.status===404)return false;
  if(!reply.ok)throw new CommerceError('installation_unavailable',503);
  const r=await reply.json();return r.valid===true&&r.businessId===owner.businessId&&r.installationId===owner.installationId&&r.incarnation===owner.incarnation&&r.employeeId===owner.employeeId&&r.generation===owner.generation;

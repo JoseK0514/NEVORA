@@ -35,3 +35,9 @@ it('rejects ambient staging credentials and requires an explicit isolated UI des
  expect(()=>readCommerceConfig({...explicit,NEVORA_COMMERCE_UI_ORIGIN:'https://www.thevelani.com'})).toThrow('staging_ui_origin_required');
  expect(readCommerceConfig({...explicit,NEVORA_COMMERCE_UI_ORIGIN:'https://signup-staging.example.test'}).uiOrigin).toBe('https://signup-staging.example.test');
 });
+
+it('admits only the pinned native staging API and protected signup UI profile',()=>{
+ const env={NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_DATABASE_URL:'postgresql://nv_commerce_api_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-fixture.neon.tech/catalog?sslmode=verify-full',NEVORA_COMMERCE_ENCRYPTION_KEY:Buffer.alloc(32,4).toString('base64'),NEVORA_COMMERCE_ORIGIN:'https://br-fictional-staging-commerceapi.compute.c-15.us-east-1.aws.neon.tech',NEVORA_COMMERCE_UI_ORIGIN:'https://signup-staging.nevora.team'};
+ const config=readCommerceConfig(env);expect(config.origin).toBe('https://br-fictional-staging-commerceapi.compute.c-15.us-east-1.aws.neon.tech');expect(config.uiOrigin).toBe('https://signup-staging.nevora.team');
+ for(const patch of [{NEVORA_COMMERCE_UI_ORIGIN:'https://www.thevelani.com'},{NEVORA_COMMERCE_UI_ORIGIN:'https://foreign.invalid'},{NEVORA_COMMERCE_ORIGIN:'https://br-other-commerceapi.compute.c-15.us-east-1.aws.neon.tech'},{NEVORA_WORKSPACE_MODE:'single_company'},{NEVORA_ONBOARDING_ENVIRONMENT:'production'}])expect(()=>readCommerceConfig({...env,...patch})).toThrow('staging_ui_origin_required');
+});

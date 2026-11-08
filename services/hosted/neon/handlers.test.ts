@@ -1,6 +1,6 @@
 import {describe,it,expect,vi} from 'vitest';
 import Stripe from 'stripe';
-import {createWebhookHandler,createScheduledHandler,UNUSABLE_DATABASE_URL,type HostedRole} from './handlers';
+import {createWebhookHandler,createScheduledHandler,UNUSABLE_DATABASE_URL,observedFetch,type HostedRole} from './handlers';
 const secret='whsec_hosted_fixture';
 const inert={PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'};
 const env={...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
@@ -70,4 +70,13 @@ describe('Neon scheduled worker boundary',()=>{
  it('rejects provider management credentials in a billing worker',async()=>{let effects=0;const r=await createScheduledHandler('commercequeue',{...workerEnv,NEVORA_PROVISIONER_API_KEY:'fixture-only'},async()=>{effects++;return {state:'processed'};})(tick());expect(r.status).toBe(503);expect(effects).toBe(0);});
  it('reports retryable results as unavailable without disclosing job payloads',async()=>{const r=await createScheduledHandler('commercequeue',workerEnv,async()=>({state:'retry_scheduled',private:'fixture-only'}))(tick());expect(r.status).toBe(503);expect(await r.text()).not.toContain('fixture-only');});
  it('reduces thrown provider errors to a bounded response',async()=>{const r=await createScheduledHandler('provisioner',workerEnv,async()=>{throw Error('private fixture credential');})(tick('provisioner'));expect(r.status).toBe(503);expect(await r.text()).not.toContain('private fixture credential');});
+});
+
+it.each(['idle','disabled','retry_scheduled'])('records bounded native task state %s without job content',async state=>{
+ const lines:string[]=[];const original=console.info;console.info=(line:string)=>lines.push(line);
+ try{
+  const handler=createScheduledHandler('commercequeue',{...workerEnv,NEVORA_NEON_HOST_ENABLED:state==='disabled'?'false':'true'},async()=>({state,private:'fictional-private-payload'}));
+  await observedFetch('commercequeue',handler)(tick());
+  const records=lines.map(line=>JSON.parse(line)),task=records.find(r=>r.event==='nevora_staging_task');expect(task).toEqual({event:'nevora_staging_task',role:'commercequeue',state:state==='retry_scheduled'?'retry_required':state});expect(lines.join('')).not.toContain('fictional-private-payload');
+ }finally{console.info=original;}
 });

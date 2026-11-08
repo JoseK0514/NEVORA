@@ -1,0 +1,27 @@
+# Staging machine transport decision
+
+Status: bounded backend continuation under Jose's instruction to finish Codex-owned work. Claude owns UI. No Vercel SSO exception, bypass secret, share link or production change is authorized.
+
+## Existing contract and blocking transport
+
+The app and commerce implementation use separate data/authority roles. Company-side facts, capacity policy and current Owner checks are at `/api/commerce/facts`, `/api/commerce/policy` and `/api/commerce/owner`. Commerce already authenticates those calls with the exact enrolled per-company secret and revalidates current company/incarnation/Owner source. The web app uses the separate commerce `/internal/access` entitlement projection, and the billing UI uses the existing handoff/session/checkout/portal contracts.
+
+The staging application has Vercel SSO ALL. Machine requests are intercepted before those backend authentication checks. Observed machine requests return401 or follow a redirect to vercel.com/login; neither is application API acceptance. Extracting browser credentials or weakening SSO is excluded.
+
+## Bounded adapters to implement and review
+
+1. A staging-only `commerceauthority` Neon function accepts only the three existing machine paths/methods. It verifies an additional timestamped HMAC over method, canonical company origin, path, authorization hash and exact bounded body before reading a database. It accepts only exact registered staging-company origins. It constructs an internal Request with only required headers and calls the original company handlers within the original workspace resolver/context. It never forwards cookies or caller forwarding headers. Existing company secret, current source/incarnation, role and Owner checks remain authoritative.
+2. This function receives a fresh control reader principal with SELECT only on workspace registry/secret custody, required routing/encryption/binding configuration and its service authentication key. It receives no provider management, provisioner, enrollment, Stripe, SMTP or company-owner database credential. Individual company APP credentials continue to come from the existing encrypted custody and source guard, not caller input.
+3. A staging-only `commerceapi` Neon function exposes only the existing integrated commerce API and entitlement projection, with legacy signup/setup/contact-login disabled. It receives its catalog API principal, catalog encryption key, a dedicated restricted Stripe test API key and the machine transport key. It receives no control reader, company APP credential, onboarding root keys, provider management, enrollment, SMTP or webhook signing secret. Enforce a bounded shared staging ingress budget rather than trusting caller-supplied IP headers. Preserve the existing per-business rate, bearer/handoff/current-Owner and mode/account/price gates.
+4. Billing queue/reconciliation use the same signed machine transport. The protected app points its server-side entitlement client to `commerceapi`; the frontend receives only the normal public API base URL and its existing scoped handoff/session tokens. No service authentication key is exposed to the browser.
+5. Both adapters start closed, bind the exact Neon staging branch/test environment/source, require all inert host capability overrides, reject unknown role variables, and expose no general-purpose SQL, routing or fetch endpoint. Builds include exact source inventories; actual native unsigned/bad-signature/oversized/wrong-host/role-denial probes precede activation. Source-compatible direct company transport remains the default when the optional staging adapter is not configured; live environments cannot opt into this staging path.
+
+The existing same-origin staging billing rule remains the default. The only separate-origin profile admitted is the exact branch-pinned Neon commerceapi hostname with isolated/test mode and protected https://signup-staging.nevora.team as UI origin. Real Velani and arbitrary UI hosts remain rejected. Claude's staging billing page therefore belongs at the existing /pages/plans handoff path on that protected staging UI; production frontend/hosting remains a separate release decision.
+
+## Credential gate and acceptance
+
+Prepare code/tests and closed artifacts before adding sensitive access. A new restricted Stripe test API key needs its concrete action-time browser confirmation; any additional service credential custody must be stated with exact destinations. Never copy the existing Preview-only Stripe key into another host by assumption. New API role permissions must match actual Checkout/Customer/Portal/Subscription calls and be verified with that runtime key, not MCP OAuth.
+
+Acceptance must include original per-company denials, body/auth tampering and expiry, no data work before service auth, suspended/restored/foreign origins, current Owner revocation, entitlement projection, duplicate/reordered Stripe processing and two actual fictional company databases. Native API proof is separate from the protected web/Claude browser journey. Restore schedules/flags after bounded tests and retain durable uncertain outcomes. Existing SSO/aliases and native staging remain untouched until an exact source/configuration is accepted.
+
+This decision does not grant production approval or independent certification. Codex owns implementation/evidence; Jose owns any material scope/risk and credential confirmation; Claude owns UI.
