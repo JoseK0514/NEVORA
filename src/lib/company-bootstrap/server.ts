@@ -59,6 +59,7 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
  const quoted=business.rows.map(r=>'"'+r.name.replaceAll('"','""')+'"').join(',');
  for(const role of [spec.app,spec.worker]){
   await client.query(`GRANT CONNECT ON DATABASE ${spec.databaseName} TO ${role.name}; GRANT USAGE ON SCHEMA public TO ${role.name}`);
+  if(role===spec.app)await client.query(`GRANT EXECUTE ON FUNCTION onboarding_owner_claim(text,text,bigint,text,uuid,text,text) TO ${role.name}`);
   if(quoted)await client.query(`GRANT SELECT,INSERT,UPDATE,DELETE ON ${quoted} TO ${role.name}`);
   await client.query(`GRANT USAGE,SELECT,UPDATE ON ALL SEQUENCES IN SCHEMA public TO ${role.name}; GRANT SELECT ON onboarding_workspace_identity,onboarding_runtime_roles TO ${role.name}; GRANT UPDATE(lock_token) ON onboarding_workspace_identity TO ${role.name}`);
  }

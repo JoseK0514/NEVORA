@@ -4,8 +4,8 @@ import {isClosedRecord} from '../onboarding/contracts';
 import {workspaceBindingFacts,type WorkspaceBinding} from './resolver.server';
 import {currentWorkspaceBinding} from './context.server';
 import {workspaceMode} from './config.server';
-export type TokenPurpose='SESSION'|'RECOVERY'|'INVITATION'|'PASSKEY_LOGIN'|'PASSKEY_REGISTER'|'CLOCKER_DEVICE'|'CLOCKER_SETUP'|'CLOCKER_IDENTITY'|'CLOCKER_ENROLLMENT'|'CALENDAR'|'INSTALLATION'|'CLEANUP'|'FILE';
-const purposes:readonly string[]=['SESSION','RECOVERY','INVITATION','PASSKEY_LOGIN','PASSKEY_REGISTER','CLOCKER_DEVICE','CLOCKER_SETUP','CLOCKER_IDENTITY','CLOCKER_ENROLLMENT','CALENDAR','INSTALLATION','CLEANUP','FILE'];
+export type TokenPurpose='SESSION'|'RECOVERY'|'INVITATION'|'PASSKEY_LOGIN'|'PASSKEY_REGISTER'|'CLOCKER_DEVICE'|'CLOCKER_SETUP'|'CLOCKER_IDENTITY'|'CLOCKER_ENROLLMENT'|'CALENDAR'|'INSTALLATION'|'CLEANUP'|'FILE'|'OWNER_BOOTSTRAP';
+const purposes:readonly string[]=['SESSION','RECOVERY','INVITATION','PASSKEY_LOGIN','PASSKEY_REGISTER','CLOCKER_DEVICE','CLOCKER_SETUP','CLOCKER_IDENTITY','CLOCKER_ENROLLMENT','CALENDAR','INSTALLATION','CLEANUP','FILE','OWNER_BOOTSTRAP'];
 function aad(binding:WorkspaceBinding,purpose:TokenPurpose){const {record:r}=workspaceBindingFacts(binding);if(!purposes.includes(purpose))throw Error('Workspace token unavailable');return JSON.stringify(['workspace-token',1,r.environment,r.id,r.incarnation,r.canonicalOrigin,purpose]);}
 export function sealWorkspaceToken(binding:WorkspaceBinding,purpose:TokenPurpose,token:string,expiresAt:number,now=Date.now()):string{
  const f=workspaceBindingFacts(binding);

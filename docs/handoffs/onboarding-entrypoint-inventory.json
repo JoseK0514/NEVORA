@@ -897,6 +897,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/onboarding/bootstrap-grants/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Verified signup cookie and explicit operation ID route to dedicated initial-Owner grant queue.",
+      "isolatedBehavior": "BOUND_CUSTODY"
+    },
+    {
       "path": "src/app/api/onboarding/config/route.ts",
       "tags": [
         "request-entrypoint"
@@ -913,6 +922,15 @@
       "status": "CONVERTED",
       "isolatedBehavior": "CONTROL_PLANE",
       "reason": "Verified signup/explicit private provisioner lease and exact resource/source/role custody. No caller database target or legacy fallback. Provider/worker enablement remains disabled by default."
+    },
+    {
+      "path": "src/app/api/onboarding/owner-activation/route.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Registered company origin plus one-use initial-Owner envelope; separate from employee invitations.",
+      "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
       "path": "src/app/api/onboarding/registrations/route.ts",
@@ -3038,6 +3056,24 @@
       "status": "CONVERTED",
       "isolatedBehavior": "CONTROL_PLANE",
       "reason": "Control-plane configuration, actor proofs and explicit control-store access only; never a legacy company database fallback."
+    },
+    {
+      "path": "src/lib/onboarding/owner-activation-http.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Exact signup/company origin, strict JSON, genuine signup or BOOTSTRAP/APP binding, no-store proof redirect and no assumed session cookie.",
+      "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/lib/onboarding/owner-activation.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Verified signup queues only; private leased provisioner issues grants; fixed-path definer consumes bound company proof atomically; original receipt plus normal sign-in recovers unknown activation.",
+      "isolatedBehavior": "BOUND_CUSTODY"
     },
     {
       "path": "src/lib/onboarding/provisioning/connection.server.ts",
