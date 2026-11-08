@@ -1,4 +1,5 @@
 import {Pool} from 'pg';
+import {restrictedOnboardingControl} from './onboarding-control-principals-fixture';
 import {neonConfig} from '@neondatabase/serverless';
 import {randomUUID,createHash} from 'node:crypto';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
@@ -12,9 +13,9 @@ import {requestWorkspace,claimProvisioningJob} from '@/lib/onboarding/provisioni
 import {runProvisioningJob} from '@/lib/onboarding/provisioning/orchestrator.server';
 import {requestOwnerBootstrapGrant,runOwnerActivationWorker,activateInitialOwner} from '@/lib/onboarding/owner-activation.server';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
-export async function onboardingJourneyFixture(){
- const db=await freshOnboardingControl(),store=createControlStore(db.pool),provider=new OwnedProvisioningProvider(),pools:Pool[]=[],map=new Map<string,Pool>();
- const config=onboardingTestConfig({NEVORA_ONBOARDING_PROVIDER_ENABLED:'true',NEVORA_ONBOARDING_MAX_NEW_PROJECTS_PER_DAY:'10',NEVORA_ONBOARDING_PROVIDER_ACCOUNT_REF:'fictional-org',NEVORA_ONBOARDING_RESOURCE_POLICY_VERSION:'fictional-policy-1'}),routing={...config,tokenKey:config.workspaceTokenKey};
+export async function onboardingJourneyFixture(options:{restrictedControl?:boolean}={}){
+ const db=await freshOnboardingControl(),principals=options.restrictedControl?await restrictedOnboardingControl(db):null,store=principals?.store??createControlStore(db.pool),provisionerStore=principals?.provisionerStore??store,provider=new OwnedProvisioningProvider(),pools:Pool[]=[],map=new Map<string,Pool>();
+ const config=onboardingTestConfig({NEVORA_CONTROL_DATABASE_URL:principals?.appUrl??db.connectionUrl,NEVORA_ONBOARDING_PROVIDER_ENABLED:'true',NEVORA_ONBOARDING_MAX_NEW_PROJECTS_PER_DAY:'10',NEVORA_ONBOARDING_PROVIDER_ACCOUNT_REF:'fictional-org',NEVORA_ONBOARDING_RESOURCE_POLICY_VERSION:'fictional-policy-1'}),routing={...config,tokenKey:config.workspaceTokenKey};
  const errors:string[]=[];const original=neonConfig.fetchFunction;let loseNextRuntimeCommit=false;
  neonConfig.fetchFunction=async(_url:unknown,options:RequestInit)=>{
   const uri=new Headers(options.headers).get('Neon-Connection-String'),pool=uri?map.get(uri):undefined;if(!pool)throw Error('Non-owned onboarding SDK target');
@@ -27,14 +28,15 @@ export async function onboardingJourneyFixture(){
   const actor=await verifyRegistration({operationId:randomUUID(),proof},store,config);if(actor.state!=='verified')throw Error('Owned verification failed');const signupSession=actor.session;
   const c={schemaVersion:1,operationId:randomUUID(),expectedVersion:actor.snapshot.version,payload:{businessName:'Fictional '+slug,timeZone:'America/Chicago',requestedSlug:slug,initialLocation:{name:'Main Studio',shortName:'Main',key:'main'},ownerProfile:{id:'OWNER-1',firstName:'Fictional',lastName:'Owner',phone:'787-555-0101'}}};
   if((await requestWorkspace(actor.session,c,store,config)).state!=='pending')throw Error('Owned reservation failed');
-  if((await runProvisioningJob((await claimProvisioningJob(store,config))!,{store,config,provider,connect:provider.connect})).state!=='complete')throw Error('Owned bootstrap failed');
+  if((await runProvisioningJob((await claimProvisioningJob(provisionerStore,config))!,{store:provisionerStore,config,provider,connect:provider.connect})).state!=='complete')throw Error('Owned bootstrap failed');
+  const until=Date.now()+5000;while((await db.pool.query('SELECT state FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1',[c.operationId])).rows[0]?.state!=='OWNER_ACTIVATION_REQUIRED'){if(Date.now()>until)throw Error('Owned concurrent bootstrap did not publish its operation');await new Promise(r=>setTimeout(r,10));}
   const row=(await db.pool.query('SELECT * FROM nevora_onboarding.provisioning_operations WHERE operation_id=$1',[c.operationId])).rows[0],resource=provider.resources.get(row.resource.projectId)!;
   const secrets=(await db.pool.query('SELECT * FROM nevora_onboarding.workspace_secrets WHERE workspace_id=$1',[row.workspace_id])).rows;
   let appPool:Pool|undefined;
   for(const s of secrets){const uri=openOnboardingValue(s.ciphertext,'workspace-secret:test:'+row.workspace_id+':1:'+s.role_kind+':'+s.id,config.encryptionKey);if(!uri)throw Error('Owned runtime URI unavailable');const url=new URL(resource.db.connectionUrl);url.username=new URL(uri).username;url.password=new URL(uri).password;const pool=new Pool({connectionString:url.href,max:4});pools.push(pool);map.set(uri,pool);if(s.role_kind==='APP')appPool=pool;}
   const origin='https://'+slug+'.'+config.portalBaseDomain,binding=await resolveWorkspaceBinding({origin},store,routing,'BOOTSTRAP');
   const grantCommand={schemaVersion:1,operationId:randomUUID()};
-  async function work(){await db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');return runOwnerActivationWorker({store,config,connect:provider.connect});}
+  async function work(){await db.pool.query('UPDATE nevora_onboarding.provisioning_operations SET not_before=clock_timestamp()');return runOwnerActivationWorker({store:provisionerStore,config,connect:provider.connect});}
   async function grant(){const requested=await requestOwnerBootstrapGrant(signupSession,grantCommand,store,config);if(!['pending','ready'].includes(requested.state))throw Error('Owned grant request failed:'+requested.state);await work();const ready=await requestOwnerBootstrapGrant(signupSession,grantCommand,store,config);if(ready.state!=='ready')throw Error('Owned grant publication failed:'+ready.state);return {ready,proof:new URLSearchParams(new URL(ready.url).hash.slice(1)).get('proof')!};}
   return {actor,command:c,row,resource,origin,binding,grantCommand,work,grant,appPool:appPool!};
  }
@@ -45,5 +47,5 @@ export async function onboardingJourneyFixture(){
   const actor:SessionMutationProof={sessionTokenHash:hash,employee:{id:row.id,firstName:row.first_name,lastName:row.last_name,role:row.role,primaryLocationId:row.primary_location_id}};
   return {c,binding,actor};
  }
- return {db,store,provider,config,routing,errors,createCompany,activateCompany,loseRuntimeCommit(){loseNextRuntimeCommit=true;},async close(){neonConfig.fetchFunction=original;for(const p of pools)await p.end();await provider.close();await db.close();}};
+ return {db,store,provisionerStore,principals,provider,config,routing,errors,createCompany,activateCompany,loseRuntimeCommit(){loseNextRuntimeCommit=true;},async close(){neonConfig.fetchFunction=original;for(const p of pools)await p.end();await provider.close();await principals?.close();await db.close();}};
 }

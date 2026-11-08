@@ -589,3 +589,44 @@ jobs:
           PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-ci-evidence
           PHASE_E_CI_NEEDS_JSON: ${{ toJSON(needs) }}
         run: node scripts/phase-e-owned.mjs verify-ci
+
+  onboarding-backend:
+    name: onboarding-backend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install PostgreSQL test and backup runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          test -x /usr/lib/postgresql/16/bin/initdb
+          test -x /usr/lib/postgresql/16/bin/pg_dump
+          test -x /usr/lib/postgresql/16/bin/pg_restore
+          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Verify source-bound owned backend acceptance
+        env:
+          NEVORA_ONBOARDING_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_ONBOARDING_EVIDENCE_DIR: ${{ runner.temp }}/nevora-onboarding-backend
+        run: node scripts/onboarding-acceptance.mjs
+      - name: Upload backend evidence, separate from UI and hosted approval
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: onboarding-backend-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/nevora-onboarding-backend/**
+          if-no-files-found: error
+          retention-days: 14

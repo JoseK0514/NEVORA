@@ -1,0 +1,20 @@
+import {spawnSync} from 'node:child_process';
+import {readFileSync,mkdirSync,writeFileSync,openSync,closeSync} from 'node:fs';
+import {resolve,join} from 'node:path';
+import {randomUUID,createHash} from 'node:crypto';
+// Backend acceptance only. UI, hosted capacity/email and production authority
+// are distinct evidence gates; never infer them from these local tests.
+const git=(...args)=>{const r=spawnSync('git',args,{encoding:'utf8'});if(r.status!==0)throw Error('Source custody unavailable');return r.stdout.trim();};
+const sha=git('rev-parse','HEAD'),tree=git('rev-parse','HEAD^{tree}'),expected=process.env.NEVORA_ONBOARDING_EXPECTED_SHA??sha;
+if(expected!==sha||git('status','--porcelain','--untracked-files=normal'))throw Error('Onboarding acceptance requires the exact committed clean source.');
+if(process.env.DATABASE_URL||process.env.NEVORA_CONTROL_DATABASE_URL||process.env.FUEL_TEST_DATABASE_URL)throw Error('Unset application/test targets before owned acceptance.');
+const files=git('ls-files','-z').split('\0').filter(Boolean),inventory=JSON.parse(readFileSync('docs/handoffs/onboarding-entrypoint-inventory.json','utf8')),entries=new Map();
+for(const entry of inventory.entries){if(entries.has(entry.path)||!files.includes(entry.path)||!['CONVERTED','PROVEN_NON_RUNTIME'].includes(entry.status)||!entry.reason)throw Error('Incomplete onboarding entrypoint inventory');entries.set(entry.path,entry);}
+for(const file of files.filter(f=>f.startsWith('src/app/api/onboarding/')&&f.endsWith('/route.ts')))if(!entries.has(file))throw Error('Unclassified onboarding route');
+const root=resolve(process.env.NEVORA_ONBOARDING_EVIDENCE_DIR??'.omo/evidence/onboarding'),directory=join(root,sha+'-'+randomUUID());mkdirSync(directory,{recursive:true,mode:0o700});
+const report={schemaVersion:1,checkpoint:sha,tree,sourceClean:true,runtime:process.version,status:'failed',scope:'backend-only',steps:[],inventoryCount:entries.size,manifestArtifactSha256:createHash('sha256').update(readFileSync('src/lib/company-bootstrap/manifest.generated.ts')).digest('hex'),ui:{status:'not_run',surfaceCandidates:files.filter(f=>/^src\/app\/.+(onboarding|signup).*\/page\.tsx$/.test(f))},hosted:{status:'not_run'},production:{status:'not_authorized'}};
+const safeEnv={PATH:process.env.PATH,HOME:process.env.HOME,TMPDIR:process.env.TMPDIR,NODE_ENV:'test',NEVORA_TEST_PG_BIN:process.env.NEVORA_TEST_PG_BIN,NEVORA_TEST_PG_CLIENT_BIN:process.env.NEVORA_TEST_PG_CLIENT_BIN};
+const steps=[['manifest',process.execPath,['scripts/onboarding-manifest.mjs']],['owned-onboarding',process.execPath,['scripts/onboarding-owned.mjs','--suite','all']],['company-access-foundation',process.execPath,['scripts/payroll-postgres.mjs','vitest.company-access-integration.config.mts']],['company-access-exchange',process.execPath,['scripts/payroll-postgres.mjs','vitest.company-access-exchange.config.mts']]];
+try{for(const [name,command,args] of steps){if(git('rev-parse','HEAD')!==sha||git('status','--porcelain','--untracked-files=normal'))throw Error('Source changed during acceptance');const log=join(directory,name+'.log'),fd=openSync(log,'wx',0o600),started=Date.now();let r;try{r=spawnSync(command,args,{env:safeEnv,stdio:['ignore',fd,fd]});}finally{closeSync(fd);}report.steps.push({name,exitCode:r.status,signal:r.signal,elapsedMs:Date.now()-started,log:name+'.log'});process.stdout.write(JSON.stringify({step:name,exitCode:r.status,elapsedMs:Date.now()-started})+'\n');if(r.error||r.status!==0)throw Error('Backend acceptance step failed: '+name);}if(git('rev-parse','HEAD')!==sha||git('status','--porcelain','--untracked-files=normal'))throw Error('Source changed during acceptance');report.status='backend_passed';}
+catch(error){report.error=error instanceof Error?error.message:'Acceptance unavailable';process.exitCode=1;}
+finally{writeFileSync(join(directory,'report.json'),JSON.stringify(report,null,2)+'\n',{mode:0o600});process.stdout.write('Onboarding backend evidence: '+directory+'\n');}

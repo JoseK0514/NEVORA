@@ -13,4 +13,4 @@ export async function freshOnboardingDatabase(databaseName?:string){
  const pool=new Pool({connectionString:url.href,max:8});
  return {pool,name,connectionUrl:url.href,async close(){await pool.end();await admin.query('DROP DATABASE '+name);await admin.end();}};
 }
-export async function freshOnboardingControl(){const f=await freshOnboardingDatabase();try{for(const file of ['0001_owner_onboarding.sql','0002_workspace_registry.sql','0003_workspace_provisioning.sql','0004_owner_activation.sql'])await f.pool.query(await readFile(resolve('db/control-migrations',file),'utf8'));return f;}catch(error){await f.close();throw error;}}
+export async function freshOnboardingControl(){const f=await freshOnboardingDatabase();try{for(const file of ['0001_owner_onboarding.sql','0002_workspace_registry.sql','0003_workspace_provisioning.sql','0004_owner_activation.sql','0005_terminal_grant_retirement.sql'])await f.pool.query(await readFile(resolve('db/control-migrations',file),'utf8'));return f;}catch(error){await f.close();throw error;}}

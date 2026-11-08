@@ -55,7 +55,7 @@ async function runtimeRoles(client:BootstrapClient,spec:PendingCompanySpec){
   await client.query('INSERT INTO onboarding_runtime_roles(kind,login_role) VALUES($1,$2)',[kind,role.name]);
  }
  await client.query(`REVOKE CONNECT,TEMPORARY ON DATABASE ${spec.databaseName} FROM PUBLIC; REVOKE CREATE ON SCHEMA public FROM PUBLIC`);
- const business=await client.query<{name:string}>(`SELECT c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND c.relname NOT IN('onboarding_workspace_identity','onboarding_runtime_roles','onboarding_provision_receipts','onboarding_initial_owner','onboarding_owner_grants','onboarding_owner_activation_receipts') ORDER BY c.relname`);
+ const business=await client.query<{name:string}>(`SELECT c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN('r','p','v','m','f') AND c.relname NOT IN('onboarding_workspace_identity','onboarding_runtime_roles','onboarding_provision_receipts','onboarding_initial_owner','onboarding_owner_grants','onboarding_owner_activation_receipts','onboarding_restore_receipts') ORDER BY c.relname`);
  const quoted=business.rows.map(r=>'"'+r.name.replaceAll('"','""')+'"').join(',');
  for(const role of [spec.app,spec.worker]){
   await client.query(`GRANT CONNECT ON DATABASE ${spec.databaseName} TO ${role.name}; GRANT USAGE ON SCHEMA public TO ${role.name}`);

@@ -80,6 +80,15 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/onboarding-acceptance.mjs",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Source-pinned owned-local acceptance; no application database targets and no UI/hosted/production claim.",
+      "isolatedBehavior": "TEST_ONLY"
+    },
+    {
       "path": "scripts/onboarding-manifest.mjs",
       "tags": [
         "non-request-entrypoint"
@@ -87,6 +96,15 @@
       "status": "CONVERTED",
       "isolatedBehavior": "SOURCE_MANIFEST",
       "reason": "Bounded disabled-by-default provisioner invocation, or explicit check-only canonical source manifest producer; no legacy company fallback."
+    },
+    {
+      "path": "scripts/onboarding-operator.mts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Disabled by default; explicit private status/suspend/retire/maintenance commands, never reactivates or creates hosted resources.",
+      "isolatedBehavior": "OPERATOR_ONLY"
     },
     {
       "path": "scripts/onboarding-worker.mts",
@@ -3093,6 +3111,24 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/lib/onboarding/cleanup.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private bounded environment-scoped expired-bearer maintenance; preserve tombstones/current material, no provider deletion or send retry.",
+      "isolatedBehavior": "BOUND_ENVIRONMENT"
+    },
+    {
+      "path": "src/lib/onboarding/control-principals.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Pure operator-reviewed SQL grant template; creates no roles/resources and never executes from public routes.",
+      "isolatedBehavior": "OPERATOR_TEMPLATE"
+    },
+    {
       "path": "src/lib/onboarding/control-store.server.ts",
       "tags": [
         "direct-transport",
@@ -3119,6 +3155,24 @@
       "status": "CONVERTED",
       "reason": "Explicit bounded reviewed targets, immutable actor/target generations, deterministic child operations and pre-dispatch UNKNOWN fence. Canonical invitation service/receipt reads only; no bearer queue or blind unknown resend.",
       "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/lib/onboarding/operations.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private operator-only suspended-custody retirement; exact resource/principal/anchor, immutable receipt and new incarnation. No public route or automatic reactivation.",
+      "isolatedBehavior": "OPERATOR_ONLY"
+    },
+    {
+      "path": "src/lib/onboarding/operator-config.server.ts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit isolated operator mode and separate same-control-database credential, no application/DATABASE_URL fallback.",
+      "isolatedBehavior": "OPERATOR_ONLY"
     },
     {
       "path": "src/lib/onboarding/owner-activation-http.server.ts",
@@ -3654,6 +3708,15 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/test/integration/onboarding-provisioning-child.mts",
+      "tags": [
+        "onboarding-entrypoint"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Test-only private IPC child for actual SIGKILL recovery; accepts only owned-loopback fixture routing and has no public runtime importer.",
+      "isolatedBehavior": "TEST_ONLY"
     },
     {
       "path": "src/test/integration/owned-next-app.ts",

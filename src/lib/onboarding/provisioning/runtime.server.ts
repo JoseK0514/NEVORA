@@ -1,4 +1,5 @@
 import 'server-only';
+import {cleanupOnboardingControl} from '../cleanup.server';
 import {runOwnerActivationWorker} from '../owner-activation.server';
 import {readOnboardingConfig,type EnabledConfig} from '../config.server';
 import {runtimeControlStore} from '../control-store.server';
@@ -20,6 +21,6 @@ export function readProvisionerRuntime(env:Readonly<Record<string,string|undefin
 }
 export async function runProvisionerOnce(env:Readonly<Record<string,string|undefined>>=process.env):Promise<ProvisioningReport|{state:'disabled'|'idle'}>{
  const runtime=readProvisionerRuntime(env);if(!runtime)return {state:'disabled'};
- const store=runtimeControlStore(runtime.config),lease=await claimProvisioningJob(store,runtime.config);if(!lease)return runOwnerActivationWorker({store,config:runtime.config});
+ const store=runtimeControlStore(runtime.config);await cleanupOnboardingControl(store,runtime.config);const lease=await claimProvisioningJob(store,runtime.config);if(!lease)return runOwnerActivationWorker({store,config:runtime.config});
  return runProvisioningJob(lease,{store,config:runtime.config,provider:new NeonProvisioningProvider({apiKey:runtime.apiKey,policy:runtime.policy})});
 }

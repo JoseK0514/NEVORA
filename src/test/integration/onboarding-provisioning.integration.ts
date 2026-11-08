@@ -143,4 +143,24 @@ describe('verified control-plane provisioning commands',()=>{
   }finally{await provider.close();}
  });
 
+ it('recovers an actual killed worker after resource creation without a second provider create',async()=>{
+  const {spawn}=await import('node:child_process');const {resolve}=await import('node:path');const a=await verified('owner-a@example.invalid'),c=command(a.snapshot.version);await requestWorkspace(a.session,c,store,config);const provider=new OwnedProvisioningProvider();
+  const child=spawn(process.execPath,['--conditions=react-server','--import',resolve('scripts/node-server-context.mjs'),'--import','tsx',resolve('src/test/integration/onboarding-provisioning-child.mts')],{cwd:process.cwd(),env:{PATH:process.env.PATH,HOME:process.env.HOME,TMPDIR:process.env.TMPDIR,NODE_ENV:'test',NEVORA_ONBOARDING_TEST_CUSTODY:process.env.NEVORA_ONBOARDING_TEST_CUSTODY},stdio:['ignore','ignore','ignore','ipc']});
+  const exited=new Promise<{code:number|null;signal:NodeJS.Signals|null}>((ok,bad)=>{child.once('error',bad);child.once('exit',(code,signal)=>ok({code,signal}));});let killed=false;const deadline=setTimeout(()=>child.kill('SIGKILL'),8000);
+  child.on('message',async value=>{
+   const m=value as {kind:string;id:number;method:string;args:unknown[]};
+   if(m.kind==='ready'){child.send({kind:'start',controlUrl:db.connectionUrl,config});return;}
+   if(m.kind==='child_failed'||m.kind==='unexpected_completion'){child.kill('SIGTERM');return;}
+   if(m.kind!=='provider')return;
+   try{
+    if(m.method==='find')child.send({kind:'reply',id:m.id,result:await provider.find(m.args[0] as never,m.args[1] as never)});
+    else if(m.method==='create'){await provider.create(m.args[0] as never,m.args[1] as never);killed=child.kill('SIGKILL');}
+    else child.kill('SIGTERM');
+   }catch{child.kill('SIGTERM');}
+  });
+  try{const outcome=await exited;expect(killed).toBe(true);expect(outcome.signal).toBe('SIGKILL');expect(provider.createCalls).toBe(1);expect((await db.pool.query("SELECT outcome FROM nevora_onboarding.provisioning_attempts")).rows[0].outcome).toBe('PENDING');
+   await db.pool.query("UPDATE nevora_onboarding.provisioning_operations SET lease_expires_at=clock_timestamp()-interval '1 second',not_before=clock_timestamp()");const lease=await claimProvisioningJob(store,config);expect((await runProvisioningJob(lease!,{store,config,provider,connect:provider.connect})).state).toBe('complete');expect(provider.createCalls).toBe(1);expect(provider.resources.size).toBe(1);
+  }finally{clearTimeout(deadline);if(child.exitCode===null&&child.signalCode===null)child.kill('SIGKILL');await exited.catch(()=>undefined);await provider.close();}
+ });
+
 });

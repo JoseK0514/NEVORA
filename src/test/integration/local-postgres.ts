@@ -48,6 +48,7 @@ export const CURRENT_MIGRATIONS = [
   '0048_self_service_onboarding.sql',
   '0049_initial_owner_activation.sql',
   '0050_onboarding_invitation_batch_authority.sql',
+  '0051_onboarding_restore_receipts.sql',
 ] as const;
 
 /** This adapter deliberately does not use the application's DATABASE_URL. Every

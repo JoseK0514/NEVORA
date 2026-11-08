@@ -7,7 +7,7 @@ import {randomBytes} from 'node:crypto';
 
 // This runner owns a NEW loopback server; it cannot accept application targets.
 if(process.env.DATABASE_URL||process.env.NEVORA_CONTROL_DATABASE_URL||process.env.FUEL_TEST_DATABASE_URL)throw Error('Unset existing application/test database targets before owned onboarding tests.');
-const args=process.argv.slice(2),suites=['registration','isolation-routing','isolation-auth','provisioning','owner-activation','setup','people','invitations','all'];
+const args=process.argv.slice(2),suites=['registration','isolation-routing','isolation-auth','provisioning','owner-activation','setup','people','invitations','journey','operations','all'];
 const suite=args.length===0?'all':args.length===2&&args[0]==='--suite'?args[1]:null;
 if(!suite||!suites.includes(suite))throw Error('Use --suite with a documented onboarding suite.');
 const localBinary=resolve('.superpowers/sdd/2026-11-07-self-service-owner-onboarding/tools/postgres17/package/native/bin');
@@ -22,7 +22,7 @@ try{
  run('initdb',['-D',data,'-U',user,'--auth-local=scram-sha-256','--auth-host=scram-sha-256','--pwfile',join(owned,'password'),'--encoding=UTF8','--no-locale']);
  run('pg_ctl',['-D',data,'-l',join(owned,'postgres.log'),'-w','start','-o',`-h 127.0.0.1 -p ${port} -k ${owned}`]);
  console.log('Owned onboarding PostgreSQL started on loopback; existing databases are not used.');
- const env={PATH:process.env.PATH,HOME:process.env.HOME,TMPDIR:process.env.TMPDIR,NODE_ENV:'test',NEVORA_ONBOARDING_TEST_ADMIN_URL:`postgresql://${user}:${password}@127.0.0.1:${port}/postgres`,NEVORA_ONBOARDING_TEST_CUSTODY_DIR:owned,NEVORA_ONBOARDING_TEST_CUSTODY:marker,NEVORA_ONBOARDING_TEST_SUITE:suite};
+ const env={PATH:process.env.PATH,HOME:process.env.HOME,TMPDIR:process.env.TMPDIR,NODE_ENV:'test',NEVORA_ONBOARDING_TEST_ADMIN_URL:`postgresql://${user}:${password}@127.0.0.1:${port}/postgres`,NEVORA_ONBOARDING_TEST_CUSTODY_DIR:owned,NEVORA_ONBOARDING_TEST_CUSTODY:marker,NEVORA_ONBOARDING_TEST_SUITE:suite,NEVORA_TEST_PG_BIN:bin,NEVORA_TEST_PG_CLIENT_BIN:process.env.NEVORA_TEST_PG_CLIENT_BIN??(existsSync(resolve('.superpowers/sdd/2026-11-07-self-service-owner-onboarding/tools/pgclients17/bin/pg_dump'))?resolve('.superpowers/sdd/2026-11-07-self-service-owner-onboarding/tools/pgclients17/bin'):bin)};
  const r=spawnSync(process.execPath,['node_modules/vitest/vitest.mjs','run','--config','vitest.onboarding-integration.config.mts'],{env,stdio:'inherit'});exit=r.status??1;
 }finally{
  if(existsSync(join(data,'postmaster.pid')))run('pg_ctl',['-D',data,'-w','stop','-m','fast']);
