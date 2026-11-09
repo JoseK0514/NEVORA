@@ -1,0 +1,48 @@
+{
+  "observedAt": "2026-11-09T01:39:15.658Z",
+  "probes": [
+    {
+      "origin": "https://nevora-onboarding-staging-407jorlm5-josekarlo-5933s-projects.vercel.app",
+      "status": 302,
+      "locationHost": "vercel.com",
+      "tlsVerified": true,
+      "protected": true
+    },
+    {
+      "origin": "https://acceptance-a-20261108.portal-staging.nevora.team",
+      "status": 302,
+      "locationHost": "vercel.com",
+      "tlsVerified": true,
+      "protected": true
+    },
+    {
+      "origin": "https://acceptance-b-20261108.portal-staging.nevora.team",
+      "error": "ENOTFOUND"
+    }
+  ],
+  "safari": {
+    "origin": "https://nevora-onboarding-staging-407jorlm5-josekarlo-5933s-projects.vercel.app",
+    "path": "/api/onboarding/config",
+    "authenticatedExistingSession": true,
+    "observedBody": {
+      "schemaVersion": 1,
+      "signupEnabled": false,
+      "locales": [
+        "en",
+        "es"
+      ]
+    },
+    "httpStatusNotReadFromUI": true
+  },
+  "publicResolverVerifiedB": {
+    "origin": "https://acceptance-b-20261108.portal-staging.nevora.team",
+    "status": 302,
+    "locationHost": "vercel.com",
+    "tlsVerified": true,
+    "dnsResolver": "1.1.1.1",
+    "cname": [
+      "983c97c5e0514a63.vercel-dns-017.com"
+    ],
+    "protected": true
+  }
+}

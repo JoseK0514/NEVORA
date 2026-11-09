@@ -1,0 +1,4 @@
+; Add only these two fictional staging-company CNAME records to nevora.team.
+; Import adds records; do not use a DNS template or overwrite the zone.
+acceptance-a-20261108.portal-staging.nevora.team. 1800 IN CNAME 983c97c5e0514a63.vercel-dns-017.com.
+acceptance-b-20261108.portal-staging.nevora.team. 1800 IN CNAME 983c97c5e0514a63.vercel-dns-017.com.

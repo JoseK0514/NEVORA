@@ -1,5 +1,7 @@
 # Sandbox credential and hosting acceptance
 
+**Latest source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
+
 The approved sandbox credential/hosting phase is complete using the existing Neon and Vercel accounts. No Render subscription or paid resource was added. Full onboarding is still gated on private provisioning/mail/ingress, the real two-business Owner journey, Claude UI and independent release acceptance.
 
 Application source: **4ba940075a323cae6f2ba0c036991257deb57325**, tree **e9a5ed92d7bc86b499f89bc848fb2da08d105055**, detached/local. Later evidence commits do not change application bytes. Nothing was pushed, merged or deployed to real production/native staging. Claude's UI and other chats were untouched.

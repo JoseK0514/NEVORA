@@ -1,5 +1,7 @@
 ## No-Render staging checkpoint (current)
 
+**Latest source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
+
 **Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
 
 Closed Neon Functions deployment3 uses clean source0dcf319ce514f48a490247a5fb219490bd39c95c. Actual route/forged-header probes11/11 pass; all processing remains false and all three schedules are disabled. The earlier native no-op scheduler deliveries and fixed role/status logs succeeded3/3 at sourcec333; those prove platform wakeup only. No new secret has been stored on Neon. No paid resource, upgrade, Render/native change, Vercel SSO change or alias move occurred.

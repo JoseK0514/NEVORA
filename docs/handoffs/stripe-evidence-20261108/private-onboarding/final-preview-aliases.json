@@ -1,0 +1,18 @@
+{
+  "observedAt": "2026-11-09T01:39:56.445Z",
+  "deploymentId": "dpl_CStTXazvGFjC1pK6nV8zsCgAdYbJ",
+  "aliases": [
+    {
+      "alias": "acceptance-a-20261108.portal-staging.nevora.team",
+      "uid": "cc2544520a657842ee037988c212c326e5082d5c235caa1a238e3d7a236bea27ce1ce6bb7c3cb9ce8c2a02314b7b5ec0588d098dc067e67bdba3ad2a290bac4f",
+      "created": "2026-11-09T01:37:50.990Z"
+    },
+    {
+      "alias": "acceptance-b-20261108.portal-staging.nevora.team",
+      "uid": "a520eb72dc3fd742473e12ce295e4cb9c8f3cb51b562f6168105139c6fa175b8051435eab9cab2bfdb18a2defbc34b35d0b2d81e7819ff267709d068e74618db",
+      "created": "2026-11-09T01:38:08.893Z"
+    }
+  ],
+  "connectorReadStatus": 403,
+  "authenticatedScopedCLISucceeded": true
+}

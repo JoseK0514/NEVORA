@@ -1,5 +1,7 @@
 # Integrated onboarding and subscription backend
 
+**Latest source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
+
 **Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
 
 November8,2026. Codex owns logic and staging; Claude owns all rendering. Current implementation work is detached/local. Read the source-specific verification packet before treating a checkpoint as accepted.

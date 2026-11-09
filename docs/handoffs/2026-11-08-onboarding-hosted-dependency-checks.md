@@ -1,5 +1,7 @@
 # Onboarding hosted-service and dependency checks
 
+**Latest source-specific status:** [Private onboarding and Stripe staging acceptance](2026-11-08-private-onboarding-staging-acceptance.md) supersedes the hosted/private dependency and candidate claims below: source `a07bfcc17`, two genuinely provisioned companies, real approved-inbox mail, sandbox payment/failure/Portal recovery, protected READY Preview and exact company DNS/TLS verified. All processing ends OFF. Claude UI (including observed billing-return404), combined-source integration/CI, Tax policy and public release remain open. Older checkpoints below are historical where superseded; API contracts remain applicable.
+
 **Current sandbox evidence:** [November8 credential and hosting acceptance](2026-11-08-neon-sandbox-credential-acceptance.md) supersedes the older credential, webhook, worker and Preview checkpoints below. Approved credential storage, genuine signed delivery, bounded native queue/reconciliation and exact-source protected Preview are verified. Full onboarding/Claude UI and private dependencies remain open.
 
 2026-11-08, America/Puerto_Rico. Follow-up to SCRUM-166 and local onboarding candidate6b4af1cf2. Codex owns logic/infrastructure verification; Claude owns UI. Existing companies/production and the Shopify store were not modified.

@@ -1,0 +1,24 @@
+{
+  "observedAt": "2026-11-09T01:37:52.465Z",
+  "nameserver": "ns01.domaincontrol.com",
+  "rows": [
+    {
+      "name": "acceptance-a-20261108.portal-staging.nevora.team",
+      "authoritativeCname": [
+        "983c97c5e0514a63.vercel-dns-017.com"
+      ],
+      "publicCname": [
+        "983c97c5e0514a63.vercel-dns-017.com"
+      ]
+    },
+    {
+      "name": "acceptance-b-20261108.portal-staging.nevora.team",
+      "authoritativeCname": [
+        "983c97c5e0514a63.vercel-dns-017.com"
+      ],
+      "publicCname": [
+        "983c97c5e0514a63.vercel-dns-017.com"
+      ]
+    }
+  ]
+}
