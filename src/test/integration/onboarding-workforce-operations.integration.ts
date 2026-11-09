@@ -49,6 +49,11 @@ it('uses actual company-scoped WORKER-only control custody without any browser k
    const url=new URL(f.db.connectionUrl);url.username=role;url.password=password;const pool=new Pool({connectionString:url.href,max:2});readers.push(pool);return {role,pool,url:url.href,store:control.createControlStore(pool)};
   }
   const r=await reader('test');
+  await f.db.pool.query("ALTER TABLE nevora_onboarding.workspace_registry ADD COLUMN future_private_metadata text DEFAULT 'fictional-do-not-project'");
+  const rerun=await f.db.pool.connect();try{await configureWorkerControlReader(rerun,r.role);}finally{rerun.release();}
+  expect((await r.pool.query("SELECT column_name FROM information_schema.columns WHERE table_schema='nevora_onboarding' AND table_name='worker_workspace_registry' ORDER BY ordinal_position")).rows.map(x=>x.column_name)).toEqual([
+   'id','registration_id','canonical_origin','environment','incarnation','revision','lifecycle','provider_project_id','app_secret_ref','app_role_name','worker_secret_ref','worker_role_name','created_at',
+  ]);
   for(const table of ['workspace_secrets','workspace_registry'])await expect(r.pool.query('SELECT * FROM nevora_onboarding.'+table)).rejects.toMatchObject({code:'42501'});
   expect((await r.pool.query('SELECT workspace_id::text,role_kind FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([{workspace_id:a.c.row.workspace_id,role_kind:'WORKER'}]);
   expect((await r.pool.query('SELECT id::text FROM nevora_onboarding.worker_workspace_registry')).rows).toEqual([{id:a.c.row.workspace_id}]);

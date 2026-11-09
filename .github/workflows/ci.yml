@@ -377,6 +377,20 @@ jobs:
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
       - name: Rondo leadership fixture and recovery gate (no live model calls)
         run: node scripts/payroll-postgres.mjs vitest.rondo-leadership.config.mts
+      - name: Native payroll isolated PostgreSQL integration gate
+        run: node scripts/payroll-postgres.mjs vitest.native-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/native-payroll.json"
+      - name: Configurable payroll isolated PostgreSQL integration gate
+        run: node scripts/payroll-postgres.mjs vitest.configurable-payroll-integration.config.mts --reporter=json --outputFile="$RUNNER_TEMP/configurable-payroll.json"
+      - name: Upload dedicated payroll SQL evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: payroll-sql-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/native-payroll.json
+            ${{ runner.temp }}/configurable-payroll.json
+          if-no-files-found: error
+          retention-days: 14
 
   phase-e-postgres:
     name: phase-e-postgres

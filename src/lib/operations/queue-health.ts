@@ -1,5 +1,6 @@
 import 'server-only';
-import type {SqlExecutor} from '../notifications/types';
+import type {SqlStatement} from '../notifications/types';
+export type QueueHealthReader={query(statement:SqlStatement,signal?:AbortSignal):Promise<unknown[]>};
 export type QueueHealth={workspaceId:string;observedAt:string;payroll:{due:number;failed:number;expiredLeases:number;oldestDueSeconds:number};notifications:{dueIntents:number;dueDeliveries:number;failed:number;expiredLeases:number;oldestDueSeconds:number}};
 const liveNotice="n.environment=$1 AND n.expires_at>t.now AND n.push_state NOT IN('cancelled','expired')";
 const liveDelivery=liveNotice+' AND d.expires_at>t.now';
@@ -28,15 +29,17 @@ const count=(v:unknown)=>{
  if(typeof v==='string'&&/^(0|[1-9][0-9]*)$/.test(v))v=Number(v);
  if(typeof v!=='number'||!Number.isSafeInteger(v)||v<0)throw Error('operations_health_unavailable');return v;
 };
-export async function readQueueHealth(ex:SqlExecutor,environment:'test'|'production',callerSignal?:AbortSignal):Promise<QueueHealth>{
+export async function readQueueHealth(ex:QueueHealthReader,environment:'test'|'production',callerSignal?:AbortSignal):Promise<QueueHealth>{
  if(!['test','production'].includes(environment))throw Error('operations_configuration_invalid');
  const signal=callerSignal?AbortSignal.any([callerSignal,AbortSignal.timeout(5000)]):AbortSignal.timeout(5000);
  let onAbort=()=>{};
  try{
   signal.throwIfAborted();
   const aborted=new Promise<never>((_ok,bad)=>{onAbort=()=>bad(Error('operations_health_unavailable'));signal.addEventListener('abort',onAbort,{once:true});});
-  const rows=await Promise.race([Promise.resolve().then(()=>{signal.throwIfAborted();return ex.query<Record<string,unknown>>({text:observationSql,values:[environment]},signal);}),aborted]);
-  const r=rows[0];
+  const rows=await Promise.race([Promise.resolve().then(()=>{signal.throwIfAborted();return ex.query({text:observationSql,values:[environment]},signal);}),aborted]);
+  const value=rows[0];
+  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('operations_health_unavailable');
+  const r=value as Record<string,unknown>;
   if(rows.length!==1||!r||Object.keys(r).sort().join(',')!=='notification_due_deliveries,notification_due_intents,notification_expired_leases,notification_failed,notification_oldest_due_seconds,observed_at,payroll_due,payroll_expired_leases,payroll_failed,payroll_invalid_leases,payroll_oldest_due_seconds,workspace_id'||typeof r.workspace_id!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(r.workspace_id)||typeof r.observed_at!=='string'||!Number.isFinite(Date.parse(r.observed_at))||count(r.payroll_invalid_leases)!==0)throw Error('operations_health_unavailable');
   const payroll={due:count(r.payroll_due),failed:count(r.payroll_failed),expiredLeases:count(r.payroll_expired_leases),oldestDueSeconds:count(r.payroll_oldest_due_seconds)};
   const notifications={dueIntents:count(r.notification_due_intents),dueDeliveries:count(r.notification_due_deliveries),failed:count(r.notification_failed),expiredLeases:count(r.notification_expired_leases),oldestDueSeconds:count(r.notification_oldest_due_seconds)};

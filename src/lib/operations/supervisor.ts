@@ -52,7 +52,12 @@ async function syncStateDirectory(config:OperationsConfig){
 function decodeReceipt(text:string,config:OperationsConfig,command:WorkerCommand,allowPreviousSource=false):InvocationReceipt{
  try{
   const r=JSON.parse(text) as InvocationReceipt;
-  if(!r||Object.keys(r).sort().join(',')!=='cleanupConfirmed,command,environment,exitCode,finishedAt,lastSuccessAt,schemaVersion,scopeId,sourceSha,startedAt,status'||r.schemaVersion!==1||r.command!==command||r.environment!==config.environment||r.scopeId!==config.scopeId||!sha(r.sourceSha)||!allowPreviousSource&&r.sourceSha!==config.sourceSha||!instant(r.startedAt)||!['running','succeeded','failed','timed_out','interrupted'].includes(r.status)||typeof r.cleanupConfirmed!=='boolean'||r.exitCode!==null&&(!Number.isSafeInteger(r.exitCode)||r.exitCode<0||r.exitCode>255)||r.lastSuccessAt!==null&&!instant(r.lastSuccessAt)||r.status==='running'&&(r.finishedAt!==null||r.exitCode!==null||r.cleanupConfirmed)||r.status!=='running'&&(!instant(r.finishedAt)||Date.parse(r.finishedAt)<Date.parse(r.startedAt))||r.status==='succeeded'&&(r.exitCode!==0||!r.cleanupConfirmed||r.lastSuccessAt!==r.finishedAt)||r.lastSuccessAt!==null&&Date.parse(r.lastSuccessAt)>Date.parse(r.finishedAt??r.startedAt))throw unavailable();
+  if(!r||Object.keys(r).sort().join(',')!=='cleanupConfirmed,command,environment,exitCode,finishedAt,lastSuccessAt,schemaVersion,scopeId,sourceSha,startedAt,status')throw unavailable();
+  if(r.schemaVersion!==1||r.command!==command||r.environment!==config.environment||r.scopeId!==config.scopeId||!sha(r.sourceSha)||!allowPreviousSource&&r.sourceSha!==config.sourceSha)throw unavailable();
+  if(!instant(r.startedAt)||!['running','succeeded','failed','timed_out','interrupted'].includes(r.status)||typeof r.cleanupConfirmed!=='boolean')throw unavailable();
+  if(r.exitCode!==null&&(!Number.isSafeInteger(r.exitCode)||r.exitCode<0||r.exitCode>255)||r.lastSuccessAt!==null&&!instant(r.lastSuccessAt))throw unavailable();
+  if(r.status==='running'&&(r.finishedAt!==null||r.exitCode!==null||r.cleanupConfirmed)||r.status!=='running'&&(!instant(r.finishedAt)||Date.parse(r.finishedAt)<Date.parse(r.startedAt)))throw unavailable();
+  if(r.status==='succeeded'&&(r.exitCode!==0||!r.cleanupConfirmed||r.lastSuccessAt!==r.finishedAt)||r.lastSuccessAt!==null&&Date.parse(r.lastSuccessAt)>Date.parse(r.finishedAt??r.startedAt))throw unavailable();
   return r;
  }catch{throw unavailable();}
 }

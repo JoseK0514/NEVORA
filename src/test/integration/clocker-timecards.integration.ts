@@ -61,6 +61,30 @@ describe('D3 owned timecard protocol', () => {
     await f.q('INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES($1,$2,1,$3)', [workspaceId, correction, { id: correction, status: 'REVIEW_REQUIRED', rows: [{ employeeId: 'c34-a' }] }]);
     expect((await act('REOPEN')).status).toBe('reopened');
   });
+  it('recovers an exact committed reopen after later payroll approval without admitting fresh changes or stale authority', async () => {
+    await act('APPROVE'); await act('FINALIZE');
+    const current = await card();
+    const command = { operationId:randomUUID(),employeeId:'c34-a',...period,
+      expectedRevision:current.revision,expectedSourceHash:current.sourceHash,
+      action:'REOPEN' as const,note:'Reviewed correction of recorded time.' };
+    const receipt = await mutateTimecard(owner,command,f.db.executor);
+    expect(receipt).toEqual({status:'reopened',operationId:command.operationId,revision:3});
+    expect(await mutateTimecard(owner,command,f.db.executor)).toEqual(receipt);
+    await act('APPROVE'); await act('FINALIZE');
+    const [{id:workspaceId}] = await f.q<{id:string}>('SELECT id FROM workspaces WHERE singleton');
+    const run = randomUUID();
+    await f.q('INSERT INTO payroll_runs(workspace_id,id,start_date,end_date) VALUES($1,$2,$3,$4)',[workspaceId,run,period.startDate,period.endDate]);
+    await f.q('INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES($1,$2,1,$3)',
+      [workspaceId,run,{id:run,status:'APPROVED',rows:null,nativeCalculation:{employees:[{employeeId:'c34-a'}]}}]);
+    expect(await act('REOPEN')).toEqual({status:'blocked',reason:'payroll_approved'});
+    expect(await mutateTimecard(owner,command,f.db.executor)).toEqual(receipt);
+    expect(await mutateTimecard(owner,{...command,note:'Changed retry payload.'},f.db.executor)).toEqual({status:'conflict'});
+    expect(await mutateTimecard(owner,{...command,employeeId:'c34-b'},f.db.executor)).toEqual({status:'conflict'});
+    expect(await f.q('SELECT revision,action FROM timecard_revisions WHERE operation_id=$1',[command.operationId])).toEqual([{revision:3,action:'REOPEN'}]);
+    expect((await card()).state).toBe('FINALIZED');
+    await f.q("DELETE FROM employee_sessions WHERE token_hash=repeat('a',64)");
+    expect(await mutateTimecard(owner,command,f.db.executor)).toEqual({status:'unavailable'});
+  });
   it('approves, finalizes and retains history across explicit reopen', async () => {
     expect((await act('APPROVE')).status).toBe('approved');
     expect((await act('FINALIZE')).status).toBe('finalized');
