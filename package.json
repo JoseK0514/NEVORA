@@ -47,7 +47,8 @@
     "commerce:api": "node --import tsx services/commerce/server.ts",
     "commerce:worker": "node --import tsx services/commerce/worker-cli.ts",
     "commerce:operator": "node --import tsx services/commerce/operator.ts",
-    "test:commerce:owned": "node scripts/commerce-postgres.mjs"
+    "test:commerce:owned": "node scripts/commerce-postgres.mjs",
+    "operations:worker": "node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/workforce-operations.mts"
   },
   "dependencies": {
     "@gsap/react": "2.1.2",
