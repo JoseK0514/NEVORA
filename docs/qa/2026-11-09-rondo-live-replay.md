@@ -1,5 +1,7 @@
 # Rondo live replay — November 9, 2026
 
+Subsequent result: a separately authorized [$2 continuation](2026-11-09-rondo-live-completion.md) completed and manually reviewed both remaining cases. The counts and budget below preserve the earlier $5-run checkpoint.
+
 The three previously failed requests answered safely in this replay. Eleven of the thirteen Owner model scenarios completed and passed root-agent manual review. Two remain unscored because the approved additional $5 cap stopped further transmission. This is a bounded source-engine evaluation, not independent certification or production acceptance.
 
 ## Candidate and environment
@@ -50,7 +52,7 @@ Evidence directory: `/Users/josek0514/.codex/rondo-live-replay-20261109/`.
 - `budget/identity.json`, `budget/ledger.json`, `guard.mjs`, `guard.check.mjs`, `closed-guard-check.json`: authorization bound, reservations and closure controls.
 - `harness/`, `fixture-source/`, `logs/`, `receipt.json`: exact archived replay harnesses, fixture sources, execution logs and file hashes. Temporary replay entrypoints were removed from the application worktrees.
 
-Evidence correction: the raw NEVORA `harnessHash` accidentally hashes the candidate commit string, including its newline. It is not a harness source hash. Raw reports are preserved; the receipt's archived-file SHA256 values supply actual file integrity.
+Evidence correction: the raw NEVORA `harnessHash` accidentally hashes the candidate commit string, including its newline. It is not a harness source hash. Raw reports are preserved; the receipt's archived-file SHA256 values verify the archived copies at receipt time. They cannot retrospectively bind the precise executed harness bytes at run time. [Independent QA](2026-11-09-rondo-independent-review.md) preserves this provenance limitation; the later continuation records a matching actual source-file hash.
 
 The budget-blocked turn is captured by the application as `provider_failed` / `network`, but the guard independently identified the local pre-transmission stop. It is not an upstream rejection or a semantic failure.
 
