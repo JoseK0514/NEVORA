@@ -1,0 +1,49 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [31m❯[39m src/test/integration/onboarding-journey.integration.ts [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 4556[2mms[22m[39m
+   [33m[2m✓[22m[39m creates two isolated fictional companies, signs in through real password actions, resumes setup and activates duplicate local employee IDs[33m 1866[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a failed browser cookie write after real password sign-in without changing the known credential[33m 698[2mms[22m[39m
+   [33m[2m✓[22m[39m processes real leased payroll and notification work with WORKER while denying Owner takeover SQL[33m 663[2mms[22m[39m
+[31m   [31m×[31m uses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated[39m[33m 1329[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/onboarding-journey.integration.ts[2m > [22muses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated
+[31m[1mAssertionError[22m: expected { state: 'ready', …(10) } to match object { memory: { state: 'ready', …(1) } }
+(37 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[33m@@ -1,11 +1,10 @@[39m
+[2m  {[22m
+[2m    "memory": {[22m
+[2m      "memory": {[22m
+[2m        "intents": [[22m
+[2m          {[22m
+[32m-           "intentId": "069c5db3-8f9b-4d25-89b2-9d4c64a1e573",[39m
+[2m            "text": "Fictional company A preference",[22m
+[2m          },[22m
+[2m        ],[22m
+[2m        "revision": 1,[22m
+[2m      },[22m
+
+[36m [2m❯[22m src/test/integration/onboarding-journey.integration.ts:[2m73:25[22m[39m
+    [90m 71|[39m   const call=(company:typeof a,value?:unknown)=>withWorkspaceBinding(c…
+    [90m 72|[39m   expect(await call(a,command)).toMatchObject({state:'memory_saved',re…
+    [90m 73|[39m   expect(await call(a)).toMatchObject({memory:{state:'ready',memory:{r…
+    [90m   |[39m                         [31m^[39m
+    [90m 74|[39m   expect(await call(b)).toMatchObject({memory:{state:'ready',memory:{r…
+    [90m 75|[39m   const worker=await resolveWorkspaceBinding({origin:a.c.origin},f.sto…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 09:06:45
+[2m   Duration [22m 4.79s[2m (tests 96%, transform 2%, import 2%)[22m
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.

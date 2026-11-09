@@ -1,0 +1,45 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/owner-advisor/intelligence.integration.ts (8 tests | 2 failed) 2596ms
+   × investigates through Neon chat format, retains private goals, replays exactly and does not mutate schedules 437ms
+   × resumes a period task in English, rereads changed records in Spanish and rejects the older decision evidence 363ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/owner-advisor/intelligence.integration.ts > investigates through Neon chat format, retains private goals, replays exactly and does not mutate schedules
+Error: Invalid advisor response
+ ❯ requireValue src/components/owner-advisor/public-response.ts:11:21
+      9| import { parseCoveragePlans } from "./public-coverage-plans";
+     10| function requireValue(value: unknown): asserts value {
+     11|   if (!value) throw Error("Invalid advisor response");
+       |                     ^
+     12| }
+     13| const text = (v: unknown, max = 12000) =>
+ ❯ parseAnswer src/components/owner-advisor/public-response.ts:140:5
+ ❯ src/lib/owner-advisor/intelligence.integration.ts:55:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/owner-advisor/intelligence.integration.ts > resumes a period task in English, rereads changed records in Spanish and rejects the older decision evidence
+Error: Invalid advisor response
+ ❯ requireValue src/components/owner-advisor/public-response.ts:11:21
+      9| import { parseCoveragePlans } from "./public-coverage-plans";
+     10| function requireValue(value: unknown): asserts value {
+     11|   if (!value) throw Error("Invalid advisor response");
+       |                     ^
+     12| }
+     13| const text = (v: unknown, max = 12000) =>
+ ❯ parseAnswer src/components/owner-advisor/public-response.ts:140:5
+ ❯ src/lib/owner-advisor/intelligence.integration.ts:153:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 15 passed (16)
+      Tests  2 failed | 145 passed (147)
+   Start at  09:01:10
+   Duration  48.43s (tests 97%, import 2%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

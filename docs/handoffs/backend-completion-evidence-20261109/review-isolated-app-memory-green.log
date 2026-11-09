@@ -1,0 +1,16 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [32m✓[39m src/test/integration/onboarding-journey.integration.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4656[2mms[22m[39m
+   [33m[2m✓[22m[39m creates two isolated fictional companies, signs in through real password actions, resumes setup and activates duplicate local employee IDs[33m 1843[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a failed browser cookie write after real password sign-in without changing the known credential[33m 691[2mms[22m[39m
+   [33m[2m✓[22m[39m processes real leased payroll and notification work with WORKER while denying Owner takeover SQL[33m 719[2mms[22m[39m
+   [33m[2m✓[22m[39m uses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated[33m 1402[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 09:07:04
+[2m   Duration [22m 4.89s[2m (tests 96%, transform 2%, import 2%)[22m
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.
