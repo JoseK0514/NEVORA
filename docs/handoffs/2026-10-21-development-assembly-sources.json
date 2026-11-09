@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "47c9782e70cd012cd6e360484665fd44b4a7178c",
+      "sha": "90e030149d689f2c11af2d21ff4fac02d295f7e2",
       "disposition": "held",
-      "reason": "Held exact collaboration head after merging development e9c3b60f5. Earlier bounded backend extraction fromd349b661 and subsequent lifetime/authorization fixes are already inherited through development; this head is not wholly included. Unique UI/navigation/copy/browser/native-app work remains held under Claude/native ownership. No additional collaboration delta is adopted by the November9 onboarding/Owner-partner backend completion. See2026-11-08-backend-only-development-integration.md and2026-11-09-backend-source-completion.json. Main and frozen Release1 remain separate."
+      "reason": "Held exact collaboration head after merging development e9c3b60f5. Earlier bounded backend extraction fromd349b661 and subsequent lifetime/authorization fixes are already inherited through development; this head is not wholly included. Unique UI/navigation/copy/browser/native-app work remains held under Claude/native ownership. No additional collaboration delta is adopted by the November9 onboarding/Owner-partner backend completion. See2026-11-08-backend-only-development-integration.md and2026-11-09-backend-source-completion.json. Main and frozen Release1 remain separate. November9 observed UI/native-only follow-up90e03014 (12paths: DirectionB phone/device components, DESIGN, UI scan artifacts and owned browser-harness styles) is also HELD; no new runtime backend delta selected. The source gate caught this advancement during qualification; no changes were imported."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",

@@ -1,0 +1,39 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/queue-health.test.ts (6 tests | 1 failed) 7ms
+   × monitors the explicitly selected worker domain without requiring optional payroll to be enabled 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/queue-health.test.ts > monitors the explicitly selected worker domain without requiring optional payroll to be enabled
+AssertionError: expected { healthy: false, …(1) } to deeply equal { healthy: true, reasons: [] }
+
+- Expected
++ Received
+
+  {
+-   "healthy": true,
+-   "reasons": [],
++   "healthy": false,
++   "reasons": [
++     "payroll_failed",
++   ],
+  }
+
+ ❯ src/lib/operations/queue-health.test.ts:25:50
+     23| it('monitors the explicitly selected worker domain without requiring o…
+     24|  const h=await readQueueHealth(executor([{...row(),payroll_failed:'1'}…
+     25|  expect(assessQueueHealth(h,60,'notifications')).toEqual({healthy:true…
+       |                                                  ^
+     26| });
+     27|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  09:22:27
+   Duration  95ms (transform 53%, tests 23%, import 18%, worker 6%)
+

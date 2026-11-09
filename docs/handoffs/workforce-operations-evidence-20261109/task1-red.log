@@ -1,0 +1,20 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/supervisor.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts [ src/lib/operations/supervisor.test.ts ]
+Error: Cannot find module './supervisor' imported from /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/lib/operations/supervisor.test.ts
+ ❯ src/lib/operations/supervisor.test.ts:6:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  09:10:28
+   Duration  84ms (worker 97%, environment 3%)
+

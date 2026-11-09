@@ -1,0 +1,109 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [32m✓[39m src/test/integration/onboarding-operations.integration.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 9783[2mms[22m[39m
+   [33m[2m✓[22m[39m requires actual suspended control custody and never modifies another company[33m 2101[2mms[22m[39m
+   [33m[2m✓[22m[39m retires native challenges, private material, worker jobs and runtime credentials, preserving business data and suspension[33m 1189[2mms[22m[39m
+   [33m[2m✓[22m[39m reconciles lost company and control commit acknowledgements with the original restore receipt, never resetting credentials twice[33m 2447[2mms[22m[39m
+   [33m[2m✓[22m[39m runs actual registration/provisioning/activation using separate restricted control principals without exposing bootstrap custody to the web role[33m 961[2mms[22m[39m
+   [33m[2m✓[22m[39m retires expired encrypted bearers under the restricted provisioner while preserving tombstones and current material[33m 865[2mms[22m[39m
+   [33m[2m✓[22m[39m retires an actual owned pg_dump/pg_restore image before any registry reactivation[33m 2219[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-owner-activation.integration.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 20547[2mms[22m[39m
+   [33m[2m✓[22m[39m issues only a verified-signup-owned redirect, installs one real credential and finalizes both durable stores[33m 866[2mms[22m[39m
+   [33m[2m✓[22m[39m serializes simultaneous claims and retains the original command receipt while changed password replay conflicts[33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects expired and explicitly revoked grants before any credential is created[33m 1800[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks email, employment and grant authority after real scrypt completes and honors interruption[33m 1751[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses the other actual company host, restored incarnation and fabricated bindings[33m 1497[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers lost credential commit acknowledgement by original receipt without issuing a session or changing the password[33m 878[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a lost company grant commit and a lost final control commit from their durable receipts[33m 916[2mms[22m[39m
+   [33m[2m✓[22m[39m binds the verified email independently of an unchanged employee timestamp[33m 801[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers the anchor-first/control-second activation gap without resetting credentials[33m 967[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks Owner role during a simultaneous scrypt-bound claim and limits live-grant CPU admission[33m 925[2mms[22m[39m
+   [33m[2m✓[22m[39m uses real HTTP grant and activation boundaries without issuing an assumed browser session[33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m adds activation support to a legacy schema without adopting its existing active Owner[33m 443[2mms[22m[39m
+   [33m[2m✓[22m[39m skips ten expired pending registrations and fairly rotates live activation work[33m 7980[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-commerce.integration.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 18108[2mms[22m[39m
+   [33m[2m✓[22m[39m enrolls the actual provisioned company once before publishing activation, without a second Owner credential or provisioning job[33m 963[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses the competing public signup and setup paths in integrated mode before writing a second account[33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers concurrent enrollment replay without restarting a trial or storing any company database credential[33m 1030[2mms[22m[39m
+   [33m[2m✓[22m[39m allows the verified contact to own a second separate company without linking billing authority by email[33m 1675[2mms[22m[39m
+   [33m[2m✓[22m[39m uses current A/B routing for billing facts and never the process-wide legacy installation[33m 1883[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a committed enrollment with a lost acknowledgement before publishing the same pending Owner[33m 1145[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps billing identity and capacity immutable to APP/WORKER and binds current Owner proofs to the correct company[33m 2066[2mms[22m[39m
+   [33m[2m✓[22m[39m connects the provisioned Owner to one Stripe checkout and signed lifecycle events without changing the original trial[33m 1458[2mms[22m[39m
+   [33m[2m✓[22m[39m uses separate real catalog logins so billing cannot reset a trial and enrollment cannot edit subscriptions[33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m cannot mint a billing handoff with a retired company instance while its registry is suspended[33m 1016[2mms[22m[39m
+   [33m[2m✓[22m[39m never substitutes B authority when A cache validation is interleaved with a B request[33m 2191[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects previously issued mailbox proofs for an onboarding business even when a caller omits integrated API configuration[33m 814[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects preexisting handoffs and billing sessions after Owner authority is revoked[33m 1146[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses a correctly named provisioning target occupied in another user schema without changing its sentinel[33m 617[2mms[22m[39m
+   [33m[2m✓[22m[39m gives a WORKER a read-only entitlement credential that cannot mint Owner billing authority even with readable session hashes[33m 880[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-invitations.integration.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 15028[2mms[22m[39m
+   [33m[2m✓[22m[39m issues the explicit selected group once through canonical receipts with the existing168hour lifetime[33m 1044[2mms[22m[39m
+   [33m[2m✓[22m[39m reports accepted, known failed and unknown external delivery per person without automatically resending[33m 1114[2mms[22m[39m
+   [33m[2m✓[22m[39m revalidates a queued target email/version before the next chunk and never sends stale reviewed input[33m 1593[2mms[22m[39m
+   [33m[2m✓[22m[39m retains an unknown dispatch fence after a crash before canonical issue and does not repeat it on replay[33m 863[2mms[22m[39m
+   [33m[2m✓[22m[39m serializes duplicate batch submits and rejects changed selection under the same operation ID[33m 942[2mms[22m[39m
+   [33m[2m✓[22m[39m stops remaining sends when the issuing Owner is demoted during the external delivery wait[33m 1010[2mms[22m[39m
+   [33m[2m✓[22m[39m pins queued target role generation independently of an unchanged timestamp[33m 1416[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps an unknown outcome after a lost canonical invitation commit response and never reconstructs or resends its bearer[33m 803[2mms[22m[39m
+   [33m[2m✓[22m[39m does not bind an old approval to the same Owner after demotion and later promotion[33m 990[2mms[22m[39m
+   [33m[2m✓[22m[39m uses the real mail adapter against owned loopback SMTP and activates only the exact bound company proof[33m 1929[2mms[22m[39m
+   [33m[2m✓[22m[39m permits a newly reviewed explicit resend, retires the old proof and preserves one-use employee activation[33m 1211[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects revoked and expired proofs and clears terminal digests without deleting invitation history[33m 1201[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps the actual HTTP batch send/read path host-bound and reports the real loopback SMTP receipt[33m 911[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-setup.integration.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 9681[2mms[22m[39m
+   [33m[2m✓[22m[39m resumes canonical business fields after refresh and atomically saves the existing workspace profile plus one receipt[33m 789[2mms[22m[39m
+   [33m[2m✓[22m[39m serializes two tabs at one expected version and rejects changed replay without a second canonical write[33m 1007[2mms[22m[39m
+   [33m[2m✓[22m[39m denies non-Owner and revoked sessions before revealing configuration or saving[33m 731[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects invalid timezone and foreign location without advancing progress or saving settings[33m 743[2mms[22m[39m
+   [33m[2m✓[22m[39m derives readiness from actual staffing and coverage and falls back after canonical data removal[33m 947[2mms[22m[39m
+   [33m[2m✓[22m[39m writes canonical locations and hour targets once, and optional skips never enable payroll[33m 845[2mms[22m[39m
+   [33m[2m✓[22m[39m rolls back the canonical write if its onboarding receipt cannot commit[33m 801[2mms[22m[39m
+   [33m[2m✓[22m[39m serves current Owner state on the registered host and rejects cross-origin writes[33m 1003[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps the canonical timezone conversion lock once operational records exist[33m 1334[2mms[22m[39m
+   [33m[2m✓[22m[39m fences stale onboarding forms after the established workspace, staffing and coverage settings writers commit[33m 1479[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-people.integration.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 10901[2mms[22m[39m
+   [33m[2m✓[22m[39m uses canonical employee/eligibility/qualification receipts without sending an invitation or creating credentials[33m 1284[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects duplicate IDs locally while allowing the same actual company-local number in another database[33m 2270[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects inactive/foreign locations, missing Manager scope and invented qualifications without partial profiles[33m 1624[2mms[22m[39m
+   [33m[2m✓[22m[39m saves a profile without optional email and reports it separately as uninvitable[33m 1038[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a lost actual creation commit reply from both original receipts without duplicate employees[33m 1044[2mms[22m[39m
+   [33m[2m✓[22m[39m requires a current Owner even if a Manager would hold ordinary Company create permission[33m 787[2mms[22m[39m
+   [33m[2m✓[22m[39m returns a version conflict for another tab without a partial canonical creation[33m 978[2mms[22m[39m
+   [33m[2m✓[22m[39m rolls back profile and eligibility if the shared onboarding receipt cannot persist[33m 840[2mms[22m[39m
+   [33m[2m✓[22m[39m persists only explicitly selected qualifications and the Owner-selected initial Manager scope[33m 1035[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-provisioning.integration.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 7875[2mms[22m[39m
+   [33m[2m✓[22m[39m atomically installs only canonical migrations, a pending Owner without credentials and an exact recovery receipt[33m 631[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves the legacy fresh-company CLI active Owner and second-run refusal[33m 450[2mms[22m[39m
+   [32m✓[39m verified control-plane provisioning commands [2m(19)[22m
+     [33m[2m✓[22m[39m enforces the dispatch-day ceiling against prior-day backlog, concurrent jobs and a lowered cap[33m 679[2mms[22m[39m
+     [33m[2m✓[22m[39m recovers a lost create response using the original owned resource without another POST[33m 639[2mms[22m[39m
+     [33m[2m✓[22m[39m recovers a lost company commit from its exact receipt without duplicate schema or credential writes[33m 655[2mms[22m[39m
+     [33m[2m✓[22m[39m retries an explicitly rejected429 create but never reuses a stale or fabricated worker lease[33m 633[2mms[22m[39m
+     [33m[2m✓[22m[39m waits for a temporarily missing known-resource listing without quarantining or POSTing again[33m 659[2mms[22m[39m
+     [33m[2m✓[22m[39m retries a transient read failure before any create intent without creating an ambiguous POST[33m 611[2mms[22m[39m
+     [33m[2m✓[22m[39m recovers lost acknowledgements after resource publication and final control publication[33m 613[2mms[22m[39m
+     [33m[2m✓[22m[39m bootstraps two independent businesses concurrently with the same local Owner ID[33m 876[2mms[22m[39m
+     [33m[2m✓[22m[39m recovers an actual killed worker after resource creation without a second provider create[33m 671[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-journey.integration.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 5165[2mms[22m[39m
+   [33m[2m✓[22m[39m creates two isolated fictional companies, signs in through real password actions, resumes setup and activates duplicate local employee IDs[33m 2500[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers a failed browser cookie write after real password sign-in without changing the known credential[33m 638[2mms[22m[39m
+   [33m[2m✓[22m[39m processes real leased payroll and notification work with WORKER while denying Owner takeover SQL[33m 701[2mms[22m[39m
+   [33m[2m✓[22m[39m uses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated[33m 1325[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-workforce-operations.integration.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 2227[2mms[22m[39m
+   [33m[2m✓[22m[39m observes real due/future/failed/leased queues under restricted WORKER without writes or cross-company data[33m 1080[2mms[22m[39m
+   [33m[2m✓[22m[39m uses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers[33m 1146[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-registration.integration.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 1165[2mms[22m[39m
+   [32m✓[39m actual control-database verified registration [2m(20)[22m
+     [33m[2m✓[22m[39m refuses a proof that expires while waiting for its unchanged registration row lock[33m 765[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-isolation-routing.integration.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 444[2mms[22m[39m
+ [32m✓[39m src/test/integration/onboarding-isolation-auth.integration.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 364[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[32m139 passed[39m[22m[90m (139)[39m
+[2m   Start at [22m 09:45:11
+[2m   Duration [22m 103.30s[2m (tests 99%, import 1%)[22m
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.

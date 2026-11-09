@@ -1,0 +1,31 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/supervisor.test.ts (11 tests | 1 failed) 711ms
+   × reports a crashed invocation and retains its lock for explicit paused-host recovery 38ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > reports a crashed invocation and retains its lock for explicit paused-host recovery
+AssertionError: expected { healthy: false, reason: 'invalid' } to match object { healthy: false, reason: 'stale' }
+
+- Expected
++ Received
+
+  {
+    "healthy": false,
+-   "reason": "stale",
++   "reason": "invalid",
+  }
+
+ ❯ src/lib/operations/supervisor.test.ts:73:91
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  09:11:36
+   Duration  801ms (tests 97%, transform 2%, import 1%)
+

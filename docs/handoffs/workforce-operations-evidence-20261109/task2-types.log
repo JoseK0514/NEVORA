@@ -1,0 +1,9 @@
+
+> fuel-scheduler@0.1.0 typecheck
+> tsc --noEmit
+
+src/lib/operations/supervisor.test.ts(105,194): error TS2769: No overload matches this call.
+  Overload 3 of 8, '(command: string, args?: readonly string[] | undefined, options?: SpawnSyncOptions | undefined): SpawnSyncReturns<string | NonSharedBuffer>', gave the following error.
+    Type '{ PATH: string | undefined; HOME: string | undefined; NODE_ENV: string; NEVORA_OPERATIONS_ENABLED: string; NEVORA_OPERATIONS_ENVIRONMENT: string; NEVORA_OPERATIONS_SOURCE_SHA: string; NEVORA_OPERATIONS_SCOPE_ID: string; NEVORA_OPERATIONS_STATE_DIR: string; NEVORA_OPERATIONS_DEADLINE_SECONDS: string; }' is not assignable to type 'ProcessEnv'.
+      Types of property 'NODE_ENV' are incompatible.
+        Type 'string' is not assignable to type '"test" | "production" | "development"'.

@@ -1,0 +1,96 @@
+{
+  "parsed": [
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-dispatch-health@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-dispatch-health@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-dispatch@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-dispatch@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-reminders-health@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-reminders-health@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-reminders@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-notifications-reminders@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-payroll-health@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-payroll-health@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-payroll@.service.example",
+      "sections": [
+        "Unit",
+        "Service"
+      ]
+    },
+    {
+      "file": "ops/workforce/systemd/nevora-payroll@.timer.example",
+      "sections": [
+        "Unit",
+        "Timer",
+        "Install"
+      ]
+    }
+  ],
+  "linuxSystemdExecuted": false,
+  "reason": "systemd-analyze and Docker are not installed on this Mac; target-host verification remains required."
+}

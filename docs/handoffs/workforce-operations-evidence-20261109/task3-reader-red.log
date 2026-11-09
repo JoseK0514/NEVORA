@@ -1,0 +1,20 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/routing-reader.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/routing-reader.test.ts [ src/lib/operations/routing-reader.test.ts ]
+Error: Cannot find module './routing-reader' imported from /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/lib/operations/routing-reader.test.ts
+ ❯ src/lib/operations/routing-reader.test.ts:3:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  09:30:54
+   Duration  95ms (worker 97%, environment 3%)
+
