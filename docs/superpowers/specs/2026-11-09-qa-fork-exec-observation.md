@@ -1,0 +1,7 @@
+# QA fork/exec observation repair
+
+Two exact hosted failures (4ef communications and41 navigation) have the same forensic result: the rejected new detached Next leader's first command hash equals the live browser parent's exact command; its next hash equals the actual Next CLI command reconstructed from its ownership receipt. PID, parent, group and birth remain unchanged. Both fixtures closed and source/mirror verification passed; zero browser scenarios executed. This is an initial pre-exec fork sample, not evidence that an accepted resource changed identity.
+
+Only initial, previously unleased direct detached children whose command still equals the independently pinned live root may collect a bounded fresh post-exec observation before first binding. Retain exact PID/birth/parent/group/owner-marker/ancestry continuity during collection; require the root to remain independently proven; fail closed if unresolved, changed or unavailable. Existing registered-resource command identity and all signal/retirement/source controls remain unchanged. Never rebind an existing lease or treat IPC/JSON as independent process proof.
+
+Use actual owned child processes and deterministic injected pre-exec ps sampling for RED/GREEN, with raw argv/environment kept out of evidence. Cover successful exec collection, bounded unresolved rejection and changed lifetime during collection. Run all existing process/registration/retirement/supervisor negative suites unchanged. No product UI/native, application logic, credentials, database or provider changes.

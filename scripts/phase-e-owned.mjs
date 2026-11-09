@@ -211,9 +211,30 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     if (!child.pid || pid === child.pid || !isDescendant(pid, child.pid, table)) throw Error('Process is not an owned child descendant');
     // Only snapshot supplies this current independently collected identity.
     // Registration always reads fresh; cached leases/IPC/receipts cannot supply it.
-    const identity = observedIdentity ?? ownedProcessIdentity(pid, ownerId);
+    let identity = observedIdentity ?? ownedProcessIdentity(pid, ownerId);
     if (!identity) throw Error('Process lacks invocation ownership');
     const previous = leases.get(pid);
+    if (!previous && rootLease && identity.ppid === child.pid && identity.pid === identity.pgid && identity.commandHash === rootLease.commandHash) {
+      // An independent poll can see fork's inherited parent argv before exec
+      // completes. That is not the new program's initial command identity.
+      // Collect a bounded post-exec proof BEFORE creating its first lease;
+      // an established lease can never take this path or change its command.
+      const birth = identity, by = performance.now() + 250, pause = new Int32Array(new SharedArrayBuffer(4));
+      do {
+        rootGroupProof();
+        if (performance.now() >= by) throw Object.assign(Error('Owned child exec identity unresolved'), {
+          observationFailure: { reason: 'EXEC_IDENTITY_UNRESOLVED', pid, phase: 'initial-binding' },
+        });
+        Atomics.wait(pause, 0, 0, 5);
+        const fresh = ownedProcessIdentity(pid, ownerId, true);
+        if (!fresh) throw Error('Process lacks invocation ownership');
+        if (fresh.pid !== birth.pid || fresh.started !== birth.started || fresh.ppid !== birth.ppid || fresh.pgid !== birth.pgid) throw continuityFailure(birth, fresh);
+        identity = fresh;
+      } while (identity.commandHash === rootLease.commandHash);
+      rootGroupProof();
+      table = processTable();
+      if (!isDescendant(pid, child.pid, table) || table.get(pid)?.ppid !== birth.ppid) throw continuityFailure(birth, identity);
+    }
     const rootMember = rootLease && identity.pgid === rootLease.pid;
     if (rootMember && kind === 'owned-descendant' && (!previous || previous.kind === 'owned-descendant') && rootGroupProof(identity) === retiredProcess) return;
     if (previous) {
