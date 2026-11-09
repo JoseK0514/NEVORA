@@ -80,6 +80,11 @@ describe('D3 owned timecard protocol', () => {
     expect(await mutateTimecard(owner,command,f.db.executor)).toEqual(receipt);
     expect(await mutateTimecard(owner,{...command,note:'Changed retry payload.'},f.db.executor)).toEqual({status:'conflict'});
     expect(await mutateTimecard(owner,{...command,employeeId:'c34-b'},f.db.executor)).toEqual({status:'conflict'});
+    await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('c34-other-owner','Other','Fictional Owner','558','OWNER','loc-1')");
+    await f.q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('e',64),'c34-other-owner',now()+interval '1 day')");
+    const otherOwner=proof('c34-other-owner','OWNER','e');
+    expect(await mutateTimecard(otherOwner,command,f.db.executor)).toEqual({status:'blocked',reason:'payroll_approved'});
+    expect(await mutateTimecard(otherOwner,{...command,operationId:randomUUID()},f.db.executor)).toEqual({status:'blocked',reason:'payroll_approved'});
     expect(await f.q('SELECT revision,action FROM timecard_revisions WHERE operation_id=$1',[command.operationId])).toEqual([{revision:3,action:'REOPEN'}]);
     expect((await card()).state).toBe('FINALIZED');
     await f.q("DELETE FROM employee_sessions WHERE token_hash=repeat('a',64)");

@@ -149,17 +149,17 @@ async function readTimecardsCore(proof:SessionMutationProof,requested:Period,exe
  * the old hours with nothing flagging it. While the latest payroll run for an overlapping period is APPROVED and pays
  * this person, reopen is refused; starting a payroll correction for that period (which recalculates from current
  * hours until it's approved) lifts the block. Runs list people in rows (provider import) or nativeCalculation. */
-export function payrollApprovedGuard(workspaceId:string,employeeId:string,startDate:string,endDate:string,operationId:string){
+export function payrollApprovedGuard(workspaceId:string,employeeId:string,startDate:string,endDate:string,operationId:string,actorId:string){
   // Existing operations go to the immutable SQL receipt authority, which checks
   // actor/workspace/command hash before replay or conflict. Current access guards
   // still surround this transaction; only new writes face the paid-hours veto.
-  return {text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM timecard_revisions WHERE operation_id=$5::uuid)
+  return {text:`SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM timecard_revisions WHERE operation_id=$5::uuid AND workspace_id=$1 AND actor_employee_id=$6)
     AND EXISTS(SELECT 1 FROM payroll_runs r JOIN payroll_runs_current c ON c.workspace_id=r.workspace_id AND c.run_id=r.id
     WHERE r.workspace_id=$1 AND r.start_date<=$4::date AND r.end_date>=$3::date AND c.payload->>'status'='APPROVED'
      AND NOT EXISTS(SELECT 1 FROM payroll_runs child WHERE child.workspace_id=r.workspace_id AND child.correction_of=r.id)
      AND (EXISTS(SELECT 1 FROM jsonb_array_elements(CASE WHEN jsonb_typeof(c.payload->'rows')='array' THEN c.payload->'rows' ELSE '[]'::jsonb END) x WHERE x->>'employeeId'=$2)
       OR EXISTS(SELECT 1 FROM jsonb_array_elements(CASE WHEN jsonb_typeof(c.payload->'nativeCalculation'->'employees')='array' THEN c.payload->'nativeCalculation'->'employees' ELSE '[]'::jsonb END) x WHERE x->>'employeeId'=$2)))
-    THEN 'nevora_timecard_PAYROLL_APPROVED' ELSE '1' END)::integer`,values:[workspaceId,employeeId,startDate,endDate,operationId]};
+    THEN 'nevora_timecard_PAYROLL_APPROVED' ELSE '1' END)::integer`,values:[workspaceId,employeeId,startDate,endDate,operationId,actorId]};
 }
 
 /**
@@ -180,7 +180,7 @@ export async function mutateTimecard(proof:SessionMutationProof,input:unknown,ex
   const statements=[...workspaceReadGuard(workspace),
     {text:'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',values:[[...new Set([actor,command.employeeId])].sort()]},
     ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'},authority),
-    ...(command.action==='REOPEN'?[payrollApprovedGuard(workspace.id,command.employeeId,command.startDate,command.endDate,command.operationId)]:[]),
+    ...(command.action==='REOPEN'?[payrollApprovedGuard(workspace.id,command.employeeId,command.startDate,command.endDate,command.operationId,actor)]:[]),
     {text:'SELECT nevora_timecard_command($1::uuid,$2,$3,$4,$5::date,$6::date,$7::integer,$8,$9,$10,$11) AS result',
       values:[command.operationId,workspace.id,command.employeeId,actor,command.startDate,command.endDate,command.expectedRevision,
         command.expectedSourceHash,command.action,command.note??null,createHash('sha256').update(JSON.stringify(command)).digest('hex')]},
