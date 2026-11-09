@@ -1,0 +1,19 @@
+{
+  "id": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "name": "nevora-onboarding-staging",
+  "owner": {
+    "name": "josekarlo-5933's projects",
+    "slug": "josekarlo-5933s-projects"
+  },
+  "createdAt": 1794149754751,
+  "rootDirectory": null,
+  "nodeVersion": "24.x",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "outputDirectory": null,
+  "installCommand": "npm ci --ignore-scripts --no-fund",
+  "sandbox": {
+    "region": "iad1",
+    "failoverRegions": []
+  }
+}

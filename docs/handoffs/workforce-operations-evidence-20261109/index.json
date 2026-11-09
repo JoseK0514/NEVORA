@@ -100,6 +100,106 @@
     "bytes": 50
   },
   {
+    "path": "claim-cheap-rejection-green.log",
+    "sha256": "ef8c59321b6fe7810b31d9181a9aa68b9a76177d7ce779dd51d80b822ae0467c",
+    "bytes": 338
+  },
+  {
+    "path": "claim-cheap-rejection-lint.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  {
+    "path": "claim-cheap-rejection-red.log",
+    "sha256": "66db8f77da03fab5a6ab437a7e350e83578d2c342225a141758cfd9c2dd42220",
+    "bytes": 3150
+  },
+  {
+    "path": "claim-cheap-rejection-types.log",
+    "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "bytes": 50
+  },
+  {
+    "path": "claim-final-acceptance-report.json",
+    "sha256": "75bb4fdacdc6f2078482144bb39ea8c9228c97aa7c655bb9ad5a882fbe733ed6",
+    "bytes": 1323
+  },
+  {
+    "path": "claim-final-acceptance.log",
+    "sha256": "82f33745f67d4648dfbe7c2a70a5ebcb573bc55597f8c44e4d926172cc84e41e",
+    "bytes": 485
+  },
+  {
+    "path": "claim-final-root.log",
+    "sha256": "8dba4faac589f85be0d9e42e087252c5453bdc39b7d08ceb186204c5d51e9e81",
+    "bytes": 521
+  },
+  {
+    "path": "claim-hosted-attempt2-failure.log",
+    "sha256": "b36cfc1a6e71d6305d0acd994852c3167dcc8689356abc163f31af825849c0f3",
+    "bytes": 29360
+  },
+  {
+    "path": "claim-hosted-foundation-attempt2-failure.log",
+    "sha256": "63422b51351fa96f03ff65b5679e1e123b529161a93ecf6f8a96423569e176ee",
+    "bytes": 209511
+  },
+  {
+    "path": "claim-neon-bundles-verified.log",
+    "sha256": "e9df3e260ac894e5262fd142d40c3180d6da0a78e7ff400b0331549fdd1e4292",
+    "bytes": 2716
+  },
+  {
+    "path": "claim-neon-bundles.log",
+    "sha256": "af73eaffba404ea5306712fdd28be9c0c4e21072340d2f5489b9af6ee2f5dd0c",
+    "bytes": 1453
+  },
+  {
+    "path": "claim-neon-input-identity.json",
+    "sha256": "e47bed2f2a5382d9dc09ec8bf24529efe1c58ed56f78953af4c977e2caa95e41",
+    "bytes": 1840
+  },
+  {
+    "path": "claim-plan-diagnostic.integration.json",
+    "sha256": "cbd79aea2bbbdee68fc90c342256104dfe5b6e952240332d5576019e0adce3b5",
+    "bytes": 14490
+  },
+  {
+    "path": "claim-preview-dry.json",
+    "sha256": "25478bafbc8e5c0b653c54d9afb87688ccd99aff4713a64cf219a097a333b410",
+    "bytes": 530940
+  },
+  {
+    "path": "claim-preview-metadata.json",
+    "sha256": "fb5dc0b80f61ac4d650dd7a9123a8d2dee0a8893be55603ca9f93edbb46d95cc",
+    "bytes": 527
+  },
+  {
+    "path": "claim-preview-project.json",
+    "sha256": "cd9dd960b0d7e34e6c4dd5dee5b1cdeb97117134ff53d5dd0575b6c3fae24d3c",
+    "bytes": 476
+  },
+  {
+    "path": "claim-preview-protection-after.json",
+    "sha256": "8b12ab692ae287745c5371c66d05ed751a1dc91ebdf77f4fb06614ef2ea93207",
+    "bytes": 212
+  },
+  {
+    "path": "claim-preview-protection-before.json",
+    "sha256": "8b12ab692ae287745c5371c66d05ed751a1dc91ebdf77f4fb06614ef2ea93207",
+    "bytes": 212
+  },
+  {
+    "path": "claim-preview-ready.json",
+    "sha256": "9ada7d401212a78c5a4fa4a4a59660b6bdd4b2c7bd5d0aadc7ed900b5bdee1f1",
+    "bytes": 699
+  },
+  {
+    "path": "claim-preview-source.json",
+    "sha256": "95d9aa979f974d22c3bfb201ce974ccfa7c3746a3f1e6adb0b4eec2449406d5f",
+    "bytes": 718602
+  },
+  {
     "path": "closed-neon-delivery.json",
     "sha256": "9299b324441879d0a5ba7e639c343c07dd4b12049096c06e1a9340913043301e",
     "bytes": 8828
@@ -318,6 +418,11 @@
     "path": "production-build-receipt.json",
     "sha256": "efb759e55b2ea3ff06cf36e2a02da4ebe277ab0474e75666c85ee6960560cffe",
     "bytes": 885049
+  },
+  {
+    "path": "progress-ledger.md",
+    "sha256": "d28cfbd3cc717a45c7d0853c7a7418bca524b0866ad4b998016a74c83f26f76f",
+    "bytes": 29746
   },
   {
     "path": "progress.md",

@@ -1,0 +1,16 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run --maxWorkers=1
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+
+ Test Files  774 passed | 32 skipped (806)
+      Tests  11519 passed | 857 skipped (12431)
+   Start at  11:36:26
+   Duration  454.78s (tests 84%, import 15%, transform 1%)
+
+    Isolate  806 workers spawned · ~46ms startup each (spawn + environment, per file)
+             at least ~36.69s faster with isolate: false — reuses workers across files instead of one per file
+

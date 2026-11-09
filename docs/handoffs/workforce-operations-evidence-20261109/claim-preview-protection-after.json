@@ -1,0 +1,9 @@
+{
+  "id": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "name": "nevora-onboarding-staging",
+  "accountId": "team_Lzbw410WwXGWHTuUXuamRI1N",
+  "ssoProtection": {
+    "deploymentType": "all"
+  },
+  "nodeVersion": "24.x"
+}

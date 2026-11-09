@@ -1,0 +1,71 @@
+{
+  "previousSource": {
+    "commit": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
+    "tree": "447e47ea1fbdb601a803a29468a3b58c220e6a84",
+    "dirty": false
+  },
+  "newComparisonSource": {
+    "commit": "910bd119c37412c379600d460344ada411950ad4",
+    "tree": "bc09f128c9904bcd8248569b9342989ef9c520d2",
+    "dirty": false
+  },
+  "allSixModuleBodiesIdenticalExceptCompiledSourceIdentity": true,
+  "lockedDependenciesUnchanged": true,
+  "adapters": [
+    {
+      "slug": "stripewebhook",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 2,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    },
+    {
+      "slug": "commercequeue",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 2,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    },
+    {
+      "slug": "commercereconcile",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 2,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    },
+    {
+      "slug": "provisioner",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 65,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    },
+    {
+      "slug": "commerceauthority",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 2,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    },
+    {
+      "slug": "commerceapi",
+      "sameInputInventory": true,
+      "sameTrackedInputBlobs": true,
+      "fileCount": 2,
+      "moduleChanges": [
+        "compiled source SHA only"
+      ]
+    }
+  ],
+  "decision": "Retain accurately labeled closed10b deployments; no functional source change. The changed Next claim runtime is refreshed separately."
+}
