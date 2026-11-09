@@ -29,5 +29,6 @@ export default async function ClockerPage({
   let pinEnabled = false;
   try { readPinKey(); pinEnabled = true; } catch { /* PIN setup stays unavailable until configured. */ }
   const brand = await currentBrand();
-  return <ClockerSetup uiV2={process.env.NEVORA_CLOCKER_UI_V2==='true'} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
+  // Direction B is the only Clocker presentation (Nov 8, 2026); NEVORA_CLOCKER_UI_V2 is no longer read.
+  return <ClockerSetup workspaceName={workspace.name} brand={{ style: clockerBrandStyle(brand.tokens), logoUrl: brand.logoUrl }} punchEnabled={process.env.NEVORA_CLOCKER_PUNCH_ENABLED === 'true'} pinEnabled={pinEnabled} locationKey={key} locationLabel={location.name} timeZone={workspace.timeZone} />;
 }

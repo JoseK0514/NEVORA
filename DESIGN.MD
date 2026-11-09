@@ -1535,7 +1535,7 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   sections, keeps one card; phones and tablets are unchanged. Owner payroll's Fix page says "Nothing stops this payroll"
   in the Owner empty-state card (on the card's text edge, not centred), and on phones a payroll's totals sit on the
   18px text edge like the People row and every other row.
-- **Clocker.** Unchanged: the approved Release 1 tablet design stays as is.
+- **Clocker.** Release 1 kept its tablet design until Nov 8, 2026; it is now Direction B (next section).
 - **Final round (Nov 8, 2026; decisions taken for Jose by the coordinator).**
   Decisions: (1) Search: Employees and Leads keep the desktop Search listing only their own pages (the default recorded
   under Employee desktop is now the decision). (2) Lead desktop shell: it stays the Employee shell; the only addition is
@@ -1561,4 +1561,39 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   (or Welcome's and Access help's content) is the lifted white card with the title in ink and the passkey button at the
   card's foot; tablets and desktops were already the Direction B sign-in. The Clocker is unchanged (captured before and
   after, pixel-identical).
+
+## Clocker Direction B (Jose approved the round-2 mock, Nov 8, 2026)
+Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now the **only** Clocker presentation.
+- **Retired:** the `NEVORA_CLOCKER_UI_V2` switch (no longer read; harmless if still set) and the Signature deep-teal
+  Clocker look with its Spanish second lines. Removed: `clocker-shell/setup/pin/punch/v2.module.css`, `clocker-motion.ts`,
+  `CLOCKER_ES`/`<Es>`, and the Clocker's dark-mode rules. Kept from the light presentation: the complete English/Spanish
+  switch remembered per tablet, "Stay on break", and the Title Case headings and status words the scripts press.
+- **Layout:** a teal band (landscape: a left panel, 320–480px; portrait and phones: across the top) with the wordmark and
+  "Time clock", the company logo chip when a logo is set or else the workspace name chip, the live clock as the large
+  figure (about 120px landscape) with the location pill and date under it, and the tablet status in glass at the foot.
+  The task is one lifted white card (22px); in portrait it sits low, toward the hand. Light only, Inter (bundled).
+- **Rings and icons:** every headline status icon is a 64px ring: red stop, amber wait or check, green done, teal
+  information. Phosphor bold. Action rows are 84px with a 56px icon circle and 28px icon.
+- **PIN:** 76px keys in landscape, up to 96px in portrait (grow with the screen's height), a teal-ringed field, dots fill
+  teal, a pressed key takes a teal tint. A wrong PIN: the field turns red and shakes once (220ms), the digits are already
+  cleared (as before), and the message sits under the field with an icon. Too many attempts (amber hourglass) and PIN
+  check unavailable or no connection (red Wi-Fi-off; red tablet for "Reconnect this tablet"; red for "could not clear")
+  replace the keypad with one state card and the existing Check Connection. No lockout countdown: the server's
+  `retryAfterSeconds` is a fixed 300, not the time left. A browser-level failure ("Failed to fetch") now reads as the
+  server's own "PIN verification is unavailable. Check the connection and try again."
+- **Clock state:** the person's initial in their face tint (from the first name, the only name the kiosk has) beside
+  "Hi, James."; the state chip (Off clock grey, Clocked in green, On break amber); the likeliest action leads in teal. Done
+  is a full-width 56px secondary button; Refresh Clock State and, when the tablet holds saved references, Help with a
+  saved action are teal links under it. No scheduled-shift line (the clock-state read has no schedule).
+- **Recorded:** a 96px green check that draws in, the recorded time as the hero figure, and a new line (approved copy):
+  "Have a good shift, {first}." / "See you next time, {first}." / "Enjoy your break." / "Welcome back." (Spanish in
+  clocker-copy.ts). "Saved at …", the action reference and the 8-second bar stay. Recording says what is being recorded
+  ("Clocking in {first}…" and the others) with a progress bar.
+- **Motion:** the shake, check draw-in and progress run only without reduced motion; under reduced motion the field only
+  turns red, the check fades in, and bars and spinners are still. Buttons press to .96; keys use the tint; hover only on
+  hover-capable screens; no tap-highlight flash.
+- **Unchanged:** the flow, every timer (20s PIN idle clear, 30s private screen, 10s reminder, 8s receipt), PIN limits,
+  punch rules, the recovery journal, the photo flow, privacy clearing (Escape, hide, leave), and every request and
+  response contract. Keyboard: the PIN field has focus, digits type in, Enter submits, Escape clears; Tab starts at Skip to
+  time clock, then the keys, Continue and Español; each new state focuses its heading.
 

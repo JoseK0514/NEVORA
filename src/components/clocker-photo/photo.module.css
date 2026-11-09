@@ -63,3 +63,28 @@
 .flow{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.flow .actions button{min-height:56px}.form .description{font-weight:400}.form a{justify-self:start}.form h2{margin:0 0 8px;font-size:1.1875rem}.form>form{padding-top:32px;border-top:1px solid #e3e9e6}.row{min-height:64px;align-items:center}.row input[type=checkbox]{appearance:none;position:relative;width:24px;height:24px;border:1.5px solid #94aaa0;border-radius:6px;background:white;margin:0}.row input:checked{background:#0b6e69;border-color:#0b6e69}.row input:checked::after{content:"";position:absolute;left:7px;top:3px;width:7px;height:12px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}.field select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%235f6d68%22 stroke-width=%221.75%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}.form button{box-shadow:none}.review button{box-shadow:none}.flow .actions button{box-shadow:none}
 
 .form>a.secondary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;border:1px solid #ccd8d1;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none}.form details.photoNotice{gap:0;border:1px solid #e3e9e6;border-radius:12px}.form details.photoNotice summary{min-height:48px;padding:14px 16px;cursor:pointer}.form details.photoNotice summary:focus-visible{outline:3px solid #087fca;outline-offset:3px}
+
+/* The kiosk photo flow, Direction B (Nov 8, 2026): the Clocker card's type, rings, pills and messages. Owner settings and
+ * review (.form, .review) are unchanged. */
+.flow.flow { gap: 0; font-family: inherit; color: #111517; }
+.flow.flow > * + * { margin-top: 14px; }
+.flow.flow h1 { font-size: 1.875rem; line-height: 1.2; font-weight: 700; letter-spacing: -.03em; text-wrap: balance; }
+.flow.flow > .ring + h1 { margin-top: 0; }
+.ring { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 3px #B9DCD7; }
+.ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; box-shadow: inset 0 0 0 3px #F3D3A0; }
+.ring[data-tone=red] { background: #FDECEA; color: #B42318; box-shadow: inset 0 0 0 3px #F4B7B0; }
+.ring[data-tone=green] { background: #E7F4EC; color: #1D6B45; box-shadow: inset 0 0 0 3px #B3DDC3; }
+.flow.flow .description { font-size: 1rem; line-height: 1.45; color: #3F464B; }
+.flow.flow .notice { padding: 14px 16px; border-radius: 16px; background: #F2F5F4; color: #3F464B; font-size: .9375rem; line-height: 1.45; }
+.flow.flow .photoNotice details { border: 0; border-radius: 16px; background: #F2F5F4; }
+.flow.flow .photoNotice summary { min-height: 48px; padding: 13px 16px; color: #0B6E69; font-size: .9375rem; font-weight: 600; }
+.flow.flow .photoNotice summary:focus-visible, .flow.flow .actions button:focus-visible { outline: 3px solid #0B6E69; outline-offset: 3px; }
+.flow.flow .cameraFrame { border-radius: 18px; }
+.flow.flow .actions { gap: 12px; margin-top: 22px; }
+.flow.flow .actions button { min-height: 56px; padding: 12px 24px; border: 0 !important; border-radius: 999px; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; -webkit-tap-highlight-color: transparent; transition: background-color 140ms ease, transform 120ms ease; }
+.flow.flow .primary { background: var(--clocker-accent, #0C726C); color: #FFFFFF; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
+.flow.flow .secondary { background: #F0F2F3; color: #111517; }
+.flow.flow .quiet { min-height: 48px; background: transparent; color: #0B6E69; font-size: .96875rem; font-weight: 600; }
+.flow.flow .actions button:active { transform: scale(.96); }
+@media (hover: hover) { .flow.flow .primary:hover { background: var(--clocker-accent-hover, #0A5F5A); } .flow.flow .secondary:hover { background: #E6E9EA; } }
+@media (prefers-reduced-motion: reduce) { .flow.flow .actions button { transition: none; } .flow.flow .actions button:active { transform: none; } }

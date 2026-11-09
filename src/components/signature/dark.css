@@ -1,11 +1,11 @@
 /* Dark mode ("Midnight", approved October 20, 2026): the frame pieces that do not read the Signature tokens.
  * Token values live in tokens.css. Everything here is scoped to data-theme="dark" and to the Signature surfaces
- * (employee app [data-nv-e5], sign-in and activation .ap, the Clocker [data-mobile-clocker]); Manager and Owner
+ * (employee app [data-nv-e5], sign-in and activation .ap); Manager and Owner
  * screens are untouched. These rules override long legacy selectors, so they use !important, only here. */
 
 /* Page behind the surfaces, so overscroll and the area under the sheet stay dark. */
-:root[data-theme="dark"]:has([data-nv-e5], .ap, [data-mobile-clocker]),
-:root[data-theme="dark"]:has([data-nv-e5], .ap, [data-mobile-clocker]) body { background: #0C1817 !important; color-scheme: dark; }
+:root[data-theme="dark"]:has([data-nv-e5], .ap),
+:root[data-theme="dark"]:has([data-nv-e5], .ap) body { background: #0C1817 !important; color-scheme: dark; }
 
 /* Employee frame: bottom tabs, desktop sidebar and top bar, avatar. */
 :root[data-theme="dark"] [data-nv-e5] nav.mobile-nav { background: rgba(12, 24, 23, .94) !important; border-top: 1px solid #2C3B39 !important; box-shadow: none !important; }
@@ -27,10 +27,10 @@
 :root[data-theme="dark"] [data-nv-e5] .portal-account-avatar { background: #A9E2DA !important; color: #0C1817 !important; }
 
 /* Native fields that hard-code white. */
-:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([name=pin]), select, textarea) {
+:root[data-theme="dark"] :is([data-nv-e5], .ap) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([name=pin]), select, textarea) {
   background-color: #172725 !important; color: #F5F2EB !important; border-color: #3A4846 !important;
 }
-:root[data-theme="dark"] :is([data-nv-e5], .ap, [data-mobile-clocker]) :is(input, textarea)::placeholder { color: #A9AAA4 !important; }
+:root[data-theme="dark"] :is([data-nv-e5], .ap) :is(input, textarea)::placeholder { color: #A9AAA4 !important; }
 
 /* Profile: calendar panel and the Appearance and Language switches. */
 :root[data-theme="dark"] [data-nv-e5] :is(.employee-calendar, .employee-calendar-example, .employee-calendar-status-box:not(:has(.employee-calendar-secret)), .employee-calendar-providers) {
@@ -50,7 +50,3 @@
 /* Sign-in: the navy wordmark becomes warm white on the dark sheet. */
 :root[data-theme="dark"] .ap .ap-wordmark { color: #F5F2EB !important; }
 
-/* Clocker: PIN field stays a transparent layer over the dots; the empty dots get a visible ring. */
-:root[data-theme="dark"] [data-mobile-clocker] input[name=pin] { background: transparent !important; color: transparent !important; }
-:root[data-theme="dark"] [data-mobile-clocker] [class*="pinSlots"] > span:not([data-filled=true]) { box-shadow: inset 0 0 0 2px #8A938F !important; }
-:root[data-theme="dark"] [data-mobile-clocker] .clocker-language-toggle > b { background: rgba(169, 226, 218, .14) !important; color: #A9E2DA !important; }

@@ -216,7 +216,16 @@ export const CLOCKER_COPY:Record<string,string>={
  "Choose a Break": "Elige un descanso",
  "Tablet registered": "Tableta registrada",
  "{zone} time": "Hora de {zone}",
- "Registered at {location}.": "Registrada en {location}."
+ "Registered at {location}.": "Registrada en {location}.",
+ // Direction B (Jose approved, Nov 8, 2026): the recorded and recording lines.
+ "Have a good shift, {first}.": "Que tengas un buen turno, {first}.",
+ "See you next time, {first}.": "Hasta la próxima, {first}.",
+ "Enjoy your break.": "Disfruta tu descanso.",
+ "Welcome back.": "Qué bueno verte de vuelta.",
+ "Clocking in {first}…": "Registrando la entrada de {first}…",
+ "Clocking out {first}…": "Registrando la salida de {first}…",
+ "Starting {first}’s break…": "Iniciando el descanso de {first}…",
+ "Ending {first}’s break…": "Terminando el descanso de {first}…"
 };
 export function clockerText(locale:ClockerLocale,key:string,params:Record<string,string|number>={}):string{
  const text=locale==='es'?(CLOCKER_COPY[key]??CLOCKER_COPY['We could not confirm this information. Ask your Owner for help.']):key;

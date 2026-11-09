@@ -26,7 +26,7 @@ No real employee photos, new subscriptions, outbound notifications or analytics/
 
 ## Rollback boundaries
 
-- `NEVORA_CLOCKER_UI_V2` defaults off and changes only scoped presentation. Punch enablement is independent. Returning to the previous presentation must not restore Manager Clocker authority.
+- Superseded Nov 8, 2026: `NEVORA_CLOCKER_UI_V2` is no longer read; Direction B is the only Clocker presentation (DESIGN.MD, "Clocker Direction B"). There is no presentation switch to roll back. Punch enablement stays independent, and Manager Clocker authority is not restored.
 - Photo Off/capture-unavailable stops new collection. It does not imply immediate deletion of existing/private/backup evidence. Do not bind a fictional readiness provider or expose private image URLs.
 - Migrations0038–0040 are additive and local-test verified. Do not drop populated tables, remove audit/receipt history, or clear IndexedDB as rollback. Any necessary data rollback requires a reviewed migration.
 - Browser site-data clearing or OS eviction can remove local references; no perfect-durability guarantee is made. Canonical Owner receipt/Timecards review remains the operational escalation.

@@ -72,7 +72,7 @@ async function homeScreenLaunchContracts(){
 }
 
 try{
- app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true,clockerUiV2:true});await seedOwnedApp(app.database.executor);
+ app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex'),clockerPunchEnabled:true});await seedOwnedApp(app.database.executor);
  await q("INSERT INTO clocker_break_types(id,workspace_id,name,category,target_minutes,created_by,updated_by) SELECT 'ipad-rest',l.workspace_id,'Fixture rest','REST',15,e.id,e.id FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.role='OWNER' ORDER BY e.id LIMIT 1");
  await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('IPAD-A','Avery','QA','555','EMPLOYEE','loc-1');INSERT INTO employee_location_eligibility VALUES('IPAD-A','loc-1')");
  if(process.env.IPAD_QA_INSTALL_ONLY==='true')await homeScreenLaunchContracts();else for(const engine of (process.env.IPAD_QA_ENGINES?.split(',')??['chromium','webkit'])){

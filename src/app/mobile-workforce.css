@@ -10,7 +10,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-hom
 html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-home-disclosure,.mobile-home-disclosure-content) { display: contents; }
 
 @media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
-  html body :is(.app-shell.nevora-portal[data-mobile-workforce="true"], [data-mobile-clocker="true"]) {
+  html body :is(.app-shell.nevora-portal[data-mobile-workforce="true"]) {
     --mobile-masthead: #062959;
     --mobile-masthead-secondary: #DBE8F9;
     --mobile-surface: #FFFFFF;
@@ -201,7 +201,6 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"] :is(.mobile-hom
   html body .app-shell.nevora-portal[data-mobile-workforce="true"] .mobile-payroll-review-copy { display: inline; }
   html body .app-shell.nevora-portal[data-mobile-workforce="true"] .desktop-payroll-review-copy { display: none; }
 
-  /* The public Clocker (Signature) styles its own phone layout in clocker-shell.module.css. */
 }
 
 @media (max-width: 420px) {

@@ -7,8 +7,12 @@ import {useClockerCopy,useClockerPresentation} from '../clocker-language';
 import {CLOCKER_RECEIPT_CLEAR_MS} from '../clocker-privacy';
 import {ClockerPhotoNotice} from './photo-notice';
 import styles from './photo.module.css';
+import {ClockerIcon,type ClockerIconName} from '../clocker-icon';
 const actionNames={CLOCK_IN:'Clock In',CLOCK_OUT:'Clock Out',START_BREAK:'Start Break',END_BREAK:'End Break'};
 const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for {action}',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'Recovery storage is unavailable',punch_sending:'Checking your time…',punch_unknown:'Check your clock action',punch_retry_allowed:'Check your clock action',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
+/* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. */
+const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['warning','red'],intent_unavailable:['stop','red'],
+ punch_sending:['wait','teal'],photo_saving:['wait','teal'],punch_unknown:['refresh','amber'],punch_retry_allowed:['refresh','amber'],photo_unknown:['refresh','amber'],complete:['check','green'],expired:['lock','amber'],cancelled:['info','teal']};
 export type PunchPhotoFlowProps={context:PhotoSessionContext;bindings:PhotoBindings;timeZone:string;onExit(result:PhotoSessionView):void};
 export function ClockerPunchPhotoFlow(props:PunchPhotoFlowProps){
  const key=`${props.context.intent.subject}:${JSON.stringify(props.context.intent.command)}:${props.context.proofExpiresAt}:${props.context.screenExpiresAt}`;
@@ -36,6 +40,7 @@ function ActivePhotoFlow({session,timeZone,onExit}:{session:PunchPhotoSession;ti
  useEffect(()=>{if(state.phase!=='complete')return;const timer=setTimeout(()=>{session.cancel();exitRef.current(session.getSnapshot());},CLOCKER_RECEIPT_CLEAR_MS);return()=>clearTimeout(timer);},[session,state.phase]);
  const error=state.cameraError==='CAMERA_DENIED'?'Camera access was declined. You can allow it in Safari settings or continue without a photo.':state.cameraError==='CAMERA_TIMEOUT'?'Camera permission was not completed in time. Try again while your PIN session is active.':state.cameraError==='CAPTURE_FAILED'?'A photo could not be captured. Check the camera and try again.':'The camera is unavailable. Continue without a photo or ask your Owner for help.';
  return <section className={styles.flow} aria-busy={busy} aria-labelledby="clocker-photo-title">
+  {rings[state.phase]?<span className={styles.ring} data-tone={rings[state.phase]![1]}><ClockerIcon name={rings[state.phase]![0]} size={28}/></span>:null}
   <h1 id="clocker-photo-title" ref={heading} tabIndex={-1}>{t(titles[state.phase],{action:t(actionNames[state.action])})}</h1>
   {state.requiresPhoto&&['ready','setup_required','camera_error'].includes(state.phase)?<ClockerPhotoNotice policy={state.policy} notice={state.notice}/>:null}
   <div className={styles.cameraFrame} hidden={!camera&&!state.previewUrl}>
