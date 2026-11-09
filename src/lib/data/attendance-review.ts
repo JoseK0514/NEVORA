@@ -3,7 +3,7 @@ import 'server-only';
 import { MANAGER_ROLES, requireRoles } from '../auth/permissions';
 import { requireSessionMutationProof } from '../auth/session';
 import type { AttendanceDisplayReview } from '../attendance/read-model';
-import { getDb } from '../db';
+import {applicationSql} from "@/lib/data/app-sql";
 import { readAttendanceReview } from './attendance-review.server';
 
 /**
@@ -14,7 +14,7 @@ export async function getAttendanceReview(): Promise<AttendanceDisplayReview> {
   await requireRoles(MANAGER_ROLES);
 
   try {
-    getDb();
+    applicationSql();
   } catch (error) {
     if (
       error instanceof Error &&

@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-08",
+  "observedAt": "2026-11-09",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "e2872f30ea8548b1310ea4a9b25813352decf82a",
+      "sha": "e9c3b60f5de31a96f637ba039749c9075b77eb7e",
       "disposition": "target",
-      "reason": "Freshly fetched combined application source for the November 5 native synchronization. No remote branch or deployment is changed."
+      "reason": "Freshly fetched development base for the November9 non-UI backend completion. Current development authorization/source-lifetime fixes are inherited; later onboarding/Owner partner adoption is qualified separately in2026-11-09-backend-source-completion.json. Frozen Release1 remains separate."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -384,9 +384,9 @@
     },
     {
       "branch": "main",
-      "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+      "sha": "46d6dc76922bb273379baccd329e0af636d1dcb6",
       "disposition": "protected",
-      "reason": "Observed protected production head only; no integration, deployment or production qualification is authorized by the native update."
+      "reason": "Protected main observation only: this head adds README documentation after7ffd013e. No merge, production deployment or release qualification is authorized by this backend completion."
     },
     {
       "branch": "v0/replicating-gusto-ui-62ce164a",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "d349b66196c847fdb46852a3db0c0630463295c5",
+      "sha": "90e030149d689f2c11af2d21ff4fac02d295f7e2",
       "disposition": "held",
-      "reason": "November 8 backend-only extraction authorized by Jose from exact d349b661: Employee Requests deduplication, prior/current-week action-center cards, and optional coverage-end/clock helpers selected with source-lifetime and boundary regressions. All UI/navigation/copy/harness changes and the inbox-count clock activation remain held. This is partial file/logic extraction, not inclusion of this branch head or UI acceptance. See docs/handoffs/2026-11-08-backend-only-development-integration.md and its JSON path inventory."
+      "reason": "Held exact collaboration head after merging development e9c3b60f5. Earlier bounded backend extraction fromd349b661 and subsequent lifetime/authorization fixes are already inherited through development; this head is not wholly included. Unique UI/navigation/copy/browser/native-app work remains held under Claude/native ownership. No additional collaboration delta is adopted by the November9 onboarding/Owner-partner backend completion. See2026-11-08-backend-only-development-integration.md and2026-11-09-backend-source-completion.json. Main and frozen Release1 remain separate. November9 observed UI/native-only follow-up90e03014 (12paths: DirectionB phone/device components, DESIGN, UI scan artifacts and owned browser-harness styles) is also HELD; no new runtime backend delta selected. The source gate caught this advancement during qualification; no changes were imported."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",

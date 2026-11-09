@@ -1,9 +1,10 @@
 import {createServer, type Socket} from 'node:net';
 /** Invocation-owned SMTP. Messages stay in memory and are never written to evidence. */
 export async function fakeInvitationSmtp(mode:'accept'|'reject_before_data'|'drop_after_data'='accept') {
- const messages:string[]=[];
+ const messages:string[]=[];let connections=0;
  const sockets=new Set<Socket>();
  const server=createServer(socket=>{
+  connections++;
   sockets.add(socket);socket.on('close',()=>sockets.delete(socket));socket.on('error',()=>{});
   socket.setEncoding('utf8');socket.write('220 owned-loopback ESMTP\r\n');
   let buffer='',data=false,lines:string[]=[];
@@ -29,6 +30,6 @@ export async function fakeInvitationSmtp(mode:'accept'|'reject_before_data'|'dro
  });
  await new Promise<void>((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
  const address=server.address();if(!address||typeof address==='string')throw Error('Owned SMTP bind failed');
- return {messages,env:{NODE_ENV:'test',NEVORA_INVITATION_DELIVERY_ENABLED:'true',NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(address.port),NEVORA_RECOVERY_FROM:'invitation@example.invalid',FUEL_PORTAL_ORIGIN:'http://127.0.0.1:32123'},
+ return {messages,get connections(){return connections;},env:{NODE_ENV:'test',NEVORA_INVITATION_DELIVERY_ENABLED:'true',NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(address.port),NEVORA_RECOVERY_FROM:'invitation@example.invalid',FUEL_PORTAL_ORIGIN:'http://127.0.0.1:32123'},
   async close(){for(const socket of sockets)socket.destroy();await new Promise<void>(resolve=>server.close(()=>resolve()));messages.length=0;}};
 }

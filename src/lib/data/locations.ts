@@ -1,3 +1,4 @@
+import {mutationTransaction} from './transaction-composition';
 import { randomUUID } from 'node:crypto';
 import type { Location } from '../domain';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
@@ -27,7 +28,7 @@ function actorGuard(actorEmployeeId:string):SqlStatement[]{return [
  {text:"SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees WHERE id=$1 AND active=true AND role='OWNER') THEN '1' ELSE 'location_permission_denied' END)::integer",values:[actorEmployeeId]},
 ];}
 async function mutate(statements:SqlStatement[],executor:SqlExecutor,proof:SessionMutationProof,actorEmployeeId:string):Promise<CatalogLocation>{
- try {const results=await executor.transaction([...statements,...managementSessionStatements(proof,actorEmployeeId,['OWNER'])]);const location=results[statements.length-1]?.[0] as CatalogLocation|undefined;if(!location)throw new Error('Location not found.');return location;}catch(error){if(error instanceof Error && 'code' in error && error.code==='22P02' && error.message==='invalid input syntax for type integer: "location_version_conflict"')throw new LocationConcurrencyError();if(error instanceof Error && error.message.includes('location_permission_denied'))throw new LocationPermissionError();throw error;}
+ try {const results=await mutationTransaction(executor,[...statements,...managementSessionStatements(proof,actorEmployeeId,['OWNER'])]);const location=results[statements.length-1]?.[0] as CatalogLocation|undefined;if(!location)throw new Error('Location not found.');return location;}catch(error){if(error instanceof Error && 'code' in error && error.code==='22P02' && error.message==='invalid input syntax for type integer: "location_version_conflict"')throw new LocationConcurrencyError();if(error instanceof Error && error.message.includes('location_permission_denied'))throw new LocationPermissionError();throw error;}
 }
 export async function createLocation(input: { name: string; shortName: string; clockerKey?: string; actorEmployeeId: string; proof: SessionMutationProof }, executor?: SqlExecutor): Promise<CatalogLocation> {
  assertManagementProof(input.proof,input.actorEmployeeId);

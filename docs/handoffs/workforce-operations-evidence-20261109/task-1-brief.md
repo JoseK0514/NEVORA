@@ -1,0 +1,7 @@
+### Task 1: Bounded worker supervision
+**Files:** create src/lib/operations/supervisor.ts,supervisor.test.ts; scripts/workforce-operations.mts; modify package.json for operations:worker command.
+**Interfaces:** consumes fixed canonical worker entrypoints; produces runSupervisedWorker(options):Promise<InvocationReceipt>, parseOperationsConfig(env), readInvocationHealth(config,command,now). Configuration includes enabled,environment(test or production),sourceSha40hex,scopeId UUID,stateDirectory absolute,deadlineMs positive/graceMs. Commands payroll,notifications-dispatch,notifications-reminders only.
+- [ ] Write tests using owned Node children: success/exit23, disabled/unknown-command rejection before spawn, atomic overlapping invocation denial, timeout of a SIGTERM-ignoring child, SIGTERM interruption, private directory/symlink rejection, stdout/stderr secret redaction and stale/malformed/scope-mismatched receipts. Expected RED: module missing.
+- [ ] Implement Node-only supervisor with closed command selection, exclusive owner-only lock, atomic receipt replacement,last success separate, watchdog/process-group termination and bounded cleanup. Keep executable injection confined to internal testable process primitive; CLI selects fixed argv and never invokes a shell. Expected focused tests GREEN.
+- [ ] Verify real subprocesses are gone after timeout/interruption, no temporary lock/receipt leak on handled failure; document SIGKILL lock recovery. Run types/lint for changed files and commit.
+

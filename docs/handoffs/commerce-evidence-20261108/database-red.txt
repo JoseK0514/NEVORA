@@ -1,0 +1,73 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+ ❯ services/commerce/database-safety.integration.test.ts (3 tests | 3 failed) 560ms
+   ❯ dedicated database mutation guards (3)
+     × does not migrate a catalog into another application private schema 279ms
+     × rechecks non-system schemas inside company installation before mutation 272ms
+     × refuses a maintenance database even when its public schema is empty 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  services/commerce/database-safety.integration.test.ts > dedicated database mutation guards > does not migrate a catalog into another application private schema
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ services/commerce/database-safety.integration.test.ts:15:37
+
+ ❯ fixture services/commerce/database-safety.integration.test.ts:13:436
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  services/commerce/database-safety.integration.test.ts > dedicated database mutation guards > rechecks non-system schemas inside company installation before mutation
+AssertionError: promise resolved "{ …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "locationId": "b16906a8-f14b-49d8-8f89-7cd9722ed3ba",
++   "workspaceId": "b4e7d35c-71d3-4c84-8218-614ac46664f1",
+  }
+
+ ❯ services/commerce/database-safety.integration.test.ts:21:318
+
+ ❯ fixture services/commerce/database-safety.integration.test.ts:13:430
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  services/commerce/database-safety.integration.test.ts > dedicated database mutation guards > refuses a maintenance database even when its public schema is empty
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ services/commerce/database-safety.integration.test.ts:26:120
+     24|   expect((await pool.query('SELECT value FROM another_app.records')).r…
+     25|  }));
+     26|  it('refuses a maintenance database even when its public schema is emp…
+       |                                                                                                                        ^
+     27| });
+     28|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  3 failed | 31 passed (34)
+   Start at  23:47:25
+   Duration  673ms (tests 81%, import 13%, transform 5%, worker 1%)

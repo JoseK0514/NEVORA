@@ -1,0 +1,2415 @@
+{
+  "schema": 1,
+  "base": "e9c3b60f5de31a96f637ba039749c9075b77eb7e",
+  "onboardingSource": "005c099b88fedb4c02f6b4d719002186ff99a6bb",
+  "ownerPartnerSource": "2ebda395f615ab5d66994d27b87e9fea5cd8bb5e",
+  "heldPaths": [
+    "native/ios/Sources/NevoraShellCore/WorkspaceSelection.swift",
+    "native/ios/Tests/NevoraShellCoreTests/WorkspaceSelectionTests.swift",
+    "src/app/activate/activation-invitation.tsx",
+    "src/components/account-recovery.tsx",
+    "src/components/clocker-setup.tsx"
+  ],
+  "paths": [
+    {
+      "path": ".env.example",
+      "sourceBlob": "0c5d18088c4e7f08cdf29a6df71053ab79ea8fd3",
+      "baseBlob": "64522991edafff8c639d68ade1ead1d1a21a7748",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sourceBlob": "c8117bb91c1b9c1034d22bc1012307247ea8ca3d",
+      "baseBlob": "1125ddcbd9ece94ab41248391b0da1521f96c9ec",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/control-migrations/0001_owner_onboarding.sql",
+      "sourceBlob": "51f0aaeee93fa750585bdb24744a9514cfda11e4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/control-migrations/0002_workspace_registry.sql",
+      "sourceBlob": "7f770632a5d4070545b4c7f009887971bf4c3247",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/control-migrations/0003_workspace_provisioning.sql",
+      "sourceBlob": "de88c11f06a2bf1885f33e300885895ff158c8f7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/control-migrations/0004_owner_activation.sql",
+      "sourceBlob": "e35217ce2d4c19c025a6fb76d96a33814b70ea55",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/control-migrations/0005_terminal_grant_retirement.sql",
+      "sourceBlob": "6587199b8da8b34b323818e30c87dcf2be842697",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0047_isolated_workspace_runtime.sql",
+      "sourceBlob": "7d4c4946dc066ba7b2bcbd3ea81df9f0262d4cf0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0048_self_service_onboarding.sql",
+      "sourceBlob": "1a48e56c6e44b7d11781b01f2b99048c4c2545de",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0049_initial_owner_activation.sql",
+      "sourceBlob": "96666260e043e787c7cb3ae9a14d00629546c48c",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0050_onboarding_invitation_batch_authority.sql",
+      "sourceBlob": "297a19fecab67c8874740a58e2e370205edec9bc",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0051_onboarding_restore_receipts.sql",
+      "sourceBlob": "d439c97adcc05c8a51ed50b5b99ede47a6a884fd",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0052_onboarding_canonical_revision.sql",
+      "sourceBlob": "f3de707ce9ae9e2b8c33d3a090a0afacc4a98d31",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0053_onboarding_worker_capabilities.sql",
+      "sourceBlob": "d29e22517958f84d9a29bd59414c8571524c68fa",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0054_onboarding_commerce_binding.sql",
+      "sourceBlob": "e679193ff8871c623f1689f8d895329345495446",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/0055_onboarding_commerce_worker_scope.sql",
+      "sourceBlob": "dceef75ab6a01659560f556747d5f932f8b1aee3",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "db/migrations/order.ts",
+      "sourceBlob": "b8c10fb7e8ca83cfa4c734e061d3cf9f14e5ea47",
+      "baseBlob": "cff96fd050d65f794d76896f992a492ee5605273",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/architecture/self-service-onboarding.md",
+      "sourceBlob": "1c4625afea8551600fa781ce1ad98ea864af0721",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-07-commerce-backend.md",
+      "sourceBlob": "ba3890f6f9b06e0f31701fb6b0e2380d9aec9895",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-07-commerce-code-review.md",
+      "sourceBlob": "7f63c64cc165a49d7ea587eb08176c9429eabd49",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-07-commerce-verification.md",
+      "sourceBlob": "67286d3adfa3417477fbf706d18ebfd663fefcb1",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-07-onboarding-backend-ui-contract.md",
+      "sourceBlob": "762b00b435b4907dbe5024860b682930731e832e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-integrated-onboarding-commerce.md",
+      "sourceBlob": "30567b81d604e7417152a65f29273e250d7fb2fd",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-neon-sandbox-credential-acceptance.md",
+      "sourceBlob": "ded030b29b906e7155ecf78df439c5d44f629ede",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-onboarding-hosted-dependency-checks.md",
+      "sourceBlob": "ad3384d4874fbd49ce651341d5cea2cefa4d3fab",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-private-commerce-transport-design.md",
+      "sourceBlob": "8de14c073de2305b604810db6dec6f84583f0bce",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-private-onboarding-staging-acceptance.md",
+      "sourceBlob": "8d28f18dfb2753a2423c881016b80a157c9a8e53",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-stripe-hosting-decision.md",
+      "sourceBlob": "0528d44614ed33047478c7b7e825a82535d1dbd0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-stripe-integration-readiness.md",
+      "sourceBlob": "0397cf6901aecc4006aa9f3a2b9b2ff96b351186",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-stripe-payments-invoicing-tax-preflight.md",
+      "sourceBlob": "1a3a02d23260e1d5a82eb7efe1d40c725471b8c4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/2026-11-08-stripe-runtime-tax-spec.md",
+      "sourceBlob": "ad47edc6ec247136b7ed6364b01f2d0608e982e2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/billing-red.txt",
+      "sourceBlob": "02e2696661a10f0be25cf0db07f5d0330ab25030",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/build-green.txt",
+      "sourceBlob": "7164c208541ac3184c729f3b0f4318a9736a464c",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/company-setup-green.txt",
+      "sourceBlob": "4fd0fea8c46962226f726e4c4a7a5b21dc0f5bcd",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/core-red.txt",
+      "sourceBlob": "a0557b157a6d34908b750bf84103568cfb5d94b8",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/database-red.txt",
+      "sourceBlob": "d0cff21f1472598e222bfc97d8e5c24d827b932b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/filtered-stripe-green.txt",
+      "sourceBlob": "cd3f794128a0b1915077ac93cc5b7dfe1d9dd052",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/gitleaks.txt",
+      "sourceBlob": "14a25203590d55b48b5d20fbb1523b47e6a7224e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/handoff-gate-green.txt",
+      "sourceBlob": "37ec38d3e4271ead7f48b03851e0b9a0d5927b00",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/handoff-red.txt",
+      "sourceBlob": "ffc8e9fce9b28af13eb33dc4f96f7501b6509bbb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/lint-green.txt",
+      "sourceBlob": "3273086c5152affed716a95b29d7c591a8ab098c",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/owned-postgres-green.txt",
+      "sourceBlob": "cb60214d70592dce48b651db1abaf5cf15469e37",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/semgrep.txt",
+      "sourceBlob": "42a9afa025f49484429ebb52b16de20fd6370f52",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/typecheck-green.txt",
+      "sourceBlob": "0118d4d66d35f6e467c69a5d4c8006a9718db4bd",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/commerce-evidence-20261108/unit-green.txt",
+      "sourceBlob": "d65c7a2dbc5fb240a4f6b9dd6e312c8d19305403",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/onboarding-entrypoint-inventory.json",
+      "sourceBlob": "30aec97e5d0bae55b0c7e1c0f6a9ad2a1e62c5ed",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/self-service-onboarding-backend-review.md",
+      "sourceBlob": "fd4c9d9378064d1dcb5e9eae7a1df436e7b1f783",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/self-service-onboarding-decisions.md",
+      "sourceBlob": "f690706bcda8a6c202a09911f533d557628c3377",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/self-service-onboarding-readiness.md",
+      "sourceBlob": "c47750a42b222c08cc8bc1d50f559815937a720c",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-final-closed-probes.json",
+      "sourceBlob": "36fd8059bd6a333b0cf5977a384cab38d4898cbd",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-preview-protected-probe.json",
+      "sourceBlob": "3f7bb83833c39b2d57563d5f43a078e6b0173e2b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-runtime-key-read-preflight.json",
+      "sourceBlob": "e17964e3490867ac2cb1885c901a6b550739e186",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-signed-replay.json",
+      "sourceBlob": "7560a8e0c6c970631d225573d952bfd75fefd7cb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-subscription-probe.json",
+      "sourceBlob": "c6489a681681714dc9e9818bea1d8ad7d352d84d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/credential-terminal-final-hosted-proof.json",
+      "sourceBlob": "337f0eb2c0faedf59f287070901646893c3e1970",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/hosted-continuation.json",
+      "sourceBlob": "565f06abb09c0c53eb01fe653cd0387b39511313",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-closed-c333.json",
+      "sourceBlob": "d8e3af23ee1f0cdc3f64e0521e088e9c0be9b65a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-closed-reviewed.json",
+      "sourceBlob": "f30e1843712f6c4069a694616c0b1f9431ab9e64",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-credential-acceptance.json",
+      "sourceBlob": "b27cd6154ecff69b6ee36829c04a3a0d42c2ed0b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-credential-review.md",
+      "sourceBlob": "8d0a06938f3e3848fbc4fbd65ba251df19fdafed",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-hosted-reviewed-probes.json",
+      "sourceBlob": "30bf8d70857eff399272bb9cefb902ab528ead16",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-hosting.json",
+      "sourceBlob": "f4859ce0df482f3c800446ab4a03e433b93c72d8",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/neon-review.md",
+      "sourceBlob": "29dc1d132b61b38d5634a287990655164c12e654",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/execution-evidence.tar.gz",
+      "sourceBlob": "24755238f24617d185759013c7f3f31a982822f2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-preview-aliases.json",
+      "sourceBlob": "fda1f01a8772a6a612ef045d74000e32ad9f5157",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-preview-deployment.json",
+      "sourceBlob": "9c5e1eceb1f91cb8cb2a5c483f7abec0e1051273",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-preview-protection.json",
+      "sourceBlob": "67430597462afbbba76f2f2bb98510772d858f04",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-protected-network-probes.json",
+      "sourceBlob": "08e029997abf3aac6cb6d89ab5a4cbff67d7258a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-review.md",
+      "sourceBlob": "971024d843afc1f587c67fa032650411b3d55914",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/final-tenant-dns.json",
+      "sourceBlob": "ec99f57ce6d2cb432e927c2336bcd695b74e523a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/godaddy-staging-dns-added.png",
+      "sourceBlob": "7ddda43dc43542cf712d9e3ff7c2f6fcd57ce226",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/index.json",
+      "sourceBlob": "98ff8a274360db3d742a47daf58cbc961f851721",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/jira-final-readback.json",
+      "sourceBlob": "5ee84957416aa2aba7a647c1a9e8e6c2fecb2cb6",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/progress.md",
+      "sourceBlob": "71ecf101216f33afe7ce5349c0a0a10091264300",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/staging-tenants.txt",
+      "sourceBlob": "5d002458313770fa7c4003bd16caf6d7f9e5d788",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/private-onboarding/staging-tenants.zone",
+      "sourceBlob": "5d002458313770fa7c4003bd16caf6d7f9e5d788",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/review.md",
+      "sourceBlob": "97d2a5a0393d03f6f6daafd8943434f754877fc2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/sandbox-readiness.json",
+      "sourceBlob": "8b01f2f1ba79d90a21788a106923e906e788167d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/setup-receipt.json",
+      "sourceBlob": "cfee3724af6cb2f235216893b10e908c11b465fb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/staging-config-receipt.json",
+      "sourceBlob": "3ccedc9d2f00e7dbf777902b93c5a0f092dccbc0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/handoffs/stripe-evidence-20261108/verification-receipt.json",
+      "sourceBlob": "28bba7f9c2b7f8d56a74476a80e144c0adb3b559",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/runbooks/self-service-onboarding.md",
+      "sourceBlob": "a6aeb469aed2435e2db55292c026ad1ff08e7e4d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-07-self-service-owner-onboarding.md",
+      "sourceBlob": "b770a83ec656d783df540a3fdbbf45f8442ac341",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-07-subscriptions-backend.md",
+      "sourceBlob": "a42fa2a9721d328afa2621f5df6a573bc6def841",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-08-neon-staging-hosting.md",
+      "sourceBlob": "211b9d278d7fdfe9cd90864dd5211e4ee5343d27",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-08-onboarding-commerce-integration.md",
+      "sourceBlob": "95195a9724aa65a24b502f5180b29be6356df0d1",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-08-private-onboarding-staging-acceptance.md",
+      "sourceBlob": "686668715126d03b703f169254462db221dd6566",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-11-08-stripe-runtime-tax.md",
+      "sourceBlob": "f0121e2f47e9ed2f9ebe53a8a9a7d0a20ee5864a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-11-07-self-service-owner-onboarding-design.md",
+      "sourceBlob": "cc78128ac0d83e66421342e03c8f9c87a7598d6e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "docs/superpowers/specs/2026-11-07-subscriptions-backend.md",
+      "sourceBlob": "658e356fdda128a9bc8492756630293f99613890",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "functions/clocker-photo-cleanup.ts",
+      "sourceBlob": "d7d251b16acb7d9733909effe6156bc866532027",
+      "baseBlob": "58275960d0ab498fdaef2bc93142fc17e9e1462d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "native/ios/Sources/NevoraShellCore/WorkspaceSelection.swift",
+      "sourceBlob": "6b7448f92fbaae568250981198639227c868f492",
+      "baseBlob": null,
+      "disposition": "held-for-UI-or-native-owner"
+    },
+    {
+      "path": "native/ios/Tests/NevoraShellCoreTests/WorkspaceSelectionTests.swift",
+      "sourceBlob": "36f1c4a9439ad072f86c366c3fb6449512545e08",
+      "baseBlob": null,
+      "disposition": "held-for-UI-or-native-owner"
+    },
+    {
+      "path": "next.config.ts",
+      "sourceBlob": "05ce687d4b527cdc72db12602611013af1756a6b",
+      "baseBlob": "b6d1531d84a6314b83ff38f9c6537478d72ee30d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "package-lock.json",
+      "sourceBlob": "e110bc37298a3e29d533007ebc93887ade2e8091",
+      "baseBlob": "6040935a08983b90c246db33c80df9720175aeb3",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "package.json",
+      "sourceBlob": "a92da4d609077849d4067ee179da81c62dc9cee1",
+      "baseBlob": "bef149ec9b04863e1c8942166ef13edf8cc7640b",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/build-neon-onboarding.check.mjs",
+      "sourceBlob": "3513a309c360840fb585ede6ad25104677b30d3a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/build-neon-onboarding.mjs",
+      "sourceBlob": "32435267786775be86123e2dd796b65a82364eb2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/commerce-postgres.mjs",
+      "sourceBlob": "bf4894028759086b7849035aa435357cdb54a709",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/company-setup.ts",
+      "sourceBlob": "d44b33ff6ad57dc7b232eacc805119aec21ca44a",
+      "baseBlob": "b823630f5b8f0891bff40d623bf4104fc339e255",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/fuel-notification-worker.ts",
+      "sourceBlob": "fea53eac47574720c25efb1dfd911cf549c31ec2",
+      "baseBlob": "7594e6d854fabf9eccefd9f0870f86d9f4de30fe",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/neon-archive.check.mjs",
+      "sourceBlob": "f4a64c22cbb24dcf86e2bbbb0c39606da742963e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/neon-archive.mjs",
+      "sourceBlob": "bdecd494470043547653cf9bd344735d8a6c4419",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-acceptance.mjs",
+      "sourceBlob": "0339f0a965a328715e88071d2eb44f5e24c9c13d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-inventory.check.mjs",
+      "sourceBlob": "ef8b038a01d6144a102e796b6119a03d159ab616",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-inventory.mjs",
+      "sourceBlob": "1aeddf5d6408561318a6738887f4c19bfb4a0de2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-manifest.mjs",
+      "sourceBlob": "8aa243a8ac2ddd15b6622e270af0f4f3fc5620c4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-operator.mts",
+      "sourceBlob": "8d323ca3de5eab1b9f35d34fae0d4f69c8244416",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-owned.mjs",
+      "sourceBlob": "4db399262d54a24a5baf87db00e0252a1559d790",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/onboarding-worker.mts",
+      "sourceBlob": "6ecdb0043f4906baad4a7cd1e07202eef83e0f62",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/payroll-postgres.mjs",
+      "sourceBlob": "b03a7b8ace7c65cecd30e41837fe944ba44c5e3b",
+      "baseBlob": "2e5882daa5e685ebcd73e7c1e3cbe3dfa70bf31d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/payroll-worker.ts",
+      "sourceBlob": "91d0ed003a3d331ab8c926e0500948387f9ed4ce",
+      "baseBlob": "6d3cf52cc688ea762ec9d76558bfce6afa8d5f99",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/release-lint-chain.check.mjs",
+      "sourceBlob": "9d9c348c1ddd8452a4b17ac8a4f950925647004d",
+      "baseBlob": "19261ce3487e4008893c495a0189854e09cf0a13",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "scripts/verify-neon-onboarding.mjs",
+      "sourceBlob": "6a49469f354c352bf98e0a30081158bdb62f38dc",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/README.md",
+      "sourceBlob": "2a2a01eb0bf3d61897ed62c40bc3bfe1387e4455",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/access.ts",
+      "sourceBlob": "d3a16f434536fe81876482b0c1fe4bc1ec417f1d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/account.integration.test.ts",
+      "sourceBlob": "460a621836632342d5132f4d10ea04e621b80aec",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/catalog.ts",
+      "sourceBlob": "2f670bc1907af2693618d2788dd6f8119a43a2f3",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/checkout.ts",
+      "sourceBlob": "60922299e239e4f7aad617d8dea6e90acd1c32bf",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/config.test.ts",
+      "sourceBlob": "c2627d641b9d19d1d5cd9138985dc876fd4e684e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/config.ts",
+      "sourceBlob": "44871822523f708fcd763d70d218dfa4f8fa2418",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/database-safety.integration.test.ts",
+      "sourceBlob": "a46ea4455ea7b626f8aca3c1e120bd922da70671",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/enrollment-runtime.ts",
+      "sourceBlob": "24f3ab7c4836ed530eda09eb3c4eeeee30355258",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/http.ts",
+      "sourceBlob": "b167b88756f0c9aa376ba3373b84449415762334",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/installation-transport.test.ts",
+      "sourceBlob": "a6583c56fa6569b9a0914de686288fd762e8b00d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/installation-transport.ts",
+      "sourceBlob": "287ee5668511b1724bf8b04f8233d7ad7b360066",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/installation.ts",
+      "sourceBlob": "81eacb86179a3eebefed08e4880584f4ed1adc5e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/migrations/0002_onboarding_enrollment.sql",
+      "sourceBlob": "16494b6677d0b80ef0bd9c1e30cd80c0b8f7ca27",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/migrations/0003_owner_authority.sql",
+      "sourceBlob": "6afd0dd7579e358a2b9ab340980d749389a52df5",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/migrations/0004_worker_entitlement_scope.sql",
+      "sourceBlob": "4258345eb9d443a7cfebc53068b14c2bb81b355e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/model.test.ts",
+      "sourceBlob": "13b2b68a57d90f0542558edcd18a964739f44220",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/model.ts",
+      "sourceBlob": "a28cc7b7abf9b5257ed9e02842faa681ed1d1d61",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/neon-worker.integration.test.ts",
+      "sourceBlob": "c55e80a5b1cfb720cfda4327104996dc44474f7e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/operator.ts",
+      "sourceBlob": "cbcc5db9fcb0144689df0155629c0ecacbbff99a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/owner-authority.ts",
+      "sourceBlob": "486e22babc469375ce824a6d5842f950cc33380a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/principals.ts",
+      "sourceBlob": "6f4d530bf0d2158b1ff7cfc20662cfd1845f13f8",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/provision.integration.test.ts",
+      "sourceBlob": "564afaef1df10be5f96a85cfebb0147ecf4921b2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/provision.ts",
+      "sourceBlob": "56caf93728070ba87caefb46fdfa120655c077b1",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/runtime.test.ts",
+      "sourceBlob": "8be6853f5d6992255346a72719af6e4ebc4a0b36",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/runtime.ts",
+      "sourceBlob": "ff9b1148d96008061936485f6bfe040851bb4969",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/schema.sql",
+      "sourceBlob": "0922c1d86379e8b62e86dbd024a1b49a7e413417",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/security.test.ts",
+      "sourceBlob": "bea4a60f0de36f520f459fc251f25908effac675",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/security.ts",
+      "sourceBlob": "4534feeeafd39767eaffa5b6fac4dd2b7d9d903b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/server.ts",
+      "sourceBlob": "37d05720bcaefc496747771b7df5f56e5edb3835",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/service.ts",
+      "sourceBlob": "e5339f9f80853f3d09f74e4edcc171e492ee4cc9",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/store.ts",
+      "sourceBlob": "0fd09824878159bb251fc4472539afb6fd5775ce",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe-config.ts",
+      "sourceBlob": "c9c5f38bad51cdc27301235d54e03590fa97031f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe-fixture.ts",
+      "sourceBlob": "e919e89632ce7c04d33f6260b89133ad93abb0b7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe-identity.ts",
+      "sourceBlob": "1d8414fb023bfbe8bf8aa015fa64c211748e99ad",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe-tax.ts",
+      "sourceBlob": "3d0d38e79ac15f1ff77541e369143853aa0087d0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe-webhook.ts",
+      "sourceBlob": "5c8e19bc0e8dc38061dcba9cc2ab4af3792a585b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe.integration.test.ts",
+      "sourceBlob": "7fa9fd30175416186530ace6a6c8fcbae20873a7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/stripe.ts",
+      "sourceBlob": "540544ac3ccd65e786dcf5472050caa9f780fc40",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/test-database.ts",
+      "sourceBlob": "bf7a9e48816f2606395b4f0cf673edcf65c905ab",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/worker-cli.ts",
+      "sourceBlob": "645dab3b6bdac071c7961d3f61045f1b67dfcd5e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/worker.ts",
+      "sourceBlob": "41db14bd95829738365b3a6bd84b49aeed7222a6",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/commerce/workspace-enrollment.ts",
+      "sourceBlob": "8bcfffb170bbfe697af167cf57064f23091aedc5",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/README.md",
+      "sourceBlob": "ca9ca35fc67e014812e3fec8e3f75e0bd5a34139",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/capabilities.test.ts",
+      "sourceBlob": "1d5a3ae5a0dafabfe0d8a6895cd496d8daf39f75",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/capabilities.ts",
+      "sourceBlob": "f6896d8674151fb6dacd918ff2d93dcffde65a51",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceapi.entry.ts",
+      "sourceBlob": "8639d06acb38a4873ee6afeda5dae1e4182b0ce4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceapi.test.ts",
+      "sourceBlob": "ab502559a7eca3a8b97c88505de9253b246d258e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceapi.ts",
+      "sourceBlob": "b1fd701ce552ad87f82896cffb1c2d3c40321f67",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceauthority.entry.ts",
+      "sourceBlob": "de0996bdc6be6b88355827f72701cd1e0ff7936d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceauthority.test.ts",
+      "sourceBlob": "486b1aa7a7f95d3ff1e6d7fd88a676efdd7b6b31",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commerceauthority.ts",
+      "sourceBlob": "b740a6c3254859ecee0a10e10023ce65dfa7ba60",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commercequeue.entry.ts",
+      "sourceBlob": "1d48920ee484e3835fdbd66fd22be174b1091a9e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/commercereconcile.entry.ts",
+      "sourceBlob": "bcab5e7f8fb369ab62664afe80e1e56675452964",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/control-reader.ts",
+      "sourceBlob": "bd5a758ed77b341f1347d00ddc298492b8d5d6b8",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/handlers.test.ts",
+      "sourceBlob": "5cca1976dc4c990840f5d258fecfda0d2b137cc4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/handlers.ts",
+      "sourceBlob": "869e665120217219374f98d98846bb024343f81f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/provisioner.entry.ts",
+      "sourceBlob": "71d15886af875e1052d1ce4c24abf452e97b6788",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/source.ts",
+      "sourceBlob": "14c4c5f03802c84b6e6b4057f8aed937e1f2a44b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/stripewebhook.entry.ts",
+      "sourceBlob": "f3cc9cd1b47697ae906b801a90403abcfb83ad90",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/tasks.ts",
+      "sourceBlob": "d840b330b2fc9b9785c3df8a9650766455423623",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "services/hosted/neon/test-source.ts",
+      "sourceBlob": "9321786caa66ce65d89502cdc4b52df6e64f2e72",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/activate/activation-invitation.tsx",
+      "sourceBlob": "bcd123d9bbf6589b1c6c6c78dce3dbd263bf1656",
+      "baseBlob": "864f3cd83b6979c58143a9b261ecd6c00fb97cf2",
+      "disposition": "held-for-UI-or-native-owner"
+    },
+    {
+      "path": "src/app/api/auth/activate/route.ts",
+      "sourceBlob": "86342358d7e2bb5c2663c15bff368926bdebc13c",
+      "baseBlob": "8d2dd5d819011eaafcafd093528446359310c8a1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/auth/recovery/route.ts",
+      "sourceBlob": "9e1b1e16ede2f730a1929f5ca3c0eba7e8bf80fc",
+      "baseBlob": "aaadbdce1695a8f433087edcbffda3ac033c61e9",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/auth/reset-access/route.ts",
+      "sourceBlob": "c4d5116b65a7c7b36c05d706745f4f5b34a6b372",
+      "baseBlob": "d802d8525cd7215496f921d02448e54bb19b4b80",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/billing/[...path]/route.ts",
+      "sourceBlob": "3f3f0c39355fa9303c55963908ff6dd1de64e38a",
+      "baseBlob": "e9c3b60f5de31a96f637ba039749c9075b77eb7e:src/app/api/billing/[...path]/route.ts",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/calendar/[token]/schedule.ics/route.ts",
+      "sourceBlob": "b4fea35a2199c52d7c69c5c3111868ec18c3252d",
+      "baseBlob": "7e3d2ca96fc11983025f3bebccfc0030a8f9dc39",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/photos/[photoId]/route.ts",
+      "sourceBlob": "392994020b6e32c1185035c63a86210f49d7f22a",
+      "baseBlob": "59c2796973898c9a476db827153d7395fb76b9e1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/photos/route.ts",
+      "sourceBlob": "d67a26e25ddaaaf8587193538d9c5193d0a9d7e7",
+      "baseBlob": "109547f3aad960c0f88ef6ac9d8eb7449adda623",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/pin/route.ts",
+      "sourceBlob": "f5595f065810426ff27986a36284cf34139f070a",
+      "baseBlob": "0bf296e4bcb823a108c93bab6784775f01947f5f",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/punch/route.ts",
+      "sourceBlob": "f9d3ea65546897b22bc1c111fc3cdd104d73476b",
+      "baseBlob": "e65ad8285b625933977a2272d79fc2591c0fa20b",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/review/route.ts",
+      "sourceBlob": "a794db2912b82c8afe39996687de5218b1e9584c",
+      "baseBlob": "3736ada1f5bba9a45b9e298b2594fc20f416be74",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/[location]/setup/route.ts",
+      "sourceBlob": "439ded61f1f4abf720b7a3c3439b50ca46c5c85c",
+      "baseBlob": "2b213800790a518a05ea8a582c582cf69b2a711a",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/clocker/photos/review/route.ts",
+      "sourceBlob": "a725e2aed16bfc3944e580dbd1e390902d65ce3f",
+      "baseBlob": "c9f9f17c2a05d4dcf0b68e9b89af98c6ceb9a246",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/commerce/facts/route.ts",
+      "sourceBlob": "d7c3929c6959ab9d87d9c4879eeab39ab6a84f98",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/commerce/handoff/route.ts",
+      "sourceBlob": "2b6af85b7ebcd080821c223673673e494ad32eca",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/commerce/owner/route.ts",
+      "sourceBlob": "f3c07e7a4cd3a30de3b9b82bad6928819012a4e0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/commerce/policy/route.ts",
+      "sourceBlob": "68bf70f3438f255e76466a687f5d20ee0db695ba",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/commerce/routes.test.ts",
+      "sourceBlob": "081bce7b68b97c7cd7f39824b7e2137e73095bd9",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/internal/notifications/dispatch/route.ts",
+      "sourceBlob": "f503bc5aec5233aaf9fc9fa89dbdd7c81b2a8614",
+      "baseBlob": "94d820aaf221dc94205f57ec357ade2e2f57f7fb",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/internal/notifications/reminders/route.ts",
+      "sourceBlob": "167a7ef06048ba1e39823c191564463658c0ae97",
+      "baseBlob": "1ee2841a10ed6e8658fefd6f877102701afb4395",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/manager/account-recovery/route.ts",
+      "sourceBlob": "6415ba29067a2fae2b710fb23b21ad353df12ba0",
+      "baseBlob": "0b4dad9630d1917a20aae46e9fe36198e6013999",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/challenge/route.ts",
+      "sourceBlob": "12a1344b6f29ff24c41cb056f919748f75741db0",
+      "baseBlob": "ed44de4edd9d2b5354c6f17c93210ff966b23a7a",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/complete/route.ts",
+      "sourceBlob": "05a41d18ac614c28b68cbc93ceeb2fc0c64bc700",
+      "baseBlob": "d174c04b829ead3c98dee402412c4344ee1080f1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/mobile/v1/notifications/status/route.ts",
+      "sourceBlob": "ab483bd91689cd79227794a1cd7b064395578bfb",
+      "baseBlob": "ca52d1b7bd0ae96cdd897e459f9bd9c0f30d2789",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/mobile/v1/workspaces/resolve/route.ts",
+      "sourceBlob": "9f2c2eec50c5d1d8f627ecd20ce74cc642648a41",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/bootstrap-grants/route.ts",
+      "sourceBlob": "bdab7052485f7d423521d66d31ced5bf00579c58",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/config/route.ts",
+      "sourceBlob": "3d563453ddf34f199c7344af379f401781cefdfc",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/invitation-batches/[operationId]/route.ts",
+      "sourceBlob": "b54c528c91bd9cb67f3a923ace3a8b7038c8f6ca",
+      "baseBlob": "e9c3b60f5de31a96f637ba039749c9075b77eb7e:src/app/api/onboarding/invitation-batches/[operationId]/route.ts",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/invitation-batches/route.ts",
+      "sourceBlob": "4758c302229eaaf7c0a5c5fce961d02ed22b36fa",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/operations/[operationId]/route.ts",
+      "sourceBlob": "6de043c7b8a5033e703dbddb10ba4af37c834ae8",
+      "baseBlob": "e9c3b60f5de31a96f637ba039749c9075b77eb7e:src/app/api/onboarding/operations/[operationId]/route.ts",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/owner-activation/route.ts",
+      "sourceBlob": "e38d4c7a54c4256c8c89526bacf48702101594a2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/people/route.ts",
+      "sourceBlob": "d1b5eb29e42688b1a9ec43169b68032b88133e25",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/registrations/current/route.ts",
+      "sourceBlob": "e40267035a37ae76cb9a8ba10da9c333b78ab0fe",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/registrations/route.ts",
+      "sourceBlob": "ac2988448296f222cedd01770a07a5e3465d14e2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/state/route.ts",
+      "sourceBlob": "81e4c1404ce8572f46fdd15512d78e47cd73e17f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/steps/[stepId]/route.ts",
+      "sourceBlob": "d734a1e03ca3e39709762e47bfdc8631c28a8fc1",
+      "baseBlob": "e9c3b60f5de31a96f637ba039749c9075b77eb7e:src/app/api/onboarding/steps/[stepId]/route.ts",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/verification/route.ts",
+      "sourceBlob": "83757e7ac7e31d5f33142e96ab97f2e4ef70feb7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/onboarding/workspaces/route.ts",
+      "sourceBlob": "1fa9026d1bfb7d0b06216b29758ca2b96dc869e2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/api/workspace-presentation/logo/[assetId]/route.ts",
+      "sourceBlob": "bf69d42315d2f4099c54ab7a72b0d8cb5b1c6a47",
+      "baseBlob": "55bdb224ca885f7e03c67a0ee30185ac747bcbc8",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/clocker-pin/actions.ts",
+      "sourceBlob": "7742d70fc6a81cfbdbe77bcd2e80f955ef464f21",
+      "baseBlob": "9bfd7f3fa7291729638006089297aa3691f176ec",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/app/settings/breaks/actions.ts",
+      "sourceBlob": "df3630da0327d46ddecc949dd7b0816ecb0d561f",
+      "baseBlob": "6eacbd14d5fc63be1671c6764994884c64cabe6d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/app/settings/clocker/actions.ts",
+      "sourceBlob": "a84b4d56a08553e9fc03398e50bb4e76d7c9bf0c",
+      "baseBlob": "6d955a8f4f232a5676c04ced6d8dd17f993eef71",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/actions.ts",
+      "sourceBlob": "f26d0853c8d1aef675764e70843bb45d52f89c13",
+      "baseBlob": "6cb5d40fab0b07e9f4a64d85607351cdc025e78a",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/app/app/settings/clocker/photos/review/actions.ts",
+      "sourceBlob": "2379dd50e34da4651ed30b37ae0bc6a09f7f92f0",
+      "baseBlob": "7119aaeb2b46d8d0f2cad13048436c44a0ef1ae1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/components/account-recovery.tsx",
+      "sourceBlob": "ad2dc7b8e853c3a7fccaa91018334d3361c64eff",
+      "baseBlob": "2bcb390e9cfeaf83bc5af2c5706b11087c651e1d",
+      "disposition": "held-for-UI-or-native-owner"
+    },
+    {
+      "path": "src/components/clocker-setup.tsx",
+      "sourceBlob": "abc1c8cf7769eb2f2837d6320bd3e38d7a3ae591",
+      "baseBlob": "f53fe741a20a3d0430795dba36fd49f104466f18",
+      "disposition": "held-for-UI-or-native-owner"
+    },
+    {
+      "path": "src/lib/account-deletion/requests.server.ts",
+      "sourceBlob": "9dd8884052245c59b1c63c0dbc8c5a0fb78c7f56",
+      "baseBlob": "3ad69f6e2a0f1b31ef9723bd81ddb60c08da6403",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/invitations/delivery.server.ts",
+      "sourceBlob": "3207a336966e800b766a05c7034abdd2713a32de",
+      "baseBlob": "f8bbab9dbdb3b0e99a3d53a1d8ae3f64b8a60475",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/invitations/delivery.test.ts",
+      "sourceBlob": "68403b37fc9cd4a5f1fc6fab7cf7350e7503d3de",
+      "baseBlob": "6ad2bdd88e695ba9a67929c952b02c8827454742",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/mail-transport.server.ts",
+      "sourceBlob": "8fce652200f39509617203d47b500d38c631c3d2",
+      "baseBlob": "99531072a1e62ed8f526539091b2cc34ba5c672d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/mail-transport.test.ts",
+      "sourceBlob": "29aad223206da1d903a8fcb40f2156649b98d9ef",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/passkeys/config.test.ts",
+      "sourceBlob": "7cea3919670fb4bad675c2aa00e623ea100e761f",
+      "baseBlob": "bbe758a95c9ab6971214a67c44e36e1b651ff8ec",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/passkeys/config.ts",
+      "sourceBlob": "6d3ec802f07f2c2234c25f76a904b8c9a948a99a",
+      "baseBlob": "bbf35b9d956dc6ba2c0c908f64de073e5c7872d0",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/passkeys/http.server.ts",
+      "sourceBlob": "56d1f93f82dad0d12aef9216c4ecf3e6f95a623f",
+      "baseBlob": "9451fd7e77a035426d0898c74e523c4601433a72",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/portal-request.server.ts",
+      "sourceBlob": "9ad5ddd40cc68a73ee2dce0f73fd9d250db16932",
+      "baseBlob": "ce37684f9fa67a26c55180b69f57e86bdcde2960",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/public-proof.test.ts",
+      "sourceBlob": "cce49101fd396b510280e20a1a2cc0f3c786fddf",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/public-proof.ts",
+      "sourceBlob": "85fa9603b5c33db819416ce8a7e7d16a6d6d8da7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/recovery-delivery.server.ts",
+      "sourceBlob": "ba7c89800f0d73012004b250248ac6e007ab50ec",
+      "baseBlob": "4217f31330063ef2403486bb5179e1939abb81d1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/auth/session.ts",
+      "sourceBlob": "a46a0a203386b60f02fbdc02bbdcbae6e2988a8a",
+      "baseBlob": "b4f277ea5a2b5560a7894765d8e62d46683cb330",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/calendar/service.server.ts",
+      "sourceBlob": "60de32d5646bdb797b1555211d1b9879addade14",
+      "baseBlob": "d409fa72ca7f2de239c93bae2e81510ed5e24366",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/clocker/photo-server/runtime.server.ts",
+      "sourceBlob": "b953db2aa71fc7b90d1487cef43cbc42b7d1ae94",
+      "baseBlob": "388eb8e57f79091bdae68c028657485cceb34e3f",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/clocker/punch-transport.server.ts",
+      "sourceBlob": "321d7e070c85fdb0177e39a3a30c4054726cd138",
+      "baseBlob": "6bcb45807fa758f039207c03be9d276e418cc55c",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/clocker/setup.server.ts",
+      "sourceBlob": "27945f4d644d05512401e2870a4609fd04b1260d",
+      "baseBlob": "d12ea7faae7026584cd4416eeeefe35d779f76bc",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/commerce/access.test.ts",
+      "sourceBlob": "cfa1258b47697900779a98e7af84d892a49a0450",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/commerce/access.ts",
+      "sourceBlob": "c59b336e076f778c234dfd348bc098b6aad8d4f4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/commerce/api.server.ts",
+      "sourceBlob": "3e848fc7449f2e4d1e5a7712537dbd75f87e256d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/commerce/isolated-connection.server.ts",
+      "sourceBlob": "69d19dcf044f7d1605bbb5b401f7407d92be2c25",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/commerce/owner-binding.ts",
+      "sourceBlob": "f93dacb9e3bf1447b0466b8629840c0d04c55fad",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-access/employee-profile.server.ts",
+      "sourceBlob": "1eadf175ad54fea2a03c27ab279143fc60ced838",
+      "baseBlob": "5d3816ae8b0567e6579249c4b9652e74f87272ee",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-access/invitation-http.server.ts",
+      "sourceBlob": "9320b61281cef75903ea535b5213902a4f81fd27",
+      "baseBlob": "b348795c3b97101a669dcad4374c4eef031473a1",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-access/operational-scope.server.ts",
+      "sourceBlob": "9ab265ddf1776d9e909bff0c92897db201b7bc45",
+      "baseBlob": "5e2079505c6a5eb25c744ab06b499d6aba865878",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-bootstrap/manifest.generated.ts",
+      "sourceBlob": "a6f5ef8f1e25194f83650ac8a7d178b0604a534b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-bootstrap/manifest.test.ts",
+      "sourceBlob": "92c1718aca22f2854117a33513b4d52386c80e64",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-bootstrap/server.ts",
+      "sourceBlob": "50be837c8d4fe57bba9c33e542c90e8a4210929e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/company-bootstrap/worker-privileges.ts",
+      "sourceBlob": "26d036e76fd924369606a89feec9f1d95130e516",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/acknowledgements.ts",
+      "sourceBlob": "f6253aee49f5f87b5113defd84f32d07c408d788",
+      "baseBlob": "62a32609493b8953ff3cca8a68a1279b35359ebf",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/app-sql.ts",
+      "sourceBlob": "91d75e13b3efa3f6d1cefc2e2ca3471d3106c31e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/attendance-review.ts",
+      "sourceBlob": "c38dc988a43659f58440bb4274de924b5482c0e0",
+      "baseBlob": "ea5a2efcc3a04e4d8ca798cd08e1b55e791b5ffd",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/availability-inputs.ts",
+      "sourceBlob": "edd567802b4026e34a1b62eb60c1a0ae74629354",
+      "baseBlob": "d3a73fc34c15fc116a081df3544889c08f6f79be",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/availability-submissions.ts",
+      "sourceBlob": "f6dab4e47eec719f57c437a152fd015bd3a21208",
+      "baseBlob": "513e501ea1ada84970676f7494375e3b7fe8a6e4",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/availability.ts",
+      "sourceBlob": "145bed80b7cc05452c32ebbd184acb8938cd20a0",
+      "baseBlob": "b6880385420b5b77a6190eda277e0de890e82e4a",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/callouts.ts",
+      "sourceBlob": "27576582d4abd8f9c675fd61f0f4914b4bdb8527",
+      "baseBlob": "05e9e7f4291525327cbd07797dbb13ecbc9dc4c0",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/employees.ts",
+      "sourceBlob": "5f8b36c7b84c90551eeba9c003c8d5f26fc2ca2a",
+      "baseBlob": "cdd2e1c9a35860d7689c4f26df5d736152709db5",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/exchanges.ts",
+      "sourceBlob": "262f387bb7ede72a20766876ca8906d014fbed46",
+      "baseBlob": "f7918a58094669ee3516357ad1caca96b8fc79db",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/generation-guards.ts",
+      "sourceBlob": "70b859a647a5387ef4a0de516d4bb3104dc204d7",
+      "baseBlob": "f2ad814052bbc5a411803e6d496f0b76297cd92b",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/hour-fairness.ts",
+      "sourceBlob": "4e92f8733fa7c1b62dafc79b544b3a3b009ebe5e",
+      "baseBlob": "602949623f59fd2e457ca3209999a447feffdc8e",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/locations.ts",
+      "sourceBlob": "1bb29009bc6c470b26e1af3d8144b0ac31118be9",
+      "baseBlob": "8e2be8a69a70fcf811c70c37719f77ed49a813d7",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/notifications.ts",
+      "sourceBlob": "cf6bd1be103bc18ba63a74229598c51f837ab97c",
+      "baseBlob": "a77c26b505d5cabc7e49204ff2fe56532b75e19a",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/positions.ts",
+      "sourceBlob": "b062687f30db5390d86b18b85e7ee9ef7fb4cc4e",
+      "baseBlob": "d3e098bd7857bc96b836da8539aa62122457f952",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/publication-revisions.ts",
+      "sourceBlob": "2ef05788569d1b377c59d98b0b8a11bf39389074",
+      "baseBlob": "3e00d668e6adffbc92151d98dbc1af6a3b33a2b3",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/requests.ts",
+      "sourceBlob": "5dffa033f94f74dfd943271a7f4a2c9d182a7bfb",
+      "baseBlob": "8a302031199554ed44b9f121603618b8a1a23ce4",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/schedule-health.ts",
+      "sourceBlob": "faad21be1592243ae84dbe5611be7341cbc00ec0",
+      "baseBlob": "ce62cb57cd428dc3276d53e59f477fbd15eca0d7",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/schedules.ts",
+      "sourceBlob": "68c6a8bbf9883dceb343051e13d73d6fb55350fb",
+      "baseBlob": "731a7b0a1fdc15c5c39945cae3eba968e4ce50b3",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/source-table-lock.ts",
+      "sourceBlob": "8a4e54bc94f4473b11d4717f7f3aa82d975c69db",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/sql-executor.ts",
+      "sourceBlob": "bc669009e6b003e2be59d46358aa22b6184c15bb",
+      "baseBlob": "4b2ebc51b6ae40db9a5ef50b3fd99bee2647731c",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/time-clock.ts",
+      "sourceBlob": "33ee4c713897bcedcc8315a1d34fbbf128a1d378",
+      "baseBlob": "caa9b73d613c5637d7b3fb513a8a653365800747",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/transaction-composition.ts",
+      "sourceBlob": "ab35b8239a90db30a7bef5de78d68afa5aad5084",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/week-settings.ts",
+      "sourceBlob": "7884371c949a1ed34e82ad3d9942ea1770e0893a",
+      "baseBlob": "0321d13206ac2da9ff7340828ad14f439384729d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/data/workspaces.ts",
+      "sourceBlob": "1950999b65557678bb85da67807cae669fee0db3",
+      "baseBlob": "a678ee1fc9a0d2a5025b1bc8d5b8dc47dc7757fb",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/db.ts",
+      "sourceBlob": "00fc8623e2d6df142ab60df1ad30d0b8a607a2b7",
+      "baseBlob": "e8df7c4138c6a49a2c70e6aaa482eb26299a6b0d",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/native-push/enrollment.ts",
+      "sourceBlob": "dcdfd760703c0b745a6e846fd043b0089443172e",
+      "baseBlob": "58a27e85eda733d76571770d6479365214fe6acd",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/native-push/runtime.ts",
+      "sourceBlob": "242759225440a56f52a5c161365fb1472fb0132d",
+      "baseBlob": "bdccb917c2286bb7f42ebe944317b3e19c023fb4",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/notifications/config.ts",
+      "sourceBlob": "af645703dc5750c1d412eabeb0f0ccba0082c779",
+      "baseBlob": "9ba81de5eebeb7d08ebfb2e21cdf42b50c639863",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/notifications/logout.ts",
+      "sourceBlob": "9c8bd282b5b67c24b8076b0e1066dc5712269ce0",
+      "baseBlob": "c80ad2980580efc0dbda78a7909cf36fa0abd2b2",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/notifications/subscription-service.ts",
+      "sourceBlob": "d26aee50b7a92e40762bedf17af9ced05e3e00e7",
+      "baseBlob": "e6c8d335526d9cff1043f80052d4e7fcf68ec9b2",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/notifications/types.ts",
+      "sourceBlob": "2aa5f75cff30a03e44a108683bf02403d4b2c9cc",
+      "baseBlob": "aa6bc57d45ec3cd15faa0885424d0c9c49576f4b",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/notifications/worker.ts",
+      "sourceBlob": "cc793486847236bab91986121a16f84d9346e41f",
+      "baseBlob": "c903607de2218cd53aebd6c0c36674e302e45d30",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/cleanup.server.ts",
+      "sourceBlob": "2a4f664613cb45e855e50fe2cdcbea67166cb67a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/config.server.ts",
+      "sourceBlob": "13f23362ec5e644e783555c1c38e123485cb7fa4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/config.test.ts",
+      "sourceBlob": "178dd877b24ebcbbb2928199070137713c04b16f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/contracts.test.ts",
+      "sourceBlob": "6796a7f359630963939ba0534f8d3512f39caa2b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/contracts.ts",
+      "sourceBlob": "ff7a392352202ba3db990d6d9b58876f1550a1e3",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/control-principals.server.ts",
+      "sourceBlob": "85832572df13bb04599fedf0fb9163900be49f5e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/control-store.server.ts",
+      "sourceBlob": "fdfb09ae7546d0a0ebe6edec033051888e3aa18f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/crypto.server.ts",
+      "sourceBlob": "8ea9f13cf3e27598cd8bcbf24b0ca2e679e4d352",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/fixtures/v1/provisioning-pending.json",
+      "sourceBlob": "9c1b4c681d9c05dbb722eabed128e348e1803bd5",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/fixtures/v1/setup-state.json",
+      "sourceBlob": "569900ae6ba8ef021a1c799f9fc28c6f70a51902",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/fixtures/v1/verification-requested.json",
+      "sourceBlob": "41b865a32f4c46aa2671882ed3504e69e7cef113",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/fixtures/v1/version-conflict.json",
+      "sourceBlob": "00439e83713bbf16f59cc1b73a3b10d5a1e2600f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/http.server.ts",
+      "sourceBlob": "58ca88f1663409812d2a145ad033b23ba81bc9d2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/http.test.ts",
+      "sourceBlob": "3cc1c627c72d45e5480f494952eba6b644f43495",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/invitation-batch-http.server.ts",
+      "sourceBlob": "597663468a8f769b551b40e6a1a96ede5d9f2dda",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/invitation-batch.server.ts",
+      "sourceBlob": "a5674a49dccd4e3af4203cd95cdcf396401c5a65",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/invitation-batch.test.ts",
+      "sourceBlob": "577c94e9b03979de28349125db74b438cf11d1b7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/operations.server.ts",
+      "sourceBlob": "1f16e2ec0e22219b105b60d63d69b913ecdceab8",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/operator-config.server.ts",
+      "sourceBlob": "0d12fbc37b82cd67bd7418bdebfb377547d05eb2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/operator-config.test.ts",
+      "sourceBlob": "622394dc76e25e4f24a6f6bf19e68830787ee024",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/owner-activation-http.server.ts",
+      "sourceBlob": "3116f13840699d7f1d55ed33e5d3e7c3ef7d37f7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/owner-activation.server.ts",
+      "sourceBlob": "2e7580f5ad55fc06d63e8dadfc4ef325535fccc1",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/owner-http.server.ts",
+      "sourceBlob": "0518af072e2a953593bfd3e8ecd2fc8855f057da",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/people.server.ts",
+      "sourceBlob": "f01733ab65e0125a245ba6746710b6e6f9fd1ccb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/people.test.ts",
+      "sourceBlob": "2b4911bcdaa2ebf99156760d4e7fecb567ea9354",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/connection.server.ts",
+      "sourceBlob": "b7b81657a22a2d747829e142fc8e892cfdf0d1e0",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/http.server.ts",
+      "sourceBlob": "69d5723d9b189e6ca823d433e107f1e9be399b7b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/model.test.ts",
+      "sourceBlob": "45be08ab0c283d488872b518f291b90f2400825a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/model.ts",
+      "sourceBlob": "d30f75972305cdf606871477e991e0ed4b9270ab",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/neon-provider.server.ts",
+      "sourceBlob": "78df8cc7182f134ad6e159d9e430c823e319848d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/neon-provider.test.ts",
+      "sourceBlob": "c35cdd0a614d26c906ab91b74327bdafb7bc9579",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/orchestrator.server.ts",
+      "sourceBlob": "d050c9d32b275716ad64c392c01d5a11054489df",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/provider.ts",
+      "sourceBlob": "fcb882b30866c3db3666dc5eec65ef7bb56b6273",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/runtime.server.ts",
+      "sourceBlob": "f49ad855884083befb6a5a0f90208edc6ce750b2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/runtime.test.ts",
+      "sourceBlob": "8db6d734544ff4f3e77eb2793f1d4ac6e738351a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/provisioning/store.server.ts",
+      "sourceBlob": "69f8fb29123586718aff23e6da4b58520a4ebf12",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/readiness.server.ts",
+      "sourceBlob": "811172477311ee66e737a6b895f328f88bf09f20",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/readiness.test.ts",
+      "sourceBlob": "bb82565323ab0ae013227fe3cd136124cdbfab1a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/registration-http.server.ts",
+      "sourceBlob": "d15024271e0ee0503a43949e677eb4407b2237fb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/registration.server.ts",
+      "sourceBlob": "867e428e6e9ad30860c0ca1f00fe500b04320b06",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/registration.test.ts",
+      "sourceBlob": "62cf24ea9a4974a21509155a1e0048b7ac886580",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/setup.server.ts",
+      "sourceBlob": "706bdba832c4af74896c65b73c2bab63fc3b0af6",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/setup.test.ts",
+      "sourceBlob": "7e1cb3b3553c3f54155bb1b2872e8a989b444274",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/steps.ts",
+      "sourceBlob": "ab6f8cfc7121639cf5fca60304805ef0fb32618f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/onboarding/verification-delivery.server.ts",
+      "sourceBlob": "c271a572b8e8e73d371cb120a75544c90a74e2e2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/payroll/store.ts",
+      "sourceBlob": "4d8c7077e9c133bb121e61fcde7104a2cf5849b2",
+      "baseBlob": "93982c60bb30e66d05b563db732c247f301db950",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/payroll/worker.ts",
+      "sourceBlob": "9fd29b7ccfa5229cd5a07bd5d401cf5b00bb4c94",
+      "baseBlob": "1c2188937f7e13d511ebcae0727a87d7faafb8a7",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/postgres-url.ts",
+      "sourceBlob": "34f9fbc3c224b5315ab1fb7ef02a6e4c424c194c",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/time-corrections/http.server.ts",
+      "sourceBlob": "b6b6330408b60afa01a7ef47a0e37a5ce1a28eef",
+      "baseBlob": "9fa56f828bf561ba300e6fd0a05b8a04e335d8f6",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/binding.server.ts",
+      "sourceBlob": "448ff1388656219e489bfad584250ef104c603fb",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/config.server.ts",
+      "sourceBlob": "8479f1a472df4e355933fed28fba60ad912aa093",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/context.server.ts",
+      "sourceBlob": "6d2c7064d3aada4ecbf8d3b538da42a617773fac",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/context.test.ts",
+      "sourceBlob": "6818e7be112102d7c67ed5970d4d5797ca6d22b4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/contracts.ts",
+      "sourceBlob": "775142ffe13ff6ae79100ed35070bd86e1c26c74",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/cookies.server.ts",
+      "sourceBlob": "9ef31c4c6457bb834d982d83b076b795e2bcb642",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/discovery.server.ts",
+      "sourceBlob": "c061340a39cfbeddf754533ff31b1b46890613ff",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/discovery.test.ts",
+      "sourceBlob": "177973ef80ee6ed95134565369af25090a5047b7",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/machine-config.test.ts",
+      "sourceBlob": "36340fb5215ffa2e6e63ca4961f61b224adde701",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/resolver.server.ts",
+      "sourceBlob": "7060a78ca135be54669cb17bbdddc7793500dde4",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/resolver.test.ts",
+      "sourceBlob": "64bc168656bd9d78f325fb24000a63f92090e16b",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/runtime-config.server.ts",
+      "sourceBlob": "ffde0c30b41136a148798ad0db8b7147e60dc41f",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/token-envelope.server.ts",
+      "sourceBlob": "7aa9b2a487e2c921f5304ab2b1b4aa17e40c6924",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/token-envelope.test.ts",
+      "sourceBlob": "a4059d3fb7bf257d7b64d0c2d3cda15dd99a730d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/transport.server.ts",
+      "sourceBlob": "391f9a62d513c9d6719c5cde3814d28aef5c6c1d",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/lib/workspace-routing/worker.server.ts",
+      "sourceBlob": "7b2070a7d1508a3b00e43667097fbbf63a7d0a97",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/proxy.ts",
+      "sourceBlob": "9b8ba2004df94cac5f02ad3817ab551cde22e132",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/company-access-notification-producers.integration.ts",
+      "sourceBlob": "0e647d2b8eddd15e8f5d0d2621e860f401feb698",
+      "baseBlob": "d9b9b375df7b9c23288c5ad95e069b06b0d9a2ec",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/company-access-smtp.test-support.ts",
+      "sourceBlob": "ef4f6c48277e1a2479dc2b4665238773384273fb",
+      "baseBlob": "902618e410680d80baca784f1476c18779e58159",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/fresh-company-setup.integration.ts",
+      "sourceBlob": "a539e59f684ced4cde7809adcac41e7237f0c44f",
+      "baseBlob": "3dc7357c07f33f9d1de32f0f783407ab24072a27",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "sourceBlob": "e29a0611a148cfe0177cb4c5260023eafcd04fb8",
+      "baseBlob": "524fde36dc29cc4f763c3412aa767111fc748390",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-commerce.integration.ts",
+      "sourceBlob": "9acca6a69e372c2747db745562f8705f89a40036",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-control-principals-fixture.ts",
+      "sourceBlob": "87ba4fc073134c099cb3f365bf4fa0a52b0afb03",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-fixture.ts",
+      "sourceBlob": "caa84c1c8622ea227e158d61c00a8ff17a86b14a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-invitations.integration.ts",
+      "sourceBlob": "55d70a22c244f92b94edd181d5ec9e4048426480",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-isolation-auth.integration.ts",
+      "sourceBlob": "9245569a4560a25d778d363f229dee4497196cb2",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-isolation-routing.integration.ts",
+      "sourceBlob": "b23ab90f58758343d9167ef426bb544cf673f579",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-journey-fixture.ts",
+      "sourceBlob": "a2a922632f126791abc352f39dd0b51738f0ce07",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-journey.integration.ts",
+      "sourceBlob": "6e201cd00b2a090d40400da374ad568b4b454461",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-operations.integration.ts",
+      "sourceBlob": "7d37bd409cffbff72e9ea69804fd1cb0ae40500e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-owner-activation.integration.ts",
+      "sourceBlob": "7cf3e4a08765515a736704c63000c00a069731ee",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-people.integration.ts",
+      "sourceBlob": "5eb399c05d07a12a2d114171efd2cebfc8d4718a",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-provider-fixture.ts",
+      "sourceBlob": "d8e929782c441842460ef38922e1210c2ced14c5",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-provisioning-child.mts",
+      "sourceBlob": "a3ad1e89e22296907d4dedff4a9b28f0b71d8e4e",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-provisioning.integration.ts",
+      "sourceBlob": "9c0a60569f10d9b35e8aaf62ca72cd8dc49715d5",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-registration.integration.ts",
+      "sourceBlob": "aaefc07530e10fd2ac672d36b10bc495bc46fe45",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-setup.integration.ts",
+      "sourceBlob": "964800a82332d59460a9ad349d2c824cd4058845",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-test-config.ts",
+      "sourceBlob": "4fee0e94103b3909abd0da2a550e70ad0d151612",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/integration/onboarding-workspace-fixture.ts",
+      "sourceBlob": "626e59b4645453f5f4fd86e22e16a0ef00fe55ab",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/migration-order.test.ts",
+      "sourceBlob": "dddadd24f261640e4c7fcedb8bec03d0ff4e62a9",
+      "baseBlob": "4382e0f896349954b3160c85a61e8e6a80b0195c",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "src/test/no-page-entrance-motion.test.ts",
+      "sourceBlob": "5b5537b1cb1b0d868b9fbe38e0a7cfffae93a746",
+      "baseBlob": "b438c683b868f7a72667803f00d2e7e605ebf788",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "tools/eslint-config-next/PROVENANCE.json",
+      "sourceBlob": "1a1ccbb7c54b7e15eaa6767c2da5df77a5fd7d76",
+      "baseBlob": "f277a336c0c33851be87604043a4974f70bd68e0",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "tools/eslint-config-next/package.json",
+      "sourceBlob": "d346afb3dd8fa2e5a270a970278aa832680f1c4a",
+      "baseBlob": "36d199d3a9c6a73fe2f5f676cfd6bc112d5cdf96",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "tools/eslint-plugin-next/PROVENANCE.json",
+      "sourceBlob": "9b2867f814392668956f6315947315e339ca74ac",
+      "baseBlob": "f3c8cb1c2694bbcdf52d197841313b417f4bcfb2",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "tools/eslint-plugin-next/package.json",
+      "sourceBlob": "012954bbb65495b5a94e10539c43705c18459176",
+      "baseBlob": "45280d329462ca190be21b5a2e9c6a5fb36c240b",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "vitest.company-access-exchange.config.mts",
+      "sourceBlob": "50c9a2d6e991dd06f3902f0239f3123502661cc1",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "vitest.company-access-integration.config.mts",
+      "sourceBlob": "ea3a9f5ebf7fde6e0f4fae6474c339b804c170e7",
+      "baseBlob": "53434ccabc72770090d2ea2f1421b86283fcb7ab",
+      "disposition": "adopted-via-three-way-integration"
+    },
+    {
+      "path": "vitest.onboarding-integration.config.mts",
+      "sourceBlob": "488e00b3893bd4b8467f81164ee027e424e289ab",
+      "baseBlob": null,
+      "disposition": "adopted-via-three-way-integration"
+    }
+  ],
+  "noUIOrNativeAppByteChanges": true,
+  "productionSourceSelectionUnchanged": "f5fa463b111e263c9b863b16b6c2bca502571a7b",
+  "ownerPartner": {
+    "source": "2ebda395f615ab5d66994d27b87e9fea5cd8bb5e",
+    "heldPaths": [
+      "src/components/owner-advisor/advisor.tsx",
+      "src/components/owner-advisor/client.test.ts",
+      "src/components/owner-advisor/controller.test.ts",
+      "src/components/owner-advisor/controller.ts",
+      "src/components/owner-advisor/legal-panel.test.tsx",
+      "src/components/owner-advisor/legal-panel.tsx",
+      "src/components/owner-advisor/memory-controller.test.ts",
+      "src/components/owner-advisor/memory-panel.test.tsx",
+      "src/components/owner-advisor/memory-panel.tsx",
+      "src/components/owner-advisor/operational-insights-panel.test.tsx",
+      "src/components/owner-advisor/operational-insights-panel.tsx",
+      "src/components/owner-advisor/public-response.ts",
+      "src/components/owner-advisor/render.test.tsx",
+      "src/components/owner-advisor/workflows.tsx",
+      "src/test/integration/owner-advisor-partner-browser.integration.ts",
+      "vitest.owner-advisor-partner-browser.config.mts"
+    ],
+    "adoptedPaths": [
+      "db/migrations/0046_owner_advisor_memory.sql",
+      "db/migrations/order.ts",
+      "docs/execution/owner-ai-resilience-2026-11-01/EXECUTION.md",
+      "docs/execution/owner-ai-resilience-2026-11-01/README.md",
+      "docs/handoffs/2026-11-01-owner-advisor-memory.md",
+      "docs/handoffs/2026-11-01-owner-ai-analyst-strategy.md",
+      "docs/handoffs/2026-11-01-owner-ai-partner-acceptance.md",
+      "docs/handoffs/2026-11-01-owner-chat-resilience-hardening.md",
+      "docs/operations/owner-advisor-legal-review.md",
+      "docs/reviews/2026-11-01-owner-ai-partner/README.md",
+      "docs/reviews/2026-11-01-owner-ai-partner/execution.json",
+      "docs/reviews/2026-11-01-owner-ai-strategy/ASSESSMENT.md",
+      "docs/reviews/2026-11-01-owner-ai-strategy/legal-knowledge.md",
+      "docs/reviews/2026-11-01-owner-ai-strategy/owner-judgment.md",
+      "docs/reviews/2026-11-01-owner-ai-strategy/reasoning-architecture.md",
+      "docs/superpowers/plans/2026-11-01-owner-ai-partner.md",
+      "docs/superpowers/plans/2026-11-01-owner-ai-resilience.md",
+      "docs/superpowers/specs/2026-11-01-owner-ai-partner.md",
+      "docs/superpowers/specs/2026-11-01-owner-ai-resilience-design.md",
+      "scripts/owner-advisor-partner-report.mts",
+      "scripts/payroll-postgres.mjs",
+      "src/app/api/owner/advisor/route.ts",
+      "src/lib/owner-advisor/adversarial.test.ts",
+      "src/lib/owner-advisor/concise-decision.test.ts",
+      "src/lib/owner-advisor/contracts.ts",
+      "src/lib/owner-advisor/coverage-actions.integration.ts",
+      "src/lib/owner-advisor/decision-metrics.test.ts",
+      "src/lib/owner-advisor/decision-metrics.ts",
+      "src/lib/owner-advisor/decision-mode.integration.ts",
+      "src/lib/owner-advisor/decision-mode.test.ts",
+      "src/lib/owner-advisor/decision.test.ts",
+      "src/lib/owner-advisor/decision.ts",
+      "src/lib/owner-advisor/http.integration.ts",
+      "src/lib/owner-advisor/http.test.ts",
+      "src/lib/owner-advisor/intelligence.integration.ts",
+      "src/lib/owner-advisor/intelligence.test.ts",
+      "src/lib/owner-advisor/legal-contracts.test.ts",
+      "src/lib/owner-advisor/legal-loop.test.ts",
+      "src/lib/owner-advisor/legal-research.integration.ts",
+      "src/lib/owner-advisor/legal-research.server.ts",
+      "src/lib/owner-advisor/legal-research.test.ts",
+      "src/lib/owner-advisor/legal-research.ts",
+      "src/lib/owner-advisor/legal-sources.ts",
+      "src/lib/owner-advisor/loop.server.ts",
+      "src/lib/owner-advisor/loop.test.ts",
+      "src/lib/owner-advisor/mandatory-evidence.test.ts",
+      "src/lib/owner-advisor/memory-command.test.ts",
+      "src/lib/owner-advisor/memory.integration.ts",
+      "src/lib/owner-advisor/memory.server.ts",
+      "src/lib/owner-advisor/memory.test.ts",
+      "src/lib/owner-advisor/memory.ts",
+      "src/lib/owner-advisor/notebook.ts",
+      "src/lib/owner-advisor/operational-insights-loop.test.ts",
+      "src/lib/owner-advisor/operational-insights.integration.ts",
+      "src/lib/owner-advisor/operational-insights.server.ts",
+      "src/lib/owner-advisor/operational-insights.test.ts",
+      "src/lib/owner-advisor/operational-insights.ts",
+      "src/lib/owner-advisor/partner-preflight.integration.ts",
+      "src/lib/owner-advisor/provider.test.ts",
+      "src/lib/owner-advisor/resilience.integration.ts",
+      "src/lib/owner-advisor/service.server.ts",
+      "src/lib/owner-advisor/store.server.ts",
+      "src/lib/owner-advisor/tools.server.ts",
+      "src/lib/owner-advisor/workflow-contracts.ts",
+      "src/test/fixtures/legal-gpo.ts",
+      "src/test/fixtures/owner-advisor-partner.ts",
+      "src/test/fixtures/owner-advisor-resilience.ts",
+      "src/test/integration/local-postgres.ts",
+      "src/test/integration/owner-advisor-evaluation-evidence.test.ts",
+      "src/test/integration/owner-advisor-evaluation-evidence.ts",
+      "src/test/integration/owner-advisor-partner-evaluation.live.ts",
+      "src/test/integration/owner-advisor-partner-evidence.test.ts",
+      "src/test/integration/owner-advisor-partner-evidence.ts",
+      "src/test/integration/owner-advisor-partner-fixture.ts",
+      "src/test/integration/owner-advisor-partner-pilot.check.mts",
+      "src/test/integration/owner-advisor-partner-pilot.mts",
+      "src/test/integration/owner-advisor-pilot-core.mts",
+      "src/test/integration/owner-advisor-pilot.mts",
+      "src/test/integration/owner-advisor-resilience-fixture.ts",
+      "src/test/integration/owner-advisor-resilience-pilot-preload.mts",
+      "src/test/integration/owner-advisor-resilience-pilot.check.mts",
+      "src/test/integration/owner-advisor-resilience-pilot.mts",
+      "src/test/integration/owner-advisor-resilience.live.ts",
+      "src/test/migration-order.test.ts",
+      "tsconfig.json",
+      "vitest.owner-advisor-partner-live.config.mts",
+      "vitest.owner-advisor-partner-offline.config.mts",
+      "vitest.owner-advisor-resilience-live.config.mts"
+    ],
+    "heldAdapterAcceptance": [
+      {
+        "path": "src/lib/owner-advisor/operational-insights.test.ts",
+        "case": "validates public history bounds, totals and unavailable state rather than accepting forged evidence",
+        "reason": "Original snapshot adapter assertion requires held src/components/owner-advisor/public-response.ts; backend test retains every good/bad assertion against canonical parseOperationalInsights. Claude must run the original public snapshot adapter test when integrating the held UI source."
+      }
+    ]
+  }
+}

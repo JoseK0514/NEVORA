@@ -3,7 +3,8 @@ import type {CommandResult} from '../employee-attention/types';
 import {isValidWeekStart} from '../date-utils';
 import {assertEmployeeViewProof} from './employee-profile.server';
 import {commitAttention} from './employee-attention-receipts.server';
-import { getDb, queryRows } from "../db";
+import {queryRows} from "../db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { neonNotificationExecutor } from "./notification-transactions";
 import type { SqlExecutor } from "../notifications/types";
 import {
@@ -38,7 +39,7 @@ export async function getEmployeeAcknowledgementState(
     return buildAcknowledgementState({ employeeId });
   }
 
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ publication_revision_id: string | null }>(
     await sql.query(
       `SELECT publication_revision_id
@@ -86,7 +87,7 @@ export async function hasAcknowledgedScheduleWeek(
 
 async function selfServiceScheduledIds(employeeIds: string[]) {
   if (!employeeIds.length) return [];
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{ id: string }>(await sql.query(
     `SELECT id FROM employees WHERE id = ANY($1::text[]) AND role IN ('EMPLOYEE', 'LEAD')`,
     [employeeIds],
@@ -111,7 +112,7 @@ export async function getAcknowledgementSummary(
     return { scheduledEmployees: 0, acknowledgedEmployees: 0 };
   }
 
-  const sql = getDb();
+  const sql = applicationSql();
   const acknowledgementRows = queryRows<{
     employee_id: string;
     publication_revision_id: string | null;
@@ -181,7 +182,7 @@ export async function getAcknowledgementSummary(
 }
 
 export async function clearWeekAcknowledgements(weekStart: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   await sql.query(
     `DELETE FROM schedule_acknowledgements
      WHERE week_start = $1`,

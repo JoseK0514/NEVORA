@@ -1,8 +1,9 @@
+import {privateWorkspaceToken} from '@/lib/workspace-routing/token-envelope.server';
 import {createCalendarFeedHandler} from '@/lib/calendar/http.server';
 import {readCalendarFeed} from '@/lib/calendar/service.server';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
-export const GET=createCalendarFeedHandler(readCalendarFeed);
+export const GET=createCalendarFeedHandler(async token=>{const inner=await privateWorkspaceToken('CALENDAR',token);return inner?readCalendarFeed(inner):{state:'unauthorized',reason:'invalid_link'};});
 export const HEAD=GET;
 export const POST=GET;
 export const PUT=GET;

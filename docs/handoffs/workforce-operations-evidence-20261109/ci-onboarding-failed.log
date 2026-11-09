@@ -1,0 +1,350 @@
+﻿2026-11-09T14:13:45.8179708Z Current runner version: '2.338.2'
+2026-11-09T14:13:45.8238534Z ##[group]Runner Image Provisioner
+2026-11-09T14:13:45.8260241Z Hosted Compute Agent
+2026-11-09T14:13:45.8261348Z Version: 20261028.624
+2026-11-09T14:13:45.8262487Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-09T14:13:45.8263656Z Build Date: 2026-10-28T21:51:42Z
+2026-11-09T14:13:45.8264890Z Worker ID: {94702635-0a91-4fd1-8a0b-ebe69311d641}
+2026-11-09T14:13:45.8266074Z Region: westcentralus
+2026-11-09T14:13:45.8266964Z Cloud: Azure
+2026-11-09T14:13:45.8268067Z ##[endgroup]
+2026-11-09T14:13:45.8270530Z ##[group]Operating System
+2026-11-09T14:13:45.8271697Z Ubuntu
+2026-11-09T14:13:45.8272550Z 24.04.5
+2026-11-09T14:13:45.8273345Z LTS
+2026-11-09T14:13:45.8274454Z ##[endgroup]
+2026-11-09T14:13:45.8275362Z ##[group]Runner Image
+2026-11-09T14:13:45.8276499Z Image: ubuntu-24.04
+2026-11-09T14:13:45.8277471Z Version: 20261101.360.1
+2026-11-09T14:13:45.8300074Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-09T14:13:45.8302869Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-09T14:13:45.8304630Z ##[endgroup]
+2026-11-09T14:13:45.8306550Z ##[group]GITHUB_TOKEN Permissions
+2026-11-09T14:13:45.8309958Z Contents: read
+2026-11-09T14:13:45.8311066Z Metadata: read
+2026-11-09T14:13:45.8311989Z ##[endgroup]
+2026-11-09T14:13:45.8315453Z Secret source: Actions
+2026-11-09T14:13:45.8316873Z Cache mode: write
+2026-11-09T14:13:45.8318471Z Prepare workflow directory
+2026-11-09T14:13:45.8896403Z Prepare all required actions
+2026-11-09T14:13:45.9061469Z Getting action download info
+2026-11-09T14:13:46.2988502Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-09T14:13:46.4015500Z Download action repository 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-09T14:13:46.5033630Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-09T14:13:46.7350308Z Complete job name: onboarding-backend
+2026-11-09T14:13:46.8272165Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-09T14:13:46.8273232Z with:
+2026-11-09T14:13:46.8273737Z   ref: e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:13:46.8274368Z   persist-credentials: false
+2026-11-09T14:13:46.8274908Z   repository: JoseK0514/NEVORA
+2026-11-09T14:13:46.8278859Z   token: ***
+2026-11-09T14:13:46.8279490Z   ssh-strict: true
+2026-11-09T14:13:46.8279960Z   ssh-user: git
+2026-11-09T14:13:46.8280406Z   clean: true
+2026-11-09T14:13:46.8280869Z   sparse-checkout-cone-mode: true
+2026-11-09T14:13:46.8281405Z   fetch-depth: 1
+2026-11-09T14:13:46.8281853Z   fetch-tags: false
+2026-11-09T14:13:46.8282307Z   show-progress: true
+2026-11-09T14:13:46.8282762Z   lfs: false
+2026-11-09T14:13:46.8283184Z   submodules: false
+2026-11-09T14:13:46.8283667Z   set-safe-directory: true
+2026-11-09T14:13:46.8284187Z   allow-unsafe-pr-checkout: false
+2026-11-09T14:13:46.8284906Z ##[endgroup]
+2026-11-09T14:13:47.2615443Z Syncing repository: JoseK0514/NEVORA
+2026-11-09T14:13:47.2619903Z ##[group]Getting Git version info
+2026-11-09T14:13:47.2621270Z Working directory is '/home/runner/work/NEVORA/NEVORA'
+2026-11-09T14:13:47.2640671Z [command]/usr/bin/git version
+2026-11-09T14:13:47.2641681Z git version 2.56.0
+2026-11-09T14:13:47.2644807Z ##[endgroup]
+2026-11-09T14:13:47.2692125Z Temporarily overriding HOME='/home/runner/work/_temp/93fd073f-d81c-4ad5-accb-96568c3d1564' before making global git config changes
+2026-11-09T14:13:47.2694500Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T14:13:47.2696347Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/NEVORA/NEVORA
+2026-11-09T14:13:47.2699497Z Deleting the contents of '/home/runner/work/NEVORA/NEVORA'
+2026-11-09T14:13:47.2701350Z ##[group]Initializing the repository
+2026-11-09T14:13:47.2702927Z [command]/usr/bin/git init /home/runner/work/NEVORA/NEVORA
+2026-11-09T14:13:47.2773582Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-09T14:13:47.3080740Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-09T14:13:47.3083612Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-09T14:13:47.3222400Z hint: call:
+2026-11-09T14:13:47.3226861Z hint:
+2026-11-09T14:13:47.3228237Z hint: 	git config --global init.defaultBranch <name>
+2026-11-09T14:13:47.3229791Z hint:
+2026-11-09T14:13:47.3230998Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-09T14:13:47.3232914Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-09T14:13:47.3234406Z hint:
+2026-11-09T14:13:47.3235320Z hint: 	git branch -m <name>
+2026-11-09T14:13:47.3236465Z hint:
+2026-11-09T14:13:47.3244062Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-09T14:13:47.3246657Z Initialized empty Git repository in /home/runner/work/NEVORA/NEVORA/.git/
+2026-11-09T14:13:47.3251115Z [command]/usr/bin/git remote add origin https://github.com/JoseK0514/NEVORA
+2026-11-09T14:13:47.3254782Z ##[endgroup]
+2026-11-09T14:13:47.3256407Z ##[group]Disabling automatic garbage collection
+2026-11-09T14:13:47.3257827Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-09T14:13:47.3261448Z ##[endgroup]
+2026-11-09T14:13:47.3263135Z ##[group]Setting up auth
+2026-11-09T14:13:47.3264665Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T14:13:47.3270200Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T14:13:47.3850806Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T14:13:47.3906337Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T14:13:47.4338126Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T14:13:47.4397568Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T14:13:47.4808610Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-09T14:13:47.4914121Z ##[endgroup]
+2026-11-09T14:13:47.4915789Z ##[group]Fetching the repository
+2026-11-09T14:13:47.4919570Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:13:59.9556236Z From https://github.com/JoseK0514/NEVORA
+2026-11-09T14:13:59.9571665Z  * branch            e558c1f432ae5e19b6c49b9118f3c7004f9b6b70 -> FETCH_HEAD
+2026-11-09T14:13:59.9603991Z ##[endgroup]
+2026-11-09T14:13:59.9605004Z ##[group]Determining the checkout info
+2026-11-09T14:13:59.9610159Z ##[endgroup]
+2026-11-09T14:13:59.9612571Z [command]/usr/bin/git sparse-checkout disable
+2026-11-09T14:13:59.9653117Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-09T14:13:59.9729791Z ##[group]Checking out the ref
+2026-11-09T14:13:59.9750581Z [command]/usr/bin/git checkout --progress --force e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:14:01.0460029Z Updating files:  23% (3595/15618)
+2026-11-09T14:14:01.0644258Z Updating files:  24% (3749/15618)
+2026-11-09T14:14:01.0951706Z Updating files:  25% (3905/15618)
+2026-11-09T14:14:01.1455113Z Updating files:  26% (4061/15618)
+2026-11-09T14:14:01.2150601Z Updating files:  27% (4217/15618)
+2026-11-09T14:14:01.2724520Z Updating files:  28% (4374/15618)
+2026-11-09T14:14:01.3502743Z Updating files:  29% (4530/15618)
+2026-11-09T14:14:01.3982596Z Updating files:  30% (4686/15618)
+2026-11-09T14:14:01.4677534Z Updating files:  31% (4842/15618)
+2026-11-09T14:14:01.5327168Z Updating files:  32% (4998/15618)
+2026-11-09T14:14:01.5658224Z Updating files:  33% (5154/15618)
+2026-11-09T14:14:01.6013261Z Updating files:  34% (5311/15618)
+2026-11-09T14:14:01.6388664Z Updating files:  35% (5467/15618)
+2026-11-09T14:14:01.6839462Z Updating files:  36% (5623/15618)
+2026-11-09T14:14:01.7327906Z Updating files:  37% (5779/15618)
+2026-11-09T14:14:01.7800162Z Updating files:  38% (5935/15618)
+2026-11-09T14:14:01.7953040Z Updating files:  39% (6092/15618)
+2026-11-09T14:14:01.8091504Z Updating files:  40% (6248/15618)
+2026-11-09T14:14:01.8213954Z Updating files:  41% (6404/15618)
+2026-11-09T14:14:01.8339352Z Updating files:  42% (6560/15618)
+2026-11-09T14:14:01.8509209Z Updating files:  43% (6716/15618)
+2026-11-09T14:14:01.8737741Z Updating files:  44% (6872/15618)
+2026-11-09T14:14:01.8935985Z Updating files:  45% (7029/15618)
+2026-11-09T14:14:01.9224047Z Updating files:  46% (7185/15618)
+2026-11-09T14:14:01.9468097Z Updating files:  47% (7341/15618)
+2026-11-09T14:14:01.9909868Z Updating files:  48% (7497/15618)
+2026-11-09T14:14:01.9957283Z Updating files:  49% (7653/15618)
+2026-11-09T14:14:02.0563951Z Updating files:  49% (7657/15618)
+2026-11-09T14:14:02.0790167Z Updating files:  50% (7809/15618)
+2026-11-09T14:14:02.0905235Z Updating files:  51% (7966/15618)
+2026-11-09T14:14:02.1041281Z Updating files:  52% (8122/15618)
+2026-11-09T14:14:02.1140924Z Updating files:  53% (8278/15618)
+2026-11-09T14:14:02.1229818Z Updating files:  54% (8434/15618)
+2026-11-09T14:14:02.1349826Z Updating files:  55% (8590/15618)
+2026-11-09T14:14:02.1423856Z Updating files:  56% (8747/15618)
+2026-11-09T14:14:02.1547501Z Updating files:  57% (8903/15618)
+2026-11-09T14:14:02.1736359Z Updating files:  58% (9059/15618)
+2026-11-09T14:14:02.2230320Z Updating files:  59% (9215/15618)
+2026-11-09T14:14:02.3214980Z Updating files:  60% (9371/15618)
+2026-11-09T14:14:02.3883713Z Updating files:  61% (9527/15618)
+2026-11-09T14:14:02.4296070Z Updating files:  62% (9684/15618)
+2026-11-09T14:14:02.6175788Z Updating files:  63% (9840/15618)
+2026-11-09T14:14:02.6298718Z Updating files:  64% (9996/15618)
+2026-11-09T14:14:02.6378099Z Updating files:  65% (10152/15618)
+2026-11-09T14:14:02.6435589Z Updating files:  66% (10308/15618)
+2026-11-09T14:14:02.6737667Z Updating files:  67% (10465/15618)
+2026-11-09T14:14:02.7702281Z Updating files:  68% (10621/15618)
+2026-11-09T14:14:02.8915578Z Updating files:  69% (10777/15618)
+2026-11-09T14:14:02.9952713Z Updating files:  70% (10933/15618)
+2026-11-09T14:14:03.0009962Z Updating files:  70% (11079/15618)
+2026-11-09T14:14:03.0963537Z Updating files:  71% (11089/15618)
+2026-11-09T14:14:03.1731839Z Updating files:  72% (11245/15618)
+2026-11-09T14:14:03.2860769Z Updating files:  73% (11402/15618)
+2026-11-09T14:14:03.3648852Z Updating files:  74% (11558/15618)
+2026-11-09T14:14:03.4637945Z Updating files:  75% (11714/15618)
+2026-11-09T14:14:03.5642640Z Updating files:  76% (11870/15618)
+2026-11-09T14:14:03.7052329Z Updating files:  77% (12026/15618)
+2026-11-09T14:14:03.7211463Z Updating files:  78% (12183/15618)
+2026-11-09T14:14:03.7327417Z Updating files:  79% (12339/15618)
+2026-11-09T14:14:03.7493950Z Updating files:  80% (12495/15618)
+2026-11-09T14:14:03.8191872Z Updating files:  81% (12651/15618)
+2026-11-09T14:14:03.8297535Z Updating files:  82% (12807/15618)
+2026-11-09T14:14:03.8438561Z Updating files:  83% (12963/15618)
+2026-11-09T14:14:03.8563533Z Updating files:  84% (13120/15618)
+2026-11-09T14:14:03.8663846Z Updating files:  85% (13276/15618)
+2026-11-09T14:14:03.8767804Z Updating files:  86% (13432/15618)
+2026-11-09T14:14:03.8886206Z Updating files:  87% (13588/15618)
+2026-11-09T14:14:03.8994730Z Updating files:  88% (13744/15618)
+2026-11-09T14:14:03.9097773Z Updating files:  89% (13901/15618)
+2026-11-09T14:14:03.9189919Z Updating files:  90% (14057/15618)
+2026-11-09T14:14:03.9286318Z Updating files:  91% (14213/15618)
+2026-11-09T14:14:03.9379460Z Updating files:  92% (14369/15618)
+2026-11-09T14:14:03.9483884Z Updating files:  93% (14525/15618)
+2026-11-09T14:14:03.9587041Z Updating files:  94% (14681/15618)
+2026-11-09T14:14:03.9751548Z Updating files:  95% (14838/15618)
+2026-11-09T14:14:03.9947740Z Updating files:  96% (14994/15618)
+2026-11-09T14:14:03.9949505Z Updating files:  96% (15145/15618)
+2026-11-09T14:14:04.0075816Z Updating files:  97% (15150/15618)
+2026-11-09T14:14:04.0194271Z Updating files:  98% (15306/15618)
+2026-11-09T14:14:04.0257258Z Updating files:  99% (15462/15618)
+2026-11-09T14:14:04.0258535Z Updating files: 100% (15618/15618)
+2026-11-09T14:14:04.0259280Z Updating files: 100% (15618/15618), done.
+2026-11-09T14:14:04.0487701Z Note: switching to 'e558c1f432ae5e19b6c49b9118f3c7004f9b6b70'.
+2026-11-09T14:14:04.0488393Z 
+2026-11-09T14:14:04.0488861Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-09T14:14:04.0489958Z changes and commit them, and you can discard any commits you make in this
+2026-11-09T14:14:04.0490891Z state without impacting any branches by switching back to a branch.
+2026-11-09T14:14:04.0491421Z 
+2026-11-09T14:14:04.0491813Z If you want to create a new branch to retain commits you create, you may
+2026-11-09T14:14:04.0492644Z do so (now or later) by using -c with the switch command. Example:
+2026-11-09T14:14:04.0493153Z 
+2026-11-09T14:14:04.0493516Z   git switch -c <new-branch-name>
+2026-11-09T14:14:04.0497206Z 
+2026-11-09T14:14:04.0497549Z Or undo this operation with:
+2026-11-09T14:14:04.0497956Z 
+2026-11-09T14:14:04.0498187Z   git switch -
+2026-11-09T14:14:04.0498489Z 
+2026-11-09T14:14:04.0499114Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-09T14:14:04.0499751Z 
+2026-11-09T14:14:04.0500310Z HEAD is now at e558c1f docs: retain final backend qualification and closed staging delivery
+2026-11-09T14:14:04.0640716Z ##[endgroup]
+2026-11-09T14:14:04.0714656Z [command]/usr/bin/git log -1 --format=%H
+2026-11-09T14:14:04.0759939Z e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:14:04.0772033Z ##[group]Removing auth
+2026-11-09T14:14:04.0789533Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T14:14:04.0835576Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T14:14:04.1179429Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T14:14:04.1225464Z http.https://github.com/.extraheader
+2026-11-09T14:14:04.1226965Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-09T14:14:04.1290825Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T14:14:04.1597699Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T14:14:04.1657347Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T14:14:04.1961414Z ##[endgroup]
+2026-11-09T14:14:04.2243827Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+2026-11-09T14:14:04.2244250Z with:
+2026-11-09T14:14:04.2244465Z   node-version: 24.19.0
+2026-11-09T14:14:04.2244696Z   cache: npm
+2026-11-09T14:14:04.2244908Z   always-auth: false
+2026-11-09T14:14:04.2245142Z   check-latest: false
+2026-11-09T14:14:04.2247769Z   token: ***
+2026-11-09T14:14:04.2247991Z ##[endgroup]
+2026-11-09T14:14:04.3869746Z Attempting to download 24.19.0...
+2026-11-09T14:14:04.4071760Z (node:2259) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-09T14:14:04.4085232Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-09T14:14:05.4280328Z Acquiring 24.19.0 - x64 from https://github.com/actions/node-versions/releases/download/24.19.0-30872449280/node-24.19.0-linux-x64.tar.gz
+2026-11-09T14:14:06.2308833Z Extracting ...
+2026-11-09T14:14:06.2459671Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/83d6f5d4-928d-4b35-8fca-133ca8ad8ee0 -f /home/runner/work/_temp/36566b64-07ed-420d-ab69-f17740a2cc2e
+2026-11-09T14:14:07.7590433Z Adding to the cache ...
+2026-11-09T14:14:10.5210309Z ##[group]Environment details
+2026-11-09T14:14:10.8361863Z node: v24.19.0
+2026-11-09T14:14:10.8362156Z npm: 11.17.0
+2026-11-09T14:14:10.8362376Z yarn: 1.22.22
+2026-11-09T14:14:10.8363140Z ##[endgroup]
+2026-11-09T14:14:10.8390017Z [command]/opt/hostedtoolcache/node/24.19.0/x64/bin/npm config get cache
+2026-11-09T14:14:10.9460757Z /home/runner/.npm
+2026-11-09T14:14:11.1579684Z npm cache is not found
+2026-11-09T14:14:11.1806683Z ##[group]Run npm ci
+2026-11-09T14:14:11.1806974Z [36;1mnpm ci[0m
+2026-11-09T14:14:11.1835704Z shell: /usr/bin/bash -e {0}
+2026-11-09T14:14:11.1836019Z ##[endgroup]
+2026-11-09T14:14:29.7784093Z 
+2026-11-09T14:14:29.7793184Z added 433 packages, and audited 436 packages in 19s
+2026-11-09T14:14:29.7795363Z 
+2026-11-09T14:14:29.7795814Z 151 packages are looking for funding
+2026-11-09T14:14:29.7796436Z   run `npm fund` for details
+2026-11-09T14:14:29.7802326Z 
+2026-11-09T14:14:29.7804565Z found 0 vulnerabilities
+2026-11-09T14:14:29.7816558Z npm warn allow-scripts 2 packages have install scripts not yet covered by allowScripts:
+2026-11-09T14:14:29.7817834Z npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-11-09T14:14:29.7819237Z npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+2026-11-09T14:14:29.7820159Z npm warn allow-scripts
+2026-11-09T14:14:29.7821497Z npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+2026-11-09T14:14:29.8712909Z ##[group]Run sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+2026-11-09T14:14:29.8713762Z [36;1msudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs[0m
+2026-11-09T14:14:29.8736830Z shell: /usr/bin/bash -e {0}
+2026-11-09T14:14:29.8737096Z ##[endgroup]
+2026-11-09T14:14:29.9186262Z Preferred the existing official Ubuntu HTTPS archive; package trust configuration is unchanged.
+2026-11-09T14:14:29.9266402Z ##[group]Run sudo apt-get update
+2026-11-09T14:14:29.9266740Z [36;1msudo apt-get update[0m
+2026-11-09T14:14:29.9267040Z [36;1msudo apt-get install --yes postgresql-16[0m
+2026-11-09T14:14:29.9267417Z [36;1mtest -x /usr/lib/postgresql/16/bin/initdb[0m
+2026-11-09T14:14:29.9267760Z [36;1mtest -x /usr/lib/postgresql/16/bin/pg_dump[0m
+2026-11-09T14:14:29.9268111Z [36;1mtest -x /usr/lib/postgresql/16/bin/pg_restore[0m
+2026-11-09T14:14:29.9268541Z [36;1mecho "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"[0m
+2026-11-09T14:14:29.9291903Z shell: /usr/bin/bash -e {0}
+2026-11-09T14:14:29.9292200Z ##[endgroup]
+2026-11-09T14:14:30.0990311Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+2026-11-09T14:14:30.1405806Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+2026-11-09T14:14:30.3360420Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [743 kB]
+2026-11-09T14:14:30.3682046Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [675 kB]
+2026-11-09T14:14:30.8241484Z Hit:2 https://archive.ubuntu.com/ubuntu noble InRelease
+2026-11-09T14:14:30.9591235Z Get:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+2026-11-09T14:14:31.4376159Z Get:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+2026-11-09T14:14:31.6462226Z Get:5 https://archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+2026-11-09T14:14:31.8457362Z Get:9 https://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1425 kB]
+2026-11-09T14:14:32.3845351Z Get:10 https://archive.ubuntu.com/ubuntu noble-updates/main Translation-en [313 kB]
+2026-11-09T14:14:32.5257503Z Get:11 https://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1711 kB]
+2026-11-09T14:14:32.7547330Z Get:12 https://archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [344 kB]
+2026-11-09T14:14:32.8942102Z Get:13 https://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1839 kB]
+2026-11-09T14:14:33.1043238Z Get:14 https://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [420 kB]
+2026-11-09T14:14:33.2442357Z Get:15 https://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [50.7 kB]
+2026-11-09T14:14:33.3698303Z Get:16 https://archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+2026-11-09T14:14:33.4945148Z Get:17 https://archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1157 kB]
+2026-11-09T14:14:33.6632184Z Get:18 https://archive.ubuntu.com/ubuntu noble-security/main Translation-en [234 kB]
+2026-11-09T14:14:33.9594728Z Get:19 https://archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1228 kB]
+2026-11-09T14:14:34.1314183Z Get:20 https://archive.ubuntu.com/ubuntu noble-security/universe Translation-en [248 kB]
+2026-11-09T14:14:34.2647310Z Get:21 https://archive.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [1721 kB]
+2026-11-09T14:14:34.4572587Z Get:22 https://archive.ubuntu.com/ubuntu noble-security/restricted Translation-en [394 kB]
+2026-11-09T14:14:34.5953044Z Get:23 https://archive.ubuntu.com/ubuntu noble-security/multiverse amd64 Packages [45.4 kB]
+2026-11-09T14:14:34.7203674Z Get:24 https://archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [12.4 kB]
+2026-11-09T14:14:41.1860602Z Fetched 13.0 MB in 5s (2759 kB/s)
+2026-11-09T14:14:42.3710350Z Reading package lists...
+2026-11-09T14:14:42.4140668Z Reading package lists...
+2026-11-09T14:14:42.6961995Z Building dependency tree...
+2026-11-09T14:14:42.6971099Z Reading state information...
+2026-11-09T14:14:42.9307781Z postgresql-16 is already the newest version (16.15-1.pgdg24.04+2).
+2026-11-09T14:14:42.9309310Z 0 upgraded, 0 newly installed, 0 to remove and 27 not upgraded.
+2026-11-09T14:14:42.9431561Z ##[group]Run node scripts/onboarding-acceptance.mjs
+2026-11-09T14:14:42.9431980Z [36;1mnode scripts/onboarding-acceptance.mjs[0m
+2026-11-09T14:14:42.9454650Z shell: /usr/bin/bash -e {0}
+2026-11-09T14:14:42.9454907Z env:
+2026-11-09T14:14:42.9455159Z   NEVORA_TEST_PG_BIN: /usr/lib/postgresql/16/bin
+2026-11-09T14:14:42.9455590Z   NEVORA_ONBOARDING_EXPECTED_SHA: e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:14:42.9456136Z   NEVORA_ONBOARDING_EVIDENCE_DIR: /home/runner/work/_temp/nevora-onboarding-backend
+2026-11-09T14:14:42.9456567Z ##[endgroup]
+2026-11-09T14:14:43.5549147Z file:///home/runner/work/NEVORA/NEVORA/scripts/onboarding-inventory.mjs:20
+2026-11-09T14:14:43.5550468Z  if(missing.length)throw Error('Unclassified runtime entrypoint: '+missing.join(', '));
+2026-11-09T14:14:43.5551651Z                          ^
+2026-11-09T14:14:43.5552247Z 
+2026-11-09T14:14:43.5557824Z Error: Unclassified runtime entrypoint: services/hosted/neon/stripewebhook.entry.ts, src/lib/operations/routing-reader.ts
+2026-11-09T14:14:43.5559623Z     at validateOnboardingInventory (file:///home/runner/work/NEVORA/NEVORA/scripts/onboarding-inventory.mjs:20:26)
+2026-11-09T14:14:43.5560837Z     at file:///home/runner/work/NEVORA/NEVORA/scripts/onboarding-acceptance.mjs:13:15
+2026-11-09T14:14:43.5561765Z     at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+2026-11-09T14:14:43.5562489Z     at async node:internal/modules/esm/loader:643:26
+2026-11-09T14:14:43.5570006Z     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+2026-11-09T14:14:43.5570756Z 
+2026-11-09T14:14:43.5571036Z Node.js v24.19.0
+2026-11-09T14:14:43.5687144Z ##[error]Process completed with exit code 1.
+2026-11-09T14:14:43.5778256Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-09T14:14:43.5778696Z with:
+2026-11-09T14:14:43.5779473Z   name: onboarding-backend-e558c1f432ae5e19b6c49b9118f3c7004f9b6b70
+2026-11-09T14:14:43.5779963Z   path: /home/runner/work/_temp/nevora-onboarding-backend/**
+2026-11-09T14:14:43.5780317Z   if-no-files-found: error
+2026-11-09T14:14:43.5780569Z   retention-days: 14
+2026-11-09T14:14:43.5780817Z   compression-level: 6
+2026-11-09T14:14:43.5781044Z   overwrite: false
+2026-11-09T14:14:43.5781275Z   include-hidden-files: false
+2026-11-09T14:14:43.5781526Z env:
+2026-11-09T14:14:43.5781765Z   NEVORA_TEST_PG_BIN: /usr/lib/postgresql/16/bin
+2026-11-09T14:14:43.5782065Z ##[endgroup]
+2026-11-09T14:14:43.7607569Z (node:2718) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-09T14:14:43.7609291Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-09T14:14:43.7658468Z ##[error]No files were found with the provided path: /home/runner/work/_temp/nevora-onboarding-backend/**. No artifacts will be uploaded.
+2026-11-09T14:14:43.8072347Z Post job cleanup.
+2026-11-09T14:14:43.9153337Z [command]/usr/bin/git version
+2026-11-09T14:14:43.9199829Z git version 2.56.0
+2026-11-09T14:14:43.9300393Z Temporarily overriding HOME='/home/runner/work/_temp/320afdb7-23dd-4546-81af-56f208e2345e' before making global git config changes
+2026-11-09T14:14:43.9320104Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-09T14:14:43.9321603Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/NEVORA/NEVORA
+2026-11-09T14:14:43.9356271Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-09T14:14:43.9440589Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-09T14:14:43.9992692Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-09T14:14:44.0122053Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-09T14:14:44.0904125Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-09T14:14:44.0987105Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-09T14:14:44.1483594Z Cleaning up orphan processes
+2026-11-09T14:14:44.1915962Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

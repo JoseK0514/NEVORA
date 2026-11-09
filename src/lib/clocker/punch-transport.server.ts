@@ -51,14 +51,14 @@ export async function handleClockerPunch(request:Request,locationKey:string,deps
   const key=deps.key??readPinKey();
   const identity=await readClockerIdentity(device.proof,deps.cookies.get(pinCookieName(deps.security.production))?.value??'',key,deps.executor);
   if(!identity)return failed(new ClockerPunchError('AUTH_REQUIRED'));
-  const service=new ClockerPunchService(key,deps.executor,{photoEvidence:Boolean(getClockerPhotoRuntime())});
+  const service=new ClockerPunchService(key,deps.executor,{photoEvidence:Boolean(await getClockerPhotoRuntime())});
   if(data.operation==='state'){
    const view=await service.read(identity.proof);
    // Non-authorizing identifier for this employee/device generation only. It
    // survives re-PIN for read-only recovery but is neither a cookie nor a proof.
    const subject=createHmac('sha256',key).update(JSON.stringify(['nevora-punch-recovery-subject-v1',
     device.proof.workspaceId,device.proof.deviceId,device.proof.credentialHash,device.proof.credentialVersion,identity.proof.employeeId])).digest('hex');
-   return json({state:'ready',...view,photoCaptureAvailable:Boolean(getClockerPhotoRuntime()),subject,firstName:identity.firstName,expiresAt:identity.expiresAt,locationId:device.proof.locationId});
+   return json({state:'ready',...view,photoCaptureAvailable:Boolean(await getClockerPhotoRuntime()),subject,firstName:identity.firstName,expiresAt:identity.expiresAt,locationId:device.proof.locationId});
   }
   if(data.operation==='execute')return json({state:'committed',receipt:await service.execute(identity.proof,data.command)});
   const receipt=await service.receipt(identity.proof,data.commandId,data.verificationId);

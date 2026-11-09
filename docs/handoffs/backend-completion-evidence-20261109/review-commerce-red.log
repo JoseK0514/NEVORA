@@ -1,0 +1,53 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/commerce/access-lifetime.test.ts (2 tests | 2 failed) 13ms
+   × denies an operational POST when a fresh grant expires during the final binding lookup 11ms
+   × denies an operational POST when a cached grant expires during the final binding lookup 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/commerce/access-lifetime.test.ts > denies an operational POST when a fresh grant expires during the final binding lookup
+AssertionError: expected undefined to be 503 // Object.is equality
+
+- Expected:
+503
+
++ Received:
+undefined
+
+ ❯ src/lib/commerce/access-lifetime.test.ts:10:92
+      8| it('denies an operational POST when a fresh grant expires during the f…
+      9|  fixture.advance=100;
+     10|  expect((await commerceGate('/api/timecards/finalize','POST',async()=>…
+       |                                                                                            ^
+     11| });
+     12| it('denies an operational POST when a cached grant expires during the …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/commerce/access-lifetime.test.ts > denies an operational POST when a cached grant expires during the final binding lookup
+AssertionError: expected undefined to be 503 // Object.is equality
+
+- Expected:
+503
+
++ Received:
+undefined
+
+ ❯ src/lib/commerce/access-lifetime.test.ts:15:79
+     13|  const fetch=vi.fn(async()=>fetcher());expect(await commerceGate('/api…
+     14|  fixture.now=1099;fixture.advance=1;
+     15|  expect((await commerceGate('/api/timecards/finalize','POST',fetch))?.…
+       |                                                                               ^
+     16| });
+     17|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  09:02:52
+   Duration  93ms (transform 39%, tests 38%, import 17%, worker 6%)
+

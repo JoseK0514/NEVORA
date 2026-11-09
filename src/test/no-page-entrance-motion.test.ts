@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
 // Phase 1 (inspection Oct 24): 14 gsap page entrances painted content, moved it back and animated it in after every
@@ -13,7 +14,7 @@ function sources(dir: string): string[] {
   });
 }
 it("no application component imports gsap", () => {
-  const root = new URL("..", import.meta.url).pathname;
+  const root = fileURLToPath(new URL("..", import.meta.url));
   const offenders = sources(root).filter(file => /from\s+["'](gsap|@gsap\/react)(\/[^"']*)?["']/.test(readFileSync(file, "utf8")));
   expect(offenders).toEqual([]);
 });

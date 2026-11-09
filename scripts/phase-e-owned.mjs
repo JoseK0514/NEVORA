@@ -487,7 +487,7 @@ export function verifySourceManifestMetadata(source, manifest, checkpoint) {
   }
   if (manifest.originalDbHash !== manifest.hashes['src/lib/db.ts']) throw Error('Source manifest mismatch: original DB');
   const files = gitFileList(['ls-files', '-c', '-o', '--exclude-standard', '-z'], { cwd: source })
-    .filter(file => ['src/', 'public/'].some(prefix => file.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(file))
+    .filter(file => ['src/', 'public/', 'services/', 'db/'].some(prefix => file.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(file))
     .filter(file => existsSync(join(source, file))).sort();
   assert.deepEqual(Object.keys(manifest.hashes).sort(), [...new Set(files)], 'Source manifest mismatch: missing runtime source');
   return expectedHashes;

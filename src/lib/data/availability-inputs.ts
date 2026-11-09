@@ -1,5 +1,6 @@
 import type { SqlExecutor } from "../notifications/types";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { addDays } from "../date-utils";
 import type {
   AvailabilityException,
@@ -13,7 +14,7 @@ export async function readAvailabilityInputs(
   lastWeek = firstWeek,
   executor?: SqlExecutor,
 ) {
-  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : getDb();
+  const sql = executor ? {query: (text: string, values: unknown[]) => executor.query({text,values})} : applicationSql();
   const [normalRaw, weeklyRaw, submissionsRaw, exceptionsRaw] =
     await Promise.all([
       sql.query(
@@ -106,7 +107,7 @@ export function mapAvailabilityInputs(
 }
 
 export async function readTeamAvailabilityInputs(weekStart: string) {
-  const sql = getDb();
+  const sql = applicationSql();
   const [normal, weekly, submissions, exceptions] = await Promise.all([
     sql.query(
       `SELECT employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,

@@ -12,7 +12,8 @@ import type {SqlExecutor} from '../../lib/notifications/types';
 import {createCalendarLogRedactor} from './calendar-log-redaction';
 
 const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
-const applicationInput = (name: string) => ['src/', 'public/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
+const applicationRoots=['src','public','services','db'];
+const applicationInput = (name: string) => applicationRoots.some(prefix => name.startsWith(prefix+'/')) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
 export function copyOwnedDependencies(source: string, mirror: string): void {
   // An external cp can be observed between fork and exec as the parent's Node
   // argv. Copy in-process instead of relaxing the supervisor's identity fence.
@@ -203,7 +204,7 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { m
     const queue = [''];
     for (const directory of queue) for (const entry of await readdir(join(mirror, directory), { withFileTypes: true })) {
       const name = directory ? directory + '/' + entry.name : entry.name;
-      if (entry.isDirectory() && (name === 'src' || name === 'public' || name.startsWith('src/') || name.startsWith('public/'))) queue.push(name);
+      if (entry.isDirectory() && applicationRoots.some(prefix=>name===prefix||name.startsWith(prefix+'/'))) queue.push(name);
       else if (applicationInput(name)) {
         if (!entry.isFile()) throw Error('Application mirror contains unsafe input: ' + name);
         actual.push(name);

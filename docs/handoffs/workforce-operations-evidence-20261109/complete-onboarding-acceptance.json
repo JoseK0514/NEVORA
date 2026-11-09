@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkpoint": "a4fef47174b2b410c01bdcf392ad1616b86622ce",
+  "tree": "0bd2ccb8bf26077aa5249b557fe3fbff825f3ed9",
+  "sourceClean": true,
+  "runtime": "v24.19.0",
+  "status": "backend_passed",
+  "scope": "backend-only",
+  "steps": [
+    {
+      "name": "inventory-contract",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 289,
+      "log": "inventory-contract.log"
+    },
+    {
+      "name": "manifest",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 48,
+      "log": "manifest.log"
+    },
+    {
+      "name": "owned-onboarding",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 67718,
+      "log": "owned-onboarding.log"
+    },
+    {
+      "name": "company-access-foundation",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 204140,
+      "log": "company-access-foundation.log"
+    },
+    {
+      "name": "company-access-exchange",
+      "exitCode": 0,
+      "signal": null,
+      "elapsedMs": 13876,
+      "log": "company-access-exchange.log"
+    }
+  ],
+  "inventoryCount": 472,
+  "manifestArtifactSha256": "0840e7bbab30607efd844543de2d51923679e5ce149ebd3a46ffeb68fafaf3bf",
+  "ui": {
+    "status": "not_run",
+    "surfaceCandidates": []
+  },
+  "hosted": {
+    "status": "not_run"
+  },
+  "production": {
+    "status": "not_authorized"
+  }
+}

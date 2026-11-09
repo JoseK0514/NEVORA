@@ -1,0 +1,7 @@
+### Task 2: Read-only canonical queue health
+**Files:** create src/lib/operations/queue-health.ts,queue-health.test.ts; src/test/integration/onboarding-workforce-operations.integration.ts; modify scripts/workforce-operations.mts for health.
+**Interfaces:** consumes SqlExecutor and explicit test/production notification environment; produces readQueueHealth(ex,environment):Promise<QueueHealth> with counts/oldest due age per payroll/web-push queue, expired leases and terminal failures, exact workspace ID. CLI health combines strict receipt health and SQL under withWorkerWorkspace/assertWorkerWorkspace, using explicit operator max-age/max-gap.
+- [ ] Write tests for malformed/negative/nonfinite counts, no singleton workspace and SQL unavailability; real owned WORKER tests for due/future payroll and notification retries,expired leases, terminal failures,second-company isolation,suspension rejection,no queue writes. Expected RED before implementation.
+- [ ] Implement SELECT-only aggregates using database clock and scoped one-company binding; exclude expired/cancelled intents,include ready retries and current expired leases; parse strictly and never report malformed results as empty. Expected focused unit and owned operations suite GREEN.
+- [ ] Verify health leaves every job/attempt/status/lease byte unchanged and never accesses credential/profile material; commit source and fixtures.
+

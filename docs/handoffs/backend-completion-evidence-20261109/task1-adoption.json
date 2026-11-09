@@ -1,0 +1,11 @@
+{
+  "sourcePaths": 380,
+  "heldPaths": [
+    "native/ios/Sources/NevoraShellCore/WorkspaceSelection.swift",
+    "native/ios/Tests/NevoraShellCoreTests/WorkspaceSelectionTests.swift",
+    "src/app/activate/activation-invitation.tsx",
+    "src/components/account-recovery.tsx",
+    "src/components/clocker-setup.tsx"
+  ],
+  "mergeConflictCount": 0
+}

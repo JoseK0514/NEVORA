@@ -1,0 +1,47 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/workspace-routing/worker.server.test.ts (3 tests | 2 failed) 4ms
+   × refuses a different company or environment before any business work 2ms
+   × refuses partial scope assertions and any legacy fallback for an operations-scoped invocation 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/workspace-routing/worker.server.test.ts > refuses a different company or environment before any business work
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ src/lib/workspace-routing/worker.server.test.ts:14:315
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/workspace-routing/worker.server.test.ts > refuses partial scope assertions and any legacy fallback for an operations-scoped invocation
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ src/lib/workspace-routing/worker.server.test.ts:17:159
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  09:15:44
+   Duration  97ms (transform 54%, import 29%, tests 11%, worker 5%)
+

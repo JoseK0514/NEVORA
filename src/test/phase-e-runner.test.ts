@@ -191,6 +191,15 @@ it('source_manifest_mismatch_fails for modified source or an unapproved mirror s
   const result = evaluate(runner, `import fs from 'node:fs';const [source,root]=process.argv.slice(1);fs.writeFileSync(root+'/app/src/lib/db.ts','tampered');api.verifySourceManifest(source,root,'a'.repeat(40));`, [source, root]);
   expect(result.status).not.toBe(0); expect(result.stderr).toContain('manifest mismatch');
 });
+it.each(['services/commerce/fixture.ts','db/migrations/fixture.sql'])('runtime custody rejects an omitted root input and changed mirror bytes: %s', path => {
+ const source=directory(),root=directory();execFileSync('git',['init','-q',source]);const {original,adapter}=approvedAdapterFixture();
+ put(source,'src/lib/db.ts',original);put(root,'app/src/lib/db.ts',adapter);put(source,path,'canonical runtime dependency');put(root,'app/'+path,'canonical runtime dependency');
+ const setup=`import {createHash} from 'node:crypto';import fs from 'node:fs';const h=s=>createHash('sha256').update(s).digest('hex');const [source,root]=process.argv.slice(1);const manifest={checkpoint:'a'.repeat(40),hashes:{'src/lib/db.ts':h(${JSON.stringify(original)})},originalDbHash:h(${JSON.stringify(original)}),substitutedDbHash:h(${JSON.stringify(adapter)}),substitutedFiles:['src/lib/db.ts']};`;
+ const missing=evaluate(runner,setup+`fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(manifest));api.verifySourceManifest(source,root,'a'.repeat(40));`,[source,root]);expect(missing.status).not.toBe(0);expect(missing.stderr).toContain('missing runtime source');
+ const complete=setup+`manifest.hashes[${JSON.stringify(path)}]=h('canonical runtime dependency');fs.writeFileSync(root+'/source-manifest.json',JSON.stringify(manifest));api.verifySourceManifest(source,root,'a'.repeat(40));`;
+ expect(evaluate(runner,complete,[source,root]).status).toBe(0);
+ const changed=evaluate(runner,complete+`fs.writeFileSync(root+'/app/'+${JSON.stringify(path)},'tampered');api.verifySourceManifest(source,root,'a'.repeat(40));`,[source,root]);expect(changed.status).not.toBe(0);expect(changed.stderr).toContain('manifest mismatch');
+});
 it('executed_engine_width_requirement_check rejects missing, skipped or failed browser executions', () => {
   const executions = ['chromium', 'webkit'].flatMap(engine => widths.map(width => ({ suite: 'home', engine, width, status: 'passed', checks: ['fictional exercised case'] })));
   for (const records of [executions, executions.slice(1), executions.map((record, index) => index ? record : { ...record, status: 'skipped' }), executions.map((record, index) => index ? record : { ...record, checks: [] })]) {

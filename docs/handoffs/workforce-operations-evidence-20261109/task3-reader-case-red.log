@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/routing-reader.test.ts (7 tests | 1 failed) 4ms
+   × uses a company/environment-bound machine reader without browser signing or APP custody 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/routing-reader.test.ts > uses a company/environment-bound machine reader without browser signing or APP custody
+AssertionError: expected 'nv_control_worker_t_AAAAAAAAAAAA4AAA8…' to be 'nv_control_worker_t_aaaaaaaaaaaa4aaa8…' // Object.is equality
+
+Expected: "nv_control_worker_t_aaaaaaaaaaaa4aaa8aaaaaaaaaaaaaaa"
+Received: "nv_control_worker_t_AAAAAAAAAAAA4AAA8AAAAAAAAAAAAAAA"
+
+ ❯ src/lib/operations/routing-reader.test.ts:7:56
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  09:42:03
+   Duration  97ms (transform 52%, import 27%, tests 14%, worker 6%)
+

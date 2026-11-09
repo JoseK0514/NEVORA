@@ -129,10 +129,17 @@ it.each(['PAYROLL_PREPARATION','PAYROLL_STATEMENT','SELF_TEST'] as const)('%s pe
 });
 it.each(['seed','group'] as const)('late scope loss before the real %s lifecycle-cancellation batch preserves notification history',async phase=>{
  const f=await reminderFixture();try{
-  if(phase==='group')await runReminders({executor:f.db.executor,state:sqlNotificationStateRepository(f.db.executor),config:f.config,clock:()=>new Date()});
+  let reconciliationAt=Date.now()+2*3600000;
+  if(phase==='group'){
+   await runReminders({executor:f.db.executor,state:sqlNotificationStateRepository(f.db.executor),config:f.config,clock:()=>new Date()});
+   const groups=await f.q<{dueAt:string}>("SELECT due_at::text AS \"dueAt\" FROM notifications WHERE source_kind='MANAGER_SUMMARY' AND employee_id='manager'");expect(groups).toHaveLength(1);
+   // Quiet hours can defer the actual group beyond two hours. Exercise its real
+   // due lifecycle batch regardless of the wall-clock time of this test run.
+   reconciliationAt=Math.max(reconciliationAt,Date.parse(groups[0].dueAt)+1);
+  }
   await f.q("UPDATE time_off_requests SET status='DENIED' WHERE id=$1",[f.requestId]);const before=await f.q('SELECT * FROM notifications ORDER BY id'),base=f.db.executor;let hit=false;
   const ex={...base,transaction:async(statements:readonly SqlStatement[],signal?:AbortSignal)=>{if(!hit&&statements.some(s=>s.text.startsWith('WITH cancelled AS'))){hit=true;await choose(f,'REVOKE');}return base.transaction(statements,signal);}};
-  await runReminders({executor:ex,state:sqlNotificationStateRepository(ex),config:f.config,clock:()=>new Date(Date.now()+2*3600000)});expect(hit).toBe(true);expect(await f.q('SELECT * FROM notifications ORDER BY id')).toEqual(before);
+  await runReminders({executor:ex,state:sqlNotificationStateRepository(ex),config:f.config,clock:()=>new Date(reconciliationAt)});expect(hit).toBe(true);expect(await f.q('SELECT * FROM notifications ORDER BY id')).toEqual(before);
  }finally{await f.db.dispose();}
 });
 it.each(['role-cycle','active-cycle'] as const)('actual own-request persistence omits a recipient whose %s invalidated Company after candidate construction',async cycle=>{

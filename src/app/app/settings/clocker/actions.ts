@@ -1,4 +1,5 @@
 "use server";
+import {publicWorkspaceToken} from '@/lib/workspace-routing/token-envelope.server';
 
 import { headers } from 'next/headers';
 import { requireSessionMutationProof } from '@/lib/auth/session';
@@ -26,7 +27,7 @@ export async function manageClockerDeviceAction(form: FormData): Promise<Clocker
   if (session.employee.role !== 'OWNER') {
     return { ok: false, error: 'Only an active Owner may manage Clocker devices.', refresh: false };
   }
-  const originError = clockerOriginFailure(await headers(), clockerSecurity());
+  const originError = clockerOriginFailure(await headers(), await clockerSecurity());
   if (originError) return { ok: false, error: originError.error, refresh: false };
   const proof = { employeeId: session.employee.id, sessionTokenHash: session.sessionTokenHash };
   let operation: string, name = '', locationId = '', deviceId = '', expectedVersion = 0;
@@ -52,7 +53,7 @@ export async function manageClockerDeviceAction(form: FormData): Promise<Clocker
         : await rotateClockerDevice(proof, { deviceId, expectedVersion });
       const device = clockerDeviceView(result.device);
       if (!device.enrollmentExpiresAt) throw Error('Missing setup expiration');
-      return { ok: true, device, setup: { code: result.enrollmentToken, expiresAt: device.enrollmentExpiresAt } };
+      return { ok: true, device, setup: { code: await publicWorkspaceToken('CLOCKER_ENROLLMENT',result.enrollmentToken,Date.parse(device.enrollmentExpiresAt)), expiresAt: device.enrollmentExpiresAt } };
     }
     const device = operation === 'RENAME'
       ? await renameClockerDevice(proof, { deviceId, expectedVersion, name })

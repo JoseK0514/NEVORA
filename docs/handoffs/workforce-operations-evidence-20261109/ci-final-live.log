@@ -1,0 +1,28 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/test/integration/owner-advisor-partner-evaluation.live.ts (3 tests | 1 failed) 60543ms
+   × captures independent paired service conversation and optional one-call critic: high 22637ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/integration/owner-advisor-partner-evaluation.live.ts > captures independent paired service conversation and optional one-call critic: high
+Error: cancelled
+ ❯ AbortSignal.listener src/lib/owner-advisor/loop.server.ts:82:33
+     80|       task(),
+     81|       new Promise<never>((_, reject) => {
+     82|         listener = () => reject(new AdvisorError("cancelled"));
+       |                                 ^
+     83|         signal.addEventListener("abort", listener, { once: true });
+     84|         if (signal.aborted) listener();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (3)
+   Start at  10:23:09
+   Duration  61.08s (tests 99%, transform 1%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

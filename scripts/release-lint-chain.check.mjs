@@ -38,8 +38,12 @@ test('the installed development graph contains none of the vulnerable glob chain
   for (const name of ['braces', 'micromatch', 'fast-glob']) {
     assert.deepEqual(Object.keys(lock.packages).filter(path => path.endsWith('/' + name)), [], name + ' must be removed, not suppressed');
   }
-  assert.equal(json('tools/eslint-plugin-next/package.json').dependencies.glob, '13.0.6');
+  assert.equal(json('tools/eslint-plugin-next/package.json').dependencies.glob, '14.0.4');
   assert.equal(json('package.json').devDependencies['@nevora/eslint-config-next'], 'file:tools/eslint-config-next');
+  assert.equal(require('glob/package.json').version, '14.0.4');
+  const parserRequire=createRequire(require.resolve('@typescript-eslint/typescript-estree/package.json'));
+  assert.equal(parserRequire('minimatch/package.json').version, '11.0.5');
+  for(const [path,pkg] of Object.entries(lock.packages))if(path.endsWith('/minimatch')&&Number(pkg.version?.split('.')[0])>=7)assert.ok(Number(pkg.version.split('.')[0])>=11,'No affected minimatch7-10 may remain in the installed graph');
 });
 
 for (const folder of ['eslint-config-next', 'eslint-plugin-next']) {

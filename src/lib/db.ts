@@ -6,6 +6,7 @@ const tenantRuntimeTransports = new Map<'APP' | 'WORKER', NeonQueryFunction<fals
 /** Dedicated runtime principals only; the legacy/bootstrap URL is never a
  * tenant-runtime fallback. Cache transport configuration, never tenant state. */
 export function getTenantRuntimeDb(role: 'APP' | 'WORKER') {
+  if(process.env.NEVORA_WORKSPACE_MODE!==undefined&&process.env.NEVORA_WORKSPACE_MODE!=='single_company')throw new Error('Legacy tenant runtime is unavailable in isolated mode.');
   if (role !== 'APP' && role !== 'WORKER') throw new Error('tenant_runtime_not_configured');
   const cached = tenantRuntimeTransports.get(role);
   if (cached) return cached;
@@ -22,6 +23,7 @@ export function getTenantRuntimeDb(role: 'APP' | 'WORKER') {
  * dedicated runtime principal through getTenantRuntimeDb instead; caching this
  * handle stores connection configuration and confers no workspace context. */
 export function getDb() {
+  if(process.env.NEVORA_WORKSPACE_MODE!==undefined&&process.env.NEVORA_WORKSPACE_MODE!=='single_company')throw new Error('Legacy database transport is unavailable in isolated mode.');
   if (database) return database;
 
   const connectionString = process.env.DATABASE_URL;

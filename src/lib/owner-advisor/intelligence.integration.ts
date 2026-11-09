@@ -45,8 +45,8 @@ it("investigates through Neon chat format, retains private goals, replays exactl
     expect(url).toBe(base + "/v1/chat/completions");
     bodies.push(JSON.parse(String(init.body)));
     if (bodies.length === 1) return chat({ id: "published", name: "published_staffing", args: { date: "2026-10-22" } });
-    const messages = bodies[1].messages as { role: string; content: string }[];
-    const read = JSON.parse(messages.find(m => m.role === "tool")!.content);
+    const messages = bodies[1].messages as { role: string; tool_call_id?: string; content: string }[];
+    const read = JSON.parse(messages.find(m => m.role === "tool" && m.tool_call_id === "published")!.content);
     expect(read).toMatchObject({ evidenceId: "E2", partial: false, data: { date: "2026-10-22", publication: "PUBLISHED", shifts: [{ employeeName: "Target QA", startTime: "08:00", endTime: "12:00" }] } });
     return chat({ id: "decision", name: "review_decision", args: publishedDecision() });
   });
@@ -137,7 +137,7 @@ it("resumes a period task in English, rereads changed records in Spanish and rej
     bodies.push(JSON.parse(String(init.body)));
     const turn = bodies.length;
     if (turn === 1) {
-      const inputs = (bodies[0].messages as { role: string; content: string }[]).filter(m => m.role === "user").map(m => JSON.parse(m.content));
+      const inputs = (bodies[0].messages as { role: string; content: string }[]).filter(m => m.role === "tool").map(m => JSON.parse(m.content));
       expect(inputs).toContainEqual(expect.objectContaining({ evidenceId: "E2", currentTaskEvidence: expect.objectContaining({ data: expect.objectContaining({ language: "en" }) }) }));
       await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('intelligence-time','target','loc-1','intelligence-device','2026-10-02T08:00:00-04:00','CLOCKED_IN')");
       return chat({ id: "period-es", name: "attendance_payroll_review", args: { startDate: "2026-10-01", endDate: "2026-10-02", language: "es" } });

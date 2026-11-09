@@ -1,0 +1,46 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/test/integration/company-access-claim.integration.ts (14 tests | 1 failed | 13 skipped) 306ms
+   × unknown proof rejects after one bounded custody read; a recognized proof still rechecks revocation before password work 305ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/integration/company-access-claim.integration.ts > unknown proof rejects after one bounded custody read; a recognized proof still rechecks revocation before password work
+AssertionError: expected 'SELECT i.id::text,i.employee_id AS "e…' not to match /\bJOIN\b/i
+
+- Expected:
+/\bJOIN\b/i
+
++ Received:
+"SELECT i.id::text,i.employee_id AS \"employeeId\",i.issuer_employee_id AS \"issuerId\",w.id AS \"workspaceId\",
+   w.name,w.time_zone AS \"timeZone\",w.created_at::text AS \"createdAt\",w.updated_at::text AS \"updatedAt\"
+   FROM company_invitations i JOIN workspaces w ON w.id=i.workspace_id
+ JOIN employees e ON e.id=i.employee_id JOIN locations home ON home.id=e.primary_location_id
+ JOIN employees issuer ON issuer.id=i.issuer_employee_id JOIN locations issuer_home ON issuer_home.id=issuer.primary_location_id
+ JOIN operational_subject_versions v ON v.workspace_id=i.workspace_id AND v.employee_id=issuer.id WHERE i.proof_digest=$1 AND w.singleton AND w.active AND home.workspace_id=w.id AND issuer_home.workspace_id=w.id
+ AND e.active AND e.updated_at::text=i.target_version AND issuer.active AND issuer.role='OWNER' AND v.generation=i.issuer_generation
+ AND e.id<>issuer.id AND e.email IS NOT NULL
+ AND i.email_fingerprint=encode(sha256(convert_to('NEVORA invitation email v1','UTF8')||decode('00','hex')||convert_to(lower(trim(e.email)),'UTF8')),'hex')
+ AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND i.consumed_at IS NULL AND i.retired_at IS NULL AND i.expires_at>clock_timestamp()
+ AND NOT EXISTS(SELECT 1 FROM employee_credentials c WHERE c.employee_id=e.id)
+   AND COALESCE((SELECT c.attempts FROM company_invitation_claim_counters c WHERE c.workspace_id=i.workspace_id AND c.invitation_id=i.id AND c.bucket_start=date_bin(interval '15 minutes',clock_timestamp(),timestamptz '2000-01-01 00:00:00Z')),0)<10 LIMIT 1"
+
+ ❯ src/test/integration/company-access-claim.integration.ts:94:26
+     92|   expect(await claimInvitation(randomBytes(32).toString('base64url'),o…
+     93|   expect(queries).toHaveLength(1);
+     94|   expect(queries[0]).not.toMatch(/\bJOIN\b/i);
+       |                          ^
+     95|   expect(queries[0]).toMatch(/WHERE proof_digest=\$1 LIMIT 1/);
+     96|   expect(hash).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 skipped (14)
+   Start at  11:34:54
+   Duration  586ms (tests 58%, transform 28%, import 14%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

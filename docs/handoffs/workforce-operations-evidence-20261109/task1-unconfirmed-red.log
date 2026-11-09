@@ -1,0 +1,26 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/supervisor.test.ts (13 tests | 1 failed | 12 skipped) 3045ms
+   × bounds an unconfirmed termination and retains the lock while the real child is still alive 3044ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > bounds an unconfirmed termination and retains the lock while the real child is still alive
+AssertionError: expected 'pending' not to be 'pending' // Object.is equality
+ ❯ src/lib/operations/supervisor.test.ts:96:22
+     94|   await waitFor(pidFile);
+     95|   const result=await Promise.race([pending,new Promise<'pending'>(ok=>…
+     96|   expect(result).not.toBe('pending');if(result==='pending')throw Error…
+       |                      ^
+     97|   expect(result).toMatchObject({status:'failed',cleanupConfirmed:false…
+     98|   expect(()=>original(Number(readFileSync(pidFile,'utf8')),0)).not.toT…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 skipped (13)
+   Start at  09:13:56
+   Duration  3.13s (tests 99%, transform 1%)
+

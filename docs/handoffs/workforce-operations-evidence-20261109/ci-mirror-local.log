@@ -1,0 +1,21 @@
+/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:342
+  } catch (error) { try { await close(); } catch (closureError) { throw new AggregateError([error, closureError], 'Owned application setup and closure failed'); } throw error; }
+                                                                        ^
+
+AggregateError: Owned application setup and closure failed
+    at createOwnedNextApp (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:342:73)
+    at async file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/release-mirror-custody-qa.mjs:21:6 {
+  [errors]: [
+    Error: Owned Next did not become ready; see /Users/josek0514/.codex/tmp/nevora-ci-mirror-e558-20261109/owned-next-MwlFVJ/next.log
+        at createOwnedNextApp (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:338:23)
+        at async file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/release-mirror-custody-qa.mjs:21:6,
+    Error: Tracked application source differs from HEAD
+        at trackedApplicationFiles (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:27:85)
+        at verifySource (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:197:24)
+        at <anonymous> (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:228:13)
+        at async createOwnedNextApp (/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/test/integration/owned-next-app.ts:342:27)
+        at async file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/release-mirror-custody-qa.mjs:21:6
+  ]
+}
+
+Node.js v24.19.0

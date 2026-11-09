@@ -1,7 +1,7 @@
 import {it,expect,vi} from 'vitest';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {createServer} from 'node:http';
-import type {SqlExecutor} from '../../lib/notifications/types';
+import type {SqlExecutor,SqlStatement} from '../../lib/notifications/types';
 import {companyAccessFixture} from './company-access-fixture';
 import {issued,ownedPassword} from './company-access-claim.test-support';
 import * as passwords from '../../lib/auth/password';
@@ -84,6 +84,27 @@ it('expired custody is invalid and terminal digests clear only after the 24-hour
   expect(await clearTerminalInvitationDigests(f.db.executor)).toBe(0);
   expect(await f.q('SELECT proof_digest IS NOT NULL AS retained FROM company_invitations WHERE id=$1',[fresh.receipt.invitationId])).toEqual([{retained:true}]);
  }finally{await f.db.dispose();}
+});
+it('unknown proof rejects after one bounded custody read; a recognized proof still rechecks revocation before password work',async()=>{
+ const f=await companyAccessFixture(),hash=vi.spyOn(passwords,'hashPassword');try{
+  const queries:string[]=[];
+  const observed:SqlExecutor={...f.db.executor,async query<T>(statement:SqlStatement,signal?:AbortSignal){queries.push(statement.text);return f.db.executor.query<T>(statement,signal);}};
+  expect(await claimInvitation(randomBytes(32).toString('base64url'),ownedPassword,observed)).toEqual({state:'invalid'});
+  expect(queries).toHaveLength(1);
+  expect(queries[0]).not.toMatch(/\bJOIN\b/i);
+  expect(queries[0]).toMatch(/WHERE proof_digest=\$1 LIMIT 1/);
+  expect(hash).not.toHaveBeenCalled();
+  const invite=await issued(f);let revoked=false;
+  const racing:SqlExecutor={...f.db.executor,async query<T>(statement:SqlStatement,signal?:AbortSignal){
+   const rows=await f.db.executor.query<T>(statement,signal);
+   if(!revoked){revoked=true;expect((await issueOrRevokeInvitation(f.owner,'target',{action:'REVOKE',operationId:randomUUID(),invitationId:invite.receipt.invitationId,expectedInvitationRevision:invite.receipt.revision},null,f.db.executor)).state).toBe('saved');}
+   return rows;
+  }};
+  expect(await claimInvitation(invite.proof,ownedPassword,racing)).toEqual({state:'invalid'});
+  expect(revoked).toBe(true);expect(hash).not.toHaveBeenCalled();
+  expect(await f.q('SELECT * FROM company_invitation_claim_counters')).toEqual([]);
+  expect(await f.q("SELECT * FROM company_invitation_events WHERE action='CONSUME'")).toEqual([]);
+ }finally{hash.mockRestore();await f.db.dispose();}
 });
 it('5000 unknown actual loopback HTTP claims allocate no counters or hash work and leave a valid invitation usable',async()=>{
  const f=await companyAccessFixture();context.executor=f.db.executor;let url='';

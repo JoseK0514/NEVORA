@@ -1,0 +1,85 @@
+Full unmodified RED transcript: /Users/josek0514/.codex/tmp/nevora-business-repairs-20261109-aggregate-bound-red.log
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-backend-business-repairs-20261109/Fuel Scheduler
+
+ ❯ src/lib/action-center/service.test.ts (10 tests | 1 failed) 32ms
+   × fails closed when combined scheduling and repair sources exceed the bounded aggregate 28ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/action-center/service.test.ts > fails closed when combined scheduling and repair sources exceed the bounded aggregate
+AssertionError: expected { state: 'ready', …(6) } to deeply equal { state: 'unavailable', …(1) }
+
+- Expected
++ Received
+
+  {
+-   "reason": "read_failed",
+-   "state": "unavailable",
++   "counts": {
++     "requests": 0,
++     "scheduling": 1001,
++     "timekeeping": 0,
++     "total": 1001,
++   },
++   "items": [
++     {
++       "category": "scheduling",
++       "detail": "Missing target",
++       "href": "/app/employees",
++       "id": "setup",
++       "priority": "MISSING_INPUT",
++       "title": "Set target",
++       "type": "TARGET_MISSING",
++     },
++     {
++       "category": "scheduling",
++       "dateTime": "2026-09-22T08:00",
++       "detail": "Fictional · West · Approved leave overlaps published work.",
++       "employeeId": "worker",
++       "endDateTime": "2026-09-22T12:00",
++       "href": "/app/schedule?week=2026-09-21&location=loc-1&employeeId=worker&leaveRepair=LEAVE_STAFFING%3A0%3Ashift",
++       "id": "LEAVE_STAFFING:0:shift",
++       "locationId": "loc-1",
++       "ownerEmployeeId": "reviewer",
++       "priority": "URGENT",
++       "purpose": "STAFFING_REPAIR",
++       "title": "Repair staffing for approved leave",
++       "type": "TIME_OFF",
++     },
++     {
++       "category": "scheduling",
++       "dateTime": "2026-09-22T08:00",
++       "detail": "Fictional · West · Approved leave overlaps published work.",
++       "employeeId": "worker",
++       "endDateTime": "2026-09-22T12:00",
++       "href": "/app/schedule?week=2026-0
+[Long generated response omitted here; preserved in full transcript.]
+&location=loc-1&employeeId=worker&leaveRepair=LEAVE_STAFFING%3A999%3Ashift",
++       "id": "LEAVE_STAFFING:999:shift",
++       "locationId": "loc-1",
++       "ownerEmployeeId": "reviewer",
++       "priority": "URGENT",
++       "purpose": "STAFFING_REPAIR",
++       "title": "Repair staffing for approved leave",
++       "type": "TIME_OFF",
++     },
++   ],
++   "limitedAttendance": false,
++   "observedAt": "2026-09-28T12:00:00Z",
++   "state": "ready",
++   "validForMs": 1000,
++   "weekStart": "2026-09-21",
+  }
+
+ ❯ src/lib/action-center/service.test.ts:79:18
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  11:47:09
+   Duration  222ms (transform 41%, import 39%, tests 19%, worker 1%)

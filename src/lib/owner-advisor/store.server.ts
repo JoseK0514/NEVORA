@@ -117,7 +117,7 @@ export class AdvisorStore {
   }
   /** Commit bounded recent chat history and its recoverable answer while the running
    * request lease is current; retain only the six latest completed ask payloads. */
-  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number) {
+  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number, memoryRevision?: number, profileRevision?: number) {
     const guards = ownerGuards(this.proof, this.original);
     try { await this.ex.transaction([
       ...guards,
@@ -134,6 +134,14 @@ export class AdvisorStore {
       ...(notebookRevision === undefined ? [] : [{
         text: "SELECT(CASE WHEN COALESCE((SELECT revision FROM owner_advisor_notebooks WHERE workspace_id=$1 AND owner_id=$2),0)=$3 THEN '1' ELSE 'advisor_notebook_changed' END)::integer",
         values: [...this.scope, notebookRevision],
+      }]),
+      ...(memoryRevision === undefined ? [] : [{
+        text: "SELECT(CASE WHEN COALESCE((SELECT revision FROM owner_advisor_memories WHERE workspace_id=$1 AND owner_id=$2),0)=$3 THEN '1' ELSE 'advisor_context_changed' END)::integer",
+        values: [...this.scope, memoryRevision],
+      }]),
+      ...(profileRevision === undefined ? [] : [{
+        text: "SELECT(CASE WHEN COALESCE((SELECT revision FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2),0)=$3 THEN '1' ELSE 'advisor_context_changed' END)::integer",
+        values: [...this.scope, profileRevision],
       }]),
       {
         text: "INSERT INTO owner_advisor_profiles(workspace_id,owner_id) VALUES($1,$2) ON CONFLICT DO NOTHING",
@@ -159,7 +167,7 @@ export class AdvisorStore {
       },
       ...ownerGuards(this.proof, this.original),
     ]); } catch (error) {
-      if (record(error) && typeof error.message === "string" && error.message.includes('"advisor_notebook_changed"')) throw new AdvisorError("conflict");
+      if (record(error) && typeof error.message === "string" && /"advisor_(?:notebook_changed|context_changed|lease_expired)"/.test(error.message)) throw new AdvisorError("conflict");
       throw error;
     }
   }

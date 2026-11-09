@@ -1,0 +1,43 @@
+import {it,expect} from 'vitest';
+import {randomUUID} from 'node:crypto';
+import {onboardingJourneyFixture} from './onboarding-journey-fixture';
+import {saveOnboardingPerson} from '@/lib/onboarding/people.server';
+import {readOnboardingSetup} from '@/lib/onboarding/setup.server';
+import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
+const command=(version:string,location:string,overrides:Record<string,unknown>={})=>({schemaVersion:1,operationId:randomUUID(),expectedVersion:version,payload:{employee:{id:'EMP-1',firstName:'Fictional',lastName:'Employee',phone:'787-555-0102',email:'employee@example.invalid',role:'EMPLOYEE',primaryLocationId:location,eligibleLocationIds:[location],positionIds:[],...overrides}}});
+it('uses canonical employee/eligibility/qualification receipts without sending an invitation or creating credentials',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany()),home=a.actor.employee.primaryLocationId,c=command('1',home);expect((await saveOnboardingPerson(a.actor,a.binding,c)).state).toBe('saved');const state=await readOnboardingSetup(a.actor,a.binding),person=state.configuration.people.find(p=>p.id==='EMP-1')!;expect(person.eligibleLocationIds).toEqual([home]);expect(person.positionIds).toEqual([]);expect(person.hasCredentials).toBe(false);expect(person.invitationRevision).toBe(0);expect(state.snapshot.version).toBe('2');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM company_access_operations WHERE kind='EMPLOYEE'")).rows[0].n).toBe(1);expect((await a.c.resource.db.pool.query('SELECT count(*)::int n FROM company_invitations')).rows[0].n).toBe(0);expect((await saveOnboardingPerson(a.actor,a.binding,c)).state).toBe('saved');expect((await saveOnboardingPerson(a.actor,a.binding,{...c,payload:{employee:{...c.payload.employee,firstName:'Changed'}}})).state).toBe('conflict');
+ }finally{await f.close();}
+});
+it('rejects duplicate IDs locally while allowing the same actual company-local number in another database',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany('alpha','a@example.invalid')),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));const results=await Promise.all([saveOnboardingPerson(a.actor,a.binding,command('1',a.actor.employee.primaryLocationId)),saveOnboardingPerson(b.actor,b.binding,command('1',b.actor.employee.primaryLocationId))]);expect(results.map(r=>r.state)).toEqual(['saved','saved']);expect((await saveOnboardingPerson(a.actor,a.binding,command('2',a.actor.employee.primaryLocationId,{id:'emp-1',email:'other@example.invalid'}))).state).toBe('invalid');expect((await b.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-1'")).rows[0].n).toBe(1);
+ }finally{await f.close();}
+});
+it('rejects inactive/foreign locations, missing Manager scope and invented qualifications without partial profiles',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany()),home=a.actor.employee.primaryLocationId;for(const overrides of [{primaryLocationId:randomUUID()},{positionIds:[randomUUID()]},{role:'MANAGER'}])expect((await saveOnboardingPerson(a.actor,a.binding,command('1',home,overrides))).state).toBe('invalid');expect((await readOnboardingSetup(a.actor,a.binding)).snapshot.version).toBe('1');await a.c.resource.db.pool.query('UPDATE locations SET active=false WHERE id=$1',[home]);const current=(await readOnboardingSetup(a.actor,a.binding)).snapshot.version;expect(current).toBe('2');expect((await saveOnboardingPerson(a.actor,a.binding,command(current,home))).state).toBe('invalid');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-1'")).rows[0].n).toBe(0);expect((await readOnboardingSetup(a.actor,a.binding)).snapshot.version).toBe(current);
+ }finally{await f.close();}
+});
+it('saves a profile without optional email and reports it separately as uninvitable',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany());expect((await saveOnboardingPerson(a.actor,a.binding,command('1',a.actor.employee.primaryLocationId,{email:null}))).state).toBe('saved');const state=await readOnboardingSetup(a.actor,a.binding);expect(state.configuration.people.find(p=>p.id==='EMP-1')?.email).toBeNull();expect(state.snapshot.sections.find(s=>s.id==='INVITATIONS')?.reasonCodes).toContain('EMPLOYEE_EMAIL_REQUIRED');
+ }finally{await f.close();}
+});
+it('recovers a lost actual creation commit reply from both original receipts without duplicate employees',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany()),c=command('1',a.actor.employee.primaryLocationId);f.loseRuntimeCommit();expect((await saveOnboardingPerson(a.actor,a.binding,c)).state).toBe('saved');expect((await saveOnboardingPerson(a.actor,a.binding,c)).state).toBe('saved');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-1'")).rows[0].n).toBe(1);expect((await readOnboardingSetup(a.actor,a.binding)).snapshot.version).toBe('2');
+ }finally{await f.close();}
+});
+it('requires a current Owner even if a Manager would hold ordinary Company create permission',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany());await a.c.resource.db.pool.query("UPDATE employees SET role='MANAGER' WHERE id='OWNER-1'");expect((await saveOnboardingPerson(a.actor,a.binding,command('1',a.actor.employee.primaryLocationId))).state).toBe('unavailable');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-1'")).rows[0].n).toBe(0);
+ }finally{await f.close();}
+});
+it('returns a version conflict for another tab without a partial canonical creation',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany()),c=command('1',a.actor.employee.primaryLocationId);expect((await saveOnboardingPerson(a.actor,a.binding,c)).state).toBe('saved');expect((await saveOnboardingPerson(a.actor,a.binding,command('1',a.actor.employee.primaryLocationId,{id:'EMP-2',email:'employee2@example.invalid'}))).state).toBe('conflict');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-2'")).rows[0].n).toBe(0);
+ }finally{await f.close();}
+});
+it('rolls back profile and eligibility if the shared onboarding receipt cannot persist',async()=>{
+ const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany()),ex=getWorkspaceDb(a.binding),failing:typeof ex={query:(...args)=>ex.query(...args),transaction:(s,signal)=>ex.transaction(s.some(q=>q.text.startsWith('INSERT INTO onboarding_commands'))?[...s,{text:'SELECT 1/0',values:[]}]:s,signal)};expect((await saveOnboardingPerson(a.actor,a.binding,command('1',a.actor.employee.primaryLocationId),failing)).state).toBe('unavailable');expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employees WHERE id='EMP-1'")).rows[0].n).toBe(0);expect((await readOnboardingSetup(a.actor,a.binding)).snapshot.version).toBe('1');
+ }finally{await f.close();}
+});
+it('persists only explicitly selected qualifications and the Owner-selected initial Manager scope',async()=>{
+ const {saveOnboardingStep}=await import('@/lib/onboarding/setup.server');const f=await onboardingJourneyFixture();try{const a=await f.activateCompany(await f.createCompany());await saveOnboardingStep(a.actor,a.binding,'POSITIONS',{schemaVersion:1,operationId:randomUUID(),expectedVersion:'1',payload:{action:'CREATE',name:'Fictional Specialist'}});const state=await readOnboardingSetup(a.actor,a.binding),positionId=state.configuration.positions[0].id,c=command('2',a.actor.employee.primaryLocationId,{role:'MANAGER',positionIds:[positionId]});const payload={...c.payload,initialManagerScope:{mode:'LOCATIONS',locationIds:[a.actor.employee.primaryLocationId]}};expect((await saveOnboardingPerson(a.actor,a.binding,{...c,payload})).state).toBe('saved');const person=(await readOnboardingSetup(a.actor,a.binding)).configuration.people.find(p=>p.id==='EMP-1')!;expect(person.positionIds).toEqual([positionId]);const scope=(await a.c.resource.db.pool.query("SELECT mode,location_ids FROM operational_scopes_current WHERE employee_id='EMP-1'")).rows[0];expect(scope).toEqual({mode:'LOCATIONS',location_ids:[a.actor.employee.primaryLocationId]});expect((await a.c.resource.db.pool.query("SELECT count(*)::int n FROM employee_credentials WHERE employee_id='EMP-1'")).rows[0].n).toBe(0);
+ }finally{await f.close();}
+});

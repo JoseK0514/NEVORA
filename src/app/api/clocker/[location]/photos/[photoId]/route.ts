@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 /** Authenticated POST only. No anonymous GET/public photo link. photoId is the
  * exact original command; enrolled device is supplied in bounded owner JSON. */
 export async function POST(request: Request, { params }: { params: Promise<{ location: string; photoId: string }> }) {
-  const binding = getClockerPhotoSettingsRuntime();
+  const binding = await getClockerPhotoSettingsRuntime();
   if (!binding) return Response.json({ state: 'unavailable', error: 'Photo review is not available in this environment yet.' },
     { status: 503, headers: { 'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff' } });
   const { location, photoId } = await params;

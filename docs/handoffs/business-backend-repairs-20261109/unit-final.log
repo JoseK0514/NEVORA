@@ -1,0 +1,39 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run
+
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-backend-business-repairs-20261109/Fuel Scheduler
+
+ ❯ src/test/phase-e-process.test.ts (13 tests | 1 failed) 18514ms
+   × retained Linux marker observation: changed-member 2480ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/phase-e-process.test.ts > retained Linux marker observation: changed-member
+AssertionError: {"actualPlatform":"darwin","simulation":"Linux marker retention; negative birth/ancestry field only when selected","elapsedMs":2435,"departureTriggered":false,"leaderAbsent":true,"markerReadableAfterLeaderAbsence":false,"result":{"status":1,"signal":null,"timedOut":false,"error":"Owned resource observation failed","observationFailure":{"reason":"OWNERSHIP_UNAVAILABLE","pid":79802,"phase":"member-environment","errno":"unavailable"},"resources":[{"pid":79802,"ppid":79743,"pgid":79802,"started":"Mon Nov 9 11:48:12 2026","commandHash":"9d3f2ef9162aebed3dd0cdb0b6d7a3fac0c5f8a79c51f41762d9894670b1949e","lastObservedPpid":79743,"kind":"next","stopped":true},{"pid":79845,"ppid":79802,"pgid":79802,"started":"Mon Nov 9 11:48:12 2026","commandHash":"bc4f5ec417dbf065c6ab3f16482397d7f68367dc9d63da5d970c9e574d63dc46","lastObservedPpid":79802,"kind":"owned-descendant","stopped":true}]}}: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-process.test.ts:126:56
+    124|     expect(receipt.markerReadableAfterLeaderAbsence).toBe(false);
+    125|     expect(supervised.timedOut).toBe(false);
+    126|     expect(supervised.status, JSON.stringify(receipt)).toBe(['stable-m…
+       |                                                        ^
+    127|     if (!['stable-member', 'changed-member', 'departed-member'].includ…
+    128|       expect(supervised.error).toBe('Owned resource observation failed…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 777 passed | 32 skipped (810)
+      Tests  1 failed | 11560 passed | 857 skipped (12473)
+   Start at  11:48:03
+   Duration  117.92s (tests 79%, import 19%, transform 1%)
+
+    Isolate  810 workers spawned · ~80ms startup each (spawn + environment, per file)
+             at least ~7.14s faster with isolate: false — reuses workers across files instead of one per file

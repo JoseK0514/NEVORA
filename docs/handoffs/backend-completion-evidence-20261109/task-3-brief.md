@@ -1,0 +1,7 @@
+### Task 3: Qualify combined source and adoption
+**Files:** relevant regression tests,source inventory,source-specific handoff/evidence underdocs/handoffs; no new UI/native behavior.
+**Interfaces:** consumes Tasks1/2; produces one committed exact-source backend candidate and explicit next operational plan.
+- [ ] Run relevant original real owned PostgreSQL onboarding/commerce/partner suites, root Vitest,typecheck,lint and clean source-bound production build. Expected: all required selected checks pass with skips/failures separately retained.
+- [ ] Reconcile source inventory with exact current main/collaboration refs, historical recovery refs and held dispositions. Expected: existing check:development-sources passes without false inclusion.
+- [ ] Preserve full evidence and remaining operations/model-budget/UI/legal/production gates; update Jira. Commit and obtain ONE fresh read-only whole-phase review. Fix Important/Critical findings in ONE executor RED/GREEN pass with full green suite; preserve Minor and every declined judgment as required. No re-review.
+- [ ] Prepare normal development fast-forward integration and exact CI observation when review and source gates pass; preserve current remote drift/concurrent ownership and no-main/no-production boundary. External shared push follows existing explicit authorization and governance requirements; if a new approval is actually required, prepare a concrete candidate first.

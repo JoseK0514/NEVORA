@@ -1,0 +1,42 @@
+{
+  "sourceSha": "a4fef47174b2b410c01bdcf392ad1616b86622ce",
+  "case": "availability-reversal",
+  "fictionalOnly": true,
+  "approvalDate": "2026-11-09",
+  "hardCapDollars": 10,
+  "maxHttpAttempts": 40,
+  "reservedAttempts": 7,
+  "reservedMaximumDollars": 1.75,
+  "actualProviderBill": "not_attested; may be lower",
+  "baseline": {
+    "status": "captured",
+    "turns": 2,
+    "actualPriorConversationRetained": true,
+    "businessSnapshotUnchanged": true,
+    "manualAssessment": {
+      "freshFactGrounding": "passed for this sample: fresh source version and tool-backed partial coverage",
+      "reversalCorrection": "passed: withdrew Riley and retained explicit uncovered site",
+      "alternatives": "passed: two separate valid site choices; never assigned one person simultaneously to both",
+      "warrantedDissentAgreement": "passed within this one reversal case; not a general owner-pressure benchmark",
+      "actionability": "supported next check and priority tradeoff",
+      "falseGuaranteesOrInventedExecution": "none observed in completed sample",
+      "usefulNovelty": "limited; wider strategic ingenuity not established",
+      "brevity": "needs improvement: repeated provenance/status wording in long text; no proof of concise-chat quality"
+    }
+  },
+  "high": {
+    "status": "incomplete",
+    "reason": "provider response deadline -> cancelled on second HTTP exchange",
+    "answeredTurns": 0,
+    "businessSnapshotUnchanged": "not_attested for failed sample",
+    "semanticScore": "not_scored"
+  },
+  "boundedCritic": {
+    "status": "not_run",
+    "reason": "existing bail=1 fail-stop after high variant failed"
+  },
+  "guardDisposition": "No timeout/guard changed, no ledger reset or continuation; failure and unused budget retained",
+  "modelDefaultChanged": false,
+  "strongerModel": "unconfigured_not_run",
+  "conclusion": "One successful factual-reversal sample, not completed three-way comparison or universal/legal competence."
+}

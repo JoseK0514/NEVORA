@@ -1,0 +1,11 @@
+# Owner AI actual-model evaluation — November 9, 2026
+
+Observed sourcea4fef47174b2b410c01bdcf392ad1616b86622ce; unchanged application logic10b4ee0cd. One fresh explicit$10/40-attempt approval and private zero-use ledger; fictional data only. Model gpt-6-1-sol at the fixed approved Neon pilot endpoint, with current catalog/rate ceiling checked after approval/custody admission. Earlier ledgers were unchanged.
+
+Baseline completed the real two-turn conversation. After Riley availability was removed, it re-read current coverage, withdrew the old joint recommendation, left the uncovered location explicit, and offered two separate valid alternatives instead of assigning Target to both simultaneous sites. Actual prior assistant conversation was retained, source versions changed, and business snapshots were unchanged. No invented execution or unsupported guarantee was observed in this completed sample. Broader novelty, owner-pressure judgment, legal accuracy and universal competence are not established. The text still repeats provenance/status wording and is long; concise-chat quality needs further work.
+
+The high-reasoning variant failed on its second HTTP exchange at the existing response deadline and produced no completed answer. The runner's existing bail=1 stopped the critic variant; it is NOT RUN, not passed. Preserve that failure. No default-model, reasoning, timeout or guard change was made, and there was no new ledger/reset/continuation to spend the unused allowance.
+
+Seven HTTP attempts reserved a maximum$1.75 against the$10 cap. This is a conservative reservation, not an attestation of the provider's actual bill; the canceled response may have incurred usage. The remaining allowance is not permission to expand this closed run. Full fictional wire/body/source/case/rubric/usage evidence, rates and final immutable ledger remain in the private external run directory and sanitized copies under workforce-operations-evidence-20261109/owner-ai-live-*.json.
+
+Result: factual reversal worked in one baseline sample. The full three-way comparison did not complete; high reasoning and critic superiority are unqualified. No production feature, business action, legal clearance or independent certification follows from this evaluation.

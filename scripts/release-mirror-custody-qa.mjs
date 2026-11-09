@@ -19,6 +19,7 @@ try{
  process.env.FUEL_TEST_DATABASE_URL=`postgresql://nevora_probe@127.0.0.1:${port}/nevora_exchange_test_mirror_${port}`;
  process.env.FUEL_TEST_ALLOW_DESTRUCTIVE_TEARDOWN='yes';
  app=await createOwnedNextApp(evidence,{pinDevTypeReferences:true});
+ for(const path of ['services/commerce/workspace-enrollment.ts','db/migrations/order.ts'])assert.deepEqual(readFileSync(join(app.mirror,path)),readFileSync(path),'Owned runtime dependency must retain canonical bytes: '+path);
  const file=join(app.mirror,'src/lib/navigation.ts');
  if(mode==='mutated')writeFileSync(file,readFileSync(file,'utf8')+'\n// fictional mutation probe\n');
  else writeFileSync(join(app.mirror,'src/lib/untracked-mirror-probe.ts'),'export const fictionalInjection=true;\n');

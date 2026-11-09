@@ -1,0 +1,23 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/test/phase-e-runner.test.ts (92 tests | 2 failed | 90 skipped) 473ms
+   × runtime custody rejects an omitted root input and changed mirror bytes: services/commerce/fixture.ts 212ms
+   × runtime custody rejects an omitted root input and changed mirror bytes: db/migrations/fixture.sql 260ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > runtime custody rejects an omitted root input and changed mirror bytes: services/commerce/fixture.ts
+ FAIL  src/test/phase-e-runner.test.ts > runtime custody rejects an omitted root input and changed mirror bytes: db/migrations/fixture.sql
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ src/test/phase-e-runner.test.ts:198:208
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 90 skipped (92)
+   Start at  10:20:54
+   Duration  584ms (tests 91%, transform 4%, import 4%)
+

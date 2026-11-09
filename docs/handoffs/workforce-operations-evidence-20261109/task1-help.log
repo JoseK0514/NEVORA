@@ -1,0 +1,5 @@
+
+> fuel-scheduler@0.1.0 operations:worker
+> node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/workforce-operations.mts --help
+
+Usage: operations:worker run payroll|notifications-dispatch|notifications-reminders

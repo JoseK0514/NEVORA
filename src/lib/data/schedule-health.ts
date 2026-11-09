@@ -1,3 +1,4 @@
+import {mutationTransaction} from './transaction-composition';
 import {assertOperationalAccess,operationalScopeStatements} from '../company-access/operational-scope.server';
 import { workspaceReadGuard } from "./workspaces";
 import { assertManagementProof } from "./management-session";
@@ -6,7 +7,8 @@ import { neonNotificationExecutor } from "./notification-transactions";
 import { timeMinutes } from "../scheduling/periods";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 
 export type LocationStaffingSetting = {
   locationId: string;
@@ -37,7 +39,7 @@ export type EmployeeHourTarget = {
 };
 
 export async function listLocationStaffingSettings(): Promise<LocationStaffingSetting[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -65,7 +67,7 @@ export async function listLocationStaffingSettings(): Promise<LocationStaffingSe
 }
 
 export async function listEmployeeHourTargets(): Promise<EmployeeHourTarget[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -152,7 +154,7 @@ export async function saveScheduleHealthSettings(input: {
   const employeeIds = [...new Set([actorId, ...hourTargets.map(t => t.employeeId)])].sort();
   const locationIds = staffingSettings.map(s => s.locationId).sort();
   const targetIds = hourTargets.map(t => t.employeeId).sort();
-  await executor.transaction([
+  await mutationTransaction(executor,[
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE', values: [employeeIds] },
     { text: 'SELECT id FROM locations WHERE id=ANY($1::text[]) OR id IN (SELECT primary_location_id FROM employees WHERE id=ANY($2::text[])) ORDER BY id FOR UPDATE', values: [locationIds, employeeIds] },
@@ -179,7 +181,7 @@ export async function saveEmployeeHourTargets(targets: readonly HourTargetInput[
 }
 
 export async function listCoverageWindows(): Promise<CoverageWindow[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -305,7 +307,7 @@ export async function createCoverageWindow(
   const sql=executor??neonNotificationExecutor();
   const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},sql);
   const id=randomUUID();
-  await sql.transaction([
+  await mutationTransaction(sql,[
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     {
@@ -344,7 +346,7 @@ export async function deleteCoverageWindow(windowId: string, proof: SessionMutat
     ...operationalScopeStatements(proof,workspace,{kind:'COMPANY'}),
   ];
   const index = statements.findIndex(s => s.text.startsWith('DELETE FROM location_coverage_windows'));
-  const result = await executor.transaction(statements);
+  const result = await mutationTransaction(executor,statements);
   return Boolean(result[index]?.[0]);
 }
 
@@ -362,7 +364,7 @@ export async function replaceCoverageWindowPositionRequirements(
   validateRequirements(input.requirements);
   const sql=executor??neonNotificationExecutor();
   const {workspace}=await assertOperationalAccess(input.proof,{kind:'COMPANY'},sql);
-  await sql.transaction([
+  await mutationTransaction(sql,[
     ...workspaceReadGuard(workspace),
     { text: 'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR SHARE', values: [input.actorEmployeeId] },
     {

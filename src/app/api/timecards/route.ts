@@ -3,16 +3,16 @@ import {neonNotificationExecutor} from '@/lib/data/sql-executor';
 import {getSession,requireSessionMutationProof} from '@/lib/auth/session';
 import {readTimecards} from '@/lib/timecards/service';
 import {parsePeriod} from '@/lib/timecards/project';
-import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
+import {correctionBoundaryResponse,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 export async function POST(request:Request):Promise<Response>{
-  const boundary=correctionBoundary(request,true,'x-nevora-timecards');
-  if(boundary)return correctionJson({state:'unavailable'},boundary);
+  const boundary=correctionBoundaryResponse(request,true,'x-nevora-timecards');
+  if(boundary)return boundary;
   try{
     const session=await getSession();
     if(!session)return correctionJson({state:'unavailable'},401);
-    if(request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
+    if(request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403,'actor_mismatch');
     let period;
     try{
       const body=await readCorrectionJson(request);

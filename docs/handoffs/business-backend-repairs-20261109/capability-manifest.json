@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "observedDate": "2026-11-09",
+  "inspectedPreview": {
+    "source": "90e030149d689f2c11af2d21ff4fac02d295f7e2",
+    "deploymentId": "dpl_DxjP1KTc8FXmS9Qs9BKqbQSxZ922",
+    "url": "https://nevora-g9ku3cfv7-josekarlo-5933s-projects.vercel.app",
+    "database": {
+      "project": "young-boat-84629568",
+      "branch": "br-quiet-glade-arsg9iuh",
+      "name": "neondb"
+    },
+    "qualification": "historical_ui_evidence_and_current_read_only_checks_only",
+    "containsTheseBackendRepairs": false
+  },
+  "backendRepairs": {
+    "originAdmission": {
+      "status": "implemented_local_verification",
+      "hostedAcceptance": "pending_new_preview"
+    },
+    "leaveStaffing": {
+      "status": "implemented_owned_postgres_verified",
+      "policy": "APPROVE_AND_TRACK_REPAIR",
+      "taskSource": "saved_approval_and_latest_immutable_publication",
+      "ownerSource": "recorded_approving_reviewer",
+      "newMigrationRequired": false,
+      "uiIntegration": "Claude_pending"
+    },
+    "coverageMinutes": {
+      "status": "implemented_unit_verified",
+      "basis": "canonical_staff_position_and_lead_obligations",
+      "uiIntegration": "Claude_pending"
+    }
+  },
+  "optionalCapabilities": [
+    {
+      "capability": "owner_advisor_notebook",
+      "status": "held",
+      "requiredMigrations": [
+        "0044_owner_advisor_notebook.sql"
+      ],
+      "requiredTables": [
+        "owner_advisor_notebooks"
+      ],
+      "observedTableExists": false,
+      "providerQualification": "not_asserted"
+    },
+    {
+      "capability": "owner_advisor_coverage_review",
+      "status": "held",
+      "requiredMigrations": [
+        "0045_owner_coverage_actions.sql"
+      ],
+      "requiredTables": [
+        "owner_advisor_coverage_reviews"
+      ],
+      "observedTableExists": false,
+      "providerQualification": "not_asserted"
+    },
+    {
+      "capability": "native_push",
+      "status": "held",
+      "requiredMigrations": [
+        "0046_native_push.sql"
+      ],
+      "requiredTables": [
+        "native_push_installations"
+      ],
+      "observedTableExists": false,
+      "rolesInSource": [
+        "OWNER",
+        "EMPLOYEE"
+      ],
+      "physicalDeviceAndProviderQualification": "not_asserted"
+    }
+  ],
+  "workerOperations": {
+    "source": "development_already_contains_supervision_and_select_only_queue_health",
+    "hostSchedulerAlarmAcceptance": "separate_gate",
+    "activationPerformed": false
+  },
+  "migrationsAppliedToSharedOrProductionDatabase": false,
+  "providerActivationPerformed": false,
+  "productionAuthorization": false,
+  "initialDevelopmentBase": "d8f35da69810550c71b4193069f17d5efd5fc060",
+  "integrationBase": "4ef5f606932cff46932db78d1076d423bb98778e",
+  "backendImplementationCommit": "167b187e934025dc458d37f3b9bfc9356c57af29"
+}

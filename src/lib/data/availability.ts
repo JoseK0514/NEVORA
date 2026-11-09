@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import type { SessionMutationProof } from "../shift-changes/types";
 import type { SqlExecutor, SqlStatement } from "../notifications/types";
 import { neonNotificationExecutor } from "./notification-transactions";
@@ -21,7 +22,7 @@ function timeValue(value: unknown) {
 }
 
 export async function listAvailability(employeeId: string): Promise<AvailabilityRecord[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT id, day_of_week, start_time, end_time
@@ -73,7 +74,7 @@ export async function listTeamAvailabilityWindows(weekStart?: string): Promise<A
     const team = await readTeamAvailabilityInputs(weekStart);
     return [...team].flatMap(([employeeId, inputs]) => resolveAvailabilityWeek({ weekStart, ...inputs }).map((window, index) => ({ id: `${employeeId}:${weekStart}:${index}`, employeeId, ...window })));
   }
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<Record<string, unknown>>(await sql.query(
     `SELECT id, employee_id, day_of_week, start_time, end_time FROM availability_windows ORDER BY employee_id, day_of_week, start_time`,
     [],

@@ -1,0 +1,5 @@
+
+> fuel-scheduler@0.1.0 check:development-sources
+> node scripts/development-source-inventory.mjs
+
+PASS: 73 classified sources, 3 active branches; exact archives, included sources and current development verified.

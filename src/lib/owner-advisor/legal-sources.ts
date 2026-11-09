@@ -1,0 +1,19 @@
+/** Public identities only. Review records live server-side; this allowlist also
+ * constrains typed source-card links without broadening ordinary advisor links. */
+export type LegalJurisdiction = "PR_US" | "US_FEDERAL";
+export type LegalTopic = "working_time" | "overtime_classification" | "source_status";
+export type LegalStatus = "unreviewed" | "annulled" | "superseded";
+export type LegalSource = { id: string; url: string; label: string; jurisdiction: LegalJurisdiction; topics: readonly LegalTopic[]; format: "html" | "pdf"; status: LegalStatus; subjectStatus: LegalStatus; version: string; requiredFacts: readonly string[] };
+export const LEGAL_SOURCES: readonly LegalSource[] = [
+  { id: "pr-dtrh-law41-notice", url: "https://www.trabajo.pr.gov/ley41_2022.asp", label: "DTRH notice concerning Law 41-2022", jurisdiction: "PR_US", topics: ["working_time", "overtime_classification", "source_status"], format: "html", status: "unreviewed", subjectStatus: "annulled", version: "agency-notice-unversioned", requiredFacts: ["work_location", "work_dates", "employer_coverage"] },
+  { id: "pr-ogp-law379", url: "https://bvirtualogp.pr.gov/ogp/Bvirtual/leyesreferencia/PDF/Trabajo/379-1948.pdf", label: "OGP Law 379 compilation (PDF)", jurisdiction: "PR_US", topics: ["working_time", "overtime_classification", "source_status"], format: "pdf", status: "unreviewed", subjectStatus: "unreviewed", version: "compilation-unverified", requiredFacts: ["work_location", "work_dates", "employer_coverage", "actual_hours", "employment_terms"] },
+  { id: "us-ecfr-785-11", url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-785/subpart-C/subject-group-ECFR2a97bb687c99827/section-785.11", label: "eCFR 29 CFR 785.11 — working time", jurisdiction: "US_FEDERAL", topics: ["working_time"], format: "html", status: "unreviewed", subjectStatus: "unreviewed", version: "current-endpoint-unverified", requiredFacts: ["work_location", "work_dates", "employer_coverage", "actual_hours"] },
+  { id: "us-ecfr-541-2", url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-A/section-541.2", label: "eCFR 29 CFR 541.2 — job titles", jurisdiction: "US_FEDERAL", topics: ["overtime_classification"], format: "html", status: "unreviewed", subjectStatus: "unreviewed", version: "current-endpoint-unverified", requiredFacts: ["work_location", "work_dates", "employer_coverage", "actual_duties", "pay_basis"] },
+  { id: "us-ecfr-541-600", url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-A/part-541/subpart-G/section-541.600", label: "eCFR 29 CFR 541.600 — salary requirements", jurisdiction: "US_FEDERAL", topics: ["overtime_classification"], format: "html", status: "unreviewed", subjectStatus: "unreviewed", version: "current-endpoint-unverified", requiredFacts: ["work_location", "work_dates", "employer_coverage", "actual_duties", "pay_basis", "actual_compensation"] },
+  { id: "us-gpo-2026-09839", url: "https://www.govinfo.gov/content/pkg/FR-2026-05-15/html/2026-09839.htm", label: "GPO May 15, 2026 Part 541 technical amendment", jurisdiction: "US_FEDERAL", topics: ["overtime_classification", "source_status"], format: "html", status: "unreviewed", subjectStatus: "unreviewed", version: "FR-2026-05-15-2026-09839", requiredFacts: ["work_location", "work_dates", "employer_coverage", "actual_duties", "pay_basis", "actual_compensation"] },
+];
+export function legalSourceIds(jurisdiction: LegalJurisdiction, topic: LegalTopic): string[] {
+  // PR selection includes relevant federal working-time research. Federal
+  // classification is an explicit separate inspection; nothing implies coverage.
+  return LEGAL_SOURCES.filter(s => s.topics.includes(topic) && (s.jurisdiction === jurisdiction || jurisdiction === "PR_US" && topic === "working_time" && s.id === "us-ecfr-785-11")).slice(0, 3).map(s => s.id);
+}

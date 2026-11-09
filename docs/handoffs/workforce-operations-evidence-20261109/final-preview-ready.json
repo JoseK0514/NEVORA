@@ -1,0 +1,29 @@
+{
+  "observedAt": "2026-11-09T14:14:07.791892+00:00",
+  "id": "dpl_8Ep6Qi6wmofthJWqZyTCfTSuqCG3",
+  "url": "nevora-onboarding-staging-kcfqwdgzw-josekarlo-5933s-projects.vercel.app",
+  "state": "READY",
+  "target": null,
+  "project": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "sourceSha": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
+  "sourceTree": "447e47ea1fbdb601a803a29468a3b58c220e6a84",
+  "nodeVersion": "24.x",
+  "aliases": [],
+  "ssoProtection": {
+    "deploymentType": "all"
+  },
+  "publicConfigStatus": 302,
+  "existingCompanyAliases": [
+    {
+      "host": "acceptance-a-20261108.portal-staging.nevora.team",
+      "deploymentId": "dpl_CStTXazvGFjC1pK6nV8zsCgAdYbJ",
+      "unchanged": true
+    },
+    {
+      "host": "acceptance-b-20261108.portal-staging.nevora.team",
+      "deploymentId": "dpl_CStTXazvGFjC1pK6nV8zsCgAdYbJ",
+      "unchanged": true
+    }
+  ],
+  "renderedAuthenticatedAcceptance": false
+}

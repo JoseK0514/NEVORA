@@ -1,0 +1,30 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/routing-reader.test.ts (8 tests | 1 failed) 6ms
+   × admits only a canonical driver destination, login and verified TLS; rejects connection-option substitution 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/routing-reader.test.ts > admits only a canonical driver destination, login and verified TLS; rejects connection-option substitution
+AssertionError: expected {} to match object { rejectUnauthorized: true }
+
+- Expected
++ Received
+
+- {
+-   "rejectUnauthorized": true,
+- }
++ {}
+
+ ❯ src/lib/operations/routing-reader.test.ts:16:144
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 26 passed (27)
+   Start at  10:03:28
+   Duration  4.59s (tests 99%, transform 1%)
+

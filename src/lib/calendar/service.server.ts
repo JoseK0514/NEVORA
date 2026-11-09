@@ -1,3 +1,4 @@
+import {publicWorkspaceToken} from '../workspace-routing/token-envelope.server';
 import 'server-only';
 import {assertOperationalAccess,operationalScopeStatements,isOperationalAuthorizationError} from '../company-access/operational-scope.server';
 import {createHash,randomUUID} from 'node:crypto';
@@ -88,7 +89,7 @@ async function manage(proof:SessionMutationProof,employeeId:string,command:Calen
   statements.push({text:'INSERT INTO calendar_operations(workspace_id,actor_employee_id,operation_id,authority,payload_hash,result) VALUES($1,$2,$3::uuid,$4,$5,$6::jsonb)',values:[workspace.id,proof.employee.id,command.operationId,command.authority,payload,JSON.stringify(safeResult)]},...authority());
   started=true;await executor.transaction(statements);
   await responseFence();
-  return command.kind==='REVOKE'?safeResult:{status:'created',operationId:command.operationId,id,generation,url:`/api/calendar/${credential.token}/schedule.ics`};
+  return command.kind==='REVOKE'?safeResult:{status:'created',operationId:command.operationId,id,generation,url:`/api/calendar/${await publicWorkspaceToken('CALENDAR',credential.token,Date.now()+20*366*86400000)}/schedule.ics`};
  }catch(error){
   if(denied(error))return {status:'blocked',reason:'access_denied'};
   const code=error&&typeof error==='object'&&'code' in error?String(error.code):'';

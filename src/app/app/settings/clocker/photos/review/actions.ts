@@ -17,7 +17,7 @@ export async function listClockerPunchPhotosAction(query: PhotoReviewQuery): Pro
   const session = await requireSessionMutationProof();
   if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may review punch photos.' };
   try {
-    const runtime = getClockerPhotoSettingsRuntime();
+    const runtime = await getClockerPhotoSettingsRuntime();
     if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', page: await runtime.settingsTransport.service.listPhotos(proof, query) };
@@ -28,7 +28,7 @@ export async function readClockerPunchPhotoDetailAction(reference: PhotoReferenc
   const session = await requireSessionMutationProof();
   if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may review punch photos.' };
   try {
-    const runtime = getClockerPhotoSettingsRuntime();
+    const runtime = await getClockerPhotoSettingsRuntime();
     if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', record: await runtime.settingsTransport.service.photoDetail(proof, reference) };
@@ -38,10 +38,10 @@ export async function removeClockerPunchPhotoAction(reference: PhotoReference): 
   await requireRoles(['OWNER']);
   const session = await requireSessionMutationProof();
   if (session.employee.role !== 'OWNER') return { state: 'rejected', code: 'AUTH_REQUIRED', message: 'Only an active Owner may remove punch photos.' };
-  const originError = clockerOriginFailure(await headers(), clockerSecurity());
+  const originError = clockerOriginFailure(await headers(), await clockerSecurity());
   if (originError) return { state: 'rejected', message: originError.error, code: 'ORIGIN_REJECTED' };
   try {
-    const runtime = getClockerPhotoSettingsRuntime();
+    const runtime = await getClockerPhotoSettingsRuntime();
     if (!runtime || !runtime.settingsTransport.enabled) return unavailable();
     const proof = await runtime.portalProof(session);
     return { state: 'available', result: await runtime.settingsTransport.service.removePhoto(proof, reference) };

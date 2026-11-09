@@ -1,3 +1,4 @@
+import {sourceTableLock} from './source-table-lock';
 import type { SqlExecutor, SqlStatement } from '../notifications/types';
 import { scheduleWeekLockStatements } from './notification-transactions';
 
@@ -73,7 +74,7 @@ export function generationMutationGuards(source:GenerationSource,weeks:readonly 
     // FIRST lock: do not upgrade SHARE, and retain FK KEY SHARE compatibility.
     {text:'SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR NO KEY UPDATE',values:[]},
     ...scheduleWeekLockStatements(weeks),
-    ...tables.map(table=>({text:`LOCK TABLE ${table} IN SHARE ROW EXCLUSIVE MODE`,values:[]})),
+    ...tables.map(table=>sourceTableLock([table],'SHARE ROW EXCLUSIVE')),
     // Separate statement: fresh READ COMMITTED snapshot after every lock wait.
     generationSourceGuard(source),
   ];

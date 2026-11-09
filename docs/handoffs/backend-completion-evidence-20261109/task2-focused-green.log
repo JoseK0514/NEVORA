@@ -1,0 +1,12 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+
+ Test Files  27 passed (27)
+      Tests  256 passed (256)
+   Start at  08:48:36
+   Duration  4.63s (tests 85%, import 11%, transform 3%, worker 1%)
+
+    Isolate  27 workers spawned · ~56ms startup each (spawn + environment, per file)
+             at least ~695ms faster with isolate: false — reuses workers across files instead of one per file
+

@@ -214,12 +214,10 @@ it("supplies current briefing and date before the first provider call", async ()
   });
   const fetch = transport([answer]);
   await investigate(config, [], "", "Tomorrow?", { ...d, fetch });
-  expect(JSON.parse(String(fetch.mock.calls[0][1].body)).input).toContainEqual(
-    expect.objectContaining({
-      role: "user",
-      content: expect.stringContaining("2026-10-22"),
-    }),
-  );
+  const input = JSON.parse(String(fetch.mock.calls[0][1].body)).input;
+  expect(input.at(-2)).toMatchObject({ type: "function_call", name: "company_briefing", arguments: "{}" });
+  expect(input.at(-1)).toMatchObject({ type: "function_call_output", call_id: input.at(-2).call_id });
+  expect(JSON.parse(input.at(-1).output)).toMatchObject({ evidenceId: "E1", currentCompanyBriefing: { data: { date: "2026-10-22" } } });
 });
 it("bounds the entire provider response stream", async () => {
   await expect(

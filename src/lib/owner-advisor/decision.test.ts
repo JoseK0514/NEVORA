@@ -14,7 +14,7 @@ it("renders an accepted evidence-based decision through the existing answer cont
   expect(result.text).toContain("Review the recorded exceptions");
   expect(result.text).toContain("availability has not been confirmed");
   expect(result.text).toContain("Read the current canonical records again");
-  expect(result.text).toContain("unverified");
+  expect(result.text).toContain("Unverified options: review");
   expect(result.text).toContain("No business action");
   expect(result.sources).toEqual([{ label: "Today", href: "/app", observedAt: observation }]);
   expect(Object.keys(result).sort()).toEqual(["sources", "text"]);
@@ -42,8 +42,9 @@ it.each(invalidCases)("returns bounded correction feedback for $name, then accep
   });
   const result = await investigate(config, [], "", "Compare options", { ...dependencies(), fetch });
   expect(result.text).toContain("Two shifts");
-  const input = bodies[1].input as { type?: string; output?: string }[];
-  const feedback = input.find(item => item.type === "function_call_output");
+  const input = bodies[1].input as { type?: string; call_id?: string; output?: string }[];
+  const feedback = input.find(item => item.type === "function_call_output" && item.call_id === "decision-1");
+  expect(JSON.parse(input.find(item => item.type === "function_call_output" && item.call_id !== "decision-1")!.output!)).toMatchObject({ evidenceId: "E1", currentCompanyBriefing: { observedAt: observation } });
   expect(JSON.parse(feedback!.output!)).toMatchObject({ state: "revise", issues: expect.arrayContaining([code]) });
   expect(JSON.parse(feedback!.output!).availableEvidence).toEqual([{ id: "E1", tool: "company_briefing", args: {}, observedAt: observation, partial: false }]);
   expect(String(feedback!.output)).not.toContain("PRIVATE_REVIEW_TOKEN");

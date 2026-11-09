@@ -1,0 +1,287 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [32m✓[39m src/test/integration/company-access-notification-authority.integration.ts [2m([22m[2m39 tests[22m[2m)[22m[33m 11574[2mms[22m[39m
+   [33m[2m✓[22m[39m stored Manager LOCATIONS cannot authorize a global operational source from employee eligibility[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m current Manager bell returns no operational items/count/partial evidence after restriction[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m current stored scope loss before-lease prevents actual SQL worker delivery through an owned fake sender[33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m current stored scope loss accepted prevents actual SQL worker delivery through an owned fake sender[33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m stored scope loss prevents materialization before delivery reservation and retains the original notice[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m stored scope loss prevents lease before delivery reservation and retains the original notice[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m a newly created unassigned Manager cannot read a queued global source[33m 410[2mms[22m[39m
+   [33m[2m✓[22m[39m Manager notification view consumes a finite fifteen-second private observation budget[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m Manager notification view does not extend its original short session budget after a later session extension[33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m Manager notification response does not release an old private projection after final-observation scope loss[33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m actual own submission constructs review seeds only for current COMPANY Company recipients[33m 392[2mms[22m[39m
+   [33m[2m✓[22m[39m actual own submission constructs review seeds only for current LOCATIONS Company recipients[33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m actual own submission constructs review seeds only for current REVOKE Company recipients[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m mark-read suppresses an unauthorized postcommit response and retains its known durable read timestamp[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m Manager LOCATIONS operational authority leaves a real owned device self-test visible, readable and deliverable[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m native financial-B grant and own published statement notice survive operational-A restriction and revocation through bell/read/open/fake delivery[33m 335[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-notification-producers.integration.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 6802[2mms[22m[39m
+   [33m[2m✓[22m[39m publication recipient persistence waits behind a real revocation and omits the denied Manager without losing the business result[33m 313[2mms[22m[39m
+   [33m[2m✓[22m[39m callout-approval recipient persistence waits behind a real revocation and omits the denied Manager without losing the business result[33m 329[2mms[22m[39m
+   [33m[2m✓[22m[39m schedule-copy recipient persistence waits behind a real revocation and omits the denied Manager without losing the business result[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m callout-approval persistence owning its real locks commits before a waiting revocation and preserves the stored history afterward[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m schedule-copy persistence owning its real locks commits before a waiting revocation and preserves the stored history afterward[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m maintenance persistence owning its real locks commits before a waiting revocation and preserves the stored history afterward[33m 306[2mms[22m[39m
+   [33m[2m✓[22m[39m zero-row summary INSERT cannot consume an actually reached pending seed[33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m actual own-request persistence omits a recipient whose role-cycle invalidated Company after candidate construction[33m 308[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-schedule-actions.integration.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 19888[2mms[22m[39m
+   [33m[2m✓[22m[39m normal actions deny B targets, forged foreign employee and A publication without private validation results or writes[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m normal scoped create/update/delete A succeeds and preserves every B schedule timestamp[33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m create stable Company preserves real APPROVED_TIME_OFF feedback without writes[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m create APPROVED_TIME_OFF observed during REVOKE cannot return private feedback under the earlier Company admission[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m create APPROVED_TIME_OFF observed during REGRANT cannot return private feedback under the earlier Company admission[33m 306[2mms[22m[39m
+   [33m[2m✓[22m[39m update APPROVED_TIME_OFF observed during REGRANT cannot return private feedback under the earlier Company admission[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m update stable Company preserves real SHIFT_OVERLAP feedback without writes[33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m update SHIFT_OVERLAP observed during LOCATIONS cannot return private feedback under the earlier Company admission[33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m update SHIFT_OVERLAP observed during REVOKE cannot return private feedback under the earlier Company admission[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m update canonical management read after LOCATIONS cannot continue to private validation[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m stable Company action retains actual published generation target names[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m generation action LOCATIONS during actual canonical snapshot cannot release published target names[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m generation action REGRANT during actual canonical snapshot cannot release published target names[33m 332[2mms[22m[39m
+   [33m[2m✓[22m[39m generation action REVISION during actual canonical snapshot cannot release published target names[33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m generation service REGRANT during actual canonical snapshot cannot release published target names[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m create actual writer SHIFT_OVERLAP catch retains only STABLE original Company feedback[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m create actual writer SHIFT_OVERLAP catch retains only LOCATIONS original Company feedback[33m 319[2mms[22m[39m
+   [33m[2m✓[22m[39m create actual writer SHIFT_OVERLAP catch retains only REVISION original Company feedback[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m create committed warning response requires the REVISION original Company admission[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m update committed warning response requires the STABLE original Company admission[33m 316[2mms[22m[39m
+   [33m[2m✓[22m[39m update committed warning response requires the LOCATIONS original Company admission[33m 319[2mms[22m[39m
+   [33m[2m✓[22m[39m update committed warning response requires the REVISION original Company admission[33m 317[2mms[22m[39m
+   [33m[2m✓[22m[39m generation service STABLE after actual guarded command cannot return stale private result[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m generation service LOCATIONS after actual guarded command cannot return stale private result[33m 309[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-communications.integration.ts [2m([22m[2m40 tests[22m[2m)[22m[33m 14242[2mms[22m[39m
+   [33m[2m✓[22m[39m current REVOKE Manager cannot recover private communications, roster, or original operation receipt[33m 394[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner keeps complete B communication management and a current lifetime of at most fifteen seconds[33m 343[2mms[22m[39m
+   [33m[2m✓[22m[39m Company Manager keeps complete B communication management and a current lifetime of at most fifteen seconds[33m 383[2mms[22m[39m
+   [33m[2m✓[22m[39m preview suppresses its private projection after awaited Company loss[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m list suppresses its private projection after awaited Company loss[33m 306[2mms[22m[39m
+   [33m[2m✓[22m[39m the final DB-clock check rolls back actual communication writes after session expiry[33m 1394[2mms[22m[39m
+   [33m[2m✓[22m[39m post-commit Company loss suppresses a new communication receipt without rewriting its committed history[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager list API denies current selected-location access with no private body or new effects[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager operation API denies current selected-location access with no private body or new effects[33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager read API retains current Company behavior[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager list API retains current Company behavior[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager context API retains current Company behavior[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m normal manager operation API retains current Company behavior[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m LEAD own receipt, read/ack and scheduled-team publication remain identity-based after Manager revocation[33m 313[2mms[22m[39m
+   [33m[2m✓[22m[39m read consumes the remaining post-observation session lifetime before returning its private body[33m 661[2mms[22m[39m
+   [33m[2m✓[22m[39m list consumes the remaining post-observation session lifetime before returning its private body[33m 697[2mms[22m[39m
+   [33m[2m✓[22m[39m context consumes the remaining post-observation session lifetime before returning its private body[33m 671[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-employee-profile.integration.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 5957[2mms[22m[39m
+   [33m[2m✓[22m[39m intentional self-deactivation with another Owner uses the pinned pre-edit authority and removes its session[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m expiry after role and scope writes rolls back the entire captured-authority transaction[33m 2816[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-recovery-calendar.integration.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 9266[2mms[22m[39m
+   [33m[2m✓[22m[39m assisted final DB-clock guard rolls back when the session expires after actual business writes[33m 1391[2mms[22m[39m
+   [33m[2m✓[22m[39m calendar final DB-clock guard rolls back when the session expires after actual business writes[33m 1405[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-schedule-writes.integration.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 4964[2mms[22m[39m
+   [33m[2m✓[22m[39m manual A ensure/create/edit/delete stays authorized and leaves B schedule metadata and shifts exact[33m 340[2mms[22m[39m
+   [33m[2m✓[22m[39m direct B ensure/create/edit/delete rejects exact current authorization and leaves every business/publication/notification row unchanged[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m a local draft edit cannot silently repair an unrecorded B publication or emit its global revision/intents[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m schedule final wall-clock check rolls back a shift blocked until its admitted session expires[33m 1229[2mms[22m[39m
+   [33m[2m✓[22m[39m explicit Company restoration permits generated deletion and exclusion clearing without publication or notification effects[33m 307[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-period-export.integration.ts [2m([22m[2m29 tests[22m[2m)[22m[33m 11623[2mms[22m[39m
+   [33m[2m✓[22m[39m mapping list requires Company and preserves existing immutable export/period history[33m 437[2mms[22m[39m
+   [33m[2m✓[22m[39m mapping save requires Company and preserves existing immutable export/period history[33m 435[2mms[22m[39m
+   [33m[2m✓[22m[39m export creation requires Company and preserves existing immutable export/period history[33m 437[2mms[22m[39m
+   [33m[2m✓[22m[39m period close read requires Company and preserves existing immutable export/period history[33m 381[2mms[22m[39m
+   [33m[2m✓[22m[39m population save requires Company and preserves existing immutable export/period history[33m 371[2mms[22m[39m
+   [33m[2m✓[22m[39m manifest prepare requires Company and preserves existing immutable export/period history[33m 385[2mms[22m[39m
+   [33m[2m✓[22m[39m artifact serve requires Company and preserves existing immutable export/period history[33m 380[2mms[22m[39m
+   [33m[2m✓[22m[39m handoff recording requires Company and preserves existing immutable export/period history[33m 386[2mms[22m[39m
+   [33m[2m✓[22m[39m profile receipt replay rechecks current Company instead of using historical authority[33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m export receipt replay rechecks current Company instead of using historical authority[33m 375[2mms[22m[39m
+   [33m[2m✓[22m[39m population receipt replay rechecks current Company instead of using historical authority[33m 401[2mms[22m[39m
+   [33m[2m✓[22m[39m manifest receipt replay rechecks current Company instead of using historical authority[33m 373[2mms[22m[39m
+   [33m[2m✓[22m[39m handoff receipt replay rechecks current Company instead of using historical authority[33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner and Company preserve complete canonical B time, mappings, manifest totals and exact stored artifact bytes[33m 419[2mms[22m[39m
+   [33m[2m✓[22m[39m mapping projection suppresses fetched private payloads when Company is lost before return[33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m close projection suppresses fetched private payloads when Company is lost before return[33m 404[2mms[22m[39m
+   [33m[2m✓[22m[39m cached export verification suppresses fetched private payloads when Company is lost before return[33m 390[2mms[22m[39m
+   [33m[2m✓[22m[39m artifact audit suppresses fetched private payloads when Company is lost before return[33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m all export/period services deny current revoked authority without private data or audit writes[33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m all export/period services deny current role cycle authority without private data or audit writes[33m 402[2mms[22m[39m
+   [33m[2m✓[22m[39m all export/period services deny current unassigned authority without private data or audit writes[33m 371[2mms[22m[39m
+   [33m[2m✓[22m[39m actual legacy export/period APIs deny restricted reads, writes, CSV and stored artifacts[33m 500[2mms[22m[39m
+   [33m[2m✓[22m[39m mapping save loses Company after admission and all actual business rows/audit/receipts roll back[33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m export creation loses Company after admission and all actual business rows/audit/receipts roll back[33m 376[2mms[22m[39m
+   [33m[2m✓[22m[39m population save loses Company after admission and all actual business rows/audit/receipts roll back[33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m manifest prepare loses Company after admission and all actual business rows/audit/receipts roll back[33m 388[2mms[22m[39m
+   [33m[2m✓[22m[39m artifact serve loses Company after admission and all actual business rows/audit/receipts roll back[33m 360[2mms[22m[39m
+   [33m[2m✓[22m[39m handoff recording loses Company after admission and all actual business rows/audit/receipts roll back[33m 395[2mms[22m[39m
+   [33m[2m✓[22m[39m P4 leaving someone with recorded hours out of pay needs an Owner and a real reason[33m 562[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-global-reads.integration.ts [2m([22m[2m33 tests[22m[2m)[22m[33m 9195[2mms[22m[39m
+   [33m[2m✓[22m[39m current Company and Owner global reads preserve complete B data with finite observations[33m 400[2mms[22m[39m
+   [33m[2m✓[22m[39m action center POST enforces Company at the actual API boundary[33m 306[2mms[22m[39m
+   [33m[2m✓[22m[39m actual global read APIs retain current Company positive controls and complete B reports/timecards/CSV[33m 348[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-invitations.integration.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2351[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-authority.integration.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1950[2mms[22m[39m
+   [33m[2m✓[22m[39m explicit legacy Company survives contact edits; Owner restriction/revocation/restoration requires current versions and never revives old grants[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m CA-09 scope-only restriction/revocation preserves the exact employee version and independent financial B document access[33m 323[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-claim.integration.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 24961[2mms[22m[39m
+   [33m[2m✓[22m[39m live registered-email possession creates one hashed credential, consumes once and discloses only own login ID on known success[33m 469[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable revoke proof is generic invalid before counters or password derivation[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable reissue proof is generic invalid before counters or password derivation[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable contact proof is generic invalid before counters or password derivation[33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable inactive proof is generic invalid before counters or password derivation[33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable credential proof is generic invalid before counters or password derivation[33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable issuer_role_cycle proof is generic invalid before counters or password derivation[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable issuer_inactive proof is generic invalid before counters or password derivation[33m 486[2mms[22m[39m
+   [33m[2m✓[22m[39m unusable workspace_inactive proof is generic invalid before counters or password derivation[33m 331[2mms[22m[39m
+   [33m[2m✓[22m[39m expired custody is invalid and terminal digests clear only after the 24-hour grace[33m 950[2mms[22m[39m
+   [33m[2m✓[22m[39m 5000 unknown actual loopback HTTP claims allocate no counters or hash work and leave a valid invitation usable[33m 20212[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-authority-races.integration.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 6089[2mms[22m[39m
+   [33m[2m✓[22m[39m a revocation holding the workspace commits before a blocked operational guard and the guarded write is denied[33m 385[2mms[22m[39m
+   [33m[2m✓[22m[39m operational guard waiting behind session expiry denies after the change with no writes[33m 337[2mms[22m[39m
+   [33m[2m✓[22m[39m an operation holding its guards commits before a waiting scope revocation, then new operations deny[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m an operation holding its guards commits before a waiting role change, then new operations deny[33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m wall-clock expiry after a guarded write rolls the write back on its final check[33m 1545[2mms[22m[39m
+   [33m[2m✓[22m[39m scope assignment blocked behind subject lifecycle cannot append a stale grant or receipt[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m scope assignment blocked behind Owner role loss cannot append a stale grant or receipt[33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m scope assignment holding locks commits before a waiting role change for manager, then current access changes[33m 402[2mms[22m[39m
+   [33m[2m✓[22m[39m scope assignment holding locks commits before a waiting role change for owner, then current access changes[33m 313[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner expiry at the blocked scope receipt rolls revision and operation back together[33m 1546[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-time-review.integration.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 8675[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval denies selected-location authority and preserves all revisions, raw time and adjustment history[33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review denies selected-location authority and preserves all revisions, raw time and adjustment history[33m 334[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval permits current Owner exactly once and preserves its replay receipt[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval permits current Company Manager exactly once and preserves its replay receipt[33m 314[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review permits current Owner exactly once and preserves its replay receipt[33m 337[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review permits current Company Manager exactly once and preserves its replay receipt[33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval rechecks Company after admission and rolls back the actual business batch[33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review rechecks Company after admission and rolls back the actual business batch[33m 354[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval historical receipt is inaccessible after restriction while the committed history is preserved[33m 320[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review historical receipt is inaccessible after restriction while the committed history is preserved[33m 342[2mms[22m[39m
+   [33m[2m✓[22m[39m both time-review protocols deny current role cycle access without business effects[33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m both time-review protocols deny current unassigned access without business effects[33m 416[2mms[22m[39m
+   [33m[2m✓[22m[39m actual timecard review API cannot bypass Company using valid B commands and intent bindings[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m actual correction review API cannot bypass Company using valid B commands and intent bindings[33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m timecard approval expires after actual business writes and its final DB-clock guard rolls back receipts and revisions[33m 1509[2mms[22m[39m
+   [33m[2m✓[22m[39m correction review expires after actual business writes and its final DB-clock guard rolls back receipts and revisions[33m 1461[2mms[22m[39m
+   [33m[2m✓[22m[39m actual timecard review API permits current Company and replays the same committed receipt[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m actual correction review API permits current Company and replays the same committed receipt[33m 359[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-projections.integration.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 2356[2mms[22m[39m
+   [33m[2m✓[22m[39m restricted directory is a minimal authorized roster; Company and canonical financial/self roster remain complete[33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m schedule rows and local minutes are filtered in SQL and direct B/all/empty selectors cannot widen scope[33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m editor options expose only qualified local memberships/minimal position names and foreign shift IDs deny[33m 328[2mms[22m[39m
+   [33m[2m✓[22m[39m published and archived position labels use the captured value including null; drafts resolve the current catalog[33m 320[2mms[22m[39m
+   [33m[2m✓[22m[39m clock monitor filters actual site before counts while retaining an unclosed inactive employee/device record[33m 357[2mms[22m[39m
+   [33m[2m✓[22m[39m out-of-scope rows do not consume the permitted roster query limit[33m 386[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-pin-management.integration.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 7832[2mms[22m[39m
+   [33m[2m✓[22m[39m current COMPANY Manager cannot read PIN metadata or write it[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m current REVOKE Manager cannot read PIN metadata or write it[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner sets and reads a separate PIN without changing portal credentials[33m 423[2mms[22m[39m
+   [33m[2m✓[22m[39m PIN write rechecks Company after slow work before committing pin, audit and identity invalidation[33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m PIN final DB-clock guard rolls back actual writes after session expiry[33m 1571[2mms[22m[39m
+   [33m[2m✓[22m[39m PIN metadata read suppresses its result after awaited Company revocation[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m post-commit Company loss suppresses PIN metadata without deleting committed PIN or audit[33m 467[2mms[22m[39m
+   [33m[2m✓[22m[39m normal PIN action denies a scoped Manager and leaves all records unchanged[33m 498[2mms[22m[39m
+   [33m[2m✓[22m[39m normal Owner PIN action derives its actor from the current session[33m 461[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE device PIN verification remains identity/eligibility-based after Manager operational revocation[33m 560[2mms[22m[39m
+   [33m[2m✓[22m[39m LEAD device PIN verification remains identity/eligibility-based after Manager operational revocation[33m 1056[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-scope.integration.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 3140[2mms[22m[39m
+   [32m✓[39m single-company access custody migration [2m(10)[22m
+     [33m[2m✓[22m[39m atomically preserves only the evidenced current active Manager census and canonical rows[33m 302[2mms[22m[39m
+     [33m[2m✓[22m[39m ordinary contact edits preserve generation while every role or active transition invalidates the old grant[33m 354[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects empty/duplicate/unknown/inactive scoped locations, forged generations and invalid next revisions[33m 355[2mms[22m[39m
+     [33m[2m✓[22m[39m scope/adoption/history are append-only and rerunning adoption cannot widen an Owner restriction[33m 311[2mms[22m[39m
+     [33m[2m✓[22m[39m one live invitation and existing-custody counters prevent arbitrary proof rows and terminal resurrection[33m 341[2mms[22m[39m
+     [33m[2m✓[22m[39m an empty current-Manager census is valid and does not adopt an inactive Manager on later reactivation[33m 303[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects an inactive workspace before any additive object or adoption can commit[33m 337[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-time-off-review.integration.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 6773[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies selected-location access before reading a private pending request[33m 370[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies selected-location access before reading a private absent request[33m 363[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies selected-location access before reading a private terminal request[33m 396[2mms[22m[39m
+   [33m[2m✓[22m[39m current Owner makes one terminal decision and keeps the repeat a no-op[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m current Company Manager makes one terminal decision and keeps the repeat a no-op[33m 456[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies current unassigned Manager without new decisions, cancellations or intents[33m 404[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies current revoked Manager without new decisions, cancellations or intents[33m 484[2mms[22m[39m
+   [33m[2m✓[22m[39m team review denies current role cycle Manager without new decisions, cancellations or intents[33m 402[2mms[22m[39m
+   [33m[2m✓[22m[39m team decision rechecks Company after admission and rolls back the real decision/cancellation/intents batch[33m 476[2mms[22m[39m
+   [33m[2m✓[22m[39m team decision expires after actual writes and the final DB-clock guard rolls back all related records[33m 1570[2mms[22m[39m
+   [33m[2m✓[22m[39m normal time-off review action denies a scoped Manager with a generic review redirect and no writes[33m 372[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-notification-review.integration.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 5544[2mms[22m[39m
+   [33m[2m✓[22m[39m ten denied earlier candidates cannot starve eleven authorized own deliveries across two real dispatches[33m 362[2mms[22m[39m
+   [33m[2m✓[22m[39m ten denied earlier candidates cannot starve eleven authorized SELF_TEST deliveries across two real dispatches[33m 334[2mms[22m[39m
+   [33m[2m✓[22m[39m one hundred earlier denied request seeds cannot hide later Owner requests across reminder invocations[33m 359[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE locations-manager during check source observation cannot inherit the earlier admission[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE unassigned-manager during final-worker source observation cannot inherit the earlier admission[33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE locations-manager during final-worker source observation cannot inherit the earlier admission[33m 361[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE inactive during final-worker source observation cannot inherit the earlier admission[33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m LEAD unassigned-manager during check source observation cannot inherit the earlier admission[33m 425[2mms[22m[39m
+   [33m[2m✓[22m[39m LEAD locations-manager during check source observation cannot inherit the earlier admission[33m 339[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-global-scheduling.integration.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 5855[2mms[22m[39m
+   [33m[2m✓[22m[39m template list/count requires Company and cannot expose/capture global source or mutate custody from a location grant[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m a Company copy commits all source locations once; restriction suppresses its historical command, receipt and replay without deleting them[33m 349[2mms[22m[39m
+   [33m[2m✓[22m[39m global scheduling methods all reject current unassigned authority before private sources[33m 327[2mms[22m[39m
+   [33m[2m✓[22m[39m global scheduling methods all reject current revoked authority before private sources[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m template archive loses Company after admission: its actual capture/write batch and receipts roll back[33m 331[2mms[22m[39m
+   [33m[2m✓[22m[39m whole copy loses Company after admission: its actual capture/write batch and receipts roll back[33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m generation with an A selector loses Company after admission: its actual capture/write batch and receipts roll back[33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m whole-week deadline loses Company after admission: its actual capture/write batch and receipts roll back[33m 323[2mms[22m[39m
+   [33m[2m✓[22m[39m Company template reads retain all rows/counts and an authorized no-op generator/deadline remain usable[33m 361[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-claim-races.integration.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 7736[2mms[22m[39m
+   [33m[2m✓[22m[39m claim waiting behind contact rechecks binding before admission/hash and creates no credential or consume event[33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m claim waiting behind deactivation rechecks binding before admission/hash and creates no credential or consume event[33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m claim waiting behind issuer role rechecks binding before admission/hash and creates no credential or consume event[33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m claim waiting behind credential insertion rechecks binding before admission/hash and creates no credential or consume event[33m 354[2mms[22m[39m
+   [33m[2m✓[22m[39m claim blocked behind REVOKE cannot consume the retired proof[33m 376[2mms[22m[39m
+   [33m[2m✓[22m[39m claim blocked behind ISSUE cannot consume the retired proof[33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks commits before waiting contact and the credential is retained[33m 477[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks commits before waiting deactivation and the credential is retained[33m 474[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks commits before waiting issuer role and the credential is retained[33m 438[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks commits before waiting credential insertion and the credential is retained[33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks consumes before waiting REVOKE and no later invitation operation can undo it[33m 443[2mms[22m[39m
+   [33m[2m✓[22m[39m a claim holding its locks consumes before waiting ISSUE and no later invitation operation can undo it[33m 446[2mms[22m[39m
+   [33m[2m✓[22m[39m final wall-clock expiry after credential insertion and consumption rolls both and the audit event back[33m 2906[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-configuration.integration.ts [2m([22m[2m17 tests[22m[2m)[22m[33m 5240[2mms[22m[39m
+   [33m[2m✓[22m[39m coverage B create denies a location grant before private data/metadata or business effects[33m 336[2mms[22m[39m
+   [33m[2m✓[22m[39m coverage B quantities denies a location grant before private data/metadata or business effects[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m whole employee eligibility/positions permits the intended complete update for current Company authority[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m whole staffing/hour targets permits the intended complete update for current Company authority[33m 346[2mms[22m[39m
+   [33m[2m✓[22m[39m coverage B create permits the intended complete update for current Company authority[33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m coverage B quantities permits the intended complete update for current Company authority[33m 316[2mms[22m[39m
+   [33m[2m✓[22m[39m normal configuration actions cannot bypass Company by forging B IDs and preserve all rows[33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m known committed scheduling profile success remains truthful when cache refresh fails[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m whole employee eligibility/positions loses Company after admission and rolls all actual configuration/profile writes back[33m 338[2mms[22m[39m
+   [33m[2m✓[22m[39m coverage B create loses Company after admission and rolls all actual configuration/profile writes back[33m 341[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-owned-app-fixture.integration.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1607[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-claim-admission.integration.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 5636[2mms[22m[39m
+   [33m[2m✓[22m[39m four live password derivations have zero queued waiters; unknown proofs stay cheap and aborted work releases its slot after settling[33m 927[2mms[22m[39m
+   [33m[2m✓[22m[39m hash and SQL failures release work slots and never claim a credential commit[33m 564[2mms[22m[39m
+   [33m[2m✓[22m[39m near-limit concurrent admission saturates at ten and permits only the two remaining derivations[33m 648[2mms[22m[39m
+   [33m[2m✓[22m[39m exhausted live proof pressure cannot consume a fresh invitation budget or derive passwords[33m 2481[2mms[22m[39m
+   [33m[2m✓[22m[39m admission bounds its known invitation to 97 historic buckets and preserves other invitations counters[33m 493[2mms[22m[39m
+   [33m[2m✓[22m[39m lost commit acknowledgement returns no identity and replay cannot consume twice[33m 522[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-employee-actions.integration.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 906[2mms[22m[39m
+   [33m[2m✓[22m[39m single-command normal core action commits role+scope and preserves the saved receipt when refresh fails[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m normal JSON commands reject forged actor, invalid identity/contact text and stale input without mutation[33m 326[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-invitation-races.integration.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 3833[2mms[22m[39m
+   [33m[2m✓[22m[39m issuance waiting behind target deactivation rechecks after the lock and leaves no side effects[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m issuance waiting behind issuer role loss rechecks after the lock and leaves no side effects[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m issuance waiting behind issuer session expiry rechecks after the lock and leaves no side effects[33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner wall-clock expiry after the last blocking write rolls back invitation, counters, events and receipt[33m 1340[2mms[22m[39m
+   [33m[2m✓[22m[39m issuance that owns the locks commits before a waiting target contact change and later status invalidates its proof[33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m issuance that owns the locks commits before a waiting credential creation change and later status invalidates its proof[33m 317[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-clock-api.integration.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1860[2mms[22m[39m
+   [33m[2m✓[22m[39m normal monitor GET exposes only actual A activity with a finite scoped observation and keeps inactive open records[33m 329[2mms[22m[39m
+   [33m[2m✓[22m[39m normal monitor GET denies current unassigned access without an activity/count body[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m normal monitor GET suppresses an already fetched snapshot when scope is revoked before return[33m 343[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-invitation-route.integration.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 913[2mms[22m[39m
+   [33m[2m✓[22m[39m normal Owner route uses the real configured invitation adapter into owned SMTP, returns metadata only and enforces headers/body[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m normal route persists the actual adapter outcome for reject_before_data without claiming delivery[33m 311[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-digest-maintenance.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 305[2mms[22m[39m
+   [33m[2m✓[22m[39m digest maintenance clears deterministic capped batches while preserving recent/current custody, metadata, events and all counters[33m 304[2mms[22m[39m
+ [32m✓[39m src/test/integration/company-access-scope-route.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m Owner route assigns scope from current versions, own authority is minimal and a Manager cannot grant or inspect Owner controls[33m 302[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m      Tests [22m [1m[32m496 passed[39m[22m[90m (496)[39m
+[2m   Start at [22m 10:24:17
+[2m   Duration [22m 203.02s[2m (tests 98%, import 1%, transform 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

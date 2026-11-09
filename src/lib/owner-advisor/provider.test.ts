@@ -82,8 +82,10 @@ it("pairs multiple chat tool calls with sequential results before continuing", a
   ]);
   const messages = JSON.parse(String(fetch.mock.calls[1][1].body)).messages;
   const assistants = messages.filter((item: { tool_calls?: unknown[] }) => item.tool_calls);
-  expect(assistants.flatMap((item: { tool_calls: unknown[] }) => item.tool_calls)).toEqual([first, second]);
-  expect(messages.filter((item: { role: string }) => item.role === "tool").map((item: { tool_call_id: string; content: string }) => [item.tool_call_id, JSON.parse(item.content).partial])).toEqual([["published-1", false], ["coverage-2", false]]);
+  const mandatory = assistants[0].tool_calls[0];
+  expect(mandatory).toMatchObject({ id: expect.any(String), type: "function", function: { name: "company_briefing", arguments: "{}" } });
+  expect(assistants.flatMap((item: { tool_calls: unknown[] }) => item.tool_calls)).toEqual([mandatory, first, second]);
+  expect(messages.filter((item: { role: string }) => item.role === "tool").map((item: { tool_call_id: string; content: string }) => [item.tool_call_id, JSON.parse(item.content).currentCompanyBriefing?.partial ?? JSON.parse(item.content).partial])).toEqual([[mandatory.id, false], ["published-1", false], ["coverage-2", false]]);
 });
 
 it.each([

@@ -1,0 +1,31 @@
+(node:32201) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/db/migrations/order.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"event":"nevora_staging_http","role":"stripewebhook","status":404}
+{"event":"nevora_staging_http","role":"stripewebhook","status":503}
+{"event":"nevora_staging_http","role":"commercequeue","status":404}
+{"event":"nevora_staging_http","role":"commercequeue","status":401}
+{"event":"nevora_staging_http","role":"commercequeue","status":503}
+{"event":"nevora_staging_http","role":"commercequeue","status":503}
+{"event":"nevora_staging_task","role":"commercequeue","state":"disabled"}
+{"event":"nevora_staging_http","role":"commercequeue","status":200}
+{"event":"nevora_staging_http","role":"commercereconcile","status":404}
+{"event":"nevora_staging_http","role":"commercereconcile","status":401}
+{"event":"nevora_staging_http","role":"commercereconcile","status":503}
+{"event":"nevora_staging_http","role":"commercereconcile","status":503}
+{"event":"nevora_staging_task","role":"commercereconcile","state":"disabled"}
+{"event":"nevora_staging_http","role":"commercereconcile","status":200}
+{"event":"nevora_staging_http","role":"provisioner","status":404}
+{"event":"nevora_staging_http","role":"provisioner","status":401}
+{"event":"nevora_staging_http","role":"provisioner","status":503}
+{"event":"nevora_staging_http","role":"provisioner","status":503}
+{"event":"nevora_staging_task","role":"provisioner","state":"disabled"}
+{"event":"nevora_staging_http","role":"provisioner","status":200}
+{"event":"nevora_staging_http","role":"commerceauthority","status":404}
+{"event":"nevora_staging_http","role":"commerceauthority","status":503}
+{"event":"nevora_staging_http","role":"commerceauthority","status":404}
+{"event":"nevora_staging_http","role":"commerceapi","status":404}
+{"event":"nevora_staging_http","role":"commerceapi","status":503}
+{"event":"nevora_staging_http","role":"commerceapi","status":404}
+{"state":"passed","source":{"commit":"910bd119c37412c379600d460344ada411950ad4","tree":"bc09f128c9904bcd8248569b9342989ef9c520d2","dirty":false},"verifiedFiles":75,"functions":["stripewebhook","commercequeue","commercereconcile","provisioner","commerceauthority","commerceapi"],"actualZipExtractionVerified":true,"canonicalSqlTamperingRejected":true,"localTriggerSimulationOnly":true}

@@ -1,0 +1,11 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-backend-business-repairs-20261109/Fuel Scheduler
+
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  11:54:48
+   Duration  3.71s (tests 95%, transform 2%, import 2%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

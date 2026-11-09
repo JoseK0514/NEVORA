@@ -1,0 +1,77 @@
+{
+  "buildId": "Yp-ie4-amhy2pOdrFU1cB",
+  "probes": [
+    {
+      "environment": "preview",
+      "path": "/api/timecards",
+      "originCase": "candidate",
+      "status": 401,
+      "failure": "authentication_required"
+    },
+    {
+      "environment": "preview",
+      "path": "/api/timecards",
+      "originCase": "configured",
+      "status": 401,
+      "failure": "authentication_required"
+    },
+    {
+      "environment": "preview",
+      "path": "/api/timecards",
+      "originCase": "foreign",
+      "status": 403,
+      "failure": "origin_mismatch"
+    },
+    {
+      "environment": "preview",
+      "path": "/api/timecards",
+      "originCase": "missing",
+      "status": 403,
+      "failure": "origin_mismatch"
+    },
+    {
+      "environment": "preview",
+      "path": "/api/manager/time-off-staffing",
+      "originCase": "candidate",
+      "status": 401,
+      "failure": "authentication_required"
+    },
+    {
+      "environment": "production",
+      "path": "/api/timecards",
+      "originCase": "candidate",
+      "status": 403,
+      "failure": "origin_mismatch"
+    },
+    {
+      "environment": "production",
+      "path": "/api/timecards",
+      "originCase": "configured",
+      "status": 401,
+      "failure": "authentication_required"
+    },
+    {
+      "environment": "production",
+      "path": "/api/timecards",
+      "originCase": "foreign",
+      "status": 403,
+      "failure": "origin_mismatch"
+    },
+    {
+      "environment": "production",
+      "path": "/api/timecards",
+      "originCase": "missing",
+      "status": 403,
+      "failure": "origin_mismatch"
+    },
+    {
+      "environment": "production",
+      "path": "/api/manager/time-off-staffing",
+      "originCase": "candidate",
+      "status": 403,
+      "failure": "origin_mismatch"
+    }
+  ],
+  "passed": 10,
+  "applicationCredentialsUsed": false
+}

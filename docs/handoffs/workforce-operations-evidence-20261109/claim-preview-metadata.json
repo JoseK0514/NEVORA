@@ -1,0 +1,16 @@
+{
+  "id": "dpl_GW19vG3bwGPG14U84GPSRYhf1pvZ",
+  "name": "nevora-onboarding-staging",
+  "url": "nevora-onboarding-staging-3au43m67x-josekarlo-5933s-projects.vercel.app",
+  "target": null,
+  "readyState": "READY",
+  "projectId": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "alias": [],
+  "errorCode": null,
+  "errorMessage": null,
+  "sourceMeta": {
+    "nevoraSourceSha": "910bd119c37412c379600d460344ada411950ad4",
+    "nevoraSourceTree": "bc09f128c9904bcd8248569b9342989ef9c520d2",
+    "nevoraSourceScope": "backend-completion"
+  }
+}

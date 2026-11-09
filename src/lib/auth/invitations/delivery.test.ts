@@ -35,3 +35,11 @@ it('rejects recipient header injection before connecting to SMTP',async()=>{
   expect(smtp.messages.length).toBe(0);
  }finally{await smtp.close();}
 });
+
+it('classifies a staging-recipient refusal as definitely failed without opening SMTP',async()=>{
+ const smtp=await fakeInvitationSmtp();try{
+  const sender=invitationDelivery({...smtp.env,NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_STAGING_EMAIL_RECIPIENT:'approved@example.invalid'})!;
+  await expect(sender.send({registeredEmail:'other@example.invalid',proof:randomBytes(32).toString('base64url'),expiresAt:new Date(Date.now()+900000).toISOString()})).rejects.toMatchObject({deliveryState:'FAILED'});
+  expect(smtp.connections).toBe(0);expect(smtp.messages.length).toBe(0);
+ }finally{await smtp.close();}
+});

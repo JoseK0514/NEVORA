@@ -1,0 +1,33 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [32m✓[39m src/test/integration/company-access-shift-changes.integration.ts [2m([22m[2m36 tests[22m[2m)[22m[33m 12538[2mms[22m[39m
+   [33m[2m✓[22m[39m MANAGER_APPROVE refuses selected-location management before the global snapshot and preserves all related history[33m 596[2mms[22m[39m
+   [33m[2m✓[22m[39m MANAGER_DECLINE refuses selected-location management before the global snapshot and preserves all related history[33m 316[2mms[22m[39m
+   [33m[2m✓[22m[39m MANAGER_CLOSE refuses selected-location management before the global snapshot and preserves all related history[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m APPROVE_CALLOUT refuses selected-location management before the global snapshot and preserves all related history[33m 317[2mms[22m[39m
+   [33m[2m✓[22m[39m current Owner keeps a real Manager approval and its original operation receipt[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m current Company Manager keeps a real Manager approval and its original operation receipt[33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m custom Manager transition denies revoked authority without new history or notices[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m private availability projection rechecks original Company authority after the awaited SQL observation[33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m private operation projection rechecks original Company authority after the awaited SQL observation[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m a saved Manager operation cannot be replayed after restriction even after deleting its live source shift[33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m the real business transaction rechecks original Company after planning and preserves the complete batch on denial[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m the final actual DB-clock check rolls back absence, linked coverage, receipts, events and notices after expiry[33m 1563[2mms[22m[39m
+   [33m[2m✓[22m[39m scope loss after a known commit suppresses its response without rewriting the committed receipt or history[33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m EMPLOYEE own report, cancellation, history and operation remain identity-based while Manager scope is restricted[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m actual exchange action denies restricted Manager authority and keeps durable history[33m 326[2mms[22m[39m
+   [33m[2m✓[22m[39m actual callout action denies restricted Manager authority and keeps durable history[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m actual reconcile action denies restricted Manager authority and keeps durable history[33m 314[2mms[22m[39m
+   [33m[2m✓[22m[39m actual structured action retains Company Manager success through the session actor[33m 327[2mms[22m[39m
+   [33m[2m✓[22m[39m actual exchange action retains Company Manager success through the session actor[33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m actual reconcile action retains Company Manager success through the session actor[33m 316[2mms[22m[39m
+   [33m[2m✓[22m[39m Company revocation committed while the real business transaction waits on its workspace lock is observed before any write[33m 303[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m36 passed[39m[22m[90m (36)[39m
+[2m   Start at [22m 10:27:42
+[2m   Duration [22m 12.88s[2m (tests 98%, transform 2%, import 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

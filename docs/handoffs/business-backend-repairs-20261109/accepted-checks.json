@@ -1,0 +1,78 @@
+{
+  "source": "167b187e934025dc458d37f3b9bfc9356c57af29",
+  "checks": [
+    {
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exitCode": 0,
+      "log": "build-accepted.log"
+    },
+    {
+      "command": [
+        "python3",
+        "docs/handoffs/business-backend-repairs-20261109/verify-admission.py"
+      ],
+      "exitCode": 0,
+      "log": "http-admission-run.log"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "log": "typecheck-accepted.log"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exitCode": 0,
+      "log": "lint-accepted.log"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.company-access-integration.config.mts",
+        "src/test/integration/company-access-time-off-review.integration.ts",
+        "src/test/integration/company-access-leave-staffing.integration.ts"
+      ],
+      "exitCode": 0,
+      "log": "leave-authority-accepted.log"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.action-center-integration.config.mts"
+      ],
+      "exitCode": 0,
+      "log": "action-center-accepted.log"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "check:onboarding-manifest"
+      ],
+      "exitCode": 0,
+      "log": "onboarding-manifest.log"
+    },
+    {
+      "command": [
+        "npm",
+        "run",
+        "check:development-sources"
+      ],
+      "exitCode": 0,
+      "log": "source-inventory.log"
+    }
+  ]
+}

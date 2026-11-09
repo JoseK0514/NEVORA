@@ -1,0 +1,13 @@
+✔ new download, auth action, worker and direct database paths cannot evade the entrypoint inventory (2.882541ms)
+✔ test-only suffixes are bounded exemptions, invalid inventory dispositions are rejected (0.08025ms)
+✔ server actions after comments, without semicolons, or inline in a page still require classification (0.331334ms)
+✔ commerce server/catalog/worker boundaries cannot evade the runtime inventory (0.070458ms)
+✔ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (123.328ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 263.352667
