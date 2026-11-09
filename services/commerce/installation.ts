@@ -3,7 +3,7 @@ import type {BillingOwner} from "./owner-authority";
 import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError } from "./model";
-import { validateWorkspaceProfile } from "../../src/lib/workspace/validation";
+import { validateWorkspaceTimeZone } from "../../src/lib/workspace/validation";
 import { unseal } from "./security";
 async function installation(
   store: CommerceStore,
@@ -45,7 +45,7 @@ export async function readInstallationFacts(
     throw new CommerceError("installation_identity_mismatch", 503);
   let timeZone:string|null=null;
   if(data.timeZone!==undefined){
-    try{timeZone=validateWorkspaceProfile({name:'Workplace',timeZone:data.timeZone}).timeZone;}
+    try{timeZone=validateWorkspaceTimeZone(data.timeZone);}
     catch{throw new CommerceError('installation_unavailable',503);}
   }
   return {employeeCount:data.employeeCount as number,timeZone};

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import Stripe from "stripe";
 import { Pool } from "pg";
-import { randomUUID } from "node:crypto";
+import { createHmac,randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { CommerceStore } from "./store";
 import { StripeBilling } from "./stripe";
@@ -115,6 +115,14 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     const portalRequest=provider.requests.find(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')!.form;
     expect(portalRequest.get('locale')).toBe('es');expect(new URL(portalRequest.get('return_url')!).pathname).toBe('/pages/es-facturacion');
     expect((await store.business(id)).trialEnd).toBe(b.trialEnd);expect((await store.business(id)).paidThrough).toBeNull();
+  });
+  it('replays an in-flight Portal request created before language support with identical provider parameters',async()=>{
+    await checkout();const b=await store.business(id),operation=randomUUID();
+    const proof=createHmac('sha256',store.key).update(`portal-return:${id}:${operation}`).digest('base64url');
+    const previous=await provider.client.billingPortal.sessions.create({customer:b.customerId!,return_url:`https://accounts.example.test/pages/nevora-billing#handoff=${proof}`},{idempotencyKey:`nevora-portal:${id}:${operation}`});
+    expect(await billing.portal(b,operation)).toBe(previous.url);
+    const requests=provider.requests.filter(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST');
+    expect(requests).toHaveLength(2);expect(requests[0].form.has('locale')).toBe(false);expect(requests[1].form.toString()).toBe(requests[0].form.toString());
   });
   it("rejects the wrong merchant before checkout, portal or reconciliation", async () => {
     Object.assign(billing.options, { expectedAccountId: "acct_wrong" });

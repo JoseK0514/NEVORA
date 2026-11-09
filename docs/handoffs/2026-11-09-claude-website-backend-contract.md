@@ -25,7 +25,7 @@ These findings distinguish live infrastructure, development implementation, olde
 
 **Claude now:** remove/disable the parked Open NEVORA link. Do not substitute a preview or the broken alpha alias. Avoid promising an automatic “workplace ready” email: the implemented self-service flow emails verification, then returns the Owner activation URL through authenticated provisioning/bootstrap APIs; a later ready-notification email was not established. Manual setup details can be emailed by Velani as an operating process, but that is separate from an implemented automated mail event.
 
-**Codex/release next:** source reconciliation and exact candidate CI, migrations/environment custody, UI/role acceptance and recovery/restore evidence, then Jose's explicit production approval. Deploy that accepted source to the actual `nevora` project; verify its platform and company hosts; attach apex/portal domain and change only the required GoDaddy web records, preserving email records; check TLS/login/recovery and rollback. Pointing DNS at the failed build cannot resolve this issue. The earlier account-level domain addition and verified Resend sending records do not constitute project attachment, website deployment or sign-in acceptance.
+**Codex/release next:** source reconciliation and exact candidate CI, migrations/environment custody, UI/role acceptance and recovery/restore evidence, then Jose's explicit production approval. Deploy that accepted source to the actual `nevora` project; verify its platform and company hosts; attach apex/portal domain and change only the required GoDaddy web records, preserving email records; check TLS/login/recovery and rollback. Pointing DNS at the failed build cannot resolve this issue. The earlier account-level domain addition and Resend email-record setup do not constitute project attachment, website deployment or sign-in acceptance.
 
 ## 2. Sign-in contract
 
@@ -74,7 +74,7 @@ The Nov5 daily retention registration belongs to **Rondo website chat sessions**
 
 **Jose already selected the future policy:** keep an unpaid workplace for30 days after trial end, permit Owner export, remind at trial end and seven/one days before deletion. The Release1.1 candidate at `831d33dac00f63622f538e77fc598857f3b9b8d9` is an unshipped pure policy, not a live scheduler, outbox, export or deletion implementation. Reuse that decision; do not request it again or revert to three days. Integration still needs conversion/deletion serialization, durable reminders, complete export, scoped resumable deletion, legal holds/backup restoration controls and hosted acceptance.
 
-**Claude now:** neither “deleted within3 days” nor “automatically deleted30 days later” is supported as current live behavior. Reconcile all EN/ES privacy, trial, deletion, help and Rondo knowledge text with the actual shipped milestone. Do not promise indefinite retention from the absence of an automatic eraser. Publish the final deletion timeline only when its implementation and release are verified. Manual account-deletion/legal-retention processes are separate.
+**Claude now:** neither “deleted within 3 days” nor “automatically deleted 30 days later” is supported as current live behavior. Reconcile all EN/ES privacy, trial, deletion, help and Rondo knowledge text with the actual shipped milestone. Do not promise indefinite retention from the absence of an automatic eraser. Publish the final deletion timeline only when its implementation and release are verified. Manual account-deletion/legal-retention processes are separate.
 
 ## 5. More than30 employees — policy approved by Jose in this task
 
@@ -90,9 +90,9 @@ Claude can align calculator/forms/help in EN/ES around “Contact Velani for ass
 
 ### Clocker pause return path
 
-A denied valid tablet page GET redirects303 to `/clocker/paused?reason=subscription_required&from=%2Fclocker%2F<key>`, or `reason=billing_status_unavailable` when authority cannot be checked. `from` is generated from the exact original path, matched against `^/clocker/[A-Za-z0-9_-]{8,128}$`. No query, external URL or caller destination is carried. Explicit JSON requests, API calls and writes retain402/503 JSON. GET `/clocker/paused` is a bounded recovery exemption, including before isolated routing; writes are not exempt. No billing or employee data is exposed.
+A denied valid tablet page GET redirects303 to `/clocker/access/paused?reason=subscription_required&from=%2Fclocker%2F<key>`, or `reason=billing_status_unavailable` when authority cannot be checked. `from` is generated from the exact original path, matched against `^/clocker/[a-z0-9]+(?:-[a-z0-9]+)*$` with a 1–64-character key, matching the existing catalog and PIN transport (including numeric `2` and `110`). No query, external URL or caller destination is carried. Explicit JSON requests, API calls and writes retain402/503 JSON. GET `/clocker/access/paused` is a bounded recovery exemption, including before isolated routing; writes are not exempt. No billing or employee data is exposed.
 
-**Claude integration dependency:** the reserved paused page from the separate commerce UI candidate must be included before release; it is absent from this development checkout. Keep its existing validation and full-page “Try again” behavior. This backend task does not create that UI. The prior app-billing/export recovery candidate also remains an explicit integration dependency.
+**Claude integration dependency:** move the separate commerce UI paused page to **`/clocker/access/paused`** before release and update its `from` validation to the catalog rule above. The old `/clocker/paused` is a valid existing location key and must remain gated as an ordinary tablet; the new multi-segment route cannot collide with a location. This corrects the older 8–128-character proposal. The recovery screen is absent from this development checkout. Keep strict validation of the new allowed return-path shape and full-page “Try again” behavior. This backend task does not create that UI. The prior app-billing/export recovery candidate also remains an explicit integration dependency.
 
 ### Workplace time zone
 
@@ -102,15 +102,17 @@ A denied valid tablet page GET redirects303 to `/clocker/paused?reason=subscript
 
 The November8 request for `lang` on `/v1/signup` and `/v1/login-link` referred to a **superseded standalone flow**. In integrated onboarding those endpoints, plus legacy setup/verify, intentionally remain409 `use_onboarding`. Do not re-enable mailbox-only billing authority or wire the theme to these old endpoints.
 
-Use `locale:"es"` in canonical `/api/onboarding/registrations`. The existing Spanish verification copy now links to the configured signup origin at `/onboarding/verify?lang=es#proof=…` (English uses `lang=en`). Claude's verification screen reads the language, scrubs the proof immediately and follows the existing POST/cookie contract. It must not submit that proof to the old Shopify `nevora-verify` token endpoint.
+Use `locale:"es"` in canonical `/api/onboarding/registrations`. The existing Spanish verification copy now links to the configured signup origin at `/onboarding/verify?lang=es#proof=…` (English uses `lang=en`). **Claude must implement and verify** a screen that reads this language, scrubs the proof immediately and follows the existing POST/cookie contract. That screen is absent from this candidate; its behavior is an integration requirement, not an observed result. It must not submit that proof to the old Shopify `nevora-verify` token endpoint.
 
-Authenticated `POST /v1/checkout` and `/v1/portal` accept optional `{lang:"en"|"es"}`; omission defaults to English. Invalid/null values return400 `invalid_language`. Normal Owner/bearer/installation/Origin/Idempotency-Key checks are preserved.
+Authenticated `POST /v1/checkout` and `/v1/portal` accept optional `{lang:"en"|"es"}`; omission keeps English return destinations and the legacy Portal provider payload (no added locale parameter). Explicit `en` or `es` sets the Stripe page language. Invalid/null values return400 `invalid_language`. Normal Owner/bearer/installation/Origin/Idempotency-Key checks are preserved.
+
+The initial authenticated Owner handoff still goes to exactly **`/pages/plans#handoff=…`**, with an empty query. The company route validates that fixed destination. Claude must make this central entry bilingual, preserve an existing Velani language preference or offer a language choice there, then send the selected `lang` on Checkout/Portal. Do not append language/query parameters to the protected handoff URL or claim automatic cross-domain language continuity. This remains part of source-matched EN/ES browser acceptance.
 
 | Action | English | Spanish |
 |---|---|---|
 | Checkout success | `/pages/nevora-billing-return#handoff=…` | `/pages/es-pago#handoff=…` |
 | Checkout cancel / Portal return | `/pages/nevora-billing#handoff=…` | `/pages/es-facturacion#handoff=…` |
-| Stripe page locale | `en` | `es` |
+| Stripe page locale, when explicitly requested | `en` | `es` |
 
 These paths are attached only to the configured approved UI origin, never a submitted return URL. Replaying/recovering an existing open Checkout reuses its original stored locale and destinations, even after a language switch; it cannot create a second checkout or reset trial/payment state. Preserve one operation ID and identical Portal payload on a lost-response retry; a newly selected language is a new user action with a new ID. Stripe's normal idempotency checks remain in force. UI must not infer payment from any return URL.
 

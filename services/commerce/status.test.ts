@@ -1,12 +1,17 @@
 import {afterEach,expect,it,vi} from 'vitest';
+import {Pool} from 'pg';
 import {createCommerce} from './service';
 import {CommerceStore,type Business} from './store';
 import {seal} from './security';
 const id='11111111-1111-4111-8111-111111111111',key=Buffer.alloc(32,7),secret='a'.repeat(43);
-afterEach(()=>vi.unstubAllGlobals());
+const pools:Pool[]=[];
+afterEach(async()=>{vi.unstubAllGlobals();vi.restoreAllMocks();await Promise.all(pools.splice(0).map(p=>p.end()));});
 async function status(timeZone:unknown,origin='https://www.thevelani.com'){
- const business={id,state:'ready',slotId:id,profile:{email:'owner@example.invalid',timeZone:'Pacific/Honolulu'},planKey:'small',trialEnd:Date.now()+10000,paidThrough:null,pastDueSince:null,subscriptionStatus:null} as Business;
- const store={key,session:async()=>id,tokenOwner:async()=>null,business:async()=>business,pool:{query:async()=>({rowCount:1,rows:[{id,origin:'https://company.example.test',instance_secret:seal(secret,key,'instance:'+id)}]})}} as unknown as CommerceStore;
+ const business:Business={id,state:'ready',slotId:id,email:'owner@example.invalid',profile:{email:'owner@example.invalid',timeZone:'Pacific/Honolulu'},planKey:'small',trialStart:null,trialEnd:Date.now()+10000,paidThrough:null,pastDueSince:null,subscriptionStatus:null,customerId:null,subscriptionId:null,employeeCount:7,enrollmentSource:'onboarding',incarnation:'1',origin:'https://company.example.test'};
+ const pool=new Pool({connectionString:'postgresql://fictional@127.0.0.1:1/catalog'});pools.push(pool);
+ const store=new CommerceStore(pool,key,'onboarding');
+ vi.spyOn(store,'session').mockResolvedValue(id);vi.spyOn(store,'tokenOwner').mockResolvedValue(null);vi.spyOn(store,'business').mockResolvedValue(business);
+ vi.spyOn(pool,'query').mockImplementation(async()=>({command:'SELECT',oid:0,fields:[],rowCount:1,rows:[{id,origin:'https://company.example.test',instance_secret:seal(secret,key,'instance:'+id)}]}));
  vi.stubGlobal('fetch',async()=>Response.json({businessId:id,installationId:id,employeeCount:7,...(timeZone===undefined?{}:{timeZone})}));
  const app=createCommerce({store,origin:'https://billing.example.test',allowedOrigins:['https://www.thevelani.com'],provisioningMode:'onboarding'});
  return app(new Request('https://billing.example.test/v1/status',{headers:{origin,authorization:'Bearer fictional'}}),'127.0.0.1');

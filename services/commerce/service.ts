@@ -238,7 +238,7 @@ export function createCommerce(options: CommerceOptions) {
         (path === "/v1/checkout" || path === "/v1/portal") &&
         request.method === "POST"
       ) {
-        const lang=commerceLanguage(input.lang);
+        const lang=input.lang===undefined?undefined:commerceLanguage(input.lang);
         if (business.state !== "ready")
           throw new CommerceError("setup_pending", 409);
         if (!options.billing)

@@ -76,10 +76,12 @@ export async function requireOperationalCommerce() {
 }
 /** Tablet-safe recovery only. The return path is a bounded local Clocker key;
  * request query strings and caller-provided destinations are never forwarded. */
+export const CLOCKER_PAUSED_PATH='/clocker/access/paused';
 export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
-  if(request&&method==='GET'&&/^\/clocker\/[A-Za-z0-9_-]{8,128}$/.test(path)&&!request.headers.get('accept')?.includes('application/json')){
+  const locationKey=path.startsWith('/clocker/')?path.slice('/clocker/'.length):'';
+  if(request&&method==='GET'&&locationKey.length<=64&&/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey)&&!request.headers.get('accept')?.includes('application/json')){
     const query=new URLSearchParams({reason:code,from:path});
-    return new Response(null,{status:303,headers:{location:new URL('/clocker/paused?'+query,request.url).href,'cache-control':'no-store','referrer-policy':'no-referrer'}});
+    return new Response(null,{status:303,headers:{location:new URL(CLOCKER_PAUSED_PATH+'?'+query,request.url).href,'cache-control':'no-store','referrer-policy':'no-referrer'}});
   }
   return Response.json({error:{code}},{status:code==='subscription_required'?402:503,headers:{'cache-control':'no-store'}});
 }
@@ -91,7 +93,7 @@ export async function commerceGate(
 ): Promise<Response | null> {
   if (!commerceEnabled()) return null;
   if(publicOnboardingPath(path))return null;
-  if(path==='/clocker/paused'&&method==='GET')return null;
+  if(path===CLOCKER_PAUSED_PATH&&method==='GET')return null;
   if (
     path.startsWith("/api/commerce/") ||
     path.startsWith("/api/auth/") ||

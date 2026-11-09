@@ -73,7 +73,7 @@ export class StripeBilling implements BillingPort {
     await this.verifyAccount();
     return createCheckout(this.checkoutPorts(), business, operation,owner,lang);
   }
-  async portal(input: Business, operation: string,owner?:BillingOwner|null,lang:CommerceLanguage='en') {
+  async portal(input: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage) {
     await this.verifyAccount();
     return this.store.withBusinessLock(input.id, async (client, business) => {
       if (!business.customerId)
@@ -85,8 +85,8 @@ export class StripeBilling implements BillingPort {
       const session = await this.stripe.billingPortal.sessions.create(
         {
           customer: business.customerId,
-          return_url: `${this.options.origin}${billingPage(lang,'billing')}#handoff=${proof}`,
-          locale:lang,
+          return_url: `${this.options.origin}${billingPage(lang??'en','billing')}#handoff=${proof}`,
+          ...(lang===undefined?{}:{locale:lang}),
         },
         { idempotencyKey: `nevora-portal:${business.id}:${operation}` },
       );
