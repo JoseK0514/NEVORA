@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "e9c3b60f5de31a96f637ba039749c9075b77eb7e",
+      "sha": "3446982085c32b238b4d329c98639f3978c6e8b2",
       "disposition": "target",
-      "reason": "Freshly fetched development base for the November9 non-UI backend completion. Current development authorization/source-lifetime fixes are inherited; later onboarding/Owner partner adoption is qualified separately in2026-11-09-backend-source-completion.json. Frozen Release1 remains separate."
+      "reason": "Freshly fetched development base for the November 9 Rondo integration. The scoped adoption is tested Rondo application commits 537e4eb8 and 41d5706c, with their independent QA and replay handoffs through a395ca83. Existing onboarding, operating-authority and approved-leave backend work is inherited. No production or whole collaboration-branch adoption is implied."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "c0a24ef7a772f20df6149c9cf4cdf629e6fe45c7",
+      "sha": "e561e97cf35b9707ca5a7621d3ae8e9b63b52399",
       "disposition": "held",
-      "reason": "Held exact collaboration head after merging development e9c3b60f5. Earlier bounded backend extraction fromd349b661 and subsequent lifetime/authorization fixes are already inherited through development; this head is not wholly included. Unique UI/navigation/copy/browser/native-app work remains held under Claude/native ownership. No additional collaboration delta is adopted by the November9 onboarding/Owner-partner backend completion. See2026-11-08-backend-only-development-integration.md and2026-11-09-backend-source-completion.json. Main and frozen Release1 remain separate. November9 observed UI/native-only follow-up90e03014 (12paths: DirectionB phone/device components, DESIGN, UI scan artifacts and owned browser-harness styles) is also HELD; no new runtime backend delta selected. The source gate caught this advancement during qualification; no changes were imported. November9 final entrypoint reconciliation: collaborationc0a24ef7a has merged delivered development ancestry but remains HELD as a whole. Current developmentc8d5390f8 already preserves our4ef backend and separately authorized167b187e9 business repairs. No additional collaboration code is selected by this metadata-only fix; Claude UI/native ownership and independent acceptance remain separate."
+      "reason": "HELD under Claude/native UI ownership. Reconciled from recorded c0a24ef7 to e561e97c: 41 changed paths add leave-staffing repair, canonical coverage presentation and failure-recovery UI/helpers. No Owner advisor chat/API contract or Rondo provider file changed in that delta. The complete collaboration branch still contains held UI/navigation/copy/native work and is not imported by this scoped Rondo integration. Existing development contains the earlier approved backend contracts. Rondo is qualified against the development UI; separate Claude/UI acceptance is required before adopting held collaboration work. See docs/qa/2026-11-09-rondo-development-integration.md."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",

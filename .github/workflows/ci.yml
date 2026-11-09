@@ -375,6 +375,8 @@ jobs:
         run: npm run test:release:postgres
       - name: Owner advisor isolated PostgreSQL integration gate
         run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
+      - name: Rondo leadership fixture and recovery gate (no live model calls)
+        run: node scripts/payroll-postgres.mjs vitest.rondo-leadership.config.mts
 
   phase-e-postgres:
     name: phase-e-postgres
