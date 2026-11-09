@@ -1,5 +1,8 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,randomBytes} from 'node:crypto';
+import {Pool} from 'pg';
+import {configureWorkerControlReader,workerControlRole} from '@/lib/operations/routing-reader';
+import {currentWorkspaceBinding} from '@/lib/workspace-routing/context.server';
 import {onboardingJourneyFixture} from './onboarding-journey-fixture';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
 import {getWorkspaceDb} from '@/lib/workspace-routing/transport.server';
@@ -33,12 +36,27 @@ it('observes real due/future/failed/leased queues under restricted WORKER withou
   await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[workspaceId]);await expect(readQueueHealth(ex,'test')).rejects.toThrow('operations_health_unavailable');expect((await db.query(queues)).rows).toEqual(before);
  }finally{await f.close();}
 });
-it('checks expected company/environment against the actual current registry before invoking scoped work',async()=>{
- const f=await onboardingJourneyFixture();try{
-  const a=await f.activateCompany(await f.createCompany());vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_WORKER_EXPECTED_WORKSPACE_ID',a.c.row.workspace_id);vi.stubEnv('NEVORA_WORKER_EXPECTED_ENVIRONMENT','test');
-  vi.spyOn(routing,'readWorkspaceRoutingConfig').mockReturnValue(f.routing);vi.spyOn(control,'runtimeControlStore').mockReturnValue(f.store);
-  const work=vi.fn(async()=>true);expect(await withWorkerWorkspace(a.c.origin,work)).toBe(true);
-  vi.stubEnv('NEVORA_WORKER_EXPECTED_WORKSPACE_ID',randomUUID());await expect(withWorkerWorkspace(a.c.origin,work)).rejects.toThrow();expect(work).toHaveBeenCalledTimes(1);
-  vi.stubEnv('NEVORA_WORKER_EXPECTED_WORKSPACE_ID',a.c.row.workspace_id);vi.stubEnv('NEVORA_WORKER_EXPECTED_ENVIRONMENT','production');await expect(withWorkerWorkspace(a.c.origin,work)).rejects.toThrow();expect(work).toHaveBeenCalledTimes(1);
- }finally{await f.close();}
+it('uses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers',async()=>{
+ const f=await onboardingJourneyFixture();const readers:Pool[]=[],roles:string[]=[];try{
+  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  async function reader(environment:'test'|'production'){
+   const role=workerControlRole(a.c.row.workspace_id,environment),password=randomBytes(32).toString('base64url');roles.push(role);
+   await f.db.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.db.pool.query(`GRANT CONNECT ON DATABASE ${f.db.name} TO ${role}`);
+   const client=await f.db.pool.connect();try{await configureWorkerControlReader(client,role);}finally{client.release();}
+   const url=new URL(f.db.connectionUrl);url.username=role;url.password=password;const pool=new Pool({connectionString:url.href,max:2});readers.push(pool);return {role,pool,url:url.href,store:control.createControlStore(pool)};
+  }
+  const r=await reader('test');
+  for(const table of ['workspace_secrets','workspace_registry'])await expect(r.pool.query('SELECT * FROM nevora_onboarding.'+table)).rejects.toMatchObject({code:'42501'});
+  expect((await r.pool.query('SELECT workspace_id::text,role_kind FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([{workspace_id:a.c.row.workspace_id,role_kind:'WORKER'}]);
+  expect((await r.pool.query('SELECT id::text FROM nevora_onboarding.worker_workspace_registry')).rows).toEqual([{id:a.c.row.workspace_id}]);
+  const machine=routing.readWorkerRoutingConfig({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_PORTAL_BASE_DOMAIN:f.config.portalBaseDomain,NEVORA_CONTROL_DATABASE_URL:r.url,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:f.config.encryptionKey});expect(machine).not.toHaveProperty('tokenKey');
+  await expect(resolveWorkspaceBinding({origin:b.c.origin},r.store,machine,'WORKER')).rejects.toThrow();for(const purpose of ['APP','BOOTSTRAP'] as const)await expect(resolveWorkspaceBinding({origin:a.c.origin},r.store,machine,purpose)).rejects.toThrow();
+  vi.spyOn(routing,'readWorkerRoutingConfig').mockReturnValue(machine);vi.spyOn(control,'runtimeControlStore').mockReturnValue(r.store);
+  const work=vi.fn(async()=>readQueueHealth(getWorkspaceDb(await currentWorkspaceBinding()),'test'));
+  const expected={workspaceId:a.c.row.workspace_id,environment:'test' as const};expect(await withWorkerWorkspace(a.c.origin,work,expected)).toMatchObject({workspaceId:a.c.row.workspace_id});
+  await expect(withWorkerWorkspace(a.c.origin,work,{...expected,workspaceId:b.c.row.workspace_id})).rejects.toThrow();await expect(withWorkerWorkspace(a.c.origin,work,{...expected,environment:'production'})).rejects.toThrow();expect(work).toHaveBeenCalledTimes(1);
+  const prod=await reader('production');expect((await prod.pool.query('SELECT * FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([]);expect((await r.pool.query('SELECT count(*)::int n FROM nevora_onboarding.worker_workspace_secrets')).rows[0].n).toBe(1);
+  await f.db.pool.query('ALTER ROLE '+r.role+' INHERIT');const elevated=await f.db.pool.connect();try{await expect(configureWorkerControlReader(elevated,r.role)).rejects.toThrow('operations_reader_scope_invalid');}finally{elevated.release();await f.db.pool.query('ALTER ROLE '+r.role+' NOINHERIT');}
+  await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[a.c.row.workspace_id]);expect((await r.pool.query('SELECT * FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([]);await expect(withWorkerWorkspace(a.c.origin,work,expected)).rejects.toThrow();
+ }finally{for(const pool of readers)await pool.end();for(const role of roles){await f.db.pool.query('DROP OWNED BY '+role);await f.db.pool.query('DROP ROLE '+role);}await f.close();}
 });

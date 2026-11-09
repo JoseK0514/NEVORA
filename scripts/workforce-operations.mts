@@ -25,7 +25,7 @@ async function health(config:OperationsConfig,command:WorkerCommand){
   if(queues.workspaceId!==config.scopeId)throw Error('operations_health_unavailable');
   const heartbeat=await readInvocationHealth(config,command,Date.now(),maxGap),queueStatus=assessQueueHealth(queues,maxAge,command==='payroll'?'payroll':'notifications');
   return {schemaVersion:1,command,environment:config.environment,scopeId:config.scopeId,sourceSha:config.sourceSha,sourceIdentity:'operator-declared',healthy:heartbeat.healthy&&queueStatus.healthy,heartbeat,queueStatus,queues};
- });}finally{clearTimeout(watchdog);}
+ },{workspaceId:config.scopeId,environment:config.environment});}finally{clearTimeout(watchdog);}
 }
 
 /** Private operator CLI only. No HTTP ingress, arbitrary executable or scheduler

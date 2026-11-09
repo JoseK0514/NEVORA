@@ -2,7 +2,7 @@ import 'server-only';
 import {validOnboardingToken} from '../onboarding/crypto.server';
 import {validWorkspaceSlug} from '../onboarding/contracts';
 
-export type WorkspaceRoutingConfig={environment:'test'|'development'|'production';portalBaseDomain:string;controlDatabaseUrl:string;encryptionKey:string;tokenKey?:string;secretScope?:'COMMERCE_APP_ONLY'};
+export type WorkspaceRoutingConfig={environment:'test'|'development'|'production';portalBaseDomain:string;controlDatabaseUrl:string;encryptionKey:string;tokenKey?:string;secretScope?:'COMMERCE_APP_ONLY'|'WORKER_ONLY'};
 export class WorkspaceRoutingError extends Error{constructor(){super('Workspace is unavailable');}}
 export function workspaceMode(env:Readonly<Record<string,string|undefined>>=process.env):'single_company'|'isolated'{const mode=env.NEVORA_WORKSPACE_MODE??'single_company';if(mode!=='single_company'&&mode!=='isolated')throw new WorkspaceRoutingError();return mode;}
 function routingConfig(env:Readonly<Record<string,string|undefined>>,browser:boolean):WorkspaceRoutingConfig{
@@ -12,6 +12,16 @@ function routingConfig(env:Readonly<Record<string,string|undefined>>,browser:boo
  try{const url=new URL(env.NEVORA_CONTROL_DATABASE_URL??'');if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname||!url.pathname.slice(1)||['postgres','template0','template1'].includes(url.pathname.slice(1))||url.hash||(environment==='production'&&(url.searchParams.get('sslmode')!=='verify-full'||['localhost','127.0.0.1','[::1]'].includes(url.hostname))))throw new WorkspaceRoutingError();return {environment:environment as WorkspaceRoutingConfig['environment'],portalBaseDomain,controlDatabaseUrl:url.href,encryptionKey,...(browser?{tokenKey}:{secretScope:'COMMERCE_APP_ONLY' as const})};}catch{throw new WorkspaceRoutingError();}
 }
 export function readWorkspaceRoutingConfig(env:Readonly<Record<string,string|undefined>>=process.env):WorkspaceRoutingConfig{return routingConfig(env,true);}
+/** Standalone workforce machines need no Owner envelope/signing capability. */
+export function readWorkerRoutingConfig(env:Readonly<Record<string,string|undefined>>=process.env):WorkspaceRoutingConfig{
+ if('NEVORA_WORKSPACE_TOKEN_SECRET' in env||'NEVORA_COMMERCE_BINDING_KEY' in env||!['test','production'].includes(env.NEVORA_ONBOARDING_ENVIRONMENT??''))throw new WorkspaceRoutingError();
+ const config=routingConfig(env,false),url=new URL(config.controlDatabaseUrl),role=decodeURIComponent(url.username);
+ const prefix=config.environment==='test'?'t':'p';
+ if(!new RegExp('^nv_control_worker_'+prefix+'_[a-f0-9]{32}$').test(role)||!url.password)throw new WorkspaceRoutingError();
+ const ownedLocal=config.environment==='test'&&['127.0.0.1','localhost','[::1]'].includes(url.hostname);
+ if(!ownedLocal&&(url.searchParams.get('sslmode')!=='verify-full'||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(url.hostname)))throw new WorkspaceRoutingError();
+ return {...config,secretScope:'WORKER_ONLY'};
+}
 /** Fixed machine-only routing. No browser envelope capability is admitted. */
 export function readCommerceAuthorityRoutingConfig(env:Readonly<Record<string,string|undefined>>=process.env):WorkspaceRoutingConfig{
  if('NEVORA_WORKSPACE_TOKEN_SECRET' in env||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||env.NEVORA_COMMERCE_ENVIRONMENT!=='staging')throw new WorkspaceRoutingError();

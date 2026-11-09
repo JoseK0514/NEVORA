@@ -8,7 +8,7 @@
 **Spec:** docs/superpowers/specs/2026-11-09-workforce-operations.md
 
 ## Global Constraints
-UI/native-app bytes unchanged;native dispatch excluded. No production,customer data,real provider delivery,new account/paid hosting,external messages or model calls. No DB grants/schema or auth bypass. Explicit environment/scope/source/state-directory selection. Existing job leases govern effects; process receipts never establish delivery or exactly-once processing.
+UI/native-app bytes unchanged;native dispatch excluded. No production,customer data,real provider delivery,new account/paid hosting,external messages or model calls. No external DB grants/schema or auth bypass. Setup-only per-company WORKER reader views/grants are prepared and tested only in owned PostgreSQL; activation requires explicit credential/custody approval. Explicit environment/scope/source/state-directory selection. Existing job leases govern effects; process receipts never establish delivery or exactly-once processing.
 
 ## Review Focus
 - Concurrent attempts and host crashes must not replace an active lock or turn old success into current healthy execution.
@@ -32,8 +32,9 @@ UI/native-app bytes unchanged;native dispatch excluded. No production,customer d
 - [ ] Verify health leaves every job/attempt/status/lease byte unchanged and never accesses credential/profile material; commit source and fixtures.
 
 ### Task 3: Operations/recovery/API handoff and final qualification
-**Files:** docs/runbooks/workforce-operations.md; ops/workforce/systemd templates; docs/handoffs/2026-11-09-non-ui-completion.md and source/evidence receipts.
+**Files:** src/lib/operations/routing-reader.ts and tests; scoped worker configuration/resolver/transport/helper; docs/runbooks/workforce-operations.md; ops/workforce/systemd templates; docs/handoffs/2026-11-09-non-ui-completion.md and source/evidence receipts.
 **Interfaces:** consumes Tasks1/2 and preserved onboarding recovery/Stripe/Owner partner contracts; produces runnable but DISABLED host templates, explicit operator activation/rollback/checklist, Claude API contract handoff and source-specific evidence/Jira updates.
+- [ ] Remove the discovered browser-key dependency using a company/environment-bound WORKER-only control reader: reject Owner/browser custody, use security-barrier registry/secret views filtered by immutable session principal, deny APP/base/other-company/environment access, and verify actual restricted SQL. Expected reader unit/owned tests GREEN after observed RED. Setup-only DDL runs only in owned tests; hosted creation/custody remains gated.
 - [ ] Prepare single-host oneshot/timer templates with no install/enable action; explicit envfile,separate private state folders and monitoring exit-code contract. Document cadence/thresholds as operator decisions,no SLA claim; pause before lock recovery,let canonical leases retry ambiguous effects,no forced queue repair. Expected source/template checks pass.
 - [ ] Complete technical API/operations/recovery handoff and concrete disabled actual-model proposal; preserve other documentation owners,independent UI/legal and frozen Release1 gates. Update Jira146/89/85/104/161/166/168/170/174 as applicable with exact evidence,never self-close remaining activation acceptance.
 - [ ] Run focused real process tests,owned queue tests,full root/types/lint/build and source guard once after final code; bind final source and preserve all logs. Expected required suites GREEN with skips/pending separated and no UI/native diff. Obtain ONE fresh whole-phase reviewer; address Important/Critical in one RED/GREEN pass,record all rulings/minors,no re-review. Prepare exact guarded development fast-forward and observe CI only within existing authorization; no main/production.
