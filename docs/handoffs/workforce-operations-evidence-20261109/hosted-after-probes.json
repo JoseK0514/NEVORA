@@ -1,0 +1,129 @@
+{
+  "observedAt": "2026-11-09T14:10:56.681965+00:00",
+  "phase": "after-closed-refresh",
+  "sourceSha": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
+  "requests": [
+    {
+      "slug": "stripewebhook",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "commercequeue",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "commercereconcile",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "provisioner",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "commerceauthority",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "commerceapi",
+      "method": "GET",
+      "path": "/not-a-nevora-route",
+      "forgedHeader": false,
+      "expected": 404,
+      "status": 404
+    },
+    {
+      "slug": "commercequeue",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": false,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "commercequeue",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": true,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "commercereconcile",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": false,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "commercereconcile",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": true,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "provisioner",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": false,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "provisioner",
+      "method": "POST",
+      "path": "/run",
+      "forgedHeader": true,
+      "expected": 401,
+      "status": 401
+    },
+    {
+      "slug": "stripewebhook",
+      "method": "POST",
+      "path": "/webhooks/stripe",
+      "forgedHeader": false,
+      "expected": 503,
+      "status": 503
+    },
+    {
+      "slug": "commerceapi",
+      "method": "GET",
+      "path": "/v1/status",
+      "forgedHeader": false,
+      "expected": 503,
+      "status": 503
+    },
+    {
+      "slug": "commerceauthority",
+      "method": "GET",
+      "path": "/api/commerce/facts",
+      "forgedHeader": false,
+      "expected": 503,
+      "status": 503
+    }
+  ],
+  "passed": true,
+  "noCredentialsOrProviderWork": true
+}

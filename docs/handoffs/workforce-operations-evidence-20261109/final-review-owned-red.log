@@ -1,0 +1,69 @@
+Owned onboarding PostgreSQL started on loopback; existing databases are not used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109[39m
+
+ [31m❯[39m src/test/integration/onboarding-workforce-operations.integration.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 1981[2mms[22m[39m
+[31m   [31m×[31m observes real due/future/failed/leased queues under restricted WORKER without writes or cross-company data[39m[33m 1035[2mms[22m[39m
+[31m   [31m×[31m uses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers[39m[33m 946[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/onboarding-workforce-operations.integration.ts[2m > [22mobserves real due/future/failed/leased queues under restricted WORKER without writes or cross-company data
+[31m[1mAssertionError[22m: promise resolved "{ …(4) }" instead of rejecting[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "notifications": {[39m
+[31m+     "dueDeliveries": 2,[39m
+[31m+     "dueIntents": 1,[39m
+[31m+     "expiredLeases": 1,[39m
+[31m+     "failed": 1,[39m
+[31m+     "oldestDueSeconds": 300,[39m
+[31m+   },[39m
+[31m+   "observedAt": "2026-11-09T14:03:03.799Z",[39m
+[31m+   "payroll": {[39m
+[31m+     "due": 2,[39m
+[31m+     "expiredLeases": 1,[39m
+[31m+     "failed": 1,[39m
+[31m+     "oldestDueSeconds": 300,[39m
+[31m+   },[39m
+[31m+   "workspaceId": "48aa0227-05b4-4382-93bc-cbf162f9f800",[39m
+[2m  }[22m
+
+[36m [2m❯[22m src/test/integration/onboarding-workforce-operations.integration.ts:[2m37:95[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/onboarding-workforce-operations.integration.ts[2m > [22muses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers
+[31m[1mAssertionError[22m: promise resolved "undefined" instead of rejecting[39m
+
+[32m- Expected:[39m
+Error {
+  "message": "rejected promise",
+}
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m src/test/integration/onboarding-workforce-operations.integration.ts:[2m67:60[22m[39m
+    [90m 65|[39m    const foreign=(await f.db.pool.query("SELECT ciphertext FROM nevora…
+    [90m 66|[39m    expect((await r.pool.query('SELECT ciphertext FROM nevora_onboardin…
+    [90m 67|[39m    await expect(configureWorkerControlReader(setup,r.role)).rejects.to…
+    [90m   |[39m                                                            [31m^[39m
+    [90m 68|[39m    await f.db.pool.query('REVOKE SELECT(ciphertext) ON nevora_onboardi…
+    [90m 69|[39m    for(const [privilege,column] of [['UPDATE','ciphertext'],['INSERT',…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 10:03:02
+[2m   Duration [22m 2.12s[2m (tests 96%, import 3%, transform 2%)[22m
+
+Owned onboarding PostgreSQL stopped and temporary cluster removed.

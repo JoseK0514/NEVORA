@@ -1,0 +1,37 @@
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_8Ep6Qi6wmofthJWqZyTCfTSuqCG3",
+    "url": "https://nevora-onboarding-staging-kcfqwdgzw-josekarlo-5933s-projects.vercel.app",
+    "productionUrl": null,
+    "inspectorUrl": "https://vercel.com/josekarlo-5933s-projects/nevora-onboarding-staging/8Ep6Qi6wmofthJWqZyTCfTSuqCG3",
+    "readyState": "INITIALIZING",
+    "target": null,
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_8Ep6Qi6wmofthJWqZyTCfTSuqCG3",
+    "buildMachine": {
+      "cores": 2,
+      "memory": 8192,
+      "machine": "basic",
+      "selectionType": "fixed",
+      "selectionSource": "plan-default"
+    },
+    "deploymentProtection": [
+      "vercel_authentication"
+    ]
+  },
+  "message": "Deployment nevora-onboarding-staging-kcfqwdgzw-josekarlo-5933s-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel curl https://nevora-onboarding-staging-kcfqwdgzw-josekarlo-5933s-projects.vercel.app",
+      "when": "Verify deployment, including when Deployment Protection is enabled"
+    },
+    {
+      "command": "vercel inspect nevora-onboarding-staging-kcfqwdgzw-josekarlo-5933s-projects.vercel.app --scope josekarlo-5933s-projects --non-interactive",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod --scope josekarlo-5933s-projects --non-interactive",
+      "when": "Promote to production"
+    }
+  ]
+}

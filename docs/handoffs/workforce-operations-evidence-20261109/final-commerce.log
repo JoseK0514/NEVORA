@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+
+ Test Files  10 passed (10)
+      Tests  88 passed (88)
+   Start at  10:05:04
+   Duration  4.73s (tests 88%, import 9%, transform 3%, worker 1%)
+

@@ -1,0 +1,100 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/routing-reader.test.ts (8 tests | 1 failed) 11ms
+   × admits only a canonical driver destination, login and verified TLS; rejects connection-option substitution 6ms
+ ❯ src/lib/operations/supervisor.test.ts (19 tests | 5 failed) 6125ms
+   × durably publishes lock/running state before a real child effect and terminal state before unlock 4ms
+   × fails closed before child effects if acquisition durability step 1 fails 14ms
+   × fails closed before child effects if acquisition durability step 2 fails 1ms
+   × rejects an actual private FIFO before blocking outside the child watchdog 2020ms
+   × rejects missing or mismatched notification environments in both actual CLI modes before IO 376ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/routing-reader.test.ts > admits only a canonical driver destination, login and verified TLS; rejects connection-option substitution
+AssertionError: expected {} to match object { rejectUnauthorized: true }
+
+- Expected
++ Received
+
+- {
+-   "rejectUnauthorized": true,
+- }
++ {}
+
+ ❯ src/lib/operations/routing-reader.test.ts:16:144
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > durably publishes lock/running state before a real child effect and terminal state before unlock
+TypeError: Cannot spy on export "open". Module namespace is not configurable in ESM. See: https://vitest.dev/guide/mocking/modules#mocking-a-module
+ ❯ src/lib/operations/supervisor.test.ts:35:5
+
+
+Caused by: TypeError: Cannot redefine property: open
+ ❯ src/lib/operations/supervisor.test.ts:35:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > fails closed before child effects if acquisition durability step 1 fails
+ FAIL  src/lib/operations/supervisor.test.ts > fails closed before child effects if acquisition durability step 2 fails
+TypeError: Cannot spy on export "open". Module namespace is not configurable in ESM. See: https://vitest.dev/guide/mocking/modules#mocking-a-module
+ ❯ src/lib/operations/supervisor.test.ts:43:5
+
+
+Caused by: TypeError: Cannot redefine property: open
+ ❯ src/lib/operations/supervisor.test.ts:43:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > rejects an actual private FIFO before blocking outside the child watchdog
+AssertionError: expected Error: spawnSync /usr/local/bin/node ETIM… { …(5) } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+Error {
+  "message": "spawnSync /usr/local/bin/node ETIMEDOUT",
+  "errno": -60,
+  "code": "ETIMEDOUT",
+  "syscall": "spawnSync /usr/local/bin/node",
+  "path": "/usr/local/bin/node",
+  "spawnargs": [
+    "--conditions=react-server",
+    "--import",
+    "./scripts/node-server-context.mjs",
+    "--import",
+    "tsx",
+    "--input-type=module",
+    "-e",
+    "import{superviseProcess}from \"file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/src/lib/operations/supervisor.ts\";try{await superviseProcess({\"enabled\":true,\"environment\":\"test\",\"sourceSha\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"scopeId\":\"fd1acce3-98e2-4063-bec9-b2467470daed\",\"stateDirectory\":\"/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nv-workforce-GSNW5y\",\"deadlineMs\":2000,\"graceMs\":100},'payroll',{\"file\":\"/usr/local/bin/node\",\"args\":[\"-e\",\"process.exit(0)\"]});process.exitCode=2;}catch(e){console.log(e.message);}",
+  ],
+}
+
+ ❯ src/lib/operations/supervisor.test.ts:49:221
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > rejects missing or mismatched notification environments in both actual CLI modes before IO
+AssertionError: expected '' to be 'operations_configuration_invalid' // Object.is equality
+
+- Expected
++ Received
+
+- operations_configuration_invalid
+
+ ❯ src/lib/operations/supervisor.test.ts:136:62
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  6 failed | 21 passed (27)
+   Start at  10:02:39
+   Duration  6.24s (tests 98%, transform 1%, import 1%)
+

@@ -1,0 +1,110 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/operations/supervisor.test.ts (19 tests | 3 failed | 16 skipped) 118ms
+   × durably publishes lock/running state before a real child effect and terminal state before unlock 43ms
+   × fails closed before child effects if acquisition durability step 1 fails 38ms
+   × fails closed before child effects if acquisition durability step 2 fails 37ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > durably publishes lock/running state before a real child effect and terminal state before unlock
+AssertionError: expected [] to deeply equal [ …(4) ]
+
+- Expected
++ Received
+
+- [
+-   {
+-     "effect": false,
+-     "lock": true,
+-     "status": null,
+-   },
+-   {
+-     "effect": false,
+-     "lock": true,
+-     "status": "running",
+-   },
+-   {
+-     "effect": true,
+-     "lock": true,
+-     "status": "succeeded",
+-   },
+-   {
+-     "effect": true,
+-     "lock": false,
+-     "status": "succeeded",
+-   },
+- ]
++ []
+
+ ❯ src/lib/operations/supervisor.test.ts:40:17
+     38|  });
+     39|  await superviseProcess(config,'payroll',node(`require('fs').writeFile…
+     40|  expect(events).toEqual([{lock:true,status:null,effect:false},{lock:tr…
+       |                 ^
+     41| });
+     42| it.each([1,2])('fails closed before child effects if acquisition durab…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > fails closed before child effects if acquisition durability step 1 fails
+AssertionError: promise resolved "{ schemaVersion: 1, …(10) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "cleanupConfirmed": true,
++   "command": "payroll",
++   "environment": "test",
++   "exitCode": 0,
++   "finishedAt": "2026-11-09T14:03:02.583Z",
++   "lastSuccessAt": "2026-11-09T14:03:02.583Z",
++   "schemaVersion": 1,
++   "scopeId": "b9020b5d-a794-4e18-8899-e6ef62676273",
++   "sourceSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "startedAt": "2026-11-09T14:03:02.558Z",
++   "status": "succeeded",
+  }
+
+ ❯ src/lib/operations/supervisor.test.ts:45:126
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/lib/operations/supervisor.test.ts > fails closed before child effects if acquisition durability step 2 fails
+AssertionError: promise resolved "{ schemaVersion: 1, …(10) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "cleanupConfirmed": true,
++   "command": "payroll",
++   "environment": "test",
++   "exitCode": 0,
++   "finishedAt": "2026-11-09T14:03:02.621Z",
++   "lastSuccessAt": "2026-11-09T14:03:02.621Z",
++   "schemaVersion": 1,
++   "scopeId": "c1839eae-d275-442e-922c-ca50099f94ae",
++   "sourceSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "startedAt": "2026-11-09T14:03:02.596Z",
++   "status": "succeeded",
+  }
+
+ ❯ src/lib/operations/supervisor.test.ts:45:126
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 16 skipped (19)
+   Start at  10:03:02
+   Duration  211ms (tests 78%, transform 15%, import 6%, worker 1%)
+
