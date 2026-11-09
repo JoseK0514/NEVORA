@@ -74,13 +74,24 @@ export async function requireOperationalCommerce() {
   if (commerceEnabled() && !(await readCommerceAuthority()).operational)
     throw Error("commerce_subscription_required");
 }
+/** Tablet-safe recovery only. The return path is a bounded local Clocker key;
+ * request query strings and caller-provided destinations are never forwarded. */
+export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
+  if(request&&method==='GET'&&/^\/clocker\/[A-Za-z0-9_-]{8,128}$/.test(path)&&!request.headers.get('accept')?.includes('application/json')){
+    const query=new URLSearchParams({reason:code,from:path});
+    return new Response(null,{status:303,headers:{location:'/clocker/paused?'+query,'cache-control':'no-store','referrer-policy':'no-referrer'}});
+  }
+  return Response.json({error:{code}},{status:code==='subscription_required'?402:503,headers:{'cache-control':'no-store'}});
+}
 export async function commerceGate(
   path: string,
   method: string,
   fetcher: typeof fetch = fetch,
+  request?: Request,
 ): Promise<Response | null> {
   if (!commerceEnabled()) return null;
   if(publicOnboardingPath(path))return null;
+  if(path==='/clocker/paused'&&method==='GET')return null;
   if (
     path.startsWith("/api/commerce/") ||
     path.startsWith("/api/auth/") ||
@@ -100,14 +111,8 @@ export async function commerceGate(
     return null;
   try {
     if ((await readCommerceAuthority(fetcher)).operational) return null;
-    return Response.json(
-      { error: { code: "subscription_required" } },
-      { status: 402, headers: { "cache-control": "no-store" } },
-    );
+    return commerceDenial(path,method,'subscription_required',request);
   } catch {
-    return Response.json(
-      { error: { code: "billing_status_unavailable" } },
-      { status: 503, headers: { "cache-control": "no-store" } },
-    );
+    return commerceDenial(path,method,'billing_status_unavailable',request);
   }
 }

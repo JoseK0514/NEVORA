@@ -3,6 +3,7 @@ import type {BillingOwner} from "./owner-authority";
 import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError } from "./model";
+import { validateWorkspaceProfile } from "../../src/lib/workspace/validation";
 import { unseal } from "./security";
 async function installation(
   store: CommerceStore,
@@ -21,7 +22,7 @@ async function installation(
     secret: unseal(slot.instance_secret, store.key, `instance:${slot.id}`),
   };
 }
-export async function readInstallationHeadcount(
+export async function readInstallationFacts(
   store: CommerceStore,
   business: Business,
   client?: PoolClient,
@@ -42,7 +43,15 @@ export async function readInstallationHeadcount(
     data.employeeCount < 0
   )
     throw new CommerceError("installation_identity_mismatch", 503);
-  return data.employeeCount as number;
+  let timeZone:string|null=null;
+  if(data.timeZone!==undefined){
+    try{timeZone=validateWorkspaceProfile({name:'Workplace',timeZone:data.timeZone}).timeZone;}
+    catch{throw new CommerceError('installation_unavailable',503);}
+  }
+  return {employeeCount:data.employeeCount as number,timeZone};
+}
+export async function readInstallationHeadcount(store:CommerceStore,business:Business,client?:PoolClient){
+  return (await readInstallationFacts(store,business,client)).employeeCount;
 }
 export async function applyInstallationCapacity(
   store: CommerceStore,

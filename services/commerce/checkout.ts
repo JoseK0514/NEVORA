@@ -5,6 +5,7 @@ import type { PoolClient } from "pg";
 import { CommerceStore, type Business } from "./store";
 import { CommerceError, planFor, type PlanKey } from "./model";
 import { seal, unseal } from "./security";
+import {billingPage,type CommerceLanguage} from './language';
 import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms, taxTerms } from "./stripe-tax";
 import {
@@ -61,6 +62,7 @@ async function prepare(
   id: string,
   operation: string,
   owner?:BillingOwner|null,
+  lang:CommerceLanguage='en',
 ): Promise<Intent | { pending: true }> {
   return ports.store.withBusinessLock(id, async (client, business) => {
     if (business.subscriptionId) {
@@ -140,8 +142,9 @@ async function prepare(
       customer: customerId,
       mode: early ? "setup" : "subscription",
       currency: "usd",
-      success_url: `${ports.origin}/pages/nevora-billing-return#handoff=${proof}`,
-      cancel_url: `${ports.origin}/pages/nevora-billing#handoff=${proof}`,
+      success_url: `${ports.origin}${billingPage(lang,'return')}#handoff=${proof}`,
+      cancel_url: `${ports.origin}${billingPage(lang,'billing')}#handoff=${proof}`,
+      locale:lang,
       client_reference_id: id,
       metadata,
       expires_at: expiresAt,
@@ -154,7 +157,9 @@ async function prepare(
       params.setup_intent_data = { metadata };
       params.custom_text = {
         submit: {
-          message: `Authorize USD ${(plan.amount / 100).toFixed(2)} per month${ports.tax ? (ports.tax.behavior === "exclusive" ? " plus applicable tax" : " including applicable tax") : ""} starting ${new Date(chargeStart).toISOString().slice(0, 10)}. Cancel through billing settings.`,
+          message: lang==='es'
+            ? `Autoriza USD ${(plan.amount / 100).toFixed(2)} al mes${ports.tax ? (ports.tax.behavior === 'exclusive' ? ' más los impuestos aplicables' : ' con los impuestos aplicables incluidos') : ''} a partir del ${new Date(chargeStart).toISOString().slice(0,10)}. Cancela desde la configuración de facturación.`
+            : `Authorize USD ${(plan.amount / 100).toFixed(2)} per month${ports.tax ? (ports.tax.behavior === "exclusive" ? " plus applicable tax" : " including applicable tax") : ""} starting ${new Date(chargeStart).toISOString().slice(0, 10)}. Cancel through billing settings.`,
         },
       };
     } else {
@@ -225,8 +230,9 @@ export async function createCheckout(
   business: Business,
   operation: string,
   owner?:BillingOwner|null,
+  lang:CommerceLanguage='en',
 ) {
-  const prepared = await prepare(ports, business.id, operation,owner);
+  const prepared = await prepare(ports, business.id, operation,owner,lang);
   if ("pending" in prepared)
     throw new CommerceError("subscription_sync_pending", 409);
   return ports.store.withBusinessLock(business.id, async (client) => {

@@ -21,9 +21,10 @@ export async function GET(request: Request) {
       business_id: string;
       installation_id: string;
       employee_count: number;
+      time_zone: string;
     }>(
       await applicationSql().query(
-        `SELECT i.business_id,i.installation_id,(SELECT count(*)::int FROM employees WHERE active AND role<>'OWNER') employee_count FROM public.nevora_commerce_installation i JOIN workspaces w ON w.singleton AND w.active WHERE i.singleton AND i.installation_id=$1 AND i.instance_secret_hash=$2`,
+        `SELECT i.business_id,i.installation_id,w.time_zone,(SELECT count(*)::int FROM employees WHERE active AND role<>'OWNER') employee_count FROM public.nevora_commerce_installation i JOIN workspaces w ON w.singleton AND w.active WHERE i.singleton AND i.installation_id=$1 AND i.instance_secret_hash=$2`,
         [c.installationId, hash],
       ),
     );
@@ -35,6 +36,7 @@ export async function GET(request: Request) {
         businessId: r.business_id,
         installationId: r.installation_id,
         employeeCount: r.employee_count,
+        timeZone:r.time_zone,
       },
       { headers: { "cache-control": "no-store" } },
     );

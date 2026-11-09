@@ -102,6 +102,20 @@ describe.skipIf(!enabled)("Stripe lifecycle with real catalog and SDK", () => {
     expect([...provider.sessions.values()][0].mode).toBe("setup");
     expect((await store.business(id)).paidThrough).toBeNull();
   });
+  it('keeps Spanish checkout, cancel and Portal destinations on the approved origin',async()=>{
+    const b=await store.business(id),operation=randomUUID();
+    const first=await billing.checkout(b,operation,null,'es');
+    expect(await billing.checkout(b,operation,null,'en')).toBe(first);
+    const checkoutRequest=provider.requests.find(r=>r.path==='/v1/checkout/sessions'&&r.method==='POST')!.form;
+    expect(checkoutRequest.get('locale')).toBe('es');
+    const success=new URL(checkoutRequest.get('success_url')!),cancel=new URL(checkoutRequest.get('cancel_url')!);
+    expect(success.origin).toBe('https://accounts.example.test');expect(success.pathname).toBe('/pages/es-pago');expect(success.hash).toMatch(/^#handoff=[A-Za-z0-9_-]{43}$/);
+    expect(cancel.pathname).toBe('/pages/es-facturacion');
+    await billing.portal(await store.business(id),randomUUID(),null,'es');
+    const portalRequest=provider.requests.find(r=>r.path==='/v1/billing_portal/sessions'&&r.method==='POST')!.form;
+    expect(portalRequest.get('locale')).toBe('es');expect(new URL(portalRequest.get('return_url')!).pathname).toBe('/pages/es-facturacion');
+    expect((await store.business(id)).trialEnd).toBe(b.trialEnd);expect((await store.business(id)).paidThrough).toBeNull();
+  });
   it("rejects the wrong merchant before checkout, portal or reconciliation", async () => {
     Object.assign(billing.options, { expectedAccountId: "acct_wrong" });
     const stored = await store.business(id);

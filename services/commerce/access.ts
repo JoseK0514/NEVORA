@@ -1,6 +1,6 @@
 import type { Business, CommerceStore } from "./store";
 import { accessAt, CommerceError } from "./model";
-import { readInstallationHeadcount } from "./installation";
+import { readInstallationFacts } from "./installation";
 export async function businessAccess(
   store: CommerceStore,
   business: Business,
@@ -10,10 +10,11 @@ export async function businessAccess(
   const access = accessAt(business, now),
     employeeLimit = business.planKey === "small" ? 15 : 30;
   if (business.state !== "ready")
-    return { ...access, employeeLimit, activeEmployees: 0, reason: null };
-  const activeEmployees = await (headcount
-    ? headcount(business)
-    : readInstallationHeadcount(store, business));
+    return { ...access, employeeLimit, activeEmployees: 0, timeZone:null, reason: null };
+  const facts = headcount
+    ? {employeeCount:await headcount(business),timeZone:null}
+    : await readInstallationFacts(store,business);
+  const activeEmployees=facts.employeeCount;
   if (!Number.isSafeInteger(activeEmployees) || activeEmployees < 0)
     throw new CommerceError("installation_unavailable", 503);
   const over = activeEmployees > employeeLimit;
@@ -23,6 +24,7 @@ export async function businessAccess(
     operational: access.operational && !over,
     employeeLimit,
     activeEmployees,
+    timeZone:facts.timeZone,
     reason: over ? "employee_limit_exceeded" : null,
   };
 }

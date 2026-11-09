@@ -12,7 +12,7 @@ export function verificationDelivery(env:Record<string,string|undefined>,config:
  const transport=validatedMailTransport(env);if(!transport||transport.origin!==config.signupOrigin)return null;
  return {async send({email,proof,locale,expiresAt}){
   if(!registeredEmail(email)||!validOnboardingToken(proof)||!['en','es'].includes(locale)||!Number.isFinite(Date.parse(expiresAt))||Date.parse(expiresAt)<=Date.now())throw new VerificationDeliveryError('FAILED');
-  const url=config.signupOrigin+'/onboarding/verify#proof='+proof;
+  const url=config.signupOrigin+'/onboarding/verify?lang='+locale+'#proof='+proof;
   const subject=locale==='es'?'Verifica tu correo para NEVORA':'Verify your email for NEVORA';
   const text=locale==='es'?'Verifica tu correo para comenzar la configuración de tu negocio.\n\n'+url+'\n\nSi no solicitaste este enlace, ignora este mensaje.':'Verify your email to begin setting up your business.\n\n'+url+'\n\nIf you did not request this link, ignore this message.';
   try{const r=await transport.sendRegistered(email,subject,text);if(r.accepted?.length!==1||String(r.accepted[0]).toLowerCase()!==email.toLowerCase())throw new VerificationDeliveryError('UNKNOWN');return {providerAccepted:true};}

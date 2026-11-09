@@ -5,9 +5,10 @@ import { hashPassword } from "../../src/lib/auth/password";
 import { CommerceError, parseSignup, parseEmail, planFor } from "./model";
 import { token } from "./security";
 import { CommerceStore, type Business } from "./store";
+import {commerceLanguage,type CommerceLanguage} from './language';
 export interface BillingPort {
-  checkout(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
-  portal(business: Business, operation: string,owner?:BillingOwner|null): Promise<string>;
+  checkout(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage): Promise<string>;
+  portal(business: Business, operation: string,owner?:BillingOwner|null,lang?:CommerceLanguage): Promise<string>;
   webhook(raw: string, signature: string): Promise<void>;
 }
 export type CommerceOptions = {
@@ -237,6 +238,7 @@ export function createCommerce(options: CommerceOptions) {
         (path === "/v1/checkout" || path === "/v1/portal") &&
         request.method === "POST"
       ) {
+        const lang=commerceLanguage(input.lang);
         if (business.state !== "ready")
           throw new CommerceError("setup_pending", 409);
         if (!options.billing)
@@ -249,8 +251,8 @@ export function createCommerce(options: CommerceOptions) {
         return answer({
           url:
             path === "/v1/checkout"
-              ? await options.billing.checkout(business, operation,owner)
-              : await options.billing.portal(business, operation,owner),
+              ? await options.billing.checkout(business, operation,owner,lang)
+              : await options.billing.portal(business, operation,owner,lang),
         });
       }
       throw new CommerceError("not_found", 404);

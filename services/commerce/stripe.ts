@@ -10,6 +10,7 @@ import type { StripeTaxConfig } from "./stripe-config";
 import { assertTaxPrice, readTaxTerms } from "./stripe-tax";
 import { unseal } from "./security";
 import {parseStripeWebhook,enqueueStripeWebhook} from "./stripe-webhook";
+import {billingPage,type CommerceLanguage} from './language';
 import {
   applyInstallationCapacity,
   readInstallationHeadcount,
@@ -68,11 +69,11 @@ export class StripeBilling implements BillingPort {
           : readInstallationHeadcount(this.store, business, client),
     };
   }
-  async checkout(business: Business, operation: string,owner?:BillingOwner|null) {
+  async checkout(business: Business, operation: string,owner?:BillingOwner|null,lang:CommerceLanguage='en') {
     await this.verifyAccount();
-    return createCheckout(this.checkoutPorts(), business, operation,owner);
+    return createCheckout(this.checkoutPorts(), business, operation,owner,lang);
   }
-  async portal(input: Business, operation: string,owner?:BillingOwner|null) {
+  async portal(input: Business, operation: string,owner?:BillingOwner|null,lang:CommerceLanguage='en') {
     await this.verifyAccount();
     return this.store.withBusinessLock(input.id, async (client, business) => {
       if (!business.customerId)
@@ -84,7 +85,8 @@ export class StripeBilling implements BillingPort {
       const session = await this.stripe.billingPortal.sessions.create(
         {
           customer: business.customerId,
-          return_url: `${this.options.origin}/pages/nevora-billing#handoff=${proof}`,
+          return_url: `${this.options.origin}${billingPage(lang,'billing')}#handoff=${proof}`,
+          locale:lang,
         },
         { idempotencyKey: `nevora-portal:${business.id}:${operation}` },
       );
