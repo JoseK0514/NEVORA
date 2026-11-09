@@ -91,3 +91,20 @@ it("returns honest disabled/unavailable states with no outbound fetch", async ()
     outbound.mockRestore();
   }
 });
+it("omits only the history scan on lease renewal while full reads remain fresh and authority is enforced", async () => {
+  const original = f.db.executor; let historyReads = 0;
+  state.ex = { ...original, transaction: async (...args: Parameters<typeof original.transaction>) => {
+    if (args[0].some(s => s.text.includes('AS fingerprint'))) historyReads++;
+    return original.transaction(...args);
+  } };
+  const full = await GET(request()); expect(full.status).toBe(200);
+  expect(await full.json()).toHaveProperty("operationalInsights"); expect(historyReads).toBe(1);
+  const leaseRequest = () => new Request("http://localhost/api/owner/advisor?view=lease", { headers: { "x-nevora-owner-advisor": "1" } });
+  const lease = await GET(leaseRequest()); expect(lease.status).toBe(200);
+  const body = await lease.json(); expect(body).not.toHaveProperty("operationalInsights");
+  expect(body).toMatchObject({ state: "ready", validForMs: expect.any(Number), profile: expect.any(Object), memory: expect.any(Object), notebook: expect.any(Object), attention: expect.any(Object) });
+  expect(historyReads).toBe(1);
+  await GET(request()); expect(historyReads).toBe(2);
+  await f.q("DELETE FROM employee_sessions WHERE token_hash=$1", [f.owner.sessionTokenHash]);
+  expect((await GET(leaseRequest())).status).toBe(403); expect(historyReads).toBe(2);
+});

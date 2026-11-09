@@ -1,0 +1,3 @@
+import base from './vitest.owner-advisor-integration.config.mts';
+import { defineConfig } from 'vitest/config';
+export default defineConfig({...base,test:{...base.test,maxWorkers:1,include:['src/test/integration/owner-advisor-partner-evidence.test.ts','src/lib/owner-advisor/partner-preflight.integration.ts','src/lib/owner-advisor/memory.integration.ts','src/lib/owner-advisor/decision-mode.integration.ts','src/lib/owner-advisor/legal-research.integration.ts','src/lib/owner-advisor/operational-insights.integration.ts','src/lib/owner-advisor/coverage-actions.integration.ts','src/lib/owner-advisor/legal-research.test.ts','src/lib/owner-advisor/memory.test.ts','src/lib/owner-advisor/decision-mode.test.ts']}});

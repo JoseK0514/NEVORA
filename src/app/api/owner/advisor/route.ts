@@ -55,8 +55,15 @@ async function readBody(
 /** Owner-only transport adapter; service owns feature switches, operation state and provider work. */
 async function execute(request: Request, write: boolean, signal: AbortSignal) {
   signal.throwIfAborted();
+  const url = new URL(request.url);
+  const leaseOnly = !write && url.searchParams.size === 1 && url.searchParams.get("view") === "lease";
+  if (url.search && !leaseOnly) return correctionJson({ state: "error", code: "invalid" }, 400);
+  // The sole validated read selector changes projection, never admission. Keep
+  // the shared boundary's header/site checks, without broadening other routes.
+  url.search = "";
+  const boundaryRequest = leaseOnly ? new Request(url, { headers: request.headers, signal: request.signal }) : request;
   const boundary = correctionBoundary(
-    request,
+    boundaryRequest,
     write,
     "x-nevora-owner-advisor",
     16384,
@@ -83,6 +90,8 @@ async function execute(request: Request, write: boolean, signal: AbortSignal) {
       process.env,
       signal,
       value,
+      undefined,
+      leaseOnly ? { view: "lease" } : {},
     ),
   );
 }

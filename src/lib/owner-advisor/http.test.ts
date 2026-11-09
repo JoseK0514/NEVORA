@@ -118,3 +118,12 @@ it("passes the same entry deadline to subsequent service work", async () => {
   deadline.abort();
   expect(signal.aborted).toBe(true);
 });
+it("strictly accepts only a lease-only GET selector and rejects query pollution before service work", async () => {
+  const { GET } = await import("@/app/api/owner/advisor/route");
+  const req = (query: string) => new Request(`http://localhost/api/owner/advisor${query}`, { headers: { "x-nevora-owner-advisor": "1" } });
+  expect((await GET(req("?view=lease"))).status).toBe(200);
+  expect(mocks.service.mock.calls.at(-1)?.[6]).toEqual({ view: "lease" });
+  mocks.service.mockClear();
+  for (const query of ["?view=other", "?view=lease&view=lease", "?view=lease&workspace=foreign", "?extra=1"]) expect((await GET(req(query))).status).toBe(400);
+  expect(mocks.service).not.toHaveBeenCalled();
+});

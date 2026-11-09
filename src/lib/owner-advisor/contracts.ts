@@ -1,19 +1,25 @@
+import { parseInsightRange } from "./operational-insights";
+import { parseLegalArgs } from "./legal-research";
 import { parsePeriod } from "@/lib/timecards/project";
-import { NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
+import { parseTaskFocus, type TaskFocus, NotebookError, notebookId, notebookRevision, parseNotebookCommand } from "./notebook";
+import { MemoryError, parseMemoryCommand } from "./memory";
 import { parseCoverageAction } from "./coverage-actions";
 export const ADVISOR_MAX_TOOL_CALLS = 8;
 export const ADVISOR_MAX_ANSWER_SOURCES = 1 + (ADVISOR_MAX_TOOL_CALLS - 1) * 2;
 export type AdvisorMessage = { role: "user" | "assistant"; content: string };
 export type AdvisorSource = { label: string; href: string; observedAt: string };
 export type AdvisorProfile = { priorities: string; revision: number };
-export type AdvisorAnswer = { text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; taskId: string | null } } & import("./workflow-contracts").WorkflowEvidence;
+export type DecisionContext = { objective: string; focus: TaskFocus };
+export type AdvisorAnswer = { decision?: DecisionContext; text: string; sources: AdvisorSource[]; context?: { notebookRevision: number | null; memoryRevision?: number | null; profileRevision?: number; taskId: string | null } } & import("./workflow-contracts").WorkflowEvidence;
 export type AdvisorSnapshot = {
   state: "ready";
   connection: "available" | "unavailable";
   profile: AdvisorProfile;
   history: AdvisorMessage[];
   briefing: BriefingResult;
+  operationalInsights?: import("./operational-insights").OperationalInsights;
   attention?: import("./briefing-contracts").AttentionBriefing;
+  memory?: import("./memory").MemoryRead;
   notebook?: import("./notebook").NotebookRead;
   authority: string;
   observedAt: string;
@@ -21,9 +27,11 @@ export type AdvisorSnapshot = {
 };
 export type AdvisorCommand =
   | import("./coverage-actions").CoverageActionCommand
+  | import("./memory").MemoryCommand
   | import("./notebook").NotebookCommand
   | { op: "ask_task"; requestId: string; taskId: string; expectedNotebookRevision: number; message: string }
-  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" }> }
+  | { op: "inspect"; requestId: string; tool: Extract<ToolCall, { name: "attendance_payroll_review" | "coverage_proposals" | "coverage_plan" | "legal_research" }> }
+  | ({ op: "ask_decision"; requestId: string; message: string } & DecisionContext)
   | { op: "ask"; requestId: string; message: string }
   | { op: "review_briefing"; requestId: string; issueId: string; fingerprint: string; expectedRevision: number; disposition: import("./briefing-contracts").AttentionDisposition }
   | {
@@ -63,14 +71,21 @@ export function parseCommand(v: unknown): AdvisorCommand {
   if (["prepare_coverage_draft", "apply_coverage_draft", "check_coverage_draft"].includes(String(v.op))) {
     try { return parseCoverageAction(v); } catch { throw new AdvisorError("invalid"); }
   }
+  if (v.op === "memory") {
+    try { return parseMemoryCommand(v); } catch (error) { if (error instanceof MemoryError) throw new AdvisorError(error.code); throw error; }
+  }
   if (v.op === "notebook") {
     try { return parseNotebookCommand(v); }
     catch (error) { if (error instanceof NotebookError) throw new AdvisorError(error.code); throw error; }
   }
+  if (v.op === "ask_decision" && Object.keys(v).sort().join(",") === "focus,message,objective,op,requestId" && typeof v.message === "string" && !!v.message.trim() && v.message.length <= 2000 && typeof v.objective === "string" && !!v.objective.trim() && v.objective.length <= 1000) {
+    try { return { op: "ask_decision", requestId: v.requestId.toLowerCase(), message: v.message, objective: v.objective, focus: parseTaskFocus(v.focus) }; }
+    catch { throw new AdvisorError("invalid"); }
+  }
   if (v.op === "ask_task" && Object.keys(v).sort().join(",") === "expectedNotebookRevision,message,op,requestId,taskId" && typeof v.taskId === "string" && notebookId(v.taskId.toLowerCase()) && notebookRevision(v.expectedNotebookRevision) && typeof v.message === "string" && v.message.trim().length > 0 && v.message.length <= 2000) return { op: "ask_task", requestId: v.requestId.toLowerCase(), taskId: v.taskId.toLowerCase(), expectedNotebookRevision: v.expectedNotebookRevision, message: v.message };
   if (v.op === "inspect" && Object.keys(v).sort().join(",") === "op,requestId,tool" && record(v.tool) && Object.keys(v.tool).sort().join(",") === "args,name") {
     const tool = parseTool(v.tool.name, JSON.stringify(v.tool.args));
-    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals" || tool.name === "coverage_plan") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
+    if (tool.name === "attendance_payroll_review" || tool.name === "coverage_proposals" || tool.name === "coverage_plan" || tool.name === "legal_research") return { op: "inspect", requestId: v.requestId.toLowerCase(), tool };
     throw new AdvisorError("invalid");
   }
   if (
@@ -111,6 +126,8 @@ export function parseCommand(v: unknown): AdvisorCommand {
   throw new AdvisorError("invalid");
 }
 export type ToolCall =
+  | { name: "operational_insights"; args: import("./operational-insights").InsightRange }
+  | { name: "legal_research"; args: import("./legal-research").LegalArgs }
   | { name: "attendance_payroll_review"; args: { startDate: string; endDate: string; language: "en" | "es" } }
   | { name: "coverage_proposals"; args: { date: string } }
   | { name: "coverage_plan"; args: { date: string } }
@@ -135,6 +152,8 @@ export function parseTool(name: unknown, args: unknown): ToolCall {
     throw new AdvisorError("invalid");
   }
   if (!record(v)) throw new AdvisorError("invalid");
+  if (name === "operational_insights") { try { return { name, args: parseInsightRange(v) }; } catch { throw new AdvisorError("invalid"); } }
+  if (name === "legal_research") { try { return { name, args: parseLegalArgs(v) }; } catch { throw new AdvisorError("invalid"); } }
   if (name === "attendance_payroll_review" && Object.keys(v).sort().join(",") === "endDate,language,startDate" && typeof v.startDate === "string" && typeof v.endDate === "string" && /^20/.test(v.startDate) && /^20/.test(v.endDate) && (v.language === "en" || v.language === "es")) {
     try { return { name, args: { ...parsePeriod(v.startDate, v.endDate), language: v.language } }; }
     catch { throw new AdvisorError("invalid"); }

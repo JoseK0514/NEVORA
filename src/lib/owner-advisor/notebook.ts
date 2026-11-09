@@ -36,7 +36,7 @@ function id(v: unknown): string {
   if (!notebookId(lower)) throw new NotebookError("invalid");
   return lower;
 }
-function focus(v: unknown): TaskFocus {
+export function parseTaskFocus(v: unknown): TaskFocus {
   if (object(v)) {
     if (v.kind === "general" && keys(v, ["kind"])) return { kind: "general" };
     if (v.kind === "coverage" && keys(v, ["kind", "date"]) && typeof v.date === "string" && /^20\d\d-\d\d-\d\d$/.test(v.date) && Number.isFinite(Date.parse(v.date)) && new Date(v.date).toISOString().slice(0, 10) === v.date) return { kind: "coverage", date: v.date };
@@ -51,7 +51,7 @@ function change(v: unknown): NotebookChange {
   if (v.kind === "save_goal" && keys(v, ["kind", "goalId", "text"])) return { kind: v.kind, goalId: id(v.goalId), text: text(v.text, 1000) };
   if (v.kind === "delete_goal" && keys(v, ["kind", "goalId"])) return { kind: v.kind, goalId: id(v.goalId) };
   if (v.kind === "delete_task" && keys(v, ["kind", "taskId"])) return { kind: v.kind, taskId: id(v.taskId) };
-  if (v.kind === "save_task" && keys(v, ["kind", "taskId", "objective", "notes", "state", "focus"]) && (v.state === "open" || v.state === "closed")) return { kind: v.kind, taskId: id(v.taskId), objective: text(v.objective, 1200), notes: text(v.notes, 2000, false), state: v.state, focus: focus(v.focus) };
+  if (v.kind === "save_task" && keys(v, ["kind", "taskId", "objective", "notes", "state", "focus"]) && (v.state === "open" || v.state === "closed")) return { kind: v.kind, taskId: id(v.taskId), objective: text(v.objective, 1200), notes: text(v.notes, 2000, false), state: v.state, focus: parseTaskFocus(v.focus) };
   throw new NotebookError("invalid");
 }
 export function parseNotebookCommand(v: unknown): NotebookCommand {
@@ -71,7 +71,7 @@ export function parseNotebook(v: unknown): OwnerNotebook {
   });
   const tasks = v.tasks.map((t): OwnerTask => {
     if (!object(t) || !keys(t, ["id", "objective", "notes", "state", "focus", "updatedAt"]) || !notebookId(t.id) || (t.state !== "open" && t.state !== "closed")) throw new NotebookError("invalid");
-    return { id: t.id, objective: text(t.objective, 1200), notes: text(t.notes, 2000, false), state: t.state, focus: focus(t.focus), updatedAt: timestamp(t.updatedAt) };
+    return { id: t.id, objective: text(t.objective, 1200), notes: text(t.notes, 2000, false), state: t.state, focus: parseTaskFocus(t.focus), updatedAt: timestamp(t.updatedAt) };
   });
   if (new Set(goals.map(g => g.id)).size !== goals.length || new Set(tasks.map(t => t.id)).size !== tasks.length) throw new NotebookError("invalid");
   const notebook = { revision: v.revision, goals, tasks };

@@ -125,4 +125,3 @@ Protect invitation/reset/bootstrap bearers from query logs, referers, browser hi
 The document proposes the isolation architecture and signup defaults for review. Before hosted enablement Jose must confirm the allowed account/resource budget, approved domain/region, operating/retention settings and any trial/subscription policy the product promises. Development implementation can use local fictional control/company databases, simulated provider responses and fake SMTP while these external settings remain disabled.
 
 Product: proceed with resumable end-to-end onboarding. Engineering: isolated company databases reuse current schema, but require complete routing conversion. Security: host selection alone is insufficient; token/current-authority and A/B evidence are mandatory. Governance: GO for planning, production BLOCKER until required evidence/authority. No current independent finding or held migration is self-closed.
-

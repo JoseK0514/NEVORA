@@ -180,4 +180,3 @@ Coverage: registration0/1, isolation2/3, provisioning4, first Owner5, settings6,
 Jose approved implementation on November7 with “lets do it”. Codex executes backend tasks; Claude owns UI against the versioned contract. The per-plan ledger records current task evidence. Hosted resource creation, real test messages and production release remain separately gated.
 
 Execution state: attached detached worktree based on e2872f30. Plan/contracts and verified-registration increments are local commits; no remote branch/deployment change. Verification uses invocation-owned loopback PostgreSQL, fake provider/mail channels and the existing application suite. See .superpowers/sdd/2026-11-07-self-service-owner-onboarding/progress.md and the backend readiness handoff for source-specific results.
-

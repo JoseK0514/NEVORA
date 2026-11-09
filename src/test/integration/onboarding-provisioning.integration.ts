@@ -28,6 +28,8 @@ it('atomically installs only canonical migrations, a pending Owner without crede
   await expect(bootstrapPendingCompany(client,{...spec,commandHash:'b'.repeat(64)})).rejects.toThrow();
   const appUrl=new URL(db.connectionUrl);appUrl.username=spec.app.name;appUrl.password=spec.app.password;const appClient=new Client({connectionString:appUrl.href});await appClient.connect();
   try{expect((await appClient.query('SELECT lifecycle FROM onboarding_workspace_identity')).rows[0].lifecycle).toBe('OWNER_ACTIVATION_REQUIRED');
+   expect((await appClient.query('SELECT count(*)::int n FROM owner_advisor_memories')).rows[0].n).toBe(0);
+   expect((await appClient.query("SELECT to_regprocedure('owner_advisor_save_memory(text,text,uuid,text,integer,jsonb,jsonb)') IS NOT NULL AS installed")).rows[0].installed).toBe(true);
    await expect(appClient.query('SELECT token_digest FROM onboarding_owner_grants')).rejects.toMatchObject({code:'42501'});
    await expect(appClient.query('UPDATE onboarding_workspace_identity SET incarnation=2')).rejects.toMatchObject({code:'42501'});
    expect((await appClient.query("SELECT has_database_privilege(current_user,current_database(),'TEMP') AS temporary")).rows[0].temporary).toBe(false);

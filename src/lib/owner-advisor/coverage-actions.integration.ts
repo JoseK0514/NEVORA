@@ -180,3 +180,25 @@ it.each(["location","week"])("does not count a saved parent moved to another %s 
   expect(await f.q("SELECT id,assignment_episode_id::text FROM shifts ORDER BY id")).toEqual(before);
   expect((await check(review.review.id)).progress).toMatchObject({state:"changed",assignmentsPresent:1,assignmentsTotal:2,publishedAssignments:0});
 });
+it("links a decision to exact server-checked progress and records later changes without upgrading to business success",async()=>{
+ const review=await prepare();await apply(review.review.id);
+ const decisionId=randomUUID(),today=new Date().toISOString().slice(0,10);
+ await call({op:"memory",requestId:randomUUID(),expectedRevision:0,change:{kind:"save_decision",decisionId,summary:"Use checked draft",course:"Keep these assignments",reason:"Current coverage comparison",focus:{kind:"coverage",date:"2026-10-22"},decisionDate:today,expiryDate:today}});
+ const command={op:"memory",requestId:randomUUID(),expectedRevision:1,change:{kind:"check_outcome",decisionId,reviewId:review.review.id}};
+ await call(command);
+ const read=()=>f.q<{decisions:{outcome:{kind:string;progress:unknown}}[]}>("SELECT decisions FROM owner_advisor_memories");
+ const first=(await read())[0].decisions[0].outcome;
+ expect(first).toMatchObject({kind:"coverage_checked",progress:{state:"current",assignmentsPresent:2,assignmentsTotal:2,publishedAssignments:0,coverage:{remainingBlocks:0}}});
+ expect(JSON.stringify(first)).not.toContain("verified");
+ await f.q("DELETE FROM shifts WHERE id=(SELECT id FROM shifts ORDER BY id LIMIT 1)");
+ await call({...command,requestId:randomUUID(),expectedRevision:2});
+ expect((await read())[0].decisions[0].outcome).toMatchObject({kind:"coverage_checked",progress:{state:"changed",assignmentsPresent:1,assignmentsTotal:2}});
+ // Replaying the original check returns its revision receipt, never overwrites
+ // the later observation or rechecks under a new result for the same identity.
+ expect(await call(command)).toMatchObject({state:"memory_saved",revision:2});
+ expect((await read())[0].decisions[0].outcome).toMatchObject({progress:{state:"changed"}});
+ await f.q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('second-owner','Second','Owner','555010','OWNER','loc-1'); INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('c',64),'second-owner',clock_timestamp()+interval '1 hour')");
+ const other={...f.owner,employee:{...f.owner.employee,id:"second-owner"},sessionTokenHash:"c".repeat(64)};
+ await call({op:"memory",requestId:randomUUID(),expectedRevision:0,change:{kind:"save_decision",decisionId,summary:"Other",course:"Other",reason:"Other",focus:{kind:"coverage",date:"2026-10-22"},decisionDate:today,expiryDate:today}},f.db.executor,other);
+ await expect(call({...command,requestId:randomUUID()},f.db.executor,other)).rejects.toMatchObject({code:"forbidden"});
+});
