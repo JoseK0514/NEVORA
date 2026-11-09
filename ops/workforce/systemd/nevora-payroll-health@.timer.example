@@ -1,0 +1,15 @@
+# DISABLED EXAMPLE. Cadence below is a proposal, not an approved SLA.
+# Install and enable only selected commands after explicit runtime/alert acceptance.
+[Unit]
+Description=NEVORA payroll health observation proposal (%i)
+
+[Timer]
+OnBootSec=90s
+OnUnitInactiveSec=60s
+RandomizedDelaySec=5s
+AccuracySec=1s
+Persistent=false
+Unit=nevora-payroll-health@%i.service
+
+[Install]
+WantedBy=timers.target

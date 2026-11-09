@@ -1,0 +1,30 @@
+# PREPARED EXAMPLE ONLY. No install/enable action has been authorized or run.
+# Instance %i is the exact company UUID; one canonical state folder per company/environment.
+[Unit]
+Description=NEVORA payroll read-only health (%i)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=nevora
+Group=nevora
+WorkingDirectory=/srv/nevora/current
+EnvironmentFile=/etc/nevora/workforce/%i.env
+ExecStart=/usr/bin/node --conditions=react-server --import ./scripts/node-server-context.mjs --import tsx scripts/workforce-operations.mts health payroll
+StateDirectory=nevora-workforce/%i
+StateDirectoryMode=0700
+UMask=0077
+TimeoutStartSec=20
+TimeoutStopSec=10
+KillMode=control-group
+SendSIGKILL=yes
+Restart=no
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictSUIDSGID=yes
+ReadOnlyPaths=/var/lib/nevora-workforce/%i
+StandardOutput=journal
+StandardError=journal

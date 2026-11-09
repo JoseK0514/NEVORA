@@ -3,7 +3,7 @@ import type {PoolClient} from 'pg';
 import {isOperationId} from '../onboarding/contracts';
 export function workerControlRole(workspaceId:string,environment:'test'|'production'){
  if(!isOperationId(workspaceId)||!['test','production'].includes(environment))throw Error('operations_reader_scope_invalid');
- return 'nv_control_worker_'+(environment==='test'?'t':'p')+'_'+workspaceId.replaceAll('-','');
+ return 'nv_control_worker_'+(environment==='test'?'t':'p')+'_'+workspaceId.toLowerCase().replaceAll('-','');
 }
 /** Setup only; never imported by a worker/request handler. The caller supplies an
  * acquired operator client and an already approved fresh restricted LOGIN role.
