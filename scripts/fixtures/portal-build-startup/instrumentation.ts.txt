@@ -1,0 +1,19 @@
+// UNUSED ROOT-CONTROLLED ISOLATED FIXTURE SOURCE. Future src/instrumentation.ts.
+// Requires a real controlled generated installation, existing clean release
+// build/retention and current native capsule. It is not production activation,
+// executing-code authentication, PortalProof issuance or a business gate.
+// Installed Next16.3.8 skips register during phase-production-build. A normal
+// build must not manufacture a successful startup identity or contact APP here.
+export async function register() {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') return;
+  const { loadPortalBuildInstallStartupIdentity, isPortalBuildInstallStartupIdentity } =
+    await import('./lib/tenancy/runtime/portal-runtime-build-install-bootstrap.server');
+  const joined = await loadPortalBuildInstallStartupIdentity();
+  if (joined.status !== 'STARTUP_SOURCE_IDENTITY_JOINED_NOT_AUTHORITY' ||
+    !isPortalBuildInstallStartupIdentity(joined.identity)) {
+    throw new Error('portal_startup_binding_unavailable');
+  }
+  // A fixed nonsecret observation for the exact owned server's retained stdout.
+  // Neither this line nor server readiness authenticates a build/operator/root.
+  console.info('PORTAL_STARTUP_SOURCE_JOIN_COMPLETED_NOT_AUTHORITY');
+}

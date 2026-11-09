@@ -1,0 +1,17 @@
+{
+  "scenario": "DELETE returns malformed successful JSON; next canonical read is absent",
+  "deleteStatus": 200,
+  "deleteBody": {
+    "error": "unavailable"
+  },
+  "reads": 2,
+  "deletes": 1,
+  "state": {
+    "phase": "ready",
+    "busy": null,
+    "passkeys": [],
+    "notice": "Passkey removed.",
+    "needsRefresh": false
+  }
+}
+OBSERVED_MALFORMED_RECEIPT_ACCEPTED=true

@@ -1,0 +1,56 @@
+{
+  "capturedAt": "2026-10-27T22:36:01.543667",
+  "rootPids": [
+    6002
+  ],
+  "processes": [
+    {
+      "pid": 6002,
+      "ppid": 933,
+      "start": "Tue Oct 27 22:18:35 2026",
+      "command": "/bin/zsh ../../outputs/employee-mobile-device-alerts/reviews/qa/run-owned-combined.zsh"
+    },
+    {
+      "pid": 6011,
+      "ppid": 6002,
+      "start": "Tue Oct 27 22:18:35 2026",
+      "command": "/usr/local/bin/node scripts/payroll-postgres.mjs vitest.employee-mobile-device-alerts.config.mts"
+    },
+    {
+      "pid": 6031,
+      "ppid": 6011,
+      "start": "Tue Oct 27 22:18:35 2026",
+      "command": "/usr/local/bin/node node_modules/vitest/vitest.mjs run --config vitest.employee-mobile-device-alerts.config.mts"
+    },
+    {
+      "pid": 29363,
+      "ppid": 6031,
+      "start": "Tue Oct 27 22:35:01 2026",
+      "command": "/usr/local/bin/node --experimental-import-meta-resolve --require /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/suppress-warnings.cjs --conditions node --conditions development /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/workers/forks.js"
+    },
+    {
+      "pid": 29646,
+      "ppid": 29363,
+      "start": "Tue Oct 27 22:35:16 2026",
+      "command": "/usr/local/bin/node /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/calendar/owned-next-XjeLSZ/app/node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 62968"
+    },
+    {
+      "pid": 29654,
+      "ppid": 29646,
+      "start": "Tue Oct 27 22:35:16 2026",
+      "command": "next-server (v16.4.2)"
+    },
+    {
+      "pid": 30295,
+      "ppid": 29363,
+      "start": "Tue Oct 27 22:35:44 2026",
+      "command": "bash /Users/josek0514/Library/Caches/ms-playwright/webkit-2336/pw_run.sh --inspector-pipe --headless --no-startup-window"
+    },
+    {
+      "pid": 30301,
+      "ppid": 30295,
+      "start": "Tue Oct 27 22:35:44 2026",
+      "command": "/Users/josek0514/Library/Caches/ms-playwright/webkit-2336/Playwright.app/Contents/MacOS/Playwright --inspector-pipe --headless --no-startup-window"
+    }
+  ]
+}

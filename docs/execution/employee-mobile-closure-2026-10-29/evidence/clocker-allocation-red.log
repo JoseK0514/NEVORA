@@ -1,0 +1,87 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ src/test/phase-e-runner.test.ts (90 tests | 7 failed) 22154ms
+   × workflow contract rejects omitted-suite 94ms
+   × workflow contract rejects budget 81ms
+   × workflow contract rejects skip-aggregate 82ms
+   × workflow contract rejects missing-verifier 89ms
+   × workflow contract rejects duplicate-artifact 81ms
+   × workflow contract rejects merge-artifacts 104ms
+   × workflow contract rejects ignore-failure 91ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects omitted-suite
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects missing-verifier
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects duplicate-artifact
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects merge-artifacts
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects ignore-failure
+AssertionError: expected [ …(2) ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
++   "Clocker SQL retains the full original file selectors and bounded four-group release gate",
+    "five bounded leaves retain strict current-source aggregation and unique raw artifacts",
+  ]
+
+ ❯ src/test/phase-e-runner.test.ts:387:28
+    385|   const expectedControls = mutation === 'budget' ? ['all-browser budge…
+    386|     : mutation === 'skip-aggregate' ? ['all triggered candidate branch…
+    387|   expect(rejectedControls).toEqual(expectedControls);
+       |                            ^
+    388| });
+    389|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects budget
+AssertionError: expected [ …(2) ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
++   "Clocker SQL retains the full original file selectors and bounded four-group release gate",
+    "all-browser budget fits the existing job while single-suite and SQL budgets stay bounded",
+  ]
+
+ ❯ src/test/phase-e-runner.test.ts:387:28
+    385|   const expectedControls = mutation === 'budget' ? ['all-browser budge…
+    386|     : mutation === 'skip-aggregate' ? ['all triggered candidate branch…
+    387|   expect(rejectedControls).toEqual(expectedControls);
+       |                            ^
+    388| });
+    389|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > workflow contract rejects skip-aggregate
+AssertionError: expected [ …(3) ] to deeply equal [ …(2) ]
+
+- Expected
++ Received
+
+  [
++   "Clocker SQL retains the full original file selectors and bounded four-group release gate",
+    "all triggered candidate branches receive mandatory SQL and browser gates",
+    "five bounded leaves retain strict current-source aggregation and unique raw artifacts",
+  ]
+
+ ❯ src/test/phase-e-runner.test.ts:387:28
+    385|   const expectedControls = mutation === 'budget' ? ['all-browser budge…
+    386|     : mutation === 'skip-aggregate' ? ['all triggered candidate branch…
+    387|   expect(rejectedControls).toEqual(expectedControls);
+       |                            ^
+    388| });
+    389|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 83 passed (90)
+   Start at  11:50:03
+   Duration  22.24s (tests 100%)

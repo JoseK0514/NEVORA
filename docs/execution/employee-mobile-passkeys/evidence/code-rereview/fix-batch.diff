@@ -1,0 +1,235 @@
+$ git diff d36ea8b04fcc455bd0cac3eaff23fa76847592cf..HEAD
+exit=0
+diff --git a/src/components/employee-mobile/passkeys.test.tsx b/src/components/employee-mobile/passkeys.test.tsx
+index ed113094..1d9f2b6f 100644
+--- a/src/components/employee-mobile/passkeys.test.tsx
++++ b/src/components/employee-mobile/passkeys.test.tsx
+@@ -20,4 +20,8 @@ it('separates current uncertainty from saved facts and never offers blind mutati
+ it('states last-key consequences before explicit removal and preserves the safe Keep choice',()=>{
+  const html=render({},true,true);expect(html).toContain('last saved passkey');expect(html).toContain('Keep passkey');expect(html).toContain('Remove passkey');expect(html).toContain('does not delete it from your device');
+ });
++it('keeps desktop saved metadata and native confirmation in the incumbent presentation',()=>{
++ const html=renderToStaticMarkup(<EmployeePasskeyView mobile={false} state={state} supported confirm={key} onAdd={noop} onRefresh={noop} onRemove={noop} onReview={noop} onKeep={noop} onCancel={noop}/>);
++ expect(html).toContain('<dialog');expect(html).toContain('Face ID and passkeys');expect(html).not.toContain('How passkeys work');expect(html).toContain(' · Not used yet');
++});
+ vi.unstubAllGlobals();
+diff --git a/src/components/employee-mobile/passkeys.tsx b/src/components/employee-mobile/passkeys.tsx
+index 61d5ac55..ccff4b03 100644
+--- a/src/components/employee-mobile/passkeys.tsx
++++ b/src/components/employee-mobile/passkeys.tsx
+@@ -6,6 +6,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
+ import {createPasskeyManager,type PasskeyState} from '../../lib/passkeys/management';
+ import {passkeysAvailable,passkeysFlagOn,type Passkey} from '../../lib/passkeys/client';
+ import {useEmployeeMobile} from './use-mobile';
++import {PasskeyDesktopView} from '../passkeys/passkey-desktop-view';
+ import '../passkeys/passkeys.css';
+ import './passkeys.css';
+ 
+@@ -13,10 +14,17 @@ const subscribe=()=>()=>{};
+ const date=(value:string)=>new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+ type ViewProps={mobile:boolean;state:PasskeyState;supported:boolean;confirm:Passkey|null;onAdd:()=>void;onRefresh:()=>void;onRemove:(id:string)=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onKeep:()=>void;onCancel:()=>void;addRef?:RefObject<HTMLButtonElement|null>;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLParagraphElement|null>};
+ 
++function EmployeePasskeyDesktop(props:ViewProps){
++ const dialog=useRef<HTMLDialogElement>(null),fallbackAdd=useRef<HTMLButtonElement>(null),{state,confirm}=props;
++ useEffect(()=>{if(confirm){dialog.current?.showModal();dialog.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus();}else if(dialog.current?.open)dialog.current.close();},[confirm]);
++ return <div data-passkey-state={state.phase}><PasskeyDesktopView load={state.phase==='ready'?'ready':state.phase==='unavailable'||state.phase==='denied'?'failed':'loading'} passkeys={state.phase==='ready'?state.passkeys??[]:[]} busy={state.busy==='removing'?'remove':state.busy?'add':null} notice={state.notice?{tone:/^(Passkey added|Passkey removed)/.test(state.notice)?'done':'error',text:state.notice}:null} confirm={state.phase==='ready'?confirm:null} supported={props.supported} phone={false} disabled={state.phase!=='ready'||state.needsRefresh} dialog={dialog} addButton={props.addRef??fallbackAdd} onRefresh={props.onRefresh} onAdd={props.onAdd} onReview={props.onReview} onRemove={key=>props.onRemove(key.id)} onKeep={props.onKeep}/></div>;
++}
++
+ export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
+  const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
+  const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
+  if(state.phase==='disabled'||state.phase==='ended')return null;
++ if(!mobile)return <EmployeePasskeyDesktop mobile={mobile} state={state} supported={supported} confirm={confirm} onAdd={onAdd} onRefresh={onRefresh} onRemove={onRemove} onReview={onReview} onKeep={onKeep} onCancel={onCancel} addRef={addRef}/>;
+  return <section className={`nv-card pk-section em-passkeys${mobile?' em-passkeys-mobile':''}`} aria-labelledby="passkeys-title" data-passkey-state={state.phase}>
+   <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{mobile?'Passkeys':'Face ID and passkeys'}</h2></div>
+   <div className="nv-card__body pk-body">
+@@ -53,7 +61,7 @@ export function EmployeePasskeySection({authority}:{authority:string}){
+  const supported=useSyncExternalStore(subscribe,()=>passkeysAvailable()&&typeof navigator.credentials?.create==='function'&&window.isSecureContext,()=>false);
+  const [state,setState]=useState<PasskeyState>({phase:'loading',busy:null,passkeys:null,notice:'',needsRefresh:false});
+  const [confirm,setConfirm]=useState<Passkey|null>(null),owner=useRef<ReturnType<typeof createPasskeyManager>|null>(null);
+- const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),previousBusy=useRef(state.busy);
++ const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),completion=useRef<'add'|'remove'|null>(null);
+  useEffect(()=>{
+   if(!flag)return;
+   const manager=createPasskeyManager(authority,()=>{if(manager.state.phase!=='ready')setConfirm(null);setState({...manager.state});});owner.current=manager;
+@@ -66,9 +74,13 @@ export function EmployeePasskeySection({authority}:{authority:string}){
+   return()=>{clearInterval(poll);manager.end();owner.current=null;window.removeEventListener('blur',blur);window.removeEventListener('pagehide',pause);window.removeEventListener('offline',pause);window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);window.removeEventListener('online',resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
+  },[authority,flag]);
+  useEffect(()=>{if(confirm){confirmation.current?.focus();confirmation.current?.scrollIntoView({block:'nearest'});}},[confirm]);
+- useEffect(()=>{const wasBusy=previousBusy.current;previousBusy.current=state.busy;if(wasBusy&&!state.busy&&state.notice){requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});}},[state.busy,state.notice]);
++ useEffect(()=>{
++  if(!completion.current||state.busy||!state.notice||state.phase==='loading'||state.phase==='paused')return;
++  completion.current=null;const cancelled=/^Setup cancelled\./.test(state.notice);
++  const frame=requestAnimationFrame(()=>{if(owner.current?.state.phase==='ended')return;const target=cancelled||!mobile?add.current:feedback.current;target?.focus();target?.scrollIntoView({block:'center'});});return()=>cancelAnimationFrame(frame);
++ },[mobile,state.busy,state.notice,state.phase]);
+  if(!flag)return null;
+- return <EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
+-  onAdd={()=>void owner.current?.add()} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>void owner.current?.remove(id)} onCancel={()=>owner.current?.cancel()}
+-  onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onKeep={()=>{setConfirm(null);requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus();else add.current?.focus();});}}/>;
++ return <div data-passkey-owner=""><EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
++  onAdd={()=>{completion.current='add';void owner.current?.add();}} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>{completion.current='remove';void owner.current?.remove(id);}} onCancel={()=>{completion.current='add';owner.current?.cancel();}}
++  onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onKeep={()=>{setConfirm(null);requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus();else add.current?.focus();});}}/></div>;
+ }
+diff --git a/src/components/passkeys/passkey-desktop-view.tsx b/src/components/passkeys/passkey-desktop-view.tsx
+new file mode 100644
+index 00000000..d1456e3c
+--- /dev/null
++++ b/src/components/passkeys/passkey-desktop-view.tsx
+@@ -0,0 +1,48 @@
++"use client";
++import type {RefObject} from 'react';
++import {PASSKEY_COPY} from '@/lib/passkeys/copy';
++import type {Passkey} from '@/lib/passkeys/client';
++import {SigPendingLabel} from '@/components/signature/sig-button';
++const t=PASSKEY_COPY.en;
++const dateLabel=(iso:string)=>new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
++type Props={load:'loading'|'ready'|'failed';passkeys:Passkey[];busy:'add'|'remove'|null;notice:{tone:'done'|'error';text:string}|null;confirm:Passkey|null;supported:boolean;phone:boolean;disabled?:boolean;dialog:RefObject<HTMLDialogElement|null>;addButton:RefObject<HTMLButtonElement|null>;onRefresh:()=>void;onAdd:()=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onRemove:(key:Passkey)=>void;onKeep:()=>void};
++/** Shared incumbent desktop/management markup, without a data or ceremony owner. */
++export function PasskeyDesktopView({load,passkeys,busy,notice,confirm,supported,phone,disabled=false,dialog,addButton,onRefresh,onAdd,onReview,onRemove,onKeep}:Props){
++  return (
++    <section className="nv-card pk-section" aria-labelledby="passkeys-title">
++      <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
++      <div className="nv-card__body pk-body">
++        {load === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
++        {load === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={onRefresh}>{t.tryAgain}</button></p> : null}
++        {load === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
++        {passkeys.length ? <ul className="pk-list">
++          {passkeys.map(passkey => (
++            <li key={passkey.id} className="pk-item">
++              <span className="pk-item__text">
++                <span className="pk-item__name">{passkey.name}</span>
++                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
++              </span>
++              <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={disabled || busy !== null}
++                onClick={event => onReview(passkey,event.currentTarget)}>{t.remove}</button>
++            </li>
++          ))}
++        </ul> : null}
++        {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
++        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={onAdd} disabled={disabled || busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
++          <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
++        </button> : <p className="pk-muted">{t.notSupported}</p>}
++      </div>
++      <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
++        onClose={() => { if (confirm) onKeep(); }}>
++        {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
++          <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
++          <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
++          <div className="pk-dialog__actions">
++            <button type="button" className="nv-btn" data-kind="danger" onClick={() => onRemove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
++            <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={onKeep} disabled={disabled || busy === "remove"}>{t.keep}</button>
++          </div>
++        </form> : null}
++      </dialog>
++    </section>
++  );
++}
+diff --git a/src/components/passkeys/passkey-section.tsx b/src/components/passkeys/passkey-section.tsx
+index 0004b88e..b870817b 100644
+--- a/src/components/passkeys/passkey-section.tsx
++++ b/src/components/passkeys/passkey-section.tsx
+@@ -2,13 +2,12 @@
+ 
+ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+ import { PASSKEY_COPY } from "@/lib/passkeys/copy";
+-import { SigPendingLabel } from "@/components/signature/sig-button";
++import {PasskeyDesktopView} from "./passkey-desktop-view";
+ import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
+ import "./passkeys.css";
+ 
+ const t = PASSKEY_COPY.en;
+ const subscribe = () => () => {};
+-const dateLabel = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+ 
+ type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" };
+ 
+@@ -64,41 +63,6 @@ export function PasskeySection() {
+   }
+ 
+   const passkeys = load.state === "ready" ? load.passkeys : [];
+-  return (
+-    <section className="nv-card pk-section" aria-labelledby="passkeys-title">
+-      <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
+-      <div className="nv-card__body pk-body">
+-        {load.state === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
+-        {load.state === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={() => void refresh()}>{t.tryAgain}</button></p> : null}
+-        {load.state === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
+-        {passkeys.length ? <ul className="pk-list">
+-          {passkeys.map(passkey => (
+-            <li key={passkey.id} className="pk-item">
+-              <span className="pk-item__text">
+-                <span className="pk-item__name">{passkey.name}</span>
+-                <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
+-              </span>
+-              <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={busy !== null}
+-                onClick={event => { opener.current = event.currentTarget; setConfirm(passkey); }}>{t.remove}</button>
+-            </li>
+-          ))}
+-        </ul> : null}
+-        {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
+-        {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
+-          <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
+-        </button> : <p className="pk-muted">{t.notSupported}</p>}
+-      </div>
+-      <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
+-        onClose={() => { if (confirm) { setConfirm(null); opener.current?.focus(); } }}>
+-        {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
+-          <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
+-          <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
+-          <div className="pk-dialog__actions">
+-            <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
+-            <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
+-          </div>
+-        </form> : null}
+-      </dialog>
+-    </section>
+-  );
++  return <PasskeyDesktopView load={load.state} passkeys={passkeys} busy={busy} notice={notice} confirm={confirm} supported={supported} phone={phone} dialog={dialog} addButton={addButton}
++    onRefresh={()=>void refresh()} onAdd={()=>void add()} onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onRemove={key=>void remove(key)} onKeep={()=>{setConfirm(null);opener.current?.focus();}}/>;
+ }
+diff --git a/src/lib/passkeys/management.test.ts b/src/lib/passkeys/management.test.ts
+index 793ceec6..16e9ab90 100644
+--- a/src/lib/passkeys/management.test.ts
++++ b/src/lib/passkeys/management.test.ts
+@@ -59,3 +59,6 @@ it('only reports native registration success after the exact saved receipt is pr
+  const headers:HeadersInit[]=[];vi.stubGlobal('fetch',vi.fn(async(path:string,init:RequestInit)=>{headers.push(init.headers!);if(path.endsWith('/options'))return Response.json(options);if(path.endsWith('/verify')){saved=true;return Response.json({passkey:key});}return Response.json(snapshot(saved?[key]:[]));}));
+  const m=make();await m.refresh();await m.add();expect(m.state.passkeys).toEqual([key]);expect(m.state.notice).toMatch(/Passkey added/);expect(headers.every(value=>new Headers(value).get('X-Nevora-Passkey-Authority')===authority)).toBe(true);
+ });
++it.each([{error:'unavailable'},{},null])('rejects a non-204 removal response %j even when a later list happens to be absent',async body=>{
++ let removed=false;vi.stubGlobal('fetch',vi.fn(async(_path:string,init:RequestInit)=>{if(init.method==='DELETE'){removed=true;return Response.json(body);}return Response.json(snapshot(removed?[]:[key]));}));const m=make();await m.refresh();await m.remove(id);expect(m.state.needsRefresh).toBe(true);expect(m.state.notice).not.toBe('Passkey removed.');
++});
+diff --git a/src/lib/passkeys/management.ts b/src/lib/passkeys/management.ts
+index 1fc8f344..2cb6b7bd 100644
+--- a/src/lib/passkeys/management.ts
++++ b/src/lib/passkeys/management.ts
+@@ -43,6 +43,7 @@ export function createPasskeyManager(authority:string,changed:()=>void){
+    if(controller.signal.aborted){await response.body?.cancel().catch(()=>{});throw Error('Late reply');}
+    if(response.status===401||response.status===403){await response.body?.cancel();throw new Denied();}
+    if(response.status===204&&method==='DELETE')return null;
++   if(response.ok&&(method==='DELETE'||response.status!==200)){await response.body?.cancel();throw Error('Unexpected receipt');}
+    const value:unknown=await response.json();
+    if(!response.ok){if(record(value)&&value.error==='not_supported')throw new Disabled();throw new Refused();}
+    return value;
+diff --git a/src/test/integration/employee-mobile-passkeys.integration.ts b/src/test/integration/employee-mobile-passkeys.integration.ts
+index ca2bba9d..dedfbd1f 100644
+--- a/src/test/integration/employee-mobile-passkeys.integration.ts
++++ b/src/test/integration/employee-mobile-passkeys.integration.ts
+@@ -37,15 +37,15 @@ it('integrates own passkeys through real server verification and deliberate mobi
+     if(new URL(location.href).searchParams.has('test-unsupported'))Object.defineProperty(window,'PublicKeyCredential',{configurable:true,value:undefined});
+    });
+    const panel=page.locator('.em-passkeys'),ready=()=>page.locator('.em-passkeys[data-passkey-state="ready"]').waitFor();
+-   const shot=async(name:string)=>{const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:true});captures.push(path);};
++   const shot=async(name:string)=>{const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:false,caret:'initial',style:'nextjs-portal {visibility:hidden;}'});captures.push(path);};
+    failed=async()=>{await shot('FAILURE-'+stage);await writeFile(evidence+'/'+engine+'-failure.html',await page.content());};
+    const record=(name:string)=>checks.push({engine,name});
+    const refresh=async()=>{await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await ready();};
+    await page.goto(origin+'/app/profile');await ready();expect(await panel.getByRole('heading',{name:'Passkeys',exact:true}).count()).toBe(1);expect(await panel.innerText()).toContain('No saved passkeys');expect(binding).toMatch(/^[a-f0-9]{64}$/);await panel.scrollIntoViewIfNeeded();await shot('empty');record('Own Employee/Lead Profile current empty state, no private prehydration sample');
+    const wrong=await page.request.get(origin+'/api/auth/passkeys',{headers:{'X-Nevora-Passkey-Authority':'b'.repeat(64)}});expect(wrong.status()).toBe(401);
+    const selector=await page.request.get(origin+'/api/auth/passkeys?employeeId='+fixture.actors[1],{headers:{'X-Nevora-Passkey-Authority':binding}});expect(selector.status()).toBe(400);record('HTTP rejects another binding and employee selector');
+-   stage='native-cancel';await page.evaluate('window.__pkMode="cancel"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Setup cancelled.'}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[actor]))[0].n).toBe(0);record('Controlled native cancellation creates no server credential');
+-   stage='native-blur-resize';await page.evaluate('window.__pkMode="hold"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Finish setup'}).waitFor();const calls=await page.evaluate('window.__pkCalls');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);const node=await panel.elementHandle();await page.setViewportSize({width:1440,height:1000});expect(await node!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await shot('desktop-pending');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.dispatchEvent(new Event('focus')));expect(await page.evaluate('window.__pkCalls')).toBe(calls);await page.evaluate('window.__pkRelease()');await panel.getByRole('status').filter({hasText:'Passkey added.'}).waitFor();await ready();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[fixture.actors[1]]))[0].n).toBe(0);await shot('saved');record('Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key');
++   stage='native-cancel';await page.evaluate('window.__pkMode="cancel"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Setup cancelled.'}).waitFor();await expect.poll(()=>panel.getByRole('button',{name:'Add a passkey',exact:true}).evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[actor]))[0].n).toBe(0);record('Controlled native cancellation creates no server credential and returns exact Add focus');
++   stage='native-blur-resize';await page.evaluate('window.__pkMode="hold"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Finish setup'}).waitFor();const calls=await page.evaluate('window.__pkCalls');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);const node=await page.locator('[data-passkey-owner]').elementHandle();await page.setViewportSize({width:1440,height:1000});expect(await node!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);expect(await page.locator('.pk-dialog').count()).toBe(1);expect(await page.getByRole('heading',{name:'Face ID and passkeys',exact:true}).count()).toBe(1);expect(await page.getByText('How passkeys work',{exact:true}).count()).toBe(0);await shot('desktop-pending');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.dispatchEvent(new Event('focus')));expect(await page.evaluate('window.__pkCalls')).toBe(calls);await page.evaluate('window.__pkRelease()');await panel.getByRole('status').filter({hasText:'Passkey added.'}).waitFor();await ready();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[fixture.actors[1]]))[0].n).toBe(0);await shot('saved');record('Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key');
+    stage='layout-focus';await panel.locator('summary').click();
+    for(const theme of ['light','dark'])for(const width of [320,390,430]){
+     await page.getByLabel('Appearance',{exact:true}).selectOption(theme);await page.setViewportSize({width,height:844});await ready();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);

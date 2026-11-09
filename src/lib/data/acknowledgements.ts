@@ -1,4 +1,11 @@
+import type {SessionMutationProof} from '../shift-changes/types';
+import type {CommandResult} from '../employee-attention/types';
+import {isValidWeekStart} from '../date-utils';
+import {assertEmployeeViewProof} from './employee-profile.server';
+import {commitAttention} from './employee-attention-receipts.server';
 import { getDb, queryRows } from "../db";
+import { neonNotificationExecutor } from "./notification-transactions";
+import type { SqlExecutor } from "../notifications/types";
 import {
   buildAcknowledgementState,
   type EmployeeAcknowledgementState,
@@ -13,50 +20,14 @@ export type AcknowledgementSummary = {
   acknowledgedEmployees: number;
 };
 
-export async function acknowledgeScheduleWeek(input: {
-  weekStart: string;
-  employeeId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ employee_id: string; publication_revision_id: string }>(
-    await sql.query(
-      `WITH latest_revision AS (
-         SELECT id
-         FROM schedule_publication_revisions
-         WHERE week_start = $1
-         ORDER BY revision_number DESC
-         LIMIT 1
-       )
-       INSERT INTO schedule_acknowledgements (
-         week_start,
-         employee_id,
-         publication_revision_id,
-         acknowledged_at
-       )
-       SELECT
-         $1,
-         $2,
-         r.id,
-         now()
-       FROM latest_revision r
-       WHERE EXISTS (
-         SELECT 1
-         FROM schedule_publication_revision_shifts rs
-         WHERE rs.revision_id = r.id
-           AND rs.employee_id = $2
-       )
-       ON CONFLICT (week_start, employee_id)
-       DO UPDATE SET
-         publication_revision_id = EXCLUDED.publication_revision_id,
-         acknowledged_at = now()
-       RETURNING employee_id, publication_revision_id`,
-      [input.weekStart, input.employeeId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+/** Confirm the displayed publication through the canonical attention command; opening a schedule never acknowledges it. */
+export async function acknowledgeScheduleWeek(input:{proof:SessionMutationProof;weekStart:string;expectedRevisionId:string;operationId:string;authority:string},executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
+  try { assertEmployeeViewProof(input.proof); } catch { return {status:'blocked',reason:'session_unavailable'}; }
+  if(!isValidWeekStart(input.weekStart))return {status:'blocked',reason:'invalid_week'};
+  return commitAttention(input.proof,'CONFIRM_WEEK',{operationId:input.operationId,authority:input.authority,ref:{kind:'SCHEDULE',id:input.weekStart,version:input.expectedRevisionId}},executor);
 }
 
+/** An older global revision can remain acknowledged when this employee's own material assignments have not changed. */
 export async function getEmployeeAcknowledgementState(
   weekStart: string,
   employeeId: string,
@@ -113,6 +84,16 @@ export async function hasAcknowledgedScheduleWeek(
   return state.acknowledged;
 }
 
+async function selfServiceScheduledIds(employeeIds: string[]) {
+  if (!employeeIds.length) return [];
+  const sql = getDb();
+  const rows = queryRows<{ id: string }>(await sql.query(
+    `SELECT id FROM employees WHERE id = ANY($1::text[]) AND role IN ('EMPLOYEE', 'LEAD')`,
+    [employeeIds],
+  ));
+  return rows.map(row => row.id);
+}
+
 export async function getAcknowledgementSummary(
   weekStart: string,
 ): Promise<AcknowledgementSummary> {
@@ -122,9 +103,9 @@ export async function getAcknowledgementSummary(
   }
 
   const latestShifts = await listRevisionShifts(latest.id);
-  const scheduledEmployeeIds = Array.from(
+  const scheduledEmployeeIds = await selfServiceScheduledIds(Array.from(
     new Set(latestShifts.map((shift) => shift.employeeId)),
-  );
+  ));
 
   if (!scheduledEmployeeIds.length) {
     return { scheduledEmployees: 0, acknowledgedEmployees: 0 };
@@ -213,9 +194,9 @@ export async function listUnacknowledgedEmployeeIds(weekStart: string) {
   if (!latest) return [];
 
   const latestShifts = await listRevisionShifts(latest.id);
-  const employeeIds = Array.from(
+  const employeeIds = await selfServiceScheduledIds(Array.from(
     new Set(latestShifts.map((shift) => shift.employeeId)),
-  );
+  ));
 
   const states = await Promise.all(
     employeeIds.map(async (employeeId) => ({

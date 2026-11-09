@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clocker Kiosk</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #FFFFFF; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+  <div style="padding: 52px 16px 0; display: flex; flex-direction: column">
+    <div style="display: flex; align-items: center; justify-content: space-between; height: 44px">
+      <span role="img" aria-label="NEVORA Workforce" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 44px"><img src="assets/nevora-wordmark.png" alt="" style="display: block; height: 20px; width: auto; mix-blend-mode: multiply"><span aria-hidden="true" style="display: block; font-size: 11px; line-height: 12px; font-weight: 600; letter-spacing: 3.2px; margin-right: -3.2px; color: #6B7075; text-transform: uppercase">Workforce</span></span>
+      <span style="font-size: 13px; font-weight: 600; color: #4A4F54">Condado · Isla Verde Cafés</span>
+    </div>
+
+    <div style="margin-top: 64px; text-align: center">
+      <div style="font-size: 13px; color: #6B7075">Tuesday, October 27</div>
+      <div style="margin-top: 2px; font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.3px">8:24 AM</div>
+    </div>
+
+    <h1 style="margin: 40px 0 0; text-align: center; font-size: 15px; line-height: 20px; font-weight: 600">Enter your PIN</h1>
+    <div role="img" aria-label="2 of 4 digits entered" style="margin-top: 16px; display: flex; justify-content: center; gap: 16px">
+      <span style="width: 14px; height: 14px; border-radius: 7px; background: #1A1C1E"></span>
+      <span style="width: 14px; height: 14px; border-radius: 7px; background: #1A1C1E"></span>
+      <span style="width: 14px; height: 14px; border-radius: 7px; box-shadow: inset 0 0 0 1.5px #A7ACB1"></span>
+      <span style="width: 14px; height: 14px; border-radius: 7px; box-shadow: inset 0 0 0 1.5px #A7ACB1"></span>
+    </div>
+
+    <div role="group" aria-label="Keypad" style="margin-top: 48px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">1</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">2</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">3</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">4</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">5</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">6</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">7</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">8</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">9</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #F5F6F6; color: #4A4F54; font: 600 15px Inter, sans-serif">Clear</button>
+      <button type="button" style="height: 72px; border: 0; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: #1A1C1E; font: 600 22px Inter, sans-serif">0</button>
+      <button type="button" aria-label="Delete last digit" style="height: 72px; border: 0; border-radius: 12px; background: #F5F6F6; color: #4A4F54; display: grid; place-items: center"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h11v14H9l-6-7z"/><path d="m12.5 9.5 5 5M17.5 9.5l-5 5"/></svg></button>
+    </div>
+
+    <div style="margin-top: 24px; text-align: center; font-size: 13px; color: #6B7075">Forgot your PIN? Ask the manager on shift.</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

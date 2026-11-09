@@ -1,0 +1,6 @@
+{
+  "landed": "/app/inbox?filter=requests&decided=timeoff-approved",
+  "urlAfterToast": "/app/inbox?filter=requests",
+  "toast": "",
+  "requestsSectionLeft": 0
+}

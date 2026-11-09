@@ -1,0 +1,26 @@
+{
+  "actions": [
+    {
+      "signal": "SIGTERM",
+      "identity": {
+        "pid": 51880,
+        "ppid": 51879,
+        "pgid": 51879,
+        "start": "Tue Oct 27 22:58:27 2026",
+        "command": "next-server (v16.4.2) "
+      }
+    }
+  ],
+  "remainingOriginalIdentities": [],
+  "port63275Refused": true,
+  "manifestVerification": [
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/communications-review/owned-next-B2KZIU/source-manifest.json",
+      "inputs": 2040,
+      "mismatches": []
+    }
+  ],
+  "tmpAbsent": true,
+  "helperClosedClaim": false,
+  "closureMethod": "QA exact-identity recovery after beforeAll timeout left app unassigned; original ownership metadata preserved"
+}

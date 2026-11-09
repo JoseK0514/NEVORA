@@ -1,0 +1,40 @@
+{
+  "argv": [
+    "/usr/local/bin/node",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-firefox-options-abort.cjs"
+  ],
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "scriptSha256": "e57bff3cf4ae5a9b357dec3ee88030fe3e2e5d1bb91ed11a9eb107a9abf86c5c",
+  "playwrightVersion": "1.62.1",
+  "runtimePath": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright",
+  "serverPid": 46995,
+  "port": 64324,
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "syntheticInputs": {
+    "abortDelayMs": [
+      0,
+      1,
+      2,
+      5
+    ],
+    "serverHeadersDelayMs": 16,
+    "maxTotalCases": 14,
+    "fetchOptions": {
+      "method": "GET",
+      "cache": "no-store",
+      "credentials": "same-origin",
+      "redirect": "error",
+      "headers": {
+        "X-Nevora-Calendar": "1",
+        "X-Nevora-Calendar-Authority": "synthetic64a",
+        "Accept": "application/json"
+      }
+    },
+    "terminalObservationMs": 11000
+  }
+}

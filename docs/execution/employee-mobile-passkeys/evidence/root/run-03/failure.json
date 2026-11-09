@@ -1,0 +1,19 @@
+{
+  "error": "AssertionError: expected false to be true // Object.is equality",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects another binding and employee selector"
+    }
+  ],
+  "captures": [
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-03/chromium-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-03/chromium-FAILURE-native-cancel.png"
+  ],
+  "contrasts": [],
+  "errors": []
+}

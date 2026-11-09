@@ -1,0 +1,21 @@
+import {beforeEach,afterEach,it,expect} from 'vitest';
+import {randomUUID} from 'node:crypto';
+import {createPunchFixture} from './clocker-punch-fixture';
+import {ClockerPunchService} from '../../lib/clocker/punches.server';
+import {readClockerRecoveryReview} from '../../lib/clocker/recovery-review.server';
+import type {SessionMutationProof} from '../../lib/shift-changes/types';
+let f:Awaited<ReturnType<typeof createPunchFixture>>;
+const owner:SessionMutationProof={employee:{id:'c34-owner',role:'OWNER',firstName:'Owner',lastName:'QA',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
+beforeEach(async()=>{f=await createPunchFixture({companyAccess:true});});afterEach(async()=>{await f?.db.dispose();});
+it('UX-05 concurrent employees retain separate immutable receipts and reject cross-identity replay',async()=>{
+ const service=new ClockerPunchService(f.key,f.db.executor),a=await f.identity();
+ const make=async(proof:typeof a.proof)=>({commandId:randomUUID(),action:'CLOCK_IN' as const,verificationId:(await service.read(proof)).verificationId,expected:{revision:0,timeEntryId:null,timeEntryVersion:null,breakEntryId:null,breakEntryVersion:null}});
+ const ca=await make(a.proof);const results=await Promise.all([service.execute(a.proof,ca),service.execute(a.proof,ca)]);expect(results[0]).toEqual(results[1]);const b=await f.identity(0,'4567'),cb=await make(b.proof);const next=await Promise.all([service.execute(b.proof,cb),service.execute(b.proof,cb)]);expect(next[0]).toEqual(next[1]);
+ await expect(service.execute(b.proof,ca)).rejects.toMatchObject({code:'CONTEXT_CHANGED'});expect(await service.receipt(b.proof,ca.commandId)).toBeNull();const renewed=await f.identity();expect(await service.receipt(renewed.proof,ca.commandId)).toEqual(results[0]);
+ const review=await readClockerRecoveryReview(owner,ca.commandId,f.db.executor);expect(review).toMatchObject({state:'ready',commandId:ca.commandId,receipts:[{employeeId:'c34-a',action:'CLOCK_IN',timeEntryId:results[0].timeEntryId}]});
+ expect(await f.q('SELECT count(*)::int AS n FROM clocker_command_ledger')).toEqual([{n:2}]);expect(await f.q('SELECT count(*)::int AS n FROM time_entries')).toEqual([{n:2}]);
+});
+it('UX-05 absent receipt remains explicitly unconfirmed and does not create or delete history',async()=>{const r=await readClockerRecoveryReview(owner,randomUUID(),f.db.executor);expect(r).toMatchObject({state:'ready',receipts:[]});expect(await f.q('SELECT count(*)::int AS n FROM clocker_command_ledger')).toEqual([{n:0}]);});
+it('UX-05 current role downgrade prevents manager receipt disclosure',async()=>{await f.q("UPDATE employees SET role='LEAD' WHERE id='c34-owner'");expect(await readClockerRecoveryReview(owner,randomUUID(),f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});});
+it('UX-05 logout after ledger observation prevents private results',async()=>{const executor={...f.db.executor,query:async<T>(statement:Parameters<typeof f.db.executor.query>[0])=>{if(statement.text.includes('AS remaining'))await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-owner'");return f.db.executor.query<T>(statement);}};expect(await readClockerRecoveryReview(owner,randomUUID(),executor)).toEqual({state:'unavailable',reason:'access_denied'});});
+it('UX-05 review requires a current management proof and bounded reference',async()=>{expect(await readClockerRecoveryReview({...owner,employee:{...owner.employee,role:'EMPLOYEE'}},randomUUID(),f.db.executor)).toEqual({state:'unavailable',reason:'access_denied'});expect((await readClockerRecoveryReview(owner,'not a reference',f.db.executor)).state).toBe('unavailable');});

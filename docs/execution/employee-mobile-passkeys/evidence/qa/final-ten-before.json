@@ -1,0 +1,17 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "status": "",
+  "testHashes": {
+    "src/app/app/requests/hub/page.test.tsx": "0f18798eab31295bc059140fe81bb9462e64e62413c0518c7659e21cd2ba6bab",
+    "src/app/app/requests/page.test.tsx": "07071fad14a49679c9207a99c459e1e5386467904bb97330dfbcda5bec115f17",
+    "src/app/app/requests/page.withdrawal-carry-forward.test.tsx": "331e8090a475f730306b5cb5df082d9d436beb3f33024ce01e0a216df20052ab",
+    "src/components/employee-home-actions.test.tsx": "31eb54e5b8d6a8d9aa61252351c0cd6def0f08e202ab0dd08080dc9afe41236f",
+    "src/lib/data/scheduling-inputs.test.ts": "5506392c301f48b457f64a0afaed5a98daeeca2bc1e3ac3344c636d19bef52c9",
+    "src/lib/tenancy/migrations/backfill.test.ts": "d1068e6b405f8132be6f105ea55760cc0ae79912e74c54fb31f9cf8cb636818f",
+    "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts": "4b28ec07b1810460f3b43b929c9ff234c4144f750b9724e2df919bca9158e159",
+    "src/test/phase-e-browser-evidence.test.ts": "70dd6701e5c11134d29fc5de41e8313ee8989c23a786f4d76efd239fd5705fef",
+    "src/test/phase-e-root-group-process.test.ts": "39a3975e0957fcd4e27b46a9953b02c69a42ad89cbba1c52653f40f5bfe3d1df",
+    "src/test/phase-e-runner.test.ts": "2ceed23b82f9b7cce748b221e50f508e636a33b3f44806a919cf828f3024f70c"
+  },
+  "testBytesSameAsBaseline": true
+}

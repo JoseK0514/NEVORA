@@ -1,0 +1,44 @@
+{
+  "gate": "combined",
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts"
+  ],
+  "startedAt": "2026-10-27T19:16:38.966576+00:00",
+  "completedAt": "2026-10-27T19:33:17.010673+00:00",
+  "exitCode": 1,
+  "durationSeconds": 998.043,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-EzChag",
+      "directoryExists": false,
+      "pid": 42360,
+      "livePid": false,
+      "port": 42411,
+      "portOpen": false
+    }
+  ],
+  "finalProcesses": [],
+  "summaryLines": [
+    " \u276f  canonical-communications  src/test/integration/phase-e-communications-schema.integration.ts (11 tests | 1 failed) 4139ms",
+    "   \u2713 H13 failed final transaction rolls back decision metadata with assignments and operation 655ms",
+    " \u276f  employee  src/test/integration/employee-mobile-requests.integration.ts (1 test | 1 failed) 56827ms",
+    "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 2 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+    " FAIL   employee  src/test/integration/employee-mobile-requests.integration.ts > integrates protected Employee Requests and eligible pickup using actual SQL and three browser engines",
+    "AssertionError: expected [ { engine: 'webkit', \u2026(5) }, \u2026(1) ] to deeply equal []",
+    " FAIL   canonical-communications  src/test/integration/phase-e-communications-schema.integration.ts > 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes",
+    "Error: Owned evidence directory required",
+    " Test Files  2 failed | 18 passed (20)",
+    "      Tests  2 failed | 174 passed (176)",
+    "   Duration  996.38s (tests 100%)",
+    "[Payroll PostgreSQL] Owned cluster stopped."
+  ],
+  "stdoutSha256": "ac52f0079b2e40fd2f9108f7239a7d218d0080219ab2d0f5a199b2f28558ee78"
+}

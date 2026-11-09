@@ -1,0 +1,107 @@
+{
+  "state": "ready",
+  "kind": "management-profile",
+  "observedAt": "2026-10-19T14:00:00.000Z",
+  "validForMs": 600000,
+  "contact": {
+    "email": "maria.jose.rivera.santiago.with.a.long.name@northside-quality-assurance-workforce.example",
+    "phone": "+1 (787) 555-0100 ext. 4021"
+  },
+  "locations": {
+    "scope": "all",
+    "names": [
+      "Centro Comercial Plaza Las Américas, Nivel 1, Local de Servicio al Cliente",
+      "Location 02 · Bayamón Norte",
+      "Location 03 · Bayamón Norte",
+      "Location 04 · Bayamón Norte",
+      "Location 05 · Bayamón Norte",
+      "Location 06 · Bayamón Norte",
+      "Location 07 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 8, Local de Servicio al Cliente",
+      "Location 09 · Bayamón Norte",
+      "Location 10 · Bayamón Norte",
+      "Location 11 · Bayamón Norte",
+      "Location 12 · Bayamón Norte",
+      "Location 13 · Bayamón Norte",
+      "Location 14 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 15, Local de Servicio al Cliente",
+      "Location 16 · Bayamón Norte",
+      "Location 17 · Bayamón Norte",
+      "Location 18 · Bayamón Norte",
+      "Location 19 · Bayamón Norte",
+      "Location 20 · Bayamón Norte",
+      "Location 21 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 22, Local de Servicio al Cliente",
+      "Location 23 · Bayamón Norte",
+      "Location 24 · Bayamón Norte",
+      "Location 25 · Bayamón Norte",
+      "Location 26 · Bayamón Norte",
+      "Location 27 · Bayamón Norte",
+      "Location 28 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 29, Local de Servicio al Cliente",
+      "Location 30 · Bayamón Norte",
+      "Location 31 · Bayamón Norte",
+      "Location 32 · Bayamón Norte",
+      "Location 33 · Bayamón Norte",
+      "Location 34 · Bayamón Norte",
+      "Location 35 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 36, Local de Servicio al Cliente",
+      "Location 37 · Bayamón Norte",
+      "Location 38 · Bayamón Norte",
+      "Location 39 · Bayamón Norte",
+      "Location 40 · Bayamón Norte",
+      "Location 41 · Bayamón Norte",
+      "Location 42 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 43, Local de Servicio al Cliente",
+      "Location 44 · Bayamón Norte",
+      "Location 45 · Bayamón Norte",
+      "Location 46 · Bayamón Norte",
+      "Location 47 · Bayamón Norte",
+      "Location 48 · Bayamón Norte",
+      "Location 49 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 50, Local de Servicio al Cliente",
+      "Location 51 · Bayamón Norte",
+      "Location 52 · Bayamón Norte",
+      "Location 53 · Bayamón Norte",
+      "Location 54 · Bayamón Norte",
+      "Location 55 · Bayamón Norte",
+      "Location 56 · Bayamón Norte",
+      "Centro Comercial Plaza Las Américas, Nivel 57, Local de Servicio al Cliente",
+      "Location 58 · Bayamón Norte",
+      "Location 59 · Bayamón Norte",
+      "Location 60 · Bayamón Norte"
+    ]
+  },
+  "alerts": [
+    {
+      "id": "time-off",
+      "label": "Time-off requests",
+      "detail": "When someone asks for time off",
+      "on": true
+    },
+    {
+      "id": "shift-changes",
+      "label": "Shift requests",
+      "detail": "When someone asks to swap or give up a shift",
+      "on": true
+    },
+    {
+      "id": "unable-to-work",
+      "label": "Unable to work",
+      "detail": "When someone can’t make a shift",
+      "on": true
+    },
+    {
+      "id": "clock-review",
+      "label": "Clock-ins to review",
+      "detail": "When a clock-in needs your review",
+      "on": false
+    },
+    {
+      "id": "payroll-ready",
+      "label": "Payroll ready to review",
+      "detail": "When a pay period is ready for you",
+      "on": true
+    }
+  ]
+}

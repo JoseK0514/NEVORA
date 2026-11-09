@@ -1,0 +1,16 @@
+{
+  "kind": "STATIC_CHECK_ONLY",
+  "command": [
+    "git",
+    "diff",
+    "--check"
+  ],
+  "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "base": "1121f24e50190172d1fa40d931fd064715f31554",
+  "startedAt": "2026-10-30T10:49:32.520761+00:00",
+  "endedAt": "2026-10-30T10:49:32.538673+00:00",
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "",
+  "functionalTests": "NOT_RUN"
+}

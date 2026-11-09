@@ -1,0 +1,72 @@
+{
+  "originalFull32": {
+    "source": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5",
+    "filesTotal": 32,
+    "filesPassed": 26,
+    "filesFailed": 6,
+    "testsTotal": 371,
+    "testsPassed": 364,
+    "testsFailed": 7,
+    "exit": 1
+  },
+  "affectedRecovery01": {
+    "source": "69ae8e8c8199529f2ce3cbb4c9cac630de94e493",
+    "exit": 1,
+    "passed": 11,
+    "failed": 12,
+    "skipped": 4,
+    "accepted": false
+  },
+  "affectedRecovery02": {
+    "source": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+    "exit": 0,
+    "filesPassed": 6,
+    "testsPassed": 27,
+    "failed": 0,
+    "skipped": 0
+  },
+  "coverageAccounting": {
+    "unaffected26FilesPassingTests": 344,
+    "affected6FilesLatestPassingTests": 27,
+    "totalLogicalTestInventory": 371,
+    "oneCleanFull32InvocationOnFinalSHA": false
+  },
+  "namedFailures": [
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/employee-mobile-communications-review.integration.ts > CR-2 bounds held notification opens and fences stale results across private refresh and pause",
+      "testName": "CR-2 bounds held notification opens and fences stale results across private refresh and pause",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/employee-mobile-communications-sql.integration.ts > retains the existing finite notification-read budget for a full page of distinct team updates",
+      "testName": "retains the existing finite notification-read budget for a full page of distinct team updates",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/employee-mobile-communications-sql.integration.ts > hides disabled-module notifications while retaining unrelated own notices",
+      "testName": "hides disabled-module notifications while retaining unrelated own notices",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/employee-mobile-communications.integration.ts > integrates employee mobile messages with current audience, explicit receipts and original submission recovery",
+      "testName": "integrates employee mobile messages with current audience, explicit receipts and original submission recovery",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/employee-mobile-device-alerts.integration.ts > integrates own current-device enrollment, protected cleanup and mobile states in three engines",
+      "testName": "integrates own current-device enrollment, protected cleanup and mobile states in three engines",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |employee| src/test/integration/passkey-network.integration.ts > completes discoverable passkey sign-in through a real owned Next HTTP runtime",
+      "testName": "completes discoverable passkey sign-in through a real owned Next HTTP runtime",
+      "sameNamedTestAppearsPassedInRecovery": true
+    },
+    {
+      "originalFailure": "FAIL  |canonical-communications| src/test/integration/phase-e-communications-schema.integration.ts > 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes",
+      "testName": "0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes",
+      "sameNamedTestAppearsPassedInRecovery": true
+    }
+  ],
+  "reasonForReuse": "72..7ddf modifies only five integration fixture/test files. Application, protocol, DB factory, runner, configs and other26 test sources unchanged. All six affected files rerun as actual ownedSQL/browser gate. Earlier landscape evidence condition remains; passing tests are not physical device/release certification."
+}

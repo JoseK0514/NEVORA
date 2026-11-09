@@ -1,0 +1,7 @@
+.page{width:100%;max-width:1040px;min-width:0;}
+.heading{margin-bottom:28px;}
+.heading h1{margin:0;font-size:calc(32 * var(--type-unit, 1px));font-weight:500;line-height:1.2;letter-spacing:-.035em;}
+.heading p a{color:var(--g-accent, #077572);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+.heading p{margin:10px 0 0;max-width:60ch;font-size:calc(14 * var(--type-unit, 1px));line-height:1.65;color:var(--design-text-secondary);}
+.page :is(a,button,input){scroll-margin-block:90px 120px;}
+@media(max-width:600px){.heading{margin-bottom:22px;}.heading h1{font-size:1.75rem;}.heading p{font-size:0.8125rem;}}

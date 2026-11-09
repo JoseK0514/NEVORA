@@ -1,0 +1,22 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-profile-sql.integration.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 6869[2mms[22m[39m
+   [33m[2m✓[22m[39m projects only current own work identity, with no peer/contact/session fields[33m 1272[2mms[22m[39m
+   [33m[2m✓[22m[39m requires the exact current Employee or Lead role and refuses management on this own reader[33m 1372[2mms[22m[39m
+   [33m[2m✓[22m[39m bounds the lease by actual session expiry and refuses expired or revoked sessions[33m 1314[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps the existing active eligible-location requirement without inventing an empty profile[33m 1145[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses inactive workspace context and recovers only after the actual workspace restores[33m 826[2mms[22m[39m
+   [33m[2m✓[22m[39m a real transaction error returns generic failure, never profile facts, SQL detail or empty success[33m 938[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m   Start at [22m 20:23:25
+[2m   Duration [22m 7.78s[2m (tests 91%, transform 5%, import 3%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

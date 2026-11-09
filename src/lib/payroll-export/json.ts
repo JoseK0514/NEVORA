@@ -1,0 +1,2 @@
+/** Deterministic JSON for export fingerprints, independent of jsonb key ordering. */
+export function stableExportJson(value:unknown):string{if(Array.isArray(value))return '['+value.map(stableExportJson).join(',')+']';if(value&&typeof value==='object')return '{'+Object.entries(value).sort(([a],[b])=>a<b?-1:a>b?1:0).map(([key,v])=>JSON.stringify(key)+':'+stableExportJson(v)).join(',')+'}';return JSON.stringify(value);}

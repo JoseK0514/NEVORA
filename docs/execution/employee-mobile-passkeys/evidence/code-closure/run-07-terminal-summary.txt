@@ -1,0 +1,11 @@
+Source: /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/stdout.log
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: route.fulfill: Route is already handled!
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+     Errors  1 error
+   Start at  20:27:37
+   Duration  75.08s (tests 100%)
+[Payroll PostgreSQL] Owned cluster stopped.
+Overall invocation failed due to one unhandled error; result JSON is not an overall green gate.

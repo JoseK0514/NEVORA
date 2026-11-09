@@ -1,0 +1,155 @@
+{
+  "author": "/root/communications_qa_acceptance",
+  "observedAt": "2026-10-27T20:08:18.281344+00:00",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "gitIndexHash": "998f8c32f57743016584af450952b7c2c0872463722260b511661c9a4fa3dfae",
+  "gates": {
+    "requests": {
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests/result.json",
+      "exitCode": 0,
+      "candidateUnchanged": true,
+      "sourceInputCount": 2247,
+      "currentInputsMatchBefore": true,
+      "monitoredChanges": [],
+      "indexMatches": true,
+      "branchMatches": true,
+      "finalProcesses": []
+    },
+    "combined": {
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/result.json",
+      "exitCode": 0,
+      "candidateUnchanged": true,
+      "sourceInputCount": 2247,
+      "currentInputsMatchBefore": true,
+      "monitoredChanges": [],
+      "indexMatches": true,
+      "branchMatches": true,
+      "finalProcesses": []
+    },
+    "units": {
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/units/result.json",
+      "exitCode": 0,
+      "candidateUnchanged": true,
+      "sourceInputCount": 2247,
+      "currentInputsMatchBefore": true,
+      "monitoredChanges": [],
+      "indexMatches": true,
+      "branchMatches": true,
+      "finalProcesses": []
+    },
+    "typescript": {
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/recovery-1/typescript/result.json",
+      "exitCode": 0,
+      "candidateUnchanged": true,
+      "sourceInputCount": 2247,
+      "currentInputsMatchBefore": true,
+      "monitoredChanges": [],
+      "indexMatches": true,
+      "branchMatches": true,
+      "finalProcesses": []
+    },
+    "eslint": {
+      "resultPath": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/eslint/result.json",
+      "exitCode": 0,
+      "candidateUnchanged": true,
+      "sourceInputCount": 2247,
+      "currentInputsMatchBefore": true,
+      "monitoredChanges": [],
+      "indexMatches": true,
+      "branchMatches": true,
+      "finalProcesses": []
+    }
+  },
+  "audits": {
+    "requests": {
+      "passed": true,
+      "runtimeCount": 1,
+      "sourceMatchesCommittedCandidate": true
+    },
+    "combined": {
+      "passed": true,
+      "runtimeCount": 7,
+      "sourceMatchesCommittedCandidate": true
+    }
+  },
+  "ports": [
+    {
+      "gate": "requests",
+      "kind": "Next",
+      "port": 34113,
+      "open": false
+    },
+    {
+      "gate": "requests",
+      "kind": "PostgreSQL",
+      "port": 42123,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 44661,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 33687,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 44647,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 40343,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 42779,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 46845,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "Next",
+      "port": 43097,
+      "open": false
+    },
+    {
+      "gate": "combined",
+      "kind": "PostgreSQL",
+      "port": 45849,
+      "open": false
+    }
+  ],
+  "liveRuntimeProcesses": [],
+  "ownedTempDirectories": [],
+  "originalReportSha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c",
+  "interruptedTypeScriptOriginal": {
+    "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/typescript",
+    "resultStillAbsent": true,
+    "fileHashes": {
+      "observations.jsonl": "975c0b676ac91225f8df33424ed5adbe56b451d851f69f2df0482696377ec962",
+      "invocation.json": "2731e28a9ba67cf40a3425119988ddf4f90dd55cd2b14f3b388fe0d56d6dd2a0",
+      "source-before.json": "e6d3f89ec66d012dce1a7461f75c9cc3decb40e95e94ce1b5a5e2ebe0ae3b35a",
+      "process.json": "d7fdccce9a76ecbdce80cecabda41c10cf990984a9f7ff65818d8654589369d9",
+      "stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "status": "INCONCLUSIVE interruption; original files preserved, successful exact rerun separately mapped"
+  },
+  "gitStatus": " M docs/execution/employee-mobile-phase2/STATUS.md\n?? docs/execution/employee-mobile-communications/\n",
+  "passed": true
+}

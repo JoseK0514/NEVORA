@@ -1,0 +1,111 @@
+import {describe,expect,it} from 'vitest';
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {EmployeePayView,arrangeStatements,payPeriod,type PayView} from './pay';
+import type {PayrollStatementsResponse} from '@/lib/payroll/contracts';
+
+type Statement=PayrollStatementsResponse['statements'][number];
+const ids={old:'00000000-0000-4000-8000-000000000001',original:'00000000-0000-4000-8000-000000000002',correction:'00000000-0000-4000-8000-000000000003'};
+const statement=(id:string,payday:string,start:string,end:string,links:Partial<Statement>={}):Statement=>({id,kind:'EMPLOYEE_STATEMENT',employeeId:'FICTIONAL-E1',filename:`statement-${payday}.pdf`,sha256:'f'.repeat(64),downloadUrl:`/api/payroll/documents/${id}`,viewUrl:`/api/payroll/documents/${id}/view`,published:true,period:{startDate:start,endDate:end},payday,corrects:null,correctedBy:null,...links});
+const history=[statement(ids.old,'2030-01-10','2029-12-23','2030-01-05'),statement(ids.original,'2030-01-24','2030-01-06','2030-01-19',{correctedBy:ids.correction}),statement(ids.correction,'2030-01-24','2030-01-06','2030-01-19',{corrects:ids.original})];
+const base:PayView={statements:history,loading:false,error:'',errorCode:'',nextPay:null,statement:null,document:null,reload:()=>{}};
+const render=(view:Partial<PayView>={})=>renderToStaticMarkup(createElement(EmployeePayView,{...base,...view}));
+const text=(html:string)=>html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ');
+
+describe('Employee mobile Pay',()=>{
+ it('puts a correction first and never shows the statement it replaced as the latest',()=>{
+  const {latest,earlier}=arrangeStatements([...history].reverse());
+  expect(latest?.id).toBe(ids.correction);
+  expect(earlier.map(item=>item.id)).toEqual([ids.original,ids.old]);
+  expect(arrangeStatements([]).latest).toBeNull();
+  expect(payPeriod('2030-01-06','2030-01-19')).toBe('Jan 6 – 19, 2030');
+  expect(payPeriod('2029-12-23','2030-01-05')).toBe('Dec 23 – Jan 5, 2030');
+ });
+
+ it('shows the latest statement with deliberate View and Download, and the replaced one labelled',()=>{
+  const html=render(),plain=text(html);
+  expect(plain).toContain('Latest statement');expect(plain).toContain('Payday January 24, 2030');expect(plain).toContain('Correction');
+  expect(plain).toContain('This corrects your earlier statement for the same period.');
+  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener"`);
+  expect(html).toContain(`aria-label="View corrected statement, payday January\u00a024, 2030 (opens separately)"`);
+  expect(html).toContain(`href="/api/payroll/documents/${ids.correction}" aria-label="Download corrected statement, payday January\u00a024, 2030"`);
+  // The replaced original points to its correction first; its own files are outlined and named as replaced.
+  expect(plain).toContain('Use the corrected statement');
+  expect(html).toContain(`aria-label="View replaced statement, payday January\u00a024, 2030 (opens separately)"`);
+  expect(html).toMatch(new RegExp(`id="pay-view-earlier-${ids.original}" class="em-request-secondary"`));
+  expect(plain).toContain('Earlier statements');expect(plain).toContain('Replaced');
+  expect(plain).toContain('A corrected statement replaced this one.');
+  expect(plain).toContain('Only your own published statements are available here.');
+  // No figures, deposits or payment status: statements carry none.
+  expect(plain).not.toMatch(/\$|deposit|paid|amount|net pay/i);
+ });
+
+ it('names the next scheduled payday from the pay schedule without calling it a payment',()=>{
+  const plain=text(render({nextPay:{payday:'2030-02-07',daysUntil:3,period:{startDate:'2030-01-20',endDate:'2030-02-02'}}}));
+  expect(plain).toContain('Next scheduled payday');expect(plain).toContain('Thursday, February 7');expect(plain).toContain('In 3 days · for Jan 20 – Feb 2, 2030');
+  expect(plain).toContain('From your workplace’s pay schedule. A statement appears here after payroll is published.');
+  expect(text(render())).not.toContain('Next scheduled payday');
+ });
+
+ it.each([
+  [{loading:true,statements:null},'loading','Loading your statements…'],
+  [{statements:[]},'empty','No published statements yet'],
+  [{statements:null,error:'x',errorCode:'SIGNED_OUT'},'signed-out','Sign in to see your statements'],
+  [{statements:null,error:'x',errorCode:'MODULE_OFF'},'module-off','Pay statements are turned off'],
+  [{statements:null,error:'x',errorCode:'PAUSED'},'paused','Statements are paused'],
+  [{statements:null,error:'x',errorCode:'OFFLINE'},'paused','You’re offline'],
+  [{statements:null,error:'x',errorCode:'NETWORK'},'error','Couldn’t load your statements'],
+ ] as const)('%#: %s state is explicit and shows no stale statement',(view,state,message)=>{
+  const html=render(view as Partial<PayView>);
+  expect(html).toContain(`data-pay-state="${state}"`);expect(text(html)).toContain(message);
+  expect(html).not.toContain('/api/payroll/documents/');
+ });
+
+ it('returns an ended session to My pay after sign-in and offers retry only where it can work',()=>{
+  expect(render({statements:null,error:'x',errorCode:'SIGNED_OUT'})).toContain('href="/login?returnTo=%2Fapp%2Fmy-pay"');
+  expect(text(render({statements:null,error:'x',errorCode:'NETWORK'}))).toContain('Try again');
+  expect(text(render({statements:null,error:'x',errorCode:'MODULE_OFF'}))).not.toContain('Try again');
+ });
+
+ it('explains a PDF that could not open, and a notification statement that is no longer available',()=>{
+  expect(text(render({document:'unavailable'}))).toContain('That statement isn’t available');
+  expect(text(render({document:'failed'}))).toContain('We couldn’t open that statement');
+  expect(text(render({statement:'00000000-0000-4000-8000-00000000000f'}))).toContain('That statement isn’t available');
+  expect(text(render({statement:ids.original}))).not.toContain('isn’t available');
+  expect(render({statement:ids.original})).toMatch(/<details open="">\s*<summary id="pay-statement-00000000-0000-4000-8000-000000000002"/);
+  // While the list is still loading, nothing is claimed missing yet.
+  expect(text(render({statement:'00000000-0000-4000-8000-00000000000f',statements:null,loading:true}))).not.toContain('isn’t available');
+ });
+ it('shows arrival notices and the scheduled payday only where statements can follow (PAY-UI-1, PAY-UI-3)',()=>{
+  const next={payday:'2030-02-07',daysUntil:3};
+  for(const errorCode of ['PAUSED','OFFLINE','MODULE_OFF','SIGNED_OUT','NETWORK']){
+   const plain=text(render({statements:null,error:'x',errorCode,document:'unavailable',nextPay:next}));
+   expect(plain,errorCode).not.toContain('That statement isn’t available');expect(plain,errorCode).not.toContain('Next scheduled payday');
+   expect(plain,errorCode).not.toContain('Latest statement');
+  }
+  expect(text(render({statements:[],document:'unavailable',nextPay:next}))).toContain('That statement isn’t available');
+  expect(text(render({statements:[],document:'unavailable'}))).not.toContain('Your current statements are below');
+  expect(text(render({loading:true,statements:null,nextPay:next}))).toContain('Next scheduled payday');
+ });
+ it('names revoked access and a temporary PDF failure without blaming the file or offering a futile retry (PAY-CR-1, PAY-CR-3)',()=>{
+  const denied=render({statements:null,error:'x',errorCode:'FORBIDDEN'});
+  expect(denied).toContain('data-pay-state="denied"');expect(text(denied)).toContain('Your access to pay statements changed');expect(text(denied)).not.toContain('Try again');
+  const temporary=text(render({document:'temporary'}));
+  expect(temporary).toContain('We couldn’t open that statement');expect(temporary).toContain('Try again in a moment');expect(temporary).not.toContain('file check');
+ });
+ it('pads the loading card like every other card and keeps the privacy line to listed states (PAY-UI-13, PAY-UI-9)',()=>{
+  const loading=render({loading:true,statements:null});
+  expect(loading).toMatch(/<div class="em-pay-card em-pay-quiet" role="status"><span><small>Loading your statements…<\/small><\/span><\/div>/);
+  expect(loading).not.toMatch(/<p class="em-pay-card/);
+  expect(text(render({statements:null,error:'x',errorCode:'MODULE_OFF'}))).not.toContain('Only your own published statements');
+  expect(text(render())).toContain('Only your own published statements');
+ });
+});
+
+it('keeps a generic statement read failure neutral while preserving its alert and retry',()=>{
+ const html=render({statements:null,error:'Temporary network error',errorCode:'NETWORK'});
+ expect(html).toContain('class="em-pay-notice" role="alert"');
+ expect(html).not.toContain('em-pay-notice--error');expect(html).not.toContain('em-pay-notice--caution');
+ expect(text(html)).toContain('Couldn’t load your statements');expect(text(html)).toContain('Try again');
+ expect(html).not.toContain('EMPLOYEE_STATEMENT');
+});

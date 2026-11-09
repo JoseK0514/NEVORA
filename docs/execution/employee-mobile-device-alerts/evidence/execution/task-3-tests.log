@@ -1,0 +1,1 @@
+{"status": "passed", "application": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5", "verification": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e", "sourceFiles": 22, "preservedFiles": 1851, "registeredQaReferences": 65, "uniquePortableQaArtifacts": 63, "scopedTestsVerifiedAcrossRuns": 371, "widerDefaultFailuresRetained": 16}

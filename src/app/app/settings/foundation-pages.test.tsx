@@ -1,0 +1,24 @@
+import {it,expect,vi} from 'vitest';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {createElement} from 'react';
+import {EmployeeSchedulingFields} from '../../../components/employee-scheduling-fields';
+import type {Position} from '../../../lib/domain';
+vi.mock('@/lib/auth/permissions',()=>({requireRoles:async()=>({id:'owner',role:'OWNER'})}));
+vi.mock('@/components/page-header',()=>import('../../../components/page-header'));
+vi.mock('@/components/kit/kit',()=>import('../../../components/kit/kit'));
+vi.mock('@/components/configuration-form',()=>import('../../../components/configuration-form'));
+vi.mock('@/components/location-configuration-fields',()=>import('../../../components/location-configuration-fields'));
+vi.mock('@/lib/scheduling/location-readiness',()=>import('../../../lib/scheduling/location-readiness'));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'w',name:'Northside',timeZone:'America/New_York',active:true}),isWorkspaceTimezoneLocked:async()=>true,WorkspaceTimezoneLockedError:class extends Error{constructor(){super('Changing the business timezone requires a separately reviewed conversion because operational records already exist.');}}}));
+vi.mock('@/lib/data/employees',()=>({listLocations:async()=>[{id:'east',workspaceId:'w',name:'East Office',shortName:'East',clockerKey:'east-office',active:true},{id:'old',workspaceId:'w',name:'Old Office',shortName:'Old',clockerKey:'old-office',active:false}],listEmployees:async()=>[]}));
+vi.mock('@/lib/data/positions',()=>({listPositions:async()=>[]}));
+vi.mock('@/lib/data/schedule-health',()=>({listLocationStaffingSettings:async()=>[],listCoverageWindows:async()=>[]}));
+vi.mock('./actions',()=>({saveWorkspaceProfileAction:vi.fn(),createLocationAction:vi.fn(),updateLocationAction:vi.fn(),createPositionAction:vi.fn(),updatePositionAction:vi.fn()}));
+import WorkspacePage from './workspace/page';
+import LocationsPage from './locations/page';
+import PositionsPage from './positions/page';
+// Quiet (v4, approved Oct 23): a location is one row (short name, people, status); its setup lives on its own page.
+it('lists a new location as needing setup and keeps inactive locations',async()=>{const html=renderToStaticMarkup(await LocationsPage());expect(html).toContain('Needs setup');expect(html).toContain('aria-label="Edit East Office" href="/app/settings/locations/east"');expect(html).toContain('Old');expect(html).toContain('Inactive');expect(html).toContain('href="/app/settings/locations/new"');expect(html).toContain('1 active of 2 locations');});
+it('locked workspace uses a plain explanation, a read-only time zone and an editable name',async()=>{const html=renderToStaticMarkup(await WorkspacePage());expect(html).not.toContain('name="timeZone"');expect(html).toContain('<span class="q-rv q-rv--l">New York</span>');expect(html).toContain('Time zone is locked because you have shifts and timecards. Contact support to change it.');expect(html).toMatch(/<input[^>]*name="name" value="Northside"\/>/);expect(html).toContain('form="company-profile-form"');expect(html).toContain('>Save</button>');});
+it('empty catalog explicitly allows positionless shifts',async()=>{expect(renderToStaticMarkup(await PositionsPage())).toContain('Shifts can still be added without a position.');});
+it('all inactive unheld qualifications shows accurate optional empty state',()=>{const html=renderToStaticMarkup(createElement(EmployeeSchedulingFields,{locations:[],positions:[{id:'old',name:'Retired',active:false} as Position]}));expect(html).toContain('No active positions available. Positions are optional');expect(html).not.toContain('Retired');});

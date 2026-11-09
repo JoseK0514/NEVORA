@@ -1,0 +1,250 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "criteria": [
+    {
+      "criterion": "Strict metadata, current authority and expiry",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "accepts only exact current own metadata and a positive finite lease",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "subtracts transport time and checks expiry before native admission even if timers stall",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract binds own mobile metadata to a finite current-session lease without changing the legacy shape",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Held reads and released private state",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "bounds unread headers and clears metadata",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "bounds unread body and clears metadata",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "ends permanently on account loss and fences an abort-ignoring late read",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "treats HTTP401 as current denial without waiting for a held body",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "treats HTTP403 as current denial without waiting for a held body",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Native cancellation, blur, resize and exact focus",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "keeps an expected native-prompt blur from starting a duplicate ceremony, then rechecks before verify",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-passkeys.integration.ts",
+          "name": "integrates own passkeys through real server verification and deliberate mobile recovery in three engines",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Unknown registration/removal and exact receipt",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "never resends registration verification after unknown headers; a new read cannot invent success",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "never resends registration verification after unknown body; a new read cannot invent success",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "only reports native registration success after the exact saved receipt is present in a fresh list",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "rejects a non-204 removal response {\"error\":\"unavailable\"} even when a later list happens to be absent",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "rejects a non-204 removal response {} even when a later list happens to be absent",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "rejects a non-204 removal response null even when a later list happens to be absent",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/passkeys/management.test.ts",
+          "name": "does not repeat an uncertain removal and requires a current list before more actions",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Permission boundaries and canonical cryptography",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract rejects an old account binding before protected reads, challenges, verification or removal",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys.integration.ts",
+          "name": "passkeys with real signed WebAuthn messages and owned PostgreSQL allows only one concurrent use of a signed challenge",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys.integration.ts",
+          "name": "passkeys with real signed WebAuthn messages and owned PostgreSQL removes only an owned passkey and refuses the removed credential",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys.integration.ts",
+          "name": "passkeys with real signed WebAuthn messages and owned PostgreSQL serializes two distinct nonzero challenges against the stored counter",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Sign-in and feature-off legacy HTTP contracts",
+      "binaryObservable": "every listed assertion status is passed; owning suite exitCode0",
+      "assertions": [
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract registers, lists, signs in and removes through all JSON endpoints",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract uses the feature-off JSON error for login/options",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract uses the feature-off JSON error for login/verify",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract uses the feature-off JSON error for register/options",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkeys-http.integration.ts",
+          "name": "passkey JSON route contract uses the feature-off JSON error for register/verify",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        },
+        {
+          "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/passkey-network.integration.ts",
+          "name": "completes discoverable passkey sign-in through a real owned Next HTTP runtime",
+          "status": "passed",
+          "artifact": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/suite-results.json"
+        }
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-static/units/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Mobile visual/focus matrix",
+      "binaryObservable": "36 three-engine checkpoints;150captures;90contrast checks >=4.5;0 unexpected browser errors; separate targeted landscape probe passed",
+      "artifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/result.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/manual-visual-review.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/probe-result.json"
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/invocation.json",
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/invocation.json"
+      ]
+    },
+    {
+      "criterion": "Flag-off Employee/Lead and legacy Manager/Owner",
+      "binaryObservable": "supplement result status passed; no flag-off controls/requests; real fictional saved keys and native dialogs/focus restored for Manager/Owner",
+      "artifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/probe-result.json"
+      ],
+      "invocationArtifacts": [
+        "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/invocation.json"
+      ]
+    }
+  ]
+}

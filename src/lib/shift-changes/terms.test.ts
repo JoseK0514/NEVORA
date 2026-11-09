@@ -1,0 +1,11 @@
+import { it, expect } from 'vitest';
+import { fictionalTerms } from '../../test/fixtures/shift-changes';
+import { materialShiftTerms, shiftTermsFingerprint, sameShiftTerms, calloutReleasesShift } from './terms';
+it('material fingerprint excludes labels and changes on episode/owner/time/position/Lead/break terms', () => { const a = fictionalTerms(); expect(sameShiftTerms(a, { ...a, label: 'Changed' } as typeof a)).toBe(true); for (const patch of [{ assignmentEpisodeId: 'new' }, { employeeId: 'new' }, { endTime: '17:00' }, { positionId: 'cashier' }, { isDesignatedLead: true }, { scheduledBreaks: { status: 'KNOWN' as const, breaks: [] } }])
+    expect(sameShiftTerms(a, { ...a, ...patch })).toBe(false); expect(Object.keys(materialShiftTerms(a))).not.toContain('label'); });
+it('A090 released callout matches current episode and all material terms; legacy or returning owner is retained', () => { const t = fictionalTerms(); const parent = { id: t.scheduleId, locationId: t.locationId, weekStart: t.weekStart, status: 'PUBLISHED' as const }; const s = { id: t.shiftId, schedule_id: t.scheduleId, employee_id: t.employeeId, assignment_episode_id: t.assignmentEpisodeId, terms_revision:t.termsRevision, date: t.date, start_time: t.startTime, end_time: t.endTime, position_id: t.positionId, is_designated_lead: t.isDesignatedLead }; const c = { shift_id: t.shiftId, employee_id: t.employeeId, assignment_episode_id: t.assignmentEpisodeId, terms_revision:t.termsRevision, status: 'APPROVED', source_terms: materialShiftTerms(t), reviewed_terms_fingerprint: shiftTermsFingerprint(t) }; expect(calloutReleasesShift(c, s, parent, 'work','America/Puerto_Rico')).toBe(true); for (const patch of [{ assignment_episode_id: 'new' }, { start_time: '09:00' }, { employee_id: 'e2' }, { position_id: 'cashier' }])
+    expect(calloutReleasesShift(c, { ...s, ...patch }, parent, 'work','America/Puerto_Rico')).toBe(false); expect(calloutReleasesShift({ ...c, assignment_episode_id: null }, s, parent, 'work','America/Puerto_Rico')).toBe(false); });
+it('T03 reviewed period binds the workspace timezone independently of unchanged civil times',()=>{
+ const a={...fictionalTerms(),timeZone:'America/Puerto_Rico'};
+ expect(sameShiftTerms(a,{...a,timeZone:'America/New_York'})).toBe(false);
+});

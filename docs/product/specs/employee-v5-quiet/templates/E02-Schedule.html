@@ -1,0 +1,29 @@
+@title Schedule
+<style>
+.wk{display:grid;grid-template-columns:repeat(7,1fr);margin:20px 12px 0}
+.wk a{display:flex;flex-direction:column;align-items:center;gap:6px}
+.wk small{font-size:13px;line-height:18px;font-weight:500;color:#8A8A87}
+.wk b{display:grid;place-items:center;width:36px;height:36px;border-radius:18px;font-weight:400;font-variant-numeric:tabular-nums}
+.wk .on b{background:#111413;color:#fff;font-weight:600}
+.wk i{display:block;width:5px;height:5px;border-radius:3px;background:#C8C8C5;margin-top:-2px}
+.wk .off i{background:transparent}
+.sh{display:flex;align-items:baseline;justify-content:space-between;margin:32px 20px 4px}
+.sh b{font-size:20px;line-height:25px;font-weight:600;letter-spacing:-.4px}
+.sh span{font-size:15px;line-height:20px;color:#6B6B6B}
+.dark .sh span{color:#9A9A96}
+</style>
+<div class="p">
+  <div class="bar"><span class="sp"></span><a href="#" aria-label="Add to your calendar">{{i:CalendarCheck}}</a></div>
+  <div class="hd"><h1>Schedule</h1><p>Oct 19 – 25 · 5 shifts · 40 h</p></div>
+  <div class="seg"><span class="on">My shifts</span><span>Open shifts</span></div>
+  <div class="wk"><a class="" href="#"><small>M</small><b>19</b><i></i></a><a class="" href="#"><small>T</small><b>20</b><i></i></a><a class="" href="#"><small>W</small><b>21</b><i></i></a><a class="" href="#"><small>T</small><b>22</b><i></i></a><a class="" href="#"><small>F</small><b>23</b><i></i></a><a class="on" href="#"><small>S</small><b>24</b><i></i></a><a class="" href="#"><small>S</small><b>25</b><i></i></a></div>
+  <div style="margin-top:20px"><div class="row av-row"><span class="av tint">{{i:CalendarCheck}}</span><span class="rt"><b>Confirm this week</b><i>Your manager asked you to check it</i></span><a class="bs go" href="#">Confirm</a></div></div>
+  <div class="sh"><b>Saturday</b><span>Day off</span></div>
+  <p class="empty">No shift today.</p>
+  <div class="sh"><b>Coming up</b><span>2 shifts</span></div>
+  <div>
+    <a class="row" href="#"><span class="rt"><b>Sunday, Oct 25</b><i>8:00 AM – 4:00 PM · Main Office</i></span>{{i:CaretRight:s chev}}</a>
+    <a class="row" href="#"><span class="rt"><b>Monday, Oct 26</b><i>8:00 AM – 4:00 PM · Main Office</i></span>{{i:CaretRight:s chev}}</a>
+  </div>
+  {{etabs:Schedule}}
+</div>

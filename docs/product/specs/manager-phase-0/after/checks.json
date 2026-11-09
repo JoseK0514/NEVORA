@@ -1,0 +1,268 @@
+{
+  "base": "http://127.0.0.1:61460",
+  "role": "MANAGER (AUDIT-M, fictional)",
+  "ranAt": "2026-10-19T00:49:01.246Z",
+  "results": [
+    {
+      "name": "D2 Home availability uses eligible people (390)",
+      "passed": true,
+      "detail": "Availability received\nEmployees and leads"
+    },
+    {
+      "name": "axe Home (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Home (390)",
+      "passed": true
+    },
+    {
+      "name": "D1 Inbox has no Approve/Decline buttons (390)",
+      "passed": true,
+      "detail": {
+        "decisionButtons": 0
+      }
+    },
+    {
+      "name": "D1 Inbox has no swipe hint (390)",
+      "passed": true,
+      "detail": {
+        "swipeHint": 0
+      }
+    },
+    {
+      "name": "axe Inbox (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Inbox (390)",
+      "passed": true
+    },
+    {
+      "name": "D1 keyboard never reaches Approve/Decline in Inbox (390)",
+      "passed": true,
+      "detail": [
+        "NEVORA Workforce home",
+        "Search⌘K",
+        "Notifications, 2 unread in your recent inbox",
+        "Refresh",
+        "Review timecard › for Morgan Rivera",
+        "Review timecard › for Alexandra Rivera",
+        "Review timecard › for María José Rivera Santiago With A Long",
+        "All, 40",
+        "To review, 39",
+        "Requests, 1",
+        "View coverage gap: Coverage gap at Main Office",
+        "View coverage gap: Coverage gap at West Office",
+        "View coverage gap: Coverage gap at Main Office",
+        "Weekly hour target missing10 items · earliest first10",
+        "Set deadline: Availability deadline not set",
+        "Availability not submitted5 items · earliest first5",
+        "View schedule: Schedule acknowledgement pending",
+        "View schedule: Schedule acknowledgement pending",
+        "Review time off: Time-off request",
+        "Coverage gap at Main Office12 items · earliest first12",
+        "Coverage gap at West Office6 items · earliest first6",
+        "Home",
+        "Schedule",
+        "Inbox",
+        "Team"
+      ]
+    },
+    {
+      "name": "D1 Inbox offers Review time off link (390)",
+      "passed": true
+    },
+    {
+      "name": "D1 review screen shows dates, length and note before deciding (390)",
+      "passed": true,
+      "detail": {
+        "url": "/app/requests?tab=pending&requestId=audit-timeoff#request-audit-timeoff"
+      }
+    },
+    {
+      "name": "D3 no disabled button keeps the teal fill (390)",
+      "passed": true,
+      "detail": {
+        "disabled": [
+          {
+            "text": "Review selected timecards",
+            "bg": "rgb(246, 247, 248)",
+            "color": "rgb(95, 99, 104)"
+          }
+        ],
+        "tealFilled": 0
+      }
+    },
+    {
+      "name": "D3 blocked approval says why (390)",
+      "passed": true,
+      "detail": "Approve after Oct 18"
+    },
+    {
+      "name": "axe Timecards (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "D4 rules show All day, never 12 AM – 12 AM (390)",
+      "passed": true,
+      "detail": {
+        "allDay": 7
+      }
+    },
+    {
+      "name": "D4 a window ending at 24:00 reads midnight (390)",
+      "passed": true,
+      "detail": "4:00 PM – midnight"
+    },
+    {
+      "name": "D2 Home availability uses eligible people (320)",
+      "passed": true,
+      "detail": "Availability received\nEmployees and leads"
+    },
+    {
+      "name": "axe Home (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Home (320)",
+      "passed": true
+    },
+    {
+      "name": "D1 Inbox has no Approve/Decline buttons (320)",
+      "passed": true,
+      "detail": {
+        "decisionButtons": 0
+      }
+    },
+    {
+      "name": "D1 Inbox has no swipe hint (320)",
+      "passed": true,
+      "detail": {
+        "swipeHint": 0
+      }
+    },
+    {
+      "name": "axe Inbox (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Inbox (320)",
+      "passed": true
+    },
+    {
+      "name": "D3 no disabled button keeps the teal fill (320)",
+      "passed": true,
+      "detail": {
+        "disabled": [
+          {
+            "text": "Review selected timecards",
+            "bg": "rgb(246, 247, 248)",
+            "color": "rgb(95, 99, 104)"
+          }
+        ],
+        "tealFilled": 0
+      }
+    },
+    {
+      "name": "D3 blocked approval says why (320)",
+      "passed": true,
+      "detail": "Approve after Oct 18"
+    },
+    {
+      "name": "axe Timecards (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "D4 rules show All day, never 12 AM – 12 AM (320)",
+      "passed": true,
+      "detail": {
+        "allDay": 7
+      }
+    },
+    {
+      "name": "D4 a window ending at 24:00 reads midnight (320)",
+      "passed": true,
+      "detail": "4:00 PM – midnight"
+    },
+    {
+      "name": "D2 Home availability uses eligible people (1440)",
+      "passed": true,
+      "detail": "availability\nReview"
+    },
+    {
+      "name": "axe Home (1440)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Home (1440)",
+      "passed": true
+    },
+    {
+      "name": "D1 Inbox has no Approve/Decline buttons (1440)",
+      "passed": true,
+      "detail": {
+        "decisionButtons": 0
+      }
+    },
+    {
+      "name": "D1 Inbox has no swipe hint (1440)",
+      "passed": true,
+      "detail": {
+        "swipeHint": 0
+      }
+    },
+    {
+      "name": "axe Inbox (1440)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no page overflow Inbox (1440)",
+      "passed": true
+    },
+    {
+      "name": "D3 no disabled button keeps the teal fill (1440)",
+      "passed": true,
+      "detail": {
+        "disabled": [
+          {
+            "text": "Review selected timecards",
+            "bg": "rgb(246, 247, 248)",
+            "color": "rgb(95, 99, 104)"
+          }
+        ],
+        "tealFilled": 0
+      }
+    },
+    {
+      "name": "D3 blocked approval says why (1440)",
+      "passed": true,
+      "detail": "Approve after Oct 18"
+    },
+    {
+      "name": "axe Timecards (1440)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "D4 rules show All day, never 12 AM – 12 AM (1440)",
+      "passed": true,
+      "detail": {
+        "allDay": 7
+      }
+    },
+    {
+      "name": "D4 a window ending at 24:00 reads midnight (1440)",
+      "passed": true,
+      "detail": "4:00 PM – midnight"
+    }
+  ]
+}

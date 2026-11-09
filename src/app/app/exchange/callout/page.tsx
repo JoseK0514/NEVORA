@@ -1,131 +1,52 @@
-import Link from "next/link";
+import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import { getWorkspace } from "@/lib/data/workspaces";
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
+import { shiftBoundaryInstants } from "@/lib/business-time";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
-import { requireSession } from "@/lib/auth/session";
-import {
-  currentDateInPuertoRico,
-  formatDayLabel,
-  formatTime,
-} from "@/lib/date-utils";
-import { getPublishedShift } from "@/lib/data/exchanges";
-import { submitCalloutAction } from "@/app/app/exchange/callout/actions";
+import { CalloutView } from "@/components/callout-view";
+import {requireSessionMutationProof} from "@/lib/auth/session";
+import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
+import {matchesCalloutShift} from "@/lib/shift-changes/displayed-terms";
+import { requireSelfService } from "@/lib/auth/permissions";
+import { getCalloutShift } from "@/lib/data/exchanges";
 
-const REASONS = [
-  ["ILLNESS", "Illness / sick"],
-  ["FAMILY_EMERGENCY", "Family emergency"],
-  ["TRANSPORTATION", "Transportation issue"],
-  ["SCHOOL", "School conflict"],
-  ["PERSONAL_EMERGENCY", "Personal emergency"],
-  ["OTHER", "Other"],
-] as const;
 
 export default async function CalloutPage({
   searchParams,
 }: {
   searchParams: Promise<{ shiftId?: string; error?: string }>;
 }) {
-  const session = await requireSession();
+  const moduleOff = await moduleGate("marketplace");
+  if (moduleOff) return moduleOff;
+
+  const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
+  // Opened without choosing a shift: back to My requests quietly (inspection Oct 24).
   if (!params.shiftId) {
-    redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
+    redirect("/app/exchange?tab=my");
   }
 
-  const shift = await getPublishedShift(params.shiftId);
+  // A shift with held edits still opens and shows its published version
+  // (Jose, 2026-10-31); the report binds to the live assignment below.
+  const shift = await getCalloutShift(params.shiftId);
 
-  if (
-    !shift ||
-    shift.employeeId !== session.id ||
-    shift.date < currentDateInPuertoRico()
-  ) {
+  if (!shift || shift.employeeId !== session.id) {
     redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
   }
+  const proof=await requireSessionMutationProof();
+  const reviewed=await readShiftChangeTerms(proof,shift.id);
+  let ended=false;
+  // The coherent authenticated read supplies the server observation; rendering
+  // does not sample a second clock or reinterpret the workspace time zone.
+  try {ended=!!reviewed&&Date.parse(shiftBoundaryInstants(shift,shift.timeZone??workspace.timeZone).endAt)<=Date.parse(reviewed.observedAt);}
+  catch { /* Keep inability reporting available; never guess an invalid instant. */ }
+  if(ended)redirect("/app/exchange?tab=my&error=INVALID_SHIFT");
 
-  const date = formatDayLabel(shift.date);
-
-  return (
-    <>
-      <PageHeader
-        eyebrow="Shift call-out"
-        title="Unable to work this shift"
-        description="Submit the reason management needs to review. Your shift does not change until the request is approved."
-        actions={
-          <Link className="button secondary" href="/app/exchange?tab=my">
-            Cancel
-          </Link>
-        }
-      />
-
-      {params.error ? (
-        <p className="form-error">
-          {params.error === "details"
-            ? "Please explain the reason when selecting Other."
-            : "Choose a reason before submitting the call-out."}
-        </p>
-      ) : null}
-
-      <section className="content-grid two callout-layout">
-        <article className="panel callout-shift-summary">
-          <p className="eyebrow">Shift</p>
-          <h2>{date.weekday} · {date.day}</h2>
-          <p className="large-detail">
-            {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
-          </p>
-          <p className="muted">{shift.locationName}</p>
-
-          <div className="callout-warning">
-            <strong>You are still responsible for this shift right now.</strong>
-            <span>
-              If management approves the call-out, the shift will move to the
-              coverage board for an eligible replacement.
-            </span>
-          </div>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Required</p>
-              <h2>Why can&apos;t you work?</h2>
-            </div>
-          </div>
-
-          <form action={submitCalloutAction} className="employee-form">
-            <input type="hidden" name="shiftId" value={shift.id} />
-
-            <label>
-              Reason
-              <select name="reasonCode" defaultValue="" required>
-                <option value="" disabled>Select a reason</option>
-                {REASONS.map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Additional details <span>Required when selecting Other</span>
-              <textarea
-                name="reasonNote"
-                maxLength={300}
-                rows={4}
-                placeholder="Add any details management should know..."
-              />
-            </label>
-
-            <div className="form-footer">
-              <Link className="button secondary" href="/app/exchange?tab=my">
-                Cancel
-              </Link>
-              <button className="button primary" type="submit">
-                Submit Call-out
-              </button>
-            </div>
-          </form>
-        </article>
-      </section>
-    </>
-  );
+  const fields=reviewed&&matchesCalloutShift(shift,reviewed.source)?{kind:"SUBMIT_CALLOUT",sourceShiftId:shift.id,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint}:null;
+  // The employee never learns a held edit exists: only the displayed shift goes to the client.
+  const {held:_held,...display}=shift;void _held;
+  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode="callout" sourceId={shift.id}><CalloutView shift={display} fields={fields} error={params.error} /></ResponsiveEmployeeCreation>;
 }

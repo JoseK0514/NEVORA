@@ -1,0 +1,32 @@
+{
+  "gate": "combined",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "base": "564c71371e16f528a94aa242e42bf906d5890314",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts"
+  ],
+  "env": {
+    "HOME": "/home/agent",
+    "PATH": "/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/override:/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin:/opt/codex/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/agent/.local/bin:/opt/codex/runtimes/codex-primary-runtime/dependencies/bin/fallback",
+    "TMPDIR": "/tmp",
+    "LD_LIBRARY_PATH": "/workspace/scratch/nevora-runtime/browser-libs/usr/lib/x86_64-linux-gnu",
+    "PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS": "1",
+    "NEVORA_TEST_PG_BIN": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/messages",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/hours",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/planning",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/creation",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/responses",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE": "/workspace/nevora-evidence/independent-qa/combined/mobile"
+  },
+  "startedAt": "2026-10-27T18:30:16.926207+00:00",
+  "initialProcesses": [],
+  "initialClusters": [],
+  "sourceInputCount": 2197,
+  "gitIndexHash": "3892a8f1f54d4b97a7e79621f1e2f445d73bb641b2354af54ecf58b7fcb29699"
+}

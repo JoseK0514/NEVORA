@@ -1,0 +1,70 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in and current Home status settled"
+    }
+  ],
+  "captures": [
+    "chromium-notifications-light-320.png",
+    "chromium-notifications-light-390.png",
+    "chromium-notifications-light-430.png",
+    "chromium-notifications-dark-320.png",
+    "chromium-notifications-dark-390.png",
+    "chromium-notifications-dark-430.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    }
+  ],
+  "messages": [],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:61905/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    }
+  ]
+}

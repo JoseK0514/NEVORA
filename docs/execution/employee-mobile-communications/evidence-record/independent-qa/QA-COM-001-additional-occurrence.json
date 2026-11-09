@@ -1,0 +1,29 @@
+{
+  "extends": "QA-COM-001",
+  "classification": "BLOCKER",
+  "status": "OPEN",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "observedAt": "2026-10-27T18:42:39.170730+00:00",
+  "test": "src/test/integration/employee-mobile-planning.integration.ts",
+  "observedResult": "1 test failed after100721ms despite all63 workflow checkpoints; two strict unexpected WebKit pageerrors in authority-loss. Cause remains undetermined.",
+  "errors": [
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "type": "pageerror",
+      "text": "Fetch API cannot load http://127.0.0.1:35609/api/notifications due to access control checks.\n    at unknown (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3664:49)\n    at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3663:89)",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "type": "pageerror",
+      "text": "Fetch API cannot load http://127.0.0.1:35609/api/employee/planning/timeoff/list due to access control checks.\n    at unknown (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3392:49)\n    at usePlanning.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3391:76)",
+      "expected": false
+    }
+  ],
+  "results": "/workspace/nevora-evidence/independent-qa/combined/planning/results.json",
+  "resultsSha256": "b05b01801c1ac93d4d42c998b8cbb3abd150c607b20cceba8d693eb80a5c6f88",
+  "nextLog": "/workspace/nevora-evidence/independent-qa/combined/planning/owned-next-SLkPGS/next.log",
+  "failurePixelLimit": "No failure PNG/HTML because final diagnostics ran after per-engine browser closure."
+}

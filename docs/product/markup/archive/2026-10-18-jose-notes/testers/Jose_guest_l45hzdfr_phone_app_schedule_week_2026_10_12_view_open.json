@@ -1,0 +1,36 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/schedule?week=2026-10-12&view=open",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/schedule?week=2026-10-12&view=open",
+ "path": "/app/schedule?week=2026-10-12&view=open",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 796
+ },
+ "page": {
+  "w": 440,
+  "h": 925
+ },
+ "title": "NEVORA Workforce",
+ "heading": "My schedule",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 13,
+   "y": 751,
+   "text": "",
+   "t": 1792354676175,
+   "target": {
+    "tag": "div",
+    "id": "",
+    "cls": "page-frame",
+    "text": "My scheduleReview your week and manage your shifts.My shiftsOpen shiftsOpen shiftsShifts y"
+   }
+  }
+ ],
+ "note": "This is ugly, it looks crazy \n",
+ "updatedAt": "2026-10-18T20:17:56.777Z"
+}

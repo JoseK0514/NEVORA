@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Access and Sign-in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F5F6F6; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+
+  <header style="background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding: 52px 16px 12px">
+    <div style="display: flex; align-items: center; height: 44px">
+      <a href="#" style="flex: none; display: inline-flex; align-items: center; gap: 2px; height: 44px; margin-left: -6px; padding-right: 8px; text-decoration: none; font-size: 15px; font-weight: 600; white-space: nowrap"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Alexandra</a>
+      <h1 style="flex: 1; margin: 0; text-align: center; font-size: 17px; line-height: 22px; font-weight: 600; white-space: nowrap">Access and sign-in</h1>
+      <span aria-hidden="true" style="width: 44px; flex: none"></span>
+    </div>
+  </header>
+
+  <div style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 12px">
+    <section aria-label="Access" style="border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6">
+      <div style="display: flex; align-items: center; height: 44px; padding: 0 16px; box-shadow: inset 0 -1px 0 #EDEEEF">
+        <span style="font-size: 13px; font-weight: 600; color: #4A4F54">Access</span>
+      </div>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px; text-decoration: none; color: #1A1C1E">
+        <span style="flex: 1; font-size: 15px">Role</span>
+        <span style="font-size: 15px; color: #4A4F54">Employee</span>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A7ACB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </a>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px; box-shadow: inset 0 1px 0 #EDEEEF; text-decoration: none; color: #1A1C1E">
+        <span style="flex: 1; font-size: 15px">Clocker PIN</span>
+        <span style="font-size: 15px; color: #4A4F54">Set</span>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A7ACB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </a>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 16px; box-shadow: inset 0 1px 0 #EDEEEF; text-decoration: none; color: #1A1C1E">
+        <span style="flex: 1; font-size: 15px">Account</span>
+        <span style="font-size: 15px; color: #4A4F54">Active</span>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A7ACB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </a>
+    </section>
+
+    <section aria-label="Password" style="border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6">
+      <a href="#" style="display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 16px; text-decoration: none; color: #1A1C1E">
+        <span style="flex: 1; display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Reset password</span><span style="font-size: 13px; color: #6B7075">We’ll text her a code to set a new one</span></span>
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A7ACB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+      </a>
+    </section>
+  </div>
+
+  <div style="position: absolute; left: 16px; right: 16px; bottom: 108px">
+    <button type="button" aria-describedby="deactivate-note" style="width: 100%; height: 44px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #B42318; color: #B42318; font: 600 15px Inter, sans-serif">Deactivate Alexandra</button>
+    <div id="deactivate-note" style="margin-top: 8px; text-align: center; font-size: 13px; color: #6B7075">Her pay history stays. You can bring her back later.</div>
+  </div>
+
+  <nav aria-label="Main" style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; background: #FFFFFF; box-shadow: 0 -1px 0 #E3E5E6; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); padding-top: 8px; box-sizing: border-box">
+    <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #6B7075; text-decoration: none; font-size: 11px; font-weight: 500"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"><path d="M3.5 10.5 12 3.5l8.5 7V20a.5.5 0 0 1-.5.5h-4.5v-6h-7v6H4a.5.5 0 0 1-.5-.5z"/></svg>Home</a>
+    <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #6B7075; text-decoration: none; font-size: 11px; font-weight: 500"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>Schedule</a>
+    <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #6B7075; text-decoration: none; font-size: 11px; font-weight: 500"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Time</a>
+    <a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #6B7075; text-decoration: none; font-size: 11px; font-weight: 500"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18M16 15h2"/></svg>Payroll</a>
+    <a href="#" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 3px; color: #0B6E69; text-decoration: none; font-size: 11px; font-weight: 600"><svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 13.5a6 6 0 0 1 3.5 6.5"/></svg>Team</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

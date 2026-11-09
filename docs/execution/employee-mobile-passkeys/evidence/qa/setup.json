@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-28T00:17:48.337021+00:00",
+  "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "baseline": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/passkeys-qa-owned-baseline-592d4212",
+  "baselineSHA": "592d421225e8266a5079f2a1381dc3b4175b9635",
+  "originalHashes": {
+    "stdout.log": "1497d8f3688fe8bf870144f6f1f9098327c740471af3317b555c3cba62dbc35f",
+    "failed-files.json": "595d0e9eddbd8e34f5412177f2b26fd0b53619e31a52310e3ce30c7084dc8324"
+  },
+  "ulw": "No active plan; evidence recorded under .omo/evidence"
+}

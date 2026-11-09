@@ -1,0 +1,201 @@
+{
+  "error": "AssertionError: expected 856.515625 to be less than or equal to 765.40625",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Schedule fixed hash opens the native Profile disclosure and focuses its summary; one current Calendar owner"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects an employee selector; no peer link or data exposed"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual own issue and peer isolation; controlled clipboard failure/success, native full-link selection; evidence redacts the secret"
+    },
+    {
+      "engine": "chromium",
+      "name": "Provider-specific native guides,320/390/430 light/dark and200% text plus coarse landscape; no overflow,44/48 targets and sampled text contrast"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause releases the URL; resume reads actual active state without reconstructing its one-time credential"
+    },
+    {
+      "engine": "chromium",
+      "name": "Replacement requires explicit consequence review; cancel returns exact focus, confirmed rotation invalidates the former feed"
+    }
+  ],
+  "captures": [
+    "chromium-calendar-empty.png",
+    "chromium-calendar-link-once-redacted.png",
+    "chromium-calendar-light-320.png",
+    "chromium-calendar-light-320-text200.png",
+    "chromium-calendar-light-390.png",
+    "chromium-calendar-light-390-text200.png",
+    "chromium-calendar-light-430.png",
+    "chromium-calendar-light-430-text200.png",
+    "chromium-calendar-dark-320.png",
+    "chromium-calendar-dark-320-text200.png",
+    "chromium-calendar-dark-390.png",
+    "chromium-calendar-dark-390-text200.png",
+    "chromium-calendar-dark-430.png",
+    "chromium-calendar-dark-430-text200.png",
+    "chromium-calendar-coarse-landscape.png",
+    "chromium-calendar-paused.png",
+    "chromium-calendar-replace-confirmation.png",
+    "chromium-calendar-desktop-preserved.png",
+    "chromium-failure.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "support",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "status",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "support",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "status",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "unknown-command-resize",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49353/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "unknown-command-resize",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49353/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "unknown-command-resize",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49353/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true
+    }
+  ]
+}

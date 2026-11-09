@@ -10,6 +10,12 @@ export type EmployeeAcknowledgementState = {
   needsAcknowledgement: boolean;
 };
 
+/**
+ * Projects whether the employee must review again. A newer publication can keep
+ * their acknowledgement effective when their own shift facts are unchanged;
+ * missing comparison snapshots conservatively require review. This projection
+ * does not record a receipt or establish current write authority.
+ */
 export function buildAcknowledgementState(input: {
   employeeId: string;
   acknowledgementRevisionId?: string;

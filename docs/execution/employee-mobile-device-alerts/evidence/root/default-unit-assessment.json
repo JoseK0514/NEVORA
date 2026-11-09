@@ -1,0 +1,134 @@
+{
+  "candidate": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5",
+  "actualExit": 1,
+  "failed": 16,
+  "passed": 9803,
+  "pending": 801,
+  "failures": [
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "name": "retained Linux marker observation: changed-member",
+      "classification": "process-observation failure; cause unresolved"
+    },
+    {
+      "file": "src/test/phase-e-root-group-process.test.ts",
+      "name": "root-group actual exec: root-exit",
+      "classification": "process-observation failure; cause unresolved"
+    },
+    {
+      "file": "src/test/phase-e-runner.test.ts",
+      "name": "rejects zero executed tests and skipped SQL tests even when the child exits zero",
+      "classification": "process-observation failure; cause unresolved"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions confirmation without changes persists submission metadata without inventing day overrides",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions unavailable all week writes seven dated full-day exceptions",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions changes only the selected date, preserving other overrides",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "the final deadline guard uses the current clock after the lock wait",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "retries a stale legacy conversion after locking and preserves another saved day's override",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/page.test.tsx",
+      "name": "marks a waiting request amber and an approval green, with a timeline",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/page.test.tsx",
+      "name": "names who decided a request and when, and never names anyone on a withdrawal",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "marks a waiting request amber and an approval green, with a timeline",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "offers a confirmed withdrawal only for the current employee pending request",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "keeps withdrawal inside its own request row, next to the facts and the waiting status",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "retains both request destinations for EMPLOYEE",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "retains both request destinations for LEAD",
+      "classification": "retained deterministic baseline"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "lists the person's own time off, waiting first, and never turns a failed read into no requests",
+      "classification": "retained deterministic baseline"
+    }
+  ],
+  "failingTestSourceComparison": [
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "preAlertsSHA256": "0f18798eab31295bc059140fe81bb9462e64e62413c0518c7659e21cd2ba6bab",
+      "candidateSHA256": "0f18798eab31295bc059140fe81bb9462e64e62413c0518c7659e21cd2ba6bab",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/app/requests/page.test.tsx",
+      "preAlertsSHA256": "07071fad14a49679c9207a99c459e1e5386467904bb97330dfbcda5bec115f17",
+      "candidateSHA256": "07071fad14a49679c9207a99c459e1e5386467904bb97330dfbcda5bec115f17",
+      "unchanged": true
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "preAlertsSHA256": "331e8090a475f730306b5cb5df082d9d436beb3f33024ce01e0a216df20052ab",
+      "candidateSHA256": "331e8090a475f730306b5cb5df082d9d436beb3f33024ce01e0a216df20052ab",
+      "unchanged": true
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "preAlertsSHA256": "5506392c301f48b457f64a0afaed5a98daeeca2bc1e3ac3344c636d19bef52c9",
+      "candidateSHA256": "5506392c301f48b457f64a0afaed5a98daeeca2bc1e3ac3344c636d19bef52c9",
+      "unchanged": true
+    },
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "preAlertsSHA256": "8e0c6fdf1b1e673dff2042634af60cc6b5676a18d7cfb271768729cdc6880ee0",
+      "candidateSHA256": "8e0c6fdf1b1e673dff2042634af60cc6b5676a18d7cfb271768729cdc6880ee0",
+      "unchanged": true
+    },
+    {
+      "file": "src/test/phase-e-root-group-process.test.ts",
+      "preAlertsSHA256": "39a3975e0957fcd4e27b46a9953b02c69a42ad89cbba1c52653f40f5bfe3d1df",
+      "candidateSHA256": "39a3975e0957fcd4e27b46a9953b02c69a42ad89cbba1c52653f40f5bfe3d1df",
+      "unchanged": true
+    },
+    {
+      "file": "src/test/phase-e-runner.test.ts",
+      "preAlertsSHA256": "2ceed23b82f9b7cce748b221e50f508e636a33b3f44806a919cf828f3024f70c",
+      "candidateSHA256": "2ceed23b82f9b7cce748b221e50f508e636a33b3f44806a919cf828f3024f70c",
+      "unchanged": true
+    }
+  ],
+  "interpretation": "13 known deterministic failures match four retained files. The other three observations are in previously unstable process-runner tests; they are not the same three baseline assertion identities. No causal attribution or whole-suite-green claim. Current bounded Alerts checks and release gates remain separate."
+}

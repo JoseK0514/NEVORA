@@ -1,0 +1,114 @@
+{
+  "inspectedAt": "2026-10-27T19:20:34.485847+00:00",
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "includedFiles": [
+    "src/test/integration/employee-mobile-communications.integration.ts",
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-communications-sql.integration.ts",
+    "src/test/integration/employee-mobile-hours-sql.integration.ts",
+    "src/test/integration/employee-mobile-hours.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts",
+    "src/test/integration/employee-mobile-planning-sql.integration.ts",
+    "src/test/integration/employee-mobile-creation.integration.ts",
+    "src/test/integration/employee-mobile-creation-privacy.integration.ts",
+    "src/test/integration/employee-mobile-responses.integration.ts",
+    "src/test/integration/employee-mobile-requests.integration.ts",
+    "src/test/integration/employee-mobile-exchange-privacy.integration.ts",
+    "src/test/integration/shift-change-hardening.integration.ts",
+    "src/test/integration/shift-change-views.integration.ts",
+    "src/test/integration/phase-e-communications-schema.integration.ts",
+    "src/test/integration/phase-e-communications.integration.ts",
+    "src/test/integration/phase-e-communication-ack.integration.ts",
+    "src/test/integration/communications-gap-remediation.integration.ts",
+    "src/test/integration/company-access-communications.integration.ts",
+    "src/test/integration/phase-e-communication-notifications.integration.ts"
+  ],
+  "directEnvironmentReads": [
+    {
+      "file": "src/test/integration/employee-mobile-communications.integration.ts",
+      "line": 17,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_MESSAGES_EVIDENCE;"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications.integration.ts",
+      "line": 20,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications-review.integration.ts",
+      "line": 16,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE;"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications-review.integration.ts",
+      "line": 25,
+      "text": "runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-hours.integration.ts",
+      "line": 15,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_HOURS_EVIDENCE;"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-hours.integration.ts",
+      "line": 18,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-planning.integration.ts",
+      "line": 12,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_PLANNING_EVIDENCE;if(!evidence)throw Error('Choose external NEVORA_EMPLOYEE_PLANNING_EVIDENCE');await mkdir(evidence,{recursive:true});"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-planning.integration.ts",
+      "line": 13,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright'),app=await createOwnedNextApp(evidence);"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-creation.integration.ts",
+      "line": 17,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_CREATION_EVIDENCE;if(!evidence)throw Error('Choose explicit external NEVORA_EMPLOYEE_CREATION_EVIDENCE');await mkdir(evidence,{recursive:true});"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-creation.integration.ts",
+      "line": 18,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-responses.integration.ts",
+      "line": 18,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_RESPONSES_EVIDENCE;"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-responses.integration.ts",
+      "line": 21,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-requests.integration.ts",
+      "line": 15,
+      "text": "const evidence=process.env.NEVORA_EMPLOYEE_MOBILE_EVIDENCE;"
+    },
+    {
+      "file": "src/test/integration/employee-mobile-requests.integration.ts",
+      "line": 18,
+      "text": "const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');"
+    },
+    {
+      "file": "src/test/integration/phase-e-communications-schema.integration.ts",
+      "line": 186,
+      "text": "const output=process.env.PHASE_E_EVIDENCE_DIR;if(!output)throw Error('Owned evidence directory required');"
+    }
+  ],
+  "requiredEvidenceVariables": [
+    "NEVORA_EMPLOYEE_MESSAGES_EVIDENCE",
+    "NEVORA_EMPLOYEE_MESSAGES_REVIEW_EVIDENCE",
+    "NEVORA_EMPLOYEE_HOURS_EVIDENCE",
+    "NEVORA_EMPLOYEE_PLANNING_EVIDENCE",
+    "NEVORA_EMPLOYEE_CREATION_EVIDENCE",
+    "NEVORA_EMPLOYEE_RESPONSES_EVIDENCE",
+    "NEVORA_EMPLOYEE_MOBILE_EVIDENCE",
+    "PHASE_E_EVIDENCE_DIR"
+  ],
+  "note": "The first full1ada invocation omitted PHASE_E_EVIDENCE_DIR. It remains RED; no live invocation changed."
+}

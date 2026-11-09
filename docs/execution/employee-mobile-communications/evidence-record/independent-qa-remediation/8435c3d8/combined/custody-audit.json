@@ -1,0 +1,209 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "expectedApplicationInputs": 2007,
+  "sourceMatchesCommittedCandidate": true,
+  "runtimeCount": 7,
+  "expectedRuntimeCount": 7,
+  "runtimes": [
+    {
+      "suite": "creation",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/creation/owned-next-ZBH9gQ",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "c7fefa9367920f0a68f014db452958c0745a9bdc16aa864397ed6217e9ffc514",
+      "pid": 12756,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 44661,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 276559,
+        "marker": "fuel-phase3-disposable:65861dac-a1a9-490d-af43-b3d51e649b9a"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "hours",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/hours/owned-next-hByR0J",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "d4312815e964359a197ef21915a35e6838b1ba28de6e99841648a019147717f7",
+      "pid": 15766,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 33687,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 282153,
+        "marker": "fuel-phase3-disposable:2b5a050b-d875-456d-87de-a061a8c498ca"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "messages",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/owned-next-8ayEGR",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "b0de9df424363efb5b8b64f3bfe1495972636d36f2efada149d5a788b88c2ea2",
+      "pid": 6278,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 44647,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 270943,
+        "marker": "fuel-phase3-disposable:da3b81d4-a218-4449-b54b-1b27c8ef923b"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "mobile",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/mobile/owned-next-lGWp5o",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "2ae24e280008dbca4e416fc3e1f8555831c62921e97391547a8eaa0d5f3811c5",
+      "pid": 19090,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 40343,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 287752,
+        "marker": "fuel-phase3-disposable:11a2f07a-495b-4079-b2ff-1b2ad5041699"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "planning",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/planning/owned-next-8Ug50p",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "fc22af304c358324ba5070b24bc466de0533525dd357bd6519bbcf2e50682a9e",
+      "pid": 14254,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 42779,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 279356,
+        "marker": "fuel-phase3-disposable:656646d0-a008-41cb-8a83-f16a43e2a450"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "responses",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/responses/owned-next-7fZIVJ",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "809545370eb92be274ea96fa77723cf15913fa492119fced2cd71cb110619717",
+      "pid": 17457,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 46845,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 284950,
+        "marker": "fuel-phase3-disposable:57355a95-d7a0-4ed1-82c8-646c64eee218"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "review",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/owned-next-H2G4Tq",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "19339a554fe0cef924610bc866c846fe138bdadbb89569c263cce96c41912821",
+      "pid": 9798,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 43097,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_4e4c163a047c",
+        "oid": 273762,
+        "marker": "fuel-phase3-disposable:e086baa7-e9e6-4143-910d-0fafbd4301ee"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "runnerClusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-MPjWw2",
+      "directoryExists": false,
+      "pid": 2025,
+      "livePid": false,
+      "port": 45849,
+      "portOpen": false
+    }
+  ],
+  "supplementalDatabaseCustody": {
+    "runnerLive": false,
+    "clusters": [
+      {
+        "directory": "/tmp/nevora-payroll-owned-MPjWw2",
+        "directoryExists": false,
+        "pid": 2025,
+        "livePid": false,
+        "port": 45849,
+        "portOpen": false,
+        "pidLive": false
+      }
+    ]
+  },
+  "databaseObservationMethod": "Recorder queries actual owned cluster through existing pg package with scrubbed environment; any query failures are retained.",
+  "gateSourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterStopLogged": true,
+  "artifactsCount": 858,
+  "passed": true
+}

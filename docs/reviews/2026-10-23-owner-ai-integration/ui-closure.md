@@ -1,0 +1,15 @@
+# Independent UI closure report to Jose
+
+**UI recommendation: NO-GO for UI-1 closure on `783bb7e003381ff42ff6bb6a543814dc1c51996c`.** The attempted fix does not meet the approved target-size contract. Original `reviews/ui.md` remains unchanged; its conditional local recommendation has not become unconditional approval.
+
+**ISSUE — UI-1 remains open.** I independently ran the repository browser suite and a second external supplemental browser harness against this clean candidate. Both fail on actual WebKit at 320px: `Review language` is 25px high, below 44px. The added `min-height:44px` rule is present in the source and verified runtime mirror, but does not produce the required geometry. I make no unverified claim about the CSS root cause.
+
+Exact dimensions retained for Chromium: Coverage date, Period start, Period end and Review language each measure 48px high at 320, 390 and 1440px. WebKit fails at its first 320px measurement. Its 390/1440px checks and later WebKit scenarios are incomplete; no pass is inferred from the prior candidate. I visually inspected the failure screenshot and Chromium's focused selector viewport and read the actual traces and logs.
+
+**VERIFIED — evidence and closure.** Baseline: exit 1, 53.78s; supplemental: exit 1, 54.59s. Both reports correctly retain `complete:false`. The supplemental harness adds English-result/consent screenshots and named-control measurements while retaining the failing assertion; no assertion was weakened and no application/test/index/HEAD edit was made. Both source manifests identify 783bb7e; I independently matched all 1,866 source hashes in each run. Both receipts show closed=true, sourceVerified=true, mirrorVerified=true, and owned dependency/cache release after closure. Both owned PostgreSQL clusters stopped. Git status was clean when closure was audited. Parent has been informed that both runtimes are closed and the source may change.
+
+**Limits.** Chromium completed its workflow groups; WebKit completed draft/publication consent before the target failure. These partial results do not establish full acceptance. Both reports record no uncaught page errors or external browser requests. The answer/error/cancel cases remain intercepted fixtures and no provider was configured. Existing density/localization follow-ups and hosted/physical-device/full-accessibility/live-model limits remain as written in the initial independent report. The separate citation-source fix was inspected as part of the diff but is not independently certified by this UI closure attempt.
+
+Next required step: correct actual WebKit selector geometry, freeze a new candidate, then independently replay the real browser size and workflow checks. Do not close UI-1 from the CSS declaration or Chromium success.
+
+Evidence: `ui-fixed/browser-run.log`, `ui-fixed/supplemental-run.log`, `ui-fixed/browser/webkit-QAOWNER-failure.png`, both WebKit Owner traces, `ui-fixed/closure-audit.json`. Full structured matrix: `ui-fixed/owner-ai-integration-ui-manual-qa.md`. Every referenced artifact exists and is non-empty.

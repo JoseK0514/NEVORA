@@ -1,0 +1,6 @@
+2026-10-27 20:37:40.111 AST [41153] LOG:  starting PostgreSQL 17.10 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit
+2026-10-27 20:37:40.111 AST [41153] LOG:  listening on IPv4 address "127.0.0.1", port 64362
+2026-10-27 20:37:40.111 AST [41153] LOG:  Unix-domain socket path "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/owned-tmp/nevora-payroll-owned-dlvl0kg_/.s.PGSQL.64362" is too long (maximum 103 bytes)
+2026-10-27 20:37:40.111 AST [41153] WARNING:  could not create Unix-domain socket in directory "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/owned-tmp/nevora-payroll-owned-dlvl0kg_"
+2026-10-27 20:37:40.111 AST [41153] FATAL:  could not create any Unix-domain sockets
+2026-10-27 20:37:40.111 AST [41153] LOG:  database system is shut down

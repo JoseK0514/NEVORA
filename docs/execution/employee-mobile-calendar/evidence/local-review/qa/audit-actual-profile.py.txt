@@ -1,0 +1,74 @@
+import hashlib,json,pathlib,re,socket,os,subprocess,sys
+E=pathlib.Path(__file__).parent
+A=E/sys.argv[1]
+W=pathlib.Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume')
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def alive(pid):
+ try:os.kill(pid,0);return True
+ except ProcessLookupError:return False
+def openport(port):
+ with socket.socket() as s:s.settimeout(.3);return s.connect_ex(('127.0.0.1',port))==0
+isDiagnostic=True
+errors=[];stages={}
+for name in (('combined',) if isDiagnostic else ('units','typescript','eslint','combined')):
+ p=A/name
+ result=json.loads((p/'result.json').read_text());inv=json.loads((p/'invocation.json').read_text());inputs=json.loads((p/'source-inputs.json').read_text())
+ actual={k:digest(W/k) for k in inputs}
+ stages[name]={'exitCode':result['exitCode'],'sourceUnchanged':result['sourceUnchanged'],'gitUnchanged':result['gitUnchanged'],'actualSourceHashesMatch':actual==inputs,'candidate':inv['candidate'],'sourceCount':len(inputs),'invocation':inv['argv']}
+ if result['exitCode'] or not result['sourceUnchanged'] or not result['gitUnchanged'] or actual!=inputs:errors.append('stage:'+name)
+candidate=stages['combined']['candidate'];P=A/'combined';owners=[]
+for f in sorted(P.rglob('ownership.json')):
+ m=json.loads(f.read_text());root=f.parent;manifest=json.loads((root/'source-manifest.json').read_text());hashes=manifest['hashes'];substituted=manifest['substitutedFiles']
+ sourceBad=[k for k,v in hashes.items() if digest(W/k)!=v]
+ expected=dict(hashes);expected['src/lib/db.ts']=manifest['substitutedDbHash']
+ if 'next-env.d.ts' in substituted:expected['next-env.d.ts']=manifest['generatedTypeReferences']['derivedHash']
+ mirror=root/'app';mirrorBad=[k for k,v in expected.items() if not (mirror/k).is_file() or digest(mirror/k)!=v]
+ inventory={str(p.relative_to(mirror)) for directory in ('src','public') for p in (mirror/directory).rglob('*') if p.is_file()}
+ inventory|={k for k in ('package.json','package-lock.json','tsconfig.json','next-env.d.ts','next.config.ts') if (mirror/k).is_file()}
+ item={'path':str(f),'checkpoint':manifest['checkpoint'],'sourceCount':len(hashes),'sourceHashesMatch':not sourceBad,'mirrorHashesMatch':not mirrorBad,'mirrorInventoryMatches':inventory==set(expected),'substitutedFiles':substituted,'closed':m.get('closed'),'sourceVerified':m.get('sourceVerified'),'mirrorVerified':m.get('mirrorVerified'),'derivedArtifactsReleased':m.get('derivedArtifactsReleased'),'pid':m.get('pid'),'port':m.get('port'),'pidAlive':alive(m['pid']),'portOpen':openport(m['port'])}
+ owners.append(item)
+ if any((manifest['checkpoint']!=candidate,sourceBad,mirrorBad,inventory!=set(expected),not m.get('closed'),not m.get('sourceVerified'),not m.get('mirrorVerified'),item['pidAlive'],item['portOpen'],set(substituted)-{'src/lib/db.ts','next-env.d.ts'})):errors.append('owner:'+str(f))
+observations=json.loads((P/'observations.json').read_text());databases=[];observerErrors=[]
+for o in observations:
+ if not o.get('frozenCandidateMatches'):errors.append('candidate observation')
+ if 'observerError' in o:observerErrors.append(o['observerError'])
+ observerErrors.extend(o.get('databaseObservationErrors',[]))
+ for d in o.get('databases',[]):
+  if d['exitCode']:observerErrors.append(d)
+  for row in d['rows']:
+   rows=json.loads(row)
+   if isinstance(rows,list):databases.extend(rows)
+   else:observerErrors.append(rows)
+unique={str((d['datname'],d['oid'],d['marker'])):d for d in databases}
+prefixes=sorted({next((x for x in ('nevora_exchange_test_','nevora_foundation_test_','fuel_phase3_test_') if d['datname'].startswith(x)),'INVALID') for d in databases})
+markersValid=all(re.fullmatch('fuel-phase3-disposable:[a-f0-9-]{36}',d['marker'] or '') and isinstance(d['oid'],int) and d['oid']>0 for d in databases)
+if not markersValid:errors.append('database markers')
+combined=json.loads((P/'result.json').read_text());clusters=[]
+for c in combined['clusters']:
+ item={**c,'recheckDirectoryExists':pathlib.Path(c['directory']).exists(),'recheckPidAlive':alive(c['pid']),'recheckPortOpen':openport(c['port'])};clusters.append(item)
+ if any(item[k] for k in ('directoryExists','pidStillAlive','portStillOpen','recheckDirectoryExists','recheckPidAlive','recheckPortOpen')):errors.append('cluster:'+c['directory'])
+
+report=json.loads((P/'profile/result.json').read_text())
+identity=json.loads((P/'profile/cluster-identity.json').read_text())
+identityAudit={'metadata':identity,'pidAlive':alive(identity['pid']),'portOpen':openport(identity['port']),'directoryExists':pathlib.Path(identity['directory']).exists()}
+if identityAudit['pidAlive'] or identityAudit['portOpen'] or identityAudit['directoryExists'] or not identity.get('closed'):errors.append('actual cluster identity cleanup')
+records=[json.loads(x) for x in (P/'profile/events.jsonl').read_text().splitlines()]
+requests=[x for x in records if 'requestId' in x]
+ids=sorted({x['requestId'] for x in requests});orphans=[]
+for rid in ids:
+ rows=[x for x in requests if x['requestId']==rid]
+ seen={scope:any(x['event']=='request' and x['scope']==scope for x in rows) for scope in ('page','context')}
+ terminal={scope:any(x['event'] in ('requestfinished','requestfailed') and x['scope']==scope for x in rows) for scope in ('page','context')}
+ if any(seen[scope] and not terminal[scope] for scope in seen):orphans.append({'requestId':rid,'path':rows[0]['path'],'seen':seen,'terminal':terminal})
+idle=[x for x in records if x['event']=='original-idle-assertion']
+consumer=[x for x in records if x['event']=='consumer']
+if report['status']!='passed' or report.get('failure'):errors.append('diagnostic failure')
+leaks=[];scanned=0
+for f in P.rglob('*'):
+ if not f.is_file() or 'app' in f.relative_to(P).parts or f.suffix not in ('.json','.jsonl','.log'):continue
+ scanned+=1
+ if re.search(r'/api/calendar/[A-Za-z0-9_-]{43}(?![A-Za-z0-9_-])',f.read_text(errors='replace')):leaks.append(str(f))
+if leaks:errors.append('raw Calendar capability in diagnostic evidence')
+result={'scope':'actual-source10cycleProfilediagnostic','candidate':candidate,'stages':stages,'owners':owners,'ownerCount':len(owners),'observationCount':len(observations),'observerErrors':observerErrors,'observedDatabaseCount':len(unique),'observedDatabases':list(unique.values()),'observedNamespaces':prefixes,'markersValid':markersValid,'clusters':clusters,'clusterIdentityAudit':identityAudit,'cycleSummary':{'status':report['status'],'completedCycles':len(report['checks']),'failure':report.get('failure')},'eventSummary':{'events':len(records),'requests':len(ids),'orphans':orphans,'idleAssertions':len(idle),'failedIdleAssertions':[x for x in idle if x['actual']!=0],'consumerEvents':len(consumer),'consumerCycles':sorted({x['cycle'] for x in consumer})},'evidenceCredentialScan':{'files':scanned,'leakPaths':leaks},'errors':errors}
+(A/'audit-result.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:result[k] for k in ('candidate','ownerCount','observationCount','observerErrors','observedNamespaces','markersValid','cycleSummary','eventSummary','evidenceCredentialScan','errors')},indent=2))

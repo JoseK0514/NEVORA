@@ -1,0 +1,60 @@
+{
+  "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+  "results": [
+    {
+      "name": "default",
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:30:43.360Z",
+      "finishedAt": "2026-10-29T17:37:19.637Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/default.log"
+    },
+    {
+      "name": "typecheck",
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:37:20.371Z",
+      "finishedAt": "2026-10-29T17:37:37.948Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/typecheck.log"
+    },
+    {
+      "name": "lint",
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:37:38.624Z",
+      "finishedAt": "2026-10-29T17:38:07.141Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/lint.log"
+    },
+    {
+      "name": "startup",
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:38:07.925Z",
+      "finishedAt": "2026-10-29T17:38:09.748Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/startup.log"
+    },
+    {
+      "name": "build",
+      "checkpoint": "f2410b056421795221596ab52312b2d1ae9aed40",
+      "startedAt": "2026-10-29T17:38:10.365Z",
+      "finishedAt": "2026-10-29T17:38:21.012Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "custodyError": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/final-static-closure-3/build.log"
+    }
+  ]
+}

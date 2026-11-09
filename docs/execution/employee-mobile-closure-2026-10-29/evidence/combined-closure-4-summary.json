@@ -1,0 +1,50 @@
+{
+  "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+  "scope": "Employee-only release; existing compatibility-role regressions retained",
+  "results": [
+    {
+      "suite": "phase1",
+      "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+      "startedAt": "2026-10-29T16:54:39.384Z",
+      "finishedAt": "2026-10-29T16:56:09.055Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/phase1.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/phase1"
+    },
+    {
+      "suite": "requests",
+      "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+      "startedAt": "2026-10-29T16:56:09.070Z",
+      "finishedAt": "2026-10-29T16:57:04.705Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/requests.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/requests"
+    },
+    {
+      "suite": "responses",
+      "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+      "startedAt": "2026-10-29T16:57:04.715Z",
+      "finishedAt": "2026-10-29T16:58:39.360Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/responses.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/responses"
+    },
+    {
+      "suite": "creation",
+      "checkpoint": "e92b8bda3f668f5a84b89bb1ee40effdac16c296",
+      "startedAt": "2026-10-29T16:58:39.370Z",
+      "finishedAt": "2026-10-29T17:00:56.751Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/creation.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-4/creation"
+    }
+  ]
+}

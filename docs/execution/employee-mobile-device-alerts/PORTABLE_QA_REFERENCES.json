@@ -1,0 +1,443 @@
+[
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-07/result.json",
+    "target": "evidence/root/reviews/qa/actual-app-characterization-07/result.json",
+    "sourceSHA256": "e51d10fed1f1f7b6a1f73514b4b58b5ba698f30b733a43d5661b65bf3b13234d",
+    "portableSHA256": "e51d10fed1f1f7b6a1f73514b4b58b5ba698f30b733a43d5661b65bf3b13234d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/qa-recovered-custody.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-01/qa-recovered-custody.json",
+    "sourceSHA256": "9632d3b1b1037798df8a5aa747fac4353a253ca9816b160b93e939c95dece602",
+    "portableSHA256": "9632d3b1b1037798df8a5aa747fac4353a253ca9816b160b93e939c95dece602",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/run.log",
+    "target": "evidence/root/reviews/qa/affected-recovery-01/run.log",
+    "sourceSHA256": "1b5af9d10fd83e6d20a91350e0525371b1432be8593dc7f39e12aba2db65962f",
+    "portableSHA256": "1b5af9d10fd83e6d20a91350e0525371b1432be8593dc7f39e12aba2db65962f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/summary.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-01/summary.json",
+    "sourceSHA256": "05de2805c52d44473d676c351b96316168e41b1db2eab311ce49b15fc3cdf906",
+    "portableSHA256": "05de2805c52d44473d676c351b96316168e41b1db2eab311ce49b15fc3cdf906",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/canonical-communications/communication-history-preservation.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/canonical-communications/communication-history-preservation.json",
+    "sourceSHA256": "0fba368ddc1418397834f86f78aa9f91b551e652a2bf3aa424b9f70087fdb23f",
+    "portableSHA256": "0fba368ddc1418397834f86f78aa9f91b551e652a2bf3aa424b9f70087fdb23f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications-review/results.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/communications-review/results.json",
+    "sourceSHA256": "b35a785548cc018603095c43a769bad7e35f6337ea6e0f135ecd0ca1fea0bfcd",
+    "portableSHA256": "b35a785548cc018603095c43a769bad7e35f6337ea6e0f135ecd0ca1fea0bfcd",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/communications/results.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/communications/results.json",
+    "sourceSHA256": "5c2332e584ca9198f3aeb99ad2b2c9053afec5f9d455229fe84a8d2f914a8904",
+    "portableSHA256": "5c2332e584ca9198f3aeb99ad2b2c9053afec5f9d455229fe84a8d2f914a8904",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/capability-gates/install.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/capability-gates/install.png",
+    "sourceSHA256": "8036a7813e7bb0a68ce7ca1d31763e1d44ad12a4c8e8aacf6194187b5b11a34a",
+    "portableSHA256": "8036a7813e7bb0a68ce7ca1d31763e1d44ad12a4c8e8aacf6194187b5b11a34a",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/chromium-light-coarse-landscape-2.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/chromium-light-coarse-landscape-2.png",
+    "sourceSHA256": "919e6b6fd01bf81c8c161e431c015c9151de2647958518fafd6b38cc19356879",
+    "portableSHA256": "919e6b6fd01bf81c8c161e431c015c9151de2647958518fafd6b38cc19356879",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/feature-off/EMPLOYEE.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/feature-off/EMPLOYEE.png",
+    "sourceSHA256": "4f04ecfa638174a225e64506f876fb6fbc4f157cae259a31f1bfd37a7e3960dd",
+    "portableSHA256": "4f04ecfa638174a225e64506f876fb6fbc4f157cae259a31f1bfd37a7e3960dd",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/firefox-dark-coarse-landscape-1.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/firefox-dark-coarse-landscape-1.png",
+    "sourceSHA256": "77cf40055262ad7e42c25f0563d510be99c0f7a0c18518ad08fcd987c6390b42",
+    "portableSHA256": "77cf40055262ad7e42c25f0563d510be99c0f7a0c18518ad08fcd987c6390b42",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/gates-result.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/gates-result.json",
+    "sourceSHA256": "698e9fbbfa65354db860828462d72028275cd583f0d2b83fda7de90f394c69c3",
+    "portableSHA256": "698e9fbbfa65354db860828462d72028275cd583f0d2b83fda7de90f394c69c3",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/result.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/result.json",
+    "sourceSHA256": "b7ca0f4f1cddfc7f4afabdda2c36ceb123a51701d59d39c11a04f29edf1fc8c6",
+    "portableSHA256": "b7ca0f4f1cddfc7f4afabdda2c36ceb123a51701d59d39c11a04f29edf1fc8c6",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/webkit-dark-coarse-landscape-1.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/webkit-dark-coarse-landscape-1.png",
+    "sourceSHA256": "1fe6834684987687bf54718db4bb96a2a09995e59fbd0198e5b80158b5c5e6c7",
+    "portableSHA256": "1fe6834684987687bf54718db4bb96a2a09995e59fbd0198e5b80158b5c5e6c7",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/device/webkit-light-text200-Turn-off-alerts.png",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/device/webkit-light-text200-Turn-off-alerts.png",
+    "sourceSHA256": "4dd1f3ae168cedee7c07108b5503d63ad15f77f9150f4024c3f619b501c0322f",
+    "portableSHA256": "4dd1f3ae168cedee7c07108b5503d63ad15f77f9150f4024c3f619b501c0322f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/exit-code.txt",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/exit-code.txt",
+    "sourceSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "portableSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/independent-custody-audit.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/independent-custody-audit.json",
+    "sourceSHA256": "d58ea28c985a1bec31d9cfbf87c9e96ef29d09360119ff4abfe9ed09be5059fe",
+    "portableSHA256": "d58ea28c985a1bec31d9cfbf87c9e96ef29d09360119ff4abfe9ed09be5059fe",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/independent-due-fixture-audit.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/independent-due-fixture-audit.json",
+    "sourceSHA256": "cf2f0d14d7ac8c049c94bfeaa14453b7ddcf9dd1a2704fd1bba271811e0e2ae5",
+    "portableSHA256": "cf2f0d14d7ac8c049c94bfeaa14453b7ddcf9dd1a2704fd1bba271811e0e2ae5",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/invocation.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/invocation.json",
+    "sourceSHA256": "078cdc4ebd10dddf577eeb0e3d0fdb1ef4805900a43a853a6f4b0f8de9672e80",
+    "portableSHA256": "078cdc4ebd10dddf577eeb0e3d0fdb1ef4805900a43a853a6f4b0f8de9672e80",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/journey-observation-audit.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/journey-observation-audit.json",
+    "sourceSHA256": "1884e4e418cf4d4225204fbad9c712e093c46524f2d35357ee570065f6d5e1fa",
+    "portableSHA256": "1884e4e418cf4d4225204fbad9c712e093c46524f2d35357ee570065f6d5e1fa",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/owned-process-history.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/owned-process-history.json",
+    "sourceSHA256": "6dddfa9d80b8ab29126bd1e2dd46d1d883d8a6d786790ec5f46023b8d89c4b44",
+    "portableSHA256": "6dddfa9d80b8ab29126bd1e2dd46d1d883d8a6d786790ec5f46023b8d89c4b44",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/passkey-network/http-verification.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/passkey-network/http-verification.json",
+    "sourceSHA256": "abf9c6c6d2c361e0d720141d34c228006af6811c585356ecba0702e8a7f6ca39",
+    "portableSHA256": "abf9c6c6d2c361e0d720141d34c228006af6811c585356ecba0702e8a7f6ca39",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/run.log",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/run.log",
+    "sourceSHA256": "90bdf0d347db7c00830c3093b287e1dc98ebbd553b883370c38e50b20af09d5a",
+    "portableSHA256": "90bdf0d347db7c00830c3093b287e1dc98ebbd553b883370c38e50b20af09d5a",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/summary.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/summary.json",
+    "sourceSHA256": "8e73883195e069e081970044b44bbd85031c849b56df3717f25ff09e57efe09a",
+    "portableSHA256": "8e73883195e069e081970044b44bbd85031c849b56df3717f25ff09e57efe09a",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-02/tmpdir-after.json",
+    "target": "evidence/root/reviews/qa/affected-recovery-02/tmpdir-after.json",
+    "sourceSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "portableSHA256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/baseline-QA-OWN-1.json",
+    "target": "evidence/root/reviews/qa/baseline-QA-OWN-1.json",
+    "sourceSHA256": "436986201b38903bb89e65bc9fb1b12cd9f2555d3b5c1d95a5e6b9de4e8e5ef7",
+    "portableSHA256": "436986201b38903bb89e65bc9fb1b12cd9f2555d3b5c1d95a5e6b9de4e8e5ef7",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/baseline-QA-OWN-2.json",
+    "target": "evidence/root/reviews/qa/baseline-QA-OWN-2.json",
+    "sourceSHA256": "37ba5c8813c08cec92fc17a4fc5952f008ed5c941ef7702db9b361043adc71e1",
+    "portableSHA256": "37ba5c8813c08cec92fc17a4fc5952f008ed5c941ef7702db9b361043adc71e1",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/baseline-QA-OWN-3.json",
+    "target": "evidence/root/reviews/qa/baseline-QA-OWN-3.json",
+    "sourceSHA256": "907869f7167731f2d5429a7ecc89461b4875311ee24efa1dfbdfd650899c881e",
+    "portableSHA256": "907869f7167731f2d5429a7ecc89461b4875311ee24efa1dfbdfd650899c881e",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/baseline-ownership-probe.log",
+    "target": "evidence/root/reviews/qa/baseline-ownership-probe.log",
+    "sourceSHA256": "952ae4e488a3c58b139382fd4cf8899ed03de373ee84c2abad646c0762723224",
+    "portableSHA256": "952ae4e488a3c58b139382fd4cf8899ed03de373ee84c2abad646c0762723224",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/candidate-QA-OWN-1.json",
+    "target": "evidence/root/reviews/qa/candidate-QA-OWN-1.json",
+    "sourceSHA256": "3b5e77d437e31a379a8391caff7c1bcf347713563b2769ab5184ad30fbe20366",
+    "portableSHA256": "3b5e77d437e31a379a8391caff7c1bcf347713563b2769ab5184ad30fbe20366",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/candidate-QA-OWN-2.json",
+    "target": "evidence/root/reviews/qa/candidate-QA-OWN-2.json",
+    "sourceSHA256": "d70e449d4fdcf5ff6728bc44bb2fde542094c7d2e9f0f9cdb4e837bc3bcfd96f",
+    "portableSHA256": "d70e449d4fdcf5ff6728bc44bb2fde542094c7d2e9f0f9cdb4e837bc3bcfd96f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/candidate-ownership-probe.log",
+    "target": "evidence/root/reviews/qa/candidate-ownership-probe.log",
+    "sourceSHA256": "7ab077e5ce3dbd7fcc1737ac0093d2c7ea145627a72fe217e7157a6cfb548c53",
+    "portableSHA256": "7ab077e5ce3dbd7fcc1737ac0093d2c7ea145627a72fe217e7157a6cfb548c53",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/capture-keyboard-characterization.md",
+    "target": "evidence/root/reviews/qa/capture-keyboard-characterization.md",
+    "sourceSHA256": "4293a8662e087a6c80824ef8fabdd0c16a5e2c10760f5850e75b55cc1ecb6484",
+    "portableSHA256": "4293a8662e087a6c80824ef8fabdd0c16a5e2c10760f5850e75b55cc1ecb6484",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/coverage-reconciliation.json",
+    "target": "evidence/root/reviews/qa/coverage-reconciliation.json",
+    "sourceSHA256": "0a0cfcea130b8fe221c6144877d309980301a3e7f57a36b2de3023f67cd228b4",
+    "portableSHA256": "0a0cfcea130b8fe221c6144877d309980301a3e7f57a36b2de3023f67cd228b4",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/diagnostic-final-three-custody.json",
+    "target": "evidence/root/reviews/qa/diagnostic-final-three-custody.json",
+    "sourceSHA256": "96051f5164ee09194eaf0426f0be6357531bc9b051c989aada718b4290ed782e",
+    "portableSHA256": "96051f5164ee09194eaf0426f0be6357531bc9b051c989aada718b4290ed782e",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/diagnostic-first-four-custody.json",
+    "target": "evidence/root/reviews/qa/diagnostic-first-four-custody.json",
+    "sourceSHA256": "2005ea7c1338ed7ac702bda5f299688aaf62adf3801587fec1ceb2c5e83bd03f",
+    "portableSHA256": "2005ea7c1338ed7ac702bda5f299688aaf62adf3801587fec1ceb2c5e83bd03f",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-candidate-QA-OWN-1.json",
+    "target": "evidence/root/reviews/qa/final-candidate-QA-OWN-1.json",
+    "sourceSHA256": "452962711c39c0b2013b0f383b1a0c9087f07bda9eb34f863dec63f93a48e114",
+    "portableSHA256": "452962711c39c0b2013b0f383b1a0c9087f07bda9eb34f863dec63f93a48e114",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-candidate-QA-OWN-2.json",
+    "target": "evidence/root/reviews/qa/final-candidate-QA-OWN-2.json",
+    "sourceSHA256": "be4843080797ac2e283ad3f0cf81d7aeb6da909806d4ccdbacfc01427fb612de",
+    "portableSHA256": "be4843080797ac2e283ad3f0cf81d7aeb6da909806d4ccdbacfc01427fb612de",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-candidate-QA-OWN-3.json",
+    "target": "evidence/root/reviews/qa/final-candidate-QA-OWN-3.json",
+    "sourceSHA256": "09cd48bcb18cc3a2c8d3e3c9c411bdf8f07e28c8c5f7670b6f9fa08e126cf2a0",
+    "portableSHA256": "09cd48bcb18cc3a2c8d3e3c9c411bdf8f07e28c8c5f7670b6f9fa08e126cf2a0",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-disabled-busy.html",
+    "target": "evidence/root/reviews/qa/final-disabled-busy.html",
+    "sourceSHA256": "b1baf0aa6a5c1ee8d9be48232c07857bd97ced7a0a12ece6d97883fa55ae6009",
+    "portableSHA256": "b1baf0aa6a5c1ee8d9be48232c07857bd97ced7a0a12ece6d97883fa55ae6009",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-focused-units.exit.txt",
+    "target": "evidence/root/reviews/qa/final-focused-units.exit.txt",
+    "sourceSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "portableSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-focused-units.log",
+    "target": "evidence/root/reviews/qa/final-focused-units.log",
+    "sourceSHA256": "86c53103bde73935929fc681a1b197116702ddcc29ad0a5572c91aecdd122d4e",
+    "portableSHA256": "86c53103bde73935929fc681a1b197116702ddcc29ad0a5572c91aecdd122d4e",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-loading-busy.html",
+    "target": "evidence/root/reviews/qa/final-loading-busy.html",
+    "sourceSHA256": "cba59035e39972514727aa58d8a283f95630c1f252216cfb422b948ec96ba877",
+    "portableSHA256": "cba59035e39972514727aa58d8a283f95630c1f252216cfb422b948ec96ba877",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-paused-busy.html",
+    "target": "evidence/root/reviews/qa/final-paused-busy.html",
+    "sourceSHA256": "b13d3dfefb7760a209b2564e9969e665c7ae7b02b918688a693e44d83edfee8d",
+    "portableSHA256": "b13d3dfefb7760a209b2564e9969e665c7ae7b02b918688a693e44d83edfee8d",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-probes.exit.txt",
+    "target": "evidence/root/reviews/qa/final-probes.exit.txt",
+    "sourceSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "portableSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-probes.log",
+    "target": "evidence/root/reviews/qa/final-probes.log",
+    "sourceSHA256": "e3c029b2fb98d115af5d2c7cb1976c7009c1e829fc31bae15738e56cabfcc20b",
+    "portableSHA256": "e3c029b2fb98d115af5d2c7cb1976c7009c1e829fc31bae15738e56cabfcc20b",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-qa-report.md",
+    "target": "evidence/root/reviews/qa/final-qa-report.md",
+    "sourceSHA256": "eefdfb93bcfacdf558dd3b0d9c51f421506726fe59e4a92cdc59519943c145c9",
+    "portableSHA256": "eefdfb93bcfacdf558dd3b0d9c51f421506726fe59e4a92cdc59519943c145c9",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-source-delta.json",
+    "target": "evidence/root/reviews/qa/final-source-delta.json",
+    "sourceSHA256": "04397cebe77aa39c5dffb5a3a321044b63c8fd4c5607f44f5a9f52a1077a8313",
+    "portableSHA256": "04397cebe77aa39c5dffb5a3a321044b63c8fd4c5607f44f5a9f52a1077a8313",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/cleanup-audit.json",
+    "target": "evidence/root/reviews/qa/full-run-01/cleanup-audit.json",
+    "sourceSHA256": "fcbd88157952ba66d06a6c213a553e23b801186f24526df04797de18ed250432",
+    "portableSHA256": "fcbd88157952ba66d06a6c213a553e23b801186f24526df04797de18ed250432",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/closure-process-ports.json",
+    "target": "evidence/root/reviews/qa/full-run-01/closure-process-ports.json",
+    "sourceSHA256": "e27e5f7928479965392b6e30e2b84b1fc6d406821b76696e81b1f39554ba3db5",
+    "portableSHA256": "e27e5f7928479965392b6e30e2b84b1fc6d406821b76696e81b1f39554ba3db5",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/combined-gate.log",
+    "target": "evidence/root/reviews/qa/full-run-01/combined-gate.log",
+    "sourceSHA256": "362d88103b458af76f535ac3d54689f0d4478e80f17d3c6aba28e1c7549c2369",
+    "portableSHA256": "362d88103b458af76f535ac3d54689f0d4478e80f17d3c6aba28e1c7549c2369",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/exit-code.txt",
+    "target": "evidence/root/reviews/qa/full-run-01/exit-code.txt",
+    "sourceSHA256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "portableSHA256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/summary.json",
+    "target": "evidence/root/reviews/qa/full-run-01/summary.json",
+    "sourceSHA256": "a5c1659073cf5358a375872732503ed937db29739902619f01d27dff139eae83",
+    "portableSHA256": "a5c1659073cf5358a375872732503ed937db29739902619f01d27dff139eae83",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/independently-read-root-default-results.json",
+    "target": "evidence/root/reviews/qa/independently-read-root-default-results.json",
+    "sourceSHA256": "d8c494533523e0a69e5df3f59abd1d44cda059846688b8c5b446e3939971b1de",
+    "portableSHA256": "d8c494533523e0a69e5df3f59abd1d44cda059846688b8c5b446e3939971b1de",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts",
+    "target": "evidence/root/reviews/qa/ownership-replacement.test.ts.txt",
+    "sourceSHA256": "6d8ac768ced9139c78c7bfb386b40fc6448dac22163c954f53143ea417150862",
+    "portableSHA256": "6d8ac768ced9139c78c7bfb386b40fc6448dac22163c954f53143ea417150862",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/ownership-retained-risk.md",
+    "target": "evidence/root/reviews/qa/ownership-retained-risk.md",
+    "sourceSHA256": "acc0ab9e447924e021946e52a027004d27fe13a2386b2298df952799e0ea5fee",
+    "portableSHA256": "acc0ab9e447924e021946e52a027004d27fe13a2386b2298df952799e0ea5fee",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/qa-a11y-1-feature-off-busy.md",
+    "target": "evidence/root/reviews/qa/qa-a11y-1-feature-off-busy.md",
+    "sourceSHA256": "855fa8e7ad5602829a23792ea202764f417d956874b5a46c98caf259f244fa51",
+    "portableSHA256": "855fa8e7ad5602829a23792ea202764f417d956874b5a46c98caf259f244fa51",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/quiet-hours-observation-text.exit.txt",
+    "target": "evidence/root/reviews/qa/quiet-hours-observation-text.exit.txt",
+    "sourceSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "portableSHA256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/quiet-hours-observation-text.log",
+    "target": "evidence/root/reviews/qa/quiet-hours-observation-text.log",
+    "sourceSHA256": "c4e01e43650ff710accb14dfafccddfe3a91215effadb51f5059e4b67a120be0",
+    "portableSHA256": "c4e01e43650ff710accb14dfafccddfe3a91215effadb51f5059e4b67a120be0",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/retained-four-unit-files.exit.txt",
+    "target": "evidence/root/reviews/qa/retained-four-unit-files.exit.txt",
+    "sourceSHA256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "portableSHA256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/retained-four-unit-files.log",
+    "target": "evidence/root/reviews/qa/retained-four-unit-files.log",
+    "sourceSHA256": "b7d6dc10b56b62979c009a93031acf27fb97104e0b751fc14499af9534ac6502",
+    "portableSHA256": "b7d6dc10b56b62979c009a93031acf27fb97104e0b751fc14499af9534ac6502",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/static-keyboard/results.json",
+    "target": "evidence/root/reviews/qa/static-keyboard/results.json",
+    "sourceSHA256": "1c9c1330bb0dbd780bf16f9c4d353115b2fc1bc48fed0335a8b4439ec53f59d6",
+    "portableSHA256": "1c9c1330bb0dbd780bf16f9c4d353115b2fc1bc48fed0335a8b4439ec53f59d6",
+    "redactions": []
+  },
+  {
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/static-touch-transition.json",
+    "target": "evidence/root/reviews/qa/static-touch-transition.json",
+    "sourceSHA256": "50e629399b4b0394b518c6b573c009d968cedddbff343e000660878bfe53b817",
+    "portableSHA256": "50e629399b4b0394b518c6b573c009d968cedddbff343e000660878bfe53b817",
+    "redactions": []
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "checks": [],
+  "captures": [
+    "chromium-failure.png"
+  ],
+  "contrasts": [],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52397/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:52397/app"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52397/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:52397/app"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:52397/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:52397/app"
+    }
+  ],
+  "limits": [
+    "Controlled loopback browsers, fictional accounts and no real notifications. Native OS/provider enrollment and verified installation-detach coverage belong to the next capability batch; this run checks no-installation signout and actual unresolved-proof retention. Physical devices/AT/hosted/release remain separate."
+  ]
+}

@@ -1,0 +1,41 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/lib/tenancy/migrations/backfill.test.ts [2m([22m[2m66 tests[22m[2m)[22m[33m 23083[2mms[22m[39m
+   [32m✓[39m complete-row migration preflight without SQL or rewritten history [2m(23)[22m
+     [33m[2m✓[22m[39m rejects duplicate PKs, row count drift and checksum drift[33m 757[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects source or original-column shape drift and emits no partial executable plan[33m 607[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects an orphan immutable parent[33m 313[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept current-active-only or unfenced snapshot capture[33m 450[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept unreconciled new writes or schema/source mismatched writer protocol[33m 572[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves global hashed recovery scopes without hash inversion or guessed tenant[33m 636[2mms[22m[39m
+     [33m[2m✓[22m[39m discriminates DEVICE versus WORKSPACE PIN limiter ancestry[33m 1387[2mms[22m[39m
+     [33m[2m✓[22m[39m detects normalized tenant-local legacy number collisions without changing either ID or excluding inactive employees[33m 384[2mms[22m[39m
+     [33m[2m✓[22m[39m requires historical captured lineage even if a deleted source ID has been reused by a different live tenant[33m 453[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks absent/incomplete JSON or array lineage capture and validates each literal reference[33m 536[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses array identity leaves mislabeled as nonidentity data[33m 385[2mms[22m[39m
+     [33m[2m✓[22m[39m uses a typed metadata sidecar whose identity mirror cannot alter historical actors[33m 402[2mms[22m[39m
+     [33m[2m✓[22m[39m requires declared JSON identity literals to be references and fails closed for unresolved captured leaves[33m 589[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks historical witness row/source mismatch and conflicting tenant ancestry without inspecting a current replacement row[33m 557[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects source capture precision loss in retained bigint security counters[33m 560[2mms[22m[39m
+     [33m[2m✓[22m[39m checks current device credential lineage against the preserved global retired-hash ledger[33m 433[2mms[22m[39m
+   [32m✓[39m interruption/resume and atomic new immutable-row protocol [2m(9)[22m
+     [33m[2m✓[22m[39m rejects a saved plan whose typed owner or chunk changed after its digest was captured[33m 498[2mms[22m[39m
+   [32m✓[39m source/schema/snapshot/row-bound database namespace witnesses [2m(15)[22m
+     [33m[2m✓[22m[39m includes empty email in the retained IS NOT NULL namespace and excludes NULL[33m 618[2mms[22m[39m
+     [33m[2m✓[22m[39m uses DB result witnesses for clocker_break_types names and its original predicate[33m 344[2mms[22m[39m
+     [33m[2m✓[22m[39m uses DB result witnesses for schedule_templates names and its original predicate[33m 538[2mms[22m[39m
+     [33m[2m✓[22m[39m requires every closed catalog even for empty tables and rejects absent result witnesses[33m 780[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects changed catalog expression, predicate, source evidence and collation checksum[33m 1240[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records[33m 888[2mms[22m[39m
+     [33m[2m✓[22m[39m binds witnessed DB results into the saved plan and stays independent of capture order[33m 443[2mms[22m[39m
+   [32m✓[39m malformed comparator capture rejection without executing data accessors [2m(6)[22m
+     [33m[2m✓[22m[39m blocks null-catalog deterministically without throwing[33m 315[2mms[22m[39m
+     [33m[2m✓[22m[39m does not execute an accessor or serialize a mutated sparse original payload[33m 480[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m66 passed[39m[22m[90m (66)[39m
+[2m   Start at [22m 20:34:34
+[2m   Duration [22m 23.17s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-ten/06-backfill.test.ts/results.json

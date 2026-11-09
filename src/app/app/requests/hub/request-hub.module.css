@@ -1,0 +1,87 @@
+/* Requests in the Signature style (target: docs/product/specs/employee-style/signature/sig-requests.png).
+ * Same tokens as Home and My schedule; r6-prefixed classes and `:not(#r6)` keep the shared layers out. */
+
+.r6Root:not(#r6) {
+  --r6-page: var(--sig-page); --r6-card: var(--sig-card); --r6-ink: var(--sig-ink-1); --r6-ink-2: var(--sig-ink-2); --r6-ink-3: var(--sig-ink-3); --r6-faint: var(--sig-faint);
+  --r6-rule: var(--sig-rule); --r6-deep: var(--sig-deep); --r6-mark: var(--sig-mark); --r6-teal: var(--sig-action); --r6-sky: var(--sig-sky); --r6-amber: var(--sig-review-ink); --r6-red: var(--sig-urgent-ink);
+  --r6-font: var(--sig-font);
+  --r6-display: var(--sig-font-display);
+  --r6-grain: var(--sig-grain);
+  display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 36px; background: var(--r6-page); color: var(--r6-ink);
+  font-family: var(--r6-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+.r6Root :where(h1, h2, p, ul, small, strong, b):not(#r6) { margin: 0; padding: 0; }
+.r6Root :where(ul):not(#r6) { list-style: none; }
+.r6Root :is(a, summary):focus-visible:not(#r6) { outline: 2px solid var(--r6-ink); outline-offset: 2px; }
+
+/* Band */
+.r6Band:not(#r6) { position: relative; isolation: isolate; overflow: hidden; padding: 18px 24px 58px; background: var(--r6-deep); color: #FFFFFF; }
+.r6Band:not(#r6)::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--r6-grain); opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+.r6Mark:not(#r6) { position: absolute; z-index: -1; right: -86px; bottom: -6px; width: 300px; height: auto; pointer-events: none; }
+.r6MarkL:not(#r6) { fill: var(--r6-mark); }
+.r6MarkT:not(#r6) { fill: var(--r6-sky); }
+.r6Eyebrow:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.r6Band h1:not(#r6) { margin-top: 10px; font: 400 2.5rem/2.75rem var(--r6-display); letter-spacing: -.035em; color: #FFFFFF; }
+.r6Summary:not(#r6) { margin-top: 8px; font: 400 1rem/1.375rem var(--r6-font); color: rgba(255, 255, 255, .72); }
+
+/* Sheet */
+.r6Sheet:not(#r6) { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; margin-top: -30px; padding-top: 26px; border-radius: 28px 28px 0 0; background: var(--r6-page); }
+.r6Primary:not(#r6) { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; margin: 0 16px; border-radius: 10px; background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1rem/1.25rem var(--r6-font); text-decoration: none; }
+.r6Primary svg:not(#r6) { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+@media (hover: hover) { .r6Primary:hover:not(#r6) { background: var(--sig-fill-hover); } }
+.r6Section:not(#r6) { display: flex; flex-direction: column; min-width: 0; margin-top: 30px; }
+.r6Head:not(#r6) { margin: 0 24px 12px; }
+.r6Head h2:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .13em; text-transform: uppercase; color: var(--r6-ink-2); }
+.r6List:not(#r6) { margin: 0 16px; border: 1px solid var(--r6-rule); border-radius: 18px; background: var(--r6-card); overflow: hidden; }
+.r6List > li:not(#r6) { position: relative; }
+.r6List > li + li:not(#r6)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--r6-rule); }
+.r6Row:not(#r6), .r6LinkRow:not(#r6) { display: flex; align-items: center; gap: 14px; min-height: 72px; padding: 14px 16px 14px 18px; color: var(--r6-ink); text-decoration: none; }
+.r6LinkRow:not(#r6) { justify-content: space-between; min-height: 68px; padding-block: 12px; }
+@media (hover: hover) { .r6Row:hover:not(#r6), .r6LinkRow:hover:not(#r6) { background: var(--sig-hover-bg); } }
+.r6Row:focus-visible:not(#r6), .r6LinkRow:focus-visible:not(#r6) { outline-offset: -3px; border-radius: 18px; }
+.r6Day:not(#r6) { flex: none; display: flex; flex-direction: column; width: 2.5rem; }
+.r6Day small:not(#r6) { font: 600 .75rem/1rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; color: var(--r6-ink-3); }
+.r6Day strong:not(#r6) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--r6-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.r6Copy:not(#r6), .r6LinkRow > span:not(#r6) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.r6Copy strong:not(#r6), .r6LinkRow b:not(#r6) { font: 500 1.0625rem/1.375rem var(--r6-font); letter-spacing: -.012em; color: var(--r6-ink); }
+.r6Copy span:not(#r6), .r6LinkRow small:not(#r6) { font: 400 .9375rem/1.25rem var(--r6-font); color: var(--r6-ink-2); }
+.r6State:not(#r6) { flex: none; font: 600 .75rem/1rem var(--r6-font); letter-spacing: .12em; text-transform: uppercase; }
+.r6Wait:not(#r6) { color: var(--r6-amber); } .r6Good:not(#r6) { color: var(--r6-teal); } .r6No:not(#r6) { color: var(--r6-red); } .r6Quiet:not(#r6) { color: var(--r6-ink-3); }
+.r6Chevron:not(#r6) { flex: none; fill: none; stroke: var(--sig-glyph, #8A8378); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.r6None:not(#r6) { padding: 20px 18px; font: 400 .9375rem/1.3125rem var(--r6-font); color: var(--r6-ink-3); }
+.r6Empty:not(#r6) { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 0 16px; padding: 20px 18px; border: 1px solid var(--r6-rule); border-radius: 18px; background: var(--r6-card); font: 400 .9375rem/1.3125rem var(--r6-font); color: var(--r6-ink-2); }
+.r6Empty strong:not(#r6) { font: 500 1rem/1.3125rem var(--r6-font); color: var(--r6-ink); }
+.r6Link:not(#r6) { display: inline-flex; align-items: center; min-height: 44px; color: var(--r6-ink); font: 500 .9375rem/1.25rem var(--r6-font); text-decoration: underline; text-decoration-color: var(--r6-rule); text-underline-offset: 5px; }
+
+/* Help: one quiet row that opens. */
+.r6Help:not(#r6) { margin: 30px 16px 0; border: 1px solid var(--r6-rule); border-radius: 18px; background: var(--r6-card); overflow: hidden; }
+.r6Help > summary:not(#r6) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 0 16px 0 18px; color: var(--r6-ink); font: 500 1rem/1.3125rem var(--r6-font); list-style: none; cursor: pointer; }
+.r6Help > summary:not(#r6)::-webkit-details-marker { display: none; }
+.r6Help > summary .r6Chevron:not(#r6) { transition: transform .2s ease; }
+.r6Help[open] > summary .r6Chevron:not(#r6) { transform: rotate(90deg); }
+.r6HelpBody:not(#r6) { display: flex; flex-direction: column; gap: 10px; padding: 4px 18px 10px; border-top: 1px solid var(--r6-rule); }
+.r6HelpBody p:not(#r6) { padding-top: 8px; font: 400 .9375rem/1.375rem var(--r6-font); color: var(--r6-ink-2); }
+.r6HelpBody strong:not(#r6) { color: var(--r6-ink); font-weight: 500; }
+
+@media (min-width: 768px) {
+  .r6Root:not(#r6) { width: min(100%, 760px); padding: 16px 24px 48px; }
+  .r6Band:not(#r6) { padding: 28px 32px 34px; border-radius: 24px; }
+  .r6Band h1:not(#r6) { font-size: 2.75rem; line-height: 3rem; }
+  .r6Sheet:not(#r6) { margin-top: 0; padding-top: 24px; border-radius: 0; background: none; }
+  .r6Primary:not(#r6), .r6List:not(#r6), .r6Empty:not(#r6), .r6Help:not(#r6) { margin-inline: 0; }
+  .r6Primary:not(#r6) { align-self: flex-start; padding: 0 24px; }
+  .r6Head:not(#r6) { margin-inline: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .r6Help > summary .r6Chevron:not(#r6) { transition: none; } }
+
+/* Request rows: [date] [dates and length] [state] [›]; on narrow phones the state moves under the length. */
+.r6Row:not(#r6) { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "day copy state chev"; column-gap: 14px; }
+.r6Row > .r6Day:not(#r6) { grid-area: day; }
+.r6Row > .r6Copy:not(#r6) { grid-area: copy; }
+.r6Row > .r6State:not(#r6) { grid-area: state; }
+.r6Row > .r6Chevron:not(#r6) { grid-area: chev; }
+@container r6 (max-width: 22rem) {
+  .r6Row:not(#r6) { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "day copy chev" "day state chev"; row-gap: 6px; }
+  .r6Row > .r6State:not(#r6) { justify-self: start; }
+}
+.r6Root:not(#r6) { container: r6 / inline-size; }

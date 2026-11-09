@@ -1,20 +1,38 @@
-import Link from "next/link";
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
+import { CoverageAssistant } from "@/components/coverage-assistant";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listEmployees, listLocations } from "@/lib/data/employees";
-import { listEmployeeHourTargets } from "@/lib/data/schedule-health";
 import { listHourFairness } from "@/lib/data/hour-fairness";
 import { getShiftValidationContext } from "@/lib/data/schedules";
+import { listPositions } from "@/lib/data/positions";
+import { requireSessionMutationProof } from "@/lib/auth/session";
+import { readCoverageRepair } from "@/lib/data/coverage-repair.server";
+import { coverageRepairUrl, parseCoverageRepairLocator, CoverageRepairConflictError } from "@/lib/scheduling/coverage-repair";
 import {
-  formatDayLabel,
-  formatTime,
   isDateInWeek,
   isValidWeekStart,
 } from "@/lib/date-utils";
 import { rankCoverageCandidates } from "@/lib/scheduling/coverage-ranking";
-import { validateShift } from "@/lib/scheduling/validate-shift";
+import { businessDateStart, shiftPeriod } from "@/lib/scheduling/periods";
+
+/** What a coverage gap still needs, in words. Codex C2 adds a numeric `count` (and `positionName` on POSITION targets);
+ * until that read reaches this branch, the server's sentence ("2 employees missing", "Cashier: 1 missing") is reworded,
+ * and any other label is shown as it is. */
+type NeedTarget = { target: string; label: string; count?: number; positionName?: string };
+function needLabel({ target, label, count, positionName }: NeedTarget) {
+  const people = (n: number) => `${n} more ${n === 1 ? "person" : "people"} needed`;
+  if (target === "LEAD") return "Shift lead needed";
+  if (typeof count === "number" && target === "STAFFING") return people(count);
+  if (typeof count === "number" && target === "POSITION" && positionName) return `${positionName}: ${count} more needed`;
+  const staff = /^(\d+) employees (?:missing|needed)$/.exec(label);
+  if (staff) return people(Number(staff[1]));
+  const position = /^(.+): (\d+) (?:missing|needed)$/.exec(label);
+  if (position) return `${position[1]}: ${position[2]} more needed`;
+  return label;
+}
 
 export default async function CoverageSuggestionsPage({
   searchParams,
@@ -25,201 +43,154 @@ export default async function CoverageSuggestionsPage({
     locationId?: string;
     start?: string;
     end?: string;
+    lead?: string;
+    positionId?: string;
+    repair?: string;
+    refresh?: string;
+    saved?: string;
   }>;
 }) {
   await requireRoles(MANAGER_ROLES);
+  const proof=await requireSessionMutationProof();
   const params = await searchParams;
+  if (params.repair !== undefined) {
+    let locator;
+    try { locator = parseCoverageRepairLocator(params.repair); }
+    catch { redirect('/app/schedule?error=COVERAGE_REVIEW_STALE'); }
+    const source=await withOperationalCompany(proof,async()=>{
+      try{return await readCoverageRepair(locator,proof,params.refresh==='1');}
+      catch(error){if(!(error instanceof CoverageRepairConflictError))throw error;return null;}
+    });
+    if(source.state==='unavailable')return <OperationalUnavailable title="Coverage review unavailable" reason={source.reason}/>;
+    const review=source.data;
+    const back = `/app/schedule?week=${encodeURIComponent(locator.weekStart)}&location=${encodeURIComponent(locator.locationId)}`;
+    const status = review?.status ?? 'STALE';
+    return <ScopedReadFrame observation={source}><CoverageAssistant
+      date={locator.date}
+      startTime={locator.startTime}
+      endTime={locator.endTime}
+      locationName={review?.location.shortName ?? locator.locationId}
+      positionName={review?.position?.name}
+      designatedLead={review?.designatedLead ?? locator.reported.requiresLead}
+      backHref={back}
+      status={status}
+      repair
+      saved={params.saved === '1'}
+      addShiftHref={`/app/schedule/new?week=${encodeURIComponent(locator.weekStart)}&date=${encodeURIComponent(locator.date)}&locationId=${encodeURIComponent(locator.locationId)}&start=${encodeURIComponent(locator.startTime)}&end=${encodeURIComponent(locator.endTime)}`}
+      rulesHref={`/app/schedule/settings?week=${encodeURIComponent(locator.weekStart)}`}
+      refreshHref={coverageRepairUrl(locator, true)}
+      requirements={review?.targets.map(target => ({
+        label: needLabel(target as NeedTarget),
+        selected: target.target === review.locator.target && (target.target !== 'POSITION' || target.positionId === review.locator.positionId),
+        href: coverageRepairUrl({
+          ...review.locator,
+          target: target.target,
+          positionId: 'positionId' in target ? target.positionId : undefined,
+        }),
+      }))}
+      candidates={(review?.candidates ?? []).map(candidate => ({
+        employeeId: candidate.employeeId,
+        employeeName: candidate.employeeName,
+        role: candidate.role,
+        scheduledHours: candidate.scheduledHours,
+        targetHours: candidate.targetHours,
+        hoursNeeded: candidate.hoursNeeded,
+        priorUnderTargetWeeks: candidate.priorUnderTargetWeeks,
+        href: `/app/schedule/new?review=${encodeURIComponent(candidate.review)}`,
+      }))}
+    /></ScopedReadFrame>;
+  }
   const weekStart = params.week ?? "";
   const date = params.date ?? "";
   const locationId = params.locationId ?? "";
   const startTime = params.start ?? "";
   const endTime = params.end ?? "";
 
+  try { businessDateStart(weekStart); shiftPeriod({ date, startTime, endTime }); } catch { redirect("/app/schedule?error=INVALID_SHIFT"); }
   if (
     !isValidWeekStart(weekStart) ||
     !isDateInWeek(date, weekStart) ||
     !locationId ||
     !/^\d{2}:\d{2}$/.test(startTime) ||
     !/^\d{2}:\d{2}$/.test(endTime) ||
-    startTime >= endTime
+    startTime === endTime
   ) {
     redirect("/app/schedule?error=INVALID_SHIFT");
   }
 
-  const [employees, targets, fairness, locations] = await Promise.all([
+  const source=await withOperationalCompany(proof,async()=>{
+  const [employees, fairness, locations, positions] = await Promise.all([
     listEmployees(),
-    listEmployeeHourTargets(),
     listHourFairness(weekStart),
     listLocations(),
+    params.positionId ? listPositions() : Promise.resolve([]),
   ]);
 
-  const targetMap = new Map(
-    targets.map((target) => [target.employeeId, target.targetWeeklyHours]),
-  );
   const fairnessMap = new Map(
     fairness.map((item) => [item.employeeId, item.priorUnderTargetWeeks]),
   );
 
   const inputs = await Promise.all(
     employees.map(async (employee) => {
-      const eligible = employee.eligibleLocationIds.includes(locationId);
-
-      if (!employee.active || !eligible) {
-        return {
-          employeeId: employee.id,
-          employeeName: `${employee.firstName} ${employee.lastName}`,
-          eligible,
-          active: employee.active,
-          available: false,
-          conflictFree: false,
-          scheduledHours: 0,
-          targetHours: targetMap.get(employee.id),
-          priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
-          role: employee.role,
-          primaryLocationId: employee.primaryLocationId,
-        };
-      }
-
       const context = await getShiftValidationContext({
         employeeId: employee.id,
+        locationId,
         date,
         weekStart,
+        positionId: params.positionId,
       });
-
-      if (!context) {
-        return {
-          employeeId: employee.id,
-          employeeName: `${employee.firstName} ${employee.lastName}`,
-          eligible,
-          active: employee.active,
-          available: false,
-          conflictFree: false,
-          scheduledHours: 0,
-          targetHours: targetMap.get(employee.id),
-          priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
-          role: employee.role,
-          primaryLocationId: employee.primaryLocationId,
-        };
-      }
-
-      const result = validateShift({
-        candidate: {
-          employeeId: employee.id,
-          locationId,
-          date,
-          startTime,
-          endTime,
-        },
-        ...context,
-        mode: "SHIFT_EXCHANGE",
-      });
-
-      const codes = new Set(result.issues.map((issue) => issue.code));
-
+      if (!context) return null;
       return {
-        employeeId: employee.id,
         employeeName: `${employee.firstName} ${employee.lastName}`,
-        eligible,
-        active: employee.active,
-        available: !codes.has("OUTSIDE_AVAILABILITY"),
-        conflictFree:
-          !codes.has("SHIFT_OVERLAP") &&
-          !codes.has("APPROVED_TIME_OFF") &&
-          !codes.has("EMPLOYEE_INACTIVE"),
-        scheduledHours:
-          Math.round((context.existingWeeklyMinutes / 60) * 100) / 100,
-        targetHours: targetMap.get(employee.id),
-        priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
         role: employee.role,
         primaryLocationId: employee.primaryLocationId,
+        priorUnderTargetWeeks: fairnessMap.get(employee.id) ?? 0,
+        rules: {
+          candidate: {
+            employeeId: employee.id,
+            locationId,
+            date,
+            startTime,
+            endTime,
+            isDesignatedLead: params.lead === "1",
+            positionId: params.positionId,
+          },
+          ...context,
+        },
       };
     }),
   );
-
-  const candidates = rankCoverageCandidates(inputs);
-  const location = locations.find((item) => item.id === locationId);
-  const day = formatDayLabel(date);
-
-  return (
-    <div className="coverage-suggestions-page">
-      <PageHeader
-        eyebrow="Coverage assistant"
-        title="Suggested employees"
-        description={`${location?.shortName ?? locationId} · ${day.weekday} ${day.day} · ${formatTime(startTime)}–${formatTime(endTime)}`}
-        actions={
-          <Link className="button secondary" href={`/app/schedule?week=${weekStart}`}>
-            Back to Schedule
-          </Link>
-        }
-      />
-
-      <section className="panel suggestion-explainer">
-        <div>
-          <strong>How these suggestions are ordered</strong>
-          <span>
-            Eligible + available employees first, prioritizing people furthest
-            below their weekly target, then repeated recent hour shortfalls.
-          </span>
-        </div>
-        <StatusPill tone={candidates.length ? "success" : "warning"}>
-          {candidates.length} eligible
-        </StatusPill>
-      </section>
-
-      <section className="panel suggestion-list">
-        {candidates.length ? (
-          candidates.map((candidate, index) => {
-            const primary = locations.find(
-              (item) => item.id === candidate.primaryLocationId,
-            );
-
-            return (
-              <article className="suggestion-row" key={candidate.employeeId}>
-                <span className="suggestion-rank">{index + 1}</span>
-                <div className="suggestion-person">
-                  <strong>{candidate.employeeName}</strong>
-                  <span>
-                    {candidate.employeeId} · {candidate.role?.[0]}
-                    {candidate.role?.slice(1).toLowerCase()} · {primary?.shortName ?? "—"}
-                  </span>
-                </div>
-                <div className="suggestion-hours">
-                  <strong>
-                    {candidate.targetHours === undefined
-                      ? `${candidate.scheduledHours}h scheduled`
-                      : `${candidate.scheduledHours}/${candidate.targetHours}h`}
-                  </strong>
-                  <span>
-                    {candidate.hoursNeeded
-                      ? `${candidate.hoursNeeded}h below target`
-                      : candidate.targetHours === undefined
-                        ? "No target set"
-                        : "At or above target"}
-                  </span>
-                </div>
-                <div className="suggestion-history">
-                  <strong>{candidate.priorUnderTargetWeeks}</strong>
-                  <span>prior weeks short</span>
-                </div>
-                <Link
-                  className="button primary"
-                  href={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${locationId}&employeeId=${candidate.employeeId}&start=${startTime}&end=${endTime}`}
-                >
-                  Add to Schedule
-                </Link>
-              </article>
-            );
-          })
-        ) : (
-          <div className="empty-state">
-            <strong>No eligible employees found.</strong>
-            <span>
-              Everyone is unavailable, already working, on approved time off,
-              inactive, or not eligible for this location.
-            </span>
-          </div>
-        )}
-      </section>
-    </div>
+  const candidates = rankCoverageCandidates(
+    inputs.filter((input) => input !== null),
   );
+    return {locations,positions,candidates};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Coverage suggestions unavailable" reason={source.reason}/>;
+  const {locations,positions,candidates}=source.data;
+  const location = locations.find((item) => item.id === locationId);
+  const position = positions.find(item => item.id === params.positionId);
+
+  return <ScopedReadFrame observation={source}><CoverageAssistant
+    date={date}
+    startTime={startTime}
+    endTime={endTime}
+    locationName={location?.shortName ?? locationId}
+    positionName={position?.name}
+    designatedLead={params.lead === '1'}
+    backHref={`/app/schedule?week=${weekStart}&location=${encodeURIComponent(locationId)}`}
+    status="READY"
+    addShiftHref={`/app/schedule/new?week=${weekStart}&date=${date}&locationId=${encodeURIComponent(locationId)}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}${params.positionId ? `&positionId=${encodeURIComponent(params.positionId)}` : ''}`}
+    rulesHref={`/app/schedule/settings?week=${weekStart}`}
+    candidates={candidates.map(candidate => ({
+      employeeId: candidate.employeeId,
+      employeeName: candidate.employeeName,
+      role: candidate.role,
+      primaryLocationName: locations.find(item => item.id === candidate.primaryLocationId)?.shortName,
+      scheduledHours: candidate.scheduledHours,
+      targetHours: candidate.targetHours,
+      hoursNeeded: candidate.hoursNeeded,
+      priorUnderTargetWeeks: candidate.priorUnderTargetWeeks,
+      href: `/app/schedule/new?week=${weekStart}&date=${date}&locationId=${locationId}&employeeId=${candidate.employeeId}&start=${startTime}&end=${endTime}${params.lead === "1" ? "&lead=1" : ""}${params.positionId ? `&positionId=${encodeURIComponent(params.positionId)}` : ''}`,
+    }))}
+  /></ScopedReadFrame>;
 }

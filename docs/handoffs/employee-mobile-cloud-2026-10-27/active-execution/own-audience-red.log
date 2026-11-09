@@ -1,0 +1,25 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+ ❯ src/components/employee-mobile/messages-view.test.tsx (5 tests | 1 failed) 16ms
+   × shows only the own original audience count without claiming delivery or coworker receipts 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/employee-mobile/messages-view.test.tsx > shows only the own original audience count without claiming delivery or coworker receipts
+AssertionError: expected '<article class="em-message-detail" ar…' to contain 'Original audience: 3 recipients'
+
+Expected: "Original audience: 3 recipients"
+Received: "<article class="em-message-detail" aria-label="Update content"><header><p class="em-message-meta">Your team update</p><h2>Own update</h2><p class="em-message-meta">Oct 27, 9:00 AM AST</p></header><p class="em-message-copy">Opening check.</p><div class="em-message-reading"><h3>Your reading status</h3><p>You haven’t marked this update as read.</p><button type="button" class="em-request-primary">Acknowledge update</button></div><section class="em-message-withdraw"><h3>Your published update</h3><button type="button" class="em-request-secondary">Withdraw update</button></section></article>"
+
+ ❯ src/components/employee-mobile/messages-view.test.tsx:11:590
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  13:30:46
+   Duration  112ms (import 46%, tests 28%, transform 23%, worker 3%)
+

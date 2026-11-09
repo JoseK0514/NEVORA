@@ -1,0 +1,80 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "chromium",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "webkit",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-3 OPTIONAL mark-read records own reading without acknowledgement"
+    },
+    {
+      "engine": "firefox",
+      "name": "CR-1 real module-refused lookup retains exact committed original for deliberate recovery without another publication"
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:36427/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:36427/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:36427/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "scenario": "optional-and-original",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    }
+  ],
+  "captures": [
+    "chromium-optional-and-original-refused-original-lookup.png",
+    "chromium-optional-and-original-original-recovered.png",
+    "webkit-optional-and-original-refused-original-lookup.png",
+    "webkit-optional-and-original-original-recovered.png",
+    "firefox-optional-and-original-refused-original-lookup.png",
+    "firefox-optional-and-original-original-recovered.png"
+  ]
+}

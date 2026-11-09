@@ -1,4 +1,9 @@
-import { randomUUID } from "node:crypto";
+import { databaseDate as dateValue } from './database-date';
+import { executeShiftChangeAdapter, type ShiftChangeAdapterInput } from './shift-change-adapters';
+import { neonNotificationExecutor } from './notification-transactions';
+import type { SqlExecutor } from '../notifications/types';
+import {currentCalloutReleaseSql} from './shift-change-release';
+import { heldShiftEditSql } from './held-edits-sql';
 import { getDb, queryRows } from "@/lib/db";
 
 export type CalloutReasonCode =
@@ -12,6 +17,8 @@ export type CalloutReasonCode =
 export type CalloutStatus = "PENDING" | "APPROVED" | "DENIED" | "CANCELLED";
 
 export type CalloutRecord = {
+  requestRevision?:number;
+  releaseApplies?:boolean;
   id: string;
   shiftId: string;
   employeeId: string;
@@ -26,12 +33,13 @@ export type CalloutRecord = {
   reasonNote?: string;
   status: CalloutStatus;
   createdAt: string;
+  /** Employee reads only, server-side only: while the shift has held edits the
+   * record shows the published version, and this pairs it with the live terms
+   * so history slots recorded from the live terms can be shown as published. */
+  heldDisplay?: { live: CalloutTerms; shown: CalloutTerms };
 };
-
-function dateValue(value: unknown) {
-  if (value instanceof Date) return value.toISOString().slice(0, 10);
-  return String(value).slice(0, 10);
-}
+/** The assignment facts an employee-facing callout display shows. */
+export type CalloutTerms = { date: string; startTime: string; endTime: string; locationId: string; positionId: string | null; isDesignatedLead: boolean };
 
 function timeValue(value: unknown) {
   return String(value).slice(0, 5);
@@ -39,8 +47,21 @@ function timeValue(value: unknown) {
 
 function mapCallout(row: unknown): CalloutRecord {
   const item = row as Record<string, unknown>;
+  const record = mapCalloutColumns(item);
+  if (item.display_held === true) record.heldDisplay = {
+    live: { date: dateValue(item.live_date), startTime: timeValue(item.live_start_time), endTime: timeValue(item.live_end_time), locationId: String(item.live_location_id),
+      positionId: item.live_position_id == null ? null : String(item.live_position_id), isDesignatedLead: item.live_is_designated_lead === true },
+    shown: { date: record.date, startTime: record.startTime, endTime: record.endTime, locationId: record.locationId,
+      positionId: item.shown_position_id == null ? null : String(item.shown_position_id), isDesignatedLead: item.shown_is_designated_lead === true },
+  };
+  return record;
+}
+
+function mapCalloutColumns(item: Record<string, unknown>): CalloutRecord {
   return {
+    releaseApplies:item.release_applies===true,
     id: String(item.id),
+    requestRevision:Number(item.request_revision),
     shiftId: String(item.shift_id),
     employeeId: String(item.employee_id),
     employeeName: String(item.employee_name),
@@ -63,6 +84,8 @@ function mapCallout(row: unknown): CalloutRecord {
 const CALLOUT_SELECT = `
   SELECT
     c.id,
+    (${currentCalloutReleaseSql()}) AS release_applies,
+    c.request_revision,
     c.shift_id,
     c.employee_id,
     e.first_name || ' ' || e.last_name AS employee_name,
@@ -83,45 +106,71 @@ const CALLOUT_SELECT = `
   JOIN locations l ON l.id = s.location_id
 `;
 
-export async function createCallout(input: {
-  shiftId: string;
-  employeeId: string;
-  reasonCode: CalloutReasonCode;
-  reasonNote?: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `INSERT INTO shift_callouts (
-         id,
-         shift_id,
-         employee_id,
-         reason_code,
-         reason_note
-       )
-       SELECT
-         $1,
-         sh.id,
-         sh.employee_id,
-         $4,
-         $5
-       FROM shifts sh
-       JOIN schedules s ON s.id = sh.schedule_id
-       WHERE sh.id = $2
-         AND sh.employee_id = $3
-         AND s.status = 'PUBLISHED'
-       RETURNING id`,
-      [
-        randomUUID(),
-        input.shiftId,
-        input.employeeId,
-        input.reasonCode,
-        input.reasonNote ?? null,
-      ],
-    ),
-  );
+/**
+ * Employee-facing callout reads (Jose, 2026-10-31): while the reporting
+ * employee's shift has held edits, their own report shows the latest
+ * publication's version of it (date, times, location), never the unpublished
+ * edit. Owner/Manager reads keep CALLOUT_SELECT and its live terms. Once the
+ * changes are published live equals published, so nothing differs.
+ */
+const EMPLOYEE_CALLOUT_SELECT = `
+  SELECT
+    c.id,
+    (${currentCalloutReleaseSql()}) AS release_applies,
+    c.request_revision,
+    c.shift_id,
+    c.employee_id,
+    e.first_name || ' ' || e.last_name AS employee_name,
+    COALESCE(pub.location_id, s.location_id) AS location_id,
+    COALESCE((SELECT short_name FROM locations WHERE id=pub.location_id), l.short_name) AS location_name,
+    s.week_start,
+    COALESCE(pub.date, sh.date) AS date,
+    COALESCE(pub.start_time, sh.start_time) AS start_time,
+    COALESCE(pub.end_time, sh.end_time) AS end_time,
+    c.reason_code,
+    c.reason_note,
+    c.status,
+    c.created_at,
+    pub.id IS NOT NULL AS display_held,
+    sh.date AS live_date, sh.start_time AS live_start_time, sh.end_time AS live_end_time, s.location_id AS live_location_id,
+    sh.position_id AS live_position_id, sh.is_designated_lead AS live_is_designated_lead,
+    pub.position_id AS shown_position_id, pub.is_designated_lead AS shown_is_designated_lead
+  FROM shift_callouts c
+  JOIN employees e ON e.id = c.employee_id
+  JOIN shifts sh ON sh.id = c.shift_id
+  JOIN schedules s ON s.id = sh.schedule_id
+  JOIN locations l ON l.id = s.location_id
+  LEFT JOIN LATERAL (
+    SELECT rs.* FROM schedule_publication_revision_shifts rs
+    WHERE rs.revision_id=(SELECT pr.id FROM schedule_publication_revisions pr WHERE pr.week_start=s.week_start ORDER BY pr.revision_number DESC LIMIT 1)
+      AND rs.source_shift_id=sh.id AND rs.employee_id=c.employee_id
+    LIMIT 1
+  ) pub ON s.status='PUBLISHED' AND ${heldShiftEditSql('sh', 's')}
+`;
 
-  return rows[0]?.id ?? null;
+/**
+ * History slots on the employee's own report: a slot recorded from the live
+ * terms of a shift that is still held is shown as the published version.
+ * Anything else (earlier published terms, other requests) is left as recorded.
+ */
+export function shownCalloutTerms(callout: Pick<CalloutRecord, 'heldDisplay'>, terms: unknown): unknown {
+  const held = callout.heldDisplay;
+  if (!held || !terms || typeof terms !== 'object') return terms;
+  const t = terms as Record<string, unknown>;
+  const fact = (camel: string, snake: string) => Object.hasOwn(t, camel) ? t[camel] : t[snake];
+  const text = (value: unknown, length: number) => typeof value === 'string' ? value.slice(0, length) : null;
+  const position = fact('positionId', 'position_id'), lead = fact('isDesignatedLead', 'is_designated_lead');
+  const live = text(fact('date', 'date'), 10) === held.live.date && text(fact('startTime', 'start_time'), 5) === held.live.startTime
+    && text(fact('endTime', 'end_time'), 5) === held.live.endTime && String(fact('locationId', 'location_id') ?? '') === held.live.locationId
+    && (position === undefined || (position ?? null) === held.live.positionId) && (lead === undefined || lead === held.live.isDesignatedLead);
+  if (!live) return terms;
+  const rest = Object.fromEntries(Object.entries(t).filter(([key]) => !['start_time', 'end_time', 'location_id', 'position_id', 'is_designated_lead'].includes(key)));
+  return { ...rest, ...held.shown, ...(position === undefined ? { positionId: undefined } : {}), ...(lead === undefined ? { isDesignatedLead: undefined } : {}) };
+}
+
+export async function createCallout(input:{shiftId:string;employeeId:string;reasonCode:CalloutReasonCode;reasonNote?:string} & ShiftChangeAdapterInput,executor:SqlExecutor=neonNotificationExecutor()):Promise<string|null> {
+ const result=await executeShiftChangeAdapter(input,'SUBMIT_CALLOUT',executor);
+ return result.status==='pending'?result.requestId:null;
 }
 
 export async function listPendingCallouts(): Promise<CalloutRecord[]> {
@@ -138,11 +187,12 @@ export async function listPendingCallouts(): Promise<CalloutRecord[]> {
 
 export async function listEmployeeCallouts(
   employeeId: string,
+  executor?: SqlExecutor,
 ): Promise<CalloutRecord[]> {
-  const sql = getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
   const rows = queryRows(
     await sql.query(
-      `${CALLOUT_SELECT}
+      `${EMPLOYEE_CALLOUT_SELECT}
        WHERE c.employee_id = $1
        ORDER BY c.created_at DESC
        LIMIT 20`,
@@ -152,105 +202,25 @@ export async function listEmployeeCallouts(
   return rows.map(mapCallout);
 }
 
-export async function getCallout(calloutId: string): Promise<CalloutRecord | null> {
-  const sql = getDb();
-  const rows = queryRows(
-    await sql.query(
-      `${CALLOUT_SELECT}
-       WHERE c.id = $1
-       LIMIT 1`,
-      [calloutId],
-    ),
-  );
+export const calloutReadSql = (id="$1") => `${CALLOUT_SELECT} WHERE c.id=${id} LIMIT 1`;
+
+/** `employeeView` is the reporting employee's own read (published version while held). */
+export async function getCallout(calloutId: string, executor: SqlExecutor = neonNotificationExecutor(), options: { employeeView?: boolean } = {}): Promise<CalloutRecord | null> {
+  const rows = await executor.query({ text: options.employeeView ? `${EMPLOYEE_CALLOUT_SELECT} WHERE c.id=$1 LIMIT 1` : calloutReadSql(), values: [calloutId] });
   return rows[0] ? mapCallout(rows[0]) : null;
 }
 
-export async function approveCalloutAndOpenCoverage(input: {
-  calloutId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-  const exchangeId = randomUUID();
-
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `WITH approved AS (
-         UPDATE shift_callouts c
-         SET status = 'APPROVED',
-             reviewed_by = $2,
-             reviewed_at = now()
-         WHERE c.id = $1
-           AND c.status = 'PENDING'
-           AND NOT EXISTS (
-             SELECT 1
-             FROM shift_exchanges x
-             WHERE x.source_shift_id = c.shift_id
-               AND x.status IN ('OPEN', 'EMPLOYEE_PENDING', 'MANAGER_PENDING')
-           )
-         RETURNING c.id, c.shift_id, c.employee_id
-       ),
-       opened AS (
-         INSERT INTO shift_exchanges (
-           id,
-           kind,
-           source_shift_id,
-           requested_by_employee_id,
-           status
-         )
-         SELECT
-           $3,
-           'COVERAGE',
-           shift_id,
-           employee_id,
-           'OPEN'
-         FROM approved
-         RETURNING id
-       )
-       SELECT approved.id
-       FROM approved
-       JOIN opened ON true`,
-      [input.calloutId, input.managerId, exchangeId],
-    ),
-  );
-
-  return Boolean(rows[0]);
+export async function approveCalloutAndOpenCoverage(input:{calloutId:string;managerId:string} & ShiftChangeAdapterInput,executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'APPROVE_CALLOUT',executor);return ['completed','closed'].includes(result.status);
 }
-
-export async function denyCallout(input: {
-  calloutId: string;
-  managerId: string;
-}) {
-  const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `UPDATE shift_callouts
-       SET status = 'DENIED',
-           reviewed_by = $2,
-           reviewed_at = now()
-       WHERE id = $1
-         AND status = 'PENDING'
-       RETURNING id`,
-      [input.calloutId, input.managerId],
-    ),
-  );
-  return Boolean(rows[0]);
+export async function denyCallout(input:{calloutId:string;managerId:string} & ShiftChangeAdapterInput,executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'DECLINE_CALLOUT',executor);return ['completed','closed'].includes(result.status);
 }
-
-export async function cancelPendingCallout(input: {
-  calloutId: string;
-  employeeId: string;
-}) {
+export async function cancelPendingCallout(input:{calloutId:string;employeeId:string} & ShiftChangeAdapterInput,executor:SqlExecutor=neonNotificationExecutor()) {
+ const result=await executeShiftChangeAdapter(input,'CANCEL_CALLOUT',executor);return ['completed','closed'].includes(result.status);
+}
+export async function listTeamCalloutHistory(): Promise<CalloutRecord[]> {
   const sql = getDb();
-  const rows = queryRows<{ id: string }>(
-    await sql.query(
-      `UPDATE shift_callouts
-       SET status = 'CANCELLED'
-       WHERE id = $1
-         AND employee_id = $2
-         AND status = 'PENDING'
-       RETURNING id`,
-      [input.calloutId, input.employeeId],
-    ),
-  );
-  return Boolean(rows[0]);
+  return queryRows(await sql.query(`${CALLOUT_SELECT}
+    WHERE c.status <> 'PENDING' ORDER BY c.created_at DESC LIMIT 30`)).map(mapCallout);
 }

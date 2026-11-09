@@ -1,0 +1,20 @@
+[
+  {
+    "at": "2026-10-27T23:07:04.837227+00:00",
+    "runnerPid": 5086,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  },
+  {
+    "at": "2026-10-27T23:07:05.385249+00:00",
+    "runnerPid": 5086,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  },
+  {
+    "at": "2026-10-27T23:07:05.940309+00:00",
+    "runnerPid": 5086,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  }
+]

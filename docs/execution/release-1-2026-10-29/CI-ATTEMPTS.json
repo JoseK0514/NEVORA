@@ -1,0 +1,215 @@
+{
+  "workflow": ".github/workflows/mobile-access.yml",
+  "attempts": [
+    {
+      "id": 40944082224,
+      "head": "fcbf3c528d50493feb42fa0eafdbcb8b2976da58",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40944082224",
+      "status": "completed",
+      "conclusion": "failure",
+      "jobs": 0,
+      "cause": "Unsupported runner.temp use in job.env; GitHub context table permits runner in step.env.",
+      "reference": "https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability",
+      "repair": "036c7a8e moves external evidence variable to verification step.env"
+    },
+    {
+      "id": 40945665879,
+      "head": "3e0fa436540fdd64ee26e4c74ae354dc5c2caa45",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40945665879",
+      "status": "completed",
+      "conclusion": "failure",
+      "workflowAndRuntimeInstall": "passed",
+      "tests": {
+        "passed": 1,
+        "failed": 2
+      },
+      "findings": [
+        "WebKit final Manager issuance check reused the Owner context: navigation to /login interrupted by /app.",
+        "Landscape networkidle wait timed out before Firefox cases;80 completed layout samples had0 assertion failures.",
+        "Quick guide396 measurements passed, including native Linux keyboard."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40945665879",
+      "repairStatus": "Implemented8fb7274f: isolated independent Manager actor and rendered-UI landscape readiness, preserving original assertions/timeouts. Full local suite/static pass. Hosted rerun pending push."
+    },
+    {
+      "id": 40949328383,
+      "head": "47839e1debe54d4e2f5732cba9ab271c7f9c8159",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40949328383",
+      "status": "completed",
+      "conclusion": "failure",
+      "tests": {
+        "passed": 2,
+        "failed": 1
+      },
+      "findings": [
+        "All18 flow checks completed, but raw runtime gate caught7 WebKit native same-owned-origin API fetch diagnostics during document replacement. Independent window exceptions and framework diagnostics were empty.",
+        "Landscape120 cases/24 rotations and Quick guide396 measurements passed."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40949328383",
+      "repairStatus": "9fa3abf7 follows actual More\u2192Profile links, exposing genuine stale-ID signout RED.4bb48f35 repairs continuity reset timing. Full local Access and static/replayed startup pass; no new diagnostic suppression. Hosted replay required after push."
+    },
+    {
+      "id": 40955560516,
+      "head": "1f015da5939f5eeebc5746e0e46df72c1635f0c9",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40955560516",
+      "status": "completed",
+      "conclusion": "failure",
+      "tests": {
+        "passed": 2,
+        "failed": 1
+      },
+      "findings": [
+        "Chromium sign-out/account-switch stopped when profile.count polled0 against expected1; helper did not await More route and used Vitest default1000ms poll.",
+        "Only4 real flow records completed; raw errors/window exceptions/framework diagnostics empty. WebKit actual flow was not reached.",
+        "Guide396 and landscape120/24 passed."
+      ],
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40955560516",
+      "repairStatus": "c68c45ee waits actual More URL and visible Profile within already-configured browser deadline before preserving unique1 assertion. No configured timeout, retry, role bypass or error allowance changed. Local fullAccess passes with12 recorded navigation timings; Chromium More readiness1132ms. Hosted replay still required."
+    },
+    {
+      "id": 40957836154,
+      "head": "1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40957836154",
+      "conclusion": "success",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "checks": 18,
+      "errors": [],
+      "windowExceptions": [],
+      "frameworkDiagnostics": [],
+      "profileNavigation": [
+        {
+          "engine": "chromium",
+          "actor": "Employee",
+          "elapsedMs": 1883,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Employee",
+          "elapsedMs": 3588,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Manager",
+          "elapsedMs": 501,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "chromium",
+          "actor": "Manager",
+          "elapsedMs": 984,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Employee",
+          "elapsedMs": 954,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Employee",
+          "elapsedMs": 2277,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Manager",
+          "elapsedMs": 683,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "webkit",
+          "actor": "Manager",
+          "elapsedMs": 1850,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Employee",
+          "elapsedMs": 1075,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Employee",
+          "elapsedMs": 1746,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Manager",
+          "elapsedMs": 335,
+          "state": "More ready",
+          "path": "/app/more"
+        },
+        {
+          "engine": "firefox",
+          "actor": "Manager",
+          "elapsedMs": 895,
+          "state": "Profile ready",
+          "path": "/app/profile"
+        }
+      ],
+      "guideContrasts": 66,
+      "componentGuide": 396,
+      "landscape": 120,
+      "rotations": 24,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40957836154/artifact/mobile-access-1e174c56ecd84a811ed8445b4651f3ed5ce03563",
+      "limit": "Exact hosted source precedes this Home/Pay layout batch; not final same-SHA release acceptance."
+    },
+    {
+      "id": 40963858890,
+      "head": "9da03f59fe117f16c5ba8c8c95238b64d60e3794",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40963858890",
+      "conclusion": "failure",
+      "passed": 2,
+      "failed": 1,
+      "findings": [
+        "Firefox Help Back href was sampled before contextual route committed;13flow groups44guide contrasts completed; raw/window/framework errors0.",
+        "Guide396 and landscape120/24 passed."
+      ],
+      "repairStatus": "f7dca6ee awaits actual Help URL and visible exact Back within existing deadline, preserves exact href assertion and error gates. Full local Access3passed at de4; hosted new-source replay pending.",
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40963858890"
+    },
+    {
+      "id": 40973929823,
+      "head": "0c7fa56fbdf444ce56c529b844fb295bf351a91f",
+      "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40973929823",
+      "conclusion": "success",
+      "passed": 3,
+      "failed": 0,
+      "pending": 0,
+      "checks": 18,
+      "errors": [],
+      "windowExceptions": [],
+      "frameworkDiagnostics": [],
+      "guideContrasts": 66,
+      "componentGuide": 396,
+      "landscape": 120,
+      "rotations": 24,
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/ci-40973929823/mobile-access-0c7fa56fbdf444ce56c529b844fb295bf351a91f",
+      "limit": "Exact hosted Employee checkpoint precedes Owner Inbox and combined migration chain; final same-candidate release gate remains open."
+    }
+  ],
+  "actualSuccessfulRun": {
+    "id": 40973929823,
+    "head": "0c7fa56fbdf444ce56c529b844fb295bf351a91f",
+    "conclusion": "success",
+    "url": "https://github.com/JoseK0514/NEVORA/actions/runs/40973929823",
+    "limit": "Exact hosted Employee checkpoint precedes Owner Inbox and combined migration chain; final same-candidate release gate remains open."
+  }
+}

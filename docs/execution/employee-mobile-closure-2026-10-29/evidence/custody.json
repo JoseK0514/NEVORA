@@ -1,0 +1,170 @@
+[
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages/owned-next-2hnxRv/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages/owned-next-2hnxRv",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/calendar/owned-next-8PHy0x/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/calendar/owned-next-8PHy0x",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages_review/owned-next-0zr3jv/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/messages_review/owned-next-0zr3jv",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/responses/owned-next-GXkWge/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/responses/owned-next-GXkWge",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/planning/owned-next-XvQh20/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/planning/owned-next-XvQh20",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkeys/owned-next-UEvVdp/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkeys/owned-next-UEvVdp",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/creation/owned-next-a6z74E/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/creation/owned-next-a6z74E",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/profile/owned-next-32ZNFW/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/profile/owned-next-32ZNFW",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/mobile/owned-next-sYHloE/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/mobile/owned-next-sYHloE",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkey-network/owned-next-E3IejY/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/passkey-network/owned-next-E3IejY",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/device/owned-next-C9UMxk/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/device/owned-next-C9UMxk",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/hours/owned-next-SeNj7w/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/device-alerts/hours/owned-next-SeNj7w",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure/closure/owned-next-Z5RnW6/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/closure/closure/owned-next-Z5RnW6",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion/deletion/owned-next-baekJW/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/deletion/deletion/owned-next-baekJW",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay/pay/owned-next-qjK4KN/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/pay/pay/owned-next-qjK4KN",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1/mobile/owned-next-dkZ3Ib/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/contract-final-8b75493e/phase1/mobile/owned-next-dkZ3Ib",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/closure/closure/owned-next-BrYdTR/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/closure/closure/owned-next-BrYdTR",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/creation/creation/owned-next-waNnWw/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/creation/creation/owned-next-waNnWw",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/phase1/mobile/owned-next-zbDlYP/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-f8369ee1/phase1/mobile/owned-next-zbDlYP",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure/closure/owned-next-DxKAKz/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/closure/closure/owned-next-DxKAKz",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  },
+  {
+    "receipt": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1/mobile/owned-next-asp66t/ownership.json",
+    "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/targeted-final-20c5abed/phase1/mobile/owned-next-asp66t",
+    "closed": true,
+    "sourceVerified": true,
+    "mirrorVerified": true,
+    "derivedArtifactsReleased": true
+  }
+]

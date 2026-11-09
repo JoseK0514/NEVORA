@@ -1,0 +1,665 @@
+{
+  "recommendation": "NO-GO",
+  "candidate": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+  "branch": "codex/employee-mobile-local-resume-20261027",
+  "at": "2026-10-27T21:52:53.807829+00:00",
+  "independentOwner": "/root/profile_local_qa_acceptance",
+  "manualQa": {
+    "surfaceEvidence": [
+      {
+        "scenarioId": "QA01",
+        "criterionReference": "Task 3 broad relevant regressions",
+        "surface": "Terminal / Vitest88-file bounded corpus",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' static --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579; resolved unit argv in units-invocation",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "units-invocation",
+          "units-result",
+          "units-log",
+          "argv"
+        ],
+        "detail": "88 files,679 cases passed; no unfiltered npm test."
+      },
+      {
+        "scenarioId": "QA02",
+        "criterionReference": "Task 3 full nonincremental typecheck",
+        "surface": "Terminal / TypeScript",
+        "exactInvocation": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "typescript-invocation",
+          "typescript-result"
+        ],
+        "detail": "Exit0; source/Git unchanged."
+      },
+      {
+        "scenarioId": "QA03",
+        "criterionReference": "Task 3 changed-file lint",
+        "surface": "Terminal / ESLint",
+        "exactInvocation": "node node_modules/eslint/bin/eslint.js <exact15paths in eslint-invocation>",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "eslint-invocation",
+          "eslint-result",
+          "lint-scope"
+        ],
+        "detail": "Exit0; exact changed-file list recorded."
+      },
+      {
+        "scenarioId": "QA04",
+        "criterionReference": "Task 3 expanded complete combined gate",
+        "surface": "Owned loopback PostgreSQL + all canonical and Employee integration projects",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579; inner argv: node scripts/payroll-postgres.mjs vitest.employee-mobile-profile.config.mts --reporter=default --reporter=json --outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+        "verdict": "FAIL",
+        "artifactRefs": [
+          "combined-invocation",
+          "combined-result",
+          "combined-log",
+          "suite",
+          "finding"
+        ],
+        "detail": "22 files:21 passed,1 failed.183 cases:182 passed,1 failed,0 pending. No retry;exact duration 679.40s Vitest/681.074s recorder."
+      },
+      {
+        "scenarioId": "QA05",
+        "criterionReference": "Task 1 current own profile authority",
+        "surface": "Real owned SQL / profile-sql.integration.ts",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "suite",
+          "combined-log"
+        ],
+        "detail": "All6 profile SQL cases passed: own projection, exact Employee/Lead role, expired/revoked session, active eligible location, active workspace, generic transaction-error response."
+      },
+      {
+        "scenarioId": "QA06",
+        "criterionReference": "Task 2 private lifecycle and Task 3 initial server/mobile/focus/layout",
+        "surface": "Real Chromium/WebKit/Firefox Profile browser actions",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "profile-browser",
+          "pixels",
+          "owner-profile"
+        ],
+        "detail": "All 3 engines completed the first 7 checkpoints: server DOM identity exclusion, native forward focus order, current own read/no selectors, private pause, read-failure recovery, explicit light/dark at 320/390/430 matrix and 200% text. Does not certify usable no-JavaScript Profile."
+      },
+      {
+        "scenarioId": "QA07",
+        "criterionReference": "Task 3 System follows current device appearance",
+        "surface": "Real Firefox System-to-Light browser transition",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579",
+        "verdict": "FAIL",
+        "artifactRefs": [
+          "finding",
+          "theme",
+          "theme-pixels",
+          "theme-dom",
+          "pending",
+          "suite"
+        ],
+        "detail": "At profile.integration.ts:91:122 expected light, got dark; System selected, storage null, matchMedia dark=false, visible document, no pending requests. Root cause unproven."
+      },
+      {
+        "scenarioId": "QA08",
+        "criterionReference": "Task 3 language/contextual legal/desktop/new-account/native-signout complete three-engine journey",
+        "surface": "Actual browser, cookie and owned SQL assertions",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579",
+        "verdict": "FAIL",
+        "artifactRefs": [
+          "profile-browser",
+          "suite",
+          "finding"
+        ],
+        "detail": "Incomplete required 3-engine acceptance: Chromium and WebKit completed 14 checkpoints each; Firefox stopped after 7. Firefox later language/legal/desktop/revocation/new-account/native-signout stages are NOT accepted from other-engine passes or previous root preflights."
+      },
+      {
+        "scenarioId": "QA09",
+        "criterionReference": "Task 3 prior Employee and canonical regressions",
+        "surface": "Real3-engineRequests/Responses/Creation/Planning/Hours/Messages/Review plus canonicalSQL",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "suite",
+          "requests-browser",
+          "responses-browser",
+          "creation-browser",
+          "planning-browser",
+          "hours-browser",
+          "messages-browser",
+          "messages-review-browser",
+          "history"
+        ],
+        "detail": "All 21 nonfailing files passed. Raw warnings, deliberate failures and cancelled request diagnostics remain retained; not a warning-free-console claim."
+      },
+      {
+        "scenarioId": "QA10",
+        "criterionReference": "Task 3 frozen source/mirror/PID/port/DB custody",
+        "surface": "Terminal / filesystem hashes / local process and sockets / read-only pg observations",
+        "exactInvocation": "python3 '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py' combined --candidate 4bf7257950f898b97b93293470f0677bdb70b6bf --attempt 4bf72579; postrun verification recorded in custody",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "combined-result",
+          "custody",
+          "observations",
+          "marker-note",
+          "marker-1",
+          "marker-2"
+        ],
+        "detail": "All 8 owned Next apps closed/sourceVerified/mirrorVerified;2,016 hashes each independently match candidate. All 8 Next PIDs/ports and owned PG PID/port absent; ownedPG temp removed. Git/source/index unchanged. Legacy marker-null column retained, not misrepresented as marker absence; corrected sidecars independently prove actual shared comments."
+      }
+    ],
+    "adversarialCases": [
+      {
+        "scenarioId": "ADV01",
+        "criterionReference": "Task 1",
+        "adversarialClass": "Cross-user/role/workspace/location/session authority",
+        "expectedBehavior": "Only current own Employee/Lead facts; deny foreign selector, management reader use, revoked/expired/ineligible context.",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "suite",
+          "profile-browser"
+        ],
+        "detail": "6 SQL cases plus actual400 foreign-selector response in all 3 browser paths."
+      },
+      {
+        "scenarioId": "ADV02",
+        "criterionReference": "Task 1/2",
+        "adversarialClass": "Offline and read transport failure",
+        "expectedBehavior": "Remove private identity and work facts; retain independent settings/help/signout; deliberate recovery.",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "profile-browser"
+        ],
+        "detail": "All 3 engines passed pause/read-failure/recovery checkpoints; expected network failures retained."
+      },
+      {
+        "scenarioId": "ADV03",
+        "criterionReference": "Task 2/3",
+        "adversarialClass": "Private facts before hydration",
+        "expectedBehavior": "Exclude static desktop own identity from mobile serverDOM.",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "profile-browser"
+        ],
+        "detail": "All 3 actual JavaScript-disabled contexts checked; this is DOM exclusion only, not no-JS usability."
+      },
+      {
+        "scenarioId": "ADV04",
+        "criterionReference": "Task 3",
+        "adversarialClass": "Narrow viewport/enlarged text/keyboard",
+        "expectedBehavior": "No horizontal overflow, readable enlarged labels, labelled native controls and nav clearance.",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "profile-browser",
+          "pixels"
+        ],
+        "detail": "320/390/430 light/dark and320px, 200% cases completed all 3; forward native keyboard only, no reverse/AT claim."
+      },
+      {
+        "scenarioId": "ADV05",
+        "criterionReference": "Task 3",
+        "adversarialClass": "Rapid system appearance transition",
+        "expectedBehavior": "Current System setting must render current device media appearance under this test contract.",
+        "verdict": "FAIL",
+        "artifactRefs": [
+          "finding",
+          "theme",
+          "suite"
+        ],
+        "detail": "Firefox independently reproduced mismatch. Browser event timing is an unproven proposed cause at report time."
+      },
+      {
+        "scenarioId": "ADV06",
+        "criterionReference": "Task 1/3",
+        "adversarialClass": "Revocation/new-account leakage/native logout and unresolved device cleanup",
+        "expectedBehavior": "Remove identity and services on intent; delete session/cookie; retain opaque unresolved cleanup proof without false success.",
+        "verdict": "FAIL",
+        "artifactRefs": [
+          "profile-browser",
+          "suite"
+        ],
+        "detail": "Required Firefox segment not reached dueADV05. Chromium/WebKit actual native/SQL checks passed, but partial coverage is rejected as full acceptance."
+      },
+      {
+        "scenarioId": "ADV07",
+        "criterionReference": "Task 3 canonical regression",
+        "adversarialClass": "Concurrency/retries/revocation/immutable history",
+        "expectedBehavior": "Earlier canonical receipts, source revocations, original operations and history remain correct.",
+        "verdict": "PASS",
+        "artifactRefs": [
+          "suite",
+          "history",
+          "messages-browser",
+          "messages-review-browser"
+        ],
+        "detail": "Existing complete canonical and employee regression files passed; no live delivery or production load testing."
+      },
+      {
+        "scenarioId": "ADV08",
+        "criterionReference": "BoundedProfile scope",
+        "adversarialClass": "New arbitrary URL/freeform preference input",
+        "expectedBehavior": "No new user-entered redirect/editor/injection surface introduced by this bounded presentation.",
+        "verdict": "not_applicable",
+        "artifactRefs": [
+          "profile-browser"
+        ],
+        "detail": "The new preferences are fixed native choices and contextual return links are fixed; this batch introduces no arbitrary redirect/text editor. Existing input/authority regressions are still included."
+      }
+    ],
+    "artifactRefs": [
+      {
+        "id": "units-invocation",
+        "kind": "invocation",
+        "description": "Exact argv, scrubbed environment, source count and recorder/helper hashes",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/invocation.json",
+        "bytes": 5999,
+        "sha256": "f1ed547ceb325f10f9db45e272a4bfa1a1d8145916985b6a6e620f729a26194a"
+      },
+      {
+        "id": "units-result",
+        "kind": "execution-result",
+        "description": "Actual process result and immutable-source/custody observations",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/result.json",
+        "bytes": 424,
+        "sha256": "21c67aa0a8335a8c34c03ebd1137bc1cc2b11b853f777062d2419fe4d582dfc8"
+      },
+      {
+        "id": "units-log",
+        "kind": "terminal-transcript",
+        "description": "Unmodified stdout and stderr",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/stdout.log",
+        "bytes": 13347,
+        "sha256": "df9d4bd35a9440ad7b3b7ea75e196ca39d039b7721df6ab73ad269282a144ffb"
+      },
+      {
+        "id": "typescript-invocation",
+        "kind": "invocation",
+        "description": "Exact argv, scrubbed environment, source count and recorder/helper hashes",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/typescript/invocation.json",
+        "bytes": 1501,
+        "sha256": "dc81a7026fd4976353077aad016f4aabb6f1755506dce82b48ad0a841b6ecf4e"
+      },
+      {
+        "id": "typescript-result",
+        "kind": "execution-result",
+        "description": "Actual process result and immutable-source/custody observations",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/typescript/result.json",
+        "bytes": 424,
+        "sha256": "ea651f0bac2eca06fd4a16e245821e0c8e47802122200d891f8ce9d5c37729f4"
+      },
+      {
+        "id": "eslint-invocation",
+        "kind": "invocation",
+        "description": "Exact argv, scrubbed environment, source count and recorder/helper hashes",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/eslint/invocation.json",
+        "bytes": 2255,
+        "sha256": "ce9f3efaa6f8be4aab69d4a5c7c7585c99c6c9f43d5d8558b27f5fb2217290a3"
+      },
+      {
+        "id": "eslint-result",
+        "kind": "execution-result",
+        "description": "Actual process result and immutable-source/custody observations",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/eslint/result.json",
+        "bytes": 422,
+        "sha256": "6e2e739a75ec87edf4d67344720808c78b8c5492aa691a888599b5211f40bb67"
+      },
+      {
+        "id": "combined-invocation",
+        "kind": "invocation",
+        "description": "Exact argv, scrubbed environment, source count and recorder/helper hashes",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/invocation.json",
+        "bytes": 3757,
+        "sha256": "a96b003a944c737b34b32eca7bf6316fa452e46097a38d76dcf20bd39e11d45b"
+      },
+      {
+        "id": "combined-result",
+        "kind": "execution-result",
+        "description": "Actual process result and immutable-source/custody observations",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/result.json",
+        "bytes": 7120,
+        "sha256": "47fd4acc8b32b8dd262df31b37a8380061672443ac5ee8bbd25af99e85948a10"
+      },
+      {
+        "id": "combined-log",
+        "kind": "terminal-transcript",
+        "description": "Unmodified stdout and stderr",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/stdout.log",
+        "bytes": 28891,
+        "sha256": "e2b384187c311a061a91c316f94f9e40dad8af080ae9c834382a64859bd86948"
+      },
+      {
+        "id": "suite",
+        "kind": "test-results",
+        "description": "Full selector-free 22-file, 183-case assertion results",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+        "bytes": 65687,
+        "sha256": "f671175853b13d70f6c8b21eadf2c0b807fa2305d916acee390c36ca2ba81c12"
+      },
+      {
+        "id": "finding",
+        "kind": "finding",
+        "description": "Open independent QA-PROFILE-001 with exact diagnostic state and artifact hashes",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+        "bytes": 3138,
+        "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327"
+      },
+      {
+        "id": "theme",
+        "kind": "browser-diagnostic",
+        "description": "Firefox root theme dark despite System and dark matchMedia false",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-theme-diagnostic.json",
+        "bytes": 105,
+        "sha256": "3a825d8b99b8d18f2cd99caf02bc688836f6228a008414ff1ba936f3c746ee14"
+      },
+      {
+        "id": "theme-pixels",
+        "kind": "browser-screenshot",
+        "description": "Personally inspected failure screenshot",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.png",
+        "bytes": 100294,
+        "sha256": "c49d001ef0556ec24f343980bd5343af5a16f8a9d60daa421f23627760038600"
+      },
+      {
+        "id": "theme-dom",
+        "kind": "browser-dom",
+        "description": "Actual failure DOM",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.html",
+        "bytes": 53405,
+        "sha256": "02b9435b25001dd33694c4c4d558b29627aba39ed2296e158b874b0fe2a18881"
+      },
+      {
+        "id": "pending",
+        "kind": "browser-diagnostic",
+        "description": "No outstanding app/API requests at the Profile failure",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-pending-requests.json",
+        "bytes": 2,
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      {
+        "id": "pixels",
+        "kind": "visual-review",
+        "description": "Five personally inspected current-candidate screenshots and bounded observations",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/personally-inspected-pixels.json",
+        "bytes": 2723,
+        "sha256": "9557063a9dd95f62ea851b9a42ddd91562d1a55382a9e41dd0d7990fb96f4b38"
+      },
+      {
+        "id": "custody",
+        "kind": "source-custody",
+        "description": "Independent all-eight-manifest SHA256 and postrun PID/port checks",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/final-source-custody-verification.json",
+        "bytes": 3791,
+        "sha256": "46cd4726d8c6b612d7cf67a6da36e19134eed0de55b6095085f79d4e79517228"
+      },
+      {
+        "id": "observations",
+        "kind": "runtime-observations",
+        "description": "Periodic candidate/owned cluster/PID/port/OID observations; original marker column retained",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observations.json",
+        "bytes": 67447,
+        "sha256": "385c8d888f10123946796432320e78c0984fb6dbe16195d05976cd0c630923a4"
+      },
+      {
+        "id": "marker-note",
+        "kind": "diagnostic-note",
+        "description": "Separately identified correction from obj_description to shared-object shobj_description",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/database-observer-note.json",
+        "bytes": 898,
+        "sha256": "6298e52adb322c6912439c2300e1950d9e25da13c7b51f442b4db136a9781b75"
+      },
+      {
+        "id": "marker-1",
+        "kind": "database-observation",
+        "description": "Read-only shared-comment disposable marker and OID, first owned app",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observed-database-shared-markers.json",
+        "bytes": 137,
+        "sha256": "ee442cdc67c8d2f5a840368b6c455f8271a0e839b8165ba808e9d6c3136298ad"
+      },
+      {
+        "id": "marker-2",
+        "kind": "database-observation",
+        "description": "Read-only shared-comment disposable marker and OID, communications-review app",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observed-database-shared-markers-second.json",
+        "bytes": 537,
+        "sha256": "c5e0d8e3cdf2ae34c894ff84079c67f37ae2b5d0b077a2506caf0cccd67d43b4"
+      },
+      {
+        "id": "invalid-attempt",
+        "kind": "failed-setup-record",
+        "description": "Earlier f52 attempt invalid/incomplete, both observer and evidence-directory setup errors retained with teardown",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/invalid-attempt-closure.json",
+        "bytes": 1009,
+        "sha256": "43833162dbcb3778f3700cdc8f4b2d55157ad9b7c11bacd674dc2364ca7afc8a"
+      },
+      {
+        "id": "argv",
+        "kind": "scope-record",
+        "description": "Reconstructed saved 76-file corpus plus fixture guard/new Profile/shared regressions, 88 files",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/unit-argv-preparation.json",
+        "bytes": 9687,
+        "sha256": "73870ce146d6cfc8cb777c038c592587140856ba03761715f7428abcdab895e2"
+      },
+      {
+        "id": "lint-scope",
+        "kind": "scope-record",
+        "description": "Exact 15 changed TS/TSX/MJS/MTS files",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/lint-files.json",
+        "bytes": 775,
+        "sha256": "38eae6fbbd2c2d75627440b2a3ad4ed2c99635dd796d158279a99a0ec266216b"
+      },
+      {
+        "id": "requests-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/results.json",
+        "bytes": 9870,
+        "sha256": "90c55e023345735bcb2c5f2f28420f3a72a61ec16117a75ba434d2131f97541d"
+      },
+      {
+        "id": "responses-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/results.json",
+        "bytes": 19953,
+        "sha256": "4780bbcbec91ac2f29a1023b4ad5705c618a4f02dd3eab06ab07865d216fb63b"
+      },
+      {
+        "id": "creation-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/results.json",
+        "bytes": 32317,
+        "sha256": "73312cdbbdf610be98ba60cf85dbf7f0a021d6d99af3c61a07e8ca819b4c94dd"
+      },
+      {
+        "id": "planning-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/results.json",
+        "bytes": 34156,
+        "sha256": "22cc5235022db7e6cec9c9cc269aba50deb0d90b124b30aed0d133d88e3314f8"
+      },
+      {
+        "id": "hours-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/results.json",
+        "bytes": 29800,
+        "sha256": "d0fcde689325a4742193caf34c6432293511c8d202716dc3d1172f356dc4d0b8"
+      },
+      {
+        "id": "messages-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/results.json",
+        "bytes": 50216,
+        "sha256": "9953186817895d03f50e90e98fa7926361a8efe84eb9183a2dd3525651f9ecdf"
+      },
+      {
+        "id": "messages-review-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/results.json",
+        "bytes": 10618,
+        "sha256": "21e0c951792d059fa4e4db6aabebf4931c7898f607f39f8652d6fe4d55d6ceb9"
+      },
+      {
+        "id": "profile-browser",
+        "kind": "browser-action-log",
+        "description": "Actual engine checkpoints, captures, contrast and diagnostic records",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/results.json",
+        "bytes": 22202,
+        "sha256": "0bbe931527c732be4dd878dd9913e7d8cb04f954fb6e176ed4f9f4a5e1844ced"
+      },
+      {
+        "id": "owner-messages",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/owned-next-9ClGEK/ownership.json",
+        "bytes": 982,
+        "sha256": "5c7b5950d901a602083abc6cc9bce03242a7a307e8f03ea6c3309558cbb473fe"
+      },
+      {
+        "id": "owner-responses",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/owned-next-ifA9Rx/ownership.json",
+        "bytes": 983,
+        "sha256": "a02475d4c990ced180ce3a1a0d81c982e18063c4bb9ac08e78c7e053fb22f0f1"
+      },
+      {
+        "id": "owner-planning",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/owned-next-qBaAJL/ownership.json",
+        "bytes": 982,
+        "sha256": "633d6d9357fa1bb091afc7c2b3b7e27b11807db60ccf3aa1f12b4231aeb112fb"
+      },
+      {
+        "id": "owner-requests",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/owned-next-XCDdkG/ownership.json",
+        "bytes": 982,
+        "sha256": "656c15e8305b5cb8c3a0b10bc0827b2158fed9292c7648eb155cc7bb0c40708c"
+      },
+      {
+        "id": "owner-messages-review",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/owned-next-W7Gnel/ownership.json",
+        "bytes": 989,
+        "sha256": "1d3e7f14101749f8242dcba762d89457aea0ebd02a6b030c0469528ce2ad374b"
+      },
+      {
+        "id": "owner-creation",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/owned-next-SRVvpL/ownership.json",
+        "bytes": 982,
+        "sha256": "ae4df3dfefafd26c467c83385e5cf941419a76309c9d79710a05e42ab7c9ca78"
+      },
+      {
+        "id": "owner-profile",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/owned-next-sQQuIC/ownership.json",
+        "bytes": 981,
+        "sha256": "f8e392238e56fab5cb27b533d62078587d4945a1adcd12a153b5a98f273d18aa"
+      },
+      {
+        "id": "owner-hours",
+        "kind": "runtime-ownership",
+        "description": "Owned mirror source/hash closure and exact database identity",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/owned-next-fApaCM/ownership.json",
+        "bytes": 979,
+        "sha256": "5e332ac639d88142e99543613dce502cdd805adb321573c6a5dfcdb35cdf6189"
+      },
+      {
+        "id": "manifest-messages",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/owned-next-9ClGEK/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-responses",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/owned-next-ifA9Rx/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-planning",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/owned-next-qBaAJL/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-requests",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/owned-next-XCDdkG/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-messages-review",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/owned-next-W7Gnel/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-creation",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/owned-next-SRVvpL/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-profile",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/owned-next-sQQuIC/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "manifest-hours",
+        "kind": "source-manifest",
+        "description": "Frozen source hashes and explicitly substituted local DB transport",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/owned-next-fApaCM/source-manifest.json",
+        "bytes": 239328,
+        "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+      },
+      {
+        "id": "history",
+        "kind": "database-evidence",
+        "description": "Canonical communication history preservation written in this valid attempt",
+        "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/canonical-e/communication-history-preservation.json",
+        "bytes": 21366,
+        "sha256": "9ad58d459bc67d82a45a11625ed4c51781f5d39279c01620d7f75d213ab2a2c2"
+      }
+    ]
+  },
+  "openFinding": "QA-PROFILE-001",
+  "limits": [
+    "Local headless macOS browsers with fictional isolated data only.",
+    "Firefox later Profile workflow incomplete after mandatory System assertion failure.",
+    "No physical iOS/Android device, reverse keyboard, assistive technology, hosted/production/release certification.",
+    "Native provider/passkey enrollment, actual verified push-installation detach and remaining capability groups are not certified by this batch.",
+    "Actual no-JavaScript Profile usability is not claimed; prehydration capture proves only identity exclusion.",
+    "No app changes/commits, real messages, production data changes, secret reading or source cleanup performed by QA."
+  ],
+  "nextRequired": "Diagnose QA-PROFILE-001 with isolated evidence; apply the smallest justified app or faithful fixture correction without weakening outcomes/timeouts. Freeze new candidate and independently rerun affected3-engine journey and complete acceptance before advancing.",
+  "runtimeReleased": true
+}

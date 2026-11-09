@@ -1,0 +1,25 @@
+{
+  "id": "QA-COM-002",
+  "classification": "BLOCKER",
+  "status": "OPEN",
+  "owner": "independent Senior QA /root/communications_qa_acceptance",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "observedAt": "2026-10-27T18:44:02.030434+00:00",
+  "gate": "node scripts/payroll-postgres.mjs vitest.employee-mobile-communications.config.mts",
+  "observedResult": "All92 canonical cases in six newly included suites fail fixture setup because the combined runner supplies exchange c1 database prefix while five suites require foundation and notification suite requires fuel_phase3.",
+  "error": "Refusing non-disposable/remote SQL target.",
+  "failureLocation": "src/test/integration/local-postgres.ts:59:11",
+  "runnerLocation": "scripts/payroll-postgres.mjs prefix selector",
+  "canonicalFailedCases": 92,
+  "suiteCounts": {
+    "phase-e-communications-schema.integration.ts": 11,
+    "company-access-communications.integration.ts": 40,
+    "phase-e-communication-notifications.integration.ts": 11,
+    "phase-e-communications.integration.ts": 17,
+    "communications-gap-remediation.integration.ts": 7,
+    "phase-e-communication-ack.integration.ts": 6
+  },
+  "stdout": "/workspace/nevora-evidence/independent-qa/combined/stdout.log",
+  "stdoutSha256": "7c07ff2a247e6ea9a864bf1ef101f6c072128feda02517166cfb380a03738f03",
+  "closureRequirement": "Keep all19 required files and exact full invocation, preserve local-postgres strict per-fixture prefix/loopback/new-database/marker/teardown controls, correct harness environment mapping, then independently rerun all canonical cases and full final-candidate acceptance. Do not turn setup refusal into passing application coverage."
+}

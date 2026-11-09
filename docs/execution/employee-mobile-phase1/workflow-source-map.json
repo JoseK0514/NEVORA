@@ -1,0 +1,570 @@
+{
+  "candidate": "74979bbb6e2694eb54a57191f0a8f1267f56d7b8",
+  "scope": "34 source/service ownership bindings; no Phase 2 E2E completion inferred",
+  "workflows": [
+    {
+      "id": "home",
+      "source": "src/components/employee-home-quiet.tsx",
+      "source_marker": "export function EmployeeHomeQuietView",
+      "source_sha256": "9bac5c8d20040a49700aa1c3fc8feee8c7be96b47b0e162f539bc62db74ae51d",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-home.server.ts",
+          "sha256": "edec3614bebfd4010223273e63f0ebd0ee2c94493e87ae16cba42af316f21d88"
+        }
+      ],
+      "implementation_phase": 1,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "schedule",
+      "source": "src/app/app/schedule/page.tsx",
+      "source_marker": "export default",
+      "source_sha256": "75bac3d51646ff91161726f3e694d88a31e16d8b60a74cf66a220ca4c2dd913e",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-schedule.ts",
+          "sha256": "2cc35c761b32166ee0d85df3be6455af2211f8870fd17061c8b4acf432431c45"
+        },
+        {
+          "path": "src/lib/data/employee-weekly-review.server.ts",
+          "sha256": "3be9ac116d9e7a298243fee851cd6bbd4c46b73a442edb6074d62d497ab3847b"
+        }
+      ],
+      "implementation_phase": 1,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "schedule-review",
+      "source": "src/components/employee-weekly-confirmation.tsx",
+      "source_marker": "export function EmployeeWeeklyConfirmation",
+      "source_sha256": "eef17ded4de337e7224f52026404f3184b62ad8cfa29a58176f34befb74f78b7",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-attention-receipts.server.ts",
+          "sha256": "7f2c87c53fa0ab2763bdbfbb4ecfd3b85a2a2cc9e23fd51046d59fc66034dc27"
+        },
+        {
+          "path": "src/app/app/schedule/acknowledge-actions.ts",
+          "sha256": "c036a8061e425853a28e108ea3fa96a86f2b56d2c8eefb5dc0439fef222a6266"
+        }
+      ],
+      "implementation_phase": 1,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "open-shifts",
+      "source": "src/app/app/exchange/page.tsx",
+      "source_marker": "const claimable=",
+      "source_sha256": "7e8820b0b73100ed8c3ded78a0fbb7c02560ad9ed9000bf909471913ac93f1ea",
+      "service_owners": [
+        {
+          "path": "src/lib/data/shift-changes.ts",
+          "sha256": "1340db93596f89a4cd4db7ebbe8af02c825b5e8900ba08bcbceac66fe4d9a77b"
+        },
+        {
+          "path": "src/lib/data/shift-change-views.ts",
+          "sha256": "289888c444f46d0be23b122dc93d24c338a74d1cac66204718f1a4817343f90f"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "swap-create",
+      "source": "src/app/app/exchange/swap/page.tsx",
+      "source_marker": "requireSelfService(",
+      "source_sha256": "a09c3313ac5d10599f77c3219f054a71577e8325d47e6f77a2d1e55b1a6eea80",
+      "service_owners": [
+        {
+          "path": "src/lib/data/shift-changes.ts",
+          "sha256": "1340db93596f89a4cd4db7ebbe8af02c825b5e8900ba08bcbceac66fe4d9a77b"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "swap-incoming",
+      "source": "src/app/app/exchange/page.tsx",
+      "source_marker": "const incoming=",
+      "source_sha256": "7e8820b0b73100ed8c3ded78a0fbb7c02560ad9ed9000bf909471913ac93f1ea",
+      "service_owners": [
+        {
+          "path": "src/lib/data/shift-changes.ts",
+          "sha256": "1340db93596f89a4cd4db7ebbe8af02c825b5e8900ba08bcbceac66fe4d9a77b"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "callout",
+      "source": "src/app/app/exchange/callout/page.tsx",
+      "source_marker": "requireSelfService(",
+      "source_sha256": "bc341de062693d014d50b6c5b7bcdd6ab3720e4c7ce29240ab1e282a6f34a449",
+      "service_owners": [
+        {
+          "path": "src/lib/data/shift-changes.ts",
+          "sha256": "1340db93596f89a4cd4db7ebbe8af02c825b5e8900ba08bcbceac66fe4d9a77b"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "exchange-history",
+      "source": "src/app/app/exchange/page.tsx",
+      "source_marker": "const myExchangeActivity",
+      "source_sha256": "7e8820b0b73100ed8c3ded78a0fbb7c02560ad9ed9000bf909471913ac93f1ea",
+      "service_owners": [
+        {
+          "path": "src/lib/data/shift-changes.ts",
+          "sha256": "1340db93596f89a4cd4db7ebbe8af02c825b5e8900ba08bcbceac66fe4d9a77b"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "timeoff-full",
+      "source": "src/app/app/requests/time-off-signature.tsx",
+      "source_marker": "Full days",
+      "source_sha256": "cd86c9178f7b1531a658fb4dba40aacc7f1871ba417ddc544cad387139767c49",
+      "service_owners": [
+        {
+          "path": "src/lib/data/requests.ts",
+          "sha256": "1cc81393298dc8e5c80c5fa1b5e3b8c930b4d5f40b7c7ad7983609bbf7c6bc78"
+        },
+        {
+          "path": "src/app/app/requests/actions.ts",
+          "sha256": "1b47d8d8c38c4437c6afd0e2aa8bbd2e8e37bc8cf0cd2eea44e15ebb308df920"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "timeoff-partial",
+      "source": "src/app/app/requests/time-off-signature.tsx",
+      "source_marker": "Part of a day",
+      "source_sha256": "cd86c9178f7b1531a658fb4dba40aacc7f1871ba417ddc544cad387139767c49",
+      "service_owners": [
+        {
+          "path": "src/lib/data/requests.ts",
+          "sha256": "1cc81393298dc8e5c80c5fa1b5e3b8c930b4d5f40b7c7ad7983609bbf7c6bc78"
+        },
+        {
+          "path": "src/app/app/requests/actions.ts",
+          "sha256": "1b47d8d8c38c4437c6afd0e2aa8bbd2e8e37bc8cf0cd2eea44e15ebb308df920"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "timeoff-history",
+      "source": "src/app/app/requests/page.tsx",
+      "source_marker": "const pending = mine",
+      "source_sha256": "aca2ad5129ccbd2a6828eb87b53be571497a081ea3011b05cc9a831b61afd839",
+      "service_owners": [
+        {
+          "path": "src/lib/data/requests.ts",
+          "sha256": "1cc81393298dc8e5c80c5fa1b5e3b8c930b4d5f40b7c7ad7983609bbf7c6bc78"
+        },
+        {
+          "path": "src/app/app/requests/actions.ts",
+          "sha256": "1b47d8d8c38c4437c6afd0e2aa8bbd2e8e37bc8cf0cd2eea44e15ebb308df920"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "timeoff-withdraw",
+      "source": "src/app/app/requests/page.tsx",
+      "source_marker": "request.employeeId === session.id",
+      "source_sha256": "aca2ad5129ccbd2a6828eb87b53be571497a081ea3011b05cc9a831b61afd839",
+      "service_owners": [
+        {
+          "path": "src/lib/data/requests.ts",
+          "sha256": "1cc81393298dc8e5c80c5fa1b5e3b8c930b4d5f40b7c7ad7983609bbf7c6bc78"
+        },
+        {
+          "path": "src/app/app/requests/actions.ts",
+          "sha256": "1b47d8d8c38c4437c6afd0e2aa8bbd2e8e37bc8cf0cd2eea44e15ebb308df920"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "availability-usual",
+      "source": "src/components/availability-signature.tsx",
+      "source_marker": "export function",
+      "source_sha256": "13e7d50624298edb66c0a223bfb03c6deb79d421e3d6992fc64f3307557be659",
+      "service_owners": [
+        {
+          "path": "src/lib/data/availability.ts",
+          "sha256": "39a31e68002adf9a100fc8fdd177393d5bf84861fd641649f30f6ceeb923d849"
+        },
+        {
+          "path": "src/app/app/availability/actions.ts",
+          "sha256": "0093f80383ea9c41577882790094d1ede3e580f31bfc7dc81d28bff9797aced4"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "availability-week",
+      "source": "src/components/availability-signature.tsx",
+      "source_marker": "export function",
+      "source_sha256": "13e7d50624298edb66c0a223bfb03c6deb79d421e3d6992fc64f3307557be659",
+      "service_owners": [
+        {
+          "path": "src/lib/data/week-settings.ts",
+          "sha256": "73a32e14b1ae582bbc6505799cd71f679b331e5223d9001c994741706ebf3aea"
+        },
+        {
+          "path": "src/app/app/availability/actions.ts",
+          "sha256": "0093f80383ea9c41577882790094d1ede3e580f31bfc7dc81d28bff9797aced4"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "recorded-time",
+      "source": "src/components/employee-time-panel.tsx",
+      "source_marker": "export function",
+      "source_sha256": "d0a4e949a09403ce7cdf1c5ab30ae8a793967162209ec824304183098cb2e849",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-time.ts",
+          "sha256": "9170f268acdd4dbe43559ce76e03525f5be46dbb81cd4cf4eb1cd43b6dcdb954"
+        },
+        {
+          "path": "src/app/api/employee/my-time/route.ts",
+          "sha256": "5dbe2c806e674ceb9ed20eb06c45265ad0d84c792b2ef19fc8bd833f1201772a"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "timecards",
+      "source": "src/app/app/timecards/page.tsx",
+      "source_marker": "manager={false}",
+      "source_sha256": "187dc89b56894dba80a920063a8842518f497ffa1b17b76bb1e190d1218f6b92",
+      "service_owners": [
+        {
+          "path": "src/lib/timecards/service.ts",
+          "sha256": "d3336ceffb14652bb183e38e8c149e699b0cad1e045449ac78d11a4024d8a455"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "entry-correction",
+      "source": "src/components/employee-time-corrections.tsx",
+      "source_marker": "export function",
+      "source_sha256": "90644dc263b23231ab17a279d4e57159dd7857831756d461da79b31ae7e25bef",
+      "service_owners": [
+        {
+          "path": "src/lib/time-corrections/service.ts",
+          "sha256": "49c3d4629dfdc20e16797f333b84b4bddf9b2ce7a43c0a7ed35194ae53b8e673"
+        },
+        {
+          "path": "src/lib/time-corrections/http.server.ts",
+          "sha256": "f175653d6968b6c44b8ed1e4c80ab3d2ce721db010cba4ff244547d030b0feab"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "missing-time",
+      "source": "src/components/employee-time-corrections.tsx",
+      "source_marker": "employee-missing-time-correction",
+      "source_sha256": "90644dc263b23231ab17a279d4e57159dd7857831756d461da79b31ae7e25bef",
+      "service_owners": [
+        {
+          "path": "src/lib/time-corrections/service.ts",
+          "sha256": "49c3d4629dfdc20e16797f333b84b4bddf9b2ce7a43c0a7ed35194ae53b8e673"
+        },
+        {
+          "path": "src/lib/time-corrections/http.server.ts",
+          "sha256": "f175653d6968b6c44b8ed1e4c80ab3d2ce721db010cba4ff244547d030b0feab"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "correction-history",
+      "source": "src/components/employee-time-corrections.tsx",
+      "source_marker": "Correction history is unavailable",
+      "source_sha256": "90644dc263b23231ab17a279d4e57159dd7857831756d461da79b31ae7e25bef",
+      "service_owners": [
+        {
+          "path": "src/lib/time-corrections/service.ts",
+          "sha256": "49c3d4629dfdc20e16797f333b84b4bddf9b2ce7a43c0a7ed35194ae53b8e673"
+        },
+        {
+          "path": "src/lib/time-corrections/http.server.ts",
+          "sha256": "f175653d6968b6c44b8ed1e4c80ab3d2ce721db010cba4ff244547d030b0feab"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "notification-inbox",
+      "source": "src/app/app/notifications/page.tsx",
+      "source_marker": "if(!manager)return",
+      "source_sha256": "3a80320c848f7211d5c62d91063927e4463176f51e875a96903b9686964e368e",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-notification-list.server.ts",
+          "sha256": "30151fde9b88bcaddb893b21c5f9c2dd2f1191488e50f65b3ecbe298c38c778c"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "company-updates",
+      "source": "src/components/communication-detail.tsx",
+      "source_marker": "export function CommunicationDetail",
+      "source_sha256": "f82b854a8eb4e9b99a0d8269fb6d91356ed247a5879416831dc4ea9fc070bb2c",
+      "service_owners": [
+        {
+          "path": "src/lib/communications/service.server.ts",
+          "sha256": "c286cf3f2cabe5675f60f940d17cee4baf3aa8b98a787b84959b945a48ad6ac7"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "team-post",
+      "source": "src/lib/communications/policy.ts",
+      "source_marker": "export function canAuthorCommunication",
+      "source_sha256": "9a7bd9ae992525b6ac0e1e1d5155b3406b0a76343014313498010e984025741b",
+      "service_owners": [
+        {
+          "path": "src/lib/communications/service.server.ts",
+          "sha256": "c286cf3f2cabe5675f60f940d17cee4baf3aa8b98a787b84959b945a48ad6ac7"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "profile-read",
+      "source": "src/components/employee-account-panel.tsx",
+      "source_marker": "if(quiet&&kind==='profile')",
+      "source_sha256": "7d91c316adc10f845d7516e5e44b93be9b7565173fe5fd9dac52ad9e10749126",
+      "service_owners": [
+        {
+          "path": "src/lib/data/employee-profile.server.ts",
+          "sha256": "85dd0c8542606097df9366f2b14f0286e8f4e095b966d523a09734fb47dc7d8c"
+        },
+        {
+          "path": "src/lib/employee-view-route.server.ts",
+          "sha256": "27d449aa1a0ddffc08a26a286eb7ff40b088d98adf397704020c2a90755f1617"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "language",
+      "source": "src/components/employee-profile-rows.tsx",
+      "source_marker": "title=\"Language\"",
+      "source_sha256": "a630be2c0e348fb725e81fe79fd9e68b29b640bc340f5a2d59d9c78c7d01b45d",
+      "service_owners": [
+        {
+          "path": "src/components/auth-premium/lang-switch.tsx",
+          "sha256": "650f8bab9de3c024e041c699fb3abcb012c467d98e130de40f5fd19c3aa2de3c"
+        },
+        {
+          "path": "src/lib/auth-lang.server.ts",
+          "sha256": "27faaa42e1fd30056a8d57f7800a6fdbab91efa7d173700759fdda3c3d9f38a5"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "appearance",
+      "source": "src/components/employee-profile-rows.tsx",
+      "source_marker": "title=\"Appearance\"",
+      "source_sha256": "a630be2c0e348fb725e81fe79fd9e68b29b640bc340f5a2d59d9c78c7d01b45d",
+      "service_owners": [
+        {
+          "path": "src/lib/theme.ts",
+          "sha256": "552fdffd83995589507b11236d6e6e4ec15f38f0d9ece2dfeeef6e7a2c350810"
+        },
+        {
+          "path": "src/components/theme-switch.tsx",
+          "sha256": "ebe2589d1e9d3948acd3ac6726d39daec4d27e3ed906bf0e367ced80a597b9d2"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "device-alerts",
+      "source": "src/app/app/profile/page.tsx",
+      "source_marker": "const notificationsEnabled=",
+      "source_sha256": "3c24b47b8e8da8cc61a3f352e23c6aa73dcd3456e7fc3d8d29aea23def015f5a",
+      "service_owners": [
+        {
+          "path": "src/lib/notifications/subscription-service.ts",
+          "sha256": "9e0f46bad6d7a041bded566ac62e23e29655f636882df983dae1a6bf0cd3fef2"
+        },
+        {
+          "path": "src/lib/notifications/device-client.ts",
+          "sha256": "e4545feacc68318710dc3c58dd6227fba6ad6fee9405e8c22b3ce6980bb45374"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "calendar",
+      "source": "src/components/calendar-subscription-panel.tsx",
+      "source_marker": "export function CalendarSubscriptionView",
+      "source_sha256": "c4a99b9790282c7a6d29d8f74266221d19c1e61c7ad667aa974653fa37ea7ab8",
+      "service_owners": [
+        {
+          "path": "src/lib/calendar/service.server.ts",
+          "sha256": "d9992a6afccd56476352317c7dbd89910c4ba550e12bbad652b3165162418b51"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "passkeys",
+      "source": "src/components/passkeys/passkey-section.tsx",
+      "source_marker": "registerPasskey(deviceName())",
+      "source_sha256": "1abab3ab99bbdca3629f644aacee1a1dfe98f78192a8d6770e18c8996bd99c86",
+      "service_owners": [
+        {
+          "path": "src/lib/auth/passkeys/service.server.ts",
+          "sha256": "8b1b335c2af16122bdd160e498e17f67bd76e442d598a246f96624a3a291f5c1"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "support-legal",
+      "source": "src/app/app/profile/page.tsx",
+      "source_marker": "policiesVisible()?<>",
+      "source_sha256": "3c24b47b8e8da8cc61a3f352e23c6aa73dcd3456e7fc3d8d29aea23def015f5a",
+      "service_owners": [
+        {
+          "path": "src/lib/legal/policies.ts",
+          "sha256": "81412e1baa25b5a3a5271856f3efa3e5896c245a90db0847b51274423f3fc7a9"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "account-delete",
+      "source": "src/app/app/account/delete/page.tsx",
+      "source_marker": "const session = await requireSession()",
+      "source_sha256": "62783868c48c18e8d38be3e4d75c4e8e8306146e481a2d0fb8bf57b78f96cc23",
+      "service_owners": [
+        {
+          "path": "src/lib/account-deletion/requests.server.ts",
+          "sha256": "0c0abb9ab54b933f8dfe63f971a2be2a22eec73a9ac1a9209ca790662edc6f21"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "sign-out",
+      "source": "src/app/app/profile/page.tsx",
+      "source_marker": "aria-label=\"Session\"",
+      "source_sha256": "3c24b47b8e8da8cc61a3f352e23c6aa73dcd3456e7fc3d8d29aea23def015f5a",
+      "service_owners": [
+        {
+          "path": "src/app/login/actions.ts",
+          "sha256": "d1572b943da1999cf0f316447f8bfdd041e775d4302939950bf109cc89fcfe73"
+        },
+        {
+          "path": "src/lib/auth/session.ts",
+          "sha256": "438f470a253f9368adc3314b4a80e7e565b65c4303d126f8c073a86c74cfca6d"
+        },
+        {
+          "path": "src/lib/notifications/device-client.ts",
+          "sha256": "e4545feacc68318710dc3c58dd6227fba6ad6fee9405e8c22b3ce6980bb45374"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "pay-statements",
+      "source": "src/app/app/my-pay/page.tsx",
+      "source_marker": "if (!payrollFeatureEnabled())",
+      "source_sha256": "5755f9cc17d8852ecf1ce13a9ba1974cc22d46a1dff7c16f168e20c711a8bcde",
+      "service_owners": [
+        {
+          "path": "src/lib/payroll/service.ts",
+          "sha256": "f07534a97a7f09795420b9aa7f33ae4c0a2a6d988c3d2c7fae4e31c0ecbc4bd9"
+        },
+        {
+          "path": "src/lib/payroll/documents.ts",
+          "sha256": "072dcfbd0a340793186a29cd4a233ea42a9d1f3d0e6e6d34aa4e63e712b8ccc3"
+        }
+      ],
+      "implementation_phase": 2,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "modules",
+      "source": "src/lib/workspace-presentation/modules.ts",
+      "source_marker": "export function moduleForPath",
+      "source_sha256": "f86fe862d28d6914f27a7ee60a979ac8079db6d2828b4a438aac3568da1d2117",
+      "service_owners": [
+        {
+          "path": "src/lib/workspace-presentation/current.server.tsx",
+          "sha256": "77e8008c3de1682e4199d88abcd29c44aff0a9479484dc37317d459b7c2740fb"
+        },
+        {
+          "path": "src/lib/workspace-presentation/service.ts",
+          "sha256": "80ecc643fcb3c1d27d7c667378adeb696cbcfad6dbbaf763ae77747e4e76056d"
+        }
+      ],
+      "implementation_phase": 1,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    },
+    {
+      "id": "recovery",
+      "source": "src/components/employee-account-panel.tsx",
+      "source_marker": "export function EmployeeAccountPanel",
+      "source_sha256": "7d91c316adc10f845d7516e5e44b93be9b7565173fe5fd9dac52ad9e10749126",
+      "service_owners": [
+        {
+          "path": "src/lib/private-snapshot-client.ts",
+          "sha256": "1703fdd69d282590c603d3dd4b2472d75ff529dacab102984c27eb52e4e3445a"
+        },
+        {
+          "path": "src/lib/employee-view-route.server.ts",
+          "sha256": "27d449aa1a0ddffc08a26a286eb7ff40b088d98adf397704020c2a90755f1617"
+        }
+      ],
+      "implementation_phase": 1,
+      "evidence_scope": "Phase 1 locally exercised surfaces and supporting contracts; other workflows are source ownership only until their batch"
+    }
+  ]
+}

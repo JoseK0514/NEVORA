@@ -1,28 +1,591 @@
 name: CI
+# Every checkout and evidence receipt names the exact candidate: on pull_request that is the PR head
+# (github.sha there is the synthetic merge commit); on push it is github.sha.
 
 on:
   push:
     branches: [development, main]
   pull_request:
-    branches: [development, main]
+    branches: [development, main, "phase-c/**", "release/**", "codex/verify-preview-33"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    name: validate
+    runs-on: ubuntu-24.04
+    # Unit tests alone take 14-15 minutes on hosted runners (maxWorkers=1), so 20 left too little room.
+    timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          node-version: 22
-      - name: Install dependencies
-        run: npm install
-      - name: Test
-        run: npm test
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Unit tests
+        run: npm test -- --maxWorkers=1
+      - name: Owner advisor pilot guard regressions
+        run: node --import tsx --test src/test/integration/owner-advisor-pilot.check.mts
+      - name: Inspector archive custody (not findings acceptance)
+        run: |
+          node --test scripts/inspection-evidence.check.mjs scripts/development-source-inventory.check.mjs
+          npm run check:inspection-evidence
+      - name: Notification and foundation configuration regressions
+        run: |
+          npm run test:notifications:qa
+          npm run test:foundation:qa
+          npm run test:release-engineering
       - name: Type check
         run: npm run typecheck
       - name: Lint
         run: npm run lint
-      - name: Build
-        run: npm run build
+      - name: Source-bound production build
+        env:
+          PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          NEVORA_BUILD_RECEIPT: ${{ runner.temp }}/nevora-build-source.json
+        run: node scripts/release-build.mjs
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+      - name: Full dependency audit including development tooling
+        run: npm audit --audit-level=high
+      - name: Upload build custody receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: build-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/nevora-build-source.json
+          if-no-files-found: error
+          retention-days: 14
+
+  clocker-postgres-suite:
+    name: Clocker SQL (${{ matrix.shard }}/4)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [1, 2, 3, 4]
+    env:
+      CLOCKER_SQL_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owned mirror mutation and inventory regressions
+        run: |
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-mutated" node --import tsx scripts/release-mirror-custody-qa.mjs mutated
+          NEVORA_MIRROR_EVIDENCE_DIR="$RUNNER_TEMP/mirror-extra" node --import tsx scripts/release-mirror-custody-qa.mjs extra
+      - name: Persisted Clocker PostgreSQL tests
+        env:
+          CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-evidence
+        run: npm run test:clocker:owned -- --shard=${{ matrix.shard }}/4
+      - name: Upload current-source Clocker SQL shard evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clocker-sql-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.shard }}-of-4
+          path: ${{ runner.temp }}/clocker-sql-evidence/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  clocker-postgres:
+    name: clocker-postgres
+    if: ${{ always() }}
+    needs: [clocker-postgres-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Download current-run Clocker SQL shard evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: clocker-sql-*
+          path: ${{ runner.temp }}/clocker-sql-artifacts
+          merge-multiple: false
+      - name: Verify all Clocker SQL groups and complete source coverage
+        env:
+          CLOCKER_SQL_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CLOCKER_SQL_EVIDENCE_DIR: ${{ runner.temp }}/clocker-sql-aggregate
+          CLOCKER_SQL_ARTIFACTS_DIR: ${{ runner.temp }}/clocker-sql-artifacts
+          CLOCKER_SQL_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/clocker-sql-shards.mjs aggregate
+      - name: Upload Clocker SQL aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: clocker-sql-aggregate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/clocker-sql-aggregate/*.json
+          if-no-files-found: error
+          retention-days: 14
+
+  phase-d-attendance-ui:
+    name: phase-d-attendance-ui
+    runs-on: ubuntu-24.04
+    # Busy runners took 27-41 min on the Release 1 line (WebKit screenshots, owned PostgreSQL); 40 cut off a passing run.
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        id: attendance_runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owner advisor PostgreSQL and browser gate
+        env:
+          NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE: ${{ runner.temp }}/nevora-owner-advisor-browser-evidence
+        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-browser.config.mts
+      - name: Upload Owner advisor browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-advisor-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/*-trace.zip
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-owner-advisor-browser-evidence/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Exact-SHA D1.3 attendance browser gate
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d:attendance-ui
+      - name: Verify SHA-bound report
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_ATTENDANCE_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d13-browser-evidence
+          PHASE_D_ATTENDANCE_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_ATTENDANCE_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_ATTENDANCE_EXPECTED_SHA) throw new Error('Attendance evidence SHA mismatch');
+          if (report.sourceClean !== true) throw new Error('Attendance evidence did not run from a clean tracked worktree');
+          if (report.errors.length !== 0) throw new Error('Attendance browser report contains errors');
+          console.log(JSON.stringify({ checkpoint: report.checkpoint, tree: report.tree, checks: report.checks.length, errors: report.errors }, null, 2));
+          NODE
+      - name: Whole Phase D exact-candidate browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs browser
+      - name: Independent Phase D audit remediation regressions
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/phase-d-owned.mjs remediation
+      - name: Verify remediation SHA-bound evidence
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_REMEDIATION_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-remediation-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),path=require('node:path');
+          for(const item of ['account/report.json','missing/report.json','report.json']) {
+            const r=JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_REMEDIATION_EVIDENCE_DIR,item),'utf8'));
+            if(r.checkpoint!==process.env.PHASE_D_EXPECTED_SHA||!r.sourceClean)throw Error('Invalid remediation custody: '+item);
+            if((r.errors??[]).length||(r.runtimeErrors??[]).length||(r.results??[]).some(x=>x.result!=='PASS'))throw Error('Failed remediation gate: '+item);
+            console.log(JSON.stringify({item,checkpoint:r.checkpoint,tree:r.tree,checks:(r.results??r.checks).length}));
+          }
+          NODE
+      - name: Existing D2 correction browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D2_CORRECTIONS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-d2-browser-evidence
+          PHASE_D2_CORRECTIONS_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run test:phase-d2:corrections-ui
+      - name: Existing Clocker lifecycle and recovery browser regression
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_C_EVIDENCE_DIR: ${{ runner.temp }}/nevora-clocker-browser-evidence
+          PHASE_C_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node scripts/clocker-break-filter-readiness.check.mjs
+          node scripts/phase-c-clocker-postgres.mjs --punch-ui
+      - name: Verify whole-phase SHA and mandatory UX evidence
+        if: ${{ !cancelled() && steps.attendance_runtime.outcome == 'success' }}
+        env:
+          PHASE_D_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-d-browser-evidence
+          PHASE_D_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const report = JSON.parse(fs.readFileSync(path.join(process.env.PHASE_D_EVIDENCE_DIR, 'report.json'), 'utf8'));
+          if (report.checkpoint !== process.env.PHASE_D_EXPECTED_SHA || !report.sourceClean || report.errors.length) throw new Error('Invalid whole-phase candidate evidence');
+          for (const engine of ['chromium','webkit']) for (const item of ['D7','UX-01','UX-03','UX-04','UX-05']) {
+            if (!report.checks.some(check => check.startsWith(engine+':') && check.includes(item))) throw new Error('Missing '+engine+' '+item+' evidence');
+          }
+          console.log(JSON.stringify({checkpoint:report.checkpoint,tree:report.tree,checks:report.checks.length,errors:report.errors}));
+          NODE
+      - name: Upload whole Phase D browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase-d-whole-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/report.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-remediation-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.csv
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/*.pdf
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-d-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d2-browser-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-clocker-browser-evidence/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload D1.3 browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: d13-attendance-browser-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/source-manifest.json
+            ${{ runner.temp }}/nevora-d13-browser-evidence/**/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+
+  release-postgres:
+    name: release-postgres
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Release PostgreSQL integration gates
+        run: npm run test:release:postgres
+      - name: Owner advisor isolated PostgreSQL integration gate
+        run: node scripts/payroll-postgres.mjs vitest.owner-advisor-integration.config.mts
+
+  phase-e-postgres:
+    name: phase-e-postgres
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-sql-evidence" >> "$GITHUB_ENV"
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Long-path owned TCP startup regression
+        env:
+          PHASE_E_STARTUP_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence
+        run: npm run test:phase-e:startup
+      - name: Owned Phase E sql gates
+        run: npm run test:phase-e:sql
+      - name: Verify exact-source executed Phase E evidence
+        run: node scripts/phase-e-owned.mjs verify-evidence --suite sql
+      - name: Upload Phase E sql evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase-e-sql-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/startup-receipt.json
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/sql-report.json
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/runner.log
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/tcp-query.log
+            ${{ runner.temp }}/nevora-phase-e-long-path-startup-evidence/**/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/sql-*.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-e-sql-evidence/owned-postgres-*/ownership.json
+          if-no-files-found: error
+          retention-days: 14
+
+  phase-e-ui-suite:
+    name: phase-e-ui-suite (${{ matrix.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        suite: [home, communications, calendar, navigation, attention]
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PHASE_E_BROWSER_SUITE: ${{ matrix.suite }}
+    steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Home fresh-generation scheduling regression
+        if: ${{ matrix.suite == 'home' }}
+        env:
+          NODE_ENV: test
+          HOME_READINESS_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence
+        run: node --import ./scripts/qa-server-context.mjs --import tsx scripts/phase-e-home-held-response.check.mjs
+      - name: Browser feedback and reviewed-view readiness regressions
+        if: ${{ matrix.suite == 'calendar' }}
+        run: node scripts/browser-render-readiness.check.mjs
+      - name: Actual React private-intent clearance regression
+        if: ${{ matrix.suite == 'attention' }}
+        run: node scripts/attention-intent-readiness.check.mjs
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Owned Phase E browser gates
+        run: node scripts/phase-e-owned.mjs browser --suite "$PHASE_E_BROWSER_SUITE"
+      - name: Verify exact-source executed Phase E evidence
+        run: node scripts/phase-e-browser-evidence.mjs leaf --suite "$PHASE_E_BROWSER_SUITE"
+      - name: Upload Phase E browser evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase-e-browser-${{ github.event.pull_request.head.sha || github.sha }}-${{ matrix.suite }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.json
+            ${{ runner.temp }}/nevora-phase-e-home-readiness-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/home-held-*.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/attention-intent-readiness-custody.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/calendar-readiness-custody.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+
+  phase-e-ui:
+    name: phase-e-ui
+    if: ${{ always() }}
+    needs: [phase-e-ui-suite]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Download isolated current-run suite evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: phase-e-browser-*
+          path: ${{ runner.temp }}/nevora-phase-e-suite-artifacts
+          merge-multiple: false
+      - name: Reject incomplete or failed Phase E suite evidence
+        env:
+          PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-browser-aggregate
+          PHASE_E_ARTIFACTS_DIR: ${{ runner.temp }}/nevora-phase-e-suite-artifacts
+          PHASE_E_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/phase-e-browser-evidence.mjs aggregate
+      - name: Upload Phase E aggregate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: phase-e-browser-aggregate-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/nevora-phase-e-browser-aggregate/browser-aggregate-report.json
+          if-no-files-found: error
+          retention-days: 14
+
+  phase-e-evidence:
+    name: phase-e-evidence
+    if: ${{ always() }}
+    needs: [validate, clocker-postgres, release-postgres, phase-d-attendance-ui, phase-e-postgres, phase-e-ui]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+      - name: Reject any skipped or failed mandatory E/D regression job
+        env:
+          PHASE_E_EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          PHASE_E_EVIDENCE_DIR: ${{ runner.temp }}/nevora-phase-e-ci-evidence
+          PHASE_E_CI_NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/phase-e-owned.mjs verify-ci

@@ -1,0 +1,22 @@
+import { beforeAll, afterAll, it, expect } from 'vitest';
+import { createDisposableExchangeDatabase } from './local-postgres';
+import { getShiftValidationContext } from '../../lib/data/schedules';
+import { readGenerationSnapshot } from '../../lib/data/schedule-generation-snapshot';
+import { validateShift } from '../../lib/scheduling/validate-shift';
+import { fictionalProfile, configured } from '../fixtures/shift-changes';
+let db: Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
+beforeAll(async () => { db = await createDisposableExchangeDatabase({ mode: 'current-runtime' }); });
+afterAll(async () => { await db?.dispose(); });
+it('A090/A096 real SQL manual and generation readers retain distant rest and configured profile', async () => {
+    const q = (text: string, values: readonly unknown[] = []) => db.executor.query({ text, values });
+    await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('manager','Fictional','Manager','NONE','MANAGER','loc-1'),('worker','Fictional','Worker','NONE','EMPLOYEE','loc-1'); INSERT INTO employee_location_eligibility VALUES('worker','loc-1'),('worker','loc-2'); INSERT INTO availability_windows VALUES('normal','worker',1,'00:00','24:00'); UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false; INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('window','loc-1',1,'08:00','16:00'); INSERT INTO schedules(id,location_id,week_start,created_by) VALUES('past','loc-2','2026-08-31','manager'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) VALUES('past-shift','past','worker','2026-09-01','08:00','16:00')");
+    const profile = fictionalProfile();
+    profile.minimumRest = configured({ minutes: 60 * 24 * 40, timeBasis: 'ELAPSED' });
+    await q('INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) VALUES($1,$2,$3,$4::jsonb)', ['worker', 24, 40, JSON.stringify(profile)]);
+    const context = await getShiftValidationContext({ employeeId: 'worker', locationId: 'loc-1', date: '2026-10-05', weekStart: '2026-10-05' }, db.executor);
+    expect(context!.existingShifts.map(s => s.id)).toContain('past-shift');
+    expect(validateShift({ ...context!, candidate: { employeeId: 'worker', locationId: 'loc-1', date: '2026-10-05', startTime: '08:00', endTime: '16:00' }, mode: 'MANAGER_SCHEDULE' }).blockers.map(x => x.code)).toContain('MIN_REST');
+    const snapshot = await readGenerationSnapshot({ workspaceId: 'workspace-fuel', actorEmployeeId: 'manager', weekStart: '2026-10-05', mode: 'FILL_GAPS_ONLY', locationScope: { kind: 'SELECTED', locationIds: ['loc-1'] } }, db.executor);
+    expect(snapshot.input.ledger.map(s => s.id)).toContain('past-shift');
+    expect(snapshot.input.employees.find(e => e.id === 'worker')!.operationalProfile).toEqual(profile);
+});

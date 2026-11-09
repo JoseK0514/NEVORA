@@ -1,0 +1,95 @@
+[
+ {
+  "mode": "chrome-button",
+  "surface": "manager-more",
+  "value": "? Error: page.evaluate: Target crashed ",
+  "before": {
+   "url": "http://localhost:52119/app/schedule",
+   "len": 2
+  },
+  "after": {
+   "error": "Error: page.evaluate: Target crashed "
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "finder-sheet",
+  "value": "? did not open (not reachable here)",
+  "before": {
+   "url": "http://localhost:52119/app/schedule",
+   "len": 2
+  },
+  "after": {
+   "error": "Error: page.evaluate: TypeError: Cannot read properties of null (reading 'open')\n    at eval (eval at evaluate (:311:30)"
+  },
+  "second": null,
+  "opened": false
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "page-menu-locations",
+  "value": "? Error: page.evaluate: Target crashed ",
+  "before": {
+   "url": "http://localhost:52119/app/settings/locations",
+   "len": 2
+  },
+  "after": {
+   "error": "Error: page.evaluate: Target crashed "
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "page-menu-schedule",
+  "value": "? Error: page.evaluate: Target crashed ",
+  "before": {
+   "url": "http://localhost:52119/app/schedule",
+   "len": 2
+  },
+  "after": {
+   "error": "Error: page.evaluate: Target crashed "
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "no-surface",
+  "value": "✓ navigates back as today"
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "employee-more",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:52119/app/schedule",
+   "len": 3
+  },
+  "after": {
+   "url": "http://localhost:52119/app/schedule",
+   "len": 3,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ },
+ {
+  "mode": "chrome-button",
+  "surface": "employee-more-home",
+  "value": "✓ closes and stays",
+  "before": {
+   "url": "http://localhost:52119/app",
+   "len": 4
+  },
+  "after": {
+   "url": "http://localhost:52119/app",
+   "len": 4,
+   "open": false
+  },
+  "second": null,
+  "opened": true
+ }
+]

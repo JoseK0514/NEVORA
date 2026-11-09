@@ -1,87 +1,27 @@
-import Link from "next/link";
-import { BrandMark } from "@/components/brand-mark";
-import { PhoneInput } from "@/components/phone-input";
-import { activateAccountAction } from "@/app/activate/actions";
+import {mobileAccessMetadata} from "@/components/mobile-access/metadata.server";
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import { getPublicWorkspaceName } from "@/lib/data/workspaces";
+import { safeReturnTo } from "@/lib/notifications/destinations";
+import { AUTH_COPY } from "@/lib/auth-copy";
+import { readAuthLang } from "@/lib/auth-lang.server";
+import { QuietAuthShell } from "@/components/auth-premium/auth-shell";
+import { ActivationInvitation } from "./activation-invitation";
+import "../login/auth-premium.css";
+import "../login/auth-signature.css";
+import "./activation.css";
 
-export default async function ActivatePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ error?: string; employeeId?: string }>;
+/** Account activation in the Signature sign-in frame. The invitation flow and its wording are development's. */
+export default async function ActivatePage({ searchParams }: {
+  searchParams: Promise<{ returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
+  const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
+  const returnQuery = returnTo ? `returnTo=${encodeURIComponent(returnTo)}` : "";
 
-  return (
-    <main className="auth-page employee-login-page employee-activate-page">
-      <div className="employee-login-overlay" aria-hidden="true" />
-      <div className="employee-login-scene-copy" aria-hidden="true"><span>GOOD PEOPLE</span><strong>GREAT COFFEE</strong></div>
-      <div className="employee-login-shell">
-        <header className="employee-login-brand">
-          <BrandMark large />
-          <div><strong>Fuel Coffee Drive</strong><span>Employee Portal</span></div>
-        </header>
-        <section className="auth-card employee-login-card">
-          <div className="employee-login-heading">
-            <p className="eyebrow">EMPLOYEE PORTAL</p>
-            <h1>Activate Account</h1>
-            <p>Set up your account to access your Fuel schedule and requests.</p>
-          </div>
-
-        {params.error ? (
-          <p className="form-error">
-            {params.error === "not_found"
-              ? "We could not activate that account. Check the Employee ID and phone number, or the account may already be activated."
-              : params.error === "mismatch"
-                ? "Passwords do not match. Please enter them again."
-              : "Enter your Employee ID and phone number, and choose a matching password of at least 8 characters."}
-          </p>
-        ) : null}
-
-        <form action={activateAccountAction} className="form-stack employee-login-form">
-          <label>
-            Employee ID
-            <input
-              name="employeeId"
-              placeholder="Enter your employee ID"
-              defaultValue={params.employeeId ?? ""}
-              autoComplete="username"
-              required
-            />
-          </label>
-          <label>
-            Phone Number
-              <PhoneInput name="phone" autoComplete="tel" required />
-          </label>
-          <label>
-            Create Password
-              <input
-              name="password"
-              type="password"
-              minLength={8}
-              autoComplete="new-password"
-              required
-              />
-              <small>Use at least 8 characters.</small>
-          </label>
-          <label>
-            Confirm Password
-            <input
-              name="confirmPassword"
-              type="password"
-              minLength={8}
-              autoComplete="new-password"
-              required
-            />
-          </label>
-          <button type="submit" className="button primary full employee-login-submit">Activate Account</button>
-        </form>
-
-        <div className="auth-secondary employee-login-secondary">
-          <span>Already activated?</span>
-          <Link href="/login">Back to Sign In</Link>
-        </div>
-        </section>
-        <footer className="employee-login-footer"><span>Fuel Coffee Drive • Employee Portal</span><small>People fuel possibility.</small></footer>
-      </div>
-    </main>
-  );
+  return <QuietAuthShell helpFrom="activate" lang={lang} t={AUTH_COPY[lang]} back={`/login${returnQuery ? `?${returnQuery}` : ""}`}>
+    <ActivationInvitation mobileAccess={mobileAccessEnabled()} lang={lang} workspaceName={workspaceName} loginHref={`/login?activated=1${returnQuery ? `&${returnQuery}` : ""}`} />
+  </QuietAuthShell>;
 }
+
+export const generateMetadata=()=>mobileAccessMetadata("activate");

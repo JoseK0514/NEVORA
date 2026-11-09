@@ -1,0 +1,11 @@
+import {createCalendarFeedHandler} from '@/lib/calendar/http.server';
+import {readCalendarFeed} from '@/lib/calendar/service.server';
+export const runtime='nodejs';
+export const dynamic='force-dynamic';
+export const GET=createCalendarFeedHandler(readCalendarFeed);
+export const HEAD=GET;
+export const POST=GET;
+export const PUT=GET;
+export const PATCH=GET;
+export const DELETE=GET;
+export const OPTIONS=GET;

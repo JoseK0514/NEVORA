@@ -1,0 +1,107 @@
+{
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "results": [
+    {
+      "suite": "creation",
+      "checks": 40,
+      "captures": 192,
+      "contrasts": 54,
+      "minimumRecordedActionContrast": 6.089452668960573,
+      "pageErrors": [],
+      "warningCount": 12,
+      "expectedConsoleErrorCount": 3,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 14
+    },
+    {
+      "suite": "hours",
+      "checks": 51,
+      "captures": 105,
+      "contrasts": 54,
+      "minimumRecordedActionContrast": 6.089452668960573,
+      "pageErrors": [],
+      "warningCount": 6,
+      "expectedConsoleErrorCount": 6,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 46
+    },
+    {
+      "suite": "messages",
+      "checks": 69,
+      "captures": 210,
+      "contrasts": 90,
+      "minimumRecordedActionContrast": 6.089452668960573,
+      "pageErrors": [],
+      "warningCount": 26,
+      "expectedConsoleErrorCount": 15,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 40
+    },
+    {
+      "suite": "mobile",
+      "checks": 28,
+      "captures": 36,
+      "contrasts": 0,
+      "minimumRecordedActionContrast": null,
+      "pageErrors": [],
+      "warningCount": 3,
+      "expectedConsoleErrorCount": 4,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 0
+    },
+    {
+      "suite": "planning",
+      "checks": 63,
+      "captures": 114,
+      "contrasts": 72,
+      "minimumRecordedActionContrast": 6.089452668960573,
+      "pageErrors": [
+        {
+          "engine": "webkit",
+          "stage": "authority-loss",
+          "type": "pageerror",
+          "text": "Fetch API cannot load http://127.0.0.1:35609/api/notifications due to access control checks.\n    at unknown (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3664:49)\n    at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_11wmvgs2u40ix._.js:3663:89)",
+          "expected": false
+        },
+        {
+          "engine": "webkit",
+          "stage": "authority-loss",
+          "type": "pageerror",
+          "text": "Fetch API cannot load http://127.0.0.1:35609/api/employee/planning/timeoff/list due to access control checks.\n    at unknown (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3392:49)\n    at usePlanning.useEffect.controller (http://127.0.0.1:35609/_next/static/chunks/src_1mogl_5xj6rk3._.js:3391:76)",
+          "expected": false
+        }
+      ],
+      "warningCount": 12,
+      "expectedConsoleErrorCount": 4,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 36
+    },
+    {
+      "suite": "responses",
+      "checks": 34,
+      "captures": 90,
+      "contrasts": 36,
+      "minimumRecordedActionContrast": 6.089452668960573,
+      "pageErrors": [
+        {
+          "engine": "webkit",
+          "stage": "own-pickup",
+          "type": "pageerror",
+          "text": "Fetch API cannot load http://127.0.0.1:40989/api/notifications due to access control checks.\n    at unknown (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3664:49)\n    at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3663:89)",
+          "expected": false
+        },
+        {
+          "engine": "webkit",
+          "stage": "own-pickup",
+          "type": "pageerror",
+          "text": "Fetch API cannot load http://127.0.0.1:40989/api/employee/exchange due to access control checks.\n    at unknown (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1530:49)\n    at EmployeeMobileExchange.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1529:87)",
+          "expected": false
+        }
+      ],
+      "warningCount": 3,
+      "expectedConsoleErrorCount": 3,
+      "unexpectedConsoleErrorCount": 0,
+      "failedRequestCount": 15
+    }
+  ]
+}

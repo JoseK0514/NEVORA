@@ -1,0 +1,38 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "mode": "EMPLOYEE",
+      "role": "EMPLOYEE",
+      "result": "passed"
+    },
+    {
+      "mode": "LEAD",
+      "role": "LEAD",
+      "result": "passed"
+    },
+    {
+      "mode": "MANAGER",
+      "role": "MANAGER",
+      "result": "passed"
+    },
+    {
+      "mode": "OWNER",
+      "role": "OWNER",
+      "result": "passed"
+    },
+    {
+      "mode": "install",
+      "role": "EMPLOYEE",
+      "result": "passed"
+    },
+    {
+      "mode": "unsupported",
+      "role": "EMPLOYEE",
+      "result": "passed"
+    }
+  ],
+  "limits": [
+    "Chromium-only supplement with fictional native boundaries. No physical installation or delivery."
+  ]
+}

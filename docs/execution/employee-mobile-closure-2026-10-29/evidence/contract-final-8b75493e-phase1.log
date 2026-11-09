@@ -1,0 +1,195 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Real password/session Home uses Employee-only five-destination navigation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Recorded time is read independently; planned active shift does not fabricate clock-in
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Home opens the exact currently authorized own shift and its details
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Own published weeks and navigation retain exact server-source context
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Native date selection resolves its actual Monday week without manager filters
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Schedule confirmation persists canonically for the exact own week; refresh renders its receipt
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Light/Dark320/390/430 layouts retain accessible navigation and week-control targets
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Enlarged text, content clearance and native week-picker keyboard Escape preserve focus
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Desktop keeps original Home greeting, presentation and hidden mobile additions
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Desktop Schedule preserves existing bar-first layout and hides mobile date controls
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Background/offline release clears private Home facts
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Own published past overnight shift preserves end-day meaning without future-only swap controls
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Foreign shift deep link cannot open another employee assignment
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Loading withholds own shift facts until actual Home read completes
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: light failed Home transport renders a visible contrasted retry and recovers actual data
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: dark failed Home transport renders a visible contrasted retry and recovers actual data
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Real source-cap partial state discloses limits while retaining independently authorized shift
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Owner-saved module-off policy hides employee options and refuses a direct module route without management controls
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Lost committed response preserves original operation and retry recovers one canonical receipt
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Republished changed and removed own assignments invalidate the old confirmation and preserve exact empty-week review
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Real no-upcoming-shift Home retains actual recorded-clock access
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Calendar direct entry and125/150/200 percent text retain readable disclosure and navigation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Current workspace deactivation clears own facts and restoration requires a fresh authorized read
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Revoked sessions clear own Home and refuse a direct protected Schedule route
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: Expired Lead session cannot enter protected Schedule
+chromium: LEAD real session retains role-owned navigation and presentation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: OWNER real session retains role-owned navigation and presentation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+chromium: MANAGER real session retains role-owned navigation and presentation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Real password/session Home uses Employee-only five-destination navigation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Recorded time is read independently; planned active shift does not fabricate clock-in
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Home opens the exact currently authorized own shift and its details
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Own published weeks and navigation retain exact server-source context
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Native date selection resolves its actual Monday week without manager filters
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Schedule confirmation persists canonically for the exact own week; refresh renders its receipt
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Light/Dark320/390/430 layouts retain accessible navigation and week-control targets
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Enlarged text, content clearance and native week-picker keyboard Escape preserve focus
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Desktop keeps original Home greeting, presentation and hidden mobile additions
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Desktop Schedule preserves existing bar-first layout and hides mobile date controls
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Background/offline release clears private Home facts
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+webkit: Revoked sessions clear own Home and refuse a direct protected Schedule route
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Real password/session Home uses Employee-only five-destination navigation
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Recorded time is read independently; planned active shift does not fabricate clock-in
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Home opens the exact currently authorized own shift and its details
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Own published weeks and navigation retain exact server-source context
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Native date selection resolves its actual Monday week without manager filters
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Schedule confirmation persists canonically for the exact own week; refresh renders its receipt
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Light/Dark320/390/430 layouts retain accessible navigation and week-control targets
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Enlarged text, content clearance and native week-picker keyboard Escape preserve focus
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Desktop keeps original Home greeting, presentation and hidden mobile additions
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Desktop Schedule preserves existing bar-first layout and hides mobile date controls
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Background/offline release clears private Home facts
+
+stdout | src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+firefox: Revoked sessions clear own Home and refuse a direct protected Schedule route
+
+ ❯ src/test/integration/employee-mobile-phase1.integration.ts (1 test | 1 failed) 139486ms
+   × integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access 139483ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/integration/employee-mobile-phase1.integration.ts > integrates approved Employee mobile Home and Schedule with real own reads, confirmation and current access
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "chromium: console Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+
+ ❯ src/test/integration/employee-mobile-phase1.integration.ts:195:694
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  13:49:16
+   Duration  139.93s (tests 100%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

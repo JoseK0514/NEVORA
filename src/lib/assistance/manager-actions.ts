@@ -1,3 +1,13 @@
+import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
+import { formatDisplayDate, formatTime } from '../date-utils';
+
+/** "Mon, Oct 12 · 8:00 AM–4:00 PM" for people; ids and links keep ISO values. */
+function gapWhen(gap: { date: string; startTime: string; endTime: string }) {
+  const start = gap.startTime.slice(0, 5), end = gap.endTime.slice(0, 5);
+  const when = start === "00:00" && end === "24:00" ? "all day" : `${formatTime(start)}–${end === "24:00" ? "midnight" : formatTime(end)}`;
+  return `${formatDisplayDate(gap.date)} · ${when}`;
+}
+
 export type ManagerActionPriority =
   | "URGENT"
   | "REVIEW"
@@ -21,6 +31,8 @@ export type ManagerActionItem = {
   detail: string;
   href: string;
   dateTime?: string;
+  /** A coverage gap's end, workspace-local ("YYYY-MM-DDTHH:MM"; an overnight window ends the next day). */
+  endDateTime?: string;
   employeeId?: string;
   locationId?: string;
 };
@@ -32,7 +44,9 @@ export type ManagerCoverageGapInput = {
   date: string;
   startTime: string;
   endTime: string;
-  gap: number;
+  gap: number | null;
+  requiresLead?: boolean | null;
+  positionCoverage?: {positionId: string; positionName: string; missing: number}[];
 };
 
 export type ManagerHourIssueInput = {
@@ -76,10 +90,37 @@ function encode(value: string) {
   return encodeURIComponent(value);
 }
 
+/** When a coverage window ends, local to the workspace: the same day, or the next for an overnight (or to-midnight) window. */
+function gapEnd(gap: { date: string; startTime: string; endTime: string }) {
+  const end = gap.endTime.slice(0, 5);
+  if (end > gap.startTime.slice(0, 5)) return `${gap.date}T${end}`;
+  const next = new Date(`${gap.date}T12:00:00Z`); next.setUTCDate(next.getUTCDate() + 1);
+  return `${next.toISOString().slice(0, 10)}T${end === "24:00" ? "00:00" : end}`;
+}
+
 function coverageAction(
   weekStart: string,
   gap: ManagerCoverageGapInput,
 ): ManagerActionItem {
+  if (gap.gap === null || gap.requiresLead === null) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'REVIEW',
+    title: `Staffing setup needed at ${gap.locationName}`,
+    detail: 'Configure minimum staffing and choose a designated Lead rule.',
+    href: '/app/schedule/settings', locationId: gap.locationId,
+  };
+  const missingPositions = (gap.positionCoverage ?? []).filter(position => position.missing > 0);
+  const repairHref = coverageRepairUrl({ version: 1, weekStart, gapKey: gap.key, locationId: gap.locationId,
+    date: gap.date, startTime: gap.startTime, endTime: gap.endTime,
+    target: missingPositions.length > 1 ? 'CHOOSE' : missingPositions.length === 1 ? 'POSITION' : gap.gap === 0 ? 'LEAD' : 'STAFFING',
+    ...(missingPositions.length === 1 ? { positionId: missingPositions[0].positionId } : {}),
+    reported: reportedCoverageState({ ...gap, requiresLead: gap.requiresLead ?? gap.gap === 0 }) });
+  if (missingPositions.length) return {
+    id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
+    title: `Position not covered at ${gap.locationName}`,
+    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    href: repairHref,
+    dateTime: `${gap.date}T${gap.startTime}`, endDateTime: gapEnd(gap), locationId: gap.locationId,
+  };
   const leadOnly = gap.gap === 0;
   const people = gap.gap === 1 ? "1 employee" : `${gap.gap} employees`;
 
@@ -88,18 +129,14 @@ function coverageAction(
     type: "COVERAGE_GAP",
     priority: "URGENT",
     title: leadOnly
-      ? `Lead coverage missing at ${gap.locationName}`
+      ? `No lead scheduled at ${gap.locationName}`
       : `Coverage gap at ${gap.locationName}`,
     detail: leadOnly
-      ? `${gap.date} · ${gap.startTime}–${gap.endTime} · Designated lead required`
-      : `${gap.date} · ${gap.startTime}–${gap.endTime} · Need ${people}`,
-    href:
-      `/app/schedule/coverage?week=${encode(weekStart)}` +
-      `&date=${encode(gap.date)}` +
-      `&locationId=${encode(gap.locationId)}` +
-      `&start=${encode(gap.startTime)}` +
-      `&end=${encode(gap.endTime)}`,
+      ? `${gapWhen(gap)} · Designated lead required`
+      : `${gapWhen(gap)} · Need ${people}`,
+    href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,
+    endDateTime: gapEnd(gap),
     locationId: gap.locationId,
   };
 }
@@ -114,7 +151,7 @@ function requestAction(
       priority: "REVIEW",
       title: "Time-off request",
       detail: `${request.employeeName} is waiting for review.`,
-      href: `/app/requests?tab=team&requestId=${encode(request.id)}`,
+      href: `/app/requests?tab=pending&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,
     };
   }
@@ -124,7 +161,7 @@ function requestAction(
       id: `CALLOUT:${request.id}`,
       type: "CALLOUT",
       priority: "REVIEW",
-      title: "Unable-to-work request",
+      title: "Unable to Work Request",
       detail: `${request.employeeName} is waiting for review.`,
       href: `/app/exchange?tab=requests&requestId=${encode(request.id)}`,
       dateTime: request.createdAt,
@@ -135,7 +172,7 @@ function requestAction(
     id: `EXCHANGE:${request.id}`,
     type: "EXCHANGE",
     priority: "REVIEW",
-    title: "Shift request",
+    title: "Shift Request",
     detail: `${request.employeeName} is waiting for review.`,
     href: `/app/exchange?tab=requests&requestId=${encode(request.id)}`,
     dateTime: request.createdAt,
@@ -151,7 +188,7 @@ function hourAction(
       id: `HOURS:${issue.employeeId}`,
       type: "TARGET_MISSING",
       priority: "MISSING_INPUT",
-      title: "Weekly hour target missing",
+      title: "No weekly hour target",
       detail: `${issue.employeeName} is not included in hours-balance checks.`,
       href: `/app/schedule/settings?employeeId=${encode(issue.employeeId)}`,
       employeeId: issue.employeeId,
@@ -233,7 +270,7 @@ export function buildManagerActionItems(
       type: "DEADLINE_MISSING",
       priority: "MISSING_INPUT",
       title: "Availability deadline not set",
-      detail: "Set the weekly cutoff before employees finalize availability.",
+      detail: "Set the availability deadline before employees finalize availability.",
       href: `/app/schedule?week=${encode(input.weekStart)}`,
     });
   }
@@ -244,7 +281,7 @@ export function buildManagerActionItems(
       type: "COVERAGE_RULES_MISSING",
       priority: "MISSING_INPUT",
       title: "Coverage periods not fully configured",
-      detail: "Configure expected coverage windows so missing shifts can be detected.",
+      detail: "Configure expected coverage windows so staffing issues can be detected.",
       href: "/app/schedule/settings",
     });
   }

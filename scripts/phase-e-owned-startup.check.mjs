@@ -1,0 +1,42 @@
+import assert from 'node:assert/strict';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { test } from 'node:test';
+import { externalEvidence, safeEnvironment } from './phase-e-owned.mjs';
+
+test('real owned PostgreSQL starts over TCP under a long evidence path and fully tears down', () => {
+  assert.equal(process.env.DATABASE_URL, undefined, 'Unset DATABASE_URL');
+  assert.equal(process.env.FUEL_TEST_DATABASE_URL, undefined, 'Unset inherited test database');
+  const bin = process.env.NEVORA_TEST_PG_BIN;
+  assert(bin && ['initdb', 'pg_ctl'].every(file => existsSync(join(bin, file))), 'Select the existing approved local PostgreSQL runtime');
+  const source = resolve(process.cwd());
+  const evidence = externalEvidence(source, process.env.PHASE_E_STARTUP_EVIDENCE_DIR);
+  const root = mkdtempSync(join(evidence, 'long-owned-startup-'));
+  const fixture = join(root, 'fixture'), logs = join(root, 'external-evidence-' + 'long-path-'.repeat(12));
+  mkdirSync(join(fixture, 'src/test/integration'), { recursive: true });
+  mkdirSync(join(fixture, 'node_modules/vitest'), { recursive: true });
+  mkdirSync(logs);
+  writeFileSync(join(fixture, '.gitignore'), 'node_modules/\n');
+  writeFileSync(join(fixture, 'vitest.phase-e-integration.config.mts'), 'export default {};\n');
+  writeFileSync(join(fixture, 'src/test/integration/phase-e-published-assignments.integration.ts'), '/* Harness startup boundary only; no E feature test. */\n');
+  writeFileSync(join(fixture, 'node_modules/vitest/vitest.mjs'), `import assert from 'node:assert/strict';import fs from 'node:fs';import {createRequire} from 'node:module';import {resolve} from 'node:path';
+const owner=JSON.parse(fs.readFileSync(process.env.PHASE_E_OWNERSHIP_FILE,'utf8'));
+const {Client}=createRequire(${JSON.stringify(join(source, 'package.json'))})('pg');const client=new Client({host:'127.0.0.1',port:owner.port,user:'nevora_e',database:'postgres',connectionTimeoutMillis:3000});await client.connect();
+try{const result=await client.query("SELECT current_setting('unix_socket_directories') AS sockets,host(inet_server_addr()) AS address");fs.writeFileSync(${JSON.stringify(join(root, 'tcp-query.log'))},JSON.stringify(result.rows));assert.deepEqual(result.rows,[{sockets:'',address:'127.0.0.1'}]);}finally{await client.end();}
+const a=process.argv.slice(2);fs.writeFileSync(a[a.indexOf('--outputFile')+1],JSON.stringify({success:true,numTotalTests:1,numPassedTests:1,numFailedTests:0,numPendingTests:0,numTodoTests:0,testResults:[{name:resolve('src/test/integration/phase-e-published-assignments.integration.ts'),status:'passed',assertionResults:[{status:'passed',fullName:'owned TCP startup boundary; no E feature acceptance'}]}]}));\n`);
+  execFileSync('git', ['init', '-q', fixture]); execFileSync('git', ['add', '.'], { cwd: fixture });
+  execFileSync('git', ['-c', 'user.name=Fictional QA', '-c', 'user.email=qa@example.invalid', 'commit', '-qm', 'long path owned startup boundary'], { cwd: fixture });
+  const fixtureSha = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: fixture, encoding: 'utf8' }).trim();
+  const command = [process.execPath, join(source, 'scripts/phase-e-owned.mjs'), 'sql', '--suite', 'assignments'];
+  const result = spawnSync(command[0], command.slice(1), { cwd: fixture, encoding: 'utf8', timeout: 60_000, env: { ...safeEnvironment(), PHASE_E_EXPECTED_SHA: fixtureSha, PHASE_E_EVIDENCE_DIR: logs } });
+  writeFileSync(join(root, 'runner.log'), (result.stdout ?? '') + (result.stderr ?? ''));
+  const report = JSON.parse(readFileSync(join(logs, 'sql-report.json'), 'utf8'));
+  const ownership = JSON.parse(readFileSync(report.ownershipFile, 'utf8'));
+  const receipt = { command, fixtureSha, source, sourceCheckpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), runnerHash: createHash('sha256').update(readFileSync(command[1])).digest('hex'), exitCode: result.status, hypotheticalSocketPathBytes: Buffer.byteLength(join(ownership.root, '.s.PGSQL.' + ownership.port)), ownershipClosed: ownership.closed, dataRemains: existsSync(ownership.data), kind: 'real PG startup/lifecycle boundary; not E application acceptance' };
+  writeFileSync(join(root, 'startup-receipt.json'), JSON.stringify(receipt, null, 2));
+  assert(receipt.hypotheticalSocketPathBytes > 103, 'Regression must exceed the socket path limit');
+  assert.equal(result.status, 0, 'Owned TCP PostgreSQL failed; see retained runner/postgres logs');
+  assert.equal(ownership.closed, true); assert.equal(existsSync(ownership.data), false);
+});

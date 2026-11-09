@@ -1,0 +1,280 @@
+[
+ {
+  "id": "L5 reports 320 root100: field and button column edges match within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 286,
+     "top": 283,
+     "height": 85.5,
+     "width": 252
+    },
+    {
+     "left": 34,
+     "right": 286,
+     "top": 381,
+     "height": 85.5,
+     "width": 252
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 286,
+     "top": 478,
+     "height": 44,
+     "width": 252,
+     "text": "View period",
+     "lines": 1
+    },
+    {
+     "left": 34,
+     "right": 286,
+     "top": 534,
+     "height": 44,
+     "width": 252,
+     "text": "Refresh",
+     "lines": 1
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L5 reports 320 root100: buttons 44px, one line each",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   {
+    "left": 34,
+    "right": 286,
+    "top": 478,
+    "height": 44,
+    "width": 252,
+    "text": "View period",
+    "lines": 1
+   },
+   {
+    "left": 34,
+    "right": 286,
+    "top": 534,
+    "height": 44,
+    "width": 252,
+    "text": "Refresh",
+    "lines": 1
+   }
+  ]
+ },
+ {
+  "id": "L5 reports 390 root100: field and button column edges match within 1px",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 190,
+     "top": 283,
+     "height": 85.5,
+     "width": 156
+    },
+    {
+     "left": 200,
+     "right": 356,
+     "top": 283,
+     "height": 85.5,
+     "width": 156
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 207,
+     "top": 381,
+     "height": 44,
+     "width": 173,
+     "text": "View period",
+     "lines": 1
+    },
+    {
+     "left": 217,
+     "right": 356,
+     "top": 381,
+     "height": 44,
+     "width": 139,
+     "text": "Refresh",
+     "lines": 1
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L5 reports 390 root100: buttons 44px, one line each",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   {
+    "left": 34,
+    "right": 207,
+    "top": 381,
+    "height": 44,
+    "width": 173,
+    "text": "View period",
+    "lines": 1
+   },
+   {
+    "left": 217,
+    "right": 356,
+    "top": 381,
+    "height": 44,
+    "width": 139,
+    "text": "Refresh",
+    "lines": 1
+   }
+  ]
+ },
+ {
+  "id": "L5 reports 390 root200: one column, no sideways scroll",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "labels": [
+    {
+     "left": 34,
+     "right": 190,
+     "top": 506,
+     "height": 132,
+     "width": 156
+    },
+    {
+     "left": 200,
+     "right": 356,
+     "top": 506,
+     "height": 132,
+     "width": 156
+    }
+   ],
+   "buttons": [
+    {
+     "left": 34,
+     "right": 356,
+     "top": 650,
+     "height": 64.5,
+     "width": 322,
+     "text": "View period",
+     "lines": 1
+    },
+    {
+     "left": 34,
+     "right": 356,
+     "top": 727,
+     "height": 64.5,
+     "width": 322,
+     "text": "Refresh",
+     "lines": 1
+    }
+   ],
+   "display": "flex",
+   "cols": "repeat(2, minmax(0px, 1fr))",
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L6 employee timecards 320 root100: both buttons 44px, one line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "text": "View period",
+    "name": null,
+    "height": 48,
+    "width": 248,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   },
+   {
+    "text": "Refresh timecardsRefresh",
+    "name": "Refresh timecards",
+    "height": 48,
+    "width": 248,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   }
+  ]
+ },
+ {
+  "id": "L6 employee timecards 390 root100: both buttons 44px, one line",
+  "engine": "chromium",
+  "pass": false,
+  "detail": [
+   {
+    "text": "View period",
+    "name": null,
+    "height": 48,
+    "width": 153,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   },
+   {
+    "text": "Refresh timecardsRefresh",
+    "name": "Refresh timecards",
+    "height": 48,
+    "width": 153,
+    "lines": 1,
+    "inside": true,
+    "overflowX": 0,
+    "minHeight": "44px",
+    "heightProp": "48px"
+   }
+  ]
+ },
+ {
+  "id": "L6 employee timecards 390 root200: labels inside the buttons, nothing overflows",
+  "engine": "chromium",
+  "pass": false,
+  "detail": {
+   "m": [
+    {
+     "text": "View period",
+     "name": null,
+     "height": 48,
+     "width": 153,
+     "lines": 2,
+     "inside": false,
+     "overflowX": 0,
+     "minHeight": "44px",
+     "heightProp": "48px"
+    },
+    {
+     "text": "Refresh timecardsRefresh",
+     "name": "Refresh timecards",
+     "height": 48,
+     "width": 153,
+     "lines": 2,
+     "inside": false,
+     "overflowX": 0,
+     "minHeight": "44px",
+     "heightProp": "48px"
+    }
+   ],
+   "overflow": 0
+  }
+ }
+]

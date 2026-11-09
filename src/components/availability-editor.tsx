@@ -1,285 +1,107 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { NavIcon } from "@/components/nav-icon";
-import {
-  applyAllDays,
-  applyWeekdays,
-  clearAvailability,
-  type AvailabilityState,
-} from "@/lib/availability-presets";
-import {
-  saveAvailabilityAction,
-  saveWeeklyAvailabilityAction,
-} from "@/app/app/availability/actions";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useFormStatus } from "react-dom";
+import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
+import type { AvailabilityState } from "@/lib/availability-presets";
+import { addDays, formatDayLabel } from "@/lib/date-utils";
+import { saveAvailabilityAction, saveWeeklyAvailabilityAction } from "@/app/app/availability/actions";
+import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
+import { EmployeeSubmitButton } from "./employee-submit-button";
+import { revealFeedback } from "@/lib/reveal-feedback";
 
-const WEEKDAYS = [
+const DAYS = [
   { dayOfWeek: 1, label: "Monday" },
   { dayOfWeek: 2, label: "Tuesday" },
   { dayOfWeek: 3, label: "Wednesday" },
   { dayOfWeek: 4, label: "Thursday" },
   { dayOfWeek: 5, label: "Friday" },
-];
-
-const WEEKEND = [
   { dayOfWeek: 6, label: "Saturday" },
   { dayOfWeek: 0, label: "Sunday" },
 ];
 
-function minutesBetween(startTime: string, endTime: string) {
-  const [startHour, startMinute] = startTime.split(":").map(Number);
-  const [endHour, endMinute] = endTime.split(":").map(Number);
-  return Math.max(0, endHour * 60 + endMinute - (startHour * 60 + startMinute));
+function AvailabilityFields({ initialAvailability, weekStart, locked }: {
+  initialAvailability: AvailabilityState;
+  weekStart?: string;
+  locked: boolean;
+}) {
+  const { pending } = useFormStatus();
+  const [availability, setAvailability] = useState(initialAvailability);
+  const initialSignature = useMemo(() => JSON.stringify(initialAvailability), [initialAvailability]);
+  const dirty = JSON.stringify(availability) !== initialSignature;
+  const availableDays = DAYS.filter(day => availability[day.dayOfWeek].available).length;
+  const disabled = locked || pending;
+  const changedDays = DAYS.filter(day => JSON.stringify(availability[day.dayOfWeek]) !== JSON.stringify(initialAvailability[day.dayOfWeek])).map(day => day.dayOfWeek);
+
+  function updateDay(dayOfWeek: number, patch: Partial<AvailabilityState[number]>) {
+    setAvailability(current => ({ ...current, [dayOfWeek]: { ...current[dayOfWeek], ...patch } }));
+  }
+
+  return <>
+    {weekStart ? <>
+      <input type="hidden" name="weekStart" value={weekStart} />
+      <input type="hidden" name="changedDays" value={changedDays.join(",")} />
+    </> : null}
+    <header className="av-editor-heading">
+      <div><h2>Your weekly hours</h2><p>Choose the days and times you can work.</p></div>
+      <span className="av-day-count">{availableDays} of 7 days available</span>
+    </header>
+    <fieldset className="av-day-list" disabled={disabled}>
+      <legend className="sr-only">Availability by day</legend>
+      {DAYS.map((day, index) => {
+        const value = availability[day.dayOfWeek];
+        return <div className={`av-day-row${value.available ? " is-available" : ""}`} key={day.dayOfWeek}>
+          <div className="av-day-name"><strong>{day.label}</strong>{weekStart ? <span>{formatDayLabel(addDays(weekStart, index)).day}</span> : null}</div>
+          <label className="av-availability-toggle">
+            <span className="av-switch"><input type="checkbox" role="switch" name={`available-${day.dayOfWeek}`} aria-label={`${day.label} availability`} checked={value.available} onChange={event => updateDay(day.dayOfWeek, { available: event.target.checked })} /><span className="av-switch-track" aria-hidden="true" /></span>
+            <span>{value.available ? "Available" : "Unavailable"}</span>
+          </label>
+          {value.available ? <div className="av-time-range">
+            <label><span>From</span><input type="time" required name={`start-${day.dayOfWeek}`} aria-label={`${day.label} start time`} value={value.startTime} onChange={event => updateDay(day.dayOfWeek, { startTime: event.target.value })} /></label>
+            <span className="av-time-separator" aria-hidden="true">–</span>
+            <label><span>Until</span><input type="time" required name={`end-${day.dayOfWeek}`} aria-label={`${day.label} end time`} value={value.endTime} onChange={event => updateDay(day.dayOfWeek, { endTime: event.target.value })} /></label>
+          </div> : <p className="av-no-hours">No available hours</p>}
+        </div>;
+      })}
+    </fieldset>
+    <p className="av-input-hint">An end time of midnight includes the rest of that day.</p>
+    {weekStart && availableDays === 0 ? <p className="av-zero-note">Submitting with every day unavailable tells your manager you cannot work this week.</p> : null}
+    <footer className="av-editor-footer">
+      <p role="status" aria-live="polite">{pending ? "Saving your availability…" : locked ? "This week is closed for changes." : dirty ? "You have unsaved changes." : weekStart ? "Submit these hours for this week." : "Your saved usual week."}</p>
+      <div className="av-form-actions">
+        <button className="av-button secondary" type="button" disabled={disabled || !dirty} onClick={() => setAvailability(initialAvailability)}><ArrowCounterClockwiseIcon size={18} aria-hidden="true" />Reset changes</button>
+        <EmployeeSubmitButton className="av-button primary" pendingText="Saving…" disabled={locked || (!weekStart && !dirty)}>{locked ? <LockSimpleIcon size={18} aria-hidden="true" /> : null}{weekStart ? "Submit weekly availability" : "Save usual week"}{!locked ? <ArrowRightIcon size={18} aria-hidden="true" /> : null}</EmployeeSubmitButton>
+      </div>
+    </footer>
+  </>;
 }
 
-function durationLabel(startTime: string, endTime: string) {
-  const minutes = minutesBetween(startTime, endTime);
-  const hours = Math.floor(minutes / 60);
-  const remainder = minutes % 60;
-  return `${hours}h ${remainder}m`;
-}
-
-export function AvailabilityEditor({
-  initialAvailability,
-  weekStart,
-  locked = false,
-}: {
+export function AvailabilityEditor({ initialAvailability, weekStart, locked = false, employeeView = false }: {
   initialAvailability: AvailabilityState;
   weekStart?: string;
   locked?: boolean;
+  employeeView?: boolean;
 }) {
-  const [availability, setAvailability] = useState(initialAvailability);
-
-  const initialSignature = useMemo(
-    () => JSON.stringify(initialAvailability),
-    [initialAvailability],
-  );
-  const currentSignature = JSON.stringify(availability);
-  const dirty = currentSignature !== initialSignature;
-  const availableDays = Object.values(availability).filter((day) => day.available);
-  const totalAvailableMinutes = availableDays.reduce(
-    (sum, day) => sum + minutesBetween(day.startTime, day.endTime),
-    0,
-  );
-  const totalAvailableHours = Math.floor(totalAvailableMinutes / 60);
-  const totalAvailableRemainder = totalAvailableMinutes % 60;
-
-  function updateDay(
-    dayOfWeek: number,
-    patch: Partial<AvailabilityState[number]>,
-  ) {
-    setAvailability((current) => ({
-      ...current,
-      [dayOfWeek]: {
-        ...current[dayOfWeek],
-        ...patch,
-      },
-    }));
+  // IS (round 3): a failed save (network, 401, 403) keeps the page and the hours entered, and says nothing was saved.
+  const [failed, setFailed] = useState(0);
+  const failures = useRef(0);
+  const feedback = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (failed && feedback.current) revealFeedback(feedback.current); }, [failed]);
+  const saving = useRef(false);
+  async function save(data: FormData) {
+    if (saving.current) return;
+    saving.current = true;
+    setFailed(0);
+    try { await (weekStart ? saveWeeklyAvailabilityAction : saveAvailabilityAction)(data); }
+    catch (error) { unstable_rethrow(error); setFailed(++failures.current); }
+    finally { saving.current = false; }
   }
-
-  function renderDay(day: { dayOfWeek: number; label: string }) {
-    const value = availability[day.dayOfWeek];
-
-    return (
-      <div
-        className={
-          value.available
-            ? "availability-day-row is-available"
-            : "availability-day-row"
-        }
-        key={day.dayOfWeek}
-      >
-        <div className="availability-day-name">
-          <strong>{day.label}</strong>
-        </div>
-
-        <label className="availability-switch">
-          <input
-            type="checkbox"
-            name={`available-${day.dayOfWeek}`}
-            checked={value.available}
-            disabled={locked}
-            onChange={(event) =>
-              updateDay(day.dayOfWeek, { available: event.target.checked })
-            }
-          />
-          <span className="availability-switch-track" aria-hidden="true">
-            <span />
-          </span>
-          <span className="availability-switch-label">
-            {value.available ? "On" : "Off"}
-          </span>
-        </label>
-
-        {value.available ? (
-          <div className="availability-time-range">
-            <label>
-              <span>From</span>
-              <span className="availability-time-input-wrap">
-                <span className="availability-time-icon" aria-hidden="true">
-                  <NavIcon name="clock" size={16} />
-                </span>
-                <input
-                  type="time"
-                  name={`start-${day.dayOfWeek}`}
-                  value={value.startTime}
-                  disabled={locked}
-                  onChange={(event) =>
-                    updateDay(day.dayOfWeek, { startTime: event.target.value })
-                  }
-                />
-              </span>
-            </label>
-
-            <span className="availability-time-separator">–</span>
-
-            <label>
-              <span>Until</span>
-              <span className="availability-time-input-wrap">
-                <span className="availability-time-icon" aria-hidden="true">
-                  <NavIcon name="clock" size={16} />
-                </span>
-                <input
-                  type="time"
-                  name={`end-${day.dayOfWeek}`}
-                  value={value.endTime}
-                  disabled={locked}
-                  onChange={(event) =>
-                    updateDay(day.dayOfWeek, { endTime: event.target.value })
-                  }
-                />
-              </span>
-            </label>
-
-            <span className="availability-duration">
-              {durationLabel(value.startTime, value.endTime)}
-            </span>
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-
-  const formAction = weekStart
-    ? saveWeeklyAvailabilityAction
-    : saveAvailabilityAction;
-
-  return (
-    <form action={formAction} className="availability-workspace">
-      {weekStart ? <input type="hidden" name="weekStart" value={weekStart} /> : null}
-      <section className="availability-quickbar" aria-label="Quick availability setup">
-        <div className="availability-quick-intro">
-          <span className="availability-quick-icon" aria-hidden="true">
-            <NavIcon name="calendar" size={20} />
-          </span>
-          <span className="availability-quick-copy">
-            <strong>Quick Setup</strong>
-            <small>Use Monday&apos;s hours as the starting point.</small>
-          </span>
-        </div>
-
-        <div className="availability-summary">
-          <strong>{availableDays.length} of 7 days available</strong>
-          <small>
-            {availableDays.length
-              ? `${totalAvailableHours}h ${totalAvailableRemainder}m total weekly availability`
-              : "No availability set yet."}
-          </small>
-        </div>
-
-        <div className="availability-quick-actions">
-          <button
-            type="button"
-            className="button primary compact-button availability-apply-weekdays"
-            disabled={locked}
-            onClick={() => setAvailability((current) => applyWeekdays(current))}
-          >
-            <NavIcon name="templates" size={15} />
-            Apply Mon–Fri
-          </button>
-          <button
-            type="button"
-            className="button secondary compact-button"
-            disabled={locked}
-            onClick={() => setAvailability((current) => applyAllDays(current))}
-          >
-            <NavIcon name="calendar" size={15} />
-            Apply Every Day
-          </button>
-          <button
-            type="button"
-            className="button ghost compact-button availability-clear"
-            disabled={locked}
-            onClick={() => setAvailability((current) => clearAvailability(current))}
-          >
-            Clear All
-          </button>
-        </div>
-      </section>
-
-      <section className="panel availability-schedule-card">
-        <div className="availability-group">
-          <div className="availability-group-heading">
-            <strong>Weekdays</strong>
-            <span>Monday through Friday</span>
-          </div>
-          {WEEKDAYS.map(renderDay)}
-        </div>
-
-        <div className="availability-group weekend-group">
-          <div className="availability-group-heading">
-            <strong>Weekend</strong>
-            <span>Saturday and Sunday</span>
-          </div>
-          {WEEKEND.map(renderDay)}
-        </div>
-      </section>
-
-      <div className={dirty ? "availability-savebar is-dirty" : "availability-savebar"}>
-        <div className="availability-save-status">
-          <span className="availability-save-icon" aria-hidden="true">
-            <NavIcon name={locked || dirty ? "alert" : "coverage"} size={20} />
-          </span>
-          <span className="availability-save-copy">
-            <strong className="availability-status-full">
-              {locked
-                ? "Availability locked"
-                : dirty
-                  ? "Unsaved changes"
-                  : "Availability up to date"}
-            </strong>
-            <strong className="availability-status-compact">
-              {locked ? "Locked" : dirty ? "Unsaved changes" : "Up to date"}
-            </strong>
-            <small>
-              {locked
-                ? "The deadline for this schedule week has passed."
-                : dirty
-                  ? "Save when your availability looks right."
-                  : weekStart
-                    ? "This weekly submission is used for the selected schedule."
-                    : "Changes will be used as your normal scheduling baseline."}
-            </small>
-          </span>
-        </div>
-        <div className="availability-save-actions">
-          <button
-            className="button secondary"
-            type="button"
-            disabled={locked || !dirty}
-            onClick={() => setAvailability(initialAvailability)}
-          >
-            Reset
-          </button>
-          <button
-            className="button primary"
-            type="submit"
-            disabled={locked || !dirty}
-          >
-            Save Availability
-          </button>
-        </div>
-      </div>
-    </form>
-  );
+  return <form action={save} onReset={event => event.preventDefault()} className={`av-editor${employeeView ? " av-employee-editor" : ""}`} aria-label={weekStart ? "Weekly availability submission" : "Normal availability preferences"}>
+    <AvailabilityFields initialAvailability={initialAvailability} weekStart={weekStart} locked={locked} />
+    {/* IS-75: the alert sits next to Save, where the person is looking. */}
+    {failed ? <p ref={feedback} tabIndex={-1} className="form-error" role="alert">Your availability wasn’t saved. Check your connection and save again. If this keeps happening, <Link href="/login">sign in again</Link>.</p> : null}
+  </form>;
 }

@@ -1,0 +1,85 @@
+name: Communications diagnostic (not release verification)
+
+on:
+  push:
+    branches: [codex/development-ci-consolidation-20261022]
+    paths: [.github/workflows/communications-diagnostic.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: communications-diagnostic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    name: communications-diagnostic-only
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PHASE_E_EXPECTED_SHA: ${{ github.sha }}
+      PHASE_E_BROWSER_SUITE: communications
+    steps:
+      - name: Select owned evidence directory
+        run: echo "PHASE_E_EVIDENCE_DIR=$RUNNER_TEMP/nevora-phase-e-browser-evidence" >> "$GITHUB_ENV"
+      - name: Checkout exact diagnostic candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Verify bounded diagnostic regressions
+        run: node --test scripts/browser-response-deadline.check.mjs
+      - name: Install pinned Playwright runtime
+        shell: bash
+        run: |
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          npm audit --prefix "$PW_ROOT" --audit-level=high
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install Chromium and WebKit
+        timeout-minutes: 8
+        run: '"$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit'
+      - name: Install PostgreSQL test runtime
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          PG_INITDB="/usr/lib/postgresql/16/bin/initdb"
+          test -n "$PG_INITDB"
+          PG_BIN="$(dirname "$PG_INITDB")"
+          test -x "$PG_BIN/initdb"
+          test -x "$PG_BIN/pg_ctl"
+          echo "NEVORA_TEST_PG_BIN=$PG_BIN" >> "$GITHUB_ENV"
+      - name: Observe all 14 Communications cells in their shared owned fixture
+        run: node scripts/phase-e-owned.mjs browser --suite "$PHASE_E_BROWSER_SUITE"
+      - name: Verify diagnostic source and runtime closure
+        run: node scripts/phase-e-browser-evidence.mjs leaf --suite "$PHASE_E_BROWSER_SUITE"
+      - name: Upload bounded diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: communications-diagnostic-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*-report.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-failure.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/updates-*-checks.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/source-manifest.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/*.png
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-postgres-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/ownership.json
+            ${{ runner.temp }}/nevora-phase-e-browser-evidence/owned-next-*/source-manifest.json
+          if-no-files-found: error
+          retention-days: 7

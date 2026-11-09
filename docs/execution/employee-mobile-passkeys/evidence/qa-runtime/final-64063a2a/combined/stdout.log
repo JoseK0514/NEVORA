@@ -1,0 +1,12 @@
+file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/scripts/payroll-postgres.mjs:47
+    throw new Error(
+          ^
+
+Error: pg_ctl failed: pg_ctl: could not start server
+Examine the log output.
+
+    at run (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/scripts/payroll-postgres.mjs:47:11)
+    at file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/scripts/payroll-postgres.mjs:64:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.19.0

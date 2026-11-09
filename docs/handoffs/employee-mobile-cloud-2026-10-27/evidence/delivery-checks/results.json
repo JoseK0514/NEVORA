@@ -1,0 +1,15 @@
+{
+  "typescript": {
+    "command": "npx tsc --noEmit --incremental false",
+    "exitCode": 0
+  },
+  "copiedJavaScriptLint": {
+    "exitCode": 0
+  },
+  "pinnedApplicationInputs": {
+    "count": 2004,
+    "allUnchanged": true
+  },
+  "productPendingModuleRegression": "RED; unchanged; must be fixed by Cloud",
+  "sourceRuntimeBehaviorChangedByDelivery": false
+}

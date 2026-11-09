@@ -1,0 +1,303 @@
+[
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/copy-receipt?operation=bcff9beb-3440-4bbe-a8e0-0561ca20dc3a",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span. «Location» 12px",
+   "strong. «Northside Main Office» 14px",
+   "span.nevora-field-label «Employee» 12px",
+   "span.nevora-field-label «Position Optional» 12px",
+   "strong. «Designated shift lead» 13px",
+   "output. «8 hr scheduled» 12px",
+   "span. «Optional» 12px",
+   "summary. «Delete shift» 12px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 100,
+  "route": "/app/schedule/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.shift-workspace-context «Oct 19 – Oct 25» 10px",
+   "span.nevora-field-label «Location» 13px",
+   "span.nevora-field-label «Employee» 13px",
+   "span.nevora-field-label «Position Optional» 13px",
+   "span. «Date» 13px",
+   "span. «Start time» 13px",
+   "span. «End time» 13px",
+   "strong. «Designated shift lead» 13px",
+   "span.shift-preview-label «Draft preview» 12px",
+   "span. «Set start and end times» 13px",
+   "strong. «Choose an employee» 14px",
+   "span. «Your selection will appear her» 10px"
+  ],
+  "targets": [],
+  "cls": 0,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule/copy-receipt?operation=bcff9beb-3440-4bbe-a8e0-0561ca20dc3a",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0457,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2383,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.0929,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 125,
+  "route": "/app/schedule/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [
+   "span.shift-workspace-context «Oct 19 – Oct 25» 12.5px",
+   "span. «Your selection will appear her» 12.5px"
+  ],
+  "targets": [],
+  "cls": 0.084,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule/copy-receipt?operation=bcff9beb-3440-4bbe-a8e0-0561ca20dc3a",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1393,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.3728,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.196,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 150,
+  "route": "/app/schedule/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.1177,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule/copy-receipt?operation=bcff9beb-3440-4bbe-a8e0-0561ca20dc3a",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.556,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule/coverage",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.8783,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule/edit?shiftId=audit-next-0-1",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.6371,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ },
+ {
+  "engine": "chromium",
+  "account": "AUDIT-M",
+  "size": "390",
+  "text": 200,
+  "route": "/app/schedule/new",
+  "status": 200,
+  "overflow": [],
+  "smallText": [],
+  "targets": [],
+  "cls": 0.2518,
+  "errors": [
+   "console: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ],
+  "axe": [],
+  "ok": false
+ }
+]

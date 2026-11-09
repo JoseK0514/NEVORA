@@ -1,12 +1,6 @@
 import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 
-function priorityLabel(priority: ManagerActionItem["priority"]) {
-  if (priority === "URGENT") return "Urgent";
-  if (priority === "REVIEW") return "Review";
-  return "Setup";
-}
-
 function actionLabel(type: ManagerActionItem["type"]) {
   switch (type) {
     case "COVERAGE_GAP":
@@ -23,7 +17,7 @@ function actionLabel(type: ManagerActionItem["type"]) {
     case "ACKNOWLEDGEMENT_MISSING":
       return "View";
     case "DEADLINE_MISSING":
-      return "Set Deadline";
+      return "Set deadline";
     case "COVERAGE_RULES_MISSING":
       return "Configure";
   }
@@ -63,12 +57,9 @@ export function ManagerActionList({
       {visibleItems.map((item) => (
         <div className="manager-action-table-row" role="row" key={item.id}>
           <span
-            className={`manager-priority ${item.priority.toLowerCase().replace("_", "-")}`}
-            aria-label={item.priority === "URGENT" ? "Urgent" : item.priority === "REVIEW" ? "Review" : "Setup"}
-          >
-            <span className={`manager-priority-dot ${item.priority.toLowerCase()}`} aria-hidden="true" />
-            <small>{priorityLabel(item.priority)}</small>
-          </span>
+            className={`manager-priority-dot ${item.priority.toLowerCase()}`}
+            aria-label={item.priority === "URGENT" ? "Urgent" : item.priority === "REVIEW" ? "Review" : "Missing input"}
+          />
           <strong>{item.title}</strong>
           <span className="manager-action-detail">{item.detail}</span>
           <Link className="button secondary compact-button" href={item.href}>

@@ -1,0 +1,549 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "chromium",
+      "name": "Initial held real read exposes loading without stale private rows"
+    },
+    {
+      "engine": "chromium",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "chromium",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "chromium",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit own mark-read stays distinct from acknowledgement"
+    },
+    {
+      "engine": "chromium",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Changed audience refuses stale send and permits deliberate fresh review with unchanged draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual commit/lost response survives route changes and source withdrawal; exact original receipt remains recoverable"
+    },
+    {
+      "engine": "chromium",
+      "name": "Not-found lookup permits deliberate exact original payload/operation retry"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native Tab moves from Title to Message"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Failed read stays unavailable and refresh recovers"
+    }
+  ],
+  "captures": [
+    "chromium-notifications-light-320-viewport.png",
+    "chromium-notifications-light-320.png",
+    "chromium-notifications-light-390-viewport.png",
+    "chromium-notifications-light-390.png",
+    "chromium-notifications-light-430-viewport.png",
+    "chromium-notifications-light-430.png",
+    "chromium-notifications-dark-320-viewport.png",
+    "chromium-notifications-dark-320.png",
+    "chromium-notifications-dark-390-viewport.png",
+    "chromium-notifications-dark-390.png",
+    "chromium-notifications-dark-430-viewport.png",
+    "chromium-notifications-dark-430.png",
+    "chromium-notifications-text-200-viewport.png",
+    "chromium-notifications-text-200.png",
+    "chromium-detail-light-320-viewport.png",
+    "chromium-detail-light-320.png",
+    "chromium-detail-light-390-viewport.png",
+    "chromium-detail-light-390.png",
+    "chromium-detail-light-430-viewport.png",
+    "chromium-detail-light-430.png",
+    "chromium-detail-dark-320-viewport.png",
+    "chromium-detail-dark-320.png",
+    "chromium-detail-dark-390-viewport.png",
+    "chromium-detail-dark-390.png",
+    "chromium-detail-dark-430-viewport.png",
+    "chromium-detail-dark-430.png",
+    "chromium-detail-text-200-viewport.png",
+    "chromium-detail-text-200.png",
+    "chromium-updates-light-320-viewport.png",
+    "chromium-updates-light-320.png",
+    "chromium-updates-light-390-viewport.png",
+    "chromium-updates-light-390.png",
+    "chromium-updates-light-430-viewport.png",
+    "chromium-updates-light-430.png",
+    "chromium-updates-dark-320-viewport.png",
+    "chromium-updates-dark-320.png",
+    "chromium-updates-dark-390-viewport.png",
+    "chromium-updates-dark-390.png",
+    "chromium-updates-dark-430-viewport.png",
+    "chromium-updates-dark-430.png",
+    "chromium-updates-text-200-viewport.png",
+    "chromium-updates-text-200.png",
+    "chromium-compose-light-320-viewport.png",
+    "chromium-compose-light-320.png",
+    "chromium-compose-light-390-viewport.png",
+    "chromium-compose-light-390.png",
+    "chromium-compose-light-430-viewport.png",
+    "chromium-compose-light-430.png",
+    "chromium-compose-dark-320-viewport.png",
+    "chromium-compose-dark-320.png",
+    "chromium-compose-dark-390-viewport.png",
+    "chromium-compose-dark-390.png",
+    "chromium-compose-dark-430-viewport.png",
+    "chromium-compose-dark-430.png",
+    "chromium-compose-text-200-viewport.png",
+    "chromium-compose-text-200.png",
+    "chromium-audience-light-320-viewport.png",
+    "chromium-audience-light-320.png",
+    "chromium-audience-light-390-viewport.png",
+    "chromium-audience-light-390.png",
+    "chromium-audience-light-430-viewport.png",
+    "chromium-audience-light-430.png",
+    "chromium-audience-dark-320-viewport.png",
+    "chromium-audience-dark-320.png",
+    "chromium-audience-dark-390-viewport.png",
+    "chromium-audience-dark-390.png",
+    "chromium-audience-dark-430-viewport.png",
+    "chromium-audience-dark-430.png",
+    "chromium-audience-text-200-viewport.png",
+    "chromium-audience-text-200.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "audience-change",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:57136/app/updates/cd0f7b9d-018e-4530-9810-d0ba6caab8bb?_rsc=h4-7ZZkZ7ItqDcNZ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:57136/app/notifications?_rsc=MWCD28xLGOwxSRUp",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:57136/app/updates/cd0f7b9d-018e-4530-9810-d0ba6caab8bb?_rsc=eKqmvtdjUbM-jYDl",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:57136/app/notifications?_rsc=u4fA-IL8gzX-900N",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:57136/app/updates/0b553098-cab6-455d-b24c-c2a3060af740?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:57136/app/updates/0b553098-cab6-455d-b24c-c2a3060af740?_rsc=ugISz6h6L0p5Z4hN",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:57136/app/updates?_rsc=0EmE6hMbVwECCbPa",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:57136/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/app/updates?_rsc=o5AxBJ1NOrScdMa5",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/app/updates/compose?_rsc=G_2ZVhXQTN25kW5I",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/app/updates/compose?_rsc=OEjwLtKvXE5JJuhi",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/api/employee/messages/compose/new",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/app/updates/8ea3f0e2-a134-4bc5-86ac-83b7e27611ae?_rsc=fsvmWbuf1uWKnY-J",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:57136/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:57136/app/updates?_rsc=ojJBpNOLlwe7gg4P",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:57136/app/updates/8ea3f0e2-a134-4bc5-86ac-83b7e27611ae?_rsc=21zJNP-5RLt7UIhc",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:57136/api/employee/messages/detail/8ea3f0e2-a134-4bc5-86ac-83b7e27611ae",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:57136/app/updates/compose?_rsc=G_2ZVhXQTN25kW5I",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:57136/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "url": "http://127.0.0.1:57136/api/employee/messages/compose/new",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "ownerId": "02cb9415-1f07-40fa-be6b-e5338b740b75",
+  "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "root": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/affected-recovery-01/communications-review/owned-next-B2KZIU",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 51879,
+  "port": 63275,
+  "url": "http://127.0.0.1:63275",
+  "identity": {
+    "name": "nevora_exchange_test_c1_b2ed9a745e62",
+    "oid": 42217,
+    "marker": "fuel-phase3-disposable:0aea766a-4183-408f-9432-2275cfdd9e65"
+  }
+}

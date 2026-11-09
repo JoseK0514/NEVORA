@@ -1,0 +1,6 @@
+
+/workspace/NEVORA/src/lib/data/employee-notification-list.server.ts
+  167:5  error  Do not assign to the variable `module`. See: https://nextjs.org/docs/messages/no-assign-module-variable  @next/next/no-assign-module-variable
+
+✖ 1 problem (1 error, 0 warnings)
+

@@ -1,0 +1,274 @@
+[
+  [
+    "390 home positions",
+    {
+      "setup": 158,
+      "today": 363,
+      "tasks": 622,
+      "week": 867,
+      "doneStepVisible": false,
+      "taskTags": [
+        "Urgent",
+        "Coverage need",
+        "Review",
+        "Review",
+        "Setup needed",
+        "Setup needed",
+        "Earlier this week",
+        "Earlier this week"
+      ]
+    }
+  ],
+  [
+    "390 home focus order",
+    {
+      "firstTasks": 5,
+      "firstWeek": 7
+    }
+  ],
+  [
+    "390 schedule",
+    {
+      "buildPublish": 500,
+      "roster": 578,
+      "unscheduled": "Show 7 not scheduled this day",
+      "height": 1940
+    }
+  ],
+  [
+    "390 schedule deep link to unscheduled person",
+    {
+      "focused": "",
+      "detailsOpen": true
+    }
+  ],
+  [
+    "390 availability",
+    {
+      "height": 1652,
+      "rowHeights": [
+        118,
+        118,
+        118
+      ],
+      "pending": 5
+    }
+  ],
+  [
+    "390 rules",
+    {
+      "height": 5013,
+      "groups": [
+        {
+          "open": false,
+          "summary": "Main Office7 periods · 7 days a week"
+        },
+        {
+          "open": false,
+          "summary": "West Office7 periods · 7 days a week"
+        }
+      ],
+      "firstId": "coverage-qa-loc-1-1"
+    }
+  ],
+  [
+    "390 rules filter",
+    {
+      "missingOnlyRows": 10,
+      "afterSearch": [
+        "Taylor Rivera"
+      ]
+    }
+  ],
+  [
+    "390 rules save with filter",
+    {
+      "url": "/app/schedule/settings",
+      "changed": [
+        "target-AUDIT-LEAD"
+      ],
+      "leadTarget": "30"
+    }
+  ],
+  [
+    "390 rules deep link to period",
+    {
+      "focused": "",
+      "groupOpen": true
+    }
+  ],
+  [
+    "390 inbox sections",
+    [
+      "Needs attention now, 3",
+      "To review, 18",
+      "Requests, 1",
+      "Earlier this week, 18"
+    ]
+  ],
+  [
+    "390 page /app",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/schedule",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/availability",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/schedule/settings",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/inbox",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "1440 home positions",
+    {
+      "setup": 190,
+      "today": 317,
+      "tasks": 469,
+      "week": 469,
+      "doneStepVisible": true,
+      "taskTags": [
+        "Urgent",
+        "Coverage need",
+        "Review",
+        "Review",
+        "Review",
+        "Setup needed",
+        "Setup needed",
+        "Earlier this week"
+      ]
+    }
+  ],
+  [
+    "1440 home focus order",
+    {
+      "firstTasks": 5,
+      "firstWeek": 38
+    }
+  ],
+  [
+    "1440 schedule",
+    {
+      "buildPublish": 365,
+      "roster": 478,
+      "unscheduled": "Show 7 unscheduled",
+      "height": 1362
+    }
+  ],
+  [
+    "1440 schedule deep link to unscheduled person",
+    {
+      "focused": "",
+      "detailsOpen": true
+    }
+  ],
+  [
+    "1440 availability",
+    {
+      "height": 1381,
+      "rowHeights": [
+        127,
+        127,
+        127
+      ],
+      "pending": 5
+    }
+  ],
+  [
+    "1440 rules",
+    {
+      "height": 2697,
+      "groups": [
+        {
+          "open": false,
+          "summary": "Main Office7 periods · 7 days a week"
+        },
+        {
+          "open": false,
+          "summary": "West Office7 periods · 7 days a week"
+        }
+      ],
+      "firstId": "coverage-qa-loc-1-1"
+    }
+  ],
+  [
+    "1440 rules filter",
+    {
+      "missingOnlyRows": 9,
+      "afterSearch": []
+    }
+  ],
+  [
+    "1440 rules deep link to period",
+    {
+      "focused": "",
+      "groupOpen": true
+    }
+  ],
+  [
+    "1440 inbox sections",
+    [
+      "Needs attention now, 3",
+      "To review, 18",
+      "Requests, 1",
+      "Earlier this week, 18"
+    ]
+  ],
+  [
+    "1440 page /app",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/schedule",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/availability",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/schedule/settings",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/inbox",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ]
+]

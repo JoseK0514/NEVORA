@@ -1,0 +1,13 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-client.test.ts src/lib/notifications/device-protocol.test.ts src/app/app/api/push/push-routes.test.ts src/components/employee-mobile/device-alerts.test.tsx src/components/app-shell.test.tsx src/components/portal-device-setup.test.tsx src/components/portal-device-setup-focus.test.tsx src/test/integration/owned-device-environment.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+
+ Test Files  8 passed (8)
+      Tests  149 passed (149)
+   Start at  22:01:16
+   Duration  3.07s (tests 66%, import 28%, transform 6%)
+

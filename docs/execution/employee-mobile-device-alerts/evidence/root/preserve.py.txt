@@ -1,0 +1,123 @@
+from pathlib import Path
+import os, re, json, hashlib, shutil, stat
+
+task = Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying')
+repo = task/'work/employee-mobile-local-resume'
+out = repo/'docs/execution/employee-mobile-device-alerts'
+roots = [
+ (task/'outputs/employee-mobile-device-alerts', 'root'),
+ (repo/'.superpowers/sdd/plan-employee-mobile-device-alerts', 'execution'),
+]
+code = {'.py','.js','.mjs','.cjs','.jsx','.ts','.tsx','.mts','.cts','.sh','.bash','.zsh','.sql'}
+textual = {'.log','.json','.jsonl','.html','.txt'}
+cookie = re.compile(r'((?:fuel_session|fuel_installation|fuel_push_installation|fuel_push_cleanup|nevora_pk_register|nevora_pk_login)=)[A-Za-z0-9_.-]{20,}')
+feed = re.compile(r'(/api/calendar/)[A-Za-z0-9_-]{43}(?=/|\\|\s|[\"\'])')
+entries, excluded, by_source = [], [], {}
+digest = lambda b: hashlib.sha256(b).hexdigest()
+
+def redact(data, source):
+    if source.suffix not in textual:
+        return data, []
+    try:
+        text = data.decode('utf-8')
+    except UnicodeDecodeError:
+        return data, []
+    reasons = []
+    text, n = cookie.subn(r'\1[REDACTED_DISPOSABLE_FIXTURE_COOKIE]', text)
+    if n: reasons.append({'kind':'disposable fixture cookie','occurrences':n})
+    text, n = feed.subn(r'\1[REDACTED_DISPOSABLE_FEED]', text)
+    if n: reasons.append({'kind':'disposable calendar feed capability','occurrences':n})
+    if source.suffix == '.json':
+        try:
+            value = json.loads(text)
+            secrets = set()
+            def visit(obj):
+                if isinstance(obj,dict):
+                    if obj.get('name') in {'fuel_session','fuel_installation','fuel_push_installation','fuel_push_cleanup','nevora_pk_register','nevora_pk_login'} and isinstance(obj.get('value'),str) and len(obj['value'])>=20:
+                        secrets.add(obj['value'])
+                    for child in obj.values(): visit(child)
+                elif isinstance(obj,list):
+                    for child in obj: visit(child)
+            visit(value)
+            for secret in secrets:
+                if secret.startswith('[REDACTED'): continue
+                text = text.replace(secret,'[REDACTED_DISPOSABLE_FIXTURE_COOKIE]')
+                reasons.append({'kind':'disposable cookie record','occurrences':1})
+        except (ValueError,TypeError):
+            pass
+    return text.encode('utf-8'), reasons
+
+for root, label in roots:
+    if not root.exists(): raise RuntimeError('Missing preservation source '+str(root))
+    for parent, dirs, files in os.walk(root,followlinks=False):
+        parent = Path(parent)
+        kept = []
+        for name in dirs:
+            path = parent/name
+            reason = None
+            if path.is_symlink(): reason = 'symlink'
+            elif name in {'node_modules','.next','.git','__pycache__','publish','owned-tmp','node-compile-cache'}: reason = 'runtime/dependency/generated or staging directory'
+            elif name == 'app' and parent.name.startswith('owned-next-'): reason = 'verified runtime mirror; inputs/provenance preserved, source in Git'
+            elif (path/'PG_VERSION').exists(): reason = 'database bytes'
+            if reason: excluded.append({'source':str(path),'reason':reason})
+            else: kept.append(name)
+        dirs[:] = kept
+        for name in files:
+            source = parent/name
+            if source.is_symlink() or not stat.S_ISREG(source.stat().st_mode):
+                excluded.append({'source':str(source),'reason':'nonregular/symlink'}); continue
+            if name in {'HANDOFF.draft.md','CONTINUATION.md','due-fixture-helper.draft.txt'}:
+                excluded.append({'source':str(source),'reason':'superseded narrative or implementation scratch; originals retained externally'}); continue
+            if name.startswith('.env'):
+                excluded.append({'source':str(source),'reason':'environment file'}); continue
+            relative = Path(label)/source.relative_to(root)
+            if source.suffix in code: relative = Path(str(relative)+'.txt')
+            target = out/'evidence'/relative
+            data = source.read_bytes()
+            portable, redactions = redact(data,source)
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(portable)
+            entry = {'source':str(source),'target':str(target.relative_to(out)),'sourceBytes':len(data),'portableBytes':len(portable),'sourceSHA256':digest(data),'portableSHA256':digest(portable),'redactions':redactions}
+            if digest(target.read_bytes()) != entry['portableSHA256']: raise RuntimeError('Copy hash mismatch')
+            entries.append(entry); by_source[str(source)] = entry
+
+qa_source = task/'outputs/employee-mobile-device-alerts/reviews/qa/employee-mobile-device-alerts-manual-qa.md'
+qa_report = qa_source.read_text() + '\n' + (qa_source.parent/'final-qa-report.md').read_text()
+reference_tokens=[]
+register=qa_source.read_text().split('## manualQa.artifactRefs',1)[1].split('## Conditions',1)[0]
+for line in register.splitlines():
+    if not re.match(r'^\| A\d+ \|',line): continue
+    reference_tokens.extend(token.strip().strip('`') for token in line.split('|')[-2].split(';'))
+refs=set(re.findall(r'\]\((/[^)]+)\)',qa_report))
+for ref in reference_tokens:
+    source=qa_source.parent/ref
+    if source.is_dir():
+        children=[str(child) for child in source.rglob('*') if child.is_file()]
+        if not children: raise RuntimeError('Empty QA artifact directory '+str(source))
+        refs.update(children)
+    elif source.is_file(): refs.add(str(source))
+    else: raise RuntimeError('Missing QA artifact '+str(source))
+refs=sorted(refs)
+resolved = []
+for source in refs:
+    if source not in by_source: raise RuntimeError('Unpreserved QA reference '+source)
+    entry = by_source[source]
+    target = out/entry['target']
+    if not target.exists() or target.stat().st_size == 0: raise RuntimeError('Empty QA reference '+source)
+    resolved.append({'source':source,'target':entry['target'],'sourceSHA256':entry['sourceSHA256'],'portableSHA256':entry['portableSHA256'],'redactions':entry['redactions']})
+
+for source in (task/'outputs/employee-mobile-device-alerts/reviews').rglob('*.md'):
+    entry = by_source.get(str(source))
+    if entry is None:
+        if any(str(source)==item['source'] or str(source).startswith(item['source']+'/') for item in excluded): continue
+        raise RuntimeError('Unpreserved authored report '+str(source))
+    if entry['sourceSHA256'] != entry['portableSHA256']: raise RuntimeError('Authored report bytes changed '+str(source))
+
+manifest = {'applicationCandidate':'72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5','verificationCandidate':'7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e','policy':'Authored reports and unredacted artifacts copied byte-exact. Disposable fixture cookies/feed capabilities redacted only in portable raw text/JSON/HTML, with original and portable hashes recorded. Raw external originals remain intact. Scripts receive .txt suffix only; bytes unchanged. Runtime mirrors/dependencies/generated output/database/environment files excluded.','entries':entries,'excluded':excluded,'qaRegisteredReferenceTokens':len(reference_tokens),'qaReferencesVerified':len(resolved)}
+(out/'PRESERVATION_MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
+(out/'PORTABLE_QA_REFERENCES.json').write_text(json.dumps(resolved,indent=2)+'\n')
+lines = ['# Verified QA artifact links','','The independent report remains byte-exact at [QA review](evidence/root/reviews/qa/employee-mobile-device-alerts-manual-qa.md). Its artifact register resolves below. The manifest records original/portable hashes and any declared fixture-cookie redaction.','']
+for i, entry in enumerate(resolved,1):
+    lines.append(f"{i}. [{Path(entry['source']).name}]({entry['target']}) — `{entry['source']}`")
+(out/'QA_REFERENCES.md').write_text('\n'.join(lines)+'\n')
+print(json.dumps({'files':len(entries),'portableBytes':sum(e['portableBytes'] for e in entries),'largestBytes':max(e['portableBytes'] for e in entries),'redactedFiles':sum(bool(e['redactions']) for e in entries),'qaReferences':len(resolved),'excludedDirectoriesOrFiles':len(excluded)}))

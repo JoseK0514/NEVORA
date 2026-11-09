@@ -1,0 +1,13 @@
+{
+  "currentCommunicationsReviewersStarted": false,
+  "priorReviewAgentsCompleted": [
+    "hours_final_code",
+    "hours_independent_qa",
+    "hours_independent_ui",
+    "requests_final_code",
+    "requests_independent_qa",
+    "requests_independent_ui"
+  ],
+  "priorVerdictsAreBoundedToTheirReportedCandidates": true,
+  "reports": "Existing docs/execution/<batch>/ reports in source.bundle"
+}

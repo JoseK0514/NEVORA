@@ -1,0 +1,305 @@
+{
+  "workspace": {
+    "name": "Northside QA Workforce",
+    "time_zone": "America/Puerto_Rico"
+  },
+  "people": [
+    {
+      "id": "AUDIT-E",
+      "first_name": "Alexandra",
+      "last_name": "Rivera",
+      "role": "EMPLOYEE"
+    },
+    {
+      "id": "AUDIT-LEAD",
+      "first_name": "Taylor",
+      "last_name": "Rivera",
+      "role": "LEAD"
+    },
+    {
+      "id": "AUDIT-LONG",
+      "first_name": "María José",
+      "last_name": "Rivera Santiago With A Long Name",
+      "role": "EMPLOYEE"
+    },
+    {
+      "id": "AUDIT-M",
+      "first_name": "Morgan",
+      "last_name": "Rivera",
+      "role": "MANAGER"
+    },
+    {
+      "id": "QAOWNER",
+      "first_name": "Fictional",
+      "last_name": "Owner",
+      "role": "OWNER"
+    },
+    {
+      "id": "payroll-qa-a",
+      "first_name": "María José",
+      "last_name": "Fictional QA",
+      "role": "EMPLOYEE"
+    },
+    {
+      "id": "payroll-qa-b",
+      "first_name": "b",
+      "last_name": "Fictional QA",
+      "role": "EMPLOYEE"
+    },
+    {
+      "id": "payroll-qa-manager",
+      "first_name": "manager",
+      "last_name": "Fictional QA",
+      "role": "MANAGER"
+    },
+    {
+      "id": "payroll-qa-owner",
+      "first_name": "owner",
+      "last_name": "Fictional QA",
+      "role": "OWNER"
+    },
+    {
+      "id": "payroll-qa-reviewer",
+      "first_name": "reviewer",
+      "last_name": "Fictional QA",
+      "role": "MANAGER"
+    }
+  ],
+  "locations": [
+    {
+      "id": "loc-1",
+      "name": "Northside Main Office"
+    },
+    {
+      "id": "loc-2",
+      "name": "Northside West Office"
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-10-12",
+      "count": 3
+    },
+    {
+      "date": "2026-10-13",
+      "count": 3
+    },
+    {
+      "date": "2026-10-14",
+      "count": 3
+    },
+    {
+      "date": "2026-10-15",
+      "count": 3
+    },
+    {
+      "date": "2026-10-16",
+      "count": 3
+    },
+    {
+      "date": "2026-10-17",
+      "count": 3
+    },
+    {
+      "date": "2026-10-18",
+      "count": 3
+    }
+  ],
+  "shifts": [
+    {
+      "id": "audit-shift-0-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-12",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-0-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-12",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-0-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-12",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-1-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-13",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-1-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-13",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-1-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-13",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-2-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-14",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-2-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-14",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-2-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-14",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-3-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-15",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-3-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-15",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-3-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-15",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-4-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-16",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-4-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-16",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-4-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-16",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-5-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-17",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-5-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-17",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-5-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-17",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-6-0",
+      "employee_id": "AUDIT-M",
+      "date": "2026-10-18",
+      "start_time": "07:00:00",
+      "end_time": "15:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-6-1",
+      "employee_id": "AUDIT-E",
+      "date": "2026-10-18",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    },
+    {
+      "id": "audit-shift-6-2",
+      "employee_id": "AUDIT-LONG",
+      "date": "2026-10-18",
+      "start_time": "08:00:00",
+      "end_time": "16:00:00",
+      "location_id": "loc-1",
+      "position_name": "Customer Support"
+    }
+  ],
+  "schedules": [
+    {
+      "location_id": "loc-1",
+      "status": "PUBLISHED"
+    }
+  ]
+}

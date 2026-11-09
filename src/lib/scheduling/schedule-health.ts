@@ -1,3 +1,9 @@
+import type { Position, Workspace } from "../domain";
+import { employeeCanWorkPosition, employeeCanWorkLocation } from "./capabilities";
+import { weekStartFor } from "../date-utils";
+import { minutesInWorkweek, businessDateStart, isLeadCapable, periodsOverlap, shiftPeriod, splitBusinessDays } from "./periods";
+import { schedulingIssueMessage, type ValidationIssue } from "./validate-shift";
+
 export type HealthShift = {
   id: string;
   employeeId: string;
@@ -6,20 +12,27 @@ export type HealthShift = {
   date: string;
   startTime: string;
   endTime: string;
+  positionId?: string;
+  endDate?: string;
   isDesignatedLead?: boolean;
+  isCalloutApproved?: boolean;
 };
 
 export type HealthLocation = {
   id: string;
   name: string;
-  minimumStaffPerShift: number;
-  requiresDesignatedLead?: boolean;
+  minimumStaffPerShift: number | null;
+  requiresDesignatedLead?: boolean | null;
 };
 
 export type HealthEmployee = {
   id: string;
   name: string;
   targetWeeklyHours?: number;
+  role?: string;
+  active: boolean;
+  eligibleLocationIds: readonly string[];
+  positionIds: readonly string[];
 };
 
 export type HealthCoverageWindow = {
@@ -28,6 +41,7 @@ export type HealthCoverageWindow = {
   startTime: string;
   endTime: string;
   minimumStaff?: number;
+  positionRequirements: { positionId: string; quantity: number }[];
 };
 
 export type CoverageBlock = {
@@ -38,12 +52,14 @@ export type CoverageBlock = {
   startTime: string;
   endTime: string;
   assignedStaff: number;
-  requiredStaff: number;
-  gap: number;
+  requiredStaff: number | null;
+  gap: number | null;
   staffCovered: boolean;
-  requiresLead: boolean;
+  requiresLead: boolean | null;
   leadCovered: boolean;
   leadNames: string[];
+  positionCoverage: { positionId: string; positionName: string; assigned: number; required: number; missing: number }[];
+  positionsCovered: boolean;
   covered: boolean;
 };
 
@@ -67,10 +83,6 @@ function toTime(minutes: number) {
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }
 
-function durationHours(startTime: string, endTime: string) {
-  return Math.max(0, toMinutes(endTime) - toMinutes(startTime)) / 60;
-}
-
 function roundHours(value: number) {
   return Math.round(value * 100) / 100;
 }
@@ -88,35 +100,92 @@ function overlaps(
   return toMinutes(itemStart) < segmentEnd && toMinutes(itemEnd) > segmentStart;
 }
 
+/**
+ * Segment coverage at assignment/configuration boundaries and count each eligible
+ * employee once per segment. Position and designated-Lead credit are evaluated
+ * separately; missing setup stays explicit rather than implying full coverage.
+ * Scheduled hour balances use nominal minutes clipped to the selected workweek,
+ * not captured attendance or payroll hours. Callers supply the complete ledger.
+ */
 export function calculateScheduleHealth({
   shifts,
+  positions = [],
+  workspace,
   locations,
   employees,
   coverageWindows = [],
   weekDates = [],
 }: {
+  workspace?: Pick<Workspace, "id" | "active">;
+  positions?: Position[];
   shifts: HealthShift[];
   locations: HealthLocation[];
   employees: HealthEmployee[];
   coverageWindows?: HealthCoverageWindow[];
   weekDates?: string[];
 }) {
-  const locationMap = new Map(
-    locations.map((location) => [location.id, location]),
+  const positionMap = new Map(positions.map(position => [position.id, position]));
+  const conflicts: ValidationIssue[] = [];
+  const employeeMap = new Map(
+    employees.map((employee) => [employee.id, employee]),
   );
+  const seen = new Set<string>();
+  const records = shifts
+    .filter((shift) => {
+      if (shift.isCalloutApproved || seen.has(shift.id)) return false;
+      seen.add(shift.id);
+      return true;
+    })
+    .map((shift) => ({ shift, period: shiftPeriod(shift) }));
+  const workweekStart =
+    weekDates[0] || records[0]?.shift.date
+      ? weekStartFor(weekDates[0] ?? records[0].shift.date)
+      : undefined;
 
   const dates = Array.from(
-    new Set([...weekDates, ...shifts.map((shift) => shift.date)]),
+    new Set(
+      weekDates.length
+        ? weekDates
+        : records.flatMap((record) =>
+            splitBusinessDays(record.period).map((day) => day.date),
+          ),
+    ),
   ).sort();
 
   const coverageBlocks: CoverageBlock[] = [];
+  const hasStaffing = (location: HealthLocation) => location.minimumStaffPerShift != null && typeof location.requiresDesignatedLead === 'boolean';
+  const setupIssues = locations.flatMap(location => [
+    ...(!hasStaffing(location) ? [{ code: 'STAFFING_NOT_CONFIGURED' as const, locationId: location.id, message: 'Configure minimum staffing and choose a designated Lead rule.' }] : []),
+    ...(!coverageWindows.some(window => window.locationId === location.id) ? [{ code: 'COVERAGE_NOT_CONFIGURED' as const, locationId: location.id, message: 'Configure at least one coverage period.' }] : []),
+    ...coverageWindows.filter(window => window.locationId === location.id).flatMap(window => (window.positionRequirements ?? []).filter(requirement => { const position = positionMap.get(requirement.positionId); return !position?.active || (workspace && position.workspaceId !== workspace.id) || !Number.isInteger(requirement.quantity) || requirement.quantity < 1 || requirement.quantity > 100; }).map(requirement => ({code: 'POSITION_REQUIREMENT_INVALID' as const, locationId: location.id, positionId: requirement.positionId, message: 'A required position is inactive, unavailable or has an invalid quantity.'}))),
+  ]);
 
   for (const location of locations) {
     for (const date of dates) {
-      const locationShifts = shifts.filter(
-        (shift) =>
-          shift.locationId === location.id &&
-          shift.date === date,
+      const startOfDay = businessDateStart(date);
+      const locationShifts = records
+        .filter(
+          (record) =>
+            record.shift.locationId === location.id &&
+            employeeMap.has(record.shift.employeeId) &&
+            employeeCanWorkLocation(employeeMap.get(record.shift.employeeId)!, location.id) &&
+            periodsOverlap(record.period, {
+              start: startOfDay,
+              end: startOfDay + 1440,
+            }),
+        )
+        .map((record) => ({
+          ...record.shift,
+          segmentStart: Math.max(0, record.period.start - startOfDay),
+          segmentEnd: Math.min(1440, record.period.end - startOfDay),
+        }));
+      // A foreign assignment can invalidate local position credit for only part
+      // of a shift. Keep that employee's full named ledger for segmentation and
+      // conflict detection; coverage credit itself remains location-local.
+      const localEmployeeIds = new Set(locationShifts.map(shift => shift.employeeId));
+      const employeePositionLedger = records.filter(record =>
+        record.shift.positionId && localEmployeeIds.has(record.shift.employeeId) &&
+        periodsOverlap(record.period, { start: startOfDay, end: startOfDay + 1440 }),
       );
       const dayWindows = coverageWindows.filter(
         (window) =>
@@ -127,8 +196,21 @@ export function calculateScheduleHealth({
       const boundaries = new Set<number>();
 
       for (const shift of locationShifts) {
-        boundaries.add(toMinutes(shift.startTime));
-        boundaries.add(toMinutes(shift.endTime));
+        boundaries.add(shift.segmentStart);
+        boundaries.add(shift.segmentEnd);
+      }
+
+      for (const record of employeePositionLedger) {
+        if (record.shift.locationId === location.id) continue;
+        for (const localShift of locationShifts) {
+          if (localShift.employeeId !== record.shift.employeeId) continue;
+          const overlapStart = Math.max(localShift.segmentStart, record.period.start - startOfDay);
+          const overlapEnd = Math.min(localShift.segmentEnd, record.period.end - startOfDay);
+          if (overlapStart < overlapEnd) {
+            boundaries.add(overlapStart);
+            boundaries.add(overlapEnd);
+          }
+        }
       }
 
       for (const window of dayWindows) {
@@ -148,8 +230,8 @@ export function calculateScheduleHealth({
           overlaps(start, end, window.startTime, window.endTime),
         );
 
-        const activeShifts = locationShifts.filter((shift) =>
-          overlaps(start, end, shift.startTime, shift.endTime),
+        const activeShifts = locationShifts.filter(
+          (shift) => shift.segmentStart < end && shift.segmentEnd > start,
         );
 
         if (dayWindows.length > 0 && matchingWindows.length === 0) {
@@ -160,12 +242,13 @@ export function calculateScheduleHealth({
           continue;
         }
 
-        const requiredStaff =
+        const staffingConfigured = hasStaffing(location);
+        const requiredStaff = !staffingConfigured ? null :
           matchingWindows.length > 0
             ? Math.max(
                 ...matchingWindows.map(
                   (window) =>
-                    window.minimumStaff ?? location.minimumStaffPerShift,
+                    window.minimumStaff ?? location.minimumStaffPerShift!,
                 ),
               )
             : location.minimumStaffPerShift;
@@ -173,18 +256,51 @@ export function calculateScheduleHealth({
         const activeEmployeeIds = new Set(
           activeShifts.map((shift) => shift.employeeId),
         );
+        const requirements = new Map<string, number>();
+        for (const window of matchingWindows) for (const requirement of window.positionRequirements ?? []) {
+          requirements.set(requirement.positionId, Math.max(requirements.get(requirement.positionId) ?? 0, requirement.quantity));
+        }
+        const assignedPositions = new Map<string, string>();
+        for (const employeeId of activeEmployeeIds) {
+          const simultaneousPositionIds = new Set(employeePositionLedger
+            .filter(record => record.shift.employeeId === employeeId &&
+              periodsOverlap(record.period, { start: startOfDay + start, end: startOfDay + end }))
+            .map(record => record.shift.positionId!));
+          if (simultaneousPositionIds.size > 1) {
+            conflicts.push({
+              code: "SHIFT_OVERLAP",
+              severity: "error",
+              message: "Employee has conflicting simultaneous assigned positions.",
+              details: { employeeId, locationId: location.id, date, startTime: toTime(start), endTime: toTime(end) },
+            });
+            continue;
+          }
+          const localPositionId = activeShifts.find(shift =>
+            shift.employeeId === employeeId && shift.positionId)?.positionId;
+          if (localPositionId) assignedPositions.set(employeeId, localPositionId);
+        }
+        const positionCoverage = [...requirements].map(([positionId, required]) => {
+          const position = positionMap.get(positionId);
+          const assigned = [...assignedPositions].filter(([employeeId, assignedId]) => assignedId === positionId && position && (!workspace || position.workspaceId === workspace.id) && employeeCanWorkPosition({employeePositionIds: employeeMap.get(employeeId)!.positionIds, position})).length;
+          return {positionId, positionName: position?.name ?? positionId, assigned, required, missing: Math.max(0, required - assigned)};
+        });
+        const positionsCovered = positionCoverage.every(position => position.missing === 0);
         const assignedStaff = activeEmployeeIds.size;
-        const gap = Math.max(0, requiredStaff - assignedStaff);
+        const gap = requiredStaff == null ? null : Math.max(0, requiredStaff - assignedStaff);
         const staffCovered = gap === 0;
         const leadNames = Array.from(
           new Set(
             activeShifts
-              .filter((shift) => shift.isDesignatedLead)
+              .filter(
+                (shift) =>
+                  shift.isDesignatedLead &&
+                  isLeadCapable(employeeMap.get(shift.employeeId)?.role),
+              )
               .map((shift) => shift.employeeName ?? shift.employeeId),
           ),
         );
-        const requiresLead = location.requiresDesignatedLead ?? true;
-        const leadCovered = !requiresLead || leadNames.length > 0;
+        const requiresLead = typeof location.requiresDesignatedLead !== "boolean" ? null : location.requiresDesignatedLead ?? null;
+        const leadCovered = requiresLead !== null && (!requiresLead || leadNames.length > 0);
         const startTime = toTime(start);
         const endTime = toTime(end);
 
@@ -202,7 +318,9 @@ export function calculateScheduleHealth({
           requiresLead,
           leadCovered,
           leadNames,
-          covered: staffCovered && leadCovered,
+          positionCoverage,
+          positionsCovered,
+          covered: staffCovered && leadCovered && positionsCovered,
         });
       }
     }
@@ -236,23 +354,28 @@ export function calculateScheduleHealth({
     return {
       locationId: location.id,
       locationName: location.name,
+      positionRequirementsConfigured: !setupIssues.some(issue => issue.locationId === location.id && issue.code === "POSITION_REQUIREMENT_INVALID"),
+      staffingConfigured: hasStaffing(location),
+      coverageConfigured: coverageWindows.some(window => window.locationId === location.id),
       requiredStaffPerShift: location.minimumStaffPerShift,
-      requiresDesignatedLead: location.requiresDesignatedLead ?? true,
+      requiresDesignatedLead: typeof location.requiresDesignatedLead !== "boolean" ? null : location.requiresDesignatedLead ?? null,
       totalBlocks: blocks.length,
       coveredBlocks,
       uncoveredBlocks,
       missingLeadBlocks,
-      fullyCovered: blocks.length > 0 && uncoveredBlocks === 0,
+      fullyCovered: !setupIssues.some(issue => issue.locationId === location.id) && blocks.length > 0 && uncoveredBlocks === 0,
     };
   });
 
   const hoursByEmployee = new Map<string, number>();
 
-  for (const shift of shifts) {
+  for (const { shift, period } of records) {
+    const hours = workweekStart
+      ? minutesInWorkweek(period, workweekStart) / 60
+      : (period.end - period.start) / 60;
     hoursByEmployee.set(
       shift.employeeId,
-      (hoursByEmployee.get(shift.employeeId) ?? 0) +
-        durationHours(shift.startTime, shift.endTime),
+      (hoursByEmployee.get(shift.employeeId) ?? 0) + hours,
     );
   }
 
@@ -299,7 +422,33 @@ export function calculateScheduleHealth({
       return a.employeeName.localeCompare(b.employeeName);
     });
 
+  const issues: ValidationIssue[] = coverageBlocks.flatMap((block) => {
+    if (block.requiredStaff === null || block.gap === null || block.requiresLead === null) return [];
+    const details = {
+      locationId: block.locationId,
+      locationName: block.locationName,
+      date: block.date,
+      startTime: block.startTime,
+      endTime: block.endTime,
+      missingStaff: block.gap,
+      requiredStaff: block.requiredStaff,
+    };
+    const codes = [
+      ...(!block.positionsCovered ? ["POSITION_COVERAGE_GAP" as const] : []),
+      ...(!block.staffCovered ? ["STAFFING_GAP" as const] : []),
+      ...(!block.leadCovered ? ["LEAD_COVERAGE_GAP" as const] : []),
+    ];
+    return codes.map((code) => ({
+      code,
+      severity: "error" as const,
+      message: schedulingIssueMessage(code)!,
+      details,
+    }));
+  });
   return {
+    issues: [...issues, ...conflicts],
+    setupIssues,
+    workweekStart,
     coverageBlocks,
     coverageSummary,
     locationCoverage,

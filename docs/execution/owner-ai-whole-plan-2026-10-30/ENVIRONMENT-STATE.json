@@ -1,0 +1,53 @@
+{
+  "recordedAt": "2026-10-30T14:57:21.625996+00:00",
+  "workspace": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "environmentId": "ccarenv_b64_Y2NhcmVudl8wOWY0MjVlNWI5Mjg4MTkxYWRhNzk0MDU3MTkwMTc0OA",
+  "shell": "bash",
+  "uid": 1000,
+  "environmentStateAtResume": "connected/running; current readiness observed; no configured secrets/runtime variables/outbound identities",
+  "branch": "detached HEAD",
+  "businessApplicationCheckpoint": "f2a0aac46ad41cbc1a5aab3dfd48f7f805dd94ef",
+  "applicationTree": "093f990ef9a2340dd6577c37f871f22a5e92b2ad",
+  "testCheckpoint": "29afff60ed3b0673d0ca3236ebf31bbd108ffa78",
+  "testTree": "5f9e08596db0273bbbc1c344c9a36965df06154e",
+  "deliveryHead": "Pinned in external transfer.json after final documentation commit.",
+  "incrementBase": "da1dab3e8e2f9de8f2b86c1d7b897dd692de465a",
+  "bundlePrerequisite": "1121f24e50190172d1fa40d931fd064715f31554",
+  "versions": {
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5",
+    "node": "v24.19.0",
+    "npm": "11.9.0",
+    "postgres": "postgres (PostgreSQL) 17.9",
+    "playwright": "1.62.1",
+    "axe": "4.11.0",
+    "chromiumRevision": "1234",
+    "webkitRevision": "2336"
+  },
+  "runtimeIdentity": "All SQL uses invocation-owned fresh marked loopback PostgreSQL17.9; every runner stopped its cluster. Next/real browser ownership/source/mirror closure records audited. No hosted/production DB.",
+  "runtimeSubstitutions": [
+    "Owned PostgreSQL application adapter in test mirror only",
+    "Generated Next development type references only"
+  ],
+  "localBrowserParity": "Reuses public Debian user-library preparation recorded in prior validation browser-dependencies.json. Command-local PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 bypasses ldconfig discovery only; both actual engines launch/render and all tests/audits execute. Not hosted parity.",
+  "integration": "No push, merge, PR, workflow dispatch, production configuration, release, paid provider or real notification. Shared collaboration line left untouched; remote-tracking refs are not a fresh remote status claim.",
+  "preservedWorktrees": [
+    {
+      "path": "/workspace/NEVORA",
+      "head": "c21ac528fefac35de7534d47be196fec2866c066",
+      "branch": "Existing retired codex/employee-mobile-cloud-return-20261027, untouched"
+    },
+    {
+      "path": "/workspace/work/nevora-test-scripts-20261030",
+      "head": "80b711f6322f36b1593ea86cc59a82114090e647",
+      "branch": "detached, untouched"
+    },
+    {
+      "path": "/workspace/work/nevora-owner-ai-whole-plan-baseline-20261030",
+      "head": "da1dab3e8e2f9de8f2b86c1d7b897dd692de465a",
+      "branch": "detached read-only comparison; locked dependency symlink retained, excluded from transfer"
+    }
+  ]
+}

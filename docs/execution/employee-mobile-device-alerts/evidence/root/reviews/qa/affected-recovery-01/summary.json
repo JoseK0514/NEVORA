@@ -1,0 +1,32 @@
+{
+  "exit": 1,
+  "files": {
+    "failed": 5,
+    "passed": 1,
+    "total": 6
+  },
+  "tests": {
+    "failed": 12,
+    "passed": 11,
+    "skipped": 4,
+    "total": 27
+  },
+  "durationSeconds": 38.08,
+  "initiatingFailure": "Communications-review beforeAll exceeded30000ms before createOwnedNextApp assignment; later fixtures refused its still-existing owned database.",
+  "namedFailures": [
+    "FAIL   employee  src/test/integration/employee-mobile-communications-review.integration.ts [ src/test/integration/employee-mobile-communications-review.integration.ts ]",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > refuses invalid page selectors and changed role or session before publishing own notices",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > retains the existing finite notification-read budget for a full page of distinct team updates",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > pages current updates with exact own read status and no coworker receipt roster",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > rechecks Updates module permission inside the actual employee command transaction",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > hides disabled-module notifications while retaining unrelated own notices",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > binds finite mobile views to current own identity and keeps a disabled Updates capability separate",
+    "FAIL   employee  src/test/integration/employee-mobile-communications-sql.integration.ts > resolves exact notification destinations through current canonical access without recording read or acknowledgement",
+    "FAIL   employee  src/test/integration/employee-mobile-communications.integration.ts > integrates employee mobile messages with current audience, explicit receipts and original submission recovery",
+    "FAIL   employee  src/test/integration/employee-mobile-device-alerts.integration.ts > integrates own current-device enrollment, protected cleanup and mobile states in three engines",
+    "FAIL   employee  src/test/integration/employee-mobile-device-alerts.integration.ts > keeps feature-off and role gates while install/unsupported guidance never grants permission",
+    "FAIL   employee  src/test/integration/passkey-network.integration.ts > completes discoverable passkey sign-in through a real owned Next HTTP runtime"
+  ],
+  "skipPolicy": "Rejected as acceptance; none of four skipped scenarios counted passed."
+}

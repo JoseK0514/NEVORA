@@ -1,0 +1,49 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/passkeys-qa-owned-baseline-592d4212[39m
+
+ [31m❯[39m src/app/app/requests/hub/page.test.tsx [2m([22m[2m6 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[32m 4[2mms[22m[39m
+[31m   [31m×[31m retains both request destinations for EMPLOYEE[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m retains both request destinations for LEAD[39m[32m 0[2mms[22m[39m
+   [32m✓[39m redirects MANAGER before rendering employee request content[32m 1[2mms[22m[39m
+   [32m✓[39m redirects OWNER before rendering employee request content[32m 0[2mms[22m[39m
+   [32m✓[39m does not render the hub when session verification rejects access[32m 0[2mms[22m[39m
+[31m   [31m×[31m lists the person's own time off, waiting first, and never turns a failed read into no requests[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/app/app/requests/hub/page.test.tsx[2m > [22mretains both request destinations for EMPLOYEE
+[41m[1m FAIL [22m[49m src/app/app/requests/hub/page.test.tsx[2m > [22mretains both request destinations for LEAD
+[31m[1mTypeError[22m: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined[39m
+[36m [2m❯[22m employeeViewAuthority src/lib/employee-view-authority.server.ts:[2m10:4[22m[39m
+    [90m  8|[39m export function employeeViewAuthority(proof:SessionMutationProof,view:…
+    [90m  9|[39m  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+    [90m 10|[39m   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+    [90m   |[39m    [31m^[39m
+    [90m 11|[39m }
+    [90m 12|[39m
+[90m [2m❯[22m Module.RequestsHubPage src/app/app/requests/hub/page.tsx:[2m21:60[22m[39m
+[90m [2m❯[22m src/app/app/requests/hub/page.test.tsx:[2m26:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/app/app/requests/hub/page.test.tsx[2m > [22mlists the person's own time off, waiting first, and never turns a failed read into no requests
+[31m[1mTypeError[22m: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined[39m
+[36m [2m❯[22m employeeViewAuthority src/lib/employee-view-authority.server.ts:[2m10:4[22m[39m
+    [90m  8|[39m export function employeeViewAuthority(proof:SessionMutationProof,view:…
+    [90m  9|[39m  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+    [90m 10|[39m   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+    [90m   |[39m    [31m^[39m
+    [90m 11|[39m }
+    [90m 12|[39m
+[90m [2m❯[22m Module.RequestsHubPage src/app/app/requests/hub/page.tsx:[2m21:60[22m[39m
+[90m [2m❯[22m src/app/app/requests/hub/page.test.tsx:[2m51:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (6)[39m
+[2m   Start at [22m 20:17:55
+[2m   Duration [22m 312ms[2m (transform 55%, import 43%, tests 1%, worker 1%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-ten/01-page.test.tsx/results.json

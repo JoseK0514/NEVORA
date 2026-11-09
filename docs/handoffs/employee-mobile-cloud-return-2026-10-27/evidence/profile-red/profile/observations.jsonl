@@ -1,0 +1,1 @@
+{"at": "2026-10-27T20:26:30.040958+00:00", "elapsedSeconds": 0.001, "processes": [{"pid": 29474, "ppid": 29453, "pgrp": 29453, "state": "R", "cmdline": "node scripts/payroll-postgres.mjs vitest.employee-mobile-profile.config.mts src/test/integration/employee-mobile-profile.integration.ts"}], "clusters": [], "sourceChanges": []}

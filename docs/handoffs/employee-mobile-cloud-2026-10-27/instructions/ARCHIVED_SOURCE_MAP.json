@@ -1,0 +1,10 @@
+{
+  "purpose": "Reference TypeScript example stored as inert text so project-wide TypeScript does not compile an unrelated example. No project compiler/lint rules or application inputs changed.",
+  "files": [
+    {
+      "original": "skills/superpowers/systematic-debugging/condition-based-waiting-example.ts",
+      "stored": "skills/superpowers/systematic-debugging/condition-based-waiting-example.ts.txt",
+      "sha256": "40ae5ebe497fdf310200e43fe986552546d0a22837c0d39e855db1cfd33eb88e"
+    }
+  ]
+}

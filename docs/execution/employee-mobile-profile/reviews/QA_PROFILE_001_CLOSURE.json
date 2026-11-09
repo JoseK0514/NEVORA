@@ -1,0 +1,20 @@
+{
+  "findingId": "QA-PROFILE-001",
+  "status": "VERIFIED CLOSED",
+  "owner": "/root/profile_local_qa_acceptance",
+  "candidate": "2e4104ce89f1abbb2d3bafd5b87341eba9753c47",
+  "at": "2026-10-27T22:08:44.680945+00:00",
+  "priorDisposition": "OPEN / NO-GO on 4bf7257950f898b97b93293470f0677bdb70b6bf; original report and failed artifacts retained unchanged.",
+  "observedCause": "The isolated actual-writer native Firefox probe reproduced intermediate dark application while the retained and fresh media query became light without a corresponding native change notification. The existing theme owner now reapplies once before the next paint, reading the latest choice. This is supported by independent old/new execution, not an assumed explanation for a flake.",
+  "closureEvidence": [
+    "probe-proof",
+    "probe-red",
+    "probe-green",
+    "units-log",
+    "profile-browser",
+    "suite",
+    "custody"
+  ],
+  "whyClosed": "Old writer RED on first native cycle; corrected actual writer GREEN for all 50 cycles; latest explicit/other-tab precedence unit cases pass; original application System-to-Light sequence/assertion/timeouts unchanged and passes all 3 engines; all later Profile stages complete; full 183-case combined and 682-case unit corpus pass.",
+  "limits": "Controlled local Firefox/macOS and owned app fixtures. No claim of all-device or hosted certification."
+}

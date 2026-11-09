@@ -1,0 +1,1447 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "trackedStatus": "",
+  "stages": {
+    "units": {
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "src/app/api/employee/time-corrections/route.test.ts",
+        "src/app/api/timecards/route.test.ts",
+        "src/app/app/exchange/actions.test.ts",
+        "src/app/app/exchange/callout/actions.test.ts",
+        "src/app/app/exchange/callout/page.test.tsx",
+        "src/app/app/exchange/page.test.tsx",
+        "src/app/app/exchange/swap/page.test.tsx",
+        "src/app/app/operational-page-composition.test.tsx",
+        "src/app/app/timecards/page.test.tsx",
+        "src/app/workspace-presentation.test.tsx",
+        "src/components/app-shell-identity-refresh.test.tsx",
+        "src/components/app-shell-management-signout.test.tsx",
+        "src/components/app-shell.prefetch.test.ts",
+        "src/components/app-shell.test.tsx",
+        "src/components/auth-premium/lang-switch.test.tsx",
+        "src/components/calendar-subscription-panel-lifetime.test.tsx",
+        "src/components/calendar-subscription-panel.test.tsx",
+        "src/components/communication-compose.test.tsx",
+        "src/components/communication-detail.test.tsx",
+        "src/components/employee-account-panel-lifetime.test.tsx",
+        "src/components/employee-account-panel.test.tsx",
+        "src/components/employee-home-actions.test.tsx",
+        "src/components/employee-home-clock.test.tsx",
+        "src/components/employee-home-reviewed-wiring.test.tsx",
+        "src/components/employee-home-reviewed.test.tsx",
+        "src/components/employee-mobile/calendar.test.tsx",
+        "src/components/employee-mobile/creation-operation.test.ts",
+        "src/components/employee-mobile/creation-view.test.tsx",
+        "src/components/employee-mobile/exchange-view.test.tsx",
+        "src/components/employee-mobile/hours-operation.test.ts",
+        "src/components/employee-mobile/hours-records.test.tsx",
+        "src/components/employee-mobile/message-draft.test.ts",
+        "src/components/employee-mobile/messages-view.test.tsx",
+        "src/components/employee-mobile/pickup-operation.test.ts",
+        "src/components/employee-mobile/planning-operation.test.ts",
+        "src/components/employee-mobile/profile-preferences.test.tsx",
+        "src/components/employee-mobile/profile.test.tsx",
+        "src/components/employee-mobile/request-operation.test.ts",
+        "src/components/employee-mobile/requests.test.tsx",
+        "src/components/employee-time-panel.test.tsx",
+        "src/components/employee-updates.test.tsx",
+        "src/components/legal/employee-context.test.tsx",
+        "src/components/portal-signout.test.tsx",
+        "src/components/shift-change-form-state.test.ts",
+        "src/components/time-off-withdrawal.test.tsx",
+        "src/components/timecards.employee-unchanged.test.tsx",
+        "src/lib/assistance/availability-submission.test.ts",
+        "src/lib/availability-presets.test.ts",
+        "src/lib/calendar/command-http.test.ts",
+        "src/lib/calendar/command.test.ts",
+        "src/lib/calendar/contract.test.ts",
+        "src/lib/calendar/http.server.test.ts",
+        "src/lib/calendar/ical.test.ts",
+        "src/lib/calendar/service-worker.test.ts",
+        "src/lib/calendar/token.server.test.ts",
+        "src/lib/communications/http.server.test.ts",
+        "src/lib/communications/notification-intents.test.ts",
+        "src/lib/communications/policy.test.ts",
+        "src/lib/communications/recovery.test.ts",
+        "src/lib/communications/service.server.test.ts",
+        "src/lib/communications/validation.test.ts",
+        "src/lib/data/employee-creation.server.test.ts",
+        "src/lib/data/employee-exchange.server.test.ts",
+        "src/lib/data/employee-home.server.test.ts",
+        "src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts",
+        "src/lib/data/employee-notification-list.payroll.test.ts",
+        "src/lib/data/employee-notification-list.server.test.ts",
+        "src/lib/data/employee-profile.server.test.ts",
+        "src/lib/data/employee-requests.server.test.ts",
+        "src/lib/employee-creation.test.ts",
+        "src/lib/employee-exchange.test.ts",
+        "src/lib/employee-home/project.test.ts",
+        "src/lib/employee-hours-draft.test.ts",
+        "src/lib/employee-hours.test.ts",
+        "src/lib/employee-message-navigation.test.ts",
+        "src/lib/employee-message-page.test.ts",
+        "src/lib/employee-messages.test.ts",
+        "src/lib/employee-planning.test.ts",
+        "src/lib/employee-requests.test.ts",
+        "src/lib/employee-time-client.test.ts",
+        "src/lib/employee-time.test.ts",
+        "src/lib/employee-view-authority.test.ts",
+        "src/lib/employee-view-route.test.ts",
+        "src/lib/employee-view.test.ts",
+        "src/lib/legal/policies.test.ts",
+        "src/lib/notifications/logout.test.ts",
+        "src/lib/private-snapshot-client.test.ts",
+        "src/lib/scheduling/weekly-availability.test.ts",
+        "src/lib/theme.test.ts",
+        "src/lib/time-corrections/client.test.ts",
+        "src/lib/time-corrections/read-model.test.ts",
+        "src/lib/time-corrections/review-recovery.test.ts",
+        "src/lib/time-corrections/service.test.ts",
+        "src/lib/time-corrections/validation.test.ts",
+        "src/lib/time-off-withdrawal.test.ts",
+        "src/lib/timecards/client.test.ts",
+        "src/lib/timecards/project.test.ts",
+        "src/test/employee-mobile-communications-fixtures.test.ts"
+      ]
+    },
+    "typescript": {
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--incremental",
+        "false"
+      ]
+    },
+    "eslint": {
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "node_modules/eslint/bin/eslint.js",
+        "scripts/payroll-postgres.mjs",
+        "src/components/calendar-subscription-panel-lifetime.test.tsx",
+        "src/components/calendar-subscription-panel.test.tsx",
+        "src/components/calendar-subscription-panel.tsx",
+        "src/components/employee-mobile/calendar.test.tsx",
+        "src/components/employee-mobile/calendar.tsx",
+        "src/lib/calendar/client.ts",
+        "src/lib/calendar/contract.test.ts",
+        "src/lib/calendar/contract.ts",
+        "src/lib/calendar/http.server.test.ts",
+        "src/lib/calendar/service.server.ts",
+        "src/lib/calendar/types.ts",
+        "src/test/integration/employee-mobile-calendar.integration.ts",
+        "src/test/integration/phase-e-calendar-tokens.integration.ts",
+        "vitest.employee-mobile-calendar.config.mts",
+        "vitest.employee-mobile-communications.config.mts"
+      ]
+    },
+    "combined": {
+      "exitCode": 1,
+      "sourceUnchanged": true,
+      "gitUnchanged": true,
+      "actualSourceHashesMatch": true,
+      "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2266,
+      "invocation": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.employee-mobile-calendar.config.mts",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/suite-results.json"
+      ]
+    }
+  },
+  "owners": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/calendar/owned-next-jIKPcl/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 32974209024,
+        "availableBytesAfter": 34043498496
+      },
+      "pid": 18578,
+      "port": 63229,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/creation/owned-next-tp2L6d/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 31556268032,
+        "availableBytesAfter": 32710230016
+      },
+      "pid": 21740,
+      "port": 64462,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/hours/owned-next-10w3bE/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 31575441408,
+        "availableBytesAfter": 32651915264
+      },
+      "pid": 23554,
+      "port": 65340,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/messages/owned-next-IuQJPH/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 30873624576,
+        "availableBytesAfter": 32035147776
+      },
+      "pid": 11481,
+      "port": 59480,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/messages-review/owned-next-dlG93X/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 30792855552,
+        "availableBytesAfter": 31871623168
+      },
+      "pid": 15837,
+      "port": 61799,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/planning/owned-next-Gx9Tyt/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 31747792896,
+        "availableBytesAfter": 32823554048
+      },
+      "pid": 20084,
+      "port": 63835,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/profile/owned-next-DKEQhm/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 30257016832,
+        "availableBytesAfter": 31335305216
+      },
+      "pid": 26732,
+      "port": 50644,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/requests/owned-next-tCsq43/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 30334791680,
+        "availableBytesAfter": 31391092736
+      },
+      "pid": 28464,
+      "port": 51588,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/responses/owned-next-PuC1Vi/ownership.json",
+      "checkpoint": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+      "sourceCount": 2024,
+      "sourceHashesMatch": true,
+      "mirrorHashesMatch": true,
+      "mirrorInventoryMatches": true,
+      "substitutedFiles": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true,
+      "derivedArtifactsReleased": {
+        "directories": [
+          "app/node_modules",
+          "app/.next"
+        ],
+        "availableBytesBefore": 31521300480,
+        "availableBytesAfter": 32556531712
+      },
+      "pid": 24989,
+      "port": 49587,
+      "pidAlive": false,
+      "portOpen": false
+    }
+  ],
+  "ownerCount": 9,
+  "observationCount": 1376,
+  "observerErrors": [],
+  "observedDatabaseCount": 164,
+  "observedDatabases": [
+    {
+      "oid": 16384,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3a73f865-3a09-4fbb-a9d5-19471f5a1e11"
+    },
+    {
+      "oid": 21972,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:9ac080e4-56ce-4d4c-9420-2e956084e176"
+    },
+    {
+      "oid": 24766,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:fd7b5e55-4e2f-46fe-a0f4-a1f2d9ef746f"
+    },
+    {
+      "oid": 30354,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:db1b0af6-0050-4b97-b6de-8d00c04b3424"
+    },
+    {
+      "oid": 35942,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:9dd8566a-a303-4823-b733-f64e20b8ed24"
+    },
+    {
+      "oid": 38736,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3067ba6a-925c-4f96-a452-5ba7c4e72e24"
+    },
+    {
+      "oid": 44324,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:6ab56808-f879-4ae0-8444-b9b8c2d51b3d"
+    },
+    {
+      "oid": 47118,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d46c4755-41eb-4ffe-ad9f-0dc83137df37"
+    },
+    {
+      "oid": 52706,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f774d5e6-f428-4ed2-b0cb-ac078eeba041"
+    },
+    {
+      "oid": 55500,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b60b291a-5bc1-449d-93c3-fad122cf68b7"
+    },
+    {
+      "oid": 61088,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:fb75baed-a442-47a2-ba8f-80029d886008"
+    },
+    {
+      "oid": 66676,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:563b307e-54cf-4b12-9bb0-d4b2ae31daa4"
+    },
+    {
+      "oid": 72264,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5678efb3-e375-4a17-8547-59be615b2cc3"
+    },
+    {
+      "oid": 77852,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e0d63aa5-208f-4196-9f58-3d3231a96d02"
+    },
+    {
+      "oid": 80646,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:13107b48-d244-481e-bc28-7cb1e3c77a44"
+    },
+    {
+      "oid": 86234,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:31a90fde-807c-4b11-9ab8-148583c45f4b"
+    },
+    {
+      "oid": 91822,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:280a63bd-f302-47a8-a473-0ac78be03207"
+    },
+    {
+      "oid": 94616,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b1bda363-8386-403d-aaa8-267713526065"
+    },
+    {
+      "oid": 100204,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d7922a5c-06e5-4816-a67f-b64f027c28a0"
+    },
+    {
+      "oid": 105792,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:91d44f83-5483-498e-8333-de5a4e11aaab"
+    },
+    {
+      "oid": 108586,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:75d447fd-dfd6-45e5-a303-de023b723cd4"
+    },
+    {
+      "oid": 114174,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:39cbf848-6665-4624-8be7-2f4a150d971e"
+    },
+    {
+      "oid": 116968,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f27e190e-0c7a-4969-bdec-b2f27ace123d"
+    },
+    {
+      "oid": 119762,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:2fd3e436-9406-4554-9147-460feee6d18d"
+    },
+    {
+      "oid": 122556,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0912bee2-f95d-49e9-8e8a-ec0a90a7c201"
+    },
+    {
+      "oid": 128144,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:88e9168a-c002-4cb7-b12b-a6ee2cd89b4d"
+    },
+    {
+      "oid": 133732,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:bf1f44a3-e6cb-4b7c-91a4-a70fdf888fe0"
+    },
+    {
+      "oid": 139320,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:dda1f970-43de-43ed-8e96-bcfafc336607"
+    },
+    {
+      "oid": 142114,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:45bd70e6-bce8-4982-ab43-90b990573225"
+    },
+    {
+      "oid": 147702,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d5c99f1f-738c-4a29-8932-6862e97d0028"
+    },
+    {
+      "oid": 153290,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1847ab9b-d002-4b32-b825-d33c71b8abfa"
+    },
+    {
+      "oid": 156084,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:db7cea82-4f3c-4eec-ba56-bf9b0837ac05"
+    },
+    {
+      "oid": 161672,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d7ab8007-6a93-4349-9608-eb3967976f44"
+    },
+    {
+      "oid": 167260,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:45e71b18-b921-4366-973b-342e1e691de4"
+    },
+    {
+      "oid": 172848,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0f4d53f8-da3d-4a6e-ad8d-49d09acaa760"
+    },
+    {
+      "oid": 178436,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:82e399ae-3262-4c36-b209-ea3bca572e9a"
+    },
+    {
+      "oid": 197994,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:62b5beae-a2d4-49bb-a5aa-2129ffc0644e"
+    },
+    {
+      "oid": 203582,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3e372602-9283-4110-842d-09884fc88dcc"
+    },
+    {
+      "oid": 206376,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5513c47e-5d76-4350-8a5b-a02d64493641"
+    },
+    {
+      "oid": 211964,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e5915683-edf8-4639-bbda-42c5a4298c3b"
+    },
+    {
+      "oid": 217554,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3b3a4fa6-63bf-482f-892a-e4773d2a146b"
+    },
+    {
+      "oid": 220348,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f5c14261-dbef-4221-9944-5d0f4ccfdc44"
+    },
+    {
+      "oid": 225936,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1546187f-f7ac-44f5-b86c-ded59f68d53b"
+    },
+    {
+      "oid": 228730,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:80c7aa0b-a833-455d-a935-da870253c4a1"
+    },
+    {
+      "oid": 234318,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:da188f73-3515-4ba9-ac32-ac84d0a3acd3"
+    },
+    {
+      "oid": 239906,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e0f0a31b-4ac4-4faa-8e8d-4ffd5afc686f"
+    },
+    {
+      "oid": 248288,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d8f6daf9-2050-4edf-bd15-fc2240c3c396"
+    },
+    {
+      "oid": 255920,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:4aa255fb-0859-4604-b6de-5ca375ecd05d"
+    },
+    {
+      "oid": 258714,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:882935a5-84e5-454f-ad9d-d1458034cefd"
+    },
+    {
+      "oid": 261508,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:91cf9640-34da-4daf-a89a-660fbf5600c3"
+    },
+    {
+      "oid": 267096,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b8f4162e-3b26-4e1f-b008-61f17819bd34"
+    },
+    {
+      "oid": 272684,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:4a103e95-8958-4bf8-bad0-fea5edea4ae6"
+    },
+    {
+      "oid": 278272,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f5e51609-d9eb-4a3a-a042-6a2ef3702a9d"
+    },
+    {
+      "oid": 281066,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d709eabd-9d7f-4bd3-a3d1-d64c1079f91e"
+    },
+    {
+      "oid": 288021,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:7385331a-dd89-4b5d-a4af-fe78e06700a5"
+    },
+    {
+      "oid": 293234,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a34ebaa5-bff5-4e74-ab82-943957c9055d"
+    },
+    {
+      "oid": 296028,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:8331189f-2aaa-4644-aebf-ab78fe27aad4"
+    },
+    {
+      "oid": 301616,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:ace73ed1-1783-4d44-98bd-c0da856e5ead"
+    },
+    {
+      "oid": 306829,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:722bbc9a-e041-4998-b30b-ba9f1fbb50b9"
+    },
+    {
+      "oid": 312417,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3bb8a739-8fbf-498a-b68e-34b65df639db"
+    },
+    {
+      "oid": 320799,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:996718aa-898a-485c-ad15-df021deb96c5"
+    },
+    {
+      "oid": 326387,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e40d5ddb-7a8f-4de1-bde4-f9c00bd3cddd"
+    },
+    {
+      "oid": 331975,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f0691dad-8414-4e58-a230-fc0e2a93f556"
+    },
+    {
+      "oid": 340357,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3c5d3041-da78-4dac-8a28-6f04b6da9e10"
+    },
+    {
+      "oid": 345945,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:236cf649-7913-4e2d-888b-327b1113a774"
+    },
+    {
+      "oid": 351533,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5a34f029-30a1-4a56-b9b4-fffc98a7d966"
+    },
+    {
+      "oid": 357121,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e2e754c0-24c4-4cf2-abb2-5797aab03db1"
+    },
+    {
+      "oid": 362709,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:9c65ed27-8ed8-4515-88d0-bffb34a5560c"
+    },
+    {
+      "oid": 368297,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d02976a8-df64-4c18-928c-8d09848c896d"
+    },
+    {
+      "oid": 373885,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:6d830296-128e-47f9-a157-71496bd7486c"
+    },
+    {
+      "oid": 376679,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:829ae4dd-dfb0-440b-8c63-7c1df4383789"
+    },
+    {
+      "oid": 379473,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a1e5a861-8106-4c94-8f0d-a68c09b96537"
+    },
+    {
+      "oid": 385061,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c31038e5-8fc6-4c94-b0c3-f7ad398744eb"
+    },
+    {
+      "oid": 387855,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f6ad43eb-722e-493d-9b3f-2e316743efc6"
+    },
+    {
+      "oid": 390649,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:af97e49a-f814-40ab-ae93-6c2f9a2bfeaa"
+    },
+    {
+      "oid": 393443,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5b8c190a-2978-4b74-83f8-d64cfc459bdb"
+    },
+    {
+      "oid": 396237,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e6e77a1f-03e2-432d-957b-4faa07fe322f"
+    },
+    {
+      "oid": 401825,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": null
+    },
+    {
+      "oid": 404619,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c78920b3-8e78-4e3f-a639-5e52351e9f0e"
+    },
+    {
+      "oid": 409832,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:39d97e27-b759-479d-8fdb-83f9d1d77d93"
+    },
+    {
+      "oid": 417089,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:bfb5dd0e-11d7-4a37-aa21-a1822e70ce34"
+    },
+    {
+      "oid": 424346,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:9529ba33-0de8-4452-8d8b-8fcf387be7ef"
+    },
+    {
+      "oid": 429184,
+      "datname": "nevora_foundation_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:6c862ea1-c420-4260-b27a-3d21035261cc"
+    },
+    {
+      "oid": 436040,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:cb6a11ef-c276-4ddf-b0f1-0c57b48bc87f"
+    },
+    {
+      "oid": 438834,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:85a09c8d-e4da-4304-a95d-57e9d0f29935"
+    },
+    {
+      "oid": 444422,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:8fad0949-00cc-433e-a238-fc8d619c6506"
+    },
+    {
+      "oid": 447216,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e8e750e3-39c2-4e85-81e9-840c09aa7f3f"
+    },
+    {
+      "oid": 452804,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c6baed90-3fa7-4bb2-89e9-cef4765d57ef"
+    },
+    {
+      "oid": 458393,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5f97d5b5-4b1c-4760-969e-2b64ab77a0c6"
+    },
+    {
+      "oid": 460802,
+      "datname": "fuel_phase3_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:72e8413f-541f-4604-ab35-18c816f30c9b"
+    },
+    {
+      "oid": 466390,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a3ebf55a-da16-4ccf-b9f4-a5ae9a05c724"
+    },
+    {
+      "oid": 469200,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0e10f5da-1311-4fab-8ab9-162ad5193c70"
+    },
+    {
+      "oid": 471997,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:da14833f-ab13-4322-bb3f-d00da23eaa6a"
+    },
+    {
+      "oid": 474794,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a97c0746-26d7-4b9d-91d5-66a223ab9fe6"
+    },
+    {
+      "oid": 477591,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:bd96c761-647e-4be6-97b9-c5ca263d8d07"
+    },
+    {
+      "oid": 480388,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:17f33dcd-a167-4c6e-aed4-ac1b8abcf58f"
+    },
+    {
+      "oid": 483185,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c6debaa8-e143-4cb3-ac3e-1a0b12f0cec6"
+    },
+    {
+      "oid": 485985,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:385c43f6-f1de-4cde-b538-dbbd69ff0fb9"
+    },
+    {
+      "oid": 488782,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:bb9b53a2-f5b8-42ce-aef9-1228a417d764"
+    },
+    {
+      "oid": 491579,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:9c4b07cf-ee27-47a5-a359-e064e0414fd1"
+    },
+    {
+      "oid": 497167,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:96ca89cc-93d0-4aea-935d-9323d201d5d4"
+    },
+    {
+      "oid": 499962,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:aaf9e83e-cd10-47eb-ae6c-61a7cb4432c9"
+    },
+    {
+      "oid": 502756,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e8255e9e-431d-46b8-835c-a83d90e52292"
+    },
+    {
+      "oid": 505550,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c2d5a7e2-51d3-4177-a1ce-7e928a453d3d"
+    },
+    {
+      "oid": 511138,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:819d7ea6-6a94-442f-83cf-4112325ee6b6"
+    },
+    {
+      "oid": 513932,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e8f0dcea-cb37-471e-97d8-1c00321dd52c"
+    },
+    {
+      "oid": 516726,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:69dad40f-9a28-4024-b72a-fee63d81ab0e"
+    },
+    {
+      "oid": 519520,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:4f6e4aa4-47cb-448c-8021-83908f2395b5"
+    },
+    {
+      "oid": 525108,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a8a68eeb-3480-431b-a1a7-d56a4d5963ec"
+    },
+    {
+      "oid": 527902,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3e5c6f71-e067-42a4-9aa3-f84426255582"
+    },
+    {
+      "oid": 530696,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:acf5e70c-9eb7-44d3-b355-0c5be3ed8ab7"
+    },
+    {
+      "oid": 533490,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:385a03a5-593e-45ec-91a1-f2191c7bc48d"
+    },
+    {
+      "oid": 536284,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3b851793-99a2-48b2-b84c-2cb678026d04"
+    },
+    {
+      "oid": 539078,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:90a0afd7-bd20-4ab1-9812-fcc05a28f3e5"
+    },
+    {
+      "oid": 541872,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:5b34ca74-ac1a-4c22-beda-f9567cb6c0b9"
+    },
+    {
+      "oid": 544667,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:cfc8509b-4162-449d-96b8-679d1af6bfb0"
+    },
+    {
+      "oid": 550255,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:585790a1-6774-49be-8488-167af5f65574"
+    },
+    {
+      "oid": 555843,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0caa72ab-fba9-4af4-8e7d-74704887c113"
+    },
+    {
+      "oid": 558637,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1d495f56-b667-4976-9473-a7f2e481ee43"
+    },
+    {
+      "oid": 564225,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0b5b2cc6-43fc-4773-887f-5bd952719416"
+    },
+    {
+      "oid": 567019,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:59feedf3-ec00-4497-83e2-4b7a90594806"
+    },
+    {
+      "oid": 572607,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d5e3f481-049d-4e52-8134-aebc611bb065"
+    },
+    {
+      "oid": 575401,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:6917b12a-0366-4003-aa11-71669aabd950"
+    },
+    {
+      "oid": 583783,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a8a7c16a-3d38-40f5-8991-ad944021cf29"
+    },
+    {
+      "oid": 586577,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:240bbd47-8091-4b22-8a38-ac2df228584e"
+    },
+    {
+      "oid": 592165,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3d49efce-5bf1-4e9f-97c7-00e2fcc4664e"
+    },
+    {
+      "oid": 594959,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:c06bd8df-d99b-4bf0-a89e-c3c8561962b0"
+    },
+    {
+      "oid": 597753,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b022037a-5e12-4739-95c1-9027f74a7bb1"
+    },
+    {
+      "oid": 600547,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:16d2bc50-450e-468a-ad50-393dbc56e27d"
+    },
+    {
+      "oid": 603341,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e4b65abd-b428-443b-bce2-29d4d9ee3dbf"
+    },
+    {
+      "oid": 606135,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a7e69e65-5edd-472a-a2a8-790f944564ba"
+    },
+    {
+      "oid": 608929,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1dfe0c55-cea5-4d85-b04e-741aa61c6c98"
+    },
+    {
+      "oid": 611723,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d18af7f8-86fd-44b8-aab0-f6a32dbabb9e"
+    },
+    {
+      "oid": 614517,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3cda98fd-0f5e-4f3c-837c-f55e18555080"
+    },
+    {
+      "oid": 617311,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:114e6475-9d22-45e6-ab06-04b05268c6eb"
+    },
+    {
+      "oid": 622899,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:24019a97-354b-464e-b99d-a753b46bec0e"
+    },
+    {
+      "oid": 625693,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:f5868c00-7658-41cf-88f7-3ce78648269f"
+    },
+    {
+      "oid": 631281,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:52e14b0a-150e-4ffc-a525-b41bdd8ca6fd"
+    },
+    {
+      "oid": 634075,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b0f8e558-13e4-4fb1-bccb-4657384237b1"
+    },
+    {
+      "oid": 636869,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:a185abf3-24c3-4891-af26-4aa20b8b59b4"
+    },
+    {
+      "oid": 639663,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:63447933-9e1f-495e-b9f4-dcdb3e547d49"
+    },
+    {
+      "oid": 642457,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:801702d9-9a71-4ad2-9456-751fab85ee37"
+    },
+    {
+      "oid": 645251,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:24a9320a-2cef-4fc5-add8-aec4c7b871d7"
+    },
+    {
+      "oid": 648045,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:2abf549a-a378-4814-9e9f-69b3d733f407"
+    },
+    {
+      "oid": 650839,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1eae8edd-397b-4c59-b15f-b8135ed2d147"
+    },
+    {
+      "oid": 653633,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:96a85ef2-d004-4ccb-80f4-9420ada16a29"
+    },
+    {
+      "oid": 656427,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:3614afd3-cdcb-40d9-aa4e-f1a416202885"
+    },
+    {
+      "oid": 659221,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d39d9d7d-faf6-4116-8287-428872cd0f5b"
+    },
+    {
+      "oid": 662015,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:607b0162-f5a2-42cb-8806-ed090ebed8da"
+    },
+    {
+      "oid": 664809,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d5cb4d2b-1439-4a08-9db3-b48dbc0b3aea"
+    },
+    {
+      "oid": 667603,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:bdc49e4a-b7d6-4d03-a26f-a2ea77fef221"
+    },
+    {
+      "oid": 670397,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b1862604-9c87-4dfc-bc8f-649358fe69f8"
+    },
+    {
+      "oid": 673191,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:fd1f2a95-d7c6-4729-b69c-cebc7d337f11"
+    },
+    {
+      "oid": 675985,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:37187ba9-8a3c-49fc-98b4-12919b7ea7bc"
+    },
+    {
+      "oid": 678779,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:4a23a625-875e-4c6f-afad-563ba5cd4146"
+    },
+    {
+      "oid": 681573,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:ea1bca26-f2a5-4587-b2c5-ee14e0d50198"
+    },
+    {
+      "oid": 684367,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:0dc38cf6-36a2-4e28-83d8-ddeb5265c81c"
+    },
+    {
+      "oid": 689958,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:b2b5ba2b-7961-48c7-8004-555ef92838df"
+    },
+    {
+      "oid": 692752,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": null
+    },
+    {
+      "oid": 695546,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:e7884d21-c45a-480e-8f0d-67a2cbf987ec"
+    },
+    {
+      "oid": 698340,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:d65faa9a-6b9d-4fcb-b664-dd0e352ce77a"
+    },
+    {
+      "oid": 701134,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:1360d3b2-9750-4ea7-b5bf-8b37ee2d8362"
+    },
+    {
+      "oid": 703928,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": null
+    },
+    {
+      "oid": 703928,
+      "datname": "nevora_exchange_test_c1_c6989517da88",
+      "marker": "fuel-phase3-disposable:ae69b41e-3c13-4616-bc76-3ae31959e644"
+    }
+  ],
+  "observedNamespaces": [
+    "fuel_phase3_test_",
+    "nevora_exchange_test_",
+    "nevora_foundation_test_"
+  ],
+  "markersValid": false,
+  "clusters": [
+    {
+      "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-UY7PkQ",
+      "pid": 5124,
+      "port": 53528,
+      "ownerHash": "b0bfecfc09f7be4546f7e5f2163e53c6219f0c4681337ab6c735a2457e2eaf43",
+      "directoryExists": false,
+      "pidStillAlive": false,
+      "portStillOpen": false,
+      "recheckDirectoryExists": false,
+      "recheckPidAlive": false,
+      "recheckPortOpen": false
+    }
+  ],
+  "suiteSummary": {
+    "success": false,
+    "numTotalTests": 254,
+    "numPassedTests": 253,
+    "numFailedTests": 1,
+    "numPendingTests": 0,
+    "numTotalTestSuites": 26,
+    "numPassedTestSuites": 25
+  },
+  "testFiles": [
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-calendar.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-communications-review.integration.ts",
+      "status": "passed",
+      "assertions": 4,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-communications-sql.integration.ts",
+      "status": "passed",
+      "assertions": 8,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-communications.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-creation-privacy.integration.ts",
+      "status": "passed",
+      "assertions": 3,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-creation.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-exchange-privacy.integration.ts",
+      "status": "passed",
+      "assertions": 4,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-hours-sql.integration.ts",
+      "status": "passed",
+      "assertions": 12,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-hours.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-planning-sql.integration.ts",
+      "status": "passed",
+      "assertions": 9,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-planning.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-profile-sql.integration.ts",
+      "status": "passed",
+      "assertions": 6,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-profile.integration.ts",
+      "status": "failed",
+      "assertions": 1,
+      "failed": 1
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-requests.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/employee-mobile-responses.integration.ts",
+      "status": "passed",
+      "assertions": 1,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/shift-change-hardening.integration.ts",
+      "status": "passed",
+      "assertions": 34,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/shift-change-views.integration.ts",
+      "status": "passed",
+      "assertions": 4,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/communications-gap-remediation.integration.ts",
+      "status": "passed",
+      "assertions": 7,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/company-access-communications.integration.ts",
+      "status": "passed",
+      "assertions": 40,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/company-access-recovery-calendar.integration.ts",
+      "status": "passed",
+      "assertions": 27,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-calendar-feed.integration.ts",
+      "status": "passed",
+      "assertions": 19,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-calendar-tokens.integration.ts",
+      "status": "passed",
+      "assertions": 24,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-communication-ack.integration.ts",
+      "status": "passed",
+      "assertions": 6,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-communications-schema.integration.ts",
+      "status": "passed",
+      "assertions": 11,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-communications.integration.ts",
+      "status": "passed",
+      "assertions": 17,
+      "failed": 0
+    },
+    {
+      "name": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/phase-e-communication-notifications.integration.ts",
+      "status": "passed",
+      "assertions": 11,
+      "failed": 0
+    }
+  ],
+  "combinedFileSetMatches": true,
+  "expectedFileCount": 26,
+  "unitCorpusRetained": true,
+  "evidenceCredentialScan": {
+    "files": 76,
+    "leakPaths": []
+  },
+  "errors": [
+    "stage:combined",
+    "database markers",
+    "suite failures"
+  ]
+}

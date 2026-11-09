@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  13:30:47
+   Duration  120ms (import 55%, transform 27%, tests 16%, worker 2%)
+

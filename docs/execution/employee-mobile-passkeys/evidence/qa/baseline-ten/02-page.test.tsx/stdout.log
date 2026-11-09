@@ -1,0 +1,52 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/passkeys-qa-owned-baseline-592d4212[39m
+
+ [31m❯[39m src/app/app/requests/page.test.tsx [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 3[2mms[22m[39m
+[31m   [31m×[31m marks a waiting request amber and an approval green, with a timeline[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m names who decided a request and when, and never names anyone on a withdrawal[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/app/app/requests/page.test.tsx[2m > [22mmarks a waiting request amber and an approval green, with a timeline
+[31m[1mError[22m: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[36m [2m❯[22m Module.RequestsPage src/app/app/requests/page.tsx:[2m80:21[22m[39m
+
+[90m [2m❯[22m src/app/app/requests/page.test.tsx:[2m17:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/app/app/requests/page.test.tsx[2m > [22mnames who decided a request and when, and never names anyone on a withdrawal
+[31m[1mError[22m: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+[39m
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+[36m [2m❯[22m Module.RequestsPage src/app/app/requests/page.tsx:[2m80:21[22m[39m
+
+[90m [2m❯[22m src/app/app/requests/page.test.tsx:[2m28:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 20:17:55
+[2m   Duration [22m 233ms[2m (transform 57%, import 41%, tests 1%, worker 1%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/baseline-ten/02-page.test.tsx/results.json

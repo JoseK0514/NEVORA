@@ -1,0 +1,141 @@
+/* Bridge (Release 1): Owner and Manager pages still built on Quiet (q-*) take the corporate look inside the corporate
+ * shell until each is rebuilt on the kit: the grey #F5F6F6 canvas, grouped rows as white cards (radius 12, 1px ring),
+ * Inter 22 / 15 / 13 type, 48px white fields with a 1px ring, 44px teal buttons with radius 8, 13px group labels.
+ * Scoped to [data-nv-corp], so Employee (Quiet/mobile) pages are untouched. The prefix carries one id of weight plus
+ * the shell, so it wins over quiet.css without !important. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page {
+  --q-ink: #1A1C1E; --q-grey: #6B7075; --q-soft: #6B7075; --q-faint: #A7ACB1; --q-chev: #A7ACB1; --q-line: #EDEEEF;
+  --q-fill: #EDEEEF; --q-teal: #0B6E69; --q-teal-fill: #0B6E69; --q-red: #B42318; --q-av: #4A4F54; --q-press: #EDEEEF;
+  --q-tog-off: #D5D8DA; --q-body: #4A4F54; --q-tab: #6B7075; --q-border: #D5D8DA; --q-tint: #E6F1EF; --q-tint-ink: #0B6E69;
+  background: #F5F6F6; color: #1A1C1E; padding-bottom: 24px;
+  font: 400 15px/20px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: 0; font-variant-numeric: tabular-nums;
+}
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page.q-sheet, :is(#q-root, html) .app-shell[data-nv-corp] .q-sheet .q-page { background: #F5F6F6; }
+
+/* Pushed page header: white, "‹ Back" in teal 15/600, the title 17/600. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page > .q-nav { background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding-left: 16px; padding-right: 16px; padding-bottom: 8px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__l { color: #0B6E69; font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__l .q-ic { width: 18px; height: 18px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__t { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-nav__r { font-size: 15px; line-height: 20px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bar { padding-left: 16px; padding-right: 16px; }
+
+/* Title: 22/28 600 with a 13px line. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-hd { padding: 16px 16px 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-hd h1 { font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -.45px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-hd p { margin-top: 4px; font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
+
+/* Group labels sit over their card. Nov 1 upscale (kit consistency 2): the kit's one section label, 13/18 500 #6B7075 on
+ * the card's left edge (the list's 16px inset), 8px above the card and 32px under the previous group (16px under the
+ * page's title block). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-grp { margin: 32px 16px 8px; font-size: 13px; line-height: 18px; font-weight: 500; color: #6B7075; letter-spacing: -0.04px; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(.q-hd, .q-nav, .q-seg, .q-search, .q-top-gap) + .q-grp { margin-top: 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-sec { margin: 24px 16px 8px; font-size: 17px; line-height: 22px; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-sec__aside { font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
+
+/* Rows: a white card with a 1px ring. Nov 1 upscale (kit consistency 3, 4): 60px for two lines and 52px for one; titles
+ * 15/500, details 13/400 grey, values 15/400 grey; one hover (#F2F4F4) and pressed (#EDEEEF) fill, 120ms ease-out. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list { margin: 0 16px; overflow: hidden; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list .q-list { margin: 0; border-radius: 0; box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list:empty { display: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-hd + .q-list, :is(#q-root, html) .app-shell[data-nv-corp] .q-nav + .q-list { margin-top: 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-list > li { font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-row { min-height: 60px; padding: 8px 16px; gap: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(a, button, label, summary).q-row { cursor: pointer; transition: background-color 120ms ease-out; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) and (pointer: fine) {
+  :is(#q-root, html) .app-shell[data-nv-corp] :is(a, button, label, summary).q-row:hover { background: #F2F4F4; }
+}
+:is(#q-root, html) .app-shell[data-nv-corp] :is(a, button, label, summary).q-row:active { background: #EDEEEF; transition: none; }
+@media (prefers-reduced-motion: reduce) { :is(#q-root, html) .app-shell[data-nv-corp] :is(a, button, label, summary).q-row { transition: none; } }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-row--one { min-height: 52px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-row::after, :is(#q-root, html) .app-shell[data-nv-corp] .q-row--av::after { left: 0; background: #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-rt b { font-size: 15px; line-height: 20px; font-weight: 500; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-rt i { margin-top: 0; font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(.q-rv, .q-rv--l, .q-rv--ph, .q-rv--ink, .q-rv--go) { font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-rv--ink { color: #1A1C1E; font-weight: 500; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-rv--go { color: #0B6E69; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-rv--alert { color: #B42318; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-chev { width: 16px; height: 16px; color: #A7ACB1; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-av { width: 32px; height: 32px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; font-size: 13px; font-weight: 600; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-av--lg { width: 56px; height: 56px; border-radius: 28px; font-size: 17px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-av--open { background: #FFFFFF; box-shadow: none; border: 1.5px dashed #B42318; color: #B42318; }
+
+/* Search, segments, toggles. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-search { height: 48px; margin: 16px 16px 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #6B7075; font-size: 15px; line-height: 20px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg { height: 36px; margin: 16px 16px 0; border-radius: 8px; background: #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is(a, button) { border-radius: 6px; font-size: 13px; line-height: 18px; font-weight: 600; color: #4A4F54; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-seg > :is([aria-current="page"], [aria-pressed="true"]) { color: #1A1C1E; box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+
+/* Fields: 13/600 label, 48px white input with a 1px ring, teal focus. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-fl { margin: 16px 16px 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-fl > :is(label, .q-fl__label) { margin-bottom: 6px; font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-in { height: 48px; padding: 0 12px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; font-size: 15px; line-height: 20px; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(textarea.q-in, .q-in--area) { height: 112px; padding-top: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-in:is(:focus, :focus-within) { box-shadow: inset 0 0 0 2px #0B6E69; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-help { margin: 6px 16px 0; font-size: 13px; line-height: 18px; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-error { margin: 6px 16px 0; font-size: 13px; line-height: 18px; color: #B42318; }
+
+/* Buttons: 44px, radius 8; primary teal; round 2 (R4): secondary is the one secondary style (white, #D5D8DA ring, ink 15/500). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-btn { width: calc(100% - 32px); height: 44px; margin: 16px 16px 0; border-radius: 8px; font-size: 15px; line-height: 20px; font-weight: 600; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-btn--sec { background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font-weight: 500; }
+:is(#q-root, html) .app-shell[data-nv-corp] :is(.q-btn--off, .q-btn:disabled) { background: #EDEEEF; box-shadow: none; color: #A7ACB1 !important; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-btn--quiet { background: none; box-shadow: none; color: #0B6E69 !important; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-btn--danger { background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #B42318 !important; font-weight: 500; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs { height: 32px; padding: 0 12px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font-size: 13px; line-height: 18px; font-weight: 500; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs--go { background: #0B6E69; box-shadow: none; color: #FFFFFF !important; }
+/* Codex B-04: a compact button that stands alone in a row keeps its 32px look but takes taps over 44px. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs--hit { position: relative; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-bs--hit::after { content: ""; position: absolute; inset: -6px 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-acts { padding: 0 16px 12px 60px; }
+
+/* Text blocks. An empty list reads like the kit's empty row: 15/400 grey on the card's edge. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-empty { margin: 16px 16px 0; font-size: 15px; line-height: 20px; color: #6B7075; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-list .q-empty { display: flex; align-items: center; min-height: 56px; margin: 0; padding: 8px 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-lead b { font-size: 17px; line-height: 22px; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-lead i { font-size: 13px; line-height: 18px; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-body { margin: 16px 16px 0; font-size: 15px; line-height: 22px; letter-spacing: 0; }
+
+/* Desktop and tablet: a 640px reading column, like the kit's pages. */
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .q-page { max-width: 640px; margin: 0 auto; }
+}
+/* Phones: a page that draws its own back header hides the shell's. */
+@media (max-width: 767px) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp]:not([data-corp-root]):has(.q-page > .q-nav) .mobile-header { display: none !important; }
+}
+
+/* The Clocker section's links (Tablets, Employee PINs, Breaks, Photos, Recovery): one scrolling row of 32px chips,
+ * the current one teal, instead of wrapped text links. */
+:is(#q-root, html) .app-shell[data-nv-corp] nav[aria-label="Clocker controls"] {
+  display: flex; flex-wrap: nowrap; gap: 8px; margin: 12px 0 0; padding: 0 16px 2px; overflow-x: auto; scrollbar-width: none; background: none; box-shadow: none;
+}
+:is(#q-root, html) .app-shell[data-nv-corp] nav[aria-label="Clocker controls"]::-webkit-scrollbar { display: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] nav[aria-label="Clocker controls"] > a {
+  flex: none; display: inline-flex; align-items: center; height: 32px; min-height: 0; margin: 0; padding: 0 12px; border: 0; border-radius: 16px;
+  background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #4A4F54; font: 600 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; white-space: nowrap;
+}
+:is(#q-root, html) .app-shell[data-nv-corp] nav[aria-label="Clocker controls"] > a[aria-current="page"] { background: #E6F1EF; box-shadow: none; color: #0B6E69; }
+
+/* Profile-style headers (a large avatar beside the name) use the kit's title size. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-who h1 { margin: 0; font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -.45px; }
+@media (min-width: 768px) { :is(#q-root, html) .app-shell[data-nv-corp] .q-who h1 { font-size: 28px; line-height: 34px; letter-spacing: -.56px; } }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-who p { font-size: 13px; line-height: 18px; color: #6B7075; }
+/* The older kit's buttons inside the corporate shell: 44px, radius 8, 15/600; secondary is white with a teal ring. */
+:is(#q-root, html) .app-shell[data-nv-corp] .page-frame .nv-btn { min-height: 44px; height: auto; padding: 0 16px; border-radius: 8px; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; }
+/* Round 2 (R4): the one secondary style, no teal outline. */
+:is(#q-root, html) .app-shell[data-nv-corp] .page-frame .nv-btn:not([data-kind="primary"]):not([data-kind="danger"]) { background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font-weight: 500; }
+/* Clocker devices' setup steps (board O-ClockerDevices). */
+:is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps .q-row b { font-weight: 400; }
+:is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps__n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 11px; background: #EDEEEF; color: #4A4F54; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif; }
+:is(#q-root, html) .app-shell[data-nv-corp] .clocker-steps__list { list-style: none; }
+/* Clocker recovery's review requests: inside the 16px gutter like every other block, with the kit's heading. */
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] { margin: 16px 16px 0; padding: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] h2 { margin: 0 0 8px; font: 600 17px/22px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] p { margin: 8px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .wc-content > section[class*="__requests"] .q-btn { width: 100%; margin: 0; }
+
+/* Nov 1 upscale (kit consistency 3): Scheduling rules and the other Quiet pages built on the older wave classes use the
+ * kit's row type: titles 15/500 ink, details 13/400 grey (no 17/550 or 12/600). */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page :is(.wb-record__title, .wb-setting__name > .wb-record__title) { font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.13px; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wb-record__meta { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .wb-summary-text { display: flex; flex-direction: column; min-width: 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }

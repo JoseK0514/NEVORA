@@ -1,0 +1,46 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:40315
+- Network:       http://127.0.0.1:40315
+✓ Ready in 445ms
+✓ Running next.config.ts took 52ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 579ms (next.js: 248ms, application-code: 330ms)
+ GET /login 200 in 99ms (next.js: 1.1ms, application-code: 98ms)
+ GET /login 200 in 69ms (next.js: 1.1ms, application-code: 68ms)
+ GET /app 200 in 478ms (next.js: 64ms, application-code: 413ms)
+ POST /login 200 in 2.6s (next.js: 1.5ms, application-code: 2.6s)
+  └─ ƒ login({}) in 74ms login/actions.ts
+ GET /api/notifications 200 in 534ms (next.js: 65ms, application-code: 469ms)
+ GET /api/employee/home 200 in 1101ms (next.js: 100ms, application-code: 1001ms)
+ GET /api/employee/my-time 200 in 80ms (next.js: 39ms, application-code: 41ms)
+ GET /app/notifications 200 in 350ms (next.js: 14ms, application-code: 336ms)
+ GET /api/notifications 200 in 311ms (next.js: 2ms, application-code: 309ms)
+ GET /api/employee/messages/notifications/first 200 in 1215ms (next.js: 786ms, application-code: 428ms)
+ GET /api/employee/messages/open/d1efc6d9-dfcb-43b6-bbf5-1f747a8f69be 200 in 800ms (next.js: 644ms, application-code: 156ms)
+ GET /login 200 in 91ms (next.js: 1.4ms, application-code: 90ms)
+ GET /app 200 in 298ms (next.js: 1.3ms, application-code: 297ms)
+ POST /login 200 in 414ms (next.js: 1.5ms, application-code: 413ms)
+  └─ ƒ login({}) in 66ms login/actions.ts
+ GET /api/notifications 200 in 280ms (next.js: 1.4ms, application-code: 279ms)
+ GET /api/employee/home 200 in 715ms (next.js: 1.3ms, application-code: 713ms)
+ GET /api/employee/my-time 200 in 31ms (next.js: 1.0ms, application-code: 30ms)
+ GET /app/updates 200 in 256ms (next.js: 10ms, application-code: 246ms)
+ GET /api/notifications 200 in 269ms (next.js: 0.9ms, application-code: 268ms)
+ GET /api/employee/messages/updates/first 200 in 700ms (next.js: 22ms, application-code: 678ms)
+ GET /app/updates/compose 200 in 55ms (next.js: 9ms, application-code: 46ms)
+ GET /api/employee/messages/compose/new 200 in 174ms (next.js: 19ms, application-code: 156ms)
+ GET /login 200 in 60ms (next.js: 1.0ms, application-code: 59ms)
+ GET /app 200 in 250ms (next.js: 0.9ms, application-code: 249ms)
+ POST /login 200 in 331ms (next.js: 1.4ms, application-code: 330ms)
+  └─ ƒ login({}) in 60ms login/actions.ts
+ GET /api/notifications 200 in 334ms (next.js: 1.1ms, application-code: 333ms)
+ GET /api/employee/home 200 in 685ms (next.js: 0.9ms, application-code: 684ms)
+ GET /api/employee/my-time 200 in 34ms (next.js: 1.5ms, application-code: 33ms)
+ GET /app/updates 200 in 221ms (next.js: 1.2ms, application-code: 220ms)
+ GET /api/notifications 200 in 255ms (next.js: 1.2ms, application-code: 254ms)
+ GET /api/employee/messages/updates/first 200 in 844ms (next.js: 26ms, application-code: 818ms)
+ GET /app/updates/502c26b9-f06c-45c1-b72b-86abb5a18cf7 200 in 504ms (next.js: 449ms, application-code: 55ms)
+ GET /api/employee/messages/detail/502c26b9-f06c-45c1-b72b-86abb5a18cf7 200 in 254ms (next.js: 20ms, application-code: 234ms)
+[?25h

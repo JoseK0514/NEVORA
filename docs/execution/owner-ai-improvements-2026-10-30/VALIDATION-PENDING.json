@@ -1,0 +1,63 @@
+{
+  "status": "IMPLEMENTED_UNVERIFIED",
+  "implementationCheckpoint": "67fbd50d3154e7e36e2abd9652ac9f847ed83d25",
+  "base": "1121f24e50190172d1fa40d931fd064715f31554",
+  "functionalTestExecution": "NOT_RUN_BY_USER_INSTRUCTION",
+  "newAuthoredCases": 23,
+  "regressions": [
+    {
+      "file": "src/lib/owner-advisor/notebook.test.ts",
+      "cases": 7,
+      "status": "NOT_RUN",
+      "coverage": "strict commands and scope rejection, revision conflict, Owner closure, deletion, bounded goals, corrupt/duplicate items and task command admission"
+    },
+    {
+      "file": "src/lib/owner-advisor/notebook.integration.ts",
+      "cases": 6,
+      "status": "NOT_RUN",
+      "coverage": "persistence/replay, concurrent revision and cross-operation collision, authority revocation, changed-context settlement, second Owner isolation, missing additive schema"
+    },
+    {
+      "file": "src/lib/owner-advisor/loop.test.ts",
+      "newCases": 1,
+      "status": "NOT_RUN",
+      "coverage": "fresh typed task read before inference, selected notes and server evidence, private review hint exclusion"
+    },
+    {
+      "file": "src/components/owner-advisor/notebook-controller.test.ts",
+      "cases": 7,
+      "status": "NOT_RUN",
+      "coverage": "task/revision binding and private retirement, no implicit general fallback, stale draft base, malformed snapshot/context, generated question/task switching, explicit question preservation, refreshed objective provenance"
+    },
+    {
+      "file": "src/components/owner-advisor/notebook-panel.test.tsx",
+      "cases": 2,
+      "status": "NOT_RUN",
+      "coverage": "escaped private text, honest Owner closure, continuation and scoped review affordances"
+    }
+  ],
+  "existingCoverageToRunLater": [
+    "Existing owner-advisor service/store/authority/loop and client/controller/lifecycle suites",
+    "src/test/migration-order.test.ts (updated additive tail assertion)",
+    "Authorized disposable SQL migration, replay/concurrency and missing-schema verification",
+    "Independent Owner mobile/desktop UI, accessibility, reflow and interaction acceptance",
+    "Semantic/model reasoning evaluations using approved isolated inputs and budget"
+  ],
+  "draftScenarioSource": "acceptance-scenarios.json is an unchanged copy of the prior 32 future-direction cases; none is marked passing or fully implemented by this increment",
+  "staticEvidence": [
+    "static-checks/typescript.json",
+    "static-checks/eslint.json",
+    "static-checks/whitespace.json",
+    "static-checks/followup/typescript.json",
+    "static-checks/followup/eslint.json",
+    "static-checks/followup/whitespace.json"
+  ],
+  "independentSourceReview": "Original R1 in independent-source-review.md preserved; independent-source-recheck.md confirms corrected in source at faca0f4f. No remaining concrete defect in the correction was identified; all runtime/UI/QA acceptance remains pending.",
+  "modelCalls": 0,
+  "migrationsApplied": 0,
+  "ciDispatches": 0,
+  "deployments": 0,
+  "releaseAcceptance": "PENDING",
+  "followup": "R1 source correction and three additional NOT_RUN cases; see review-resolution.md",
+  "correctedApplicationCheckpoint": "faca0f4fefe6fb950078fe3766486f111b648be9"
+}

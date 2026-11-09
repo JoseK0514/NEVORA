@@ -1,0 +1,24 @@
+@import url("p2b.css");
+/* Phase 2, organized and cleaner. */
+.u1 .secx { display: flex; justify-content: space-between; align-items: baseline; margin: 30px 24px 12px; }
+.u1 .secx .eyebrow { color: var(--ink2); }
+.u1 .secx .eyebrow em { font-style: normal; color: var(--ink3); }
+.u1 .nt4 { position: relative; display: flex; align-items: center; gap: 14px; min-height: 72px; padding: 14px 16px 14px 18px; }
+.u1 .nt4 + .nt4::before { content: ""; position: absolute; top: 0; left: 40px; right: 0; height: 1px; background: var(--rule); }
+.u1 .nt4 .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: #35B6EC; }
+.u1 .nt4 .tx { flex: 1; min-width: 0; }
+.u1 .nt4 .tx b { display: block; font: 500 17px/22px var(--sys); letter-spacing: -.2px; }
+.u1 .nt4 .tx span { display: block; margin-top: 2px; font: 400 15px/20px var(--sys); color: var(--ink2); }
+.u1 .nt4 time { flex: none; font: 400 15px/20px var(--sys); color: var(--ink3); font-variant-numeric: tabular-nums; }
+.u1 .finebar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0 12px; margin: 14px 24px 0; font: 400 15px/21px var(--sys); color: var(--ink3); }
+.u1 .set { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 8px 16px 8px 18px; position: relative; }
+.u1 .set + .set::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--rule); }
+.u1 .set b { font: 500 17px/22px var(--sys); letter-spacing: -.2px; }
+.u1 .set .v { display: inline-flex; align-items: center; gap: 8px; font: 400 15px/20px var(--sys); color: var(--ink2); }
+.u1 .set .v.go { color: var(--teal); font-weight: 500; }
+.u1 .set.red b { color: #A3271A; }
+.u1 .cardnote { display: flex; justify-content: space-between; align-items: center; gap: 12px; position: relative; z-index: 2; margin-top: 12px; font: 400 15px/21px var(--sys); color: rgba(255,255,255,.62); }
+.u1 .cardnote .ulink { color: #fff; text-decoration-color: rgba(255,255,255,.3); }
+.u1 .xbtn { display: inline-flex; width: 36px; height: 36px; border-radius: 50%; align-items: center; justify-content: center; background: #EEECE7; color: var(--ink2); }
+.u1 .hero2 .head2 { display: block; margin-top: 12px; font: 300 40px/44px var(--disp); letter-spacing: -1.5px; color: #fff; }
+.u1 .hero2 .head2 em { font-style: normal; color: #A9E2DA; }

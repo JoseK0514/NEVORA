@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0D3634" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="NEVORA local fictional native capability prototype." />
+    <title>NEVORA · Device prototype</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="masthead">
+      <div class="masthead-inner">
+        <svg class="wordmark" role="img" aria-label="NEVORA" viewBox="5 4 895 112" width="895" height="112">
+          <defs>
+            <filter id="fixture-wordmark-cutout" color-interpolation-filters="sRGB" x="0" y="0" width="100%" height="100%">
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 0 0 0 1" />
+              <feComponentTransfer><feFuncA type="linear" slope="1.08" /></feComponentTransfer>
+            </filter>
+            <mask id="fixture-wordmark-ink" maskUnits="userSpaceOnUse" x="0" y="0" width="907" height="122" style="mask-type:alpha">
+              <image href="/nevora-wordmark.png" width="907" height="122" filter="url(#fixture-wordmark-cutout)" />
+            </mask>
+            <clipPath id="fixture-wordmark-cyan"><rect x="812" y="74" width="43" height="42" /></clipPath>
+          </defs>
+          <rect x="0" y="0" width="907" height="122" fill="currentColor" mask="url(#fixture-wordmark-ink)" />
+          <image href="/nevora-wordmark.png" width="907" height="122" filter="url(#fixture-wordmark-cutout)" clip-path="url(#fixture-wordmark-cyan)" />
+        </svg>
+        <p class="prototype-label">Device prototype</p>
+      </div>
+    </header>
+    <main id="main">
+      <div class="intro">
+        <p class="eyebrow">Fictional workspace</p>
+        <h1>Your next shift.</h1>
+        <p class="intro-copy">A sample day to check how NEVORA feels on your phone.</p>
+      </div>
+
+      <section class="shift" aria-labelledby="shift-title">
+        <div class="date-block" aria-label="Monday, November 2">
+          <span>MON</span><strong>02</strong><span>NOV</span>
+        </div>
+        <div class="shift-body">
+          <p class="eyebrow">Sample shift</p>
+          <h2 id="shift-title">Main Office</h2>
+          <p class="shift-time">8:00 AM <span aria-hidden="true">—</span><span class="sr-only">to</span> 4:00 PM</p>
+          <p class="muted">Monday, November 2, 2026</p>
+        </div>
+        <button type="button" class="primary" id="open-shift">View sample shift</button>
+      </section>
+
+      <section class="check-section" aria-labelledby="check-title">
+        <div class="section-heading"><p class="eyebrow">On this device</p><h2 id="check-title">Check the essentials.</h2></div>
+        <dl class="device-facts">
+          <div><dt>Runtime</dt><dd id="runtime">Checking…</dd></div>
+          <div><dt>Content</dt><dd>Bundled fictional sample</dd></div>
+          <div><dt>Connection signal</dt><dd id="connection">Checking…</dd></div>
+          <div><dt>Passkey API</dt><dd id="passkeys">Checking…</dd></div>
+        </dl>
+        <p class="caption">API availability does not verify passkey sign-in. This sample never requests credentials.</p>
+        <button type="button" class="secondary" id="open-keyboard">Check keyboard and sheet</button>
+      </section>
+
+      <section class="check-section" aria-labelledby="saved-title">
+        <div class="section-heading"><p class="eyebrow">Restart check</p><h2 id="saved-title">A small thing to remember.</h2></div>
+        <p>Save a fictional marker, close the app, then open it again. This checks local storage only; it does not sign you in.</p>
+        <p class="sample-state" id="sample-state" role="status">Checking sample state…</p>
+        <div class="button-row">
+          <button type="button" class="secondary" id="save-sample">Save sample marker</button>
+          <button type="button" class="quiet" id="clear-sample">Clear marker</button>
+        </div>
+      </section>
+
+      <section class="check-section reading-check" aria-labelledby="reading-title">
+        <div class="section-heading"><p class="eyebrow">Reading check</p><h2 id="reading-title">Room for larger text.</h2></div>
+        <p>Try your phone’s larger-text setting, then return here. The sample should remain readable, with clear controls and room for every line.</p>
+        <p class="long-label">Sample location: Main Office — Operations and Employee Support</p>
+        <p class="caption">This fixture uses relative text sizes. Whether the operating-system setting reaches the web view must be checked on each platform.</p>
+      </section>
+      <footer><p>Fictional data only. No clock-ins, payroll, messages, or notifications are sent.</p><p id="app-status" role="status"></p></footer>
+    </main>
+
+    <dialog id="shift-dialog" aria-labelledby="shift-dialog-title">
+      <div class="sheet">
+        <div class="sheet-heading"><p class="eyebrow">Sample shift</p><button type="button" class="quiet close-dialog" autofocus>Close</button></div>
+        <h2 id="shift-dialog-title">Main Office</h2>
+        <p class="sheet-time">8:00 AM – 4:00 PM</p>
+        <p>Monday, November 2, 2026</p>
+        <div class="sheet-note"><p>This shift is fictional.</p><p class="muted">Use your phone’s Back action or Close to return to the sample. No attendance record will be created.</p></div>
+      </div>
+    </dialog>
+    <dialog id="keyboard-dialog" aria-labelledby="keyboard-title">
+      <div class="sheet">
+        <div class="sheet-heading"><p class="eyebrow">Device check</p><button type="button" class="quiet close-dialog" autofocus>Close</button></div>
+        <h2 id="keyboard-title">Try the keyboard</h2>
+        <p>Type a fictional note. Check that the field and button stay visible above your keyboard.</p>
+        <form id="keyboard-form">
+          <label for="practice-note">Practice note</label>
+          <textarea id="practice-note" name="practice-note" rows="3" maxlength="240" autocomplete="off" spellcheck="false" placeholder="Type a sample here"></textarea>
+          <p class="caption" id="note-help">Nothing in this field is saved or sent. Avoid personal information.</p>
+          <button type="submit" class="primary">Finish keyboard check</button>
+          <p id="keyboard-status" role="status"></p>
+        </form>
+      </div>
+    </dialog>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

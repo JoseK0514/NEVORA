@@ -1,0 +1,38 @@
+{
+  "author": "/root/communications_qa_acceptance",
+  "at": "2026-10-27T20:09:57.926951+00:00",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "recommendation": "GO WITH CONDITIONS",
+  "scope": "bounded local employee mobile communications acceptance",
+  "findings": {
+    "QA-COM-001": "VERIFIED/CLOSED by original author for settled task-navigation strict gate; abrupt document reload not claimed fixed",
+    "QA-COM-002": "VERIFIED/CLOSED by original author",
+    "QA-COM-003": "VERIFIED/CLOSED by original author"
+  },
+  "gatePaths": {
+    "requests": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests/result.json",
+    "combined": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/result.json",
+    "units": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/units/result.json",
+    "typescript": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/recovery-1/typescript/result.json",
+    "eslint": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/eslint/result.json"
+  },
+  "interruptedTypeScriptOriginal": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/typescript",
+  "interruptionObservation": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/typescript-interruption-observation.json",
+  "custodyPassed": true,
+  "finalCustody": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/final-custody-audit.json",
+  "closureReport": "/workspace/nevora-evidence/reviews/QA_FINDING_CLOSURE.md",
+  "closureSha256": "27ff6bc50d23952b238e030d345074c843efb275dbb66fd82fb01e8bbfe41204",
+  "originalQAReportSha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c",
+  "runtimeAndFreezeReleased": true,
+  "openNonblocking": [
+    "CR-4",
+    "UI-COM-002",
+    "UI-COM-003"
+  ],
+  "outsideScope": [
+    "abrupt forced reload/cancellation repair",
+    "physical-device/AT/OS background",
+    "hosted/CI/assembly/real delivery/production",
+    "Phase3"
+  ]
+}

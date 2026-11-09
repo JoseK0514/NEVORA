@@ -1,0 +1,439 @@
+[
+  [
+    "390 old /app?view=schedule&week=2026-10-12&day=2026-10-14&location=loc-1&employee=AUDIT-E",
+    {
+      "landed": "/app/schedule?week=2026-10-12&day=2026-10-14&location=loc-1#schedule-employee-AUDIT-E",
+      "focused": "schedule-employee-AUDIT-E",
+      "h1": "Weekly schedule",
+      "tabs": [],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "390 old /app?view=schedule",
+    {
+      "landed": "/app/schedule",
+      "focused": null,
+      "h1": "Weekly schedule",
+      "tabs": [],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "390 old /app?view=requests&week=2026-10-12",
+    {
+      "landed": "/app/inbox?filter=requests",
+      "focused": null,
+      "h1": "Inbox",
+      "tabs": [],
+      "inboxFilter": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "390 old /app?view=team&week=2026-10-12",
+    {
+      "landed": "/app?view=team&week=2026-10-12",
+      "focused": null,
+      "h1": "Welcome back, Fictional.",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "390 old /app?view=activity&week=2026-10-12",
+    {
+      "landed": "/app?view=activity&week=2026-10-12",
+      "focused": null,
+      "h1": "Welcome back, Fictional.",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "390 old /app?view=attendance",
+    {
+      "landed": "/app?view=attendance",
+      "focused": null,
+      "h1": "Time review",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "390 inbox filter round trip",
+    {
+      "afterFilter": "/app/inbox?filter=requests",
+      "review": "/app/requests?tab=pending&requestId=audit-timeoff#request-audit-timeoff",
+      "back": "/app/inbox?filter=requests",
+      "pressed": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "390 time off All requests",
+    {
+      "landed": "/app/inbox?filter=requests",
+      "pressed": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "390 home shortcut Pending requests",
+    {
+      "landed": "/app/inbox?filter=requests",
+      "back": "/app"
+    }
+  ],
+  [
+    "390 employee account recovery",
+    {
+      "landed": "/app/account-recovery?employee=AUDIT-E",
+      "prefill": "AUDIT-E",
+      "back": "Back to employee",
+      "returned": "/app/employees/AUDIT-E"
+    }
+  ],
+  [
+    "390 account recovery direct",
+    {
+      "back": "Back to Employees",
+      "href": "/app/employees",
+      "prefill": ""
+    }
+  ],
+  [
+    "390 edit shift cancel",
+    {
+      "landed": "/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14#schedule-employee-AUDIT-E",
+      "focused": "schedule-employee-AUDIT-E",
+      "back": "/app/schedule/edit?shiftId=audit-shift-2-1"
+    }
+  ],
+  [
+    "390 new shift back href",
+    {
+      "href": "/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14#schedule-employee-AUDIT-E"
+    }
+  ],
+  [
+    "390 export heading",
+    {
+      "h1": "Time exports",
+      "tab": [
+        "Timecards",
+        "Time exports",
+        "Time exports"
+      ]
+    }
+  ],
+  [
+    "390 company profile heading",
+    {
+      "h1": "Company profile"
+    }
+  ],
+  [
+    "390 notifications",
+    {
+      "text": "Workforce\nSearch\nNotifications\n\nSchedule changes, requests, and team updates in one place.\n\nAlerts and messages for you. Work that needs your decision is in Inbox.\n\nYour notifications\n\nReview an update. Take the next step.\n\nRefresh\nAll\n0\nUnread\n0\nNeeds action\n"
+    }
+  ],
+  [
+    "390 finder payroll export",
+    {
+      "results": [
+        "PagesTime exports"
+      ]
+    }
+  ],
+  [
+    "390 page /app/inbox?filter=requests",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app?view=team",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/account-recovery?employee=AUDIT-E",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/employees/AUDIT-E",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/payroll-export",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/settings/workspace",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/notifications",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "390 page /app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14",
+    {
+      "docW": 390,
+      "axe": []
+    }
+  ],
+  [
+    "1440 old /app?view=schedule&week=2026-10-12&day=2026-10-14&location=loc-1&employee=AUDIT-E",
+    {
+      "landed": "/app/schedule?week=2026-10-12&day=2026-10-14&location=loc-1#schedule-employee-AUDIT-E",
+      "focused": "schedule-employee-AUDIT-E",
+      "h1": "Weekly schedule",
+      "tabs": [],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "1440 old /app?view=schedule",
+    {
+      "landed": "/app/schedule",
+      "focused": null,
+      "h1": "Weekly schedule",
+      "tabs": [],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "1440 old /app?view=requests&week=2026-10-12",
+    {
+      "landed": "/app/inbox?filter=requests",
+      "focused": null,
+      "h1": "Inbox",
+      "tabs": [],
+      "inboxFilter": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "1440 old /app?view=team&week=2026-10-12",
+    {
+      "landed": "/app?view=team&week=2026-10-12",
+      "focused": null,
+      "h1": "Welcome back, Fictional.",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "1440 old /app?view=activity&week=2026-10-12",
+    {
+      "landed": "/app?view=activity&week=2026-10-12",
+      "focused": null,
+      "h1": "Welcome back, Fictional.",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "1440 old /app?view=attendance",
+    {
+      "landed": "/app?view=attendance",
+      "focused": null,
+      "h1": "Time review",
+      "tabs": [
+        "Overview",
+        "Attendance",
+        "Team overview",
+        "Activity"
+      ],
+      "inboxFilter": []
+    }
+  ],
+  [
+    "1440 inbox filter round trip",
+    {
+      "afterFilter": "/app/inbox?filter=requests",
+      "review": "/app/requests?tab=pending&requestId=audit-timeoff#request-audit-timeoff",
+      "back": "/app/inbox?filter=requests",
+      "pressed": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "1440 time off All requests",
+    {
+      "landed": "/app/inbox?filter=requests",
+      "pressed": [
+        "Requests,"
+      ]
+    }
+  ],
+  [
+    "1440 employee account recovery",
+    {
+      "landed": "/app/account-recovery?employee=AUDIT-E",
+      "prefill": "AUDIT-E",
+      "back": "Back to employee",
+      "returned": "/app/employees/AUDIT-E"
+    }
+  ],
+  [
+    "1440 account recovery direct",
+    {
+      "back": "Back to Employees",
+      "href": "/app/employees",
+      "prefill": ""
+    }
+  ],
+  [
+    "1440 edit shift cancel",
+    {
+      "landed": "/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14#schedule-employee-AUDIT-E",
+      "focused": "schedule-employee-AUDIT-E",
+      "back": "/app/schedule/edit?shiftId=audit-shift-2-1"
+    }
+  ],
+  [
+    "1440 new shift back href",
+    {
+      "href": "/app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14#schedule-employee-AUDIT-E"
+    }
+  ],
+  [
+    "1440 export heading",
+    {
+      "h1": "Time exports",
+      "tab": [
+        "Timecards",
+        "Time exports",
+        "Time exports"
+      ]
+    }
+  ],
+  [
+    "1440 company profile heading",
+    {
+      "h1": "Company profile"
+    }
+  ],
+  [
+    "1440 notifications",
+    {
+      "text": "Search\n⌘K\nFO\nFictional Owner\nNotifications\n\nSchedule changes, requests, and team updates in one place.\n\nAlerts and messages for you. Work that needs your decision is in Inbox.\n\nYour notifications\n\nReview an update. Take the next step.\n\nRefresh\nAll\n0\nUnread\n0\nN"
+    }
+  ],
+  [
+    "1440 finder payroll export",
+    {
+      "results": [
+        "PagesTime exports"
+      ]
+    }
+  ],
+  [
+    "1440 page /app/inbox?filter=requests",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app?view=team",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/account-recovery?employee=AUDIT-E",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/employees/AUDIT-E",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/payroll-export",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/settings/workspace",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/notifications",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ],
+  [
+    "1440 page /app/schedule?week=2026-10-12&location=loc-1&day=2026-10-14",
+    {
+      "docW": 1440,
+      "axe": []
+    }
+  ]
+]

@@ -1,0 +1,14 @@
+{
+  "node": "v24.19.0",
+  "postgres": "17.9 (@embedded-postgres/linux-x64 17.9.0-beta.17)",
+  "postgresBin": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+  "playwrightPackage": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+  "playwrightVersion": "1.57.0",
+  "engines": {
+    "chromium": "143.0.7499.4 build1200",
+    "webkit": "26.0 build2227",
+    "firefox": "144.0.2 build1497"
+  },
+  "localLibraries": "/workspace/scratch/nevora-runtime/browser-libs-packages.json",
+  "hostValidation": "ldconfig cache misses rootless GLES. Actual CDLL load, ldd and all3browser launch smoke checked; actual libraries installed inside downloaded WebKit bundle sys/lib. PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 disables cache heuristic only; no application/test gates changed."
+}

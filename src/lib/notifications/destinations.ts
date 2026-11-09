@@ -1,0 +1,144 @@
+import {parseCoverageRepairLocator,coverageRepairUrl} from '../scheduling/coverage-repair';
+import type { SourceSnapshot, RecipientAccess } from './types';
+import { diffPublishedShifts, type PublishedShiftSnapshot } from '../assistance/publication-diff';
+export function isReviewRole(recipient: RecipientAccess): boolean {
+  return recipient.role === 'OWNER' || recipient.role === 'MANAGER';
+}
+export function isSelfServiceRecipient(recipient: RecipientAccess): boolean {
+  return recipient.role === 'EMPLOYEE' || recipient.role === 'LEAD';
+}
+export function canAccessPublishedAssignment(recipient: RecipientAccess, shift: PublishedShiftSnapshot): boolean {
+  return shift.employeeId === recipient.employeeId && (isReviewRole(recipient) || recipient.allowedLocationIds.includes(shift.locationId));
+}
+const ROUTE_PARAMS: Record<string, readonly string[]> = {
+  '/app': [],
+  '/app/account/delete': [],
+  '/app/payroll': [],
+  '/app/my-pay': ['statement'], '/app/schedule': ['week','employeeId'], '/app/availability': ['week','employeeId'],
+  '/app/requests': ['tab','requestId'], '/app/exchange': ['tab','requestId'],
+  '/app/schedule/coverage': ['week','date','locationId','start','end','lead','repair','positionId','refresh'],
+  '/app/notifications/open': ['notificationId'],
+};
+const orderedJson=(value:unknown)=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)?Object.fromEntries(Object.entries(item).sort(([a],[b])=>a.localeCompare(b))):item);
+function safeId(value: string): boolean {
+  return /^[A-Za-z0-9_ :.-]{1,128}$/.test(value) && !value.includes('..');
+}
+function validDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0,10) === value;
+}
+export function safeNotificationOpenPath(notificationId: string): string | null {
+  return safeId(notificationId) ? `/app/notifications/open?notificationId=${encodeURIComponent(notificationId)}` : null;
+}
+/** Admit only rooted portal routes with route-specific, nonduplicate query fields.
+ * This syntactic navigation allowlist grants no access to the referenced business data. */
+export function safeReturnTo(candidate: string | undefined): string | null {
+  if (!candidate || candidate.length > 2048 || /[\\\u0000-\u0020\u007f#]/.test(candidate) || !candidate.startsWith('/') || candidate.startsWith('//')) return null;
+  const rawPath = candidate.split('?')[0];
+  if (rawPath.includes('%') || rawPath.split('/').some(segment => segment === '.' || segment === '..')) return null;
+  const allowed = ROUTE_PARAMS[rawPath] ?? (/^\/app\/updates\/[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(rawPath) ? [] : undefined);
+  if (!allowed) return null;
+  const url = new URL(candidate, 'https://fuel.invalid');
+  if (url.pathname !== rawPath || url.origin !== 'https://fuel.invalid') return null;
+  const seen = new Set<string>();
+  for (const [key,value] of url.searchParams) {
+    if (seen.has(key) || !allowed.includes(key)) return null;
+    seen.add(key);
+    if (key === 'week' || key === 'date') { if (!validDate(value)) return null; }
+    else if (key === 'start' || key === 'end') { if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(value) && !(rawPath === '/app/schedule/coverage' && key === 'end' && value === '24:00' && url.searchParams.has('repair'))) return null; }
+    else if (key === 'repair') { /* Validated as a bounded canonical locator below. */ }
+    else if (key === 'refresh') { if (value !== '1') return null; }
+    else if (key === 'lead') { if (value !== '1') return null; }
+    else if (key === 'statement') { if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value)) return null; }
+    else if (key === 'tab') {
+      if (!(rawPath === '/app/requests' ? ['new','my','team','pending','approved','declined'] : ['available','requests','my','history','pending','coverage','activity']).includes(value)) return null;
+    } else if (!safeId(value)) return null;
+  }
+  if (rawPath === '/app/schedule/coverage') {
+    const raw = url.searchParams.get('repair');
+    if (raw !== null) {
+      try {
+        const locator = parseCoverageRepairLocator(raw);
+        // Reject ignored JSON properties, duplicate keys, alternate encodings and
+        // mismatched route hints. This admits navigation, never assignment authority.
+        if (orderedJson(JSON.parse(raw)) !== orderedJson(locator) || raw !== JSON.stringify(JSON.parse(raw))
+          || locator.gapKey !== [locator.locationId,locator.date,locator.startTime,locator.endTime].join('|')) return null;
+        const canonical = new URL(coverageRepairUrl(locator,seen.has('refresh')), 'https://fuel.invalid');
+        if ([...url.searchParams].length !== [...canonical.searchParams].length
+          || [...canonical.searchParams].some(([key,value]) => key !== 'repair' && url.searchParams.get(key) !== value)) return null;
+      } catch { return null; }
+    } else if (seen.has('positionId') || seen.has('refresh')) return null;
+  }
+  if (rawPath === '/app/notifications/open' && !seen.has('notificationId')) return null;
+  return candidate;
+}
+/** Pure route/candidate derivation; links never grant access. Current source
+ * evaluation and operational SQL persistence independently verify authority. */
+export function destinationForSource(source: SourceSnapshot, recipient: RecipientAccess): string | null {
+  if (!recipient.active) return null;
+  const encode = encodeURIComponent;
+  switch (source.kind) {
+    case 'SCHEDULE': {
+      const personalChanges = diffPublishedShifts([...source.previousShifts],[...source.currentShifts]).filter(change => change.affectedEmployeeIds.includes(recipient.employeeId));
+      const relevantAssignments = personalChanges.length
+        ? personalChanges.flatMap(change => [change.before,change.after]).filter((shift): shift is PublishedShiftSnapshot => shift !== undefined)
+        : [...source.previousShifts,...source.currentShifts];
+      const hasAccess = isReviewRole(recipient) || relevantAssignments.some(shift => canAccessPublishedAssignment(recipient,shift));
+      return hasAccess ? safeReturnTo(`/app/schedule?week=${encode(source.revision.weekStart)}`) : null;
+    }
+    case 'TIME_OFF':
+      if (isReviewRole(recipient)) {
+        if (source.record.status === 'CANCELLED') return null;
+        const tab = {PENDING:'pending',APPROVED:'approved',DENIED:'declined'}[source.record.status];
+        return tab ? safeReturnTo(`/app/requests?tab=${tab}&requestId=${encode(source.record.id)}`) : null;
+      }
+      return source.record.employeeId === recipient.employeeId ? safeReturnTo(`/app/requests?tab=my&requestId=${encode(source.record.id)}`) : null;
+    case 'EXCHANGE': {
+      const participant = source.record.requestedByEmployeeId === recipient.employeeId || source.record.targetEmployeeId === recipient.employeeId;
+      const reviewer = isReviewRole(recipient);
+      const invited=source.record.status==='OPEN' && source.record.kind==='COVERAGE' && source.eligibleEmployeeIds?.includes(recipient.employeeId) && isSelfServiceRecipient(recipient);
+      if (!participant && !reviewer && !invited) return null;
+      const terminal = ['APPROVED','DENIED','CANCELLED','EXPIRED'].includes(source.record.status);
+      if (!terminal && !reviewer && !recipient.allowedLocationIds.includes(source.record.sourceShift.locationId)) return null;
+      if (reviewer && source.record.status === 'EMPLOYEE_PENDING') return null;
+      const tab = reviewer
+        ? terminal ? 'activity' : source.record.status === 'OPEN' ? 'coverage' : 'pending'
+        : terminal ? 'history' : invited ? 'available' : 'requests';
+      return safeReturnTo(`/app/exchange?tab=${tab}&requestId=${encode(source.record.id)}`);
+    }
+    case 'CALLOUT':
+      if (!isReviewRole(recipient) && (source.record.employeeId !== recipient.employeeId || (source.record.status === 'PENDING' && !recipient.allowedLocationIds.includes(source.record.locationId)))) return null;
+      return safeReturnTo(`/app/exchange?tab=${isReviewRole(recipient) ? source.record.status === 'PENDING' ? 'pending' : 'activity' : 'requests'}&requestId=${encode(source.record.id)}`);
+    case 'AVAILABILITY':
+      return isReviewRole(recipient) || isSelfServiceRecipient(recipient) ? safeReturnTo(`/app/availability?week=${encode(source.settings.weekStart)}`) : null;
+    case 'MANAGER_SUMMARY':
+      return isReviewRole(recipient) ? source.items.map(item => {
+        const href = safeReturnTo(item.href);
+        if (!href) return null;
+        const url = new URL(href,'https://fuel.invalid');
+        if (item.type === 'TIME_OFF') {
+          if (url.pathname !== '/app/requests') return null;
+          if (!['pending','approved','declined'].includes(url.searchParams.get('tab') ?? '')) url.searchParams.set('tab','pending');
+        } else if (item.type === 'EXCHANGE' || item.type === 'CALLOUT') {
+          if (url.pathname !== '/app/exchange') return null;
+          const tab = url.searchParams.get('tab');
+          if (!['pending','coverage','activity'].includes(tab ?? '')) url.searchParams.set('tab',tab === 'history' ? 'activity' : 'pending');
+        }
+        return safeReturnTo(`${url.pathname}${url.search}`);
+      }).find(href => href !== null) ?? null : null;
+    case 'COMMUNICATION':
+      return isSelfServiceRecipient(recipient) && source.recipientIds.includes(recipient.employeeId) ? safeReturnTo('/app/updates/'+source.source.id) : null;
+    case 'SELF_TEST':
+      return source.employeeId === recipient.employeeId ? '/app' : null;
+  }
+}
+
+/** Append only a derived fragment after the existing route/query validation. */
+export function withRequestFragment(candidate: string): string | null {
+  const safe = safeReturnTo(candidate);
+  if (!safe) return null;
+  const url = new URL(safe, 'https://fuel.invalid');
+  const id = url.searchParams.get('requestId');
+  return id && ['/app/requests', '/app/exchange'].includes(url.pathname) ? `${safe}#request-${encodeURIComponent(id)}` : safe;
+}

@@ -1,0 +1,36 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [31m❯[39m src/test/integration/employee-mobile-communications-sql.integration.ts [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m6 skipped[39m[2m)[22m[33m 4904[2mms[22m[39m
+   [2m[90m↓[39m[22m pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list
+   [2m[90m↓[39m[22m refuses invalid page selectors and changed role or session before publishing own notices
+   [2m[90m↓[39m[22m retains the existing finite notification-read budget for a full page of distinct team updates
+[31m   [31m×[31m pages current updates with exact own read status and no coworker receipt roster[39m[33m 4903[2mms[22m[39m
+   [2m[90m↓[39m[22m rechecks Updates module permission inside the actual employee command transaction
+   [2m[90m↓[39m[22m hides disabled-module notifications while retaining unrelated own notices
+   [2m[90m↓[39m[22m binds finite mobile views to current own identity and keeps a disabled Updates capability separate
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications-sql.integration.ts[2m > [22mpages current updates with exact own read status and no coworker receipt roster
+[31m[1mAssertionError[22m: expected 'eyJ2IjoxLCJhdCI6IjIwMjYtMTAtMjdUMTc6M…' to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+"eyJ2IjoxLCJhdCI6IjIwMjYtMTAtMjdUMTc6MDg6MDIuMjU2NTk2WiIsImlkIjoiZTk0YTIxMGYtMjA2ZS00ZDIyLWI0ODUtMzk4NDIxMjI5ZmVjIn0"
+
+[36m [2m❯[22m src/test/integration/employee-mobile-communications-sql.integration.ts:[2m50:353[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m6 skipped[39m[90m (7)[39m
+[2m   Start at [22m 13:08:01
+[2m   Duration [22m 5.13s[2m (tests 97%, transform 2%, import 2%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

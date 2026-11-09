@@ -1,0 +1,19 @@
+{
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "sourceParent": "8672d76ecd4000fd61a515d6559a0ace1321d503",
+  "applicationTestCandidate": "6110790f48cd6563de05c8cb7e1fcc496dfda135",
+  "applicationInputCount": 2004,
+  "deliveryChange": "documentation/references/evidence only",
+  "authorizedBy": "Jose explicitly approved pushing the saved source and full handoff to a feature branch after explaining phone access",
+  "knownRegression": "RED pending-module-fence; not fixed",
+  "cloudTaskStarted": false,
+  "prCreated": false,
+  "mergePerformed": false,
+  "manualDeploymentRequested": false,
+  "allTextEvidenceIncluded": true,
+  "repetitiveImageSelection": "evidence/CAPTURE_SELECTION.json",
+  "repository": "JoseK0514/NEVORA",
+  "verifiedRepositoryId": 1391468291,
+  "private": true,
+  "originalRepositoryUrlRedirectsToSameRepository": true
+}

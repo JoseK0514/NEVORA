@@ -1,0 +1,42 @@
+[
+  {
+    "engine": "webkit",
+    "chord": "Tab",
+    "focus": [
+      "group",
+      "summary",
+      "",
+      "summary"
+    ]
+  },
+  {
+    "engine": "webkit",
+    "chord": "Alt+Tab",
+    "focus": [
+      "group",
+      "keep",
+      "off",
+      "link"
+    ]
+  },
+  {
+    "engine": "chromium",
+    "chord": "Tab",
+    "focus": [
+      "group",
+      "keep",
+      "off",
+      "link"
+    ]
+  },
+  {
+    "engine": "chromium",
+    "chord": "Alt+Tab",
+    "focus": [
+      "group",
+      "keep",
+      "off",
+      "link"
+    ]
+  }
+]

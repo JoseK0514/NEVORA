@@ -1,0 +1,87 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile,appendFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {createOwnedNextApp} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-next-app.ts';
+import {seedOwnedApp,seedOwnedScenario,TEST_PASSWORD} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-app-fixture.ts';
+import {AUTH_COPY} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/lib/auth-copy.ts';
+const E=process.env.NEVORA_EMPLOYEE_PROFILE_EVIDENCE;if(!E)throw Error('Explicit external evidence directory required');
+await mkdir(E,{recursive:true});
+const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE!)('playwright');
+const records:any[]=[],checks:any[]=[],requestIds=new WeakMap<object,number>();let sequence=0,stage='setup',cycle=0,observation='event-only',doc:any=null;
+let logChain=Promise.resolve();
+const log=(value:any)=>{const row={nodeWallTime:Date.now(),nodeMonotonic:performance.now(),cycle,stage,observation,...value};records.push(row);logChain=logChain.then(()=>appendFile(E+'/events.jsonl',JSON.stringify(row)+'\n'));};
+const safeError=(error:unknown)=>String(error).replaceAll(TEST_PASSWORD,'[REDACTED]').replace(/(\/api\/calendar\/)[A-Za-z0-9_-]{43}/g,'$1[REDACTED]').replace(/https?:\/\/[^\s)]+/g,'[URL]').slice(0,4000);
+const sleep=(ms:number)=>new Promise(r=>setTimeout(r,ms));
+let app:Awaited<ReturnType<typeof createOwnedNextApp>>|undefined,browser:any,page:any,context:any,failure:any;
+const pending=new Map<any,any>();
+const identity=(request:any)=>{if(!requestIds.has(request))requestIds.set(request,++sequence);return requestIds.get(request);};
+const included=(request:any)=>{const p=new URL(request.url()).pathname;return p.startsWith('/api/')||p.startsWith('/app');};
+const fields=(request:any)=>({requestId:identity(request),path:new URL(request.url()).pathname,method:request.method(),pagePath:page?new URL(page.url()).pathname:null,documentObservation:doc,nativeTiming:request.timing()});
+function observe(emitter:any,scope:string){
+ emitter.on('request',(request:any)=>{if(!included(request))return;const f=fields(request);if(scope==='page')pending.set(request,{...f,requestStage:stage,requestCycle:cycle,recordedAt:Date.now()});log({event:'request',scope,...f});});
+ emitter.on('response',(response:any)=>{const request=response.request();if(!included(request))return;log({event:'response',scope,...fields(request),status:response.status()});response.finished().then((error:any)=>log({event:'response.finished',scope,...fields(request),error:error?safeError(error):null})).catch((error:any)=>log({event:'response.finished.reject',scope,...fields(request),error:safeError(error)}));});
+ for(const event of ['requestfinished','requestfailed'])emitter.on(event,(request:any)=>{if(!included(request))return;if(scope==='page')pending.delete(request);log({event,scope,...fields(request),failure:event==='requestfailed'?safeError(request.failure()?.errorText):null});});
+}
+const idle=async(label:string)=>{const started=Date.now();while(pending.size!==0&&Date.now()-started<10000)await sleep(50);const count=pending.size;log({event:'original-idle-assertion',label,expected:0,actual:count,elapsed:Date.now()-started,pending:[...pending.values()]});assert.equal(count,0,'Original10s pending-map-zero assertion: '+label);};
+const documentObservation=async()=>{doc=await page.evaluate(()=>({timeOrigin:performance.timeOrigin,path:location.pathname,wallTime:Date.now()}));log({event:'document.observation',...doc});};
+const ready=()=>page.locator('.em-profile-private[data-profile-state="ready"]').waitFor();
+async function installConsumerObservation(){
+ await context.addInitScript(()=>{
+  const ids=new WeakMap<AbortSignal,number>();let seq=0;const timeOrigin=performance.timeOrigin;
+  const emit=(data:Record<string,unknown>)=>console.log('QA_CALENDAR_CONSUMER:'+JSON.stringify({documentTimeOrigin:timeOrigin,browserTime:performance.now(),wallTime:Date.now(),documentPath:location.pathname,...data}));
+  const identify=(signal:AbortSignal)=>{if(!ids.has(signal))ids.set(signal,++seq);return ids.get(signal);};
+  const abort=AbortController.prototype.abort;
+  AbortController.prototype.abort=function(...args:any[]){const signal=this.signal,id=ids.get(signal);if(id)emit({event:'signal.abort-called',signalId:id,alreadyAborted:signal.aborted});const result=Reflect.apply(abort,this,args);if(id)emit({event:'signal.abort-returned',signalId:id,aborted:signal.aborted});return result;};
+  const fetch=globalThis.fetch;
+  globalThis.fetch=function(input:RequestInfo|URL,init?:RequestInit){
+   const raw=input instanceof Request?input.url:String(input),method=init?.method??(input instanceof Request?input.method:'GET');
+   let target=false;try{target=method==='GET'&&new URL(raw,location.href).pathname==='/api/employee/calendar-subscriptions';}catch{}
+   const promise=Reflect.apply(fetch,this,[input,init]);if(!target)return promise;
+   const signal=init?.signal??(input instanceof Request?input.signal:null),signalId=signal?identify(signal):null;emit({event:'calendar.fetch-start',signalId,aborted:signal?.aborted??null});
+   promise.then(response=>{emit({event:'calendar.headers',signalId,status:response.status});const json=response.json;response.json=function(...args:any[]){const original=Reflect.apply(json,this,args);original.then(value=>emit({event:'calendar.json-complete',signalId,state:['none','active','revoked','unavailable','unauthorized'].includes(value?.state)?value.state:'other'}),error=>emit({event:'calendar.json-reject',signalId,errorName:error?.name??'unknown',aborted:signal?.aborted??null}));return original;};},error=>emit({event:'calendar.fetch-reject',signalId,errorName:error?.name??'unknown',aborted:signal?.aborted??null}));
+   return promise;
+  };
+ });
+ log({event:'consumer-observer-installed',limits:'Onlyfuture documents; returns original fetch/json promises; adds observational then handlers and abort wrapper, so scheduling perturbation remains possible.'});
+}
+try{
+ app=await createOwnedNextApp(E);const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app!.database.executor.query<T>({text,values});
+ await seedOwnedApp(app.database.executor);const fixture=await seedOwnedScenario(app.database.executor,'CALDIAG',2),actors=[fixture.actors[0],fixture.actors[1]];
+ await q('UPDATE employees SET role=$2 WHERE id=$1',[actors[0],'EMPLOYEE']);
+ browser=await runtime.firefox.launch({headless:true});context=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce',serviceWorkers:'block'});observe(context,'context');
+ await context.route('**/*',async(route:any)=>{const u=new URL(route.request().url());if(['http:','https:'].includes(u.protocol)&&u.origin!==new URL(app!.url).origin){await route.abort();return;}await route.continue();});
+ page=await context.newPage();observe(page,'page');page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);
+ page.on('console',(message:any)=>{const text=message.text();if(text.startsWith('QA_CALENDAR_CONSUMER:'))log({event:'consumer',data:JSON.parse(text.slice('QA_CALENDAR_CONSUMER:'.length))});else if(['error','warning'].includes(message.type()))log({event:'console',type:message.type(),message:safeError(text)});});
+ page.on('pageerror',(error:any)=>log({event:'pageerror',message:safeError(error)}));
+ page.on('framenavigated',(frame:any)=>{if(frame===page.mainFrame())log({event:'mainframe.navigated',path:new URL(frame.url()).pathname});});
+ const login=async(actor:string,lang:'en'|'es')=>{const copy=AUTH_COPY[lang];await page.getByLabel(copy.employeeId,{exact:true}).fill(actor);await page.getByLabel(copy.password,{exact:true}).fill(TEST_PASSWORD);await page.getByRole('button',{name:copy.signIn,exact:true}).click();await page.waitForURL(app!.url+'/app');await page.locator('[data-home-state="ready"]:visible,[data-home-state="partial"]:visible').waitFor();await page.locator('.employee-time-badge:visible').waitFor();await documentObservation();};
+ const openProfile=async()=>{await page.locator('.mobile-nav-link[href="/app/more"]:visible').click();await page.waitForURL(app!.url+'/app/more');await page.locator('a[href="/app/profile"]:visible').first().click();await page.waitForURL(app!.url+'/app/profile');await documentObservation();await ready();};
+ const signout=async()=>{await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL(app!.url+'/login');await documentObservation();await idle('native-signout');assert.equal((await context.cookies()).some((c:any)=>c.name==='fuel_session'),false);};
+ await page.goto(app.url+'/login');await documentObservation();await login(actors[0],'en');await openProfile();await idle('initial-profile');
+ await page.getByLabel('Sign-in language',{exact:true}).selectOption('es');await page.getByLabel('Appearance',{exact:true}).selectOption('dark');
+ let current=0;
+ for(cycle=1;cycle<=10;cycle++){
+  if(cycle===6){await installConsumerObservation();observation='consumer-on-next-document';}
+  stage='current-session-denial';await ready();const session=(await context.cookies()).find((c:any)=>c.name==='fuel_session');assert.ok(session);
+  await q('DELETE FROM employee_sessions WHERE token_hash=$1',[createHash('sha256').update(session.value).digest('hex')]);
+  await page.getByRole('button',{name:'Refresh details',exact:true}).click();await page.locator('.em-profile-private[data-profile-state="denied"]').waitFor();await idle('current-session-denial');
+  stage='native-signout';await signout();
+  stage='new-account';const next=1-current;await login(actors[next],'es');await openProfile();await idle('new-account');
+  const names=await q<{id:string;name:string}>('SELECT id,first_name||\' \'||last_name AS name FROM employees WHERE id=ANY($1::text[])',[actors]);const own=names.find(n=>n.id===actors[next])!,other=names.find(n=>n.id===actors[current])!;
+  assert.ok((await page.locator('.em-profile-private').innerText()).includes(own.name));assert.equal((await page.locator('.q-profile-e').innerText()).includes(other.name),false);
+  assert.equal(await page.getByLabel('Appearance',{exact:true}).inputValue(),'dark');assert.equal(await page.getByLabel('Sign-in language',{exact:true}).inputValue(),'es');
+  const states=await page.evaluate(()=>({profile:document.querySelector('.em-profile-private')?.getAttribute('data-profile-state'),calendar:document.querySelector('[data-calendar-state]')?.getAttribute('data-calendar-state'),documentTimeOrigin:performance.timeOrigin,path:location.pathname}));
+  checks.push({cycle,observation,ownIdentityVerified:true,otherIdentityAbsent:true,states});log({event:'cycle.completed',states});
+  await page.screenshot({path:E+'/cycle-'+String(cycle).padStart(2,'0')+'.png',fullPage:false,style:'input[type=password],#employee-calendar-link {color:transparent!important;} nextjs-portal {visibility:hidden;}'});current=next;
+ }
+ stage='final-native-signout';await signout();
+}catch(error){
+ failure={message:safeError(error),stage,cycle,observation,pending:[...pending.values()]};
+ if(page){try{failure.states=await page.evaluate(()=>({profile:document.querySelector('.em-profile-private')?.getAttribute('data-profile-state'),calendar:document.querySelector('[data-calendar-state]')?.getAttribute('data-calendar-state'),documentTimeOrigin:performance.timeOrigin,path:location.pathname}));await page.screenshot({path:E+'/failure.png',fullPage:false,style:'input[type=password],#employee-calendar-link {color:transparent!important;} nextjs-portal {visibility:hidden;}'});}catch{}}
+ log({event:'diagnostic.failure',...failure});process.exitCode=1;
+}finally{
+ await browser?.close();await app?.close();await logChain;
+ await writeFile(E+'/result.json',JSON.stringify({status:failure?'failed':'passed',candidate:'f58d040b70909fa21dcb97b4f40edcfd5279226c',checks,failure,limits:['One ownedNext/fictitious markedDB;10bounded Firefox account-switch cycles only.','Cycles1–5 native events only. Cycles6–10 add prehydration observers for future documents; promises are preserved but observer scheduling perturbation is possible.','Original pendingMap only deletes native requestfinished/requestfailed;10s count-zero assertion unchanged. No credential/authority/body logging.']},null,2)+'\n');
+ console.log(JSON.stringify({status:failure?'failed':'passed',completedCycles:checks.length,failure:failure?{stage:failure.stage,cycle:failure.cycle,message:failure.message}:null}));
+}

@@ -1,0 +1,88 @@
+{
+  "key": "p35-wave-a-1283c8",
+  "branch": "claude/p35-wave-a-1283c8",
+  "source": "/workspace/nevora-sources/p35-wave-a-1283c8",
+  "out": "/workspace/nevora-previews/p35-wave-a-1283c8",
+  "large": false,
+  "commit": "76514905153c906bb76efc45808426e9d484cb64",
+  "toolsCommit": "2ab131ba004f3f26cc2b21ad95c90a6e0645259b",
+  "startedAt": "2026-10-19T17:52:56.803Z",
+  "status": "Running matrix",
+  "batches": [
+    {
+      "name": "00001-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T19-47-58-029Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00001-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app,/app/account-recovery,/app/availability,/app/clocker-recovery",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "87f8f773e244552fc5bc69b3d918132343c984eec3cc0981936a37b3bd2b6550",
+      "code": 1,
+      "passed": 14,
+      "failed": 2
+    },
+    {
+      "name": "00002-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T19-49-05-643Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00002-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/employees,/app/employees/AUDIT-LONG,/app/employees/AUDIT-LONG/clocker-pin,/app/employees/new",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "07a36008accb6c6d661534ca0ea1fead3ce71fb7495774fe1ad4868f2d42a0eb",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "name": "00003-matrix-QAOWNER-chromium-390",
+      "pass": "matrix",
+      "kind": "matrix",
+      "file": "/workspace/nevora-previews/p35-wave-a-1283c8/checks/2026-10-19T19-50-07-829Z.json",
+      "log": "/workspace/nevora-cloud-state/p35-wave-a-1283c8-00003-matrix-QAOWNER-chromium-390.log",
+      "args": [
+        "--routes",
+        "/app/exchange,/app/inbox,/app/my-pay,/app/notifications",
+        "--accounts",
+        "QAOWNER",
+        "--widths",
+        "390",
+        "--text",
+        "100,125,150,200",
+        "--browsers",
+        "chromium"
+      ],
+      "rawSha256": "e46a16b855d786eebf5d62758e7d3c66ab520ed0b1704a98c841567500e4df7c",
+      "code": 0,
+      "passed": 16,
+      "failed": 0
+    }
+  ],
+  "planned": 12580,
+  "runtimePid": 432054,
+  "url": "http://127.0.0.1:42049",
+  "runtimeCheckpoint": "76514905153c906bb76efc45808426e9d484cb64",
+  "sourceTree": "2db870370746317287697b956307fe55a7ccd716",
+  "sourceManifest": "/workspace/nevora-previews/p35-wave-a-1283c8/evidence-2026-10-19T19-46-14-918Z/owned-next-2OpC3y/source-manifest.json"
+}

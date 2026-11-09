@@ -1,0 +1,181 @@
+src/lib/auth/passkeys/store.server.ts
+   1 import "server-only";
+   2 import { createHash, randomBytes, randomUUID } from "node:crypto";
+   3 import type { SqlExecutor, SqlStatement } from "../../notifications/types";
+   4 import type { SessionMutationProof } from "../../shift-changes/types";
+   5 import type { PreparedSession, ReviewedLoginCredential } from "../session-issuance";
+   6 import { PasskeyError, type PasskeyMetadata, validateFlowToken } from "./types";
+   7 
+   8 const s = (text: string, values: readonly unknown[] = []): SqlStatement => ({ text, values });
+   9 const hash = (token: string) => createHash("sha256").update(validateFlowToken(token)).digest("hex");
+  10 const metadataFields = 'id::text,name,created_at::text AS "createdAt",last_used_at::text AS "lastUsedAt"';
+  11 const metadata = (row: PasskeyMetadata): PasskeyMetadata => ({ ...row,
+  12   createdAt: new Date(row.createdAt).toISOString(), lastUsedAt: row.lastUsedAt ? new Date(row.lastUsedAt).toISOString() : null });
+  13 export type Challenge = { challenge: string; employeeId: string | null; sessionTokenHash: string | null;
+  14   credentialUpdatedAt: string | null; employeeUpdatedAt: string | null; expiresAt: string };
+  15 export type RegistrationContext = ReviewedLoginCredential & { id: string; firstName: string; lastName: string; userHandle: string;
+  16   credentials: { id: string; transports: string[] }[] };
+  17 export type StoredCredential = ReviewedLoginCredential & { id: string; employeeId: string; active: boolean; credentialId: string;
+  18   publicKey: Buffer | string; counter: string; transports: string[]; revokedAt: string | null; userHandle: string };
+  19 
+  20 function assertion(proof: SessionMutationProof) {
+  21   return s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_sessions ss JOIN employees e ON e.id=ss.employee_id
+  22     WHERE ss.token_hash=$1 AND e.id=$2 AND e.active AND ss.expires_at>clock_timestamp())
+  23     THEN '1' ELSE 'passkey_not_found' END)::integer`, [proof.sessionTokenHash, proof.employee.id]);
+  24 }
+  25 /** Use the shared employee -> credential -> session lock order, then check the
+  26  * live session. Callers append a final assertion after their work as well. */
+  27 function guards(proof: SessionMutationProof): SqlStatement[] {
+  28   if (!proof?.employee?.id || !/^[a-f0-9]{64}$/.test(proof.sessionTokenHash ?? "")) throw new PasskeyError("not_found");
+  29   return [s("SELECT id FROM employees WHERE id=$1 FOR SHARE", [proof.employee.id]),
+  30     s("SELECT employee_id FROM employee_credentials WHERE employee_id=$1 FOR SHARE", [proof.employee.id]),
+  31     s("SELECT token_hash FROM employee_sessions WHERE token_hash=$1 FOR SHARE", [proof.sessionTokenHash]), assertion(proof)];
+  32 }
+  33 const liveChallenge = (challenge: Challenge) => s("SELECT (CASE WHEN clock_timestamp()<$1::timestamptz THEN '1' ELSE 'passkey_not_found' END)::integer", [challenge.expiresAt]);
+  34 const revisionGuard = (employee: string, updated: string | null, credential: string | null) =>
+  35   s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN employee_credentials c ON c.employee_id=e.id
+  36     WHERE e.id=$1 AND e.active AND e.updated_at=$2::timestamptz AND c.password_updated_at=$3::timestamptz)
+  37     THEN '1' ELSE 'passkey_not_found' END)::integer`, [employee, updated, credential]);
+  38 
+  39 /** Persistence boundary for passkeys. Challenge deletion runs before the final
+  40  * registration/login transaction, whose guards recheck expiry and lifecycle
+  41  * state instead of making the consumed challenge replayable on error. */
+  42 export class PasskeyStore {
+  43   constructor(private readonly executor: SqlExecutor) {}
+  44 
+  45   /** Create the account's opaque user handle once and read RP-specific active
+  46    * credentials, retaining exact login revisions for challenge issuance. */
+  47   async registrationContext(proof: SessionMutationProof, rpID: string): Promise<RegistrationContext> {
+  48     const prefix = guards(proof);
+  49     const result = await this.executor.transaction([...prefix,
+  50       s("INSERT INTO auth_passkey_users(employee_id,user_handle) VALUES($1,$2) ON CONFLICT(employee_id) DO NOTHING",
+  51         [proof.employee.id, randomBytes(32).toString("base64url")]),
+  52       s(`SELECT e.id,e.first_name AS "firstName",e.last_name AS "lastName",e.updated_at::text,c.password_hash,c.password_updated_at::text,
+  53         u.user_handle AS "userHandle",COALESCE((SELECT jsonb_agg(jsonb_build_object('id',p.credential_id,'transports',p.transports))
+  54         FROM employee_passkeys p WHERE p.employee_id=e.id AND p.rp_id=$2 AND p.revoked_at IS NULL),'[]'::jsonb) AS credentials
+  55         FROM employees e JOIN employee_credentials c ON c.employee_id=e.id JOIN auth_passkey_users u ON u.employee_id=e.id WHERE e.id=$1`,
+  56         [proof.employee.id, rpID]), assertion(proof)]);
+  57     const row = result[prefix.length + 1]?.[0] as RegistrationContext | undefined;
+  58     if (!row) throw new PasskeyError("not_found");
+  59     return row;
+  60   }
+  61 
+  62   /** At most one current challenge per flow token and purpose. Reissuing options
+  63    * replaces the old challenge; registration also binds the session and captured
+  64    * account revisions, while anonymous login carries no employee binding. */
+  65   async issueChallenge(purpose: "login" | "register", token: string, challenge: string,
+  66     proof?: SessionMutationProof, account?: RegistrationContext) {
+  67     const prefix = purpose === "register" && proof && account ? [
+  68       ...guards(proof), revisionGuard(proof.employee.id, account.updated_at, account.password_updated_at),
+  69     ] : [];
+  70     if (purpose === "register" && (!proof || !account)) throw new PasskeyError("not_found");
+  71     await this.executor.transaction([...prefix,
+  72       s("DELETE FROM auth_passkey_challenges WHERE expires_at<=clock_timestamp()"),
+  73       s(`INSERT INTO auth_passkey_challenges(token_hash,purpose,challenge,employee_id,session_token_hash,credential_updated_at,employee_updated_at)
+  74         VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(token_hash,purpose) DO UPDATE SET
+  75         challenge=EXCLUDED.challenge,employee_id=EXCLUDED.employee_id,session_token_hash=EXCLUDED.session_token_hash,
+  76         credential_updated_at=EXCLUDED.credential_updated_at,employee_updated_at=EXCLUDED.employee_updated_at,
+  77         expires_at=clock_timestamp()+interval '5 minutes'`,
+  78         [hash(token), purpose, challenge, proof?.employee.id ?? null, proof?.sessionTokenHash ?? null,
+  79           account?.password_updated_at ?? null, account?.updated_at ?? null]),
+  80       ...(proof ? [assertion(proof)] : []),
+  81     ]);
+  82   }
+  83 
+  84   /** DELETE ... RETURNING gives only one concurrent verifier the live challenge.
+  85    * Registration must match the issuing employee and session digest. */
+  86   async consumeChallenge(purpose: "login" | "register", token: string, challenge: string, proof?: SessionMutationProof): Promise<Challenge> {
+  87     const [row] = await this.executor.query<Challenge>(s(`DELETE FROM auth_passkey_challenges
+  88       WHERE token_hash=$1 AND purpose=$2 AND challenge=$3 AND expires_at>clock_timestamp()
+  89       AND ($2='login' OR (employee_id=$4 AND session_token_hash=$5))
+  90       RETURNING challenge,employee_id AS "employeeId",session_token_hash AS "sessionTokenHash",
+  91       credential_updated_at::text AS "credentialUpdatedAt",employee_updated_at::text AS "employeeUpdatedAt",expires_at::text AS "expiresAt"`,
+  92       [hash(token), purpose, challenge, proof?.employee.id ?? null, proof?.sessionTokenHash ?? null]));
+  93     if (!row) throw new PasskeyError("not_found");
+  94     return row;
+  95   }
+  96 
+  97   /** Verification snapshot only, including disabled/revoked state. The service
+  98    * evaluates eligibility and commitLogin rechecks mutable state under locks. */
+  99   async credential(credentialId: string, rpID: string): Promise<StoredCredential | null> {
+ 100     if (typeof credentialId !== "string" || credentialId.length > 4096 || !/^[A-Za-z0-9_-]+$/.test(credentialId)) throw new PasskeyError("not_found");
+ 101     const [row] = await this.executor.query<StoredCredential>(s(`SELECT p.id::text,p.employee_id AS "employeeId",p.credential_id AS "credentialId",
+ 102       p.public_key AS "publicKey",p.sign_counter::text AS counter,p.transports,p.revoked_at::text AS "revokedAt",
+ 103       u.user_handle AS "userHandle",e.active,e.updated_at::text,c.password_hash,c.password_updated_at::text
+ 104       FROM employee_passkeys p JOIN auth_passkey_users u ON u.employee_id=p.employee_id JOIN employees e ON e.id=p.employee_id
+ 105       JOIN employee_credentials c ON c.employee_id=e.id WHERE p.credential_id=$1 AND p.rp_id=$2`, [credentialId, rpID]));
+ 106     return row ?? null;
+ 107   }
+ 108 
+ 109   /** Serialize on the stable user-handle row so concurrent registrations cannot
+ 110    * exceed ten live keys. Session, issuance revisions and challenge expiry guard
+ 111    * the insert/audit transaction; only display metadata leaves this boundary. */
+ 112   async register(proof: SessionMutationProof, challenge: Challenge, credential: {
+ 113     id: string; publicKey: Uint8Array; counter: number; transports?: string[];
+ 114   }, name: string, rpID: string): Promise<PasskeyMetadata> {
+ 115     const id = randomUUID(), prefix = [...guards(proof),
+ 116       s("SELECT employee_id FROM auth_passkey_users WHERE employee_id=$1 FOR UPDATE", [proof.employee.id]),
+ 117       revisionGuard(proof.employee.id, challenge.employeeUpdatedAt, challenge.credentialUpdatedAt), liveChallenge(challenge),
+ 118       s("SELECT (CASE WHEN (SELECT count(*) FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL)<10 THEN '1' ELSE 'passkey_not_found' END)::integer", [proof.employee.id]),
+ 119     ];
+ 120     const result = await this.executor.transaction([...prefix,
+ 121       s(`INSERT INTO employee_passkeys(id,employee_id,credential_id,public_key,sign_counter,transports,rp_id,name)
+ 122         VALUES($1::uuid,$2,$3,$4::bytea,$5,$6::text[],$7,$8) RETURNING ${metadataFields}`,
+ 123         [id, proof.employee.id, credential.id, "\\x" + Buffer.from(credential.publicKey).toString("hex"), credential.counter,
+ 124           credential.transports ?? [], rpID, name]),
+ 125       s("INSERT INTO auth_passkey_audit(employee_id,passkey_id,event) VALUES($1,$2::uuid,'register')", [proof.employee.id, id]),
+ 126       assertion(proof), liveChallenge(challenge),
+ 127     ]);
+ 128     return metadata(result[prefix.length][0] as PasskeyMetadata);
+ 129   }
+ 130 
+ 131   /** Commit counter advancement, audit and session insertion together. Compare
+ 132    * against the originally verified counter after locking the key: increasing
+ 133    * counters must advance, while authenticators reporting zero may remain zero.
+ 134    * Session guards invalidate a concurrent password/lifecycle change. */
+ 135   async commitLogin(credential: StoredCredential, counter: number, challenge: Challenge, session: PreparedSession) {
+ 136     await this.executor.transaction([...session.guards,
+ 137       s("SELECT id FROM employee_passkeys WHERE id=$1::uuid FOR UPDATE", [credential.id]),
+ 138       s(`SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_passkeys WHERE id=$1::uuid AND employee_id=$2 AND revoked_at IS NULL
+ 139         AND sign_counter=$3 AND (($3::bigint=0 AND $4::bigint=0) OR $4::bigint>$3::bigint))
+ 140         THEN '1' ELSE 'passkey_not_found' END)::integer`, [credential.id, credential.employeeId, credential.counter, counter]),
+ 141       liveChallenge(challenge),
+ 142       s("UPDATE employee_passkeys SET sign_counter=$2,last_used_at=clock_timestamp() WHERE id=$1::uuid", [credential.id, counter]),
+ 143       session.insert,
+ 144       s("INSERT INTO auth_passkey_audit(employee_id,passkey_id,event) VALUES($1,$2::uuid,'sign_in')", [credential.employeeId, credential.id]),
+ 145       liveChallenge(challenge),
+ 146     ]);
+ 147   }
+ 148 
+ 149   /** Return only this live session's unrevoked key metadata; public keys and
+ 150    * credential IDs are kept inside verification/storage paths. */
+ 151   async list(proof: SessionMutationProof): Promise<PasskeyMetadata[]> {
+ 152     return (await this.snapshot(proof)).passkeys;
+ 153   }
+ 154 
+ 155   async snapshot(proof: SessionMutationProof): Promise<{passkeys:PasskeyMetadata[];validForMs:number}> {
+ 156     const prefix = guards(proof), results = await this.executor.transaction([...prefix,
+ 157       s(`SELECT ${metadataFields} FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL ORDER BY created_at,id`, [proof.employee.id]),
+ 158       s(`SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs"
+ 159         FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`, [proof.sessionTokenHash,proof.employee.id]),
+ 160       assertion(proof),
+ 161     ]);
+ 162     const lease=results[prefix.length+1]?.[0] as {validForMs:number}|undefined;
+ 163     if(!lease||!Number.isInteger(lease.validForMs)||lease.validForMs<=0)throw new PasskeyError('not_found');
+ 164     return {passkeys:(results[prefix.length] as PasskeyMetadata[]).map(metadata),validForMs:lease.validForMs};
+ 165   }
+ 166 
+ 167   /** Retire an owned key rather than deleting its history. Repeated removal of
+ 168    * an existing retired key succeeds without adding another remove audit event. */
+ 169   async remove(proof: SessionMutationProof, id: string) {
+ 170     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new PasskeyError("not_found");
+ 171     await this.executor.transaction([...guards(proof),
+ 172       s("SELECT id FROM employee_passkeys WHERE id=$1::uuid AND employee_id=$2 FOR UPDATE", [id, proof.employee.id]),
+ 173       s("SELECT (CASE WHEN EXISTS(SELECT 1 FROM employee_passkeys WHERE id=$1::uuid AND employee_id=$2) THEN '1' ELSE 'passkey_not_found' END)::integer", [id, proof.employee.id]),
+ 174       s(`WITH removed AS(UPDATE employee_passkeys SET revoked_at=clock_timestamp(),revocation_reason='removed'
+ 175         WHERE id=$1::uuid AND employee_id=$2 AND revoked_at IS NULL RETURNING id)
+ 176         INSERT INTO auth_passkey_audit(employee_id,passkey_id,event) SELECT $2,id,'remove' FROM removed`, [id, proof.employee.id]),
+ 177       assertion(proof),
+ 178     ]);
+ 179   }
+ 180 }

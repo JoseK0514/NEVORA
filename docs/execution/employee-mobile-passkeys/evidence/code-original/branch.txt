@@ -1,0 +1,3 @@
+$ git branch --show-current
+exit=0
+codex/employee-mobile-local-resume-20261027

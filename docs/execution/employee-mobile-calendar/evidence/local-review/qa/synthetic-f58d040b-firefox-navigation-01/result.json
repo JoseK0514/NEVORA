@@ -1,0 +1,538 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "playwrightVersion": "1.62.1",
+  "serverPid": 46341,
+  "port": 63963,
+  "portStillOpen": false,
+  "browserPids": [
+    46356,
+    46369,
+    46364
+  ],
+  "browserPidsStillAlive": [],
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "after": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "cases": [
+    {
+      "engine": "firefox",
+      "mode": "navigate-body",
+      "index": 0,
+      "path": "/probe/firefox/held/navigate-body-0",
+      "headersOnlyBeforeAction": true,
+      "bodyInitiallyHeld": true,
+      "consumer": [
+        {
+          "phase": "fetch.started",
+          "browserTime": 186
+        },
+        {
+          "phase": "headers.body-pending",
+          "browserTime": 192
+        },
+        {
+          "phase": "body.rejected",
+          "errorName": "AbortError",
+          "aborted": false,
+          "browserTime": 201
+        },
+        {
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 209
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-navigate-body-0",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "writableEnded": false
+        }
+      ],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144048703,
+          "monotonic": 1908.248875,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/held/navigate-body-0",
+          "aborted": true,
+          "time": 1793144048695
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "mode": "navigate-after-full-json",
+      "index": 1,
+      "path": "/probe/firefox/complete/before-navigation-1",
+      "headersOnlyBeforeAction": false,
+      "bodyInitiallyHeld": false,
+      "consumer": [
+        {
+          "at": 1793144048728,
+          "monotonic": 1933.063,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-1",
+          "phase": "fetch.started",
+          "browserTime": 42
+        },
+        {
+          "at": 1793144048746,
+          "monotonic": 1951.86825,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-1",
+          "phase": "headers.body-pending",
+          "status": 200,
+          "browserTime": 60
+        },
+        {
+          "at": 1793144048747,
+          "monotonic": 1952.337459,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-1",
+          "phase": "json.complete",
+          "ok": true,
+          "browserTime": 61
+        },
+        {
+          "at": 1793144048772,
+          "monotonic": 1977.203917,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-1",
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 85
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-completed-navigation-1",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144048786,
+          "monotonic": 1991.694667,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/complete/before-navigation-1",
+          "aborted": true,
+          "time": 1793144048770
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "at": 1793144048739,
+          "monotonic": 1944.308375,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete/before-navigation-1",
+          "writableEnded": true
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "mode": "navigate-after-full-json",
+      "index": 2,
+      "path": "/probe/firefox/complete/before-navigation-2",
+      "headersOnlyBeforeAction": false,
+      "bodyInitiallyHeld": false,
+      "consumer": [
+        {
+          "at": 1793144048810,
+          "monotonic": 2014.960459,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-2",
+          "phase": "fetch.started",
+          "browserTime": 48
+        },
+        {
+          "at": 1793144048815,
+          "monotonic": 2020.146334,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-2",
+          "phase": "headers.body-pending",
+          "status": 200,
+          "browserTime": 53
+        },
+        {
+          "at": 1793144048815,
+          "monotonic": 2020.735584,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-2",
+          "phase": "json.complete",
+          "ok": true,
+          "browserTime": 54
+        },
+        {
+          "at": 1793144049030,
+          "monotonic": 2235.777584,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-2",
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 269
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-completed-navigation-2",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144049040,
+          "monotonic": 2245.160292,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/complete/before-navigation-2",
+          "aborted": true,
+          "time": 1793144049030
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "at": 1793144048813,
+          "monotonic": 2018.349875,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete/before-navigation-2",
+          "writableEnded": true
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "mode": "navigate-after-full-json",
+      "index": 3,
+      "path": "/probe/firefox/complete/before-navigation-3",
+      "headersOnlyBeforeAction": false,
+      "bodyInitiallyHeld": false,
+      "consumer": [
+        {
+          "at": 1793144049056,
+          "monotonic": 2261.831417,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-3",
+          "phase": "fetch.started",
+          "browserTime": 33
+        },
+        {
+          "at": 1793144049059,
+          "monotonic": 2264.586542,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-3",
+          "phase": "headers.body-pending",
+          "status": 200,
+          "browserTime": 35
+        },
+        {
+          "at": 1793144049059,
+          "monotonic": 2264.662584,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-3",
+          "phase": "json.complete",
+          "ok": true,
+          "browserTime": 35
+        },
+        {
+          "at": 1793144049074,
+          "monotonic": 2279.808,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-3",
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 50
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-completed-navigation-3",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144049081,
+          "monotonic": 2286.660334,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/complete/before-navigation-3",
+          "aborted": true,
+          "time": 1793144049074
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "at": 1793144049058,
+          "monotonic": 2263.539042,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete/before-navigation-3",
+          "writableEnded": true
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "mode": "navigate-after-full-json",
+      "index": 4,
+      "path": "/probe/firefox/complete/before-navigation-4",
+      "headersOnlyBeforeAction": false,
+      "bodyInitiallyHeld": false,
+      "consumer": [
+        {
+          "at": 1793144049095,
+          "monotonic": 2300.268084,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-4",
+          "phase": "fetch.started",
+          "browserTime": 25
+        },
+        {
+          "at": 1793144049098,
+          "monotonic": 2303.475667,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-4",
+          "phase": "headers.body-pending",
+          "status": 200,
+          "browserTime": 27
+        },
+        {
+          "at": 1793144049098,
+          "monotonic": 2303.569375,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-4",
+          "phase": "json.complete",
+          "ok": true,
+          "browserTime": 27
+        },
+        {
+          "at": 1793144049124,
+          "monotonic": 2329.513875,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-4",
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 53
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-completed-navigation-4",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144049131,
+          "monotonic": 2335.993167,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/complete/before-navigation-4",
+          "aborted": true,
+          "time": 1793144049124
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "at": 1793144049096,
+          "monotonic": 2301.913042,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete/before-navigation-4",
+          "writableEnded": true
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    },
+    {
+      "engine": "firefox",
+      "mode": "navigate-after-full-json",
+      "index": 5,
+      "path": "/probe/firefox/complete/before-navigation-5",
+      "headersOnlyBeforeAction": false,
+      "bodyInitiallyHeld": false,
+      "consumer": [
+        {
+          "at": 1793144049145,
+          "monotonic": 2350.166792,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-5",
+          "phase": "fetch.started",
+          "browserTime": 24
+        },
+        {
+          "at": 1793144049147,
+          "monotonic": 2352.775,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-5",
+          "phase": "headers.body-pending",
+          "status": 200,
+          "browserTime": 27
+        },
+        {
+          "at": 1793144049148,
+          "monotonic": 2353.021209,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-5",
+          "phase": "json.complete",
+          "ok": true,
+          "browserTime": 27
+        },
+        {
+          "at": 1793144049156,
+          "monotonic": 2361.908209,
+          "event": "consumer",
+          "engine": "firefox",
+          "path": "/probe/firefox/complete/before-navigation-5",
+          "phase": "pagehide.abort",
+          "aborted": true,
+          "browserTime": 36
+        }
+      ],
+      "terminal": {
+        "page": true,
+        "context": true,
+        "observedMs": 0
+      },
+      "secondSuccessfulRead": {
+        "path": "/probe/firefox/complete/after-completed-navigation-5",
+        "phase": "json.complete",
+        "terminal": {
+          "page": true,
+          "context": true,
+          "observedMs": 0
+        }
+      },
+      "originalPageTrackerPending": [],
+      "lifecycleBeacon": [
+        {
+          "at": 1793144049162,
+          "monotonic": 2367.565584,
+          "event": "lifecycle.beacon",
+          "caseId": "/probe/firefox/complete/before-navigation-5",
+          "aborted": true,
+          "time": 1793144049156
+        }
+      ],
+      "serverHits": 1,
+      "serverClose": [
+        {
+          "at": 1793144049146,
+          "monotonic": 2351.87625,
+          "event": "server.response.close",
+          "path": "/probe/firefox/complete/before-navigation-5",
+          "writableEnded": true
+        }
+      ],
+      "originalIdleAssertion": {
+        "expected": 0,
+        "actual": 0,
+        "passed": true
+      }
+    }
+  ],
+  "orphans": [],
+  "outcome": "not_reproduced"
+}

@@ -1,0 +1,16 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications src/app/app/api/push src/components/employee-mobile/device-alerts.test.tsx src/components/app-shell.test.tsx src/components/portal-device-setup.test.tsx src/components/portal-device-setup-focus.test.tsx src/components/employee-mobile/profile.test.tsx src/components/employee-mobile/profile-preferences.test.tsx src/test/integration/owned-device-environment.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+
+ Test Files  27 passed (27)
+      Tests  546 passed (546)
+   Start at  21:43:37
+   Duration  3.09s (tests 67%, import 25%, transform 6%, worker 1%)
+
+    Isolate  27 workers spawned · ~134ms startup each (spawn + environment, per file)
+             at least ~268ms faster with isolate: false — reuses workers across files instead of one per file
+

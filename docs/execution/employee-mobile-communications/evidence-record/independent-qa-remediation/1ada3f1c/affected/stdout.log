@@ -1,0 +1,25 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:4:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-planning.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 110677[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates own mobile time-off and availability with canonical saves, drafts, current permission and deliberate recovery[33m 110676[2mms[22m[39m
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-responses.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 98531[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates Employee swap/cover responses and own detail with current permissions, recorded terms and original operations[33m 98529[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m   Start at [22m 19:12:09
+[2m   Duration [22m 209.89s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

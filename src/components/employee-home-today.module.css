@@ -1,0 +1,206 @@
+/* Employee Home in the Signature style (Jose approved all eight Signature pages on Oct 20, 2026). Target:
+ * docs/product/specs/employee-style/signature/sig-home.png. The approved sign-in (E4) carried into the app: a deep-teal
+ * band with grain and the large Λ, a soft-white sheet (Jose chose soft white over ivory, Oct 20), white lists with warm hairlines, light figures, tracked-caps labels.
+ * Self-contained: its own tokens and h5-prefixed class names, so the shared premium layers don't reach it. The
+ * `:not(#h5)` pairs lift these rules over the shared phone and clock styles. */
+
+.h5Root:not(#h5) {
+  --h5-cream: var(--sig-page); --h5-paper: var(--sig-card); --h5-ink: var(--sig-ink-1); --h5-ink-2: var(--sig-ink-2); --h5-ink-3: var(--sig-ink-3); --h5-faint: var(--sig-faint);
+  --h5-rule: var(--sig-rule); --h5-deep: var(--sig-deep); --h5-mark: var(--sig-mark); --h5-teal: var(--sig-action); --h5-mint: var(--sig-mint); --h5-sky: var(--sig-sky);
+  --h5-amber: var(--sig-review-ink); --h5-red: var(--sig-urgent-ink);
+  --h5-font: var(--sig-font);
+  --h5-display: var(--sig-font-display);
+  --h5-grain: var(--sig-grain);
+  container: h5-home / inline-size;
+  display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 calc(100px + env(safe-area-inset-bottom, 0px)); background: var(--h5-cream); color: var(--h5-ink);
+  font-family: var(--h5-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+.h5Root :where(h1, h2, h3, p, ul, small, strong):not(#h5) { margin: 0; padding: 0; }
+.h5Root :where(ul):not(#h5) { list-style: none; }
+.h5Root :is(a, button, summary):focus-visible:not(#h5) { outline: 2px solid var(--h5-ink); outline-offset: 2px; }
+
+/* ---------- The band: date, greeting, the Λ ---------- */
+.h5Band:not(#h5) { position: relative; isolation: isolate; overflow: hidden; padding: 18px 24px 58px; background: var(--h5-deep); color: #FFFFFF; }
+.h5Band:not(#h5)::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--h5-grain); opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+.h5Mark:not(#h5) { position: absolute; z-index: -1; right: -86px; bottom: -6px; width: 330px; height: auto; pointer-events: none; }
+.h5MarkL:not(#h5) { fill: var(--h5-mark); }
+.h5MarkT:not(#h5) { fill: var(--h5-sky); }
+.h5Date:not(#h5) { min-height: 16px; font: 600 .75rem/1rem var(--h5-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.h5Band h1:not(#h5) { margin-top: 10px; font: 400 2.5rem/2.75rem var(--h5-display); letter-spacing: -.035em; color: #FFFFFF; overflow-wrap: anywhere; }
+/* The greeting is two lines (the time of day, then the name); "Home" and a status line hold the same space while Home
+ * loads or pauses, so nothing below moves. */
+.h5Greet:not(#h5) { min-height: calc(5.5rem + 10px); }
+.h5Name:not(#h5) { display: block; }
+.h5Summary:not(#h5) { margin-top: 10px; font: 400 1rem/1.375rem var(--h5-font); color: rgba(255, 255, 255, .72); }
+
+/* ---------- The sheet: cream, rounded, over the band ---------- */
+.h5Columns:not(#h5) { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; margin-top: -30px; padding-top: 26px; border-radius: 28px 28px 0 0; background: var(--h5-cream); }
+.h5Primary:not(#h5), .h5Secondary:not(#h5) { display: flex; flex-direction: column; min-width: 0; }
+.h5Shifts:not(#h5) { display: flex; flex-direction: column; min-width: 0; }
+
+/* ---------- The shift card: paper, the hours set large and light, then the clock row ---------- */
+.h5Card:not(#h5) { display: flex; flex-direction: column; margin: 0 16px; border: 1px solid var(--h5-rule); border-radius: 22px; background: var(--h5-paper); color: var(--h5-ink); overflow: hidden; }
+/* One height in every state (a shift under way, later today, a clear day, loading), so the clock row never moves when
+ * Home arrives: the label, the hours, the place and the progress line. */
+.h5Today:not(#h5) { display: flex; flex-direction: column; min-width: 0; min-height: calc(6.375rem + 96px); padding: 22px 22px 18px; }
+.h5Calm:not(#h5) { justify-content: center; }
+.h5Spaced:not(#h5) { margin-top: 14px; }
+.h5Next:not(#h5) { margin-top: auto; padding-top: 16px; font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Kicker:not(#h5) { display: flex; align-items: center; gap: 8px; min-height: 16px; font: 600 .75rem/1rem var(--h5-font); letter-spacing: .13em; text-transform: uppercase; color: var(--h5-teal); }
+.h5Kicker[data-recovery]:not(#h5) { font: 500 .9375rem/1.25rem var(--h5-font); letter-spacing: 0; text-transform: none; color: var(--h5-ink-2); }
+.h5Kicker i:not(#h5) { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--h5-teal); box-shadow: 0 0 0 4px rgba(11, 110, 105, .12); }
+.h5Hours:not(#h5) { margin-top: 14px; font: 300 max(1.6875rem, min(2.125rem, 8.8cqi))/1.18 var(--h5-display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.h5Hours time:not(#h5) { white-space: nowrap; }
+.h5Title:not(#h5) { font: 300 max(1.625rem, min(2rem, 8.2cqi))/1.18 var(--h5-display); letter-spacing: -.03em; }
+.h5Where:not(#h5) { margin-top: 6px; font: 400 1rem/1.375rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Extra:not(#h5) { margin-top: 4px; font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Progress:not(#h5) { margin-top: 24px; }
+.h5Track:not(#h5) { position: relative; height: 2px; background: var(--h5-rule); }
+.h5Track span:not(#h5) { position: absolute; inset: 0 auto 0 0; min-width: 2px; background: var(--sig-fill); }
+.h5Track span:not(#h5)::after { content: ""; position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--sig-fill); }
+.h5Ends:not(#h5) { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-3); font-variant-numeric: tabular-nums; }
+
+/* The clock row: [● Off clock] ............ [refresh] [My time →]. The heading, the empty sentence, the Clocker note
+ * and "Updated" stay for screen readers. */
+.h5Clock:not(#h5) { display: flex; align-items: center; min-height: 58px; margin: 0; padding: 0 10px 0 22px; border: 0; border-top: 1px solid var(--h5-rule); border-radius: 0; background: none; box-shadow: none; }
+.h5Clock :global(:is(.employee-clock-compact, .employee-time-footer, .employee-time-current-heading)):not(#h5):not(#h5):not(#h5) { display: contents; }
+.h5Clock > :global(div):not(#h5):not(#h5):not(#h5) { display: flex; flex: 1; flex-wrap: wrap; align-items: center; gap: 0 8px; min-height: 58px; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.h5Clock :global(:is(.employee-time-current-heading h2, .employee-time-empty, .employee-time-note, .employee-time-footer > small, .employee-time-message > p, .employee-time-hold, .employee-time-current-copy)):not(#h5):not(#h5):not(#h5) {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.h5Clock :global(.employee-time-badge):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; align-items: center; gap: 8px; max-width: none; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none;
+  color: var(--h5-ink-2); font: 500 .9375rem/1.25rem var(--h5-font); letter-spacing: 0; text-transform: none;
+}
+.h5Clock :global(.employee-time-badge):not(#h5):not(#h5):not(#h5)::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--h5-faint); }
+.h5Clock :global(.employee-time-badge:is([data-state="CLOCKED_IN"], [data-state="ON_BREAK"])):not(#h5):not(#h5):not(#h5) { color: var(--h5-teal); }
+.h5Clock :global(.employee-time-badge:is([data-state="CLOCKED_IN"], [data-state="ON_BREAK"])):not(#h5):not(#h5):not(#h5)::before { background: var(--h5-teal); }
+.h5Clock :global(.employee-time-badge[aria-hidden="true"]):not(#h5):not(#h5):not(#h5) { display: none; }
+.h5Clock :global(.employee-time-message):not(#h5):not(#h5):not(#h5) { margin: 0; padding: 0; border: 0; background: none; color: var(--h5-ink-2); font: 500 .9375rem/1.25rem var(--h5-font); }
+.h5Clock :global(.employee-time-message strong):not(#h5):not(#h5):not(#h5) { font: inherit; color: inherit; }
+.h5Clock :global(.employee-time-controls):not(#h5):not(#h5):not(#h5) { display: flex; flex: 0 0 auto; align-items: center; gap: 0; width: auto; margin: 0 0 0 auto; padding: 0; }
+.h5Clock :global(.employee-time-refresh):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; flex: none; width: 44px; min-width: 0; height: 44px; min-height: 0; margin: 0; padding: 0; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; background: none; box-shadow: none; color: var(--h5-ink-2); font-size: 0; line-height: 0;
+}
+.h5Clock :global(.employee-time-refresh svg):not(#h5):not(#h5) { width: 19px; height: 19px; }
+.h5Clock :global(.employee-time-refresh:disabled):not(#h5):not(#h5):not(#h5) { color: var(--h5-faint); }
+.h5Clock :global(a.employee-time-refresh):not(#h5):not(#h5):not(#h5) { width: auto; padding: 0 10px; font: 500 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink); text-decoration: underline; text-decoration-color: var(--h5-rule); text-underline-offset: 4px; }
+.h5Clock :global(.employee-time-link):not(#h5):not(#h5):not(#h5) {
+  display: inline-flex; flex: none; align-items: center; gap: 6px; min-width: 0; min-height: 44px; margin: 0; padding: 0 12px 0 8px; border: 0; border-radius: 10px;
+  background: none; box-shadow: none; color: var(--h5-ink); font: 500 .9375rem/1.25rem var(--h5-font); text-decoration: none;
+}
+.h5Clock :global(.employee-time-link svg):not(#h5):not(#h5) { width: 16px; height: 16px; }
+.h5Clock :global(:is(.employee-time-link, .employee-time-refresh)):focus-visible:not(#h5):not(#h5):not(#h5) { outline: 2px solid var(--h5-ink); outline-offset: -2px; }
+@media (hover: hover) { .h5Clock :global(:is(.employee-time-link, .employee-time-refresh)):hover:not(:disabled):not(#h5):not(#h5):not(#h5) { background: rgba(22, 28, 27, .05); } }
+
+/* ---------- Sections: a tracked-caps label over one paper list ---------- */
+.h5Section:not(#h5) { display: flex; flex-direction: column; min-width: 0; margin-top: 30px; }
+.h5Head:not(#h5) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin: 0 24px 4px; }
+.h5Head :is(h2, h3):not(#h5) { display: flex; align-items: baseline; gap: 6px; font: 600 .75rem/1rem var(--h5-font); letter-spacing: .13em; text-transform: uppercase; color: var(--h5-ink-2); }
+.h5Count:not(#h5) { color: var(--h5-ink-2); }
+.h5Action:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; margin-right: -6px; padding: 0 6px; border-radius: 8px; color: var(--h5-ink); font: 500 .9375rem/1.25rem var(--h5-font); text-decoration: underline; text-decoration-color: var(--h5-rule); text-decoration-thickness: 1px; text-underline-offset: 5px; white-space: nowrap; }
+@media (hover: hover) { .h5Action:hover:not(#h5) { text-decoration-color: var(--h5-ink); } }
+.h5List:not(#h5) { margin: 0 16px; border: 1px solid var(--h5-rule); border-radius: 18px; background: var(--h5-paper); overflow: hidden; }
+.h5List li:not(#h5), .h5More > ul > li:not(#h5) { position: relative; }
+.h5List li + li:not(#h5)::before, .h5More > ul > li:not(#h5)::before, .h5More:not(#h5)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--h5-rule); pointer-events: none; z-index: 1; }
+.h5More:not(#h5) { position: relative; }
+.h5Row:not(#h5) { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 14px 18px; color: var(--h5-ink); text-decoration: none; }
+@media (hover: hover) { .h5Row:hover:not(#h5) { background: var(--sig-hover-bg); } }
+.h5Row:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 18px; }
+/* Row links and disclosures sit in an overflow:hidden card, so their ring goes inside; this has to outweigh the root
+ * ring rule above. Buttons inside a row keep the outside ring (an inset ink ring would vanish on a deep fill). */
+.h5List :is(a, summary):not(:global(.sig-btn), :global(.sg-cta), :global(.sg-primary), :global(.sg-round), :global(.employee-action), [data-sig-press="button"]):focus-visible:not(#h5):not(#h5) { outline-offset: -3px; }
+.h5Ring:not(#h5) { flex: none; width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--sig-ring-edge); }
+.h5Copy:not(#h5) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.h5Copy strong:not(#h5) { font: 500 1.0625rem/1.375rem var(--h5-font); letter-spacing: -.012em; color: var(--h5-ink); overflow-wrap: anywhere; }
+.h5Copy small:not(#h5) { font: 400 .9375rem/1.25rem var(--h5-font); color: var(--h5-ink-2); overflow-wrap: anywhere; }
+.h5Copy .h5Due:not(#h5) { color: var(--h5-amber); }
+.h5Copy .h5Extra:not(#h5) { color: var(--h5-ink-2); }
+.h5End:not(#h5) { position: relative; display: inline-flex; flex: none; align-items: center; }
+.h5Chevron:not(#h5) { flex: none; fill: none; stroke: var(--sig-glyph, #8A8378); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.h5Day:not(#h5) { flex: none; display: flex; flex-direction: column; width: 2.5rem; }
+.h5Day small:not(#h5) { font: 600 .75rem/1rem var(--h5-font); letter-spacing: .12em; text-transform: uppercase; color: var(--h5-ink-3); }
+.h5Day strong:not(#h5) { margin-top: 2px; font: 300 1.75rem/1.875rem var(--h5-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--h5-ink); }
+.h5Empty:not(#h5) { padding: 22px 18px; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Section > .h5Empty:not(#h5) { margin: 0 16px; border: 1px solid var(--h5-rule); border-radius: 18px; background: var(--h5-paper); }
+.h5Done:not(#h5) { display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 14px 18px; }
+.h5Tick:not(#h5) { flex: none; display: inline-flex; width: 20px; height: 20px; border-radius: 50%; align-items: center; justify-content: center; background: var(--h5-deep); }
+.h5Tick svg:not(#h5) { fill: none; stroke: #FFFFFF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.h5Note:not(#h5) { margin: 14px 24px 0; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-3); }
+.h5Warn:not(#h5) { margin: 30px 24px 0; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-amber); }
+.h5Warn + .h5Section:not(#h5), .h5Warn ~ [data-home-group="actions"]:not(#h5) { margin-top: 12px; }
+
+/* "View all": an underlined line at the foot of the list. */
+.h5More > summary:not(#h5) { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 18px; list-style: none; cursor: pointer; color: var(--h5-ink); font: 500 .9375rem/1.25rem var(--h5-font); }
+.h5More > summary > span:not(#h5) { text-decoration: underline; text-decoration-color: var(--h5-rule); text-underline-offset: 5px; }
+.h5More > summary:not(#h5)::-webkit-details-marker { display: none; }
+@media (hover: hover) { .h5More > summary:hover:not(#h5) { background: var(--sig-hover-bg); } }
+.h5More > summary:focus-visible:not(#h5) { outline-offset: -3px; border-radius: 18px; }
+.h5More > summary .h5Chevron:not(#h5) { transform: rotate(90deg); transition: transform .2s ease; }
+.h5More[open] > summary .h5Chevron:not(#h5) { transform: rotate(-90deg); }
+.h5Collapse:not(#h5), .h5More[open] .h5Expand:not(#h5) { display: none; }
+.h5More[open] .h5Collapse:not(#h5) { display: inline; }
+
+/* Sources that couldn't be fully checked: plain lines with a link each. */
+.h5Sources:not(#h5) { display: flex; flex-direction: column; gap: 4px; margin: 20px 24px 0; }
+.h5Sources li:not(#h5) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; font: 400 .9375rem/1.3125rem var(--h5-font); color: var(--h5-ink-2); }
+.h5Sources a:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; color: var(--h5-ink); font-weight: 500; text-decoration: underline; text-decoration-color: var(--h5-rule); text-underline-offset: 5px; }
+
+/* Refresh: one quiet underlined line at the foot; a real button when Home couldn't load. */
+.h5Refresh:not(#h5) { display: flex; justify-content: center; margin-top: 28px; padding: 0 20px; }
+.h5Refresh[data-waiting]:not(#h5) { visibility: hidden; }
+.h5QuietButton:not(#h5) { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: none; color: var(--h5-ink); font: 500 .9375rem/1.25rem var(--h5-font); text-decoration: underline; text-decoration-color: var(--h5-rule); text-underline-offset: 5px; cursor: pointer; }
+@media (hover: hover) { .h5QuietButton:hover:not(:disabled):not(#h5) { text-decoration-color: var(--h5-ink); } }
+.h5QuietButton:disabled:not(#h5) { color: var(--h5-ink-3); cursor: default; }
+.h5PrimaryButton:not(#h5) { display: inline-flex; align-items: center; justify-content: center; min-height: var(--sig-control-h, 56px); padding: 0 24px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-deep, #0D3634); color: #FFFFFF; font: 500 1rem/1.25rem var(--h5-font); text-decoration: none; cursor: pointer; }
+/* "Checking…" (aria-busy) keeps the deep fill; only true disabled goes quiet. */
+.h5PrimaryButton:disabled:not([aria-busy="true"]):not(#h5) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
+.h5PrimaryButton[aria-busy="true"]:not(#h5) { cursor: progress; }
+
+/* Phones: the approved order is the shift card, To do, Coming up, then Recent activity. Coming up belongs to the shift
+ * section (its links are the shift's), so the columns open up and the order is set here; desktop keeps two columns. */
+@media (max-width: 1023px) {
+  .h5Columns:not(#h5) { display: flex; flex-direction: column; align-items: stretch; }
+  :is(.h5Primary, .h5Shifts, .h5Secondary):not(#h5) { display: contents; }
+  .h5Card:not(#h5) { order: 1; }
+  .h5Warn:not(#h5) { order: 2; }
+  .h5Columns [data-home-group="actions"]:not(#h5) { order: 3; }
+  .h5Upcoming:not(#h5) { order: 4; }
+  .h5Columns [data-home-group="updates"]:not(#h5) { order: 5; }
+  .h5Sources:not(#h5) { order: 6; }
+}
+
+/* ---------- Wider screens: the band becomes a rounded panel, the sheet the page ---------- */
+@media (min-width: 768px) {
+  .h5Root:not(#h5) { width: min(100%, 720px); padding: 16px 24px 48px; }
+  .h5Band:not(#h5) { padding: 28px 32px 34px; border-radius: 24px; }
+  .h5Columns:not(#h5) { margin-top: 0; padding-top: 24px; border-radius: 0; background: none; }
+  .h5Card:not(#h5), .h5List:not(#h5), .h5Section > .h5Empty:not(#h5) { margin-inline: 0; }
+  .h5Head:not(#h5) { margin-inline: 4px; }
+  .h5Note:not(#h5), .h5Sources:not(#h5), .h5Warn:not(#h5) { margin-inline: 4px; }
+}
+@media (min-width: 1024px) {
+  .h5Root:not(#h5) { width: min(100%, 1120px); padding: 8px 24px 48px; }
+  .h5Band h1:not(#h5) { font-size: 2.75rem; line-height: 3rem; }
+  .h5Greet:not(#h5) { min-height: calc(6rem + 10px); }
+  .h5Columns:not(#h5) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+  .h5Warn:not(#h5) { margin-top: 0; }
+  .h5Secondary > .h5Section:first-child:not(#h5) { margin-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .h5More > summary .h5Chevron:not(#h5) { transition: none; }
+}
+
+/* Phase 4 (Signature, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-4/p4b-board-d.png):
+ * on wide screens the band carries two figures, the next shift and what is waiting. Hidden on phones. */
+.h5Stats:not(#h5) { display: none; }
+@media (min-width: 1024px) {
+  .h5Stats:not(#h5) { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; margin: 26px 0 0; padding: 0; border-top: 1px solid rgba(255, 255, 255, .14); }
+  .h5Stats > div:not(#h5) { min-width: 0; padding: 16px 24px 0 0; }
+  .h5Stats > div + div:not(#h5) { padding-left: 24px; border-left: 1px solid rgba(255, 255, 255, .14); }
+  .h5Stats dt:not(#h5) { font: 600 .75rem/1rem var(--sg-font, -apple-system, sans-serif); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .55); }
+  .h5Stats dd:not(#h5) { margin: 6px 0 0; font: 300 1.875rem/2.125rem -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; letter-spacing: -.03em; color: #FFFFFF; font-variant-numeric: tabular-nums; }
+  .h5Stats dd.h5StatSub:not(#h5) { margin-top: 2px; font: 400 .875rem/1.25rem -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; letter-spacing: 0; color: rgba(255, 255, 255, .7); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}

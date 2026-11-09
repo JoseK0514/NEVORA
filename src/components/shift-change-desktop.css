@@ -1,0 +1,78 @@
+/* Swap shift, Offer for cover and Unable to work on tablets and desktop (Release 1): the phone sheets' content (boards
+ * E-SwapSheet, E-CoverSheet, E-CantWorkSheet) as one white card in the desktop column — Cancel · title · Send bar, the
+ * shift on a grey block, one bordered list of choices with the radio on the right. Looks only: the forms are unchanged. */
+@media (min-width: 768px) {
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange {
+    color: #1A1C1E;
+    font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; font-variant-numeric: tabular-nums; -webkit-font-smoothing: antialiased;
+  }
+  /* In the desktop sheet (the right-hand panel) the card is the panel itself: white from top to bottom, the bar at its
+   * top edge (the shell's 48px page band is for pages, not for a page shown in a panel). */
+  :is(#q-root, html) body .app-shell .q-sheet .q-page.q-shiftchange.q-shiftchange { padding: 0 !important; background: #FFFFFF; }
+  :is(#q-root, html) body .app-shell dialog.q-sheet:has(.q-page.q-shiftchange) { background: #FFFFFF; }
+    :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange :is(.q-scform div:has(> .q-nav), form.q-scform:has(> fieldset > .q-nav), .q-shiftchange__card) {
+    max-width: 720px; margin: 0 auto; padding-bottom: 16px; overflow: hidden; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6;
+  }
+  :is(#q-root, html) body .app-shell .q-sheet .q-page.q-shiftchange.q-shiftchange :is(.q-scform div:has(> .q-nav), form.q-scform:has(> fieldset > .q-nav), .q-shiftchange__card) { max-width: none; border-radius: 0; box-shadow: none; }
+
+  /* Bar: 52px, Cancel 15 regular, title 17/600, Send 15/600, a hairline under it. */
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-nav {
+    position: static; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); height: 52px; min-height: 52px; margin: 0; padding: 0 16px;
+    background: #FFFFFF; box-shadow: inset 0 -1px 0 #EDEEEF;
+  }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-nav__l { color: #0B6E69 !important; font-size: 15px; line-height: 20px; font-weight: 400; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-nav__t { margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; color: #1A1C1E; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-nav__r { font-size: 15px; line-height: 20px; font-weight: 600; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-nav__r:disabled { color: #A7ACB1 !important; }
+
+  /* Labels: 13/600 #4A4F54, 6px above their list; 16px between groups. */
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-grp,
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fieldset > legend.q-grp {
+    float: none; display: block; width: auto; margin: 16px 16px 6px; padding: 0; font-size: 13px; line-height: 18px; font-weight: 600; color: #4A4F54; letter-spacing: 0;
+  }
+
+  /* Lists: one bordered box (radius 8, #D5D8DA); your shift is a grey block instead. */
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list {
+    margin: 0 16px; overflow: hidden; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px #D5D8DA;
+  }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list:not(:has(.q-row--pick)) { background: #F5F6F6; box-shadow: none; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list > li { font-size: 15px; line-height: 20px; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-row { min-height: 48px; padding: 4px 14px; gap: 12px; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-row--av { min-height: 60px; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-row::after { left: 0; right: 0; top: 0; bottom: auto; background: #EDEEEF; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list > li:first-child > .q-row::after { display: none; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list > li:last-child > .q-row::after { display: block; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list > li:only-child > .q-row::after { display: none; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-row--pick { cursor: pointer; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-rt b { font-size: 15px; line-height: 20px; font-weight: 400; color: #1A1C1E; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-row--av .q-rt b,
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list:not(:has(.q-row--pick)) .q-rt b { font-weight: 600; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-rt i { margin: 0; font-size: 13px; line-height: 18px; color: #6B7075; letter-spacing: 0; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-rv { font-size: 15px; line-height: 20px; font-weight: 600; color: #1A1C1E; letter-spacing: 0; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-av { width: 32px; height: 32px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; font-size: 13px; font-weight: 600; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-list > li:nth-child(even) .q-av { background: #EDEEEF; color: #4A4F54; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-radio { width: 20px; height: 20px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1.5px #6B7075; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-pick:checked + .q-radio { background: #0B6E69; box-shadow: inset 0 0 0 2px #0B6E69, inset 0 0 0 6px #FFFFFF; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-pick:checked + .q-radio::after { display: none; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-pick:focus-visible + .q-radio { outline: 2px solid #0B6E69; outline-offset: 2px; }
+
+  /* Note field: label 13/600 with the count on its right; a 68px box with a 1px ring; no resize grip. */
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fl { margin: 16px 16px 0; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fl__row { margin-bottom: 6px; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fl__label { font-size: 13px; line-height: 18px; font-weight: 600; color: #4A4F54; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fl__opt { font-size: 13px; color: #6B7075; font-weight: 400; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange textarea.q-in {
+    display: block; height: 68px; padding: 12px 14px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; font-size: 15px; line-height: 20px; color: #1A1C1E; resize: none;
+  }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange textarea.q-in:focus { box-shadow: inset 0 0 0 2px #0B6E69; outline: none; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-fl__help { margin-top: 6px; font-size: 13px; line-height: 18px; color: #6B7075; }
+
+  /* Help and empty lines: 13px grey under their group. */
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-help { margin: 6px 16px 0; font-size: 13px; line-height: 18px; color: #6B7075; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-help a { color: #0B6E69; font-weight: 600; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-help--alert { color: #B42318; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-empty { margin: 16px 16px 0; font-size: 15px; line-height: 20px; color: #4A4F54; }
+  :is(#q-root, html) body .app-shell .q-page.q-shiftchange.q-shiftchange .q-btn--sec {
+    width: calc(100% - 32px); height: 44px; margin: 12px 16px 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #0B6E69; color: #0B6E69 !important; font-size: 15px; font-weight: 600;
+  }
+}

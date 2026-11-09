@@ -2,12 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth/session";
+import { requireSessionMutationProof } from "@/lib/auth/session";
+import { requireSelfService } from "@/lib/auth/permissions";
 import { isValidWeekStart } from "@/lib/date-utils";
 import { acknowledgeScheduleWeek } from "@/lib/data/acknowledgements";
 
+/**
+ * Confirms the exact revision shown to an employee, not merely a week label.
+ * Forward the original revision, operation ID and authority binding unchanged;
+ * only a committed receipt triggers page revalidation. Other outcomes remain
+ * structured so the client can reconcile rather than invent a confirmation.
+ */
 export async function acknowledgeScheduleAction(formData: FormData) {
-  const session = await requireSession();
+  await requireSelfService("/app/schedule");
   const weekStart = String(formData.get("weekStart") ?? "");
 
   if (
@@ -18,14 +25,15 @@ export async function acknowledgeScheduleAction(formData: FormData) {
 
   const acknowledged = await acknowledgeScheduleWeek({
     weekStart,
-    employeeId: session.id,
+    proof: await requireSessionMutationProof(),
+    expectedRevisionId: String(formData.get("expectedRevisionId") ?? ""),
+    operationId: String(formData.get("operationId") ?? ""),
+    authority: String(formData.get("authority") ?? ""),
   });
 
-  if (!acknowledged) {
-    redirect(`/app/schedule?week=${weekStart}&error=NO_SCHEDULE`);
-  }
+  if (acknowledged.status !== "committed") return acknowledged;
 
   revalidatePath("/app");
   revalidatePath("/app/schedule");
-  redirect(`/app/schedule?week=${weekStart}&acknowledged=1`);
+  return acknowledged;
 }

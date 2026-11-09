@@ -1,0 +1,36 @@
+/* Clocker tablets (Owner premium R3, R8; round 2). The page: the tablets card (text rows, no icons or pills), the setup
+ * steps as a numbered list that doesn't look tappable, one primary in its footer. The sheet: the kit's c-sheet (centred
+ * title, Done or Cancel), its one action full width and "Remove tablet" as quiet red text under it. */
+/* Codex A3: on a phone the cards and the note share the settings pages' 16px gutter. */
+:is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { display: flex; flex-direction: column; gap: 12px; min-height: 0; margin-top: 12px; padding: 0 16px; background: none; }
+:is(#c-root, html) .c-tablets .c-tablets__row { cursor: pointer; }
+:is(#c-root, html) .c-tablets .c-rows > li + li > .c-tablets__row { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-tablets .c-tablets__row:disabled { cursor: default; }
+:is(#c-root, html) .c-tablets .c-tablets__list { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 14px 16px 16px; list-style: none; }
+:is(#c-root, html) .c-tablets .c-tablets__list > li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 20px; color: var(--c-ink); }
+:is(#c-root, html) .c-tablets .c-tablets__n { flex: none; display: grid; place-items: center; width: 22px; height: 22px; margin-top: -1px; border-radius: 11px; background: var(--c-line); color: var(--c-ink2);
+  font-size: 13px; line-height: 1; font-weight: 600; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .c-tablets .c-tablets__foot { flex-direction: column-reverse; align-items: stretch; }
+:is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { flex: none; width: 100%; }
+:is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+@media (min-width: 768px) {
+  /* The 16px inset stays on wide screens too, so the cards line up with the title like the other Settings pages. */
+  :is(#c-root, html) .c-tablets .c-page.c-embed.c-tablets__page { margin-top: 16px; }
+  :is(#c-root, html) .c-tablets .c-tablets__foot { flex-direction: row; justify-content: flex-end; }
+  :is(#c-root, html) .c-tablets .c-tablets__foot > .c-btn { width: auto; min-width: 140px; }
+  :is(#c-root, html) .c-tablets .c-tablets__note { margin: 0; }
+}
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__text { margin: 0; padding-top: 4px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__text strong { font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__actions { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding-top: 4px; }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__remove { align-self: center; min-width: 44px; min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--c-red);
+  font: inherit; font-size: 15px; line-height: 20px; font-weight: 500; cursor: pointer; }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__remove:disabled { color: var(--c-faint, #A7ACB1); cursor: default; }
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__remove:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 8px; }
+:is(#c-root, html) .c-tablet-sheet .c-sheet-head__l:disabled, :is(#c-root, html) .c-tablet-sheet .c-sheet__done:disabled { color: var(--c-faint, #A7ACB1); cursor: default; }
+@media (max-width: 767px) { :is(#c-root, html) .c-tablet-sheet .q-in { font-size: 16px; } }
+:is(#c-root, html) .c-tablet-sheet .wc-fields { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) dialog.q-sheet .c-sheet.c-tablet-sheet .wc-fields > .q-fl.wc-field { margin: 0; }
+/* One action, full width at every size (the sheet is a narrow panel on tablets and desktop). */
+:is(#c-root, html) .c-tablet-sheet .c-tablet-sheet__actions > .c-btn { width: 100%; }

@@ -1,17 +1,28 @@
 "use server";
+import { moduleEnabled } from "@/lib/workspace-presentation/current.server";
 
+import {isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
+
+import { isValidIsoDate } from "@/lib/date-utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSession } from "@/lib/auth/session";
-import { TIME_OFF_REVIEW_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { isValidIsoDate } from "@/lib/date-utils";
+import { requireSessionMutationProof } from "@/lib/auth/session";
+import { TIME_OFF_REVIEW_ROLES, requireRoles, requireSelfService } from "@/lib/auth/permissions";
 import {
   createTimeOffRequest,
   reviewTimeOffRequest,
+  withdrawTimeOffRequest,
 } from "@/lib/data/requests";
 
+/**
+ * Validates an employee-owned time-off request and preserves its client request
+ * UUID for persistence. Actor identity always comes from the session. Partial
+ * days must fit one calendar date; full-day ranges are inclusive date labels.
+ */
 export async function requestTimeOffAction(formData: FormData) {
-  const session = await requireSession();
+  const session = await requireSelfService("/app/requests");
+  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests"); // turned off by the company (B2)
+  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const startDate = String(formData.get("startDate") ?? "");
   const endDate = String(formData.get("endDate") ?? "");
@@ -39,6 +50,7 @@ export async function requestTimeOffAction(formData: FormData) {
   await createTimeOffRequest({
     requestId,
     employeeId: session.id,
+    proof,
     startDate,
     endDate,
     startTime,
@@ -50,21 +62,73 @@ export async function requestTimeOffAction(formData: FormData) {
   redirect("/app/requests?tab=my&submitted=1");
 }
 
+/**
+ * Routes an authorized approve/deny decision to the guarded writer, then returns
+ * to an allowlisted list/home/inbox context. A false write result means no review
+ * was recorded; do not show the success redirect for that outcome.
+ */
 export async function reviewTimeOffAction(formData: FormData) {
   const session = await requireRoles(TIME_OFF_REVIEW_ROLES);
+  if (!(await moduleEnabled("timeOff"))) redirect("/app/requests");
+  const proof = await requireSessionMutationProof();
   const requestId = String(formData.get("requestId") ?? "");
   const decision = String(formData.get("decision") ?? "");
 
   if (!requestId || (decision !== "APPROVED" && decision !== "DENIED")) {
-    redirect("/app/requests?tab=team&error=review");
+    redirect("/app/requests?tab=pending&error=review");
   }
 
-  await reviewTimeOffRequest({
-    requestId,
-    managerId: session.id,
-    status: decision,
-  });
+  let reviewed:boolean;
+  try {
+    reviewed=await reviewTimeOffRequest({requestId,managerId:session.id,proof,status:decision});
+  } catch(error) {
+    if(isOperationalAuthorizationError(error)||isManagementAuthorizationError(error))redirect('/app/requests?tab=team&error=review');
+    throw error;
+  }
+
+  // D-5: a focused review returns to where the manager came from. Only two fixed
+  // destinations are accepted; anything else keeps the list's own redirect.
+  const returnTo = String(formData.get("returnTo") ?? "");
+  const origin = returnTo === "inbox" || returnTo === "home" ? returnTo : null;
+  if (!reviewed) redirect(origin ? `/app/requests?tab=pending&error=review&requestId=${encodeURIComponent(requestId)}&from=${origin}` : "/app/requests?tab=pending&error=review");
 
   revalidatePath("/app/requests");
-  redirect("/app/requests?tab=team&reviewed=1");
+  if (origin) {
+    revalidatePath("/app/inbox");
+    const outcome = decision === "APPROVED" ? "approved" : "declined";
+    // The Inbox filter the manager came from, from a fixed list (never a free-form address).
+    const filter = String(formData.get("returnFilter") ?? "requests");
+    const back = filter === "all" ? "" : ["now", "requests", "planning"].includes(filter) ? `filter=${filter}&` : "filter=requests&";
+    redirect(origin === "home" ? `/app?decided=timeoff-${outcome}` : `/app/inbox?${back}decided=timeoff-${outcome}`);
+  }
+  redirect("/app/requests?tab=pending&reviewed=1");
+}
+
+
+import { parseWithdrawalCommand, type WithdrawalActionState } from '@/lib/time-off-withdrawal';
+import { isManagementAuthorizationError } from '@/lib/data/management-session';
+
+/**
+ * Withdraws with explicit confirmation and a deterministic command identity.
+ * Unknown transport outcomes remain unavailable so the same command can be
+ * retried; only a returned receipt proves the withdrawal was recorded.
+ */
+export async function withdrawTimeOffAction(_previous:WithdrawalActionState, formData:FormData):Promise<WithdrawalActionState> {
+  const session=await requireSelfService('/app/requests');
+  if(!(await moduleEnabled('timeOff')))return {outcome:'unavailable'};
+  const proof=await requireSessionMutationProof();
+  let command;
+  try{
+    const fields=[...formData.keys()].filter(key=>!key.startsWith('$ACTION_'));
+    if(fields.sort().join(',')!=='confirmed,operationId,requestId'||formData.get('confirmed')!=='yes')return {outcome:'invalid'};
+    command=parseWithdrawalCommand({requestId:formData.get('requestId'),operationId:formData.get('operationId')});
+  }catch{return {outcome:'invalid'};}
+  let receipt;
+  try{receipt=await withdrawTimeOffRequest({...command,employeeId:session.id,proof});}
+  catch(error){return {outcome:isManagementAuthorizationError(error)?'denied':'unavailable'};}
+  // Revalidation happens only after a known transaction result. A transport
+  // failure remains unknown and retains the exact command for protected retry.
+  revalidatePath('/app/requests');
+  if(!receipt)return {outcome:'conflict'};
+  return {outcome:'withdrawn',receipt};
 }

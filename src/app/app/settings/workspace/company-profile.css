@@ -1,0 +1,22 @@
+/* Company profile (Nov 1 upscale, review M6): one grouped card. The business name (and, while it can change, the time
+ * zone) is a row with its label on the left (15/500) and a borderless input filling the rest; the fixed values are value
+ * rows; a locked value ends in a 16px grey Lock glyph, with one 13px line under the card saying why. */
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .q-list.c-coprof { margin-top: 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof .q-rt b { font-weight: 500; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof > li { position: relative; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof > li + li { box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof > li > .q-row::after { display: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl { display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; min-height: 52px; margin: 0; padding: 0 16px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl__row { flex: none; margin: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl__label { margin: 0; font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl > .q-in { flex: 1 1 160px; min-width: 0; height: 52px; padding: 0; border-radius: 0; background: none; box-shadow: none; text-align: right; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl > .q-in:focus { box-shadow: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field:has(.q-in:focus-visible) { box-shadow: inset 0 0 0 2px #0B6E69; border-radius: 12px; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl[data-invalid="true"] > .q-in { color: #B42318; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field :is(.q-fl__error, .q-fl__help) { flex: 1 1 100%; margin: -6px 0 12px; font-size: 13px; line-height: 18px; text-align: right; }
+:is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__lock { flex: none; width: 16px; height: 16px; margin-left: -4px; color: #A7ACB1; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-page .c-coprof__note { margin: 8px 32px 0; font-size: 13px; line-height: 18px; color: #6B7075; }
+@media (max-width: 767px) {
+  /* 16px input text so iOS never zooms on focus. */
+  :is(#q-root, html) .app-shell[data-nv-corp] .c-coprof__field .q-fl > .q-in { font-size: 16px; }
+}

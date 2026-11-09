@@ -1,0 +1,81 @@
+/* Availability in the Signature style (tokens and shared pieces from signature.module.css). */
+.avForm:not(#av) { display: flex; flex-direction: column; min-width: 0; margin: 0; }
+.avForm > :global(.sg-h):first-of-type:not(#av) { margin-top: 4px; }
+.avPage :global(.av-feedback) + .avForm > :global(.sg-h):first-of-type:not(#av), .avPage :global(.sg-card) + .avForm > :global(.sg-h):first-of-type:not(#av) { margin-top: 32px; }
+.avHeadCopy:not(#av) { flex: 1; min-width: 0; }
+.avHeadCopy b:not(#av) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; color: var(--sg-ink); }
+.avHeadCopy small:not(#av) { display: block; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+
+/* Week chart: one column a day, the bar is the hours you can work. */
+.avChart:not(#av) { display: grid; grid-template-columns: 40px repeat(7, minmax(0, 1fr)); gap: 8px; padding: 0 20px 18px; }
+.avAxis:not(#av) { display: flex; flex-direction: column; justify-content: space-between; height: 112px; font: 500 .625rem/.75rem var(--sg-font); letter-spacing: .02em; color: var(--sg-ink-3); white-space: nowrap; }
+.avCol:not(#av) { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.avTrack:not(#av) { position: relative; width: 100%; max-width: 28px; height: 112px; border-radius: 9px; background: repeating-linear-gradient(180deg, var(--sg-track) 0 1px, transparent 1px 37px), var(--sig-track-soft); }
+.avTrack span:not(#av) { position: absolute; left: 0; right: 0; min-height: 6px; border-radius: 8px; background: linear-gradient(180deg, #13847D, var(--sg-teal)); box-shadow: 0 4px 10px -4px rgba(11, 110, 105, .5); }
+.avCol small:not(#av) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .1em; color: var(--sg-ink-2); }
+.avCol[data-off] small:not(#av) { color: var(--sg-ink-3); }
+
+/* Day by day */
+.avDays:not(#av) { min-width: 0; padding: 0; border: 0; }
+.avDays:disabled:not(#av) { opacity: .72; }
+.avDay:not(#av) { position: relative; padding: 10px 20px; }
+.avDay + .avDay:not(#av)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); }
+.avDay[data-on]:not(#av) { padding-bottom: 16px; }
+.avDayTop:not(#av) { display: flex; align-items: center; gap: 16px; min-height: 44px; }
+.avDayName:not(#av) { flex: none; width: 42px; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
+.avDaySum:not(#av) { flex: 1; min-width: 0; font: 400 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink-3); }
+.avDay[data-on] .avDaySum:not(#av) { color: var(--sg-ink); }
+.avSwitch:not(#av) { position: relative; flex: none; display: inline-flex; width: 52px; height: 44px; align-items: center; cursor: pointer; }
+.avSwitch input:not(#av) { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.avSwitch span:not(#av) { position: relative; width: 50px; height: 30px; border-radius: 999px; background: var(--sig-switch-off); transition: background-color .18s ease; pointer-events: none; }
+.avSwitch span:not(#av)::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, .18); transition: transform .18s ease; }
+.avSwitch input:checked + span:not(#av) { background: var(--sg-teal); }
+.avSwitch input:checked + span:not(#av)::after { transform: translateX(20px); }
+.avSwitch input:focus-visible + span:not(#av) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
+/* Press: the thumb stretches toward the side it will travel to and the track dims a touch, the instant it is touched. */
+.avSwitch input:active + span:not(#av) { filter: brightness(.95); }
+.avSwitch input:active + span:not(#av)::after { width: 28px; transition-duration: 0s, 0s; }
+.avSwitch input:checked:active + span:not(#av)::after { transform: translateX(16px); }
+.avSwitch span:not(#av)::after { transition: transform .18s var(--sig-ease, cubic-bezier(.2, .7, .2, 1)), width var(--sig-dur-press, 120ms) var(--sig-ease, cubic-bezier(.2, .7, .2, 1)); }
+.avTimes:not(#av) { display: grid; grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); align-items: end; gap: 6px; margin: 8px 0 0; }
+.avTimes label:not(#av) { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.avTimes label span:not(#av) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.avTimes input:not(#av) { width: 100%; min-width: 0; min-height: 46px; padding: 0 12px; border: 0; border-radius: 12px; background: var(--sg-page); box-shadow: inset 0 0 0 1px var(--sg-rule); color: var(--sg-ink); font: 500 1.0625rem/1 var(--sg-font); font-variant-numeric: tabular-nums; }
+.avTimes input:focus-visible:not(#av) { outline: 2px solid var(--sg-ink); outline-offset: 1px; }
+.avTimes i:not(#av) { display: flex; align-items: center; justify-content: center; height: 46px; color: var(--sg-ink-3); }
+.avHint:not(#av) { margin: 12px 24px 0 !important; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.avZero:not(#av), .avFailed:not(#av) { margin-top: 16px !important; }
+.avFailed a:not(#av) { color: var(--sg-ink); }
+
+/* Page pieces: feedback and the upcoming-week card. */
+.avPage :global(.av-feedback):not(#av) { display: flex; align-items: center; gap: 10px; margin: 0 16px 20px; padding: 14px 18px; border-radius: 18px; font: 500 .9375rem/1.3125rem var(--sg-font); }
+.avPage :global(.av-feedback.success):not(#av) { background: var(--sig-tint-done); color: var(--sig-done-ink); }
+.avPage :global(.av-feedback.error):not(#av) { background: var(--sig-tint-urgent); color: var(--sg-red); }
+.avPage :global(.av-feedback p):not(#av) { margin: 0; }
+.avNext:not(#av) { display: flex; align-items: center; gap: 14px; padding: 18px 20px; color: var(--sg-ink); text-decoration: none; }
+.avNext span:not(#av) { flex: 1; min-width: 0; }
+.avNext b:not(#av) { display: block; font: 500 1.0625rem/1.375rem var(--sg-font); }
+.avNext small:not(#av) { display: block; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.avNext i:not(#av) { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 50%; background: var(--sig-card); color: var(--sig-deep-ink); }
+.avNext:focus-visible:not(#av) { outline-offset: -3px; border-radius: 22px; }
+
+@container sg (max-width: 359px) {
+  .avChart:not(#av) { grid-template-columns: 32px repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 14px 16px; }
+  .avDay:not(#av) { padding-inline: 16px; }
+  .avDay + .avDay:not(#av)::before { left: 16px; }
+  .avDayTop:not(#av) { gap: 12px; }
+  .avTimes input:not(#av) { padding: 0 10px; font-size: 1rem; }
+  .avTimes input:not(#av)::-webkit-calendar-picker-indicator { display: none; }
+}
+@media (min-width: 768px) { .avPage :global(.av-feedback):not(#av) { margin-inline: 0; } }
+
+/* Very large text (the container is under 19 of the reader's rem): From and Until stack. */
+@container sg (max-width: 19rem) {
+  .avTimes:not(#av) { grid-template-columns: minmax(0, 1fr); }
+  .avTimes i:not(#av) { display: none; }
+}
+
+/* Reduced motion: the thumb jumps to its side; the colour change and the press stretch stay. */
+@media (prefers-reduced-motion: reduce) {
+  .avSwitch span:not(#av)::after { transition: none; }
+}

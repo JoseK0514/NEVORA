@@ -1,0 +1,1 @@
+{"id":"lookup-module-chromium","stage":"before","contains":"SELECT to_regclass('nevora_workspace_presentation_revisions') IS NOT NULL AS installed"}

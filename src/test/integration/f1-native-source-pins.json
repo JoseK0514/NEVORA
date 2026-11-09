@@ -1,0 +1,554 @@
+{
+  "format": "F1_CANONICAL_NATIVE_PREPARATION_SOURCE_BINDINGS_V1",
+  "status": "UNEXECUTED_SOURCE_PREPARATION",
+  "acceptedCommit": "f273789a12a4227c18d71090be2cfe760020d95f",
+  "acceptedTree": "84e0eab350985cf043a7f40a8335a12808500464",
+  "acceptedSourceRoot": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/f1-canonical-source-adapter/checkout-green-006",
+  "acceptedPathCount": 1188,
+  "manifest": {
+    "path": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/f1-canonical-source-adapter/PRE_GREEN_006.json",
+    "sha256": "b5834dca4f27c4d48003fa4efca04ff361e0fa9e8c18c400c772413b5cc65cec"
+  },
+  "selectedSource": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "e9719d6d2a74f21edc7bbf65706a697d90464fec79135432b115f39f33161e74",
+      "bytes": 2467
+    },
+    {
+      "path": "db/migrations/0016_time_corrections.sql",
+      "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35",
+      "bytes": 22866
+    },
+    {
+      "path": "db/migrations/0017_missing_time_supersession.sql",
+      "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea",
+      "bytes": 22377
+    },
+    {
+      "path": "db/migrations/0018_timecards.sql",
+      "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81",
+      "bytes": 14439
+    },
+    {
+      "path": "db/migrations/0021_timecard_reassignment_interlock.sql",
+      "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918",
+      "bytes": 2184
+    },
+    {
+      "path": "db/migrations/0022_timecard_reopen_revision_authority.sql",
+      "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b",
+      "bytes": 4666
+    },
+    {
+      "path": "db/migrations/0026_tenant_ownership_expand.sql",
+      "sha256": "fb5fd364f2e355c059a501422dd016d4284f9bac0287fb3d69548d52caaf43cb",
+      "bytes": 107058
+    },
+    {
+      "path": "package.json",
+      "sha256": "1751e7e207d7bf163c2f0b8cf0826c25b549c8a02a9eaa06fcdb82312f38a25d",
+      "bytes": 2625
+    },
+    {
+      "path": "src/lib/action-center/canonical-source.test.ts",
+      "sha256": "de6d84f442aec6b2b72d0e0d36e8f695dd15500ddfda7c0eb24063cb85770f5f",
+      "bytes": 20220
+    },
+    {
+      "path": "src/lib/action-center/canonical-source.ts",
+      "sha256": "492859824e83915a07be0d61a1aabb0695e25ccba834bf771c074c363cec3326",
+      "bytes": 29383
+    },
+    {
+      "path": "src/lib/action-center/intelligence.test.ts",
+      "sha256": "8ff9e4f141fcf03afb1a731802e5822f2ec54974f2eb8b26510efa8be7e652a9",
+      "bytes": 45115
+    },
+    {
+      "path": "src/lib/action-center/intelligence.ts",
+      "sha256": "e67588f2eeb1b62e1271b9b3bb3690768b20cff89c13a293d0c9654ff2ec5a63",
+      "bytes": 32116
+    },
+    {
+      "path": "src/lib/action-center/project.ts",
+      "sha256": "74e08d38116daac9db6906ede83225f7210ddc6ad60346a21adecdeb440f7feb",
+      "bytes": 4829
+    },
+    {
+      "path": "src/lib/action-center/service.ts",
+      "sha256": "976504a940d20f8a2c653d2b74a78ad361992cc3cb52a42917c44a2322cf606c",
+      "bytes": 4242
+    },
+    {
+      "path": "src/lib/assistance/manager-actions.ts",
+      "sha256": "8695a22e543b247af59398a0b730730106368dd40ec3e48299d73ac00b530ed4",
+      "bytes": 8910
+    },
+    {
+      "path": "src/lib/attendance/project.test.ts",
+      "sha256": "0d8d7796ae10271847dbcba70bd8415df92bf0443392ec3ff02ca8c012e4ef09",
+      "bytes": 31722
+    },
+    {
+      "path": "src/lib/attendance/project.ts",
+      "sha256": "10bd5064e39852ee8cd558b729df7675608472cbc6b7d4b63d8e214479b94da4",
+      "bytes": 18175
+    },
+    {
+      "path": "src/lib/attendance/read-model.ts",
+      "sha256": "1182847f7bf1d7baca4f80c019407794ed4fa9f9c93589997ad83cca1684449e",
+      "bytes": 845
+    },
+    {
+      "path": "src/lib/attendance/types.ts",
+      "sha256": "5c69ae657350a26e412484a8c6d3d5021dd224fb0bdc2000bbd29465217cefc3",
+      "bytes": 4062
+    },
+    {
+      "path": "src/lib/attendance/validation.ts",
+      "sha256": "0e3f9edadbe291bf6c89830c28dca253ec860772696e24d6dec5f9524ba2392f",
+      "bytes": 6938
+    },
+    {
+      "path": "src/lib/auth/session.ts",
+      "sha256": "f1cc1cd4714f1580f27ca00f038a7ecf597813dee23ffac3ed1725e303908fc0",
+      "bytes": 5141
+    },
+    {
+      "path": "src/lib/capabilities/policy.test.ts",
+      "sha256": "3bbb93ed968785a8d6b673135b6b0e391245c10df9c2f5003bb4c36c3ccca190",
+      "bytes": 28832
+    },
+    {
+      "path": "src/lib/capabilities/policy.ts",
+      "sha256": "2c8b81fdbb5a790f778f6de18062e788e312bf38bc873171c23fee8150940df8",
+      "bytes": 25269
+    },
+    {
+      "path": "src/lib/capabilities/types.ts",
+      "sha256": "1a58a71719cc656ffa2830a0ffcc075668d1d10593f9556bb3dc03dd8cca0444",
+      "bytes": 5970
+    },
+    {
+      "path": "src/lib/data/callouts.ts",
+      "sha256": "fedfd3c0eb237cd15aff12ad1281be5729ec7a8318e86f819fa2e17419cb15be",
+      "bytes": 5194
+    },
+    {
+      "path": "src/lib/data/employees.ts",
+      "sha256": "50166d34d0b31577b199913161a51ecd06a42377dbdb77a733fe09ae7b2ba2b1",
+      "bytes": 19885
+    },
+    {
+      "path": "src/lib/data/exchanges.ts",
+      "sha256": "6c850783f48a0fbefc2444294a2e2ab4439f75c78af55a4e0158cbc613583b4d",
+      "bytes": 22745
+    },
+    {
+      "path": "src/lib/data/management-session.ts",
+      "sha256": "a7dadf6eac9e720eb7b2c39283588902ccc0927afc66eed0cccb5537887499d5",
+      "bytes": 2194
+    },
+    {
+      "path": "src/lib/data/notification-transactions.ts",
+      "sha256": "4673a638d15a0a7aaf7072c38db1150985ad6afe665a90f47c357ee2d06c55e5",
+      "bytes": 27877
+    },
+    {
+      "path": "src/lib/data/positions.ts",
+      "sha256": "f570fa3670b81a6a51005ea0631914ff7232e37052138b4912d8c1b164bb09eb",
+      "bytes": 7527
+    },
+    {
+      "path": "src/lib/data/requests.ts",
+      "sha256": "d4909e724b350ec4af10c4121fe0c126c90aa2052baf0a078341a09fbe8d9db8",
+      "bytes": 6313
+    },
+    {
+      "path": "src/lib/data/schedule-health.ts",
+      "sha256": "1d4599d0bfdcd71092ee8aab9770aecadfc316648d5df4b9a632bb37ada22bef",
+      "bytes": 17731
+    },
+    {
+      "path": "src/lib/data/schedules.ts",
+      "sha256": "23c211f09e2128f52517f04a84c289d22dbacb50c4dafaf9c27d88814705211f",
+      "bytes": 19363
+    },
+    {
+      "path": "src/lib/data/week-settings.ts",
+      "sha256": "6192de1c4a6b8ee3971f60a4d29c515898d5ef55889eaa6ba6fe048d87ef5206",
+      "bytes": 11203
+    },
+    {
+      "path": "src/lib/data/workspaces.ts",
+      "sha256": "c87727de9f7191247a74fb745bde17529af0b887bd6f6bfe0bd636266a4cb9ae",
+      "bytes": 5628
+    },
+    {
+      "path": "src/lib/db.ts",
+      "sha256": "ad37b6b61d04317990cec940f174c20c46c067fcb75e6a34b8241a12385c470a",
+      "bytes": 1569
+    },
+    {
+      "path": "src/lib/notifications/types.ts",
+      "sha256": "0d32bb2eb6d6b12e26299bf6b988fe11eafc1b6710b3ffcd900e077f6da5ee6a",
+      "bytes": 9563
+    },
+    {
+      "path": "src/lib/scheduling/periods.ts",
+      "sha256": "a064d409358024498ebcda05538594ac0c7449c7da5f1b47a63ec8a38b6950c4",
+      "bytes": 3046
+    },
+    {
+      "path": "src/lib/scheduling/schedule-health.ts",
+      "sha256": "7730e1cbc09521d2a8719ffaa4b5c7c5b86720be7ac35575e1aa93b1938a98e6",
+      "bytes": 17004
+    },
+    {
+      "path": "src/lib/shift-changes/types.ts",
+      "sha256": "92deaf77b556b5648f9262b8974924db1f34781a2f71fb2dcd15306591d2e1a7",
+      "bytes": 7611
+    },
+    {
+      "path": "src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts",
+      "sha256": "761f3043c4071565d952c270ffe14f6df6dd2e8d995b59d1395c27770ed7c188",
+      "bytes": 124276
+    },
+    {
+      "path": "src/lib/tenancy/resolve.server.ts",
+      "sha256": "5f2e91c69b016970287fa2b7372ed4a33cfbdd5d256193c48db1b59d16cb98e4",
+      "bytes": 25239
+    },
+    {
+      "path": "src/lib/tenancy/types.ts",
+      "sha256": "c83d3e5afeef2e6f3976a1dc4cf54f9c0048a3aae177bf4a38aecf0e05a25efc",
+      "bytes": 4453
+    },
+    {
+      "path": "src/lib/time-corrections/read-model.test.ts",
+      "sha256": "46d0b63be71c2511b17a658a6790746aa3e0e045cad9697318717ded8545ff5a",
+      "bytes": 3609
+    },
+    {
+      "path": "src/lib/time-corrections/read-model.ts",
+      "sha256": "05d6807ad0592164791fe83bbf08db3e5d2fcee8518380167034e4fc52838835",
+      "bytes": 10583
+    },
+    {
+      "path": "src/lib/timecards/project.test.ts",
+      "sha256": "710e1655461260a1ef0421158d17628e0728c33f786ad98a07fc4bdabd57e42a",
+      "bytes": 4983
+    },
+    {
+      "path": "src/lib/timecards/project.ts",
+      "sha256": "9bc06160b346c7f4ea293af48485d275f5817ea58a604c08e4a848d838dbfb0d",
+      "bytes": 8641
+    },
+    {
+      "path": "src/lib/timecards/read-model.ts",
+      "sha256": "be412d0f0bc9c8444bddf2abd2cf6abfa3398b909c739d4542f61624d4a8783e",
+      "bytes": 3550
+    },
+    {
+      "path": "src/test/fixtures/attendance-exceptions.ts",
+      "sha256": "f3b61ef16672a2af1dda4305db58a8211aa05ad17636a9b7b6bfe27a9ffe50a8",
+      "bytes": 1731
+    },
+    {
+      "path": "src/test/integration/clocker-missing-time-supersession.integration.ts",
+      "sha256": "c88621c7fa00d2077022fb3f6e4ec0eaaf56047f05a5f43d70c7329af5a9ba15",
+      "bytes": 23142
+    },
+    {
+      "path": "src/test/integration/clocker-punch-fixture.ts",
+      "sha256": "016b3d953125d482c7884b533d6f4b3c7e37c9bcfaafe0a092a8a4ec0afebd7c",
+      "bytes": 3394
+    },
+    {
+      "path": "src/test/integration/clocker-time-corrections.integration.ts",
+      "sha256": "a388aca855218e37156834b91dd0f703d5d5ac2d93f8bb07b57eacc1d2bfd870",
+      "bytes": 37313
+    },
+    {
+      "path": "src/test/integration/clocker-timecards.integration.ts",
+      "sha256": "bd8d960ca8270411f20ce51b13ddbfd5d263e217d324d8d1e6adac77cebbf6a7",
+      "bytes": 10314
+    },
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "sha256": "547b3980bdead98667cf5c6bd809f4e45538d21e8e9faf4c3c1454aa06e32de1",
+      "bytes": 7298
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "5563bf72ae43a35ad7902e45d2c0e491e6ac05cb1d35ea3b0c10e3711484903b",
+      "bytes": 703
+    }
+  ],
+  "originalMigrations": [
+    {
+      "path": "db/migrations/0001_initial.sql",
+      "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1",
+      "bytes": 6333
+    },
+    {
+      "path": "db/migrations/0002_schedule_health.sql",
+      "sha256": "0dd019d1658c22763d11531ef72b39db9e5a106bb418b1a4fc63f5caaff7f9f0",
+      "bytes": 840
+    },
+    {
+      "path": "db/migrations/0003_schedule_assistance.sql",
+      "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a",
+      "bytes": 3692
+    },
+    {
+      "path": "db/migrations/0004_assistance_layer.sql",
+      "sha256": "c0263d1e40bbfe3aa646a4740b0fe345728783eac39dfda916495ccf7a1ab7e5",
+      "bytes": 2186
+    },
+    {
+      "path": "db/migrations/0005_time_clock.sql",
+      "sha256": "fc4afbdf4770bd7a3a718cd54fd204bc8df1b96296c04cb676dab3f4f6d0c4e5",
+      "bytes": 2072
+    },
+    {
+      "path": "db/migrations/0006_scheduling_rule_inputs.sql",
+      "sha256": "4a0eb437395a5f4d1873c9b06b3c1104da5a23319e968d422a5a14f3c310483a",
+      "bytes": 1176
+    },
+    {
+      "path": "db/migrations/0007_portal_web_push.sql",
+      "sha256": "020c45cbeb1c5000be22b3ce240f94225fc0c88471e540a67246dd54085440d2",
+      "bytes": 4956
+    },
+    {
+      "path": "db/migrations/0008_workspace_positions.sql",
+      "sha256": "f517e18d468556c25814141a959427c969f620fa4ac6e98cc709b31ee1d88756",
+      "bytes": 3072
+    },
+    {
+      "path": "db/migrations/0009_schedule_generation.sql",
+      "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007",
+      "bytes": 3164
+    },
+    {
+      "path": "db/migrations/0010_shift_coverage_automation.sql",
+      "sha256": "0d8b55abe49995204bda9e63492026158b91b8dc4ca414d05c77b595a6474d8e",
+      "bytes": 12705
+    },
+    {
+      "path": "db/migrations/0011_clocker_devices.sql",
+      "sha256": "788b748bbbd995c44f40d130ea079296aa3e6affcad86c78cbb3857e866c0cd0",
+      "bytes": 4305
+    },
+    {
+      "path": "db/migrations/0012_clocker_pins.sql",
+      "sha256": "9b607ca2e9e111953695ba5cf1a1dbc87f65ae483caeccc3d8056f19aab8c90f",
+      "bytes": 2295
+    },
+    {
+      "path": "db/migrations/0013_clocker_punches.sql",
+      "sha256": "f222d8b52e5cace6698f22b8d4a10fa5ffcd93db1d8c7d5cfd551a02b74216e5",
+      "bytes": 8137
+    },
+    {
+      "path": "db/migrations/0014_clocker_breaks.sql",
+      "sha256": "c20cd86b16fe2f82c05b69687402c52f37a648eb1d79c8f1418436ed8e4c5508",
+      "bytes": 10926
+    },
+    {
+      "path": "db/migrations/0015_clocker_schedule_context.sql",
+      "sha256": "5b5160bff760e17d4e235c35e4936271fba0b8124f5da8a8989e01478fff6796",
+      "bytes": 4817
+    },
+    {
+      "path": "db/migrations/0016_time_corrections.sql",
+      "sha256": "36532a3efc7c641a96b447f5caf2efbd3c4184cbfae2c6e080b548fa3fac4b35",
+      "bytes": 22866
+    },
+    {
+      "path": "db/migrations/0017_missing_time_supersession.sql",
+      "sha256": "2a35c4e3180c3294c7197af56415b231bf66a0b30417000e08de17d161ef8fea",
+      "bytes": 22377
+    },
+    {
+      "path": "db/migrations/0018_timecards.sql",
+      "sha256": "0221827d5faa0670a85661b6a15e59882382703a42bb9800576c30a1f66c1a81",
+      "bytes": 14439
+    },
+    {
+      "path": "db/migrations/0019_payroll_export_mappings.sql",
+      "sha256": "1610d1018824ec84ba9cdbe2f42f3ae36c12ba509a735ea10dce3ee21b594262",
+      "bytes": 5511
+    },
+    {
+      "path": "db/migrations/0020_account_recovery.sql",
+      "sha256": "26bc594863f1950588250be50a1ae66ba2191f90e8a908aea6a41a6ac76c61db",
+      "bytes": 1214
+    },
+    {
+      "path": "db/migrations/0021_timecard_reassignment_interlock.sql",
+      "sha256": "c5e9f1df923c67d4764427cca9f005fed93a4cb148c4a469866d15d4253b4918",
+      "bytes": 2184
+    },
+    {
+      "path": "db/migrations/0022_timecard_reopen_revision_authority.sql",
+      "sha256": "616dc741d8b48679b05958cfbd9dcf3ece018a356892034f2f1ad6a644ba584b",
+      "bytes": 4666
+    },
+    {
+      "path": "db/migrations/0023_employee_attention_receipts.sql",
+      "sha256": "2758fd0dd5567839537483bb49eba8f4e5618b67a9a77c1deccf0e550cefcef1",
+      "bytes": 1729
+    },
+    {
+      "path": "db/migrations/0024_contextual_communications.sql",
+      "sha256": "f130df4238379aa50347decbc863c51f37b108a9f5975b49ca8696b49fc08277",
+      "bytes": 14236
+    },
+    {
+      "path": "db/migrations/0025_calendar_subscriptions.sql",
+      "sha256": "357bce5c806af4f3f0d9ff8a5b48e09a90b1342e8168206efce4f949072d824b",
+      "bytes": 9825
+    }
+  ],
+  "readerOverlays": [
+    {
+      "path": "src/lib/data/manager-dashboard.ts",
+      "sha256": "9c5be849a49d9cf6000884eada9fd24554a89694faf84cd924f53ea6fe2ec3f9",
+      "bytes": 11529
+    },
+    {
+      "path": "src/lib/data/attendance-review.server.ts",
+      "sha256": "12b67e99ee49e23bcbcc472003a9b9f8f66bfb9e7612fbe210cb2d7df178f4bf",
+      "bytes": 14808
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "sha256": "a20e6c7ac4d162b7f9f265df709045feee18f641508eecc4cfd75c23f389a73e",
+      "bytes": 22209
+    },
+    {
+      "path": "src/lib/timecards/service.ts",
+      "sha256": "fdd405b6ede4a102fcd0d480a02835c2914f11d6eab8d43b996b0ae9d3aaac39",
+      "bytes": 14833
+    }
+  ],
+  "preservedSpans": [
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "label": "canonical_missing_chain",
+      "start": "const missingChain=",
+      "end": "// Existing canonical views",
+      "sha256": "e8c4192d52be6a779299317fb432b2890c34647aa2fdf4e80c48184e53793289",
+      "bytes": 838,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": false
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "label": "canonical_context_joins",
+      "start": "const contextJoins=",
+      "end": "const contextJson=",
+      "sha256": "b81904735e7b7faec91a7b17cb0b939c563a7b5b69c96fb12d08e3cbbad96328",
+      "bytes": 2506,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": false
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "label": "canonical_context_json",
+      "start": "const contextJson=",
+      "end": "const publicRequestJson =",
+      "sha256": "4cec439dfb41c23ae40ea9746bb471feba9f1f9ad4651dcbbe76c723c2c36600",
+      "bytes": 455,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": false
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "label": "canonical_public_request_json",
+      "start": "const publicRequestJson =",
+      "end": "const employeeSql =",
+      "sha256": "b1688be713cae7c20d73d4722593fcfe233d2172a13b7d2d59a164dfd2254c2a",
+      "bytes": 2088,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": false
+    },
+    {
+      "path": "src/lib/data/attendance-review.server.ts",
+      "label": "canonical_attendance_source_sql",
+      "start": "const sourceSql =",
+      "end": "type SourceRow =",
+      "sha256": "5f7af0055b0ebc553e3a99edebbc72a81462a4d71448707a1aea1a72af723eb1",
+      "bytes": 5778,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": false
+    },
+    {
+      "path": "src/lib/timecards/service.ts",
+      "label": "canonical_timecard_mutation_body_without_trailing_newlines",
+      "start": "export async function mutateTimecard",
+      "end": "export async function readTimecards",
+      "sha256": "94fd7a11fd3b92be02b68c3da3bd9ce8c1528d2dadeeb045cd0d065482aecf03",
+      "bytes": 2898,
+      "candidateByteEqual": true,
+      "stripTrailingNewlines": true,
+      "baselineEnd": "EOF"
+    }
+  ],
+  "actualTests": 0,
+  "compilerInvocations": 0,
+  "lintInvocations": 0,
+  "nativeInvocations": 0,
+  "APPWrites": 0,
+  "resources": 0,
+  "GitActions": 0,
+  "resourceSeamReferences": {
+    "exactOwnedLeaseAndCaseDatabase": "src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts",
+    "originalFullMigrationSequence": "src/test/integration/local-postgres.ts",
+    "originalFictionalClockerSourceReference": "src/test/integration/clocker-punch-fixture.ts",
+    "reuseOnly": "Root retains the existing lease/case creation, source application, client/custody recorder and cleanup. No invocation of an ambient URL-only legacy fixture is authorized by this preparation. No 0026/grants/runtime protocol is copied from the typed-backfill fixture into these legacy F1 cases."
+  },
+  "originalReaderOverlayLineage": [
+    {
+      "path": "src/lib/data/manager-dashboard.ts",
+      "sha256": "9c5be849a49d9cf6000884eada9fd24554a89694faf84cd924f53ea6fe2ec3f9",
+      "bytes": 11529
+    },
+    {
+      "path": "src/lib/data/attendance-review.server.ts",
+      "sha256": "db47ba25e462972bfd0f92a40fd99537b07dbf2bccd26cab611cc9b8a79b4f9e",
+      "bytes": 14707
+    },
+    {
+      "path": "src/lib/data/time-corrections.server.ts",
+      "sha256": "a20e6c7ac4d162b7f9f265df709045feee18f641508eecc4cfd75c23f389a73e",
+      "bytes": 22209
+    },
+    {
+      "path": "src/lib/timecards/service.ts",
+      "sha256": "edf84c5f8127e2038eedef12422644e586139486a9dc68fdeb56155b0091f079",
+      "bytes": 14742
+    }
+  ],
+  "readerCorrectionLineage": {
+    "sourceRoot": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/f1-canonical-source-adapter/checkout-green-003",
+    "status": "ROOT_VERIFIED_TYPE_SUCCESSOR_UNADOPTED_READERS",
+    "manifest": {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/f1-canonical-source-adapter/PRE_GREEN_003.json",
+      "sha256": "e585c4087c4c06fa500987f23604852bf43927ca155095755f9424d0fba8445b"
+    },
+    "correctionReceipt": {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-08/files-pasted-by-the-user-nevora/work/f-dev/root/f1-canonical-source-adapter/ROOT_CORRECTIONS_003.json",
+      "sha256": "0a05a95f663b9460d2698674ae06dd8d949dafed54e92f7a8efdcdbaf51da559"
+    },
+    "exactCorrections": [
+      "attendance capture-only typeof expiresAt string rejection before typed capture",
+      "timecard unknown result property read via inert typed transport row"
+    ],
+    "pureAdapter": "Use accepted f273 canonical-source.ts49285982; do not replace it with original six-file prep implementation",
+    "agentQA": 0
+  }
+}

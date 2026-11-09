@@ -1,35 +1,39 @@
-import Link from "next/link";
+import {ResponsiveEmployeeCreation} from '@/components/employee-mobile/creation';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {randomUUID} from 'node:crypto';
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
+import {readShiftChangeAvailability} from '@/lib/data/shift-changes';
+import {matchesDisplayedShift} from '../../../../lib/shift-changes/displayed-terms';
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate } from "@/lib/business-time";
 import { redirect } from "next/navigation";
-import { PageHeader } from "@/components/page-header";
-import { requireSession } from "@/lib/auth/session";
-import { currentDateInPuertoRico, formatDayLabel, formatTime } from "@/lib/date-utils";
+import { SwapPageContent } from '@/components/swap-page-content';
+import {requireSessionMutationProof} from "@/lib/auth/session";
+import {readShiftChangeTerms} from "@/lib/data/shift-change-snapshot";
+
+import { requireSelfService } from "@/lib/auth/permissions";
 import {
   getPublishedShift,
   listSwapTargets,
 } from "@/lib/data/exchanges";
-import { proposeSwapAction } from "@/app/app/exchange/actions";
 
-function shiftLabel(shift: {
-  date: string;
-  startTime: string;
-  endTime: string;
-  employeeName: string;
-  locationName: string;
-}) {
-  const date = formatDayLabel(shift.date);
-  return `${date.weekday} ${date.day} · ${formatTime(shift.startTime)} – ${formatTime(shift.endTime)} · ${shift.employeeName} · ${shift.locationName}`;
-}
 
 export default async function SwapPage({
   searchParams,
 }: {
-  searchParams: Promise<{ sourceShiftId?: string }>;
+  searchParams: Promise<{ sourceShiftId?: string; mode?: string }>;
 }) {
-  const session = await requireSession();
+  const moduleOff = await moduleGate("marketplace");
+  if (moduleOff) return moduleOff;
+
+  const session = await requireSelfService("/app/exchange?tab=requests");
+  const workspace = await getWorkspace();
   const params = await searchParams;
 
+  // Opened without choosing a shift (a bare link): back to Shift requests quietly. Only a chosen shift that is
+  // missing, someone else's or past is an error.
   if (!params.sourceShiftId) {
-    redirect("/app/exchange?error=INVALID_SHIFT");
+    redirect("/app/exchange");
   }
 
   const source = await getPublishedShift(params.sourceShiftId);
@@ -37,74 +41,25 @@ export default async function SwapPage({
   if (
     !source ||
     source.employeeId !== session.id ||
-    source.date < currentDateInPuertoRico()
+    source.date < businessDate(new Date(), workspace.timeZone)
   ) {
     redirect("/app/exchange?error=INVALID_SHIFT");
   }
 
-  const targets = await listSwapTargets(source, session.id);
-  const date = formatDayLabel(source.date);
+  // Offer it for cover (v5 shift sheet): only the coverage check is needed, no swap candidates.
+  const cover = params.mode === 'cover';
+  const targets = cover ? [] : await listSwapTargets(source, session.id);
+  const proof=await requireSessionMutationProof();
+  const reviewed=await readShiftChangeTerms(proof,source.id);if(!reviewed||!matchesDisplayedShift(source,reviewed.source))redirect('/app/exchange?error=EXCHANGE_CHANGED');
+  const reviewedSource=source;
+  // Each candidate resolves to its reviewed fields, null (refused by the rules) or 'changed' (its terms moved mid-read).
+  const reads=await Promise.all(targets.map(async shift=>{const terms=await readShiftChangeTerms(proof,source.id,shift.id);if(!terms?.target||!terms.targetTermsFingerprint||terms.sourceTermsFingerprint!==reviewed.sourceTermsFingerprint||!matchesDisplayedShift(source,terms.source)||!matchesDisplayedShift(shift,terms.target))return 'changed' as const;const allowed=await readShiftChangeAvailability(proof,{kind:'PROPOSE_SWAP',operationId:randomUUID(),sourceShiftId:terms.source.shiftId,sourceEpisodeId:terms.source.assignmentEpisodeId,sourceTermsFingerprint:terms.sourceTermsFingerprint,targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint});if(!allowed.allowed)return null;return {shift,fields:{targetShiftId:terms.target.shiftId,targetEpisodeId:terms.target.assignmentEpisodeId,targetTermsFingerprint:terms.targetTermsFingerprint}};}));
+  const changedMidRead=reads.includes('changed');
+  const reviewedTargets=reads.filter(t=>t!==null&&t!=='changed');
 
-  return (
-    <>
-      <PageHeader
-        eyebrow="Direct swap"
-        title="Choose a shift"
-        description="The other employee must accept first. Management must approve before either schedule changes."
-        actions={<Link className="button secondary" href="/app/exchange">Cancel</Link>}
-      />
-
-      <section className="content-grid two swap-builder">
-        <article className="panel">
-          <p className="eyebrow">Your shift</p>
-          <h2>{date.weekday} · {date.day}</h2>
-          <p className="large-detail">
-            {formatTime(source.startTime)} – {formatTime(source.endTime)}
-          </p>
-          <p className="muted">{source.locationName}</p>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">Trade for</p>
-              <h2>Available shifts this week</h2>
-            </div>
-          </div>
-
-          {targets.length ? (
-            <form action={proposeSwapAction} className="employee-form">
-              <input type="hidden" name="sourceShiftId" value={source.id} />
-              <label>
-                Requested shift
-                <select name="targetShiftId" defaultValue="" required>
-                  <option value="" disabled>Select a shift</option>
-                  {targets.map((target) => (
-                    <option key={target.id} value={target.id}>
-                      {shiftLabel(target)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <p className="form-help">
-                Both employees are rechecked for location eligibility, availability,
-                approved time off, overlaps, and weekly hours before the request moves forward.
-              </p>
-
-              <div className="form-footer">
-                <Link className="button secondary" href="/app/exchange">Cancel</Link>
-                <button className="button primary" type="submit">Send swap request</button>
-              </div>
-            </form>
-          ) : (
-            <div className="empty-state">
-              <strong>No other published shifts are available for a swap this week.</strong>
-              <span>You can still offer your shift for coverage.</span>
-            </div>
-          )}
-        </article>
-      </section>
-    </>
-  );
+  const sourceFields={sourceShiftId:reviewed.source.shiftId,sourceEpisodeId:reviewed.source.assignmentEpisodeId,sourceTermsFingerprint:reviewed.sourceTermsFingerprint};
+  // With no shift to swap into, the fallback is the real coverage offer, checked the same way as on Shift requests.
+  // Candidates that changed mid-read withhold every form; candidates the rules refuse still allow the coverage check.
+  const coverage=reviewedTargets.length||changedMidRead?null:await readShiftChangeAvailability(proof,{kind:'OFFER_COVERAGE',operationId:randomUUID(),...sourceFields}).catch(()=>({allowed:false,notice:'Current policy is unavailable.'}));
+  return <ResponsiveEmployeeCreation authority={employeeViewAuthority(proof,'creation')} mode={cover?'cover':'swap'} sourceId={source.id}><SwapPageContent source={reviewedSource} sourceFields={sourceFields} targets={reviewedTargets} coverage={coverage} mode={cover ? 'cover' : 'swap'} /></ResponsiveEmployeeCreation>;
 }

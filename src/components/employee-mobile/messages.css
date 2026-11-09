@@ -1,0 +1,38 @@
+.em-message-return { display:none; }
+@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(>.em-requests-mobile)>:is(.q-page,.cm-page,.sig-page) { display:none; }
+  /* UI-COM-003: a short page fills the canvas down to the navigation in both themes. */
+ /* The frame's bottom padding was unpainted below the page (a black band in dark mode, at every text size); the
+    canvas-colored page now owns that spacing and the full height, so nothing nests a second minimum (COM-CR-2). */
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(.em-messages) { padding-bottom:0 !important; background:var(--em-canvas); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests.em-messages { box-sizing:border-box; min-height:calc(100svh - var(--em-nav-height,80px)); padding-bottom:var(--em-space-8); }
+ /* UI-COM-002: interface words wrap whole; only a word wider than the line breaks, and only user-written copy breaks anywhere. */
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-requests.em-messages { overflow-wrap:break-word; hyphens:manual; -webkit-hyphens:manual; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages :is(p,fieldset) { margin:0; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages .em-request-heading h1 { font-size:min(var(--em-size-title),calc(12.5vw + .25rem)); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages :is(.em-message-tools,.em-message-field,.em-message-detail,.em-message-reading,.em-message-withdraw,.em-message-compose,.em-message-compose fieldset,.em-message-preview,.em-message-recovery,.em-message-paging) { display:flex; flex-direction:column; gap:var(--em-space-4); min-width:0; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-tools { gap:var(--em-space-3); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-field { gap:var(--em-space-2); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-field label { font-size:var(--em-size-support); font-weight:var(--em-weight-label); color:var(--em-ink); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages :is(input,select,textarea) { box-sizing:border-box; width:100%; min-width:0; max-width:100%; min-height:var(--em-action); padding:var(--em-space-3) var(--em-space-4); margin:0; border:1px solid var(--em-edge); border-radius:var(--em-control); background:var(--em-surface); color:var(--em-ink); caret-color:var(--em-teal); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages select { appearance:none; padding-right:48px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7 5 5 5-5' stroke='%235f6d68' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-position:right 16px center; background-size:20px; background-repeat:no-repeat; }
+ html[data-theme="dark"] body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='m5 7 5 5 5-5' stroke='%23b8b7b0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages :is(h2,h3,header) { margin:0; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages h3 { font:var(--em-weight-label) var(--em-size-body)/var(--em-line-heading) var(--em-font); color:var(--em-ink); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-messages small, html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-meta { font-size:var(--em-size-support); color:var(--em-muted); line-height:var(--em-line-body); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-state { display:flex; flex-wrap:wrap; align-items:baseline; column-gap:var(--em-space-3); row-gap:var(--em-space-1); padding-top:var(--em-space-1); color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-action-needed { color:var(--em-ink); font-weight:var(--em-weight-label); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-row-action { color:var(--em-teal); font-weight:var(--em-weight-action); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-information { background:var(--em-wash); border-radius:var(--em-small); padding:var(--em-space-4); color:var(--em-ink); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-detail { padding:var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); gap:var(--em-space-6); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-detail header { display:flex; flex-direction:column; gap:var(--em-space-3); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-detail h2 { font-size:var(--em-size-shift); line-height:var(--em-line-shift); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-copy { white-space:pre-wrap; overflow-wrap:anywhere; color:var(--em-ink); line-height:var(--em-line-body); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] :is(.em-message-reading,.em-message-withdraw) { padding-top:var(--em-space-5); border-top:1px solid var(--em-line); font-size:var(--em-size-support); color:var(--em-muted); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-compose fieldset { border:0; padding:0; gap:var(--em-space-5); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-compose textarea { resize:vertical; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-preview { padding:var(--em-space-5); background:var(--em-wash); border-radius:var(--em-card); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-paging:empty { display:none; }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-return { display:block; padding:var(--em-space-3) var(--em-inset); background:var(--em-canvas); }
+ html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-message-return a { display:flex; align-items:center; min-height:var(--em-target); color:var(--em-teal); font:var(--em-weight-action) var(--em-size-support)/var(--em-line-body) var(--em-font); }
+}

@@ -1,0 +1,27 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [31m❯[39m src/test/integration/employee-mobile-communications-sql.integration.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m4 skipped[39m[2m)[22m[33m 331[2mms[22m[39m
+   [2m[90m↓[39m[22m pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list
+   [2m[90m↓[39m[22m refuses invalid page selectors and changed role or session before publishing own notices
+   [2m[90m↓[39m[22m retains the existing finite notification-read budget for a full page of distinct team updates
+   [2m[90m↓[39m[22m pages current updates with exact own read status and no coworker receipt roster
+[31m   [31m×[31m rechecks Updates module permission inside the actual employee command transaction[39m[33m 330[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications-sql.integration.ts[2m > [22mrechecks Updates module permission inside the actual employee command transaction
+[31m[1mError[22m: Cannot find module '/src/lib/data/employee-message-module.server' imported from /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1/src/test/integration/employee-mobile-communications-sql.integration.ts[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications-sql.integration.ts:[2m55:35[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m4 skipped[39m[90m (5)[39m
+[2m   Start at [22m 12:55:20
+[2m   Duration [22m 515ms[2m (tests 72%, transform 15%, import 13%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

@@ -1,0 +1,28 @@
+{
+  "snapshot": {
+    "state": "error",
+    "server": {
+      "supported": true,
+      "enabled": true,
+      "configurationAvailable": true,
+      "testAllowed": false,
+      "ownershipGeneration": "generation-original",
+      "vapidPublicKey": "fictional",
+      "authority": "fictional-authority",
+      "validForMs": 45000,
+      "phase": "error"
+    },
+    "capabilities": {
+      "secure": true,
+      "serviceWorker": true,
+      "push": true,
+      "notifications": true,
+      "requiresStandalone": false,
+      "installPrompt": false
+    },
+    "standalone": false,
+    "message": "Device setup is unavailable. Retry, or turn off notifications if cleanup is pending."
+  },
+  "messages": [],
+  "operation": "opaque-prior-document-operation"
+}

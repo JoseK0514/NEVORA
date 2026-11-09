@@ -1,0 +1,37 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/app/app/api/push/push-routes.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/app/app/api/push/push-routes.test.ts (18 tests | 1 failed) 183ms
+   × a delayed bound status emits no unchanged installation cookie that could overwrite a newer enrollment 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/app/api/push/push-routes.test.ts > a delayed bound status emits no unchanged installation cookie that could overwrite a newer enrollment
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/app/app/api/push/push-routes.test.ts:42:68
+     40|  expect((await s.handlers.mutation(s.request({subscription:s.sub},head…
+     41|  for(const cookie of oldHeaders)s.cookieValues.set('fuel_push_installa…
+     42|  expect((await (await s.handlers.status(request)).json()).enabled).toB…
+       |                                                                    ^
+     43|  expect((await s.handlers.mutation(s.request({ownershipGeneration:acti…
+     44| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 17 passed (18)
+   Start at  21:48:25
+   Duration  277ms (tests 85%, transform 10%, import 4%, worker 1%)
+

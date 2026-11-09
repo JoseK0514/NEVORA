@@ -1,9 +1,24 @@
 import Link from "next/link";
-import "./employee-create-premium.css";
-import { NavIcon } from "@/components/nav-icon";
-import { EmployeeCreateForm } from "@/components/employee-create-form";
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import { CorpPage } from "@/components/corp/corp";
+import { SheetMarker } from "@/components/team/team-forms";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
+import { listPositions } from "@/lib/data/positions";
+import { createEmployeeFormAction } from "@/app/app/employees/actions";
+
+import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
+
+const errors: Record<string, string> = {
+  permission: "Only an Owner can add another Owner.",
+  save: "Couldn’t add this person. Check that the employee ID and email aren’t already in use.",
+  id: "Enter a unique employee ID with no more than 128 characters.",
+  name: "Enter a first and last name.",
+  email: "Check the email, or leave it blank.",
+};
 
 export default async function NewEmployeePage({
   searchParams,
@@ -11,98 +26,20 @@ export default async function NewEmployeePage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const session = await requireRoles(MANAGER_ROLES);
-  const locations = await listLocations();
-  const params = await searchParams;
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),()=>Promise.all([listLocations(),listPositions()]));
+  if(source.state==='unavailable')return <OperationalUnavailable title="Employee creation unavailable" reason={source.reason}/>;
+  const [locations,positions]=source.data;
+  const activeLocations = locations.filter((location) => location.active);
 
+  // Release 1 (boards O-AddEmployee, O-AddEmployeePay): a sheet in two steps; the form carries its own header.
   return (
-    <div className="employee-create-page">
-      <section className="employee-create-hero">
-        <div className="employee-create-hero-copy">
-          <p>Team</p>
-          <h1>Add Employee</h1>
-          <span>Create the employee profile used for scheduling and account activation.</span>
-        </div>
-
-        <Link className="button secondary employee-create-cancel-top" href="/app/employees">
-          <span aria-hidden="true">×</span>
-          Cancel
-        </Link>
-      </section>
-
-      {params.error ? (
-        <p className="form-error employee-create-error">
-          {params.error === "permission"
-            ? "Only an owner can create another owner."
-            : params.error === "id_taken"
-              ? "That Employee ID is already in use. Generate a new ID and try again."
-            : params.error === "save"
-              ? "Employee could not be saved. Check that the ID and email are not already in use."
-              : "Complete all required employee fields."}
-        </p>
-      ) : null}
-
-      <section className="employee-create-layout">
-        <EmployeeCreateForm
-          locations={locations.map((location) => ({
-            id: location.id,
-            name: location.name,
-            shortName: location.shortName,
-          }))}
-          canCreateOwner={session.role === "OWNER"}
-        />
-
-        <aside className="employee-setup-rail">
-          <section className="employee-setup-card">
-            <div className="employee-setup-heading">
-              <span className="employee-setup-heading-icon" aria-hidden="true">
-                <NavIcon name="employees" size={24} />
-              </span>
-              <span>
-                <strong>Employee Setup</strong>
-                <small>A quick and easy process.</small>
-              </span>
-            </div>
-
-            <div className="employee-setup-steps">
-              <div>
-                <span>1</span>
-                <p>
-                  <strong>Profile</strong>
-                  <small>Add the employee’s basic information, role, and location access.</small>
-                </p>
-              </div>
-              <div>
-                <span>2</span>
-                <p>
-                  <strong>Location Access</strong>
-                  <small>Select the locations where they can be scheduled.</small>
-                </p>
-              </div>
-              <div>
-                <span>3</span>
-                <p>
-                  <strong>Employee Activates Account</strong>
-                  <small>They create their own password using their Employee ID and phone number.</small>
-                </p>
-              </div>
-            </div>
-
-            <div className="employee-setup-help">
-              <span aria-hidden="true">?</span>
-              <p>
-                <strong>Need help?</strong>
-                <small>Contact an admin if you need assistance adding an employee.</small>
-              </p>
-            </div>
-
-            <div className="employee-setup-brand" aria-hidden="true">
-              <span>People</span>
-              <span>Fuel</span>
-              <span>Possibility.</span>
-            </div>
-          </section>
-        </aside>
-      </section>
-    </div>
+    <ScopedReadFrame observation={source}><CorpPage className="c-addemp c-sheetpage" labelledBy="new-employee-title">
+      <SheetMarker />
+      <NewEmployeeForm actorRole={session.role} locations={activeLocations} positions={positions} action={createEmployeeFormAction} notice={<>
+        {params.error ? <p className="c-error" role="alert">{errors[params.error] ?? "Complete all required employee fields."}</p> : null}
+        {!activeLocations.length ? <p className="c-note" role="status">{session.role === "OWNER" ? <span>Add a location first.{" "}<Link className="c-link c-link--l" href="/app/settings/locations">Locations</Link></span> : "Ask an Owner to add a location first."}</p> : null}
+      </>}/>
+    </CorpPage></ScopedReadFrame>
   );
 }

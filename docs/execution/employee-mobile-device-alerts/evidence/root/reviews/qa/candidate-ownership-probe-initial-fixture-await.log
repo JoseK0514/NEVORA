@@ -1,0 +1,39 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ ../../outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts (3 tests | 2 failed) 16ms
+   × QA-OWN-1 durable worker suppression rejects passive reclaim after rejected native unsubscribe and controller+worker replacement 13ms
+   × QA-OWN-3 reproduction: failed durable suppression plus failed native/server cleanup can reclaim after worker replacement 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  ../../outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts > QA-OWN-1 durable worker suppression rejects passive reclaim after rejected native unsubscribe and controller+worker replacement
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ ../../outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts:42:103
+     40|  const f=fixture();try{
+     41|   const first=f.controller();await first.start();expect(first.snapshot…
+     42|   await first.turnOff();expect(first.snapshot.state).toBe('error');exp…
+       |                                                                                                       ^
+     43|   expect(f.values.get('fuel-portal-subscription-operation')).toBe('');
+     44|   expect(f.db.data.get('state')).toEqual({current:null,suppressed:[gen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  ../../outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts > QA-OWN-3 reproduction: failed durable suppression plus failed native/server cleanup can reclaim after worker replacement
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ ../../outputs/employee-mobile-device-alerts/reviews/qa/ownership-replacement.test.ts:64:38
+     62|   const first=f.controller();await first.start();expect(first.snapshot…
+     63|   f.db.fail();await first.turnOff();expect(first.snapshot.state).toBe(…
+     64|   expect(f.subscription.unsubscribe).toHaveBeenCalledOnce();expect(f.v…
+       |                                      ^
+     65|   first.dispose();f.db.recover();f.replaceWorker();const next=f.contro…
+     66|   expect(next.snapshot.state).toBe('enabled');expect(next.snapshot.ser…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  22:01:00
+   Duration  110ms (transform 53%, tests 30%, import 14%, worker 3%)
+

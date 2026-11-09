@@ -1,0 +1,35 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:61097
+- Network:       http://127.0.0.1:61097
+✓ Ready in 412ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 1212ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 691ms (next.js: 217ms, application-code: 475ms)
+ GET /app/profile 200 in 535ms (next.js: 75ms, application-code: 460ms)
+ GET /fuel-portal.webmanifest 200 in 243ms (next.js: 49ms, application-code: 194ms)
+ GET /app/api/push/status 200 in 330ms (next.js: 52ms, application-code: 278ms)
+ GET /api/employee/profile 200 in 196ms (next.js: 40ms, application-code: 156ms)
+ GET /app/api/push/status 200 in 38ms (next.js: 0.9ms, application-code: 37ms)
+ GET /api/employee/calendar-subscriptions 200 in 526ms (next.js: 80ms, application-code: 446ms)
+ GET /api/employee/profile 200 in 86ms (next.js: 1.3ms, application-code: 85ms)
+ GET /api/notifications 200 in 263ms (next.js: 64ms, application-code: 199ms)
+ GET /app/profile/device-alerts 200 in 58ms (next.js: 9ms, application-code: 49ms)
+ GET /app/api/push/status 401 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /app/api/push/status 200 in 26ms (next.js: 0.9ms, application-code: 25ms)
+ POST /app/api/push/subscribe 401 in 78ms (next.js: 51ms, application-code: 28ms)
+ GET /app/api/push/status 200 in 358ms (next.js: 18ms, application-code: 340ms)
+ POST /app/api/push/subscribe 200 in 256ms (next.js: 1.8ms, application-code: 255ms)
+ GET /app/api/push/status 200 in 103ms (next.js: 1.5ms, application-code: 102ms)
+ GET /app/api/push/status 200 in 46ms (next.js: 1.5ms, application-code: 45ms)
+ GET /api/notifications 200 in 105ms (next.js: 4ms, application-code: 101ms)
+ GET /app/profile 200 in 79ms (next.js: 2ms, application-code: 77ms)
+ GET /api/employee/profile 200 in 30ms (next.js: 0.9ms, application-code: 29ms)
+ GET /api/employee/calendar-subscriptions 200 in 38ms (next.js: 0.7ms, application-code: 37ms)
+ GET /app/api/push/status 200 in 41ms (next.js: 2ms, application-code: 39ms)
+ GET /api/notifications 200 in 46ms (next.js: 1.1ms, application-code: 45ms)
+[?25h

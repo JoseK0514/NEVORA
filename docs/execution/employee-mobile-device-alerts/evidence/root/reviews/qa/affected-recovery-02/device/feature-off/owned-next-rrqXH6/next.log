@@ -1,0 +1,31 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:51436
+- Network:       http://127.0.0.1:51436
+✓ Ready in 283ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 1205ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 353ms (next.js: 136ms, application-code: 218ms)
+ GET /login 200 in 27ms (next.js: 0.7ms, application-code: 26ms)
+ GET /app/profile/device-alerts 200 in 274ms (next.js: 34ms, application-code: 240ms)
+ GET /app/profile/device-alerts 200 in 212ms (next.js: 1.2ms, application-code: 211ms)
+ GET /api/notifications 200 in 92ms (next.js: 62ms, application-code: 31ms)
+ GET /app/profile/device-alerts 200 in 136ms (next.js: 0.5ms, application-code: 136ms)
+ GET /api/notifications 200 in 41ms (next.js: 0.8ms, application-code: 41ms)
+ GET /api/company-access/operational-authority 200 in 42ms (next.js: 24ms, application-code: 18ms)
+ GET /app/profile 200 in 249ms (next.js: 8ms, application-code: 241ms)
+ GET /api/company-access/operational-authority 200 in 22ms (next.js: 0.7ms, application-code: 21ms)
+ GET /api/company-access/operational-authority 200 in 25ms (next.js: 3ms, application-code: 22ms)
+ GET /api/notifications 200 in 57ms (next.js: 1.0ms, application-code: 56ms)
+ GET /app/profile/device-alerts 200 in 80ms (next.js: 0.8ms, application-code: 79ms)
+ GET /api/notifications 200 in 81ms (next.js: 0.7ms, application-code: 80ms)
+ GET /api/manager/inbox-count 200 in 60ms (next.js: 45ms, application-code: 15ms)
+ GET /app/profile 200 in 320ms (next.js: 0.6ms, application-code: 320ms)
+ GET /api/management/profile 200 in 37ms (next.js: 32ms, application-code: 5ms)
+ GET /api/notifications 200 in 45ms (next.js: 0.9ms, application-code: 44ms)
+ GET /api/manager/inbox-count 200 in 58ms (next.js: 0.5ms, application-code: 57ms)
+[?25h

@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-27T21:34:41.641359+00:00",
+  "classification": "Invalid QA setup attempt; no application acceptance",
+  "missingPrerequisites": [
+    "Canonical PHASE_E_EVIDENCE_DIR supplied but not precreated; schema evidence write fails",
+    "External observer assumed psql, but pinned runtime contains only initdb/pg_ctl/postgres; observer raised FileNotFoundError while runner continued"
+  ],
+  "interruption": "Exact owned Vitest child SIGINT after no owned Next metadata observed; parent/worker/postmaster later verified absent",
+  "cleanup": {
+    "pgCtlStatusExit": 3,
+    "pgCtlOutput": "pg_ctl: no server running",
+    "pidsAbsent": [
+      13172,
+      13194,
+      13187
+    ],
+    "portClosed": 53559,
+    "ownerHashVerified": true,
+    "ownedTemporaryDirectoryRemoved": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-dD6crm",
+    "directoryStillExists": false
+  },
+  "git": "",
+  "candidate": "f52f314ed33f0aafae11afc4cb5fcb1103e5ddff",
+  "nextMetadata": []
+}

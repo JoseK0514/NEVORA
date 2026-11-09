@@ -1,0 +1,395 @@
+/* Phase 3.5 Wave A session: shift forms, Coverage, Copy week, the manager Time-off list, Shift requests and Availability, Team member detail, New employee, Clocker PIN, the employee Swap and Unable-to-work forms.
+ * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
+ * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css.
+ *
+ * Every Wave A page is `.nv-page.wa-page[data-nv-page]` under a kit PageBand. The pages no longer load their old
+ * page stylesheets (shift-workspace.css, edit-shift.css, coverage-assistant.css, employee-profile.css, new-employee.css,
+ * swap.css, callout-view.module.css, clocker-pin.module.css on these routes); the prefix below only has to outrank the
+ * phone-wide rules in mobile-workforce.css (0,4,3) and portal-design-system.css. Field height and border come from the
+ * shared WR-49/WR-55 rules in portal-premium.css; nothing here sets them. */
+
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  /* Layout */
+  & .wa-narrow, & .wa-wide { width: 100%; }
+  & .wa-split, & .wa-split__main, & .wa-split__side { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+
+  /* Form shell: ConfigurationForm and ShiftChangeForm render form > fieldset > content, then their own messages. */
+  & form.wa-form, & .wa-form { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+  & .wa-form > fieldset, & .wa-form fieldset.configuration-fields, & .wa-form fieldset.shift-change-fields {
+    display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; margin: 0; padding: 0; border: 0;
+  }
+  /* The busy line would push the page down; the button says "Saving…" instead (PendingButton), so the line is read, not shown. */
+  & .wa-form > p[role="status"]:not(.form-success):not(.wa-notice) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+  /* Fields: label above, field, help 8px under. */
+  & .wa-fields { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); }
+  & .wa-field, & .wa-select.nevora-field { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__control { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__control > :is(input, select, textarea) { width: 100%; min-width: 0; }
+  & .wa-field__control > input { padding-inline: var(--nv-s-4); }
+  & .wa-field__control > textarea { min-height: 112px; padding: var(--nv-s-3) var(--nv-s-4); resize: vertical; }
+  & .wa-field__control > :is(input, textarea)::placeholder { color: var(--nv-muted); opacity: 1; }
+  & .wa-field__label, & .wa-select .nevora-field-label { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: var(--nv-s-2); font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-field__optional { font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-field__help, & .wa-select .nevora-field-hint, & .wa-hint { display: block; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); text-wrap: pretty; }
+  & .wa-field > :is(input, select, textarea), & .wa-select .nevora-select-shell { width: 100%; min-width: 0; }
+  & .wa-field > input { padding-inline: var(--nv-s-4); }
+  & .wa-select .nevora-select-shell { display: block; position: relative; }
+  & .wa-field textarea { min-height: 112px; padding: var(--nv-s-3) var(--nv-s-4); resize: vertical; }
+  & .wa-field input::placeholder, & .wa-field textarea::placeholder { color: var(--nv-muted); opacity: 1; }
+  /* WR-WA-1: a pair goes side by side only when each field gets 14rem (9rem for short values such as times and PINs),
+     so it follows the field's content and the text size, not the screen width. */
+  & .wa-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--nv-s-4) var(--nv-s-3); }
+  & .wa-pair--short { grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+  /* WR-WA-3: a long name in a closed select ends with an ellipsis instead of a cut letter. */
+  & select { text-overflow: ellipsis; }
+  /* WR-WA-2: a status pill wraps its words under the glyph rather than running out of a narrow row. */
+  & .wa-person .nv-status { white-space: normal; max-width: 100%; min-height: 28px; height: auto; padding-block: 4px; }
+  & .wa-field__count { font-variant-numeric: tabular-nums; }
+
+  /* Checkbox rows: a 44px target, title and help. */
+  & .wa-check { display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; margin: 0; padding: var(--nv-s-1) 0; font: var(--nv-t-row); color: var(--nv-ink); cursor: pointer; }
+  & .wa-check > input { flex: none; width: 22px; height: 22px; margin: calc((1.375rem - 22px) / 2) 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+  & .wa-check__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  & .wa-check__title { font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-check__help { font: var(--nv-t-callout); color: var(--nv-muted); }
+
+  /* Facts: a label and its value; the value wraps under the label when there's no room. */
+  & .wa-facts { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); }
+  & .wa-fact { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: var(--nv-s-4); row-gap: 2px; padding: var(--nv-s-3) 0; }
+  & .wa-fact + .wa-fact { border-top: 1px solid var(--nv-hairline); }
+  & .wa-fact > dt { flex: 0 0 auto; margin: 0; font: var(--nv-t-label); color: var(--nv-muted); }
+  & .wa-fact > dd { flex: 1 1 10rem; margin: 0; font: var(--nv-t-row); color: var(--nv-ink); text-align: right; overflow-wrap: anywhere; }
+  & .wa-fact__more { display: block; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-muted { color: var(--nv-muted); }
+  & .wa-card-note { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-card-body { display: flex; flex-direction: column; gap: var(--nv-s-4); padding: 0 var(--nv-s-5) var(--nv-s-5); }
+  & .wa-text { margin: 0; font: var(--nv-t-body); color: var(--nv-ink); text-wrap: pretty; }
+
+  /* Notices: icon plus words, never colour alone. */
+  & .wa-notice, & .wa-form > :is(.form-error, .form-success) {
+    display: flex; align-items: flex-start; gap: var(--nv-s-3); margin: 0; padding: var(--nv-s-4) var(--nv-s-5);
+    border: 0; border-radius: var(--nv-r-card); background: var(--nv-canvas); box-shadow: var(--nv-e1); color: var(--nv-ink);
+  }
+  /* AL-WA-6, AL-WA-7: the icon centres on the first line: the title's (row role) or, without a title, the body's (callout). */
+  & .wa-notice__icon { flex: none; margin-top: calc((1.375rem - 20px) / 2); }
+  & .wa-notice:not(:has(.wa-notice__title)) .wa-notice__icon { margin-top: calc((1.25rem - 20px) / 2); }
+  & .wa-notice[data-tone="info"] .wa-notice__icon { color: var(--nv-accent); }
+  & .wa-notice[data-tone="review"] { background: var(--nv-review-fill); box-shadow: none; }
+  & .wa-notice[data-tone="review"] .wa-notice__icon { color: var(--nv-review-mark); }
+  & .wa-notice[data-tone="urgent"], & .wa-form > .form-error { background: var(--nv-urgent-fill); box-shadow: none; color: var(--nv-urgent-ink); }
+  & .wa-notice[data-tone="urgent"] .wa-notice__icon { color: var(--nv-urgent-ink); }
+  & .wa-notice[data-tone="done"], & .wa-form > .form-success { background: var(--nv-done-fill); box-shadow: none; color: var(--nv-done-ink); }
+  & .wa-notice[data-tone="done"] .wa-notice__icon { color: var(--nv-done-ink); }
+  & .wa-notice__text { min-width: 0; }
+  & .wa-notice__title { margin: 0; font: var(--nv-t-row); font-weight: 600; color: inherit; }
+  & .wa-notice__body { margin: 0; font: var(--nv-t-callout); color: inherit; text-wrap: pretty; }
+  & .wa-notice__title + .wa-notice__body { margin-top: 2px; }
+  & .wa-notice[data-tone="info"] .wa-notice__body { color: var(--nv-muted); }
+  /* ConfigurationForm's own result lines get the same look; the glyph is Phosphor's, drawn as a mask. */
+  & .wa-form > :is(.form-error, .form-success) { font: var(--nv-t-callout); font-weight: 500; }
+  & .wa-form > :is(.form-error, .form-success)::before {
+    content: ""; flex: none; width: 20px; height: 20px; margin-top: calc((1.25rem - 20px) / 2); background: currentColor;
+    -webkit-mask: var(--wa-glyph) center / contain no-repeat; mask: var(--wa-glyph) center / contain no-repeat;
+  }
+  & .wa-form > .form-error { --wa-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E"); }
+  & .wa-form > .form-success { --wa-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E"); }
+
+  /* Actions: the main action first and full width on phones; on wider screens side by side at the end. */
+  & .wa-actions { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+  & .wa-actions__note { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-actions__buttons { display: flex; flex-direction: column; gap: var(--nv-s-3); }
+  & .nv-btn[data-kind="danger"] { background: var(--nv-urgent-ink); color: #FFFFFF; }
+  & .nv-btn[data-kind="danger"]:hover:not(:disabled) { background: #8A2D19; }
+  & .nv-btn:disabled { background: var(--nv-inset); color: var(--nv-muted); box-shadow: inset 0 0 0 1px var(--nv-hairline); }
+  & .nv-btn > svg { flex: none; }
+}
+
+/* Wider screens: a reading width for one-task forms, a side summary for long ones. */
+@media (min-width: 600px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    & .wa-actions__buttons { flex-direction: row-reverse; justify-content: flex-start; flex-wrap: wrap; }
+    & .wa-actions__buttons > .nv-btn { width: auto; min-width: 10rem; }
+  }
+}
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    /* AL-WA-8: 720px of card, plus the content's 16px padding on each side. */
+    & .wa-narrow { max-width: 752px; margin-inline: auto; }
+  }
+}
+/* AL-WA-1, AL-WA-2: two columns only when the content is at least 64rem wide, so larger text keeps one column
+ * instead of squeezing the form. The side column is 22rem; the main column is never under 40rem. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page > .nv-content { container-type: inline-size; }
+@container (min-width: 64rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+    /* The summary and the main action sit together in the side column; the form runs down the main one. */
+    & .wa-split { display: grid; grid-template-columns: minmax(0, 1fr) 22rem; grid-template-areas: "main side" "main actions" "main ."; grid-template-rows: auto auto 1fr; align-items: start; }
+    & .wa-split__main { grid-area: main; }
+    & .wa-split__side { grid-area: side; }
+    & .wa-split__actions { grid-area: actions; }
+    & .wa-split__actions .wa-actions__buttons { flex-direction: column; }
+    & .wa-split__actions .wa-actions__buttons > .nv-btn { width: 100%; }
+  }
+}
+
+/* Read-only facts inside a form, and disclosures for rare or destructive actions. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-fields-group { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+  & .wa-fields-group > .wa-hint:empty { display: none; }
+  & .wa-readonly { display: flex; flex-direction: column; gap: var(--nv-s-2); padding-top: var(--nv-s-4); border-top: 1px solid var(--nv-hairline); }
+  & .wa-readonly__value { font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-disclosure { margin: 0; }
+  & .wa-disclosure__summary {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--nv-s-3); min-height: 52px; padding: 0 var(--nv-s-5) var(--nv-s-3);
+    list-style: none; font: var(--nv-t-label); color: var(--nv-urgent-ink); cursor: pointer;
+  }
+  & .wa-disclosure__summary::-webkit-details-marker { display: none; }
+  & .wa-disclosure__summary::after {
+    content: ""; flex: none; width: 16px; height: 16px; background: var(--nv-icon); transition: transform var(--nv-m-quick) var(--nv-ease-out);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  & .wa-disclosure[open] > .wa-disclosure__summary::after { transform: rotate(180deg); }
+  & .wa-disclosure[data-tone="neutral"] > .wa-disclosure__summary { color: var(--nv-accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-disclosure__summary::after { transition: none; }
+}
+
+/* Coverage: the shift on one side, who can work it on the other (from 1024px). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-columns, & .wa-columns__side, & .wa-columns__main { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+  & .wa-target { border-radius: var(--nv-r-card); }
+  & .wa-target:focus { outline: none; }
+  & .wa-target:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+  & .wa-card-note--top { padding-top: 0; padding-bottom: var(--nv-s-2); }
+  & .wa-card-note--rule { border-top: 1px solid var(--nv-hairline); padding-top: var(--nv-s-4); }
+  & .wa-strong { font-weight: 600; }
+  & .wa-text.wa-muted { color: var(--nv-muted); }
+  & .wa-disclosure--intro + .wa-card-body { padding-top: var(--nv-s-4); }
+  & .wa-ink { color: var(--nv-ink); }
+  & .wa-disclosure--intro { border-bottom: 1px solid var(--nv-hairline); }
+  & .wa-disclosure--intro > .wa-disclosure__summary { padding-bottom: 0; min-height: 44px; }
+  & .wa-disclosure--intro[open] > .wa-card-note { padding-top: 0; }
+  & .wa-candidates { list-style: none; margin: 0; padding: 0; }
+  & .wa-candidate { padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-2); }
+  & .wa-candidate + .wa-candidate { border-top: 1px solid var(--nv-hairline); }
+  & .wa-candidate__main { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  & .wa-candidate__rank { flex: none; width: 20px; padding-top: 10px; font: var(--nv-t-label); font-weight: 600; color: var(--nv-muted); text-align: center; font-variant-numeric: tabular-nums; }
+  & .wa-candidate__text { flex: 1; min-width: 0; display: flex; flex-direction: column; padding-top: 1px; }
+  & .wa-candidate__actions { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; column-gap: var(--nv-s-4); margin-top: var(--nv-s-2); padding-left: calc(20px + var(--nv-s-3) + 40px + var(--nv-s-3)); }
+  & .wa-candidate__actions > .wa-disclosure { order: 2; flex: 1 1 100%; }
+  & .wa-candidate__actions > .wa-disclosure > .wa-disclosure__summary { justify-content: flex-start; gap: var(--nv-s-1); min-height: 44px; padding: 0; }
+  & .wa-candidate__actions > .wa-disclosure > :is(.wa-facts, .wa-card-note) { padding-inline: 0; }
+  & .wa-candidate__go { order: 1; gap: 2px; }
+  & .wa-candidate__actions > .wa-disclosure:not([open]) { flex: 0 1 auto; order: 0; }
+  & .wa-code { font: inherit; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: var(--nv-ink-2); }
+  & .wa-retry > div { display: flex; flex-direction: column; gap: var(--nv-s-2); }
+  & .wa-retry .wa-retry__button { width: 100%; background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); }
+  & .wa-retry .wa-retry__button:disabled { background: var(--nv-inset); color: var(--nv-muted); }
+  & .wa-retry p { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-retry a { color: var(--nv-accent); font: var(--nv-t-label); overflow-wrap: anywhere; }
+}
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-candidate__actions { padding-left: 0; }
+}
+@container (min-width: 64rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-columns { display: grid; grid-template-columns: 22rem minmax(0, 1fr); align-items: start; }
+}
+
+/* Requests: decision cards (Time off, Shift requests), shift blocks, records and Team availability. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-card-lead { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-3); font: var(--nv-t-body); color: var(--nv-ink-2); }
+  & .wa-card-body--tight { padding-bottom: var(--nv-s-2); }
+  & .wa-target[data-selected="true"] > .nv-card { box-shadow: var(--nv-e1), 0 0 0 2px var(--nv-accent); }
+  & .wa-shifts { display: flex; flex-direction: column; gap: var(--nv-s-2); margin: 0 var(--nv-s-5) var(--nv-s-3); }
+  & .wa-shift { padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control); background: var(--nv-inset); }
+  & .wa-shift > p { margin: 0; }
+  & .wa-shift__label { font: var(--nv-t-label); color: var(--nv-muted); }
+  & .wa-shift__when { margin-top: 2px; font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-shift__length { color: var(--nv-muted); font-weight: 400; }
+  & .wa-shift__where { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+  & .wa-shifts__trade { display: flex; justify-content: center; color: var(--nv-icon); }
+  & .wa-shifts + .wa-facts { padding-top: 0; }
+  & .wa-decision { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr)); gap: var(--nv-s-3); }
+  & .wa-decision > .nv-btn { width: 100%; }
+  & .wa-decision-form { gap: var(--nv-s-2); }
+  & .wa-decision-form > .nv-link { align-self: flex-start; }
+  & .wa-row-note { display: block; margin-top: 2px; }
+  /* ShiftChangeForm's follow-up controls (retry, refresh, view status) as secondary buttons. */
+  & .wa-form > :is(a.swap-button, button.button) {
+    display: inline-flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; padding: 0 var(--nv-s-5); border: 0; border-radius: var(--nv-r-control);
+    background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); font: var(--nv-t-headline); text-decoration: none; cursor: pointer;
+  }
+  /* Records: Team activity. */
+  & .wa-entries { list-style: none; margin: 0; padding: 0 0 var(--nv-s-2); }
+  & .wa-entry { padding: var(--nv-s-3) 0 var(--nv-s-2); }
+  & .wa-entry + .wa-entry { border-top: 1px solid var(--nv-hairline); }
+  & .wa-entry__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--nv-s-2) var(--nv-s-3); padding: 0 var(--nv-s-5) var(--nv-s-2); }
+  & .wa-entry__lead { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-entry .wa-shifts { margin-bottom: var(--nv-s-2); }
+  & .wa-history { padding: 0 var(--nv-s-5); }
+  & .wa-history :is(.shift-change-history, .shift-change-unavailable) { margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-history .shift-change-history > summary { display: flex; align-items: center; min-height: 44px; color: var(--nv-accent); font: var(--nv-t-label); cursor: pointer; }
+  & .wa-history .shift-change-history ol { margin: 0 0 var(--nv-s-2); padding-left: var(--nv-s-5); }
+  & .wa-history .shift-change-history li { display: flex; flex-direction: column; padding: var(--nv-s-1) 0; font: var(--nv-t-callout); }
+  & .wa-history .shift-change-history li strong { font-weight: 600; color: var(--nv-ink-2); }
+  /* Team availability. */
+  & .wa-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--nv-s-4); }
+  & .wa-foot > span { flex: 1 1 14rem; padding-block: var(--nv-s-1); }
+  & .wa-stat-of { font-size: .6em; font-weight: 500; color: var(--nv-muted); }
+  /* IS-WA-6: the chips wrap instead of scrolling, so none is ever cut off. */
+  & .wa-chips { display: flex; flex-wrap: wrap; gap: var(--nv-s-2); padding: var(--nv-s-1) var(--nv-s-5) var(--nv-s-3); }
+  & .wa-chip {
+    flex: none; display: inline-flex; align-items: center; gap: var(--nv-s-2); min-height: 44px; padding: 0 var(--nv-s-4); border: 0; border-radius: var(--nv-r-pill);
+    background: var(--nv-inset); color: var(--nv-ink-2); font: var(--nv-t-label); white-space: nowrap; cursor: pointer;
+    transition: background-color var(--nv-m-quick) var(--nv-ease-out), color var(--nv-m-quick) var(--nv-ease-out);
+  }
+  & .wa-chip:hover { background: var(--nv-track); }
+  & .wa-chip[aria-pressed="true"] { background: var(--nv-accent-wash); color: var(--nv-accent-strong); font-weight: 600; box-shadow: inset 0 0 0 1px var(--nv-accent); }
+  & .wa-chip__count { font: var(--nv-t-badge); font-variant-numeric: tabular-nums; color: inherit; }
+  & .wa-people { list-style: none; margin: 0; padding: 0 0 var(--nv-s-2); }
+  & .wa-person { padding: var(--nv-s-3) var(--nv-s-5); }
+  & .wa-person + .wa-person { border-top: 1px solid var(--nv-hairline); }
+  & .wa-person:focus { outline: none; }
+  & .wa-person:focus-visible, & .wa-person[data-selected="true"] { box-shadow: inset 3px 0 0 var(--nv-accent); background: #F7FAF9; }
+  & .wa-person__head { display: flex; align-items: flex-start; gap: var(--nv-s-3); }
+  & .wa-person__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  & .wa-person__note { margin: var(--nv-s-2) 0 0 calc(40px + var(--nv-s-3)); font: var(--nv-t-callout); color: var(--nv-muted); }
+  & .wa-hours { list-style: none; display: grid; grid-template-columns: auto 1fr; gap: 2px var(--nv-s-3); margin: var(--nv-s-2) 0 0 calc(40px + var(--nv-s-3)); padding: 0; font: var(--nv-t-callout); color: var(--nv-ink-2); }
+  & .wa-hours > li { display: contents; }
+  & .wa-hours__day { font-weight: 600; color: var(--nv-ink); }
+}
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(.wa-hours, .wa-person__note) { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-chip { transition: none; }
+}
+
+/* Lists of decision cards: one column on phones, two side by side once each can be 30rem wide. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: var(--nv-s-4); align-items: stretch;
+}
+/* AL-WA-9: cards in a row share a height, and their decision rows line up at the bottom. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid > :is(.wa-target, .nv-card) { display: flex; flex-direction: column; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid > .wa-target > .nv-card { flex: 1; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid .nv-card { display: flex; flex-direction: column; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-grid .nv-card > :last-child { margin-top: auto; }
+
+/* People forms: Team member detail, New employee, Clocker PIN. Swap and Unable to work. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page {
+  & .wa-readonly--first { padding-top: 0; border-top: 0; }
+  & .wa-id { font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  & .wa-fieldset { display: flex; flex-direction: column; gap: var(--nv-s-2); min-width: 0; margin: 0; padding: 0; border: 0; }
+  & .wa-fieldset + .wa-fieldset { padding-top: var(--nv-s-4); border-top: 1px solid var(--nv-hairline); }
+  & .wa-fieldset__legend { float: left; width: 100%; margin: 0 0 var(--nv-s-1); padding: 0; font: var(--nv-t-label); color: var(--nv-ink-2); }
+  & .wa-fieldset__legend + * { clear: both; }
+  & .wa-checks { display: flex; flex-direction: column; }
+  & .employee-choice-disclosure { margin: 0; }
+  & .employee-choice-disclosure > .wa-disclosure__summary { padding: 0; color: var(--nv-accent); }
+  & .employee-choice-disclosure > .wa-disclosure__summary > .wa-muted { margin-left: auto; font: var(--nv-t-callout); }
+  & .wa-check > input:disabled { cursor: not-allowed; }
+  & .wa-check:has(> input:disabled) { cursor: default; }
+  /* Details | Scheduling: a two-part switch on the canvas. */
+  & .wa-tabs { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+  /* AL-WA-4: equal halves that never spill; they stack when the words don't fit side by side. */
+  & .wa-segments { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); gap: 4px; padding: 4px; border-radius: var(--nv-r-control); background: var(--nv-track); }
+  & .wa-segment {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; padding: 0 var(--nv-s-3); border: 0; border-radius: var(--nv-r-inner); text-align: center; overflow-wrap: anywhere;
+    background: transparent; color: var(--nv-ink-2); font: var(--nv-t-label); text-decoration: none; cursor: pointer;
+    transition: background-color var(--nv-m-quick) var(--nv-ease-out), color var(--nv-m-quick) var(--nv-ease-out);
+  }
+  & .wa-segment[aria-selected="true"] { background: var(--nv-canvas); color: var(--nv-ink); font-weight: 600; box-shadow: 0 1px 2px rgba(16, 40, 38, .08); }
+  & .wa-segment:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+  & .wa-tabpanel { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+  & .wa-tabpanel[hidden] { display: none; }
+  & .wa-tabpanel:focus { outline: none; }
+  /* Owner-reviewed rules. */
+  & .wa-rule { display: flex; flex-direction: column; gap: var(--nv-s-3); padding: var(--nv-s-4) 0; border-top: 1px solid var(--nv-hairline); }
+  & .wa-rule__title { margin: 0; font: var(--nv-t-headline); color: var(--nv-ink); }
+  & .wa-rule__values { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--nv-s-4) var(--nv-s-3); }
+  & .wa-facts--flush { padding-inline: 0; }
+  & .policy-save-form { display: flex; flex-direction: column; gap: var(--nv-s-4); margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+  & .policy-save-form > fieldset { display: flex; flex-direction: column; gap: 0; min-width: 0; margin: 0; padding: 0; border: 0; }
+  & .policy-save-form > fieldset > .nv-btn { margin-top: var(--nv-s-2); }
+  & .policy-save-form > p[role="status"]:not(.form-success) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  & .policy-save-form > :is(.form-error, .form-success) { margin: 0; font: var(--nv-t-callout); font-weight: 500; }
+  & .policy-save-form > .form-error { color: var(--nv-urgent-ink); }
+  & .policy-save-form > .form-success { color: var(--nv-done-ink); }
+  & .policy-save-form > button.button { min-height: 52px; border: 0; border-radius: var(--nv-r-control); background: var(--nv-canvas); color: var(--nv-ink); box-shadow: inset 0 0 0 1px var(--nv-border); font: var(--nv-t-headline); }
+  /* Steps (what happens next). */
+  & .wa-steps { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-3) calc(var(--nv-s-5) + 1.25rem); font: var(--nv-t-body); color: var(--nv-ink); }
+  & .wa-steps > li { padding: var(--nv-s-1) 0; font: var(--nv-t-body); color: var(--nv-ink); }
+  & .wa-steps > li::marker { color: var(--nv-muted); font-variant-numeric: tabular-nums; }
+  & .wa-field__help--split { display: flex; justify-content: space-between; gap: var(--nv-s-3); }
+  /* Swap: choices and the side-by-side review. */
+  & .wa-shift__time { margin-top: 0; }
+  & .wa-shifts--pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: var(--nv-s-2); }
+  & .wa-options { min-width: 0; margin: 0; padding: 0; border: 0; }
+  & .wa-options__list { display: flex; flex-direction: column; gap: var(--nv-s-2); padding: 0 var(--nv-s-5) var(--nv-s-5); }
+  & .wa-option {
+    display: flex; align-items: flex-start; gap: var(--nv-s-3); min-height: 44px; padding: var(--nv-s-3) var(--nv-s-4); border-radius: var(--nv-r-control);
+    box-shadow: inset 0 0 0 1px var(--nv-border); cursor: pointer; transition: box-shadow var(--nv-m-quick) var(--nv-ease-out), background-color var(--nv-m-quick) var(--nv-ease-out);
+  }
+  & .wa-option:hover { background: #F7F9F8; }
+  & .wa-option[data-selected="true"] { background: var(--nv-accent-wash); box-shadow: inset 0 0 0 2px var(--nv-accent); }
+  & .wa-option > input { flex: none; width: 22px; height: 22px; margin: calc((1.375rem - 22px) / 2) 0 0; accent-color: var(--nv-accent); cursor: pointer; }
+  & .wa-option > input:focus-visible { outline: 2px solid var(--nv-accent); outline-offset: 2px; }
+  & .wa-option__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  & .wa-option__title { font: var(--nv-t-row); color: var(--nv-ink); }
+  & .wa-option__meta { font: var(--nv-t-callout); color: var(--nv-ink-2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(.wa-segment, .wa-option) { transition: none; }
+}
+/* A long email or location name in the band wraps instead of running off the edge. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-masthead__summary { overflow-wrap: anywhere; }
+
+/* Inline field errors (shared FormValidation) in the form pattern: urgent ink, Phosphor warning icon, callout role. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .field-error {
+  display: flex; align-items: flex-start; gap: 6px; margin: 0; font: var(--nv-t-callout); font-weight: 500; color: var(--nv-urgent-ink);
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .field-error::before {
+  content: ""; flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 0; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm-8,56a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm8,104a12,12,0,1,1,12-12A12,12,0,0,1,128,184Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page :is(input, select, textarea)[aria-invalid="true"] { border-color: var(--nv-urgent-ink); }
+
+/* AL-WA-3: the week's three counts stack when the card is narrower than 30rem (phones, and larger text). */
+@container (max-width: 30rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stats { grid-template-columns: 1fr; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability :is(.nv-stat, .nv-stat:first-child) { flex-direction: row; align-items: baseline; justify-content: space-between; gap: var(--nv-s-3); padding: var(--nv-s-3) var(--nv-s-5); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat + .nv-stat { border-left: 0; border-top: 1px solid var(--nv-hairline); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-availability .nv-stat__value { margin-top: 0; font: var(--nv-t-title-2); }
+}
+
+/* TC-WA-1, TC-WA-2: names and labels in Wave A rows are never cut off; they wrap. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-row__title { display: block; -webkit-line-clamp: unset; overflow: visible; overflow-wrap: break-word; }
+
+/* ST-WA-1: each Wave A page's placeholder band at that page's real band height (measured October 19 at 320 / 390 / 844×390).
+   The shared rules draw the band only on phones; these set its height. */
+html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-add"], [data-route="wa-edit"], [data-route="wa-pin"], [data-route="wa-swap"]) { --route-band: 288px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-coverage"] { --route-band: 312px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 212px; }
+html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 216px; }
+html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 244px; }
+@media (max-width: 359px) {
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-edit"], [data-route="wa-coverage"]) { --route-band: 312px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 288px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-new"] { --route-band: 268px; }
+}
+@media (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-add"], [data-route="wa-edit"], [data-route="wa-coverage"], [data-route="wa-pin"], [data-route="wa-swap"]) { --route-band: 228px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-copy"] { --route-band: 140px; }
+  html body .app-shell.nevora-portal .route-skeleton[data-route="wa-member"] { --route-band: 196px; }
+  html body .app-shell.nevora-portal .route-skeleton:is([data-route="wa-new"], [data-route="wa-callout"]) { --route-band: 184px; }
+}
+
+/* The swap form's body is one column of cards, like the form itself. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .wa-swap-body { display: flex; flex-direction: column; gap: var(--nv-s-4); }
+
+/* A form's own result line inside a card keeps the card's 20px inset. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame .wa-page.wa-page .nv-card .wa-form > :is(.form-error, .form-success, a.swap-button, button.button) { margin: 0 var(--nv-s-5) var(--nv-s-5); width: auto; }

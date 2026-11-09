@@ -1,0 +1,9 @@
+{
+  "deliveryHEAD": "e06eeff35960336b2c33f1bd1037823d62a8405a",
+  "verifiedApplicationInputs": 2004,
+  "mismatches": 0,
+  "parentIsAncestor": true,
+  "applicationCandidateIsAncestor": true,
+  "environment": "Debian 13, Node v24.19.0; /workspace/NEVORA",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027"
+}

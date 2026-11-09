@@ -1,0 +1,107 @@
+{
+  "candidate": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5",
+  "rootInvocation": "Not invoked by this QA agent; independent read of root raw/JSON/exit artifacts only. Exact producer command remains in root ledger.",
+  "sourceResult": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/plan-employee-mobile-device-alerts/evidence/default-unit-results.json",
+  "sourceSHA256": "1fd95f5422b59c45102490e0f970abae3453dcdd96879144657806ad3c79db10",
+  "rootExitArtifact": "1",
+  "numFailedTests": 16,
+  "numPassedTests": 9803,
+  "numPendingTests": 801,
+  "failedAssertions": [
+    {
+      "file": "src/test/phase-e-process.test.ts",
+      "name": "retained Linux marker observation: changed-member"
+    },
+    {
+      "file": "src/test/phase-e-root-group-process.test.ts",
+      "name": "root-group actual exec: root-exit"
+    },
+    {
+      "file": "src/test/phase-e-runner.test.ts",
+      "name": "rejects zero executed tests and skipped SQL tests even when the child exits zero"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions confirmation without changes persists submission metadata without inventing day overrides"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions unavailable all week writes seven dated full-day exceptions"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "normal-based weekly submissions changes only the selected date, preserving other overrides"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "the final deadline guard uses the current clock after the lock wait"
+    },
+    {
+      "file": "src/lib/data/scheduling-inputs.test.ts",
+      "name": "retries a stale legacy conversion after locking and preserves another saved day's override"
+    },
+    {
+      "file": "src/app/app/requests/page.test.tsx",
+      "name": "marks a waiting request amber and an approval green, with a timeline"
+    },
+    {
+      "file": "src/app/app/requests/page.test.tsx",
+      "name": "names who decided a request and when, and never names anyone on a withdrawal"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "marks a waiting request amber and an approval green, with a timeline"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "offers a confirmed withdrawal only for the current employee pending request"
+    },
+    {
+      "file": "src/app/app/requests/page.withdrawal-carry-forward.test.tsx",
+      "name": "keeps withdrawal inside its own request row, next to the facts and the waiting status"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "retains both request destinations for EMPLOYEE"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "retains both request destinations for LEAD"
+    },
+    {
+      "file": "src/app/app/requests/hub/page.test.tsx",
+      "name": "lists the person's own time off, waiting first, and never turns a failed read into no requests"
+    }
+  ],
+  "independentlyComparedTestFiles": {
+    "src/app/app/requests/hub/page.test.tsx": {
+      "base": "0f18798eab31295bc059140fe81bb9462e64e62413c0518c7659e21cd2ba6bab",
+      "current": "0f18798eab31295bc059140fe81bb9462e64e62413c0518c7659e21cd2ba6bab"
+    },
+    "src/app/app/requests/page.test.tsx": {
+      "base": "07071fad14a49679c9207a99c459e1e5386467904bb97330dfbcda5bec115f17",
+      "current": "07071fad14a49679c9207a99c459e1e5386467904bb97330dfbcda5bec115f17"
+    },
+    "src/app/app/requests/page.withdrawal-carry-forward.test.tsx": {
+      "base": "331e8090a475f730306b5cb5df082d9d436beb3f33024ce01e0a216df20052ab",
+      "current": "331e8090a475f730306b5cb5df082d9d436beb3f33024ce01e0a216df20052ab"
+    },
+    "src/lib/data/scheduling-inputs.test.ts": {
+      "base": "5506392c301f48b457f64a0afaed5a98daeeca2bc1e3ac3344c636d19bef52c9",
+      "current": "5506392c301f48b457f64a0afaed5a98daeeca2bc1e3ac3344c636d19bef52c9"
+    },
+    "src/test/phase-e-process.test.ts": {
+      "base": "8e0c6fdf1b1e673dff2042634af60cc6b5676a18d7cfb271768729cdc6880ee0",
+      "current": "8e0c6fdf1b1e673dff2042634af60cc6b5676a18d7cfb271768729cdc6880ee0"
+    },
+    "src/test/phase-e-root-group-process.test.ts": {
+      "base": "39a3975e0957fcd4e27b46a9953b02c69a42ad89cbba1c52653f40f5bfe3d1df",
+      "current": "39a3975e0957fcd4e27b46a9953b02c69a42ad89cbba1c52653f40f5bfe3d1df"
+    },
+    "src/test/phase-e-runner.test.ts": {
+      "base": "2ceed23b82f9b7cce748b221e50f508e636a33b3f44806a919cf828f3024f70c",
+      "current": "2ceed23b82f9b7cce748b221e50f508e636a33b3f44806a919cf828f3024f70c"
+    }
+  },
+  "interpretation": "13 deterministic identities retained. Three current process-observation identities differ from previous baseline-three; cause unresolved. Unchanged test sources do not prove unchanged runtime cause. No whole-suite-green claim."
+}

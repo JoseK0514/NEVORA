@@ -1,0 +1,28 @@
+import {createRequire} from 'node:module';
+import {readFile,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const root='/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume';
+const source=await readFile(root+'/src/lib/theme.ts','utf8');
+const script=source.match(/export const THEME_SCRIPT = `([\s\S]*?)`;/)[1].replace('${THEME_KEY}','nv-theme');
+const {firefox}=createRequire('/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/package.json')('playwright');
+const trace=`window.__trace=[];window.__queries=[];const originalMatch=window.matchMedia;window.matchMedia=function(query){const m=originalMatch.call(window,query);if(query==='(prefers-color-scheme: dark)'){window.__queries.push(m);if(window.__queries.length===1)m.addEventListener('change',e=>window.__trace.push({kind:'native-change',at:performance.now(),eventMatches:e.matches,retained:m.matches,theme:document.documentElement.dataset.theme}));}return m;};`;
+const choose=`window.choose=function(choice){if(choice==='system')localStorage.removeItem('nv-theme');else localStorage.setItem('nv-theme',choice);window.__trace.push({kind:'choose-before',choice,at:performance.now(),retained:window.__queries[0].matches});window.__nvApplyTheme();window.__trace.push({kind:'choose-after',at:performance.now(),theme:document.documentElement.dataset.theme});};`;
+const result={sourceSha256:createHash('sha256').update(source).digest('hex'),platform:process.platform,cases:[],limits:'Isolated local HTML/native Firefox, trace-only matchMedia wrapper retains original native object; no application/DB/auth/network. This probe is diagnostic, not final acceptance.'};
+const browser=await firefox.launch({headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ await page.route('**/*',route=>route.fulfill({contentType:'text/html',body:'<html><head><style>html[data-theme="dark"]{background:#0c1817;color:#f5f2eb}html[data-theme="light"]{background:#f4f7f6;color:#172622}</style><script>'+trace+script+choose+'</script></head><body><h1>Profile</h1><select id="choice" onchange="window.choose(this.value)"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></body></html>'}));
+ await page.goto('http://127.0.0.1:19273/theme-probe');
+ for(let index=0;index<50;index++){
+  await page.emulateMedia({colorScheme:'light'});
+  await page.selectOption('#choice','dark');await page.evaluate(async()=>{await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));window.__trace=[];});
+  await page.emulateMedia({colorScheme:'dark'});
+  await page.selectOption('#choice','system');
+  await page.emulateMedia({colorScheme:'light'});
+  const sample=await page.evaluate(async()=>{window.__trace.push({kind:'light-before-frame',at:performance.now(),retained:window.__queries[0].matches,fresh:matchMedia('(prefers-color-scheme: dark)').matches,theme:document.documentElement.dataset.theme});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return {theme:document.documentElement.dataset.theme,choice:document.documentElement.dataset.themeChoice,stored:localStorage.getItem('nv-theme'),retained:window.__queries[0].matches,fresh:matchMedia('(prefers-color-scheme: dark)').matches,events:window.__trace};});
+  result.cases.push({index,...sample});
+  if(sample.theme==='dark'&&sample.retained===false&&sample.stored===null)break;
+ }
+}finally{await browser.close();}
+await writeFile(root+'/../../outputs/employee-mobile-profile/local-probes/theme-race-native-select-recheck.json',JSON.stringify(result,null,2));
+console.log(JSON.stringify({cases:result.cases.length,reproduced:result.cases.some(x=>x.theme==='dark'&&x.retained===false&&x.stored===null),last:result.cases.at(-1)}));

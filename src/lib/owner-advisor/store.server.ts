@@ -1,0 +1,166 @@
+import "server-only";
+import { createHash } from "node:crypto";
+import type { SessionMutationProof } from "@/lib/shift-changes/types";
+import type { SqlExecutor, SqlStatement } from "@/lib/notifications/types";
+import { ownerGuards, type OwnerAdmission } from "./authority.server";
+import type { AttentionReview, InternalAttention } from "./briefing";
+import {
+  AdvisorError,
+  record,
+  type AdvisorErrorCode,
+  type AdvisorMessage,
+  type AdvisorProfile,
+  type AdvisorAnswer,
+  type AdvisorCommand,
+} from "./contracts";
+export const commandHash = (command: AdvisorCommand) =>
+  createHash("sha256").update(JSON.stringify(command)).digest("hex");
+/** Owner/workspace-scoped persistence. Each single-statement helper wraps current
+ * original admission guards on both sides; multi-statement completion applies the
+ * same guards plus request lease checks. Provider side effects cannot be rolled back
+ * by a database failure, so failed/ambiguous requests retain their recorded identity. */
+export class AdvisorStore {
+  constructor(
+    readonly proof: SessionMutationProof,
+    readonly original: OwnerAdmission,
+    readonly ex: SqlExecutor,
+  ) {}
+  private get scope() {
+    return [this.original.workspace.id, this.proof.employee.id];
+  }
+  async transaction<T>(
+    statement: SqlStatement,
+    signal?: AbortSignal,
+  ): Promise<T[]> {
+    const guards = ownerGuards(this.proof, this.original);
+    const result = await this.ex.transaction(
+      [...guards, statement, ...ownerGuards(this.proof, this.original)],
+      signal,
+    );
+    return result[guards.length] as T[];
+  }
+  async read() {
+    const [row] = await this.transaction<{
+      priorities: string;
+      revision: number;
+      history: AdvisorMessage[];
+    }>({
+      text: "SELECT priorities,revision,history FROM owner_advisor_profiles WHERE workspace_id=$1 AND owner_id=$2",
+      values: this.scope,
+    });
+    return {
+      profile: row
+        ? { priorities: row.priorities, revision: row.revision }
+        : { priorities: "", revision: 0 },
+      history: row?.history ?? [],
+    };
+  }
+  async save(
+    command: Extract<AdvisorCommand, { op: "save_priorities" }>,
+  ): Promise<AdvisorProfile> {
+    const [row] = await this.transaction<{
+      result: AdvisorProfile & { error?: AdvisorErrorCode };
+    }>({
+      text: "SELECT owner_advisor_save($1,$2,$3,$4,$5,$6) AS result",
+      values: [
+        ...this.scope,
+        command.requestId,
+        commandHash(command),
+        command.expectedRevision,
+        command.priorities,
+      ],
+    });
+    if (row.result.error) throw new AdvisorError(row.result.error);
+    return row.result;
+  }
+  async reserve(requestId: string, hash: string, cap: number) {
+    const [row] = await this.transaction<{
+      result: {
+        error?: AdvisorErrorCode;
+        replay?: AdvisorAnswer;
+        admitted?: boolean;
+      };
+    }>({
+      text: "SELECT owner_advisor_reserve($1,$2,$3,$4,$5) AS result",
+      values: [...this.scope, requestId, hash, cap],
+    });
+    if (row.result.error) throw new AdvisorError(row.result.error);
+    return row.result;
+  }
+  async briefingReviews(): Promise<AttentionReview[]> {
+    return this.transaction<AttentionReview>({
+      text: `SELECT issue_id AS id,fingerprint,kind,issue_date::text AS date,location_id AS "locationId",proof,disposition,deferred_until::text AS "deferredUntil",revision FROM owner_advisor_briefing_reviews WHERE workspace_id=$1 AND owner_id=$2 ORDER BY updated_at DESC,issue_id LIMIT 50`,
+      values: this.scope,
+    });
+  }
+  async briefingReplay(command: Extract<AdvisorCommand, {op: "review_briefing"}>) {
+    const [row] = await this.transaction<{command_hash: string; kind: string; result: {revision: number}}>(
+      {text: "SELECT command_hash,kind,result FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3", values: [...this.scope, command.requestId]});
+    if (!row) return null;
+    if (row.kind !== "review_briefing" || row.command_hash !== commandHash(command)) throw new AdvisorError("conflict");
+    return row.result;
+  }
+  async reviewBriefing(command: Extract<AdvisorCommand, {op: "review_briefing"}>, issue: InternalAttention) {
+    if (issue.proof.length > 10000) throw new AdvisorError("limit");
+    const [row] = await this.transaction<{result: {revision: number; error?: AdvisorErrorCode}}>({
+      text: "SELECT owner_advisor_review_briefing($1,$2,$3,$4,$5,$6,$7::date,$8,$9,$10::jsonb,$11,$12) AS result",
+      values: [...this.scope, command.requestId, commandHash(command), issue.id, issue.fingerprint, issue.date, issue.kind, issue.locationId, JSON.stringify(issue.proof), command.expectedRevision, command.disposition],
+    });
+    if (row.result.error) throw new AdvisorError(row.result.error);
+    return row.result;
+  }
+  async fail(requestId: string) {
+    await this.transaction({
+      text: "UPDATE owner_advisor_requests SET state='failed' WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3 AND state='running'",
+      values: [...this.scope, requestId],
+    });
+  }
+  /** Commit bounded recent chat history and its recoverable answer while the running
+   * request lease is current; retain only the six latest completed ask payloads. */
+  async complete(requestId: string, message: string, answer: AdvisorAnswer, notebookRevision?: number) {
+    const guards = ownerGuards(this.proof, this.original);
+    try { await this.ex.transaction([
+      ...guards,
+      {
+        text: "SELECT pg_advisory_xact_lock(hashtextextended('owner-advisor:'||$1,0))",
+        values: [this.scope[0]],
+      },
+      {
+        text: "SELECT(CASE WHEN EXISTS(SELECT 1 FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3 AND state='running' AND lease_until>clock_timestamp()) THEN '1' ELSE 'advisor_lease_expired' END)::integer",
+        values: [...this.scope, requestId],
+      },
+      // The same workspace advisory lock serializes notebook saves and answer
+      // settlement. A changed context rolls back history and the answer together.
+      ...(notebookRevision === undefined ? [] : [{
+        text: "SELECT(CASE WHEN COALESCE((SELECT revision FROM owner_advisor_notebooks WHERE workspace_id=$1 AND owner_id=$2),0)=$3 THEN '1' ELSE 'advisor_notebook_changed' END)::integer",
+        values: [...this.scope, notebookRevision],
+      }]),
+      {
+        text: "INSERT INTO owner_advisor_profiles(workspace_id,owner_id) VALUES($1,$2) ON CONFLICT DO NOTHING",
+        values: this.scope,
+      },
+      {
+        text: `UPDATE owner_advisor_profiles SET history=(SELECT jsonb_agg(item ORDER BY n) FROM (SELECT item,n FROM jsonb_array_elements(history||$3::jsonb) WITH ORDINALITY a(item,n) ORDER BY n DESC LIMIT 12)t) WHERE workspace_id=$1 AND owner_id=$2`,
+        values: [
+          ...this.scope,
+          JSON.stringify([
+            { role: "user", content: message },
+            { role: "assistant", content: answer.text },
+          ]),
+        ],
+      },
+      {
+        text: "UPDATE owner_advisor_requests SET state='completed',result=$4::jsonb WHERE workspace_id=$1 AND owner_id=$2 AND request_id=$3",
+        values: [...this.scope, requestId, JSON.stringify(answer)],
+      },
+      {
+        text: "UPDATE owner_advisor_requests SET result=NULL WHERE workspace_id=$1 AND owner_id=$2 AND request_id IN(SELECT request_id FROM owner_advisor_requests WHERE workspace_id=$1 AND owner_id=$2 AND kind='ask' AND state='completed' ORDER BY created_at DESC,request_id DESC OFFSET 6)",
+        values: this.scope,
+      },
+      ...ownerGuards(this.proof, this.original),
+    ]); } catch (error) {
+      if (record(error) && typeof error.message === "string" && error.message.includes('"advisor_notebook_changed"')) throw new AdvisorError("conflict");
+      throw error;
+    }
+  }
+}

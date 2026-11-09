@@ -1,0 +1,47 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "sourceUnchanged": true,
+  "gitUnchanged": true,
+  "mirrors": [
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/owned-next-P4gDuS/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/flag-off/owned-next-P4gDuS/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/owned-next-zp2xp5/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-supplement/supplement/legacy-roles/owned-next-zp2xp5/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "namespaces": {
+    "nevora_exchange_test_": [
+      {
+        "oid": 16384,
+        "datname": "nevora_exchange_test_c1_ae69ef4fc060",
+        "marker": "fuel-phase3-disposable:18a2ef31-9441-4f49-8010-9de7b77ac39e"
+      },
+      {
+        "oid": 19178,
+        "datname": "nevora_exchange_test_c1_ae69ef4fc060",
+        "marker": "fuel-phase3-disposable:6eb0fa6d-7bbe-4ab1-aad7-98c722d29f1c"
+      }
+    ],
+    "nevora_foundation_test_": [],
+    "fuel_phase3_test_": []
+  },
+  "allNamespacesObserved": false,
+  "clusterTeardownVerified": true,
+  "allMirrorHashesMatch": true,
+  "scope": "Supplemental Employee/Lead flag and landscape plus legacy Manager/Owner UI, exchange namespace only; full three-namespace criterion is evidenced separately by the combined run.",
+  "expectedNamespaces": [
+    "nevora_exchange_test_"
+  ],
+  "expectedNamespacesObserved": true
+}

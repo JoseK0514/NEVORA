@@ -1,0 +1,80 @@
+{
+  "phase": "B",
+  "status": "READY_FOR_GITHUB_VERCEL_PREVIEW",
+  "phaseAAcceptedSha": "833defab3c1be4445cff3636ff6bde7d179030f8",
+  "implementationSha": "3d4a14231f26b327ad65ad08161b3759e6e820e8",
+  "commitsSincePhaseA": 13,
+  "filesChangedSincePhaseA": 42,
+  "migrations": {
+    "head": "0010_shift_coverage_automation.sql",
+    "phaseBAddedMigration": false
+  },
+  "verification": {
+    "unit": {
+      "filesPassed": 136,
+      "testsPassed": 1401,
+      "failures": 0
+    },
+    "foundationPostgres": {
+      "testsPassed": 75,
+      "failures": 0
+    },
+    "exchangesPostgres": {
+      "testsPassed": 163,
+      "failures": 0
+    },
+    "generationPostgres": {
+      "testsPassed": 144,
+      "failures": 0
+    },
+    "notificationsQa": {
+      "testsPassed": 6,
+      "failures": 0
+    },
+    "notificationsPostgres": {
+      "testsPassed": 77,
+      "failures": 0
+    },
+    "foundationQa": {
+      "testsPassed": 8,
+      "failures": 0
+    },
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "productionBuild": "PASS",
+    "ui": {
+      "engines": [
+        "chromium",
+        "webkit"
+      ],
+      "widths": [
+        320,
+        375,
+        390,
+        430,
+        768,
+        1024,
+        1440
+      ],
+      "clockerViewports": [
+        "1024x768",
+        "768x1024"
+      ],
+      "checks": 480,
+      "findings": 0,
+      "runnerErrors": 0,
+      "screenshots": 480,
+      "finishedAt": "2026-10-05T15:18:27.330Z",
+      "evidence": "/Users/josek0514/.codex/visualizations/2026/10/05/nevora-phase-b-post-guardrail-ui-final/final"
+    }
+  },
+  "guardrails": {
+    "blockerFindingsOpen": 0,
+    "majorFindingsOpen": 0,
+    "employeeHardDeleteAdded": false,
+    "phaseCTimekeepingAdded": false,
+    "phaseBFuelSpecificBehaviorAdded": false,
+    "phaseAIsAncestor": true
+  },
+  "nextStep": "Push exact Phase B candidate branch to GitHub, create/confirm Vercel Preview, smoke-test hosted candidate, then submit exact SHA to Codex."
+}

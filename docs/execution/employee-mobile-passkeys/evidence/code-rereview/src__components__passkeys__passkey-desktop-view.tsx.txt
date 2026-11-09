@@ -1,0 +1,49 @@
+src/components/passkeys/passkey-desktop-view.tsx
+   1 "use client";
+   2 import type {RefObject} from 'react';
+   3 import {PASSKEY_COPY} from '@/lib/passkeys/copy';
+   4 import type {Passkey} from '@/lib/passkeys/client';
+   5 import {SigPendingLabel} from '@/components/signature/sig-button';
+   6 const t=PASSKEY_COPY.en;
+   7 const dateLabel=(iso:string)=>new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+   8 type Props={load:'loading'|'ready'|'failed';passkeys:Passkey[];busy:'add'|'remove'|null;notice:{tone:'done'|'error';text:string}|null;confirm:Passkey|null;supported:boolean;phone:boolean;disabled?:boolean;dialog:RefObject<HTMLDialogElement|null>;addButton:RefObject<HTMLButtonElement|null>;onRefresh:()=>void;onAdd:()=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onRemove:(key:Passkey)=>void;onKeep:()=>void};
+   9 /** Shared incumbent desktop/management markup, without a data or ceremony owner. */
+  10 export function PasskeyDesktopView({load,passkeys,busy,notice,confirm,supported,phone,disabled=false,dialog,addButton,onRefresh,onAdd,onReview,onRemove,onKeep}:Props){
+  11   return (
+  12     <section className="nv-card pk-section" aria-labelledby="passkeys-title">
+  13       <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
+  14       <div className="nv-card__body pk-body">
+  15         {load === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
+  16         {load === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={onRefresh}>{t.tryAgain}</button></p> : null}
+  17         {load === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
+  18         {passkeys.length ? <ul className="pk-list">
+  19           {passkeys.map(passkey => (
+  20             <li key={passkey.id} className="pk-item">
+  21               <span className="pk-item__text">
+  22                 <span className="pk-item__name">{passkey.name}</span>
+  23                 <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
+  24               </span>
+  25               <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={disabled || busy !== null}
+  26                 onClick={event => onReview(passkey,event.currentTarget)}>{t.remove}</button>
+  27             </li>
+  28           ))}
+  29         </ul> : null}
+  30         {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
+  31         {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={onAdd} disabled={disabled || busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
+  32           <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
+  33         </button> : <p className="pk-muted">{t.notSupported}</p>}
+  34       </div>
+  35       <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
+  36         onClose={() => { if (confirm) onKeep(); }}>
+  37         {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
+  38           <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
+  39           <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
+  40           <div className="pk-dialog__actions">
+  41             <button type="button" className="nv-btn" data-kind="danger" onClick={() => onRemove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
+  42             <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={onKeep} disabled={disabled || busy === "remove"}>{t.keep}</button>
+  43           </div>
+  44         </form> : null}
+  45       </dialog>
+  46     </section>
+  47   );
+  48 }

@@ -1,0 +1,9 @@
+/* Team (board G-O-Team): the 48px search field with its magnifier, and the empty line. */
+:is(#c-root, html) .c-team .c-team-search { margin: 0; }
+:is(#c-root, html) .c-team .c-team-search__field { gap: 8px; padding: 0 12px; cursor: text; }
+:is(#c-root, html) .c-team .c-team-search__field .c-ic { width: 20px; height: 20px; color: var(--c-grey); }
+:is(#c-root, html) .c-team .c-team-search__field input { flex: 1; min-width: 0; height: 100%; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; color: var(--c-ink); font-size: 15px; line-height: 20px; outline: none; -webkit-appearance: none; appearance: none; }
+:is(#c-root, html) .c-team .c-team-search__field input::placeholder { color: var(--c-grey); }
+:is(#c-root, html) .c-team .c-team-search__field input::-webkit-search-decoration { -webkit-appearance: none; }
+:is(#c-root, html) .c-team .c-team__empty { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-team .c-team__empty + .c-btn { margin-top: 12px; }

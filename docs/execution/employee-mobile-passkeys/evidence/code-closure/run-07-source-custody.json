@@ -1,0 +1,37 @@
+[
+  {
+    "file": "src/lib/passkeys/management.ts",
+    "runtimePath": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/owned-next-SeGzhx/app/src/lib/passkeys/management.ts",
+    "expectedRevision": "b93a155b64f0273782a47e0efedbc00b2fe59bb1",
+    "matches": true,
+    "sha256": "3efa8df1bce25584bf2ed981de7183826054737e8b98feba40774fce7ad015f6"
+  },
+  {
+    "file": "src/components/employee-mobile/passkeys.tsx",
+    "runtimePath": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/owned-next-SeGzhx/app/src/components/employee-mobile/passkeys.tsx",
+    "expectedRevision": "b93a155b64f0273782a47e0efedbc00b2fe59bb1",
+    "matches": true,
+    "sha256": "366125a3e15117a0b5275627cc3b4c834e720d1bef87050e90a19830aaf07f76"
+  },
+  {
+    "file": "src/components/passkeys/passkey-desktop-view.tsx",
+    "runtimePath": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/owned-next-SeGzhx/app/src/components/passkeys/passkey-desktop-view.tsx",
+    "expectedRevision": "b93a155b64f0273782a47e0efedbc00b2fe59bb1",
+    "matches": true,
+    "sha256": "95bbe5bb11999ff9cf2d6ee470c8bbf533bd857405e1133b60afa2ad9b9cae11"
+  },
+  {
+    "file": "src/components/passkeys/passkey-section.tsx",
+    "runtimePath": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/owned-next-SeGzhx/app/src/components/passkeys/passkey-section.tsx",
+    "expectedRevision": "b93a155b64f0273782a47e0efedbc00b2fe59bb1",
+    "matches": true,
+    "sha256": "4e89e05de33b87df6c57fbd55f8d0d773961e39b002b8db4875bdf4899afa6a9"
+  },
+  {
+    "file": "src/test/integration/employee-mobile-passkeys.integration.ts",
+    "runtimePath": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-07/owned-next-SeGzhx/app/src/test/integration/employee-mobile-passkeys.integration.ts",
+    "expectedRevision": "e3b2bea09e79f63de2cb8b3f692e70ad51a561f3",
+    "matches": true,
+    "sha256": "f6e57ecc32f02b46b7208bd18e07aaeeb71e4193f3cb0468384ac810304793d3"
+  }
+]

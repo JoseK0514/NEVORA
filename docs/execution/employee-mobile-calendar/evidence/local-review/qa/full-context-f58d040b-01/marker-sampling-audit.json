@@ -1,0 +1,32 @@
+{
+  "rawAuditMarkersValid": false,
+  "rawAuditErrors": [
+    "database markers"
+  ],
+  "nullMarkerSnapshots": [
+    {
+      "oid": 301616,
+      "datname": "nevora_foundation_test_c1_67cf317c1dea",
+      "marker": null
+    },
+    {
+      "oid": 522316,
+      "datname": "nevora_exchange_test_c1_67cf317c1dea",
+      "marker": null
+    },
+    {
+      "oid": 622901,
+      "datname": "nevora_exchange_test_c1_67cf317c1dea",
+      "marker": null
+    }
+  ],
+  "nullOidsLaterSampledMarked": [],
+  "observedValidMarkerNamespaces": [
+    "fuel_phase3_test_",
+    "nevora_exchange_test_",
+    "nevora_foundation_test_"
+  ],
+  "everyOwnedNextIdentityHasNonemptyMarker": true,
+  "observerErrors": [],
+  "classification": "RISK / sampling limitation: three transient null-marker OIDs have no marked resample. No claim that each fleeting fixture was independently sampled after COMMENT. Exact factory namespace/name/OID ownership guards remain unchanged; all three required namespace families are positively sampled with valid markers, all nine browser identities marked, and entire owned cluster removed."
+}

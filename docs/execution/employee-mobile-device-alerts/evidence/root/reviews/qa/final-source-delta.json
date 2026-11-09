@@ -1,0 +1,14 @@
+{
+  "baseApplication": "72b1c192e8f2f05bcdd51b41cbf895ebce0d3dc5",
+  "finalSource": "7ddf37715ff89ba4b397cf22ec8b67ae5d53de2e",
+  "changedFiles": [
+    "src/test/integration/employee-mobile-communications-fixtures.ts",
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-communications-sql.integration.ts",
+    "src/test/integration/employee-mobile-communications.integration.ts",
+    "src/test/integration/employee-mobile-device-alerts.integration.ts"
+  ],
+  "allChangesTestOnly": true,
+  "diffStat": " .../employee-mobile-communications-fixtures.ts     | 21 +++++++++++++\n ...yee-mobile-communications-review.integration.ts | 34 +++++++++++++---------\n ...ployee-mobile-communications-sql.integration.ts |  5 +++-\n .../employee-mobile-communications.integration.ts  |  2 ++\n .../employee-mobile-device-alerts.integration.ts   | 30 +++++++++++++------\n 5 files changed, 69 insertions(+), 23 deletions(-)\n",
+  "focusedUnitsReusedBecauseApplicationAndUnitInputsUnchanged": true
+}

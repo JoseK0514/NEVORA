@@ -1,0 +1,644 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Persisted marketplace-off read releases no response or request facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Real SQL: target-only swap detail, safe original terms, peer absence refusal and exact current-role guard"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual Employee HTTP refuses arbitrary selectors and foreign report detail; incoming comparison preserves overnight and privacy"
+    },
+    {
+      "engine": "chromium",
+      "name": "Light/dark320390430, response-control contrast,200%text, measured nav clearance and native keyboard focus (WebKit Option-Tab)"
+    },
+    {
+      "engine": "chromium",
+      "name": "Back returns focus to the exact incoming request row"
+    },
+    {
+      "engine": "chromium",
+      "name": "Automatic acceptance reconciles original response and exchanges exact published assignments"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own cover and own pending report cancellation use canonical decisions; list return focuses exact own row and no peer reason appears"
+    },
+    {
+      "engine": "chromium",
+      "name": "Withdrawing own pending pickup closes that request, retains own history membership and preserves the original assignment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Declining an addressed swap preserves original assignments and records the own decision"
+    },
+    {
+      "engine": "chromium",
+      "name": "A changed publication withholds acceptance, preserves permitted decline and retains reviewed terms; the server also rejects stale acceptance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Exact own link survives the recent window and live-row deletion through protected immutable history without actions"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop retains existing own-request presentation and does not mount mobile response controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current authority loss clears detail/history and refuses private reads/actions"
+    },
+    {
+      "engine": "webkit",
+      "name": "Real SQL: target-only swap detail, safe original terms, peer absence refusal and exact current-role guard"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual Employee HTTP refuses arbitrary selectors and foreign report detail; incoming comparison preserves overnight and privacy"
+    },
+    {
+      "engine": "webkit",
+      "name": "Light/dark320390430, response-control contrast,200%text, measured nav clearance and native keyboard focus (WebKit Option-Tab)"
+    },
+    {
+      "engine": "webkit",
+      "name": "Back returns focus to the exact incoming request row"
+    },
+    {
+      "engine": "webkit",
+      "name": "Automatic acceptance reconciles original response and exchanges exact published assignments"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own cover and own pending report cancellation use canonical decisions; list return focuses exact own row and no peer reason appears"
+    },
+    {
+      "engine": "webkit",
+      "name": "Withdrawing own pending pickup closes that request, retains own history membership and preserves the original assignment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Declining an addressed swap preserves original assignments and records the own decision"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop retains existing own-request presentation and does not mount mobile response controls"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current authority loss clears detail/history and refuses private reads/actions"
+    },
+    {
+      "engine": "firefox",
+      "name": "Real SQL: target-only swap detail, safe original terms, peer absence refusal and exact current-role guard"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual Employee HTTP refuses arbitrary selectors and foreign report detail; incoming comparison preserves overnight and privacy"
+    },
+    {
+      "engine": "firefox",
+      "name": "Light/dark320390430, response-control contrast,200%text, measured nav clearance and native keyboard focus (WebKit Option-Tab)"
+    },
+    {
+      "engine": "firefox",
+      "name": "Back returns focus to the exact incoming request row"
+    },
+    {
+      "engine": "firefox",
+      "name": "Manual acceptance reconciles original response and preserves assignments pending review"
+    },
+    {
+      "engine": "firefox",
+      "name": "Withdrawing a pending manual swap closes that swap, explains both assignments and settles on canonical Cancelled without moving either employee"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own cover and own pending report cancellation use canonical decisions; list return focuses exact own row and no peer reason appears"
+    },
+    {
+      "engine": "firefox",
+      "name": "Withdrawing own pending pickup closes that request, retains own history membership and preserves the original assignment"
+    },
+    {
+      "engine": "firefox",
+      "name": "Declining an addressed swap preserves original assignments and records the own decision"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop retains existing own-request presentation and does not mount mobile response controls"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current authority loss clears detail/history and refuses private reads/actions"
+    }
+  ],
+  "captures": [
+    "chromium-incoming.png",
+    "chromium-incoming-viewport.png",
+    "chromium-detail-light-320.png",
+    "chromium-detail-light-320-viewport.png",
+    "chromium-detail-light-390.png",
+    "chromium-detail-light-390-viewport.png",
+    "chromium-detail-light-430.png",
+    "chromium-detail-light-430-viewport.png",
+    "chromium-detail-dark-320.png",
+    "chromium-detail-dark-320-viewport.png",
+    "chromium-detail-dark-390.png",
+    "chromium-detail-dark-390-viewport.png",
+    "chromium-detail-dark-430.png",
+    "chromium-detail-dark-430-viewport.png",
+    "chromium-detail-text-200.png",
+    "chromium-detail-text-200-viewport.png",
+    "chromium-real-tab-focus.png",
+    "chromium-real-tab-focus-viewport.png",
+    "chromium-accepted-canonical.png",
+    "chromium-accepted-canonical-viewport.png",
+    "chromium-own-cover-cancelled.png",
+    "chromium-own-cover-cancelled-viewport.png",
+    "chromium-pickup-withdrawn.png",
+    "chromium-pickup-withdrawn-viewport.png",
+    "chromium-reviewed-terms-changed.png",
+    "chromium-reviewed-terms-changed-viewport.png",
+    "chromium-history-after-deletion.png",
+    "chromium-history-after-deletion-viewport.png",
+    "chromium-desktop-preserved.png",
+    "chromium-desktop-preserved-viewport.png",
+    "chromium-authority-denied.png",
+    "chromium-authority-denied-viewport.png",
+    "webkit-incoming.png",
+    "webkit-incoming-viewport.png",
+    "webkit-detail-light-320.png",
+    "webkit-detail-light-320-viewport.png",
+    "webkit-detail-light-390.png",
+    "webkit-detail-light-390-viewport.png",
+    "webkit-detail-light-430.png",
+    "webkit-detail-light-430-viewport.png",
+    "webkit-detail-dark-320.png",
+    "webkit-detail-dark-320-viewport.png",
+    "webkit-detail-dark-390.png",
+    "webkit-detail-dark-390-viewport.png",
+    "webkit-detail-dark-430.png",
+    "webkit-detail-dark-430-viewport.png",
+    "webkit-detail-text-200.png",
+    "webkit-detail-text-200-viewport.png",
+    "webkit-real-tab-focus.png",
+    "webkit-real-tab-focus-viewport.png",
+    "webkit-accepted-canonical.png",
+    "webkit-accepted-canonical-viewport.png",
+    "webkit-own-cover-cancelled.png",
+    "webkit-own-cover-cancelled-viewport.png",
+    "webkit-pickup-withdrawn.png",
+    "webkit-pickup-withdrawn-viewport.png",
+    "webkit-desktop-preserved.png",
+    "webkit-desktop-preserved-viewport.png",
+    "webkit-authority-denied.png",
+    "webkit-authority-denied-viewport.png",
+    "firefox-incoming.png",
+    "firefox-incoming-viewport.png",
+    "firefox-detail-light-320.png",
+    "firefox-detail-light-320-viewport.png",
+    "firefox-detail-light-390.png",
+    "firefox-detail-light-390-viewport.png",
+    "firefox-detail-light-430.png",
+    "firefox-detail-light-430-viewport.png",
+    "firefox-detail-dark-320.png",
+    "firefox-detail-dark-320-viewport.png",
+    "firefox-detail-dark-390.png",
+    "firefox-detail-dark-390-viewport.png",
+    "firefox-detail-dark-430.png",
+    "firefox-detail-dark-430-viewport.png",
+    "firefox-detail-text-200.png",
+    "firefox-detail-text-200-viewport.png",
+    "firefox-real-tab-focus.png",
+    "firefox-real-tab-focus-viewport.png",
+    "firefox-accepted-canonical.png",
+    "firefox-accepted-canonical-viewport.png",
+    "firefox-manual-swap-withdrawn.png",
+    "firefox-manual-swap-withdrawn-viewport.png",
+    "firefox-own-cover-cancelled.png",
+    "firefox-own-cover-cancelled-viewport.png",
+    "firefox-pickup-withdrawn.png",
+    "firefox-pickup-withdrawn-viewport.png",
+    "firefox-desktop-preserved.png",
+    "firefox-desktop-preserved-viewport.png",
+    "firefox-authority-denied.png",
+    "firefox-authority-denied-viewport.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "Accept swap",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "control": "Decline swap",
+      "ratio": 10.771713285410929
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "incoming",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49587/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "incoming",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49587/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "incoming",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:49587/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority-loss",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:49587/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "incoming",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=c1c6d708-bfc4-4029-925a-af2cb78eb939&_rsc=Rp-TYVJZNdohHiJS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "incoming",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&_rsc=Rp-TYVJZNdohHiJS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "incoming",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=c1c6d708-bfc4-4029-925a-af2cb78eb939&_rsc=PARLiwxy_t7gaEAA",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=c1c6d708-bfc4-4029-925a-af2cb78eb939",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=c1c6d708-bfc4-4029-925a-af2cb78eb939",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "own-cover",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=requests&requestId=b50eed53-6137-4a53-b68d-3174642adf37",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "own-cover",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=requests&_rsc=Rp-TYVJZNdohHiJS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "own-pickup",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=requests&_rsc=Rp-TYVJZNdohHiJS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "own-pickup",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=requests&requestId=d95d7a8b-96bc-410f-b9db-caa3c4069224&_rsc=Rp-TYVJZNdohHiJS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "incoming",
+      "url": "http://127.0.0.1:49587/api/employee/my-time",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "incoming",
+      "url": "http://127.0.0.1:49587/api/employee/exchange",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=90110902-5ddf-4443-beb1-0ba3f997a7b6",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "own-pickup",
+      "url": "http://127.0.0.1:49587/api/employee/exchange",
+      "error": "cancelled",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "lost-response",
+      "url": "http://127.0.0.1:49587/app/exchange?tab=foryou&requestId=6af2409b-9c40-4d74-ba1d-b7657ff52eb4",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "own-pickup",
+      "url": "http://127.0.0.1:49587/api/employee/exchange",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    }
+  ]
+}

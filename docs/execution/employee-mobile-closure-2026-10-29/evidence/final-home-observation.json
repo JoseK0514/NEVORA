@@ -1,0 +1,1371 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Real password/session Home uses Employee-only five-destination navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "Recorded time is read independently; planned active shift does not fabricate clock-in"
+    },
+    {
+      "engine": "chromium",
+      "name": "Home opens the exact currently authorized own shift and its details"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own published weeks and navigation retain exact server-source context"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native date selection resolves its actual Monday week without manager filters"
+    },
+    {
+      "engine": "chromium",
+      "name": "Schedule confirmation persists canonically for the exact own week; refresh renders its receipt"
+    },
+    {
+      "engine": "chromium",
+      "name": "Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee"
+    },
+    {
+      "engine": "chromium",
+      "name": "Light/Dark320/390/430 layouts retain accessible navigation and week-control targets"
+    },
+    {
+      "engine": "chromium",
+      "name": "Enlarged text, content clearance and native week-picker keyboard Escape preserve focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop keeps original Home greeting, presentation and hidden mobile additions"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop Schedule preserves existing bar-first layout and hides mobile date controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Background/offline release clears private Home facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Own published past overnight shift preserves end-day meaning without future-only swap controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Foreign shift deep link cannot open another employee assignment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Loading withholds own shift facts until actual Home read completes"
+    },
+    {
+      "engine": "chromium",
+      "name": "light failed Home transport renders a visible contrasted retry and recovers actual data"
+    },
+    {
+      "engine": "chromium",
+      "name": "dark failed Home transport renders a visible contrasted retry and recovers actual data"
+    },
+    {
+      "engine": "chromium",
+      "name": "Real source-cap partial state discloses limits while retaining independently authorized shift"
+    },
+    {
+      "engine": "chromium",
+      "name": "Owner-saved module-off policy hides employee options and refuses a direct module route without management controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Lost committed response preserves original operation and retry recovers one canonical receipt"
+    },
+    {
+      "engine": "chromium",
+      "name": "Republished changed and removed own assignments invalidate the old confirmation and preserve exact empty-week review"
+    },
+    {
+      "engine": "chromium",
+      "name": "Real no-upcoming-shift Home retains actual recorded-clock access"
+    },
+    {
+      "engine": "chromium",
+      "name": "Calendar direct entry and125/150/200 percent text retain readable disclosure and navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current workspace deactivation clears own facts and restoration requires a fresh authorized read"
+    },
+    {
+      "engine": "chromium",
+      "name": "Revoked sessions clear own Home and refuse a direct protected Schedule route"
+    },
+    {
+      "engine": "chromium",
+      "name": "Expired Lead session cannot enter protected Schedule"
+    },
+    {
+      "engine": "chromium",
+      "name": "LEAD real session retains role-owned navigation and presentation"
+    },
+    {
+      "engine": "chromium",
+      "name": "OWNER real session retains role-owned navigation and presentation"
+    },
+    {
+      "engine": "chromium",
+      "name": "MANAGER real session retains role-owned navigation and presentation"
+    },
+    {
+      "engine": "webkit",
+      "name": "Real password/session Home uses Employee-only five-destination navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "Recorded time is read independently; planned active shift does not fabricate clock-in"
+    },
+    {
+      "engine": "webkit",
+      "name": "Home opens the exact currently authorized own shift and its details"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own published weeks and navigation retain exact server-source context"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native date selection resolves its actual Monday week without manager filters"
+    },
+    {
+      "engine": "webkit",
+      "name": "Schedule confirmation persists canonically for the exact own week; refresh renders its receipt"
+    },
+    {
+      "engine": "webkit",
+      "name": "Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee"
+    },
+    {
+      "engine": "webkit",
+      "name": "Light/Dark320/390/430 layouts retain accessible navigation and week-control targets"
+    },
+    {
+      "engine": "webkit",
+      "name": "Enlarged text, content clearance and native week-picker keyboard Escape preserve focus"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop keeps original Home greeting, presentation and hidden mobile additions"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop Schedule preserves existing bar-first layout and hides mobile date controls"
+    },
+    {
+      "engine": "webkit",
+      "name": "Background/offline release clears private Home facts"
+    },
+    {
+      "engine": "webkit",
+      "name": "Revoked sessions clear own Home and refuse a direct protected Schedule route"
+    },
+    {
+      "engine": "firefox",
+      "name": "Real password/session Home uses Employee-only five-destination navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "Recorded time is read independently; planned active shift does not fabricate clock-in"
+    },
+    {
+      "engine": "firefox",
+      "name": "Home opens the exact currently authorized own shift and its details"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own published weeks and navigation retain exact server-source context"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native date selection resolves its actual Monday week without manager filters"
+    },
+    {
+      "engine": "firefox",
+      "name": "Schedule confirmation persists canonically for the exact own week; refresh renders its receipt"
+    },
+    {
+      "engine": "firefox",
+      "name": "Server reads stay bound to current actor; foreign query and invalid proof cannot select another employee"
+    },
+    {
+      "engine": "firefox",
+      "name": "Light/Dark320/390/430 layouts retain accessible navigation and week-control targets"
+    },
+    {
+      "engine": "firefox",
+      "name": "Enlarged text, content clearance and native week-picker keyboard Escape preserve focus"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop keeps original Home greeting, presentation and hidden mobile additions"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop Schedule preserves existing bar-first layout and hides mobile date controls"
+    },
+    {
+      "engine": "firefox",
+      "name": "Background/offline release clears private Home facts"
+    },
+    {
+      "engine": "firefox",
+      "name": "Revoked sessions clear own Home and refuse a direct protected Schedule route"
+    }
+  ],
+  "errors": [],
+  "refusals": [
+    {
+      "engine": "chromium",
+      "path": "/api/employee/home",
+      "status": 503,
+      "state": "unavailable",
+      "reason": "read_failed",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "chromium",
+      "path": "/api/employee/my-time",
+      "status": 503,
+      "state": "unavailable",
+      "reason": "read_failed",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "chromium",
+      "path": "/api/employee/my-time",
+      "status": 401,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "chromium",
+      "path": "/api/employee/home",
+      "status": 401,
+      "state": "unauthorized",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "webkit",
+      "path": "/api/employee/home",
+      "status": 401,
+      "state": "unauthorized",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "webkit",
+      "path": "/api/employee/my-time",
+      "status": 401,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "firefox",
+      "path": "/api/employee/home",
+      "status": 401,
+      "state": "unauthorized",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    },
+    {
+      "engine": "firefox",
+      "path": "/api/employee/my-time",
+      "status": 401,
+      "state": "unavailable",
+      "reason": "access_denied",
+      "privateDataPresent": false
+    }
+  ],
+  "notificationRefusals": [
+    {
+      "engine": "chromium",
+      "url": "http://127.0.0.1:57865/api/notifications",
+      "status": 403,
+      "at": 1793298254162,
+      "authorityLoss": false,
+      "bodySafe": true
+    }
+  ],
+  "fixtureEvents": [
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298223088,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298223787,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298226330,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298226550,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298226809,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298226888,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298228623,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298228821,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298229080,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298229156,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298229802,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298229868,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298230550,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298230695,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298231121,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298231181,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298231756,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298231797,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298232124,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298232188,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298232930,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298233015,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298233363,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298233492,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298234064,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298234133,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298234487,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298234567,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298235387,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298235446,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298235895,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298236073,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298236623,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298236670,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298237118,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298237174,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298237806,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298237915,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298238216,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298238280,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298238431,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298238497,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298239102,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298239165,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298239662,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298239817,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298240069,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298240236,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298241266,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298241329,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298241977,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298242070,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298243222,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298243282,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298243974,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298244057,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298244610,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298244676,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298245699,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298246200,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298246284,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298246380,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-blocked",
+      "at": 1793298247066,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-start",
+      "at": 1793298247066,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-end",
+      "at": 1793298247088,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-released",
+      "at": 1793298247088,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298247470,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-blocked",
+      "at": 1793298247527,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298247548,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-start",
+      "at": 1793298247548,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-end",
+      "at": 1793298247573,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-released",
+      "at": 1793298247573,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298247951,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298248028,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-blocked",
+      "at": 1793298248315,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-start",
+      "at": 1793298248315,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-end",
+      "at": 1793298248369,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "mutation-released",
+      "at": 1793298248369,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298248798,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298248891,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298250277,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298250484,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298250886,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298250974,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298251462,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298251560,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298252442,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298252509,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298253662,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298254164,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298254812,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298255089,
+      "active": 0
+    },
+    {
+      "engine": "chromium",
+      "event": "read-start",
+      "at": 1793298255336,
+      "active": 1
+    },
+    {
+      "engine": "chromium",
+      "event": "read-end",
+      "at": 1793298255522,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298258043,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298258182,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298260227,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298260477,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298260731,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298260830,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298262552,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298262752,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298262978,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298263065,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298263716,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298263794,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298264318,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298264400,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298265097,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298265282,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298267530,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298267733,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298268490,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298268671,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298270377,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298270541,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298271070,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298271191,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298272072,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298272177,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298273040,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298273173,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298274013,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298274114,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298274541,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298274632,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298275344,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298275460,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298276161,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298276243,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298277000,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298277052,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298277559,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298277650,
+      "active": 0
+    },
+    {
+      "engine": "webkit",
+      "event": "read-start",
+      "at": 1793298277888,
+      "active": 1
+    },
+    {
+      "engine": "webkit",
+      "event": "read-end",
+      "at": 1793298277990,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298282570,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298282643,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298284295,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298284361,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298284927,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298284997,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298286314,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298286735,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298287000,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298287126,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298288334,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298288412,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298289797,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298289864,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298290328,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298290439,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298291473,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298291532,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298291988,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298292077,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298293046,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298293125,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298293601,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298293661,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298294522,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298294564,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298295075,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298295169,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298296182,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298296246,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298297271,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298297392,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298298273,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298298342,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298299005,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298299081,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298299771,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298299822,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298300404,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298300508,
+      "active": 0
+    },
+    {
+      "engine": "firefox",
+      "event": "read-start",
+      "at": 1793298300752,
+      "active": 1
+    },
+    {
+      "engine": "firefox",
+      "event": "read-end",
+      "at": 1793298300841,
+      "active": 0
+    }
+  ]
+}

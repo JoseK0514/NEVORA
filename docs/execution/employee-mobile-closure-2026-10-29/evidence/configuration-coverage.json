@@ -1,0 +1,693 @@
+{
+  "method": "Exact literal selection, effective namespaces, aliases, serial-file execution, worker counts, deadlines and no-test admission compared; synthetic namespace inspection only",
+  "configurations": [
+    {
+      "suite": "phase1",
+      "file": "vitest.employee-mobile-phase1.config.mts",
+      "sha256": "52ef6a72b2e08a9c6bdb95499ca91fee6e4243f88852d3500d8829aeaac1f88e"
+    },
+    {
+      "suite": "requests",
+      "file": "vitest.employee-mobile-requests.config.mts",
+      "sha256": "84e6c9a03ce92bc0eb45b22bac5ac6c6691a837fbe7bb5490c7f4ec3bbf5f33b"
+    },
+    {
+      "suite": "responses",
+      "file": "vitest.employee-mobile-responses.config.mts",
+      "sha256": "e8e8b1d5064b1611ce5a7cb1d860e960f3c68dc6ad6891ea97d9cdee1fe7ab38"
+    },
+    {
+      "suite": "creation",
+      "file": "vitest.employee-mobile-creation.config.mts",
+      "sha256": "e03d527d8e7dbf1cbf57e3deeb90f6046d01ea0d1f381ea92214cbef91656644"
+    },
+    {
+      "suite": "planning",
+      "file": "vitest.employee-mobile-planning.config.mts",
+      "sha256": "333123011405c6add3a6970cf4b7df53ff59189cc2be56160239a87c826a5b42"
+    },
+    {
+      "suite": "hours",
+      "file": "vitest.employee-mobile-hours.config.mts",
+      "sha256": "12f8b12e6b30a10802ddc1eecc8b26d61d356cfa455b748ce49c818063f49f60"
+    },
+    {
+      "suite": "communications",
+      "file": "vitest.employee-mobile-communications.config.mts",
+      "sha256": "62751c426c5c8b0702908adccb6c7666d82fe4bbde2051478b5db4cdd9616fb9"
+    },
+    {
+      "suite": "profile",
+      "file": "vitest.employee-mobile-profile.config.mts",
+      "sha256": "00b67fdb1511601afb77ddbc81f76b5f42404c8a96d971e5de97dec460468959"
+    },
+    {
+      "suite": "calendar",
+      "file": "vitest.employee-mobile-calendar.config.mts",
+      "sha256": "a131b055a9e9ff91761c04d3572d82fb0c0f88586d48eea2f1a27cc25f2cea24"
+    },
+    {
+      "suite": "passkeys",
+      "file": "vitest.employee-mobile-passkeys.config.mts",
+      "sha256": "0fb958e5dc4a1e1738cf0f6bcc4ed71474e545c5653fb29be09965f5b86e3cd7"
+    },
+    {
+      "suite": "device-alerts",
+      "file": "vitest.employee-mobile-device-alerts.config.mts",
+      "sha256": "0495e2adfe7c714e1bdb160e45c565061284ba5ae199576da1fa42cf14af7e80"
+    },
+    {
+      "suite": "deletion",
+      "file": "vitest.employee-mobile-deletion.config.mts",
+      "sha256": "edb1d8791672cd1f4f80c78717495f0c4819f3418249857a50a2bfae8a3b2640"
+    },
+    {
+      "suite": "pay",
+      "file": "vitest.employee-mobile-pay.config.mts",
+      "sha256": "7b684603a85082a6140e976ca3ea7ffca64d1499b8337ecb15d9205c43305cb7"
+    }
+  ],
+  "selected": [
+    "device-alerts",
+    "phase1",
+    "deletion",
+    "pay"
+  ],
+  "distinctFiles": 36,
+  "distinctContracts": 36,
+  "missing": [],
+  "contracts": [
+    {
+      "file": "src/test/integration/employee-mobile-phase1.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-requests.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/shift-change-hardening.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/shift-change-views.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-exchange-privacy.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-responses.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-creation.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-creation-privacy.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-planning.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-planning-sql.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-hours-sql.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-hours.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications-review.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-communications-sql.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-communications-schema.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-communications.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-communication-ack.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/communications-gap-remediation.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/company-access-communications.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-communication-notifications.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/fuel_phase3_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-profile-sql.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-profile.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-calendar.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-calendar-tokens.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/phase-e-calendar-feed.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/company-access-recovery-calendar.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-passkeys.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/passkey-network.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/passkeys-http.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/passkeys.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_foundation_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-device-alerts.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/notifications.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/fuel_phase3_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-deletion-sql.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-deletion.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    },
+    {
+      "file": "src/test/integration/employee-mobile-pay.integration.ts",
+      "environment": {
+        "FUEL_TEST_DATABASE_URL": "postgresql://nevora_qa@127.0.0.1:54321/nevora_exchange_test_c1_000000000000"
+      },
+      "fileParallelism": false,
+      "maxWorkers": 1,
+      "timeout": 600000,
+      "hookTimeout": 30000,
+      "passWithNoTests": false,
+      "resolve": {
+        "alias": {
+          "@": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/src",
+          "server-only": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029/node_modules/next/dist/compiled/server-only/empty.js"
+        }
+      }
+    }
+  ]
+}

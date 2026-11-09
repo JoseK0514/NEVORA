@@ -1,3 +1,4 @@
+import { NUVORA_BRAND } from "../brand";
 export type NotificationEvent = {
   employeeId: string;
   type: string;
@@ -69,10 +70,10 @@ export function buildCalloutOutcomeNotification(input: {
   return {
     employeeId: input.employeeId,
     type: approved ? "CALLOUT_APPROVED" : "CALLOUT_DENIED",
-    title: approved ? "Call-out approved" : "Call-out declined",
+    title: approved ? "Unable to work approved" : "Unable to work declined",
     body: approved
-      ? "Your unable-to-work request was approved and coverage is open."
-      : "Your unable-to-work request was declined.",
+      ? "Your Unable to work request was approved and coverage is open."
+      : "Your Unable to work request was declined.",
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey(
       "callout",
@@ -92,7 +93,7 @@ export function buildSwapResponseRequestedNotification(input: {
     employeeId: input.employeeId,
     type: "SWAP_RESPONSE_REQUIRED",
     title: "Shift swap request",
-    body: `${input.requesterName} asked to trade shifts with you.`,
+    body: `${input.requesterName.trim() || 'A teammate'} asked to trade shifts with you.`,
     actionHref: "/app/exchange?tab=requests",
     eventKey: eventKey("swap-response", input.exchangeId, input.employeeId),
   };
@@ -122,4 +123,27 @@ export function buildExchangeOutcomeNotification(input: {
       input.employeeId,
     ),
   };
+}
+
+/** Routine workflow events share this vocabulary with the durable outbox. */
+export function buildAcknowledgementReminderNotification(employeeId: string, revisionId: string): NotificationEvent {
+  return { employeeId, type: 'SCHEDULE_ACKNOWLEDGEMENT_REMINDER', title: 'Schedule review reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and acknowledge your schedule.`, actionHref: '/app/schedule', eventKey: eventKey('schedule-reminder',revisionId,employeeId) };
+}
+export function buildAvailabilityReminderNotification(employeeId: string, weekStart: string): NotificationEvent {
+  return { employeeId, type: 'AVAILABILITY_REMINDER', title: 'Availability reminder', body: `Open ${NUVORA_BRAND.platformLabel} to review and submit your availability.`, actionHref: '/app/availability', eventKey: eventKey('availability-reminder',weekStart,employeeId) };
+}
+export function buildManagerReviewNotification(employeeId: string, sourceId: string, coverage = false): NotificationEvent {
+  return { employeeId, type: coverage ? 'COVERAGE_ATTENTION' : 'MANAGER_REVIEW', title: coverage ? 'Coverage needs attention' : 'Requests need review', body: `Open ${NUVORA_BRAND.platformLabel} to review pending tasks.`, eventKey: eventKey('manager-review',sourceId,employeeId) };
+}
+export function buildAvailabilitySummaryNotification(employeeId: string, weekStart: string): NotificationEvent {
+  return { employeeId, type: 'AVAILABILITY_SUMMARY', title: 'Availability review', body: `Open ${NUVORA_BRAND.platformLabel} to review availability.`, actionHref: '/app/availability', eventKey: eventKey('availability-summary',weekStart,employeeId) };
+}
+export function buildSelfTestNotification(employeeId: string, sourceId: string): NotificationEvent {
+  return { employeeId, type: 'SELF_TEST', title: `${NUVORA_BRAND.platformLabel} notification test`, body: `Open ${NUVORA_BRAND.platformLabel} to review your notification settings.`, actionHref: '/app', eventKey: eventKey('self-test',sourceId,employeeId) };
+}
+
+/** Peer invitation uses reviewed shift context only, never an absence reason. */
+export function buildCoverageInvitationNotification(input:{employeeId:string;date:string;startTime:string;endTime:string;locationName:string;positionName?:string;isDesignatedLead?:boolean}):NotificationEvent {
+ const context=[input.date,`${input.startTime}–${input.endTime}`,input.locationName,input.positionName,input.isDesignatedLead?'Designated lead':undefined].filter(Boolean).join(' · ');
+ return {employeeId:input.employeeId,type:'COVERAGE_INVITATION',title:'Coverage available',body:`${context}. View shift details before volunteering.`,eventKey:''};
 }

@@ -1,0 +1,29 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-client.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/notifications/device-client.test.ts (50 tests | 1 failed) 2848ms
+   × ownership acknowledged after the read lease expires is suppressed instead of shown enabled 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/notifications/device-client.test.ts > ownership acknowledged after the read lease expires is suppressed instead of shown enabled
+AssertionError: expected 'enabled' to be 'error' // Object.is equality
+
+Expected: "error"
+Received: "enabled"
+
+ ❯ src/lib/notifications/device-client.test.ts:81:37
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 49 passed (50)
+   Start at  22:10:44
+   Duration  3.02s (tests 99%, transform 1%)
+

@@ -1,0 +1,43 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+[90mstderr[2m | src/components/employee-account-panel-lifetime.test.tsx[2m > [22m[2mclears source-expired rows without inventing lost access and recovers through Retry
+[22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ [31m❯[39m src/components/employee-account-panel-lifetime.test.tsx [2m([22m[2m10 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 35[2mms[22m[39m
+   [32m✓[39m clears source-expired rows without inventing lost access and recovers through Retry[32m 19[2mms[22m[39m
+   [32m✓[39m clears source-expired rows without inventing lost access and recovers through scheduled revalidation[32m 4[2mms[22m[39m
+   [32m✓[39m still clears and denies when current revalidation actually returns HTTP 401[32m 3[2mms[22m[39m
+   [32m✓[39m still clears and denies when current revalidation actually returns HTTP 403[32m 2[2mms[22m[39m
+[31m   [31m×[31m releases an unread HTTP 401 response without waiting for its body before denying Profile[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m releases an unread HTTP 403 response without waiting for its body before denying Profile[39m[32m 0[2mms[22m[39m
+   [32m✓[39m invalidates old notification rows before rechecking a changed operational source[32m 3[2mms[22m[39m
+   [32m✓[39m does not apply notification source invalidation to the separate own-profile reader[32m 0[2mms[22m[39m
+   [32m✓[39m signout intent immediately fences own profile and focus/storage cannot reopen that mounted session[32m 1[2mms[22m[39m
+   [32m✓[39m a held own-profile response cannot restore private facts after native signout intent[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/components/employee-account-panel-lifetime.test.tsx[2m > [22mreleases an unread HTTP 401 response without waiting for its body before denying Profile
+[41m[1m FAIL [22m[49m src/components/employee-account-panel-lifetime.test.tsx[2m > [22mreleases an unread HTTP 403 response without waiting for its body before denying Profile
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 1 times, but got 0 times[39m
+[36m [2m❯[22m src/components/employee-account-panel-lifetime.test.tsx:[2m43:17[22m[39m
+    [90m 41|[39m  EmployeeAccountPanel({kind:'profile',authority:'profile-view'});clean…
+    [90m 42|[39m  expect(last().snapshot).toEqual({state:'unavailable',reason:'access_d…
+    [90m 43|[39m  expect(cancel).toHaveBeenCalledTimes(1);
+    [90m   |[39m                 [31m^[39m
+    [90m 44|[39m  await vi.advanceTimersByTimeAsync(120000);
+    [90m 45|[39m  expect(fetch).toHaveBeenCalledTimes(1);
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 17:18:58
+[2m   Duration [22m 331ms[2m (transform 51%, import 34%, tests 14%, worker 1%)[22m
+

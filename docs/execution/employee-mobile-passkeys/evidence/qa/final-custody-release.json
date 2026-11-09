@@ -1,0 +1,28 @@
+{
+  "at": "2026-10-28T00:54:41.831461+00:00",
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "branch": "codex/employee-mobile-local-resume-20261027",
+  "status": "",
+  "baselineIsAncestor": true,
+  "temporaryRoots": [
+    {
+      "ownedTemporaryRoot": "/tmp/pkqa-7ow96tqy",
+      "existsBefore": false,
+      "existsAfter": false
+    },
+    {
+      "ownedTemporaryRoot": "/tmp/pkqa-fh482wh8",
+      "existsBefore": true,
+      "derivedCachesRemoved": [
+        {
+          "directory": "/tmp/pkqa-fh482wh8/tsx-501",
+          "fileCount": 82
+        }
+      ],
+      "existsAfter": false
+    }
+  ],
+  "qaProductFilesChanged": false,
+  "runtimeCustodyReleased": true,
+  "releaseMeaning": "Independent QA has finished its owned app/database work; source/HEAD/index may be handed back. Recommendation applies only to immutable64063a2a candidate."
+}

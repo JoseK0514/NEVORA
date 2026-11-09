@@ -1,0 +1,7 @@
+{
+  "scope": "External QA observer precision only; no app/test/config or gate change. Original recorder and helper files retained unchanged. New recorder names the new helper; new helper changes only obj_description to shobj_description for shared database comments.",
+  "oldRecorderSha256": "2cc97af210c1c73abfd417a89723984559c556b5d8f470be69c06ddd22ea2910",
+  "newRecorderSha256": "1ab1d15c0a1624b748aa0772efe165a8181d08cc831ca0a5cd7a85c3b4983889",
+  "oldObserverSha256": "3872dc656d7025a8906775aab5646a96a3885d6c32ccafa2f91ab865e80a1a21",
+  "newObserverSha256": "4fdd04b9422791bb0029a02e445b222a2c807c7205e7ee8f3fa61e124a1cbe8d"
+}

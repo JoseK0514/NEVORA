@@ -1,0 +1,231 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/data/scheduling-inputs.test.ts (19 tests | 5 failed) 11ms
+   ❯ normal-based weekly submissions (5)
+     × confirmation without changes persists submission metadata without inventing day overrides 3ms
+     × unavailable all week writes seven dated full-day exceptions 1ms
+     × changes only the selected date, preserving other overrides 0ms
+   × the final deadline guard uses the current clock after the lock wait 0ms
+   × retries a stale legacy conversion after locking and preserves another saved day's override 1ms
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx (3 tests | 3 failed) 3ms
+   × marks a waiting request amber and an approval green, with a timeline 2ms
+   × offers a confirmed withdrawal only for the current employee pending request 0ms
+   × keeps withdrawal inside its own request row, next to the facts and the waiting status 0ms
+ ❯ src/app/app/requests/hub/page.test.tsx (6 tests | 3 failed) 3ms
+   × retains both request destinations for EMPLOYEE 2ms
+   × retains both request destinations for LEAD 0ms
+   × lists the person's own time off, waiting first, and never turns a failed read into no requests 0ms
+ ❯ src/app/app/requests/page.test.tsx (2 tests | 2 failed) 3ms
+   × marks a waiting request amber and an approval green, with a timeline 2ms
+   × names who decided a request and when, and never names anyone on a withdrawal 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > confirmation without changes persists submission metadata without inventing day overrides
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:163:7
+    161|     expect(
+    162|       mocks.statements.some((s) => s.text.includes("uses_normal_availa…
+    163|     ).toBe(true);
+       |       ^
+    164|     expect(
+    165|       mocks.statements.filter((s) =>
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > unavailable all week writes seven dated full-day exceptions
+AssertionError: expected [] to have a length of 7 but got +0
+
+- Expected
++ Received
+
+- 7
++ 0
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:183:24
+    181|       s.text.includes("INSERT INTO availability_exceptions"),
+    182|     );
+    183|     expect(exceptions).toHaveLength(7);
+       |                        ^
+    184|     expect(
+    185|       exceptions.every(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > changes only the selected date, preserving other overrides
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:201:21
+    199|       s.text.includes("DELETE FROM availability_exceptions"),
+    200|     );
+    201|     expect(deletes).toHaveLength(1);
+       |                     ^
+    202|     expect(deletes[0].values).toContain("2026-10-05");
+    203|     expect(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > the final deadline guard uses the current clock after the lock wait
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ src/lib/data/scheduling-inputs.test.ts:260:5
+    258|       statement.text.includes("deadline_guard"),
+    259|     )?.text,
+    260|   ).toContain("availability_deadline < clock_timestamp()");
+       |     ^
+    261| });
+    262| it("missing staffing configuration stays explicit instead of inventing…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > retries a stale legacy conversion after locking and preserves another saved day's override
+TypeError: Cannot read properties of undefined (reading 'includes')
+ ❯ src/lib/data/scheduling-inputs.test.ts:338:45
+    336|   }>;
+    337|   expect(
+    338|     retryQueries.some((query) => query.text.includes("version_guard")),
+       |                                             ^
+    339|   ).toBe(true);
+    340|   const deletes = retryQueries.filter((query) =>
+ ❯ src/lib/data/scheduling-inputs.test.ts:338:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  src/app/app/requests/page.test.tsx > marks a waiting request amber and an approval green, with a timeline
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.test.tsx:17:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  src/app/app/requests/page.test.tsx > names who decided a request and when, and never names anyone on a withdrawal
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.test.tsx:28:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > marks a waiting request amber and an approval green, with a timeline
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:19:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > offers a confirmed withdrawal only for the current employee pending request
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:30:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > keeps withdrawal inside its own request row, next to the facts and the waiting status
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:44:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  src/app/app/requests/hub/page.test.tsx > retains both request destinations for EMPLOYEE
+ FAIL  src/app/app/requests/hub/page.test.tsx > retains both request destinations for LEAD
+TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+ ❯ employeeViewAuthority src/lib/employee-view-authority.server.ts:10:4
+      8| export function employeeViewAuthority(proof:SessionMutationProof,view:…
+      9|  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+     10|   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+       |    ^
+     11| }
+     12|
+ ❯ Module.RequestsHubPage src/app/app/requests/hub/page.tsx:21:60
+ ❯ src/app/app/requests/hub/page.test.tsx:26:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  src/app/app/requests/hub/page.test.tsx > lists the person's own time off, waiting first, and never turns a failed read into no requests
+TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+ ❯ employeeViewAuthority src/lib/employee-view-authority.server.ts:10:4
+      8| export function employeeViewAuthority(proof:SessionMutationProof,view:…
+      9|  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+     10|   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+       |    ^
+     11| }
+     12|
+ ❯ Module.RequestsHubPage src/app/app/requests/hub/page.tsx:21:60
+ ❯ src/app/app/requests/hub/page.test.tsx:51:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+
+ Test Files  4 failed (4)
+      Tests  13 failed | 17 passed (30)
+   Start at  22:07:32
+   Duration  599ms (import 72%, transform 21%, tests 5%, worker 1%)
+

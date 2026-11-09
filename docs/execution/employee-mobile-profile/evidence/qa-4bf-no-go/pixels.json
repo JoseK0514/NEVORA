@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-27T21:48:07.912811+00:00",
+  "scope": "Independent QA personally viewed these pixels using view_image, not solely test summaries. Bounded observations; failed full acceptance remains open.",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.png",
+      "sha256": "c49d001ef0556ec24f343980bd5343af5a16f8a9d60daa421f23627760038600",
+      "bytes": 100294,
+      "observation": "Personally inspected: dark rendered page with System selected. Confirms recorded theme mismatch; no pending requests recorded."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/chromium-profile-signout-held-native-submission.png",
+      "sha256": "0e3afc85de111aed3e9ce5e0d7e9863e46b53b63698e70c56fa64e40f49f2d5d",
+      "bytes": 19992,
+      "observation": "Personally inspected: private identity and service slots absent, Signing out notice and disabled button aligned; dark semantic canvas reaches navigation with no large black gap."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/webkit-profile-text200-viewport.png",
+      "sha256": "51a728bb71ce8ff615b37ea031b597cc123f3371c91a38623bd938ad959374c5",
+      "bytes": 43890,
+      "observation": "Personally inspected: enlarged Delete my account wraps with readable line spacing; Sign out remains above enlarged navigation."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-profile-light-320-viewport.png",
+      "sha256": "6057cfe9c36e027bd50df0add05df068aa2b2accc86837fa5671dfc6daadfe82",
+      "bytes": 57204,
+      "observation": "Personally inspected: explicit Light setting renders light surface, inset native select arrows and labels retained at320px. This does not close failed System transition."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/chromium-support-light-text200-viewport.png",
+      "sha256": "f61bf25a6cfe24c43ed7e857464e5d5ab1803c6867db594cdfd88bdcef2426be",
+      "bytes": 45248,
+      "observation": "Personally inspected: enlarged contextual Support header, Profile return and body fit320px; long words wrap. This single view does not certify all legal content or Firefox legal journey."
+    }
+  ]
+}

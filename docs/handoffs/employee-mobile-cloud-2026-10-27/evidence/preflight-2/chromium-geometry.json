@@ -1,0 +1,97 @@
+[
+  {
+    "tag": "HTML",
+    "cls": "",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 8773.78125,
+      "top": 0,
+      "right": 320,
+      "bottom": 8773.78125,
+      "left": 0
+    },
+    "scrollTop": 0,
+    "scrollHeight": 8774,
+    "padding": "0px",
+    "position": "static",
+    "nav": ""
+  },
+  {
+    "tag": "DIV",
+    "cls": "app-main",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 8773.78125,
+      "top": 0,
+      "right": 320,
+      "bottom": 8773.78125,
+      "left": 0
+    },
+    "scrollTop": 0,
+    "scrollHeight": 8774,
+    "padding": "0px 0px 249px",
+    "position": "static",
+    "nav": "249px"
+  },
+  {
+    "tag": "MAIN",
+    "cls": "page-frame",
+    "rect": {
+      "x": 0,
+      "y": 0,
+      "width": 320,
+      "height": 8524.78125,
+      "top": 0,
+      "right": 320,
+      "bottom": 8524.78125,
+      "left": 0
+    },
+    "scrollTop": 0,
+    "scrollHeight": 8525,
+    "padding": "0px 0px 32px",
+    "position": "static",
+    "nav": "249px"
+  },
+  {
+    "tag": "NAV",
+    "cls": "mobile-nav",
+    "rect": {
+      "x": 0,
+      "y": 595.4375,
+      "width": 320,
+      "height": 248.5625,
+      "top": 595.4375,
+      "right": 320,
+      "bottom": 844,
+      "left": 0
+    },
+    "scrollTop": 0,
+    "scrollHeight": 248,
+    "padding": "8px 8px 12px",
+    "position": "fixed",
+    "nav": "249px"
+  },
+  {
+    "tag": "FOOTER",
+    "cls": "em-request-footer",
+    "rect": {
+      "x": 20,
+      "y": 8361,
+      "width": 280,
+      "height": 107.78125,
+      "top": 8361,
+      "right": 300,
+      "bottom": 8468.78125,
+      "left": 20
+    },
+    "scrollTop": 0,
+    "scrollHeight": 108,
+    "padding": "0px",
+    "position": "static",
+    "nav": "249px"
+  }
+]

@@ -1,0 +1,655 @@
+$ git diff 592d421225e8266a5079f2a1381dc3b4175b9635...HEAD
+exit=0
+diff --git a/docs/execution/employee-mobile-passkeys/passkeys-plan.md b/docs/execution/employee-mobile-passkeys/passkeys-plan.md
+new file mode 100644
+index 00000000..0b194db8
+--- /dev/null
++++ b/docs/execution/employee-mobile-passkeys/passkeys-plan.md
+@@ -0,0 +1,29 @@
++# Employee mobile passkeys
++
++Approved continuation of Phase2 on the existing isolated feature branch; base592d4212. Canonical passkey service/store, same-origin HTTP and native WebAuthn remain the source of truth. Prototype passkeys are visual references only, never an integration or permission source.
++
++## Scope and acceptance
++
++Own Employee/Lead Profile passkeys: current saved name/added/last-used metadata, deliberate native setup, quiet cancellation, explicit Keep/Remove confirmation including the last key, canonical refresh and honest uncertain outcomes. Preserve flag-off invisibility, unsupported-browser metadata/removal, legacy manager/owner and sign-in/offer behavior. No rename, employee selector, biometric configuration, password change, policy editor, new schema, paid generation or deployment.
++
++Reuse scoped teal tokens, rem typography, regular Phosphor, native controls,44/48px targets, inline consequence review, visible focus and exact cancellation return. One owner survives resizing. Never describe every phone as Face ID. Native setup is user initiated; device stores the private credential.
++
++## Task 1: own binding and finite controller
++
++Add opt-in Employee/Lead lifetime binding to existing protected endpoints; absent header retains legacy contracts. Server always requires current actual session. Own metadata has a DB-clock/session-bounded <=45second lease. Reuse guarded canonical list and registration/removal. Strict metadata/receipt parsing, bounded headers/body, abort/fence late results, no private persistence. Synchronously expire stale command admission. Native prompt may blur the page: release visible private facts without launching a second ceremony; recheck canonical authority before verification. Pagehide/offline/signout/account storage end or cancel safely. Unknown verification is never resubmitted; fresh list reveals current facts without claiming original success. Removal retries cannot target a different ID.
++
++Tests: original HTTP contracts plus own binding/lease/session loss, parser faults, delayed/ignored abort/expiry, prompt cancellation/blur, late verification/account switch, uncertain writes/current reads. Expected: new regressions RED before production changes, then targeted GREEN.
++
++## Task 2: mobile presentation
++
++Implement own Profile security presentation with calm explanation, metadata list, progress/cancellation, truthful recovery and inline removal review. Preserve one controller and incumbent desktop/management appearance. Render/state tests first; scoped CSS from existing semantic tokens. Expected: accessible labels, no prehydration metadata, no invented permission or device state.
++
++## Task 3: real local evidence and independent review
++
++Disposable owned PostgreSQL + actual Next; real canonical server registration with a fictional cryptographic authenticator, never personal device credentials. Chromium/WebKit/Firefox mobile flows: own add/list/remove, wrong binding/foreign key/flag/unsupported/cancel/denial/lost response/signout/resize; keyboard, exact focus,320/390/430, light/dark,200% text/coarse landscape and desktop preservation. Run unit corpus, nonincremental TS, changed lint, canonical passkey SQL/HTTP and relevant Profile/Calendar regressions. Preserve failures and exact inputs; independent fresh code/UI/QA dispositions own their findings. Calendar QA-CAL-1 remains open, unrelated pass is not closure. Physical devices/OS credential stores and hosted/CI/release remain separate.
++
++## Interfaces and controls
++
++Task1 supplies strict controller/snapshot to Task2 and HTTP/browser evidence in Task3. No parallel credential engine. Product: account security only. Engineering: reuse canonical store/HTTP and stable responsive owner. Security: exact current own session, no selectors, no raw credential logging/persistence, fresh authority before native-result verify. Governance: retain failures and independent author closure; no release or risk waiver. Program: finish this bounded group; other Phase2 tools remain.
++
++Review focus: native-sheet focus/visibility races, uncertain commit after response loss, expiry before timer callback, stale cookie/account switching, malformed successful JSON, duplicate native prompts, credential storage/logging, last-key semantics, unsupported list/removal, desktop lifecycle preservation. No Jose decision is required within this approved bounded scope.
+diff --git a/scripts/payroll-postgres.mjs b/scripts/payroll-postgres.mjs
+index 4e27d49b..f4517d17 100644
+--- a/scripts/payroll-postgres.mjs
++++ b/scripts/payroll-postgres.mjs
+@@ -78,7 +78,7 @@ try {
+   const config =
+     process.argv[2] ?? "vitest.configurable-payroll-integration.config.mts";
+   const prefix = ["vitest.passkeys-network.config.mts", "vitest.all-ui-browser.config.mts", "vitest.owner-advisor-browser.config.mts", "vitest.employee-mobile-phase1.config.mts", "vitest.employee-mobile-requests.config.mts", "vitest.employee-mobile-responses.config.mts", "vitest.employee-mobile-creation.config.mts", "vitest.employee-mobile-planning.config.mts", "vitest.employee-mobile-hours.config.mts", "vitest.employee-mobile-communications.config.mts", "vitest.employee-mobile-profile.config.mts", "vitest.employee-mobile-calendar.config.mts"].includes(config)
+-    ? "nevora_exchange_test_" : "nevora_foundation_test_";
++    || config === 'vitest.employee-mobile-passkeys.config.mts' ? "nevora_exchange_test_" : "nevora_foundation_test_";
+   const env = {
+     ...process.env,
+     FUEL_TEST_DATABASE_URL: `postgresql://nevora_test@127.0.0.1:${port}/${prefix}c1_${marker.slice(0, 12)}`,
+diff --git a/src/app/app/profile/page.tsx b/src/app/app/profile/page.tsx
+index d9588c0e..fa0f0e54 100644
+--- a/src/app/app/profile/page.tsx
++++ b/src/app/app/profile/page.tsx
+@@ -9,7 +9,7 @@ import {QuietNav} from '@/components/quiet/quiet';
+ import {EmployeeProfilePage} from '@/components/employee-mobile/profile';
+ import {policiesVisible} from '@/lib/legal/policies';
+ import {ManagerProfilePage} from '@/components/manager-profile/manager-profile';
+-import {PasskeySection} from '@/components/passkeys/passkey-section';
++import {EmployeePasskeySection} from '@/components/employee-mobile/passkeys';
+ import {getWorkspace} from '@/lib/data/workspaces';
+ import {readAuthLang} from '@/lib/auth-lang.server';
+ 
+@@ -27,5 +27,5 @@ export default async function ProfilePage(){
+  return <EmployeeProfilePage authority={authority} lang={lang} notificationsEnabled={notificationsEnabled} policies={policiesVisible()}
+   legacyHeader={<><QuietNav back={{href:'/app/more',label:'More'}}/><div className="q-who"><span className="q-av q-av--lg" aria-hidden="true">{initials}</span><div><h1>{firstName} {lastName}</h1><p>{roleLabel}{workspaceName?` · ${workspaceName}`:''}</p></div></div></>}
+   calendar={<ProfileCalendarDisclosure><CalendarSubscriptionPanel key={calAuthority} authority={calAuthority}/></ProfileCalendarDisclosure>}
+-  passkeys={<PasskeySection/>}/>;
++  passkeys={<EmployeePasskeySection key={employeeViewAuthority(proof,'passkeys')} authority={employeeViewAuthority(proof,'passkeys')}/>}/>;
+ }
+diff --git a/src/components/employee-mobile/passkeys.css b/src/components/employee-mobile/passkeys.css
+new file mode 100644
+index 00000000..e358a87c
+--- /dev/null
++++ b/src/components/employee-mobile/passkeys.css
+@@ -0,0 +1,43 @@
++.em-passkeys .pk-add { display:inline-flex; align-items:center; gap:8px; }
++.em-passkeys-empty { display:flex; align-items:flex-start; gap:12px; }
++.em-passkeys-empty h3,.em-passkeys-confirmation h3 { margin:0 0 8px; font-size:1rem; }
++.em-passkeys .em-passkeys-feedback { margin:0; }
++.em-passkeys-feedback:empty { display:none; }
++.em-passkeys-actions { display:flex; flex-wrap:wrap; gap:12px; }
++.em-passkeys-confirmation,.em-passkeys-progress { display:flex; flex-direction:column; gap:12px; }
++.em-passkeys-help summary { display:flex; align-items:center; gap:12px; min-height:44px; cursor:pointer; list-style:none; }
++.em-passkeys-help summary::-webkit-details-marker { display:none; }
++.em-passkeys-help summary span { flex:1; }
++.em-passkeys-help[open] summary svg { transform:rotate(180deg); }
++.em-passkeys-help p { margin:0 0 12px; }
++@media (max-width:767px), (max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse) {
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys { display:flex; flex-direction:column; gap:var(--em-space-3); min-width:0; margin:0; padding:0; border:0; box-shadow:none; background:transparent; color:var(--em-ink); font:400 var(--em-size-body)/var(--em-line-body) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .nv-card__head { padding:0; border:0; background:none; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys :is(h2,h3,p) { margin:0; padding:0; color:inherit; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys h2 { font:var(--em-weight-section) var(--em-size-section)/var(--em-line-heading) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys h3 { font:var(--em-weight-label) var(--em-size-body)/var(--em-line-label) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-body { display:flex; flex-direction:column; gap:var(--em-space-5); padding:var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); min-width:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys :is(.pk-muted,.pk-item__meta,.em-passkeys-help) { color:var(--em-muted); font:400 var(--em-size-support)/var(--em-line-body) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-list { margin:0; padding:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-item { display:flex; align-items:flex-start; flex-wrap:wrap; gap:var(--em-space-3); padding:var(--em-space-4) 0; border-color:var(--em-line); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-item:first-child { padding-top:0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-item__text { flex:1 1 120px; gap:var(--em-space-1); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-item__name { color:var(--em-ink); font:var(--em-weight-label) var(--em-size-body)/var(--em-line-label) var(--em-font); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys svg { flex:none; color:var(--em-teal); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .em-passkeys-key { margin-top:var(--em-space-1); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys :is(.nv-btn,.pk-remove) { display:inline-flex; align-items:center; justify-content:center; gap:var(--em-space-2); box-sizing:border-box; min-width:var(--em-target); min-height:var(--em-action); height:auto; margin:0; padding:var(--em-space-3) var(--em-space-4); border:1px solid var(--em-secondary); border-radius:var(--em-control); background:var(--em-surface); color:var(--em-teal); font:var(--em-weight-action) var(--em-size-body)/var(--em-line-label) var(--em-font); white-space:normal; text-align:center; cursor:pointer; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-add { align-self:stretch; background:var(--em-teal); color:var(--em-on-action); border-color:transparent; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-add svg { color:inherit; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .pk-remove { background:transparent; border-color:transparent; font-size:var(--em-size-support); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys .nv-btn[data-kind="danger"] { color:var(--em-red); border-color:var(--em-red); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys :is(button,a,summary,[tabindex]):focus-visible { outline:3px solid var(--em-focus); outline-offset:3px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys button:disabled { opacity:.6; cursor:default; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys button:not(:disabled):hover { box-shadow:inset 0 0 0 100px color-mix(in srgb,currentColor 8%,transparent); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys :is(.em-passkeys-feedback:not(:empty),.em-passkeys-confirmation,.em-passkeys-progress) { padding:var(--em-space-4); border-radius:var(--em-control); background:var(--em-wash); font-size:var(--em-size-support); color:var(--em-ink); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys-actions { display:flex; flex-wrap:wrap; gap:var(--em-space-3); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys-actions > button { flex:1 1 160px; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys-help { border-top:1px solid var(--em-line); padding-top:var(--em-space-1); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys-help summary { min-height:var(--em-target); gap:var(--em-space-3); padding:var(--em-space-2) 0; color:var(--em-teal); font-weight:var(--em-weight-action); }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys-help p { margin:var(--em-space-3) 0 0; }
++ html:has(#employee-mobile) body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-passkeys a { display:inline-flex; align-items:center; min-height:var(--em-target); color:var(--em-teal); text-underline-offset:3px; }
++}
+diff --git a/src/components/employee-mobile/passkeys.test.tsx b/src/components/employee-mobile/passkeys.test.tsx
+new file mode 100644
+index 00000000..ed113094
+--- /dev/null
++++ b/src/components/employee-mobile/passkeys.test.tsx
+@@ -0,0 +1,23 @@
++import {expect,it,vi} from 'vitest';
++import {renderToStaticMarkup} from 'react-dom/server';
++import {EmployeePasskeyView} from './passkeys';
++import type {PasskeyState} from '../../lib/passkeys/management';
++const noop=()=>{},key={id:'11111111-1111-4111-8111-111111111111',name:'My phone',createdAt:'2026-10-27T12:00:00.000Z',lastUsedAt:null};
++const state:PasskeyState={phase:'ready',passkeys:[key],busy:null,notice:'',needsRefresh:false};
++const render=(next:Partial<PasskeyState>={},supported=true,confirm=false)=>renderToStaticMarkup(<EmployeePasskeyView mobile state={{...state,...next}} supported={supported} confirm={confirm?key:null} onAdd={noop} onRefresh={noop} onRemove={noop} onReview={noop} onKeep={noop} onCancel={noop}/>);
++it('shows only saved own metadata with honest native setup instructions',()=>{
++ const html=render();expect(html).toContain('Passkeys');expect(html).toContain('My phone');expect(html).toContain('Not used yet');expect(html).toContain('device’s screen lock');expect(html).not.toContain('Set up Face ID');expect(html).not.toContain('Rename');
++});
++it('keeps saved-key removal available when this browser cannot create credentials',()=>{
++ const html=render({},false);expect(html).toContain('Remove My phone');expect(html).not.toContain('>Add a passkey<');expect(html).toContain('still manage your saved passkeys');
++});
++it.each(['loading','paused','unavailable','denied','disabled','ended'] as const)('never renders private metadata or removal review while %s',phase=>{
++ const html=render({phase},true,true);expect(html).not.toContain('My phone');expect(html).not.toContain('>Add a passkey<');
++});
++it('separates current uncertainty from saved facts and never offers blind mutation retry',()=>{
++ const html=render({phase:'unavailable',passkeys:null,needsRefresh:true,notice:'We could not confirm the result.'});expect(html).toContain('Refresh passkeys');expect(html).not.toContain('Try setup again');
++});
++it('states last-key consequences before explicit removal and preserves the safe Keep choice',()=>{
++ const html=render({},true,true);expect(html).toContain('last saved passkey');expect(html).toContain('Keep passkey');expect(html).toContain('Remove passkey');expect(html).toContain('does not delete it from your device');
++});
++vi.unstubAllGlobals();
+diff --git a/src/components/employee-mobile/passkeys.tsx b/src/components/employee-mobile/passkeys.tsx
+new file mode 100644
+index 00000000..61d5ac55
+--- /dev/null
++++ b/src/components/employee-mobile/passkeys.tsx
+@@ -0,0 +1,74 @@
++'use client';
++
++import {useEffect,useRef,useState,useSyncExternalStore,type RefObject} from 'react';
++import {KeyIcon} from '@phosphor-icons/react/dist/ssr/Key';
++import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
++import {createPasskeyManager,type PasskeyState} from '../../lib/passkeys/management';
++import {passkeysAvailable,passkeysFlagOn,type Passkey} from '../../lib/passkeys/client';
++import {useEmployeeMobile} from './use-mobile';
++import '../passkeys/passkeys.css';
++import './passkeys.css';
++
++const subscribe=()=>()=>{};
++const date=(value:string)=>new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
++type ViewProps={mobile:boolean;state:PasskeyState;supported:boolean;confirm:Passkey|null;onAdd:()=>void;onRefresh:()=>void;onRemove:(id:string)=>void;onReview:(key:Passkey,button:HTMLButtonElement)=>void;onKeep:()=>void;onCancel:()=>void;addRef?:RefObject<HTMLButtonElement|null>;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLParagraphElement|null>};
++
++export function EmployeePasskeyView({mobile,state,supported,confirm,onAdd,onRefresh,onRemove,onReview,onKeep,onCancel,addRef,confirmationRef,feedbackRef}:ViewProps){
++ const ready=state.phase==='ready',keys=ready?state.passkeys??[]:[],busy=state.busy!==null;
++ const reviewed=ready?keys.find(key=>key.id===confirm?.id):null;
++ if(state.phase==='disabled'||state.phase==='ended')return null;
++ return <section className={`nv-card pk-section em-passkeys${mobile?' em-passkeys-mobile':''}`} aria-labelledby="passkeys-title" data-passkey-state={state.phase}>
++  <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{mobile?'Passkeys':'Face ID and passkeys'}</h2></div>
++  <div className="nv-card__body pk-body">
++   <p className="pk-muted em-passkeys-intro">Sign in with your device’s screen lock instead of typing your password.</p>
++   {state.phase==='loading'?<p className="pk-muted" role="status">Checking your saved passkeys…</p>:null}
++   {state.phase==='paused'&&!busy?<p className="pk-muted" role="status">Passkeys are paused. Return to this page to check your account.</p>:null}
++   {state.phase==='denied'?<p className="pk-muted" role="status">Your session changed. <a href="/login">Sign in again</a> to manage your passkeys.</p>:null}
++   {state.phase==='unavailable'?<p className="pk-muted">{state.needsRefresh?'Check your saved passkeys before starting another request.':'We couldn’t check your passkeys. Refresh to try again.'}</p>:null}
++   {ready?<>
++    {keys.length?<ul className="pk-list">{keys.map(key=><li className="pk-item" key={key.id}>
++     <KeyIcon className="em-passkeys-key" size={24} aria-hidden="true"/>
++     <span className="pk-item__text"><span className="pk-item__name">{key.name}</span><span className="pk-item__meta">Added {date(key.createdAt)}</span><span className="pk-item__meta">{key.lastUsedAt?'Last used '+date(key.lastUsedAt):'Not used yet'}</span></span>
++     <button type="button" className="nv-link pk-remove" aria-label={'Remove '+key.name} disabled={busy||state.needsRefresh||!!reviewed} onClick={event=>onReview(key,event.currentTarget)}>Remove</button>
++    </li>)}</ul>:<div className="em-passkeys-empty"><KeyIcon size={28} aria-hidden="true"/><div><h3>No saved passkeys</h3><p className="pk-muted">Your password still works. Add a passkey when you’re ready.</p></div></div>}
++    {reviewed?<div className="em-passkeys-confirmation" role="group" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body" tabIndex={-1} ref={confirmationRef}>
++     <h3 id="passkey-remove-title">Remove “{reviewed.name}”?</h3><p id="passkey-remove-body">This stops this passkey from signing in to NEVORA. It does not delete it from your device or sign you out.</p>
++     {keys.length===1?<p>This is your last saved passkey. You can still sign in with your password.</p>:null}
++     <div className="em-passkeys-actions"><button type="button" className="nv-btn" data-kind="secondary" disabled={busy} onClick={onKeep}>Keep passkey</button><button type="button" className="nv-btn" data-kind="danger" disabled={busy} onClick={()=>onRemove(reviewed.id)}>Remove passkey</button></div>
++    </div>:null}
++    {!reviewed&&supported?<button ref={addRef} type="button" className="nv-btn pk-add" data-kind="secondary" disabled={busy||state.needsRefresh} onClick={onAdd}><KeyIcon size={20} aria-hidden="true"/>Add a passkey</button>:null}
++    {!supported?<p className="pk-muted">This browser can’t create a passkey. You can still manage your saved passkeys here, or use a supported browser to add one.</p>:null}
++   </>:null}
++   {busy?<div className="em-passkeys-progress"><p role="status">{state.busy==='device'?'Finish setup in your device’s prompt.':state.busy==='removing'?'Removing your passkey…':state.busy==='verifying'?'Checking and saving your passkey…':'Preparing secure setup…'}</p>{state.busy==='device'||state.busy==='options'?<button type="button" className="nv-btn" data-kind="secondary" onClick={onCancel}>Cancel setup</button>:null}</div>:null}
++   <p className="em-passkeys-feedback" role="status" aria-live="polite" tabIndex={-1} ref={feedbackRef}>{state.notice}</p>
++   {(!busy&&(state.phase==='unavailable'||state.phase==='paused'))?<button type="button" className="nv-btn" data-kind="secondary" onClick={onRefresh}>Refresh passkeys</button>:null}
++   <details className="em-passkeys-help"><summary><span>How passkeys work</span><CaretDownIcon size={20} aria-hidden="true"/></summary><div><p>Your device may use a fingerprint, face scan, screen-lock code or security key. NEVORA does not receive your biometric data.</p><p>A saved name describes where a passkey was added. Your device or password manager may sync it to other devices.</p><p>Removing a passkey here stops future sign-ins with it. To remove its saved copy too, use your device or password manager.</p></div></details>
++  </div>
++ </section>;
++}
++
++/** Stable lifetime; responsive changes replace presentation, never a ceremony. */
++export function EmployeePasskeySection({authority}:{authority:string}){
++ const mobile=useEmployeeMobile(),flag=passkeysFlagOn();
++ const supported=useSyncExternalStore(subscribe,()=>passkeysAvailable()&&typeof navigator.credentials?.create==='function'&&window.isSecureContext,()=>false);
++ const [state,setState]=useState<PasskeyState>({phase:'loading',busy:null,passkeys:null,notice:'',needsRefresh:false});
++ const [confirm,setConfirm]=useState<Passkey|null>(null),owner=useRef<ReturnType<typeof createPasskeyManager>|null>(null);
++ const add=useRef<HTMLButtonElement>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLParagraphElement>(null),opener=useRef<HTMLButtonElement|null>(null),previousBusy=useRef(state.busy);
++ useEffect(()=>{
++  if(!flag)return;
++  const manager=createPasskeyManager(authority,()=>{if(manager.state.phase!=='ready')setConfirm(null);setState({...manager.state});});owner.current=manager;
++  const resume=()=>{if(document.visibilityState!=='hidden'&&navigator.onLine!==false)void manager.resume();};
++  const blur=()=>manager.pause(true),pause=()=>manager.pause(),end=()=>manager.end();
++  const visibility=()=>document.visibilityState==='hidden'?pause():resume();
++  const storage=(event:StorageEvent)=>{if(event.key===null||event.key==='fuel-portal-account-fence'||event.key==='fuel-portal-owner-generation')end();};
++  void manager.refresh();window.addEventListener('blur',blur);window.addEventListener('pagehide',pause);window.addEventListener('offline',pause);window.addEventListener('focus',resume);window.addEventListener('pageshow',resume);window.addEventListener('online',resume);window.addEventListener('nevora:signout',end);window.addEventListener('storage',storage);document.addEventListener('visibilitychange',visibility);
++  const poll=setInterval(()=>{if(document.visibilityState!=='hidden'&&manager.state.phase==='ready'&&!manager.state.busy)void manager.refresh();},30000);
++  return()=>{clearInterval(poll);manager.end();owner.current=null;window.removeEventListener('blur',blur);window.removeEventListener('pagehide',pause);window.removeEventListener('offline',pause);window.removeEventListener('focus',resume);window.removeEventListener('pageshow',resume);window.removeEventListener('online',resume);window.removeEventListener('nevora:signout',end);window.removeEventListener('storage',storage);document.removeEventListener('visibilitychange',visibility);};
++ },[authority,flag]);
++ useEffect(()=>{if(confirm){confirmation.current?.focus();confirmation.current?.scrollIntoView({block:'nearest'});}},[confirm]);
++ useEffect(()=>{const wasBusy=previousBusy.current;previousBusy.current=state.busy;if(wasBusy&&!state.busy&&state.notice){requestAnimationFrame(()=>{feedback.current?.focus();feedback.current?.scrollIntoView({block:'center'});});}},[state.busy,state.notice]);
++ if(!flag)return null;
++ return <EmployeePasskeyView mobile={mobile} state={state} supported={supported} confirm={confirm} addRef={add} confirmationRef={confirmation} feedbackRef={feedback}
++  onAdd={()=>void owner.current?.add()} onRefresh={()=>void owner.current?.refresh()} onRemove={id=>void owner.current?.remove(id)} onCancel={()=>owner.current?.cancel()}
++  onReview={(key,button)=>{opener.current=button;setConfirm(key);}} onKeep={()=>{setConfirm(null);requestAnimationFrame(()=>{if(opener.current?.isConnected)opener.current.focus();else add.current?.focus();});}}/>;
++}
+diff --git a/src/lib/auth/passkeys/http.server.ts b/src/lib/auth/passkeys/http.server.ts
+index c2063f8c..9451fd7e 100644
+--- a/src/lib/auth/passkeys/http.server.ts
++++ b/src/lib/auth/passkeys/http.server.ts
+@@ -7,6 +7,7 @@ import { correctionJson, readCorrectionJson, correctionResponseHeaders } from ".
+ import { passkeyConfig } from "./config";
+ import { PasskeyService } from "./service.server";
+ import { PasskeyError, validateFlowToken } from "./types";
++import { employeeViewAuthority } from '../../employee-view-authority.server';
+ 
+ type Action = "login_options" | "login_verify" | "register_options" | "register_verify" | "list" | "remove";
+ const errorJson = (error: string, status: number) => correctionJson({ error }, status);
+@@ -47,9 +48,14 @@ export async function passkeyHttp(request: Request, action: Action, id?: string)
+     if (protectedAction) {
+       if (!(await getSession())) return errorJson("not_found", 401);
+       try { proof = await requireSessionMutationProof(); } catch { return errorJson("not_found", 401); }
++      const binding=request.headers.get('X-Nevora-Passkey-Authority');
++      if(binding!==null&&(!['EMPLOYEE','LEAD'].includes(proof.employee.role)||binding!==employeeViewAuthority(proof,'passkeys')))
++        return errorJson('not_found',401);
+     }
+     const service = new PasskeyService(config);
+-    if (action === "list" && proof) return correctionJson({ passkeys: await service.list(proof) });
++    if (action === "list" && proof) return request.headers.has('X-Nevora-Passkey-Authority')
++      ?correctionJson({...await service.snapshot(proof),authority:employeeViewAuthority(proof,'passkeys')})
++      :correctionJson({ passkeys: await service.list(proof) });
+     if (action === "remove" && proof) {
+       await service.remove(proof, id ?? "");
+       return new Response(null, { status: 204, headers: correctionResponseHeaders });
+diff --git a/src/lib/auth/passkeys/service.server.ts b/src/lib/auth/passkeys/service.server.ts
+index 20304f24..982fe2c1 100644
+--- a/src/lib/auth/passkeys/service.server.ts
++++ b/src/lib/auth/passkeys/service.server.ts
+@@ -106,6 +106,9 @@ export class PasskeyService {
+   async list(proof: SessionMutationProof) {
+     return this.boundary(() => this.store.list(proof));
+   }
++  async snapshot(proof: SessionMutationProof) {
++    return this.boundary(() => this.store.snapshot(proof));
++  }
+   async remove(proof: SessionMutationProof, id: string) {
+     return this.boundary(async () => {
+       if (!(await consumeAuthLimit("passkey_management", proof.employee.id, 30, this.executor))) throw new PasskeyError("rate_limited");
+diff --git a/src/lib/auth/passkeys/store.server.ts b/src/lib/auth/passkeys/store.server.ts
+index ab50ad44..d03b654a 100644
+--- a/src/lib/auth/passkeys/store.server.ts
++++ b/src/lib/auth/passkeys/store.server.ts
+@@ -149,11 +149,19 @@ export class PasskeyStore {
+   /** Return only this live session's unrevoked key metadata; public keys and
+    * credential IDs are kept inside verification/storage paths. */
+   async list(proof: SessionMutationProof): Promise<PasskeyMetadata[]> {
++    return (await this.snapshot(proof)).passkeys;
++  }
++
++  async snapshot(proof: SessionMutationProof): Promise<{passkeys:PasskeyMetadata[];validForMs:number}> {
+     const prefix = guards(proof), results = await this.executor.transaction([...prefix,
+       s(`SELECT ${metadataFields} FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL ORDER BY created_at,id`, [proof.employee.id]),
++      s(`SELECT LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs"
++        FROM employee_sessions WHERE token_hash=$1 AND employee_id=$2`, [proof.sessionTokenHash,proof.employee.id]),
+       assertion(proof),
+     ]);
+-    return (results[prefix.length] as PasskeyMetadata[]).map(metadata);
++    const lease=results[prefix.length+1]?.[0] as {validForMs:number}|undefined;
++    if(!lease||!Number.isInteger(lease.validForMs)||lease.validForMs<=0)throw new PasskeyError('not_found');
++    return {passkeys:(results[prefix.length] as PasskeyMetadata[]).map(metadata),validForMs:lease.validForMs};
+   }
+ 
+   /** Retire an owned key rather than deleting its history. Repeated removal of
+diff --git a/src/lib/employee-view-authority.server.ts b/src/lib/employee-view-authority.server.ts
+index a2baa9da..031a530b 100644
+--- a/src/lib/employee-view-authority.server.ts
++++ b/src/lib/employee-view-authority.server.ts
+@@ -2,7 +2,7 @@ import 'server-only';
+ import {createHash} from 'node:crypto';
+ import type {SessionMutationProof} from './shift-changes/types';
+ 
+-export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours' | 'communications';
++export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours' | 'communications' | 'passkeys';
+ /** Public lifetime binding, never authentication. Each GET still requires the
+  * actual HttpOnly session and protected SQL guards. No raw hash is serialized. */
+ export function employeeViewAuthority(proof:SessionMutationProof,view:EmployeeView):string {
+diff --git a/src/lib/passkeys/client.ts b/src/lib/passkeys/client.ts
+index 040f7d96..135f806c 100644
+--- a/src/lib/passkeys/client.ts
++++ b/src/lib/passkeys/client.ts
+@@ -67,7 +67,7 @@ function requestOptions(json: Json): PublicKeyCredentialRequestOptions {
+   };
+ }
+ 
+-function creationOptions(json: Json): PublicKeyCredentialCreationOptions {
++export function creationOptions(json: Json): PublicKeyCredentialCreationOptions {
+   const native = (PublicKeyCredential as unknown as { parseCreationOptionsFromJSON?: (j: Json) => PublicKeyCredentialCreationOptions }).parseCreationOptionsFromJSON;
+   if (native) return native(json);
+   const user = json.user as Json;
+diff --git a/src/lib/passkeys/management.test.ts b/src/lib/passkeys/management.test.ts
+new file mode 100644
+index 00000000..793ceec6
+--- /dev/null
++++ b/src/lib/passkeys/management.test.ts
+@@ -0,0 +1,61 @@
++import {afterEach,beforeEach,expect,it,vi} from 'vitest';
++import {createPasskeyManager,parsePasskeySnapshot} from './management';
++const authority='a'.repeat(64),id='11111111-1111-4111-8111-111111111111';
++const key={id,name:'Fictional phone',createdAt:'2026-10-27T12:00:00.000Z',lastUsedAt:null};
++const snapshot=(keys:unknown[]=[key],validForMs=45000)=>({authority,validForMs,passkeys:keys});
++const options={challenge:'AQ',rp:{id:'localhost',name:'NEVORA'},user:{id:'AQ',name:'a',displayName:'a'},pubKeyCredParams:[{type:'public-key',alg:-7}]};
++const credential={toJSON:()=>({id:'fictional-public-response'})} as unknown as Credential;
++const managers:ReturnType<typeof createPasskeyManager>[]=[];
++const make=()=>{const manager=createPasskeyManager(authority,()=>{});managers.push(manager);return manager;};
++beforeEach(()=>{vi.useFakeTimers({toFake:['setTimeout','clearTimeout','setInterval','clearInterval','performance','Date']});vi.stubGlobal('window',{PublicKeyCredential:function(){}});vi.stubGlobal('PublicKeyCredential',{});vi.stubGlobal('navigator',{credentials:{create:vi.fn(async()=>null)}});});
++afterEach(()=>{managers.splice(0).forEach(manager=>manager.end());vi.unstubAllGlobals();vi.restoreAllMocks();vi.useRealTimers();});
++it('accepts only exact current own metadata and a positive finite lease',()=>{
++ expect(parsePasskeySnapshot(snapshot(),authority).passkeys).toEqual([key]);
++ for(const value of [{...snapshot(),authority:'b'.repeat(64)},{...snapshot(),validForMs:45001},snapshot([],0),snapshot([key,key]),snapshot([{...key,createdAt:'unknown'}]),snapshot([{...key,credentialId:'secret'}])])expect(()=>parsePasskeySnapshot(value,authority)).toThrow();
++});
++it.each(['headers','body'])('bounds unread %s and clears metadata',async boundary=>{
++ vi.stubGlobal('fetch',vi.fn(()=>boundary==='headers'?new Promise(()=>{}):Promise.resolve(new Response(new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('{'));}})))));
++ const manager=make(),work=manager.refresh();await vi.advanceTimersByTimeAsync(10001);await work;expect(manager.state.phase).toBe('unavailable');expect(manager.state.passkeys).toBeNull();
++});
++it('subtracts transport time and checks expiry before native admission even if timers stall',async()=>{
++ let deliver!:(r:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(r=>{deliver=r;})));const m=make(),work=m.refresh();await vi.advanceTimersByTimeAsync(500);deliver(Response.json(snapshot([],100)));await work;expect(m.state.phase).toBe('unavailable');await m.add();expect(navigator.credentials.create).not.toHaveBeenCalled();
++ vi.stubGlobal('fetch',vi.fn(async()=>Response.json(snapshot([],100))));await m.refresh();const now=vi.spyOn(performance,'now').mockReturnValue(1000);await m.add();expect(navigator.credentials.create).not.toHaveBeenCalled();expect(m.state.phase).toBe('unavailable');now.mockRestore();
++});
++it('ends permanently on account loss and fences an abort-ignoring late read',async()=>{
++ let deliver!:(r:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(r=>{deliver=r;})));const m=make(),work=m.refresh();m.end();deliver(Response.json(snapshot()));await work;await m.refresh();expect(m.state.phase).toBe('ended');expect(m.state.passkeys).toBeNull();expect(fetch).toHaveBeenCalledOnce();
++});
++it.each([401,403])('treats HTTP%s as current denial without waiting for a held body',async status=>{
++ const cancel=vi.fn();vi.stubGlobal('fetch',vi.fn(async()=>new Response(new ReadableStream({cancel}),{status})));const m=make();await m.refresh();expect(m.state.phase).toBe('denied');expect(cancel).toHaveBeenCalledOnce();
++});
++it('keeps an expected native-prompt blur from starting a duplicate ceremony, then rechecks before verify',async()=>{
++ let finish!:(c:Credential|null)=>void;vi.stubGlobal('navigator',{credentials:{create:vi.fn(()=>new Promise<Credential|null>(r=>{finish=r;}))}});
++ const calls:string[]=[];vi.stubGlobal('fetch',vi.fn(async(path:string)=>{calls.push(path);return Response.json(path.endsWith('/options')?{challenge:'AQ',rp:{id:'localhost',name:'NEVORA'},user:{id:'AQ',name:'a',displayName:'a'},pubKeyCredParams:[{type:'public-key',alg:-7}]}:snapshot([]));}));
++ const m=make();await m.refresh();const work=m.add();await vi.advanceTimersByTimeAsync(0);expect(m.state.busy).toBe('device');m.pause(true);expect(m.state.passkeys).toBeNull();await m.resume();await m.add();expect(navigator.credentials.create).toHaveBeenCalledOnce();finish(null);await work;expect(calls.filter(path=>path.endsWith('/verify'))).toHaveLength(0);expect(m.state.notice).toMatch(/cancelled/i);expect(m.state.phase).toBe('ready');
++});
++it('does not repeat an uncertain removal and requires a current list before more actions',async()=>{
++ let removes=0;vi.stubGlobal('fetch',vi.fn(async(_path:string,init:RequestInit)=>{if(init.method==='DELETE'){removes++;throw Error('lost reply');}return Response.json(snapshot());}));
++ const m=make();await m.refresh();await m.remove(id);expect(m.state.needsRefresh).toBe(true);expect(m.state.notice).toMatch(/could not confirm/i);await m.remove(id);expect(removes).toBe(1);await m.refresh();expect(m.state.phase).toBe('ready');expect(m.state.notice).not.toMatch(/removed\./i);
++});
++it('never removes an unreviewed key and only reports success after a fresh absent-key read',async()=>{
++ let removed=false;vi.stubGlobal('fetch',vi.fn(async(_path:string,init:RequestInit)=>{if(init.method==='DELETE'){removed=true;return new Response(null,{status:204});}return Response.json(snapshot(removed?[]:[key]));}));
++ const m=make();await m.refresh();await m.remove('22222222-2222-4222-8222-222222222222');expect(removed).toBe(false);await m.remove(id);expect(m.state.passkeys).toEqual([]);expect(m.state.notice).toBe('Passkey removed.');
++});
++it('does not call a successful deletion complete when its canonical follow-up read fails',async()=>{
++ let reads=0;vi.stubGlobal('fetch',vi.fn(async(_path:string,init:RequestInit)=>{if(init.method==='DELETE')return new Response(null,{status:204});if(++reads>1)throw Error('read failed');return Response.json(snapshot());}));
++ const m=make();await m.refresh();await m.remove(id);expect(m.state.needsRefresh).toBe(true);expect(m.state.notice).toMatch(/could not confirm/i);expect(m.state.passkeys).toBeNull();
++});
++it.each(['headers','body'])('never resends registration verification after unknown %s; a new read cannot invent success',async boundary=>{
++ let verifications=0;vi.stubGlobal('navigator',{credentials:{create:vi.fn(async()=>credential)}});
++ vi.stubGlobal('fetch',vi.fn(async(path:string)=>{if(path.endsWith('/options'))return Response.json(options);if(path.endsWith('/verify')){verifications++;if(boundary==='headers')return await new Promise<Response>(()=>{});return new Response(new ReadableStream({start(c){c.enqueue(new TextEncoder().encode('{'));}}));}return Response.json(snapshot([]));}));
++ const m=make();await m.refresh();const work=m.add();await vi.advanceTimersByTimeAsync(10001);await work;expect(m.state.needsRefresh).toBe(true);await m.add();expect(verifications).toBe(1);await m.refresh();expect(m.state.notice).not.toMatch(/Passkey added/);expect(verifications).toBe(1);
++});
++it('rechecks current binding after the native response and never verifies after denial',async()=>{
++ let reads=0;vi.stubGlobal('navigator',{credentials:{create:vi.fn(async()=>credential)}});const paths:string[]=[];
++ vi.stubGlobal('fetch',vi.fn(async(path:string)=>{paths.push(path);if(path.endsWith('/options'))return Response.json(options);return ++reads===1?Response.json(snapshot([])):new Response(null,{status:401});}));
++ const m=make();await m.refresh();await m.add();expect(m.state.phase).toBe('denied');expect(paths.some(path=>path.endsWith('/verify'))).toBe(false);
++});
++it('only reports native registration success after the exact saved receipt is present in a fresh list',async()=>{
++ let saved=false;vi.stubGlobal('navigator',{credentials:{create:vi.fn(async()=>credential)}});
++ const headers:HeadersInit[]=[];vi.stubGlobal('fetch',vi.fn(async(path:string,init:RequestInit)=>{headers.push(init.headers!);if(path.endsWith('/options'))return Response.json(options);if(path.endsWith('/verify')){saved=true;return Response.json({passkey:key});}return Response.json(snapshot(saved?[key]:[]));}));
++ const m=make();await m.refresh();await m.add();expect(m.state.passkeys).toEqual([key]);expect(m.state.notice).toMatch(/Passkey added/);expect(headers.every(value=>new Headers(value).get('X-Nevora-Passkey-Authority')===authority)).toBe(true);
++});
+diff --git a/src/lib/passkeys/management.ts b/src/lib/passkeys/management.ts
+new file mode 100644
+index 00000000..1fc8f344
+--- /dev/null
++++ b/src/lib/passkeys/management.ts
+@@ -0,0 +1,122 @@
++import {creationOptions,credentialJSON,deviceName,type Passkey} from './client';
++
++type Phase='loading'|'ready'|'paused'|'unavailable'|'denied'|'disabled'|'ended';
++type Busy='options'|'device'|'verifying'|'removing'|null;
++export type PasskeyState={phase:Phase;busy:Busy;passkeys:Passkey[]|null;notice:string;needsRefresh:boolean};
++type Snapshot={authority:string;validForMs:number;passkeys:Passkey[]};
++const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
++const exact=(value:Record<string,unknown>,keys:string[])=>Object.keys(value).sort().join(',')===keys.sort().join(',');
++const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
++function parseKey(value:unknown):Passkey {
++ if(!record(value)||!exact(value,['id','name','createdAt','lastUsedAt'])||typeof value.id!=='string'||!uuid.test(value.id)||typeof value.name!=='string'||!value.name.trim()||value.name.length>80||/[\u0000-\u001f\u007f]/.test(value.name)||typeof value.createdAt!=='string'||!Number.isFinite(Date.parse(value.createdAt))||value.lastUsedAt!==null&&(typeof value.lastUsedAt!=='string'||!Number.isFinite(Date.parse(value.lastUsedAt))))throw Error('Invalid passkey metadata');
++ return value as Passkey;
++}
++export function parsePasskeySnapshot(value:unknown,authority:string):Snapshot {
++ if(!record(value)||!exact(value,['authority','validForMs','passkeys'])||value.authority!==authority||typeof value.validForMs!=='number'||!Number.isInteger(value.validForMs)||value.validForMs<=0||value.validForMs>45000||!Array.isArray(value.passkeys))throw Error('Invalid passkey snapshot');
++ const passkeys=value.passkeys.map(parseKey);if(new Set(passkeys.map(key=>key.id)).size!==passkeys.length)throw Error('Duplicate passkey');
++ return {authority,validForMs:value.validForMs,passkeys};
++}
++class Denied extends Error {}
++class Disabled extends Error {}
++class Refused extends Error {}
++const uncertain='We could not confirm the result. Refresh your saved passkeys before trying again.';
++
++/** A mounted own-account owner. Native credentials never enter state/storage;
++ * every command uses the original session binding and canonical server guards. */
++export function createPasskeyManager(authority:string,changed:()=>void){
++ let state:PasskeyState={phase:'loading',busy:null,passkeys:null,notice:'',needsRefresh:false};
++ let version=0,ended=false,deadline=0,expiry:ReturnType<typeof setTimeout>|undefined;
++ let active:AbortController|undefined,reading=false;
++ const publish=(next:Partial<PasskeyState>)=>{state={...state,...next};changed();};
++ const clearLease=()=>{clearTimeout(expiry);deadline=0;};
++ const expire=()=>{clearLease();publish({phase:'unavailable',passkeys:null,notice:'Refresh to check your current passkeys.'});};
++ const valid=()=>{if(deadline<=performance.now()){expire();return false;}return state.phase==='ready'&&!state.busy&&!state.needsRefresh;};
++ const isLive=(v:number)=>!ended&&v===version;
++ function invalidate(){version++;active?.abort();active=undefined;reading=false;clearLease();}
++ async function request(path:string,method:string,signal:AbortSignal,body?:unknown):Promise<unknown>{
++  const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
++  const abort=()=>controller.abort();signal.addEventListener('abort',abort,{once:true});if(signal.aborted)controller.abort();
++  const stopped=new Promise<never>((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(Error('Request stopped')),{once:true});if(controller.signal.aborted)reject(Error('Request stopped'));});
++  timer=setTimeout(()=>controller.abort(),10000);
++  try{return await Promise.race([stopped,(async()=>{
++   const response=await fetch(path,{method,credentials:'same-origin',cache:'no-store',signal:controller.signal,headers:{'Content-Type':'application/json','X-Nevora-Passkey-Authority':authority},...(body===undefined?{}:{body:JSON.stringify(body)})});
++   if(controller.signal.aborted){await response.body?.cancel().catch(()=>{});throw Error('Late reply');}
++   if(response.status===401||response.status===403){await response.body?.cancel();throw new Denied();}
++   if(response.status===204&&method==='DELETE')return null;
++   const value:unknown=await response.json();
++   if(!response.ok){if(record(value)&&value.error==='not_supported')throw new Disabled();throw new Refused();}
++   return value;
++  })()]);}finally{clearTimeout(timer);signal.removeEventListener('abort',abort);}
++ }
++ function failure(error:unknown){clearLease();publish({phase:error instanceof Denied?'denied':error instanceof Disabled?'disabled':'unavailable',passkeys:null,busy:null});}
++ async function read(v:number,signal:AbortSignal):Promise<boolean>{
++  clearLease();publish({phase:'loading',passkeys:null});const started=performance.now();
++  try{
++   const result=parsePasskeySnapshot(await request('/api/auth/passkeys','GET',signal),authority);
++   if(!isLive(v))return false;
++   deadline=started+result.validForMs;const remaining=deadline-performance.now();
++   if(remaining<=0){expire();return false;}
++   publish({phase:'ready',passkeys:result.passkeys,needsRefresh:false});expiry=setTimeout(expire,remaining);return true;
++  }catch(error){if(isLive(v))failure(error);return false;}
++ }
++ async function refresh(){
++  if(ended||state.busy||reading||state.phase==='denied'||state.phase==='disabled')return;
++  invalidate();reading=true;const v=version,controller=active=new AbortController();
++  await read(v,controller.signal);if(isLive(v))reading=false;
++ }
++ async function afterMutation(v:number,signal:AbortSignal,check:(keys:Passkey[])=>boolean,notice:string){
++  const current=await read(v,signal);if(!isLive(v))return;
++  if(current)publish({notice:check(state.passkeys??[])?notice:uncertain,busy:null});
++  else if(state.phase!=='denied'&&state.phase!=='disabled')publish({notice:uncertain,needsRefresh:true,busy:null});
++ }
++ async function add(){
++  if(ended||!valid())return;
++  const v=version,controller=active=new AbortController();publish({busy:'options',notice:''});let sent=false;
++  try{
++   const options=await request('/api/auth/passkey/register/options','POST',controller.signal,{});
++   if(!isLive(v))return;if(deadline<=performance.now()){expire();publish({busy:null});return;}
++   if(!record(options))throw Error('Invalid options');publish({busy:'device'});
++   // Blur from an OS credential sheet is expected. Explicit cancellation,
++   // navigation, offline and signout still abort/fence this single ceremony.
++   let nativeTimer:ReturnType<typeof setTimeout>|undefined;
++   const credential=await Promise.race([
++    navigator.credentials.create({publicKey:creationOptions(options),signal:controller.signal}),
++    new Promise<never>((_,reject)=>{controller.signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true});nativeTimer=setTimeout(()=>{controller.abort();reject(new DOMException('Cancelled','AbortError'));},300000);}),
++   ]).finally(()=>clearTimeout(nativeTimer));
++   if(!isLive(v))return;
++   if(!credential){publish({busy:null});await read(v,controller.signal);if(isLive(v))publish({notice:'Setup cancelled. No passkey was added to your account.'});return;}
++   publish({busy:'verifying'});
++   if(!await read(v,controller.signal)||!isLive(v))return;
++   if(deadline<=performance.now()){expire();publish({busy:null});return;}
++   sent=true;
++   const receipt=await request('/api/auth/passkey/register/verify','POST',controller.signal,{response:credentialJSON(credential as PublicKeyCredential),name:deviceName()});
++   if(!isLive(v))return;
++   if(!record(receipt)||!exact(receipt,['passkey']))throw Error('Invalid receipt');const key=parseKey(receipt.passkey);
++   await afterMutation(v,controller.signal,keys=>keys.some(saved=>saved.id===key.id),'Passkey added. You can use it the next time you sign in.');
++  }catch(error){
++   if(!isLive(v))return;
++   if(error instanceof Denied||error instanceof Disabled){failure(error);return;}
++   if(sent){clearLease();publish({phase:'unavailable',passkeys:null,busy:null,needsRefresh:true,notice:uncertain});return;}
++   publish({busy:null});await read(v,controller.signal.aborted?(active=new AbortController()).signal:controller.signal);
++   if(isLive(v))publish({notice:error instanceof DOMException&&['AbortError','NotAllowedError'].includes(error.name)?'Setup cancelled. No passkey was added to your account.':'Setup did not finish. Check your connection and try again.'});
++  }finally{if(isLive(v)&&state.busy)publish({busy:null});}
++ }
++ async function remove(id:string){
++  if(ended||!valid()||!state.passkeys?.some(key=>key.id===id))return;
++  const v=version,controller=active=new AbortController();publish({busy:'removing',notice:''});
++  try{
++   await request('/api/auth/passkeys/'+encodeURIComponent(id),'DELETE',controller.signal);
++   if(isLive(v))await afterMutation(v,controller.signal,keys=>!keys.some(key=>key.id===id),'Passkey removed.');
++  }catch(error){if(isLive(v)){if(error instanceof Denied||error instanceof Disabled)failure(error);else{clearLease();publish({phase:'unavailable',passkeys:null,busy:null,needsRefresh:true,notice:uncertain});}}}
++  finally{if(isLive(v)&&state.busy)publish({busy:null});}
++ }
++ function pause(expectedNativeBlur=false){
++  if(ended)return;
++  if(expectedNativeBlur&&state.busy==='device'){clearLease();publish({phase:'paused',passkeys:null});return;}
++  const unknown=state.busy==='verifying'||state.busy==='removing';invalidate();publish({phase:'paused',passkeys:null,busy:null,needsRefresh:state.needsRefresh||unknown,notice:unknown?uncertain:state.notice});
++ }
++ async function resume(){if(!ended&&state.busy!=='device')await refresh();}
++ function cancel(){if(state.busy!=='device'&&state.busy!=='options')return;pause();publish({notice:'Setup cancelled. No passkey was added to your account.'});void refresh();}
++ function end(){if(ended)return;ended=true;invalidate();publish({phase:'ended',passkeys:null,busy:null,notice:'',needsRefresh:false});}
++ return {get state(){return state;},refresh,add,remove,pause,resume,cancel,end};
++}
+diff --git a/src/test/integration/employee-mobile-passkeys.integration.ts b/src/test/integration/employee-mobile-passkeys.integration.ts
+new file mode 100644
+index 00000000..ca2bba9d
+--- /dev/null
++++ b/src/test/integration/employee-mobile-passkeys.integration.ts
+@@ -0,0 +1,71 @@
++import {it,expect} from 'vitest';
++import {createRequire} from 'node:module';
++import {mkdir,writeFile} from 'node:fs/promises';
++import {resolve} from 'node:path';
++import {randomBytes,createHash} from 'node:crypto';
++import {createOwnedNextApp} from './owned-next-app';
++import {seedOwnedApp,seedOwnedScenario} from './owned-app-fixture';
++import {fictionalAuthenticator} from './passkey-authenticator.test-support';
++import {measureRenderedContrast} from '../../../scripts/browser-contrast.mjs';
++type Route={request():{method():string};fetch():Promise<unknown>;fulfill(options:{response:unknown}):Promise<void>;continue():Promise<void>};
++it('integrates own passkeys through real server verification and deliberate mobile recovery in three engines',async()=>{
++ const evidence=process.env.NEVORA_EMPLOYEE_PASSKEYS_EVIDENCE;if(!evidence)throw Error('Select explicit external passkeys evidence');await mkdir(evidence,{recursive:true});
++ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
++ const app=await createOwnedNextApp(evidence,{passkeysEnabled:true}),origin=app.url.replace('127.0.0.1','localhost');
++ const checks:{engine:string;name:string}[]=[],captures:string[]=[],contrasts:{engine:string;theme:string;width:number;ratio:number}[]=[],errors:{engine:string;stage:string;message:string;expected:boolean}[]=[];
++ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
++ let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
++ try{
++  await seedOwnedApp(app.database.executor);
++  for(const [index,engine] of ['chromium','webkit','firefox'].entries()){
++   const fixture=await seedOwnedScenario(app.database.executor,'PKM'+index,index),actor=fixture.actors[0];await q('UPDATE employees SET role=$2 WHERE id=$1',[actor,index===1?'LEAD':'EMPLOYEE']);
++   const token=randomBytes(32).toString('base64url'),hash=createHash('sha256').update(token).digest('hex');await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[hash,actor]);
++   browser=await runtime[engine].launch({headless:true});const context=await (browser as typeof runtime.chromium).newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'});await context.addCookies([{name:'fuel_session',value:token,url:origin,httpOnly:true,sameSite:'Lax'}]);
++   const page=await context.newPage();let stage='entry',expected=false,binding='';let device=fictionalAuthenticator();
++   page.on('pageerror',(error:Error)=>errors.push({engine,stage,message:error.message,expected}));
++   page.on('console',(message:{type():string;text():string})=>{if(message.type()==='error')errors.push({engine,stage,message:message.text(),expected});});
++   page.on('request',(request:{url():string;headers():Record<string,string>})=>{if(request.url().endsWith('/api/auth/passkeys'))binding=request.headers()['x-nevora-passkey-authority']??binding;});
++   await page.exposeFunction('fictionalPasskeyCreate',(challenge:string)=>device.register(challenge,origin,'localhost'));
++   await page.addInitScript(()=>{
++    const w=window as unknown as {__pkMode:string;__pkCalls:number;fictionalPasskeyCreate:(challenge:string)=>Promise<unknown>};w.__pkMode='success';w.__pkCalls=0;
++    if(typeof window.PublicKeyCredential!=='function')Object.defineProperty(window,'PublicKeyCredential',{configurable:true,value:function(){}});
++    Object.defineProperty(navigator,'credentials',{configurable:true,value:{create:async({publicKey,signal}:{publicKey:PublicKeyCredentialCreationOptions;signal:AbortSignal})=>{
++     w.__pkCalls++;if(w.__pkMode==='cancel')throw new DOMException('Fictional cancellation','NotAllowedError');
++     if(w.__pkMode==='hold')await new Promise<void>((resolve,reject)=>{Object.assign(w,{__pkRelease:resolve});signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true});});
++     const challenge=btoa(String.fromCharCode(...new Uint8Array(publicKey.challenge as ArrayBuffer))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');const response=await w.fictionalPasskeyCreate(challenge);return {toJSON:()=>response};
++    }}});
++    if(new URL(location.href).searchParams.has('test-unsupported'))Object.defineProperty(window,'PublicKeyCredential',{configurable:true,value:undefined});
++   });
++   const panel=page.locator('.em-passkeys'),ready=()=>page.locator('.em-passkeys[data-passkey-state="ready"]').waitFor();
++   const shot=async(name:string)=>{const path=evidence+'/'+engine+'-'+name+'.png';await page.screenshot({path,fullPage:true});captures.push(path);};
++   failed=async()=>{await shot('FAILURE-'+stage);await writeFile(evidence+'/'+engine+'-failure.html',await page.content());};
++   const record=(name:string)=>checks.push({engine,name});
++   const refresh=async()=>{await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await ready();};
++   await page.goto(origin+'/app/profile');await ready();expect(await panel.getByRole('heading',{name:'Passkeys',exact:true}).count()).toBe(1);expect(await panel.innerText()).toContain('No saved passkeys');expect(binding).toMatch(/^[a-f0-9]{64}$/);await panel.scrollIntoViewIfNeeded();await shot('empty');record('Own Employee/Lead Profile current empty state, no private prehydration sample');
++   const wrong=await page.request.get(origin+'/api/auth/passkeys',{headers:{'X-Nevora-Passkey-Authority':'b'.repeat(64)}});expect(wrong.status()).toBe(401);
++   const selector=await page.request.get(origin+'/api/auth/passkeys?employeeId='+fixture.actors[1],{headers:{'X-Nevora-Passkey-Authority':binding}});expect(selector.status()).toBe(400);record('HTTP rejects another binding and employee selector');
++   stage='native-cancel';await page.evaluate('window.__pkMode="cancel"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Setup cancelled.'}).waitFor();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[actor]))[0].n).toBe(0);record('Controlled native cancellation creates no server credential');
++   stage='native-blur-resize';await page.evaluate('window.__pkMode="hold"');await panel.getByRole('button',{name:'Add a passkey',exact:true}).click();await panel.getByRole('status').filter({hasText:'Finish setup'}).waitFor();const calls=await page.evaluate('window.__pkCalls');await page.evaluate(()=>window.dispatchEvent(new Event('blur')));expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);const node=await panel.elementHandle();await page.setViewportSize({width:1440,height:1000});expect(await node!.evaluate((el:HTMLElement)=>el.isConnected)).toBe(true);await shot('desktop-pending');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.dispatchEvent(new Event('focus')));expect(await page.evaluate('window.__pkCalls')).toBe(calls);await page.evaluate('window.__pkRelease()');await panel.getByRole('status').filter({hasText:'Passkey added.'}).waitFor();await ready();expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1',[fixture.actors[1]]))[0].n).toBe(0);await shot('saved');record('Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key');
++   stage='layout-focus';await panel.locator('summary').click();
++   for(const theme of ['light','dark'])for(const width of [320,390,430]){
++    await page.getByLabel('Appearance',{exact:true}).selectOption(theme);await page.setViewportSize({width,height:844});await ready();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
++    const undersized=await panel.locator('button,summary,a').evaluateAll((els:HTMLElement[])=>els.filter(el=>el.getClientRects().length).map(el=>el.getBoundingClientRect()).filter(box=>box.width<43.5||box.height<43.5).map(box=>({width:box.width,height:box.height})));expect(undersized).toEqual([]);
++    const measured=await panel.locator('.em-passkeys-intro').evaluate(measureRenderedContrast);contrasts.push({engine,theme,width,ratio:measured.ratio});expect(measured.ratio).toBeGreaterThanOrEqual(4.5);await panel.scrollIntoViewIfNeeded();await shot(theme+'-'+width);
++    await page.evaluate(()=>document.documentElement.style.fontSize='200%');expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await shot(theme+'-'+width+'-text200');await page.evaluate(()=>document.documentElement.style.fontSize='100%');
++   }
++   await page.setViewportSize({width:844,height:390});expect(await page.evaluate(()=>matchMedia('(pointer:coarse)').matches)).toBe(true);await shot('coarse-landscape');await page.setViewportSize({width:390,height:844});await page.getByLabel('Appearance',{exact:true}).selectOption('light');
++   const remove=panel.getByRole('button',{name:/^Remove /}).first();await remove.focus();await page.keyboard.press('Space');await panel.getByRole('group',{name:/Remove “/}).waitFor();expect(await panel.getByRole('group').evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);expect(await panel.innerText()).toContain('last saved passkey');await shot('remove-review');await panel.getByRole('button',{name:'Keep passkey',exact:true}).click();await expect.poll(()=>remove.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);expect((await q<{n:number}>('SELECT count(*)::integer n FROM employee_passkeys WHERE employee_id=$1 AND revoked_at IS NULL',[actor]))[0].n).toBe(1);record('Native keyboard removal review names last-key consequences; Keep returns exact focus and preserves the key');
++   stage='unsupported';await page.evaluate(()=>Object.defineProperty(navigator,'credentials',{configurable:true,value:{}}));await page.reload();await ready();expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(1);
++   // addInitScript restores the controlled native implementation on navigation.
++   await page.goto(origin+'/app/profile?test-unsupported=1');await ready();expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);expect(await panel.getByRole('button',{name:/^Remove /}).count()).toBe(1);await shot('unsupported-saved');record('Unsupported creation preserves canonical saved metadata and removal');
++   stage='lost-removal';let release!:()=>void,held=false;const gate=new Promise<void>(resolve=>{release=resolve;});
++   await page.route('**/api/auth/passkeys/*',async(route:Route)=>{if(route.request().method()!=='DELETE'){await route.continue();return;}const response=await route.fetch();held=true;await gate;try{await route.fulfill({response});}catch{/* Timed-out consumer may already be gone. */}});
++   await panel.getByRole('button',{name:/^Remove /}).click();expected=true;await panel.getByRole('button',{name:'Remove passkey',exact:true}).click();await expect.poll(()=>held).toBe(true);await panel.getByRole('button',{name:'Refresh passkeys',exact:true}).waitFor({timeout:15000});expect(await panel.innerText()).toContain('could not confirm');await shot('unknown-removal');release();await page.unroute('**/api/auth/passkeys/*');await panel.getByRole('button',{name:'Refresh passkeys',exact:true}).click();await ready();expected=false;expect(await panel.innerText()).toContain('No saved passkeys');expect(await panel.innerText()).not.toContain('Passkey removed.');expect((await q<{n:number}>("SELECT count(*)::integer n FROM auth_passkey_audit WHERE employee_id=$1 AND event='remove'",[actor]))[0].n).toBe(1);record('Lost real committed removal reply is uncertain; explicit fresh list shows current absence, one audit and no invented success');
++   stage='denied';await q('DELETE FROM employee_sessions WHERE token_hash=$1',[hash]);expected=true;await page.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});await page.locator('.em-passkeys[data-passkey-state="denied"]').waitFor();expected=false;expect(await panel.getByRole('button',{name:'Add a passkey',exact:true}).count()).toBe(0);await shot('denied');record('Actual session loss clears own metadata and all commands');
++   stage='signout';await page.getByRole('button',{name:'Sign out',exact:true}).click();await page.waitForURL(origin+'/login');expect(await panel.count()).toBe(0);expect((await context.cookies()).some((cookie:{name:string})=>cookie.name==='fuel_session')).toBe(false);record('Native signout removes mounted owner and session cookie');
++   await context.close();await browser!.close();browser=undefined;failed=undefined;
++  }
++  expect(errors.filter(error=>!error.expected)).toEqual([]);await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,errors,limits:['Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.','Owned loopback Next development/PostgreSQL, no hosted/production certification.']},null,2));
++ }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:String(error),checks,captures,contrasts,errors},null,2));throw error;}
++ finally{await browser?.close();await app.close();}
++});
+diff --git a/src/test/integration/passkeys-http.integration.ts b/src/test/integration/passkeys-http.integration.ts
+index 504cd9fd..1c961f3f 100644
+--- a/src/test/integration/passkeys-http.integration.ts
++++ b/src/test/integration/passkeys-http.integration.ts
+@@ -28,6 +28,8 @@ import { POST as registerOptions } from "../../app/api/auth/passkey/register/opt
+ import { POST as registerVerify } from "../../app/api/auth/passkey/register/verify/route";
+ import { GET as passkeys } from "../../app/api/auth/passkeys/route";
+ import { DELETE as remove } from "../../app/api/auth/passkeys/[id]/route";
++import { employeeViewAuthority } from "../../lib/employee-view-authority.server";
++import { requireSessionMutationProof } from "../../lib/auth/session";
+ 
+ const request = (path: string, body: unknown = {}, headers: Record<string, string> = {}, method = "POST") => new Request("http://localhost:3000" + path, {
+   method, headers: { origin: "http://localhost:3000", "content-type": "application/json", ...headers },
+@@ -46,6 +48,27 @@ describe("passkey JSON route contract", () => {
+     } catch (error) { await db.dispose(); throw error; }
+   });
+   afterEach(async () => { await db?.dispose(); vi.unstubAllEnvs(); });
++  it("binds own mobile metadata to a finite current-session lease without changing the legacy shape", async () => {
++    const proof = await requireSessionMutationProof();
++    const authority = employeeViewAuthority(proof, 'passkeys');
++    const response = await passkeys(request('/api/auth/passkeys', {}, { 'X-Nevora-Passkey-Authority': authority }, 'GET'));
++    expect(response.status).toBe(200);
++    expect(await response.json()).toEqual({passkeys:[],authority,validForMs:expect.any(Number)});
++    const response2 = await passkeys(request('/api/auth/passkeys', {}, {}, 'GET'));
++    expect(await response2.json()).toEqual({passkeys:[]});
++    await db.executor.query({text:"UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '1 second' WHERE employee_id='PK-HTTP'",values:[]});
++    const short = await (await passkeys(request('/api/auth/passkeys', {}, { 'X-Nevora-Passkey-Authority': authority }, 'GET'))).json();
++    expect(short.validForMs).toBeGreaterThan(0); expect(short.validForMs).toBeLessThanOrEqual(1000);
++  });
++  it("rejects an old account binding before protected reads, challenges, verification or removal", async () => {
++    const headers = { 'X-Nevora-Passkey-Authority': 'a'.repeat(64) };
++    const results = [await passkeys(request('/api/auth/passkeys', {}, headers, 'GET')),
++      await registerOptions(request('/api/auth/passkey/register/options', {}, headers)),
++      await registerVerify(request('/api/auth/passkey/register/verify', {response:{},name:'Phone'},headers)),
++      await remove(request('/api/auth/passkeys/11111111-1111-4111-8111-111111111111', {}, headers, 'DELETE'), {params:Promise.resolve({id:'11111111-1111-4111-8111-111111111111'})})];
++    expect(results.map(result=>result.status)).toEqual([401,401,401,401]);
++    expect((await db.executor.query<{n:number}>({text:'SELECT count(*)::integer n FROM auth_passkey_challenges',values:[]}))[0].n).toBe(0);
++  });
+   it("registers, lists, signs in and removes through all JSON endpoints", async () => {
+     const device = fictionalAuthenticator();
+     const creationResponse = await registerOptions(request("/api/auth/passkey/register/options"));
+diff --git a/vitest.employee-mobile-passkeys.config.mts b/vitest.employee-mobile-passkeys.config.mts
+new file mode 100644
+index 00000000..15594709
+--- /dev/null
++++ b/vitest.employee-mobile-passkeys.config.mts
+@@ -0,0 +1,15 @@
++import {defineConfig} from 'vitest/config';
++import {employeeMobileProjects} from './vitest.employee-mobile-communications.config.mts';
++export default defineConfig({test:{fileParallelism:false,passWithNoTests:false,projects:employeeMobileProjects([
++ 'src/test/integration/employee-mobile-profile-sql.integration.ts',
++ 'src/test/integration/employee-mobile-profile.integration.ts',
++ 'src/test/integration/employee-mobile-calendar.integration.ts',
++ 'src/test/integration/employee-mobile-passkeys.integration.ts',
++ 'src/test/integration/passkey-network.integration.ts',
++],[
++ 'src/test/integration/phase-e-calendar-tokens.integration.ts',
++ 'src/test/integration/phase-e-calendar-feed.integration.ts',
++ 'src/test/integration/company-access-recovery-calendar.integration.ts',
++ 'src/test/integration/passkeys-http.integration.ts',
++ 'src/test/integration/passkeys.integration.ts',
++])}});

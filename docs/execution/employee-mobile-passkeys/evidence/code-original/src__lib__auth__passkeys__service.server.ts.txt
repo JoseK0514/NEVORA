@@ -1,0 +1,119 @@
+src/lib/auth/passkeys/service.server.ts
+   1 import "server-only";
+   2 import { generateAuthenticationOptions, generateRegistrationOptions, verifyAuthenticationResponse, verifyRegistrationResponse,
+   3   type AuthenticationResponseJSON, type RegistrationResponseJSON } from "@simplewebauthn/server";
+   4 import { neonNotificationExecutor } from "../../data/notification-transactions";
+   5 import type { SqlExecutor } from "../../notifications/types";
+   6 import type { SessionMutationProof } from "../../shift-changes/types";
+   7 import { consumeAuthLimit, consumeLoginAttempt } from "../login-limits";
+   8 import { prepareSession } from "../session-issuance";
+   9 import type { PasskeyConfig } from "./config";
+  10 import { PasskeyStore } from "./store.server";
+  11 import { PasskeyError, responseChallenge } from "./types";
+  12 
+  13 /** WebAuthn verification and error boundary. The store owns live session,
+  14  * lifecycle/version and counter checks; successful cryptographic verification
+  15  * alone is never enough to register a key or commit a portal session. */
+  16 export class PasskeyService {
+  17   private readonly store: PasskeyStore;
+  18   constructor(private readonly config: PasskeyConfig, private readonly executor: SqlExecutor = neonNotificationExecutor()) {
+  19     this.store = new PasskeyStore(executor);
+  20   }
+  21   private async boundary<T>(work: () => Promise<T>): Promise<T> {
+  22     try { return await work(); }
+  23     catch (error) {
+  24       if (error instanceof PasskeyError) throw error;
+  25       if (error instanceof Error && /passkey_not_found|session_login_changed/.test(error.message)) throw new PasskeyError("not_found");
+  26       throw new PasskeyError("unavailable");
+  27     }
+  28   }
+  29   private async limit(subject: string) {
+  30     if (!(await consumeAuthLimit("passkey_ceremony", subject, 30, this.executor))) throw new PasskeyError("rate_limited");
+  31   }
+  32   /** Discoverable login reveals no account-specific credential list. The stored
+  33    * challenge is tied to the flow token, not an asserted employee identity. */
+  34   async loginOptions(token: string) {
+  35     return this.boundary(async () => {
+  36       await this.limit(token);
+  37       const options = await generateAuthenticationOptions({ rpID: this.config.rpID, userVerification: "required", timeout: 300000, allowCredentials: [] });
+  38       await this.store.issueChallenge("login", token, options.challenge);
+  39       return options;
+  40     });
+  41   }
+  42   /** Use the account's stable random user handle and capture current employee/
+  43    * credential revisions for the later, session-bound registration commit. */
+  44   async registrationOptions(proof: SessionMutationProof, token: string) {
+  45     return this.boundary(async () => {
+  46       await this.limit(proof.employee.id);
+  47       const account = await this.store.registrationContext(proof, this.config.rpID);
+  48       const options = await generateRegistrationOptions({
+  49         rpName: "NEVORA", rpID: this.config.rpID, userID: Buffer.from(account.userHandle, "base64url"),
+  50         userName: account.id, userDisplayName: account.firstName + " " + account.lastName,
+  51         attestationType: "none", timeout: 300000, supportedAlgorithmIDs: [-7, -257],
+  52         authenticatorSelection: { residentKey: "required", userVerification: "required" },
+  53         excludeCredentials: account.credentials,
+  54       });
+  55       await this.store.issueChallenge("register", token, options.challenge, proof, account);
+  56       return options;
+  57     });
+  58   }
+  59   /** Consume the challenge before signature verification. Even a failed response
+  60    * spends this ceremony; the client needs fresh options to attempt it again. */
+  61   async register(proof: SessionMutationProof, token: string, response: unknown, name: unknown) {
+  62     return this.boundary(async () => {
+  63       await this.limit(proof.employee.id);
+  64       if (typeof name !== "string" || !name.trim() || name.trim().length > 80 || /[\u0000-\u001f\u007f]/.test(name)) throw new PasskeyError("not_found");
+  65       const challenge = await this.store.consumeChallenge("register", token, responseChallenge(response), proof);
+  66       let verification;
+  67       try {
+  68         verification = await verifyRegistrationResponse({ response: response as RegistrationResponseJSON, expectedChallenge: challenge.challenge,
+  69           expectedOrigin: this.config.origin, expectedRPID: this.config.rpID, requireUserVerification: true, supportedAlgorithmIDs: [-7, -257] });
+  70       } catch { throw new PasskeyError("not_found"); }
+  71       if (!verification.verified) throw new PasskeyError("not_found");
+  72       return this.store.register(proof, challenge, verification.registrationInfo.credential, name.trim(), this.config.rpID);
+  73     });
+  74   }
+  75   /** Verify the WebAuthn response and user handle, then atomically
+  76    * advance the credential counter and create a session against captured login
+  77    * revisions. beforeSession runs after verification but before that commit for
+  78    * installation cleanup; the returned bearer is for cookie delivery afterward. */
+  79   async login(token: string, response: unknown, beforeSession: (employeeId: string) => Promise<void> = async () => {}) {
+  80     return this.boundary(async () => {
+  81       await this.limit(token);
+  82       const challenge = await this.store.consumeChallenge("login", token, responseChallenge(response));
+  83       if (!response || typeof response !== "object" || !("id" in response) || typeof response.id !== "string") throw new PasskeyError("not_found");
+  84       const credential = await this.store.credential(response.id, this.config.rpID);
+  85       if (!(await consumeLoginAttempt(credential?.employeeId ?? "missing:" + response.id, this.executor))) throw new PasskeyError("rate_limited");
+  86       if (!credential) throw new PasskeyError("not_found");
+  87       if (!credential.active) throw new PasskeyError("account_disabled");
+  88       if (credential.revokedAt) throw new PasskeyError("not_found");
+  89       let verification;
+  90       try {
+  91         const value = response as AuthenticationResponseJSON;
+  92         if (value.response.userHandle !== credential.userHandle) throw Error();
+  93         const publicKey = typeof credential.publicKey === "string"
+  94           ? Buffer.from(credential.publicKey.replace(/^\\x/, ""), "hex") : new Uint8Array(credential.publicKey);
+  95         verification = await verifyAuthenticationResponse({ response: value, expectedChallenge: challenge.challenge,
+  96           expectedOrigin: this.config.origin, expectedRPID: this.config.rpID, requireUserVerification: true,
+  97           credential: { id: credential.credentialId, publicKey, counter: Number(credential.counter), transports: credential.transports } });
+  98       } catch { throw new PasskeyError("not_found"); }
+  99       if (!verification.verified) throw new PasskeyError("not_found");
+ 100       const session = prepareSession(credential.employeeId, credential);
+ 101       await beforeSession(credential.employeeId);
+ 102       await this.store.commitLogin(credential, verification.authenticationInfo.newCounter, challenge, session);
+ 103       return session;
+ 104     });
+ 105   }
+ 106   async list(proof: SessionMutationProof) {
+ 107     return this.boundary(() => this.store.list(proof));
+ 108   }
+ 109   async snapshot(proof: SessionMutationProof) {
+ 110     return this.boundary(() => this.store.snapshot(proof));
+ 111   }
+ 112   async remove(proof: SessionMutationProof, id: string) {
+ 113     return this.boundary(async () => {
+ 114       if (!(await consumeAuthLimit("passkey_management", proof.employee.id, 30, this.executor))) throw new PasskeyError("rate_limited");
+ 115       await this.store.remove(proof, id);
+ 116     });
+ 117   }
+ 118 }

@@ -1,0 +1,79 @@
+{
+  "error": "Error: locator.evaluate: Error: strict mode violation: locator('.em-passkeys').getByRole('group') resolved to 2 elements:\n    1) <div role=\"group\" tabindex=\"-1\" class=\"em-passkeys-confirmation\" aria-labelledby=\"passkey-remove-title\" aria-describedby=\"passkey-remove-body\">…</div> aka getByRole('group', { name: 'Remove “Mac”?' })\n    2) <details open=\"\" class=\"em-passkeys-help\">…</details> aka getByText('How passkeys workYour device')\n\nCall log:\n\u001b[2m  - waiting for locator('.em-passkeys').getByRole('group')\u001b[22m\n",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects another binding and employee selector"
+    },
+    {
+      "engine": "chromium",
+      "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key"
+    }
+  ],
+  "captures": [
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-desktop-pending.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-coarse-landscape.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-FAILURE-layout-focus.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 7.712974522476015
+    }
+  ],
+  "errors": []
+}

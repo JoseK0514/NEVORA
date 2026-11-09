@@ -1,0 +1,13 @@
+# Employee Timecard history · independent QA
+
+HTML SHA-256: `f38470e0657f18c7221db1a2877b537558857e57838863841028ffc83eb3973a`. Verdict: **PASS at bounded local prototype scope**.
+
+A separate QA executor personally ran **141/141 browser scenarios**,47 in each of Chromium, WebKit and Firefox, plus **17/17 independent model scenarios** and **3/3 native focus probes**. Raw records and producer scripts are under `work/employee-mobile/evidence/timecard-history-pass/independent-qa/`. Parent checked current source hashes, every final scenario verdict and the local-only request inventory. The [QA matrix](../../work/employee-mobile/evidence/timecard-history-pass/independent-qa/timecard-history-manual-qa.md) carries exact invocations, results, runtime evidence and185 nonempty hash-bound artifact references. Parent verified all185 file sizes/hashes.
+
+The independent run covers ordinary Hours entry/findability; five canonical states; exact-period, descending decisions; immutable raw/effective snapshots; no Employee approval/finalization/export; own Employee/Lead and foreign/invalid/coherent read gates; expired/hidden/blur/offline/pagehide withholding and recovery; finalized original/proposed intervals across periods; same-day finalization; current-context review/send failures without false receipt; Pending receipt with unchanged totals; sign-out clearing; actual stale submit closures invoked after sign-out and again after restart; native disclosure keyboard operation/Escape return;320/390/430 Light/Dark and200% text geometry/focus containment.
+
+The explicit native probe observes Tab leaving the document in Chromium/WebKit, then focus returning while visibility stays visible. Private time remains withheld until deliberate Refresh timecards. Firefox keeps document focus in that probe. These differences preserve the current read contract. The earlier hours layout runner now explicitly refreshes after this native pause before testing correction geometry; all eight existing assertions remain.
+
+No product finding remained. A preflight expiry-test setup was corrected by installing the fake clock before navigation so it intercepts the actual45-second timer; preflight logs are preserved. No product assertion was removed. Parent legacy WebKit layout failure and event reproduction are separately preserved in this pass's logs.
+
+Requests observed by the independent runner were only local index.html loads. No real Employee/API data, live notification, native credential/permission action or deployment was used. This does not certify server authorization, durable correction concurrency, actual devices, assistive technology or complete desktop parity.

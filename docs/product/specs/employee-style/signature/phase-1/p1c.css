@@ -1,0 +1,17 @@
+@import url("p1b.css");
+/* Phase 1, figures and words refined: durations as h + mm with small units; the payday as one big date. */
+.u1 .hero2 .fig .n { font-weight: 200; }
+.u1 .hero2 .fig em.u { margin: 0 6px 0 1px; font-size: 24px; color: rgba(255,255,255,.62); }
+.u1 .hero2 .fig em.u:last-child { margin-right: 0; }
+.u1 .hero2 .fig.date { font-size: 60px; line-height: 62px; letter-spacing: -2.8px; font-weight: 200; }
+.u1 .hero2 .sub2 { display: flex; gap: 10px; margin-top: 10px; font: 400 16px/22px var(--sys); color: rgba(255,255,255,.72); }
+.u1 .hero2 .sub2 b { font-weight: 500; color: #A9E2DA; }
+.u1 .hero2 .pair strong em.u { margin: 0 4px 0 1px; font-size: 16px; }
+.u1 .hero2 .pair strong em.u:last-child { margin-right: 0; }
+.u1 .stmt .tx b.big3 { font: 300 26px/30px var(--disp); letter-spacing: -.8px; }
+.u1 .stmt .eyebrow { display: block; margin-bottom: 8px; color: var(--teal); }
+.u1 .hero2 .fig em.u, .u1 .hero2 .pair strong em.u { margin: 0 0 0 2px !important; }
+.u1 .hero2 .fig { word-spacing: 6px; }
+.u1 .hero2 .pair strong { word-spacing: 3px; }
+.u1 .stmt .eyebrow { color: var(--teal) !important; }
+.u1 .hero2 .fig.word, .u1 .hero2 .fig.date { word-spacing: 0; } .u1 .hero2 em.u { color: rgba(255,255,255,.78) !important; }

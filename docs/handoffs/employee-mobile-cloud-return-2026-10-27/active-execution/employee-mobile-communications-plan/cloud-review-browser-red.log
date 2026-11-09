@@ -1,0 +1,67 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+ [31m❯[39m src/test/integration/employee-mobile-communications-review.integration.ts [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 69089[2mms[22m[39m
+[31m   [31m×[31m CR-2 bounds held notification opens and fences stale results across private refresh and pause[39m[33m 23880[2mms[22m[39m
+[31m   [31m×[31m UI-COM-001 associates actual invalid fields and restores deliberate review after corrections[39m[33m 5842[2mms[22m[39m
+[31m   [31m×[31m CR-3/CR-1 preserve optional read facts and recover a refused original lookup[39m[33m 20249[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications-review.integration.ts[2m > [22mCR-2 bounds held notification opens and fences stale results across private refresh and pause
+[31m[1mTimeoutError[22m: locator.waitFor: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('.em-messages:visible').getByText('This notice couldn’t be opened with your current access.') to be visible
+[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m70:104[22m[39m
+    [90m 68|[39m     await panel().locator('.em-message-list a').first().click();await …
+    [90m 69|[39m     if(mode==='deadline'){
+    [90m 70|[39m      await panel().getByText('This notice couldn’t be opened with your…
+    [90m   |[39m                                                                                                        [31m^[39m
+    [90m 71|[39m      expect(await panel().getByText('Opening current details…',{exact:…
+    [90m 72|[39m      release();await done;expect(new URL(page.url()).pathname).toBe('/…
+[90m [2m❯[22m withPage src/test/integration/employee-mobile-communications-review.integration.ts:[2m54:3[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m60:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications-review.integration.ts[2m > [22mUI-COM-001 associates actual invalid fields and restores deliberate review after corrections
+[31m[1mAssertionError[22m: expected null to be 'true' // Object.is equality[39m
+
+[32m- Expected:[39m
+"true"
+
+[31m+ Received:[39m
+null
+
+[36m [2m❯[22m invalid src/test/integration/employee-mobile-communications-review.integration.ts:[2m94:53[22m[39m
+
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m99:3[22m[39m
+[90m [2m❯[22m withPage src/test/integration/employee-mobile-communications-review.integration.ts:[2m54:3[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m88:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications-review.integration.ts[2m > [22mCR-3/CR-1 preserve optional read facts and recover a refused original lookup
+[31m[1mTimeoutError[22m: locator.click: Timeout 15000ms exceeded.
+Call log:
+  - waiting for locator('.em-messages:visible').getByRole('button', { name: 'Mark as read', exact: true })
+[39m
+[36m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m110:70[22m[39m
+
+[90m [2m❯[22m withPage src/test/integration/employee-mobile-communications-review.integration.ts:[2m54:3[22m[39m
+[90m [2m❯[22m src/test/integration/employee-mobile-communications-review.integration.ts:[2m107:30[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 18:47:22
+[2m   Duration [22m 70.33s[2m (tests 98%, transform 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

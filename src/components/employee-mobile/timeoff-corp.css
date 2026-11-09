@@ -1,0 +1,122 @@
+/* Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet) and the planning frame shared
+ * with Availability. Kit values only (corp.css); these rules add the few pieces the kit has no class for. */
+
+/* Planning frame: the pushed-page bar is the kit's; a sheet-style page (Request time off) reads as the board's sheet. */
+:is(#c-root, html) .c-page.tof-frame { min-height: 100%; }
+:is(#c-root, html) .c-page.tof-frame--sheet { min-height: calc(100dvh - 84px); }
+:is(#c-root, html) .c-page.tof-frame--sheet { background: #FFFFFF; }
+:is(#c-root, html) .c-page.tof-frame--sheet > .c-nav { min-height: 52px; box-shadow: inset 0 -1px 0 var(--c-line); }
+:is(#c-root, html) .c-page .tof-cancel { font-weight: 400; }
+:is(#c-root, html) .c-page .c-nav__title:focus { outline: none; }
+:is(#c-root, html) .c-page .c-nav__title:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 2px; border-radius: 4px; }
+:is(#c-root, html) .c-page .tof-sub { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-page .tof-state { font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .tof-state + .c-btn { margin-top: 12px; }
+
+/* Request card: the decision row under the date block, with a hairline above it. */
+:is(#c-root, html) .c-page .tof-who { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-page .tof-who .c-av { width: 36px; height: 36px; border-radius: 18px; }
+:is(#c-root, html) .c-page .tof-who .c-av svg { width: 18px; height: 18px; }
+:is(#c-root, html) .c-page .tof-who .c-row__title, :is(#c-root, html) .c-page .tof-who .c-row__detail > span:first-child { white-space: normal; }
+:is(#c-root, html) .c-page .c-line2.tof-what { white-space: normal; overflow-wrap: anywhere; }
+
+/* Withdraw card: one red-outline button, a 13px line under it; the confirm step asks once more. */
+:is(#c-root, html) .c-page .tof-withdraw { display: flex; flex-direction: column; gap: 8px; padding: 16px; }
+:is(#c-root, html) .c-page .tof-withdraw .c-btns { margin-top: 4px; }
+:is(#c-root, html) .c-page .tof-ask { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-page .tof-feedback { display: flex; flex-direction: column; gap: 8px; font-size: 13px; line-height: 18px; color: var(--c-ink2); }
+:is(#c-root, html) .c-page .tof-feedback:focus { outline: none; }
+:is(#c-root, html) .c-page .tof-feedback a { color: var(--c-teal); font-weight: 600; }
+:is(#c-root, html) .c-page .tof-withdraw form { display: contents; }
+
+/* Request form: fields stacked 16px apart; dates side by side. */
+:is(#c-root, html) .c-page .tof-form { display: flex; flex-direction: column; gap: 16px; margin: 0; }
+:is(#c-root, html) .c-page .tof-fields { display: flex; flex-direction: column; gap: 16px; min-inline-size: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-page .tof-seg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+:is(#c-root, html) .c-page .tof-seg > button { min-height: 32px; }
+:is(#c-root, html) .c-page .tof-seg > button:focus-visible { outline: 2px solid var(--c-teal); outline-offset: 0; }
+:is(#c-root, html) .c-page .tof-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+:is(#c-root, html) .c-page .tof-form .c-in { padding: 0 14px; }
+:is(#c-root, html) .c-page .tof-form .c-field__help { margin: 0; }
+
+/* A picker field: the board's text ("Thu, Nov 12") with the real date/time input laid over it, transparent, so the
+ * native picker opens on tap and no browser glyph shows. */
+:is(#c-root, html) .c-page .tof-pick { position: relative; overflow: hidden; cursor: pointer; }
+:is(#c-root, html) .c-page .tof-pick > span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; pointer-events: none; }
+:is(#c-root, html) .c-page .tof-pick__ph { color: var(--c-grey); }
+:is(#c-root, html) .c-page .tof-pick > input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer;
+  appearance: none; -webkit-appearance: none; background: transparent; color: transparent; font-size: 16px; }
+:is(#c-root, html) .c-page .tof-pick > input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; opacity: 0; cursor: pointer; }
+:is(#c-root, html) .c-page .tof-pick:has(> input:focus-visible), :is(#c-root, html) .c-page .tof-pick:has(> input:focus) { box-shadow: inset 0 0 0 2px var(--c-teal); }
+:is(#c-root, html) .c-page .tof-pick:has(> input[aria-invalid="true"]) { box-shadow: inset 0 0 0 2px var(--c-red); }
+:is(#c-root, html) .c-page .tof-pick:has(> input:disabled) { cursor: default; color: var(--c-faint); }
+
+/* Receipt after sending. */
+:is(#c-root, html) .c-page .tof-done { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+:is(#c-root, html) .c-page .tof-done h2 { font-size: 17px; line-height: 22px; font-weight: 600; }
+:is(#c-root, html) .c-page .tof-done h2:focus { outline: none; }
+:is(#c-root, html) .c-page .tof-done p { font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+
+/* The desktop request sheet (the Quiet sheet container): white like the board's sheet, the form under a 52px bar. */
+:is(#c-root, html) dialog.q-sheet:has(.tof-sheet) { height: fit-content; background: #FFFFFF !important; }
+:is(#c-root, html) dialog.q-sheet:has(.tof-sheet) .q-sheet__top { background: #FFFFFF; }
+:is(#c-root, html) .c-page .tof-sheet { display: flex; flex-direction: column; color: var(--c-ink); font-family: Inter, "Inter Fallback", -apple-system, sans-serif; font-size: 15px; line-height: 20px; }
+:is(#c-root, html) .c-page .tof-sheet .c-sheet-head { margin: 0; }
+:is(#c-root, html) .c-page .tof-sheet .c-sheet-head__l { font-family: inherit; }
+:is(#c-root, html) .c-page .tof-sheet .tof-form { padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
+
+/* Kit fields show focus as their own 2px inset ring; the phone shell's outer outline would double it. */
+:is(#c-root, html) .c-page .tof-form :is(.c-in, .tof-pick > input):focus-visible { outline: none !important; }
+/* The sheet-style page is white to the tab bar. */
+html body :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet) { background: #FFFFFF !important; }
+
+/* Upscale M2 (Nov 1): on a phone, Request time off is a real sheet. It rises from the bottom over a dimmed page with a
+ * grabber and 16px top corners; the tab bar is hidden; the form scrolls inside it and Send is pinned in a footer with a
+ * hairline above and the safe area below. No grey band: the sheet is white to its bottom edge. */
+:is(#c-root, html) .c-page .tof-grab { display: none; }
+@media (max-width: 767px) {
+  /* Every role that opens the sheet (a Lead's v5 shell has no data-nv-corp), or its tab bar sits over Send. */
+  html:is(:root, [data-theme]) body .app-shell:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
+  /* A phone turned sideways (coarse pointer, 500px tall or less) gets corp-shell's landscape tab bar through an id-weighted
+   * rule; the sheet still hides it there, so its links aren't left under the sheet and in the Tab order. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop]:has(.tof-frame--sheet) .mobile-nav { display: none !important; }
+  :is(#c-root, html) body .c-page.tof-frame--sheet {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; flex-direction: column; gap: 0;
+    width: auto; max-width: none; min-height: 0; max-height: calc(100dvh - max(env(safe-area-inset-top, 0px), 12px) - 12px); margin: 0; padding: 0;
+    border-radius: 16px 16px 0 0; background: #FFFFFF; box-shadow: 0 -8px 24px rgb(0 0 0 / 0.10), 0 0 0 100vmax rgb(26 28 30 / 0.24);
+    overflow: hidden; animation: tof-sheet-in 360ms cubic-bezier(.32, .72, 0, 1);
+  }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-grab { display: block; flex: none; width: 36px; height: 5px; margin: 6px auto 0; border-radius: 3px; background: #D6D9DC; }
+  /* QA D3: the bar is the title's positioning box (relative, not static), so the shell's absolutely centred pushed-page
+   * title sits on Cancel's line inside the sheet instead of against the fixed sheet's bottom edge (over Send). */
+  :is(#c-root, html) body .c-page.tof-frame--sheet > .c-nav { position: relative; flex: none; min-height: 48px; height: 48px; margin: 0; padding: 0 16px; background: transparent; box-shadow: inset 0 -1px 0 var(--c-line); }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav):not(.tof-form) { margin-left: 16px; margin-right: 16px; }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > :not(.tof-grab):not(.c-nav):not(.tof-form):first-of-type { margin-top: 16px; }
+  /* The sheet's header hairline always shows (the shell's scroll-linked header line starts transparent). */
+  :is(#c-root, html) body .app-shell[data-nv-corp] .c-page.tof-frame--sheet > .c-nav { box-shadow: inset 0 -1px 0 var(--c-line); transition: none; }
+  /* The title on Cancel's 44px line: the bar is 48px and Cancel is centred in it, 2px from its bottom. Cancel is short, so
+   * the title keeps 80px each side (not the shell's 104px for a 96px back link) and stays whole at 320px. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .page-frame .c-page.tof-frame--sheet > .c-nav > .c-nav__title { bottom: 2px !important; max-width: calc(100% - 160px) !important; }
+  /* Behind the sheet: the kit's page background under the 24% dim (the Requests hub is its own route and reads, so it
+   * isn't drawn behind this one). */
+  html body .app-shell :is(.app-main, .page-frame, .em-requests-mobile):has(.tof-frame--sheet) { background: var(--c-bg, #F5F6F6) !important; }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-form { flex: 1 1 auto; min-height: 0; margin: 0; padding: 16px 16px 0; overflow-y: auto; overscroll-behavior: contain; }
+  :is(#c-root, html) body .c-page.tof-frame--sheet .tof-foot { position: sticky; bottom: 0; margin: 0 -16px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: #FFFFFF; box-shadow: inset 0 1px 0 var(--c-line); }
+  :is(#c-root, html) body .c-page.tof-frame--sheet > .tof-done, :is(#c-root, html) body .c-page.tof-frame--sheet > .c-card { margin-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+}
+@keyframes tof-sheet-in { from { transform: translateY(100%); } }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .c-page.tof-frame--sheet { animation: tof-sheet-in-fade 160ms ease-out; } }
+/* Reduced motion: the sheet is in place at once and only its dim fades in. Fading the sheet itself left its text and Send
+ * translucent for 160ms, so their contrast can't be read while it runs. */
+@keyframes tof-sheet-in-fade { from { box-shadow: 0 -8px 24px rgb(0 0 0 / 0), 0 0 0 100vmax rgb(26 28 30 / 0); } }
+:is(#c-root, html) .c-page .tof-foot { display: flex; flex-direction: column; }
+
+/* Direction B's own pieces of the request form (the field glyphs and the approval notice) show only on the employee's
+ * phone screen (employee-b/requests.css); everywhere else the form is as before. */
+:is(#c-root, html) .c-page :is(.tof-pick__ic, .eb-tof-approve) { display: none; }
+
+/* Desktop: Request time off is the kit's auto-width button at the right edge of the 720px list column. The narrow page's
+ * 100% width (720px cap) and the button's auto left margin had made it a 720px bar pushed past the list's right edge. */
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-page.c-page--narrow > .c-btn--full.tof-new.tof-new { width: fit-content; max-width: none; margin-left: auto; margin-right: max(0px, calc(100% - 720px)); }
+}

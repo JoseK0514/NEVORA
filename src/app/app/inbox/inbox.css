@@ -1,0 +1,30 @@
+/* Inbox (premium direction, phase 2): kit cards on the grey canvas under the teal band.
+ * Every row opens its full review (O1); actions read as teal links, conditions as pills (F4). */
+.premium-inbox .inbox-action { display: inline-flex; align-items: center; min-height: 28px; font: var(--nv-t-label); color: var(--nv-accent); }
+.premium-inbox .nv-row__status { flex-wrap: wrap; align-items: center; gap: var(--nv-s-2) var(--nv-s-3); }
+.premium-inbox .nv-row__status:has(> .nv-status) .inbox-action { margin-left: 0; }
+.premium-inbox a.nv-row:hover .inbox-action { color: var(--nv-accent-hover); text-decoration: underline; text-underline-offset: 3px; }
+.premium-inbox .inbox-section-count {
+  display: inline-grid; place-items: center; min-width: 26px; height: 24px; margin-left: 6px; padding: 0 8px; border-radius: 999px;
+  background: var(--nv-neutral-fill); color: var(--nv-neutral-ink); font: var(--nv-t-badge); vertical-align: 2px;
+}
+.premium-inbox #inbox-urgent .nv-card__title .inbox-section-count { background: var(--nv-urgent-fill); color: var(--nv-urgent-ink); }
+.premium-inbox .inbox-section-note { margin: 0; padding: 0 var(--nv-s-5) var(--nv-s-2); font: var(--nv-t-callout); color: var(--nv-muted); }
+.premium-inbox .nv-rows > li + li > .nv-row::before,
+.premium-inbox .nv-rows > li + li > details > .nv-row::before { content: ""; position: absolute; top: 0; left: calc(var(--nv-s-5) + 40px + var(--nv-s-3)); right: 0; height: 1px; background: var(--nv-hairline); }
+.premium-inbox .nv-card > .nv-rows:last-child, .premium-inbox .nv-card > .nv-rows:last-of-type { padding-bottom: var(--nv-s-2); }
+.premium-group > details > summary { list-style: none; cursor: pointer; }
+.premium-group > details > summary::-webkit-details-marker { display: none; }
+.premium-group > details > summary:hover { background: #F7F9F8; }
+.premium-group .inbox-group-caret { color: var(--nv-icon); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
+.premium-group > details[open] .inbox-group-caret { transform: rotate(180deg); }
+.premium-group > details > .nv-rows { margin: 0 0 var(--nv-s-2) var(--nv-s-6); border-left: 2px solid var(--nv-hairline); }
+.premium-inbox .inbox-status, .premium-inbox .inbox-clear { padding-top: var(--nv-s-5); }
+.premium-inbox .inbox-status p { margin: var(--nv-s-2) 0; font: var(--nv-t-body); color: var(--nv-muted); }
+.premium-inbox .inbox-note { margin: 0; padding: 0 var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
+.premium-inbox-filters .nv-filter { border: 0; cursor: pointer; }
+.premium-inbox-filters .nv-filter[aria-pressed="true"] { background: #FFFFFF; color: var(--nv-accent-strong); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .premium-group .inbox-group-caret { transition: none; } }
+/* TC-07: people's names are never cut; a narrow phone indents nested rows less. */
+.premium-inbox .inbox-row .nv-row__title { -webkit-line-clamp: unset; display: block; }
+@media (max-width: 359px) { .premium-group > details > .nv-rows { margin-left: var(--nv-s-3); } }

@@ -1,0 +1,12 @@
+src/lib/employee-view-authority.server.ts
+   1 import 'server-only';
+   2 import {createHash} from 'node:crypto';
+   3 import type {SessionMutationProof} from './shift-changes/types';
+   4 
+   5 export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours' | 'communications' | 'passkeys';
+   6 /** Public lifetime binding, never authentication. Each GET still requires the
+   7  * actual HttpOnly session and protected SQL guards. No raw hash is serialized. */
+   8 export function employeeViewAuthority(proof:SessionMutationProof,view:EmployeeView):string {
+   9  return createHash('sha256').update('nevora:employee-view:lifetime:v1\0').update(view).update('\0')
+  10   .update(proof.employee.id).update('\0').update(proof.sessionTokenHash).digest('hex');
+  11 }

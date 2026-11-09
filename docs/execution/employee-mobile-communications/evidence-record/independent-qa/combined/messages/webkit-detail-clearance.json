@@ -1,0 +1,24 @@
+{
+  "button": {
+    "x": 20,
+    "y": 485,
+    "width": 124.71875,
+    "height": 55,
+    "top": 485,
+    "right": 144.71875,
+    "bottom": 540,
+    "left": 20
+  },
+  "nav": {
+    "x": 0,
+    "y": 596,
+    "width": 320,
+    "height": 248,
+    "top": 596,
+    "right": 320,
+    "bottom": 844,
+    "left": 0
+  },
+  "scroll": 1221,
+  "viewport": 844
+}

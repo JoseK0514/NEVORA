@@ -1,0 +1,151 @@
+{
+  "observation_type": "Read-only exact-commit inspection; no product tests rerun",
+  "observed_at": "2026-10-04T15:58:30.737060-04:00",
+  "device": "Mac.lan",
+  "worktree": "/Users/josek0514/.codex/worktrees/nevora-phase-4-auto-scheduler/Fuel-Scheduler-",
+  "branch": "codex/nevora-phase-4-auto-scheduler",
+  "commit": "6c0f2b77b6186c4cd86db7e97f869ea831ee32b0",
+  "parent": "b4c1675a6b1de1db6e28cbe732a7294ddfc13885",
+  "tree": "f778febca308e05a722df5f453e34450c257d140",
+  "status_porcelain": "",
+  "clean_at_check": true,
+  "phase4_user_approval_quote": "phase 4 approved",
+  "phase5_design_approval_carried_forward": true,
+  "phase5_implementation_plan_approved": false,
+  "files": [
+    {
+      "path": "docs/architecture/fuel-automation-charter.md",
+      "sha256": "b484f5b7631c1b02f3f59261c94a9d9bbbda6d78d12c48b7d62b5e1d24a2da4c"
+    },
+    {
+      "path": "docs/architecture/fuel-scheduling-rules.md",
+      "sha256": "cc80442ef7a926d261e80ca387d8a98e66052b55a5e8741d7edbbe5988c91993"
+    },
+    {
+      "path": "docs/architecture/nevora-auto-scheduler.md",
+      "sha256": "ea2964664c9e924cdae4a4dd8788d094a6dfff26f93f64f4e6fc96a474b196fb"
+    },
+    {
+      "path": "docs/ui/fuel-ui-contract.md",
+      "sha256": "96844dd75f728498ed904960d805e0ba2711aa72bde75bedff316a6c6825f2d4"
+    },
+    {
+      "path": "src/lib/scheduling/exchange-validation.ts",
+      "sha256": "a067d70630ab9b02a3e1f74dfe28a5cf00757b29393c0762484dee9b3c4f79f0"
+    },
+    {
+      "path": "src/lib/scheduling/coverage-ranking.ts",
+      "sha256": "6f2ee2cd263c849e8f215dbc967ba999259f7746262b97731904f47e8274cc7a"
+    },
+    {
+      "path": "src/lib/data/exchanges.ts",
+      "sha256": "03813d5cb63aafe65e65e66ef29774e0b218b85b590a1e30ce43a4d080c2a730"
+    },
+    {
+      "path": "src/lib/data/callouts.ts",
+      "sha256": "49a394bcd7b35a8814870b35b1de1be2381ba4cecb2b1ab6b028b9a49c60f562"
+    },
+    {
+      "path": "src/lib/data/notification-transactions.ts",
+      "sha256": "397ee401634caf04a5fc021daeb205ec0ed6b4fdfe384f42a9faf9fb1483ec59"
+    },
+    {
+      "path": "src/lib/data/request-notifications.ts",
+      "sha256": "53f4970fd25c1185fa26edcfdf85cc252079604b344b46f4b300c9cfdbd35381"
+    },
+    {
+      "path": "src/lib/notifications/recipients.ts",
+      "sha256": "2dc6096e589175423b022c071afea92cf3e90f6e2316c0c82c04708f98186674"
+    },
+    {
+      "path": "src/lib/auth/permissions.ts",
+      "sha256": "33cd895853312b1d7ace7910a44e373fa4f037da856d97c0c807af9344598920"
+    },
+    {
+      "path": "src/app/app/exchange/actions.ts",
+      "sha256": "74b8eeebbba4d2018d9622082275e19003049212519a725aee792932b1ddca5c"
+    },
+    {
+      "path": "src/app/app/exchange/callout/actions.ts",
+      "sha256": "ef113b714c028fea1c815e329b81782bcc469530eb89557f5516019b29c7de85"
+    },
+    {
+      "path": "src/components/manager-shift-requests.tsx",
+      "sha256": "4755d4b1b0f9b3f257a6e2700c2dc0db52a67389f9c495f4f8684ac0b48dee8f"
+    },
+    {
+      "path": "db/migrations/0001_initial.sql",
+      "sha256": "330e125060422506f92403307224b739b73f5fc8697ed43039b22e56bcba61a1"
+    },
+    {
+      "path": "db/migrations/0003_schedule_assistance.sql",
+      "sha256": "d82513ab58c0e8a84f976a05c2be0e342309467c586ded8347cce4ef9001900a"
+    },
+    {
+      "path": "db/migrations/0009_schedule_generation.sql",
+      "sha256": "aadde6a1f5d3167ed4f346817d1feeb0c9f99f28d50adcf904a989b86120f007"
+    },
+    {
+      "path": "package.json",
+      "sha256": "2121ed3bccad0d7021edf79551dd28c97cd4e280cf46758c24c027676b198a89"
+    },
+    {
+      "path": "src/lib/scheduling/validate-shift.ts",
+      "sha256": "d545360e42ca63f7e387be7101cc96047c85958223a1ee166845ccfb496344b0"
+    },
+    {
+      "path": "src/lib/scheduling/generation/fairness.ts",
+      "sha256": "5d0242d3a4020dfead24d4b3825dbf21d6f4ccc7fd562294337e103720156090"
+    },
+    {
+      "path": "src/lib/data/generation-guards.ts",
+      "sha256": "fa23747c5f763d9da67aa813815c78753d1863bfadbacbd66a0b561443325b14"
+    },
+    {
+      "path": "src/lib/data/schedule-generation-snapshot.ts",
+      "sha256": "6a7e93aa8f657a8f25479c81bd912abdda992d3758e5dc72a76261e2f6d25554"
+    },
+    {
+      "path": "src/lib/auth/session.ts",
+      "sha256": "7ef245c9c1562165c4399961ca6753137e6bd92887dc5cbd70413a24611020d7"
+    },
+    {
+      "path": "src/lib/db.ts",
+      "sha256": "bf12b6cfe57dacebd0d63c0effa3c0e66cb6d4ac7d2ab089c5be80bf643c912e"
+    },
+    {
+      "path": "src/lib/notifications/policy.ts",
+      "sha256": "20c8402178d5197c9174c22504b9cbcda0439ca34826d5b5cfa861b1c2e90243"
+    },
+    {
+      "path": "src/lib/data/notification-state.ts",
+      "sha256": "46c2145197689f696c37a849e5aaeaea1cdf6808eea7d439df9a0de0390c3f42"
+    }
+  ],
+  "prior_sample_comparison": {
+    "count": 19,
+    "unchanged": [
+      "docs/architecture/fuel-automation-charter.md",
+      "docs/architecture/fuel-scheduling-rules.md",
+      "docs/ui/fuel-ui-contract.md",
+      "src/lib/scheduling/exchange-validation.ts",
+      "src/lib/scheduling/coverage-ranking.ts",
+      "src/lib/data/exchanges.ts",
+      "src/lib/data/callouts.ts",
+      "src/lib/data/notification-transactions.ts",
+      "src/lib/data/request-notifications.ts",
+      "src/lib/notifications/recipients.ts",
+      "src/lib/auth/permissions.ts",
+      "src/app/app/exchange/actions.ts",
+      "src/app/app/exchange/callout/actions.ts",
+      "src/components/manager-shift-requests.tsx",
+      "db/migrations/0001_initial.sql",
+      "db/migrations/0003_schedule_assistance.sql",
+      "db/migrations/0009_schedule_generation.sql",
+      "package.json"
+    ],
+    "changed": [
+      "docs/architecture/nevora-auto-scheduler.md"
+    ]
+  }
+}

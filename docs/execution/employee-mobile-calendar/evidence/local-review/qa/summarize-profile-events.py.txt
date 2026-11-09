@@ -1,0 +1,7 @@
+import pathlib,json,sys
+E=pathlib.Path(__file__).parent/sys.argv[1];a=[json.loads(x) for x in (E/'combined/profile-events.jsonl').read_text().splitlines()];requests=[x for x in a if x.get('requestId')];ids=sorted(set(x['requestId'] for x in requests));mismatches=[];unfinished=[]
+for i in ids:
+ rows=[x for x in requests if x['requestId']==i];terminal={s:any(x['scope']==s and x['event'] in ('requestfinished','requestfailed') for x in rows) for s in ('page','context')}
+ if len(set(terminal.values()))>1:mismatches.append({'requestId':i,'engine':rows[0]['engine'],'path':rows[0]['path'],'terminal':terminal})
+ if not any(terminal.values()):unfinished.append({'requestId':i,'engine':rows[0]['engine'],'path':rows[0]['path'],'events':[x['event'] for x in rows]})
+out={'eventCount':len(a),'requestCount':len(ids),'calendarRequestCount':len(set(x['requestId'] for x in requests if x['path']=='/api/employee/calendar-subscriptions')),'terminalMismatches':mismatches,'unfinished':unfinished,'consumerEvents':sum(x['event']=='consumer' for x in a)};(E/'event-summary.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out))

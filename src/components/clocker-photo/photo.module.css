@@ -1,0 +1,90 @@
+.flow { display: grid; gap: 18px; width: 100%; text-align: center; color: #172622; }
+.flow h1 { margin: 0; font-size: 32px; line-height: 1.16; letter-spacing: -.035em; }
+.flow h1:focus { outline: none; }
+.eyebrow { margin: 0; font-size: 12px; font-weight: 650; letter-spacing: .04em; color: #5f6d68; }
+.description { margin: 0; font-size: 15px; line-height: 1.6; color: #5f6d68; }
+.notice { margin: 0; padding: 16px 18px; border-radius: 16px; background: #f4f7f6; color: #344a42; font-size: 14px; line-height: 1.6; text-align: left; overflow-wrap: anywhere; }
+.cameraFrame { position: relative; width: min(100%, 460px); max-height: 40dvh; aspect-ratio: 4 / 3; margin: 0 auto; overflow: hidden; border-radius: 24px; background: #172622; }
+.cameraFrame[hidden], .video[hidden] { display: none; }
+.video, .preview { display: block; width: 100%; height: 100%; object-fit: contain; }
+.video { transform: scaleX(-1); }
+.guide { position: absolute; inset: 8% 24%; border: 2px solid #fff; border-radius: 48%; opacity: .82; pointer-events: none; }
+.cameraStatus { position: absolute; inset-inline: 14px; bottom: 12px; padding: 9px; border-radius: 12px; color: #fff; background: #172622; font-size: 13px; }
+.actions { display: flex; flex-direction: column; gap: 12px; }
+.actions button, .form button { min-height: 48px; padding: 14px 20px; border: 1px solid transparent; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 650; line-height: 1.35; cursor: pointer; touch-action: manipulation; }
+.primary { background: #0b6e69; color: #fff; }
+.secondary { background: #fff; color: #172622; border-color: #ccd8d1 !important; }
+.quiet { color: #5f6d68; background: transparent; }
+.actions button:active, .form button:active { transform: scale(.985); }
+.actions button:focus-visible, .form :is(button,input,select,textarea):focus-visible { outline: 3px solid #087fca; outline-offset: 3px; }
+.form { display: grid; gap: 24px; max-width: 760px; }
+.form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 24px; }
+.form legend { padding: 0 0 8px; font-size: 20px; font-weight: 650; }
+.row { display: flex; gap: 14px; align-items: start; padding: 16px; border: 1px solid #e3e9e6; border-radius: 16px; background: #fff; }
+.row input[type=checkbox] { width: 22px; height: 22px; margin: 2px 0 0; accent-color: #0b6e69; flex: none; }
+.row strong { display: block; font-size: 16px; }
+.row span { display: block; margin-top: 4px; font-size: 14px; color: #5f6d68; line-height: 1.55; }
+.eventGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+.field { display: grid; gap: 8px; font-size: 15px; font-weight: 600; }
+.field select, .field input, .field textarea { min-height: 48px; padding: 12px 14px; border: 1px solid #ccd8d1; border-radius: 12px; background: #fff; color: #172622; font: inherit; }
+.field textarea { resize: vertical; line-height: 1.6; }
+.footer { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.footer p { margin: 0; color: #5f6d68; font-size: 13px; line-height: 1.5; }
+.form :disabled { opacity: .6; cursor: not-allowed; }
+.photoNotice { display: grid; gap: 10px; text-align: left; }
+.photoNotice details { border: 1px solid #e3e9e6; border-radius: 16px; overflow: hidden; }
+.photoNotice summary { min-height: 48px; padding: 14px 18px; font-size: 14px; font-weight: 650; line-height: 1.5; cursor: pointer; }
+.photoNotice summary:focus-visible { outline: 3px solid #087fca; outline-offset: -3px; }
+.photoNotice .notice { border-radius: 0; }
+.notice p { margin: 0 0 12px; }
+.notice p:last-child { margin-bottom: 0; }
+.review { display: grid; gap: 24px; }
+.reviewToolbar { display: flex; gap: 20px; align-items: center; justify-content: space-between; }
+.reviewToolbar h2, .reviewToolbar h3 { margin: 0 0 8px; }
+.review :is(button) { min-height: 48px; padding: 14px 20px; border: 1px solid transparent; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 650; line-height: 1.4; cursor: pointer; touch-action: manipulation; }
+.review button:focus-visible { outline: 3px solid #087fca; outline-offset: 3px; }
+.review button:disabled { opacity: .6; cursor: not-allowed; }
+.reviewList { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.reviewRow { display: flex; gap: 20px; align-items: center; justify-content: space-between; padding: 20px; border: 1px solid #e3e9e6; border-radius: 20px; }
+.reviewRow > div { min-width: 0; overflow-wrap: anywhere; }
+.reviewRow strong { font-size: 16px; }
+.reviewRow p { margin: 6px 0; font-size: 14px; line-height: 1.5; }
+.reviewRow time { font-size: 13px; color: #5f6d68; }
+.reviewState { font-weight: 600; }
+.reviewDetail { display: grid; gap: 16px; padding: 24px; border: 1px solid #ccd8d1; border-radius: 24px; background: #fff; overflow-wrap: anywhere; }
+.reviewDetail > p { margin: 0; line-height: 1.6; }
+.privatePreview { max-width: 460px; padding: 8px; border: 1px solid #e3e9e6; border-radius: 20px; }
+.privatePreview img { display: block; width: 100%; height: auto; max-height: 50dvh; object-fit: contain; border-radius: 14px; }
+.danger { color: #9f1d2a; background: #fff; border-color: #bd8b91 !important; }
+@media(max-width:640px) { .reviewToolbar, .reviewRow { align-items: stretch; flex-direction: column; } .reviewDetail { padding: 18px; } }
+@media(max-width:480px) { .eventGrid { grid-template-columns: 1fr; } .cameraFrame { border-radius: 18px; } }
+@media(prefers-reduced-motion:reduce) { .actions button:active, .form button:active { transform: none; } }
+
+.flow{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.flow .actions button{min-height:56px}.form .description{font-weight:400}.form a{justify-self:start}.form h2{margin:0 0 8px;font-size:1.1875rem}.form>form{padding-top:32px;border-top:1px solid #e3e9e6}.row{min-height:64px;align-items:center}.row input[type=checkbox]{appearance:none;position:relative;width:24px;height:24px;border:1.5px solid #94aaa0;border-radius:6px;background:white;margin:0}.row input:checked{background:#0b6e69;border-color:#0b6e69}.row input:checked::after{content:"";position:absolute;left:7px;top:3px;width:7px;height:12px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg)}.field select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%235f6d68%22 stroke-width=%221.75%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22m6 9 6 6 6-6%22/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}.form button{box-shadow:none}.review button{box-shadow:none}.flow .actions button{box-shadow:none}
+
+.form>a.secondary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 20px;border:1px solid #ccd8d1;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none}.form details.photoNotice{gap:0;border:1px solid #e3e9e6;border-radius:12px}.form details.photoNotice summary{min-height:48px;padding:14px 16px;cursor:pointer}.form details.photoNotice summary:focus-visible{outline:3px solid #087fca;outline-offset:3px}
+
+/* The kiosk photo flow, Direction B (Nov 8, 2026): the Clocker card's type, rings, pills and messages. Owner settings and
+ * review (.form, .review) are unchanged. */
+.flow.flow { gap: 0; font-family: inherit; color: #111517; }
+.flow.flow > * + * { margin-top: 14px; }
+.flow.flow h1 { font-size: 1.875rem; line-height: 1.2; font-weight: 700; letter-spacing: -.03em; text-wrap: balance; }
+.flow.flow > .ring + h1 { margin-top: 0; }
+.ring { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; display: grid; place-items: center; background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 3px #B9DCD7; }
+.ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; box-shadow: inset 0 0 0 3px #F3D3A0; }
+.ring[data-tone=red] { background: #FDECEA; color: #B42318; box-shadow: inset 0 0 0 3px #F4B7B0; }
+.ring[data-tone=green] { background: #E7F4EC; color: #1D6B45; box-shadow: inset 0 0 0 3px #B3DDC3; }
+.flow.flow .description { font-size: 1rem; line-height: 1.45; color: #3F464B; }
+.flow.flow .notice { padding: 14px 16px; border-radius: 16px; background: #F2F5F4; color: #3F464B; font-size: .9375rem; line-height: 1.45; }
+.flow.flow .photoNotice details { border: 0; border-radius: 16px; background: #F2F5F4; }
+.flow.flow .photoNotice summary { min-height: 48px; padding: 13px 16px; color: #0B6E69; font-size: .9375rem; font-weight: 600; }
+.flow.flow .photoNotice summary:focus-visible, .flow.flow .actions button:focus-visible { outline: 3px solid #0B6E69; outline-offset: 3px; }
+.flow.flow .cameraFrame { border-radius: 18px; }
+.flow.flow .actions { gap: 12px; margin-top: 22px; }
+.flow.flow .actions button { min-height: 56px; padding: 12px 24px; border: 0 !important; border-radius: 999px; font-size: 1.0625rem; font-weight: 700; line-height: 1.25; -webkit-tap-highlight-color: transparent; transition: background-color 140ms ease, transform 120ms ease; }
+.flow.flow .primary { background: var(--clocker-accent, #0C726C); color: #FFFFFF; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
+.flow.flow .secondary { background: #F0F2F3; color: #111517; }
+.flow.flow .quiet { min-height: 48px; background: transparent; color: #0B6E69; font-size: .96875rem; font-weight: 600; }
+.flow.flow .actions button:active { transform: scale(.96); }
+@media (hover: hover) { .flow.flow .primary:hover { background: var(--clocker-accent-hover, #0A5F5A); } .flow.flow .secondary:hover { background: #E6E9EA; } }
+@media (prefers-reduced-motion: reduce) { .flow.flow .actions button { transition: none; } .flow.flow .actions button:active { transform: none; } }

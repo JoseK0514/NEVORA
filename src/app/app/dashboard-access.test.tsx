@@ -1,0 +1,27 @@
+import {beforeEach,expect,it,vi} from 'vitest';import {renderToStaticMarkup} from 'react-dom/server';
+const f=vi.hoisted(()=>({role:'MANAGER',mode:'COMPANY',unavailable:false,company:vi.fn(),authority:vi.fn(),load:vi.fn()}));
+vi.mock('@/lib/auth/session',()=>({requireSession:async()=>({id:'actor',role:f.role,firstName:'Fictional'}),requireSessionMutationProof:async()=>({employee:{id:'actor',role:f.role},sessionTokenHash:'a'.repeat(64)})}));
+vi.mock('@/lib/auth/permissions',()=>({isManagerRole:(role:string)=>['OWNER','MANAGER'].includes(role)}));
+vi.mock('@/lib/company-access/operational-scope.server',()=>({readOperationalAuthority:async()=>{f.authority();return f.unavailable?{state:'unavailable',reason:'read_failed'}:{state:'ready',employeeId:'actor',role:f.role,scope:f.mode==='NONE'?null:{mode:f.mode,locationIds:f.mode==='COMPANY'?[]:['L1']},locations:[{id:'L1',name:'Fictional managed location',shortName:'Managed'}],authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};},withOperationalCompany:async(_proof:unknown,load:()=>Promise<unknown>)=>{f.company();return {state:'ready',data:await load(),authority:'fixture',observedAt:'2026-10-14T12:00:00Z',validForMs:15000};}}));
+vi.mock('@/lib/data/manager-dashboard',()=>({loadManagerDashboardData:f.load}));
+vi.mock('@/lib/data/workspaces',()=>({getWorkspace:async()=>({id:'fixture',name:'Fictional company',timeZone:'America/Puerto_Rico'})}));
+vi.mock('@/lib/time-corrections/authority.server',()=>({correctionAuthority:()=> 'fictional-corrections'}));
+vi.mock('@/lib/data/employee-home.server',()=>({homeAuthority:()=> 'fictional-home'}));
+vi.mock('@/components/company-access/scoped-read-frame',()=>({ScopedReadFrame:({children,unavailable}:{children?:React.ReactNode;unavailable?:React.ReactNode})=>children??unavailable??null}));
+vi.mock('@/components/employee-dashboard',()=>({EmployeeDashboard:()=> <p>Own next shift and clock status</p>}));
+vi.mock('@/components/manager-dashboard',()=>({ManagerDashboard:({pendingRequestCount,role}:{pendingRequestCount:number;role:string})=><p>{role}: {pendingRequestCount} recorded pending requests</p>}));
+vi.mock('@/components/manager-clock-monitor',()=>({ManagerClockMonitor:()=> <p>Existing separately polled monitor</p>}));
+import Page from './page';const query={searchParams:Promise.resolve({})};
+import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+beforeEach(()=>{f.role='MANAGER';f.mode='COMPANY';f.unavailable=false;f.company.mockReset();f.authority.mockReset();f.load.mockReset().mockResolvedValue({dashboard:{readyLocationCount:1,totalCoverageGaps:0,pendingRequestCount:7,locationReadiness:[]},locations:[],availabilitySubmissionSummary:{submittedEmployees:0,activeEmployees:0,unavailableAllWeek:0},coverageRulesConfigured:true,managerActions:[],scheduleRoster:[],daySummaries:[],hourRows:[],pendingTimeOff:[],pendingExchanges:[],pendingCallouts:[],latestRevision:null});});
+it.each(['OWNER','MANAGER'])('preserves the full canonical %s dashboard only behind Company scope',async role=>{f.role=role;const html=renderToStaticMarkup(await Page(query));expect(html).toContain(`${role}: 7 recorded pending requests`);expect(f.company).toHaveBeenCalledOnce();expect(f.load).toHaveBeenCalledOnce();});
+it.each(['LOCATIONS','NONE'])('does not call the canonical dashboard with a partial or unassigned roster: %s',async mode=>{f.mode=mode;const html=renderToStaticMarkup(await Page(query));expect(html).toContain(mode==='NONE'?'Management access is not assigned':'Fictional managed location');expect(f.load).not.toHaveBeenCalled();expect(f.company).not.toHaveBeenCalled();expect(html).not.toContain('recorded pending requests');});
+it('withholds all operational dashboard bodies when authority cannot be confirmed',async()=>{f.unavailable=true;const html=renderToStaticMarkup(await Page(query));expect(html).toContain('Home unavailable');expect(f.load).not.toHaveBeenCalled();});
+it.each(['EMPLOYEE','LEAD'])('retains %s self dashboard with no operational company check',async role=>{f.role=role;f.unavailable=true;const html=renderToStaticMarkup(await Page(query));expect(html).toContain('Own next shift and clock status');expect(f.authority).not.toHaveBeenCalled();expect(f.company).not.toHaveBeenCalled();expect(f.load).not.toHaveBeenCalled();});
+it('owns correction recovery above the retiring private body and resets it when leaving Attendance',async()=>{
+ const attendance={searchParams:Promise.resolve({view:'attendance'})};const first=await Page(attendance),refreshed=await Page(attendance),overview=await Page(query);
+ expect(first.type).toBe(ManagerCorrectionRecoveryBoundary);expect(first.props.children.type).toBe(ScopedReadFrame);
+ expect(first.key).toBe(refreshed.key);expect(first.key).not.toBe(overview.key);
+ f.unavailable=true;expect((await Page(attendance)).type).not.toBe(ManagerCorrectionRecoveryBoundary);
+});

@@ -1,0 +1,10 @@
+{
+ "B2 consequence: layout moved by button height or wrapping (geometry only)": 1880,
+ "B1 tab labels: one token, 10px to 12px where a legacy rule won (Home views)": 160,
+ "B2 phone button shape (radius, height, padding, label type, icon)": 520,
+ "B6 consequence: Schedule layout moved by the picker track (geometry only)": 482,
+ "B6 day picker track, segments, chosen ring, today dot (phone and desktop)": 1220,
+ "B6 J1 grid heading today, column tint, location switcher": 1042,
+ "B4 Refresh short label structure (Timecards)": 4
+}
+views with any difference: 26 | desktop views with difference: manager-schedule-1440, manager-schedule-1920, manager-schedule-day-1440, manager-schedule-day-1920

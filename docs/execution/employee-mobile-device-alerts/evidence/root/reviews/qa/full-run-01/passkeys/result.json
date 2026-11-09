@@ -1,0 +1,1052 @@
+{
+  "status": "passed",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "chromium",
+      "name": "HTTP rejects another binding and employee selector"
+    },
+    {
+      "engine": "chromium",
+      "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+    },
+    {
+      "engine": "chromium",
+      "name": "Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key"
+    },
+    {
+      "engine": "chromium",
+      "name": "Offline pause and actual GET failure clear metadata and actions; only canonical refresh restores saved facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native keyboard removal review names last-key consequences; Keep returns exact focus and preserves the key"
+    },
+    {
+      "engine": "chromium",
+      "name": "Unsupported creation preserves canonical saved metadata and removal"
+    },
+    {
+      "engine": "chromium",
+      "name": "Lost real committed removal reply is uncertain; explicit fresh list shows current absence, one audit and no invented success"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit last-key removal commits once, fresh own list confirms absence and success is shown"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual session loss clears own metadata and all commands"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native signout removes mounted owner and session cookie"
+    },
+    {
+      "engine": "webkit",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "webkit",
+      "name": "HTTP rejects another binding and employee selector"
+    },
+    {
+      "engine": "webkit",
+      "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+    },
+    {
+      "engine": "webkit",
+      "name": "Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key"
+    },
+    {
+      "engine": "webkit",
+      "name": "Offline pause and actual GET failure clear metadata and actions; only canonical refresh restores saved facts"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native keyboard removal review names last-key consequences; Keep returns exact focus and preserves the key"
+    },
+    {
+      "engine": "webkit",
+      "name": "Unsupported creation preserves canonical saved metadata and removal"
+    },
+    {
+      "engine": "webkit",
+      "name": "Lost real committed removal reply is uncertain; explicit fresh list shows current absence, one audit and no invented success"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit last-key removal commits once, fresh own list confirms absence and success is shown"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual session loss clears own metadata and all commands"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native signout removes mounted owner and session cookie"
+    },
+    {
+      "engine": "firefox",
+      "name": "Own Employee/Lead Profile current empty state, no private prehydration sample"
+    },
+    {
+      "engine": "firefox",
+      "name": "HTTP rejects another binding and employee selector"
+    },
+    {
+      "engine": "firefox",
+      "name": "Controlled native cancellation creates no server credential and returns exact Add focus"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit Cancel setup aborts the controlled native promise and returns exact Add focus"
+    },
+    {
+      "engine": "firefox",
+      "name": "Single controlled native ceremony survives expected blur and resize; actual cryptographic server verify creates only own key"
+    },
+    {
+      "engine": "firefox",
+      "name": "Offline pause and actual GET failure clear metadata and actions; only canonical refresh restores saved facts"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native keyboard removal review names last-key consequences; Keep returns exact focus and preserves the key"
+    },
+    {
+      "engine": "firefox",
+      "name": "Unsupported creation preserves canonical saved metadata and removal"
+    },
+    {
+      "engine": "firefox",
+      "name": "Lost real committed removal reply is uncertain; explicit fresh list shows current absence, one audit and no invented success"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit last-key removal commits once, fresh own list confirms absence and success is shown"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual session loss clears own metadata and all commands"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native signout removes mounted owner and session cookie"
+    }
+  ],
+  "captures": [
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-loading.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-options.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-device-prompt.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-desktop-pending.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-verifying.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-paused.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-read-error.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-light-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-dark-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-coarse-landscape.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-remove-review.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-remove-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-keep-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-remove-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-keep-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-unsupported-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-unknown-removal.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-removing.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-removed.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/chromium-denied.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-loading.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-options.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-device-prompt.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-desktop-pending.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-verifying.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-paused.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-read-error.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-light-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-dark-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-coarse-landscape.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-remove-review.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-remove-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-keep-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-remove-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-keep-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-unsupported-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-unknown-removal.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-removing.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-removed.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/webkit-denied.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-loading.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-empty.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-options.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-device-prompt.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-desktop-pending.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-verifying.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-paused.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-read-error.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-light-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-320.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-320-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-320-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-320-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-320-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-390.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-390-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-390-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-390-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-390-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-430.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-430-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-430-text200-add.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-430-text200-remove.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-dark-430-text200-help.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-coarse-landscape.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-remove-review.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-remove-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-keep-light-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-remove-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-keep-dark-text200.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-unsupported-saved.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-unknown-removal.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-removing.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-removed.png",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/full-run-01/passkeys/firefox-denied.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "help",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "intro",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Add a passkey",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "Remove Mac",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "help",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 6.056099084376946
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "removal-consequences",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Remove passkey",
+      "ratio": 7.99886165737772
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "Keep passkey",
+      "ratio": 10.771713285410929
+    }
+  ],
+  "errors": [
+    {
+      "engine": "chromium",
+      "stage": "paused-read-error",
+      "message": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "denied",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "transport": [
+    {
+      "engine": "chromium",
+      "stage": "entry",
+      "event": "real-initial-response-released",
+      "at": 1793155144181
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-removal",
+      "event": "delete-forward-start",
+      "at": 1793155149072
+    },
+    {
+      "engine": "chromium",
+      "stage": "lost-removal",
+      "event": "delete-forward-reply",
+      "at": 1793155149884,
+      "status": 204
+    },
+    {
+      "engine": "webkit",
+      "stage": "entry",
+      "event": "real-initial-response-released",
+      "at": 1793155163447
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-removal",
+      "event": "delete-forward-start",
+      "at": 1793155168211
+    },
+    {
+      "engine": "webkit",
+      "stage": "lost-removal",
+      "event": "delete-forward-reply",
+      "at": 1793155168227,
+      "status": 204
+    },
+    {
+      "engine": "firefox",
+      "stage": "entry",
+      "event": "real-initial-response-released",
+      "at": 1793155182643
+    },
+    {
+      "engine": "firefox",
+      "stage": "lost-removal",
+      "event": "delete-forward-start",
+      "at": 1793155186759
+    },
+    {
+      "engine": "firefox",
+      "stage": "lost-removal",
+      "event": "delete-forward-reply",
+      "at": 1793155186774,
+      "status": 204
+    }
+  ],
+  "limits": [
+    "Controlled fictional authenticator and actual cryptographic canonical server; native OS UI/credential-store behavior and physical devices unexecuted.",
+    "Owned loopback Next development/PostgreSQL, no hosted/production certification."
+  ]
+}

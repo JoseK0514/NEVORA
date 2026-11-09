@@ -1,0 +1,34 @@
+/* The Employee shift sheet on the corporate kit (Release 1, board E-ShiftDetail): one white sheet, the shift inline under
+ * the "Day · Done" bar (no grey band, no inset block), then the ways to change it as one bordered list. */
+:is(#c-root, html) dialog.q-sheet:has(.c-esheet) { background: #FFFFFF; }
+:is(#c-root, html) dialog.q-sheet:has(.c-esheet) .q-sheet__top { background: #FFFFFF; }
+:is(#c-root, html) .c-sheet.c-esheet { gap: 16px; padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__nav { min-height: 52px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__shift { margin: 0; padding: 0; border-radius: 0; background: none; box-shadow: none; gap: 2px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__place { color: #4A4F54; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row { min-height: 52px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row:not(.c-row--one) { min-height: 60px; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row__detail { color: var(--c-grey); font-weight: 400; }
+:is(#c-root, html) .c-sheet.c-esheet .c-sheet__actions .c-row--danger .c-row__detail span { color: var(--c-grey); }
+@media (min-width: 768px) {
+  /* Upscale S12: in the right-hand panel the details sit in a white card on the grey panel, like the Owner timecard
+   * panel, with the actions card 12px under it. */
+  :is(#c-root, html) .app-shell[data-nv-corp] dialog.q-sheet:has(.c-esheet), :is(#c-root, html) .app-shell[data-nv-corp] dialog.q-sheet:has(.c-esheet) .q-sheet__top { background: #F5F6F6; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet { gap: 12px; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet .c-sheet__nav { margin-bottom: 4px; }
+  :is(#c-root, html) .app-shell[data-nv-corp] .c-sheet.c-esheet .c-esheet__card { padding: 14px 16px 16px; border-radius: 12px; background: #FFFFFF; box-shadow: var(--c-shadow-card); }
+  /* Reliability R-01: only outside the corporate shell; there every kit sheet is the right-hand panel, and this
+   * centring (its translate) would lift that panel half off the screen. */
+  :is(#c-root, html) .app-shell:not([data-nv-corp]) dialog.q-sheet:has(.c-esheet) { top: 50%; bottom: auto; height: auto; max-height: min(86dvh, 820px); margin: 0 auto; translate: 0 -50%; }
+}
+
+/* Direction B phones (Round 4): the shift sits in the kit's lifted white card, so it keeps the card's inset (it would
+ * otherwise touch the 22px corner); the bar's day is the kit's 600 weight and Done is teal, like every B back link. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-esheet__card { padding: 16px 18px 18px !important; margin: 0 !important; gap: 2px; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__title { font-weight: 600 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sheet.c-esheet .c-sheet__done { font-weight: 600 !important; color: #0B6E69 !important; }
+}
+
+/* Employee desktop (Nov 8, 2026): the note under the actions shows only there (employee-b-desktop.css). */
+:is(#c-root, html) .c-sheet.c-esheet .c-esheet__note { display: none; }

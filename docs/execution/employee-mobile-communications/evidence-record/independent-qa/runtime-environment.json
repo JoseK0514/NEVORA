@@ -1,0 +1,33 @@
+{
+  "node": "v24.19.0",
+  "postgres": "postgres (PostgreSQL) 17.9",
+  "playwrightVersion": "1.57.0",
+  "browsers": {
+    "chromium": "/home/agent/.cache/ms-playwright/chromium-1200/chrome-linux64/chrome",
+    "webkit": "/home/agent/.cache/ms-playwright/webkit-2227/pw_run.sh",
+    "firefox": "/home/agent/.cache/ms-playwright/firefox-1497/firefox/firefox"
+  },
+  "runtimeFileSha256": {
+    "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin/postgres": "6cb7622e7a655dd5c42dcf594eb0993ade5938a1694f791ecc443ec9df5c6103",
+    "/opt/codex/cua_node/lib/node_modules/playwright/package.json": "07726a5a20b29123d85311af7d11b7de6bf00ddd03121d3c9061995043ebd261",
+    "/home/agent/.cache/ms-playwright/chromium-1200/chrome-linux64/chrome": "2e61bc3fd990bd4d7b419ef6b6303c67aaed683e5b83b3b25e416f015f343209",
+    "/home/agent/.cache/ms-playwright/webkit-2227/pw_run.sh": "a85baad3d8c07173ac387a59b41500c382b21ed692afe0964d29aac247ccc63b",
+    "/home/agent/.cache/ms-playwright/firefox-1497/firefox/firefox": "6e57d2f4a01c8f92244e9a6b8706b74d4f78d5bfd8988f8f3eab2e6c188140c8",
+    "/workspace/scratch/nevora-runtime/browser-libs-packages.json": "14543765426821536da75302035b76013c00f63f74ff5bfe39a56b0aad42e654"
+  },
+  "osRelease": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.6\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+  "documentedSetup": {
+    "node": "v24.19.0",
+    "postgres": "17.9 (@embedded-postgres/linux-x64 17.9.0-beta.17)",
+    "postgresBin": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin",
+    "playwrightPackage": "/opt/codex/cua_node/lib/node_modules/playwright/package.json",
+    "playwrightVersion": "1.57.0",
+    "engines": {
+      "chromium": "143.0.7499.4 build1200",
+      "webkit": "26.0 build2227",
+      "firefox": "144.0.2 build1497"
+    },
+    "localLibraries": "/workspace/scratch/nevora-runtime/browser-libs-packages.json",
+    "hostValidation": "ldconfig cache misses rootless GLES. Actual CDLL load, ldd and all3browser launch smoke checked; actual libraries installed inside downloaded WebKit bundle sys/lib. PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=1 disables cache heuristic only; no application/test gates changed."
+  }
+}

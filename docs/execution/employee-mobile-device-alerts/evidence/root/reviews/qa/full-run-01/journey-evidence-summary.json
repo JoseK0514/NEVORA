@@ -1,0 +1,180 @@
+[
+  {
+    "path": "calendar/result.json",
+    "status": "passed",
+    "checks": 39,
+    "captures": 108,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "status",
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "limits"
+    ]
+  },
+  {
+    "path": "responses/results.json",
+    "status": null,
+    "checks": 34,
+    "captures": 90,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "failedRequests"
+    ]
+  },
+  {
+    "path": "planning/results.json",
+    "status": null,
+    "checks": 63,
+    "captures": 114,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "failedRequests"
+    ]
+  },
+  {
+    "path": "passkeys/result.json",
+    "status": "passed",
+    "checks": 36,
+    "captures": 150,
+    "error": null,
+    "unexpected": 0,
+    "errorCollectionField": "errors",
+    "keys": [
+      "status",
+      "checks",
+      "captures",
+      "contrasts",
+      "errors",
+      "transport",
+      "limits"
+    ]
+  },
+  {
+    "path": "requests/results.json",
+    "status": null,
+    "checks": 28,
+    "captures": 36,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrast",
+      "messages"
+    ]
+  },
+  {
+    "path": "creation/results.json",
+    "status": null,
+    "checks": 40,
+    "captures": 192,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "failedRequests",
+      "focusTransitions"
+    ]
+  },
+  {
+    "path": "profile/results.json",
+    "status": null,
+    "checks": 42,
+    "captures": 111,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "limits"
+    ]
+  },
+  {
+    "path": "communications-review/results.json",
+    "status": null,
+    "checks": 12,
+    "captures": 30,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "messages",
+      "captures"
+    ]
+  },
+  {
+    "path": "device/failure.json",
+    "status": null,
+    "checks": 21,
+    "captures": 27,
+    "error": "AssertionError: expected false to be true // Object.is equality",
+    "unexpected": 0,
+    "errorCollectionField": "errors",
+    "keys": [
+      "error",
+      "checks",
+      "captures",
+      "errors",
+      "contrasts",
+      "transport"
+    ]
+  },
+  {
+    "path": "hours/results.json",
+    "status": null,
+    "checks": 51,
+    "captures": 105,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "failedRequests"
+    ]
+  },
+  {
+    "path": "communications/results.json",
+    "status": null,
+    "checks": 3,
+    "captures": 14,
+    "error": null,
+    "unexpected": null,
+    "errorCollectionField": "see original source artifact",
+    "keys": [
+      "checks",
+      "captures",
+      "contrasts",
+      "messages",
+      "failedRequests"
+    ]
+  }
+]

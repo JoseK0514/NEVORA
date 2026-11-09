@@ -1,0 +1,14 @@
+/* Hours this week on the kit: a week switcher, then two cards. */
+:is(#c-root, html) .c-teamweek .c-week { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; height: 44px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-ring); }
+:is(#c-root, html) .c-teamweek .c-week__label { text-align: center; font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#c-root, html) .c-teamweek .c-week__arrow { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: var(--c-teal); }
+:is(#c-root, html) .c-teamweek .c-week__arrow .c-ic { width: 18px; height: 18px; }
+:is(#c-root, html) .c-teamweek #team-week .c-stat__label { white-space: normal; overflow: visible; }
+/* Every tap answers (phone P4): the week arrows and card links dim while pressed. */
+:is(#c-root, html) .c-teamweek :is(.c-week__arrow, .c-card__aside .c-link) { -webkit-tap-highlight-color: transparent; transition: opacity 150ms ease-out; }
+:is(#c-root, html) .c-teamweek :is(.c-week__arrow, .c-card__aside .c-link):active { opacity: .55; transition: none; }
+/* Nov 1 upscale (review S6): a person's line ("12 h of 32 h · 20 h under") is never cut mid-word; on a narrow phone it
+ * takes a second line instead. */
+:is(#c-root, html) .c-teamweek #team-hours .c-row__main { overflow: visible; }
+:is(#c-root, html) .c-teamweek #team-hours .c-row__detail { min-width: 0; overflow: visible; }
+:is(#c-root, html) .c-teamweek #team-hours .c-row__detail > span:first-child { min-width: 0; overflow: visible; white-space: normal; text-overflow: clip; overflow-wrap: anywhere; }

@@ -1,0 +1,200 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "run": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined",
+  "resultSha256": "e7dc8c1863872e19a5b85a7b22438c41905a3eff20c34575b9308d89ef81d127",
+  "kind": "Unmodified captures of isolated fictional-account browser verification; no new visual exploration",
+  "captures": [
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-notifications-light-390-viewport.png",
+      "path": "captures/messages-chromium-notifications-light-390-viewport.png",
+      "label": "Notifications, light,390px",
+      "sha256": "d910d2c550f7d66a146bfab2b11c2f350405ac729fb36dc19a785fb59b1a5109",
+      "bytes": 43327
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-notifications-dark-390-viewport.png",
+      "path": "captures/messages-chromium-notifications-dark-390-viewport.png",
+      "label": "Notifications, dark,390px",
+      "sha256": "1e51e4d0f6d165135e0e23dc9aec762d7ef28861f907d0e1560ec2f69deaf436",
+      "bytes": 44055
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-notifications-text-200-viewport.png",
+      "path": "captures/messages-chromium-notifications-text-200-viewport.png",
+      "label": "Notifications,200% root text",
+      "sha256": "857975bce0765ac9789120a311563f1052cfc327e9b24e04fbcb565b74d01079",
+      "bytes": 37308
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-updates-light-390-viewport.png",
+      "path": "captures/messages-chromium-updates-light-390-viewport.png",
+      "label": "Updates, light,390px",
+      "sha256": "fa83f1981bdfbbaf3d2eeb8fe62aa9ee06148cdfdf61be3c1e18ccb833e20d96",
+      "bytes": 47447
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-updates-dark-390-viewport.png",
+      "path": "captures/messages-chromium-updates-dark-390-viewport.png",
+      "label": "Updates, dark,390px",
+      "sha256": "99fbeff207fb54b47557eb959805a1ae515af8f4f672cc8a435dcdc3b05d6521",
+      "bytes": 48449
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-detail-light-390-viewport.png",
+      "path": "captures/messages-chromium-detail-light-390-viewport.png",
+      "label": "Own update, light,390px",
+      "sha256": "78541270eb65787603ee0113331c015c26cafcc80b177b5374e55d1606cf682d",
+      "bytes": 48296
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-detail-dark-390-viewport.png",
+      "path": "captures/messages-chromium-detail-dark-390-viewport.png",
+      "label": "Own update, dark,390px",
+      "sha256": "a5bc8e1a0919a3fa1ca5359c5ec66604b9b4873fdc629a469ae78dfe14324a9c",
+      "bytes": 49675
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-detail-text-200-viewport.png",
+      "path": "captures/messages-chromium-detail-text-200-viewport.png",
+      "label": "Own update,200% root text",
+      "sha256": "b87154c924419294700c17ed688c71d88988e97d91976cda7d2d717841b450d9",
+      "bytes": 42836
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-compose-light-390-viewport.png",
+      "path": "captures/messages-chromium-compose-light-390-viewport.png",
+      "label": "Today-team draft, light,390px",
+      "sha256": "2edf111767961cadf724cb4efc69983f94b49d68e21c7e3280b184592c245ef5",
+      "bytes": 46295
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-compose-dark-390-viewport.png",
+      "path": "captures/messages-chromium-compose-dark-390-viewport.png",
+      "label": "Today-team draft, dark,390px",
+      "sha256": "2bc27ec142c59f6d52d09d8b1f9a1de47fa701443c8222d74e35223ef80fa6ac",
+      "bytes": 46794
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-compose-text-200-viewport.png",
+      "path": "captures/messages-chromium-compose-text-200-viewport.png",
+      "label": "Today-team draft,200% root text",
+      "sha256": "be6d309472f4bd70caa7119e771b9bab17d3ce80173296961887d00a97f7ecf3",
+      "bytes": 40652
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-audience-light-390-viewport.png",
+      "path": "captures/messages-chromium-audience-light-390-viewport.png",
+      "label": "Actual current audience preview",
+      "sha256": "ec6defb49ffa58a4fae3b7500ceb6c980b5fecbd44cb5960854951c4b6a8bb40",
+      "bytes": 41991
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-invalid-title-320-text200-viewport.png",
+      "path": "captures/review-chromium-invalid-title-320-text200-viewport.png",
+      "label": "Field error and focus,320px/200% root text",
+      "sha256": "1aa4a59725f7151b00a472956a37b9da8ee48355832eb5ad7882d239a2d34a58",
+      "bytes": 44476
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/webkit-invalid-title-320-text200-viewport.png",
+      "path": "captures/review-webkit-invalid-title-320-text200-viewport.png",
+      "label": "WebKit field error and focus,320px/200% root text",
+      "sha256": "0e7f2ab88a74584642b1cad2953b4a4916b1ae15866fb85071ef616623e71940",
+      "bytes": 53016
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/firefox-invalid-title-320-text200-viewport.png",
+      "path": "captures/review-firefox-invalid-title-320-text200-viewport.png",
+      "label": "Firefox field error and focus,320px/200% root text",
+      "sha256": "86d1da61deeb5500b0bdbb6c23aeca94e0aa03506e41427f329007e87ff11513",
+      "bytes": 56142
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-form-and-original-invalid-body-control.png",
+      "path": "captures/review-chromium-form-and-original-invalid-body-control.png",
+      "label": "Canonical text-policy error",
+      "sha256": "55a2e747b5b7de769720dced04ba6310b42ceb1ce841cb5126970b8b14d549d9",
+      "bytes": 68330
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-form-and-original-invalid-expiry.png",
+      "path": "captures/review-chromium-form-and-original-invalid-expiry.png",
+      "label": "Expiry field error",
+      "sha256": "6c5901580f438f62500835be123d1d8335dbd3ab6775a7ceb9c43fe4d9302050",
+      "bytes": 67513
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-open-recovery-deadline.png",
+      "path": "captures/review-chromium-open-recovery-deadline.png",
+      "label": "Hung open reaches bounded recovery",
+      "sha256": "4d5b0ad64e436071a496cd095953a475021e0e489e76b5f3acfdaf0136e78cd0",
+      "bytes": 60351
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-optional-and-original-refused-original-lookup.png",
+      "path": "captures/review-chromium-optional-and-original-refused-original-lookup.png",
+      "label": "Actual403 original lookup while Updates off",
+      "sha256": "9289f52f62e701f0f81cb7e37518a50fc9857b7c7e52e33ce63fbd013c6d9475",
+      "bytes": 37099
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-optional-and-original-original-recovered.png",
+      "path": "captures/review-chromium-optional-and-original-original-recovered.png",
+      "label": "Original committed operation recovered",
+      "sha256": "5a39d588c77fe0f9b8c19f87159adc6ac770f6256b812616991d7205e443bf1b",
+      "bytes": 42301
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/chromium-module-fence-after-release-viewport.png",
+      "path": "captures/messages-chromium-module-fence-after-release-viewport.png",
+      "label": "Immediate fence remains after pending reply release",
+      "sha256": "8b4393cf1346762931da93d11b8854dec0e2d77459c61a67006752e37595d063",
+      "bytes": 38062
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/webkit-module-fence-after-release-viewport.png",
+      "path": "captures/messages-webkit-module-fence-after-release-viewport.png",
+      "label": "WebKit fence after pending reply release",
+      "sha256": "019d1e6adb652e06dc739bb18a7d891ddfb835a8e69679dff2052eb000e3d1b0",
+      "bytes": 47131
+    },
+    {
+      "group": "messages",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/messages/firefox-module-fence-after-release-viewport.png",
+      "path": "captures/messages-firefox-module-fence-after-release-viewport.png",
+      "label": "Firefox fence after pending reply release",
+      "sha256": "80088f841ff8983d839ac9ca883f0cba5c8c6c522e17f6e9a10d7ab45b0ac489",
+      "bytes": 51993
+    },
+    {
+      "group": "review",
+      "source": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/review/chromium-late-committed-module-fence-after-release.png",
+      "path": "captures/review-chromium-late-committed-module-fence-after-release.png",
+      "label": "Actual committed late reply, Updates off",
+      "sha256": "8b4393cf1346762931da93d11b8854dec0e2d77459c61a67006752e37595d063",
+      "bytes": 38062
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "completedAt": "2026-10-27T18:43:10.057Z",
+  "runnerPid": 9623,
+  "runnerLive": false,
+  "clusters": [
+    {
+      "path": "/tmp/nevora-payroll-owned-lHViIx",
+      "pid": 9647,
+      "port": 42795,
+      "data": "/tmp/nevora-payroll-owned-lHViIx/data",
+      "owner": "edad253c114c0584cf4ef5018518f515",
+      "postmasterOpts": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin/postgres \"-D\" \"/tmp/nevora-payroll-owned-lHViIx/data\" \"-h\" \"127.0.0.1\" \"-p\" \"42795\" \"-k\" \"/tmp/nevora-payroll-owned-lHViIx\"",
+      "portOpen": false,
+      "databases": [
+        {
+          "name": "nevora_exchange_test_c1_edad253c114c",
+          "oid": 212014,
+          "marker": "fuel-phase3-disposable:d45dfdbf-3c5d-4cc9-a80c-f5f62246a210"
+        },
+        {
+          "name": "postgres",
+          "oid": 5,
+          "marker": "default administrative connection database"
+        },
+        {
+          "name": "template0",
+          "oid": 4,
+          "marker": "unmodifiable empty database"
+        },
+        {
+          "name": "template1",
+          "oid": 1,
+          "marker": "default template for new databases"
+        }
+      ],
+      "directoryExists": false,
+      "pidLive": false
+    }
+  ]
+}

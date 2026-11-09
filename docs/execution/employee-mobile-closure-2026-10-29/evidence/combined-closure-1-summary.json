@@ -1,0 +1,39 @@
+{
+  "checkpoint": "cc89df19ae259725e5553d145847b915e16f089a",
+  "scope": "Employee-only release; existing compatibility-role regressions retained",
+  "results": [
+    {
+      "suite": "phase1",
+      "checkpoint": "cc89df19ae259725e5553d145847b915e16f089a",
+      "startedAt": "2026-10-29T16:16:54.763Z",
+      "finishedAt": "2026-10-29T16:18:27.756Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/phase1.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/phase1"
+    },
+    {
+      "suite": "requests",
+      "checkpoint": "cc89df19ae259725e5553d145847b915e16f089a",
+      "startedAt": "2026-10-29T16:18:27.771Z",
+      "finishedAt": "2026-10-29T16:19:29.363Z",
+      "exitCode": 0,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/requests.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/requests"
+    },
+    {
+      "suite": "responses",
+      "checkpoint": "cc89df19ae259725e5553d145847b915e16f089a",
+      "startedAt": "2026-10-29T16:19:29.375Z",
+      "finishedAt": "2026-10-29T16:20:29.986Z",
+      "exitCode": 1,
+      "signal": null,
+      "error": null,
+      "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/responses.log",
+      "directory": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-closure-20261029/combined-closure-1/responses"
+    }
+  ]
+}

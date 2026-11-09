@@ -1,0 +1,96 @@
+{
+  "candidate": "b93a155b64f0273782a47e0efedbc00b2fe59bb1",
+  "reviewMode": "independent read-only source and direct screenshot inspection; no runtime started",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-320-text200.png",
+      "size": 48443,
+      "sha256": "1e52e46e2362227f82362a063ac046c7120ee148cc7f27a0eebfee321d9a6cb3"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-390.png",
+      "size": 67877,
+      "sha256": "c322b1540e87436b40a70348b9f8d4241923c189aca11ad1bbb0179963f5a0d8"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-430-text200.png",
+      "size": 54024,
+      "sha256": "e56514e3778e53b2d81865a40f1ea01e51bf7c0dc28c7efd0fc5b0c37a4ff242"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-430.png",
+      "size": 66112,
+      "sha256": "09b2f7b220f8566df0588c12bfea873684dcc256a7c54dde2c3e5c2aedb0d32c"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-430.png",
+      "size": 68476,
+      "sha256": "05812c75a191ca94573ef213aaf917ba7a9c57615301811ab856f647fa51ac36"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-390.png",
+      "size": 66333,
+      "sha256": "6f5c160ba976086ce7625ea31e3202a2f3164f4713b3553ece9a7bccefc50c27"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-320.png",
+      "size": 54620,
+      "sha256": "1686d83984ecb8277a8f3de9d1502154c84fea4ef4dd344524eb773ca88e4689"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-390-text200.png",
+      "size": 53651,
+      "sha256": "7ab2dd0c99bf3334b00ae52f3f36f0a59de5b790bbefef3ecf87d84ce9bfe105"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-dark-320.png",
+      "size": 56529,
+      "sha256": "7124c8acb116ff683b236b463b79defe218d75779fc2f7bbcf052816307a8a61"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-FAILURE-layout-focus.png",
+      "size": 60443,
+      "sha256": "816eca8f1d79faec31667f24fd9626e6d97423d50e960ee5623751ac5a8f2a1f"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-empty.png",
+      "size": 52773,
+      "sha256": "37aae9ab158569db588e6118c858ab996b64d6d62a6c4a79b3181bf00417f25c"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-saved.png",
+      "size": 47894,
+      "sha256": "9bd122e4b12ab91d5c7c769084b868ad96d9f95ab38dc7e3858601ada7f760c3"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-390-text200.png",
+      "size": 51844,
+      "sha256": "ef67e0ce1e97ba3b98b28048406b898fbc260080ae1ad8da7d0bc0e69d4c51a7"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-coarse-landscape.png",
+      "size": 28119,
+      "sha256": "d7537908f7f464e1385e49edaef0d863df617e2eecafb79e9910f992ffe7f692"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-320-text200.png",
+      "size": 46917,
+      "sha256": "6abcdc3cd8f764fea22da872492dd3b15b789e8ebe8063e1f07bc189398d8e19"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-light-430-text200.png",
+      "size": 52123,
+      "sha256": "726fe3cf3619175f58ac6af091b914aa71ba267b54a78ddadbf99bbee33dabc8"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/chromium-desktop-pending.png",
+      "size": 75443,
+      "sha256": "88589c864091668acab9700f577ef733e9a485fd8c5513d001bea6d1fa602b0b"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-passkeys/run-04/failure.json",
+      "size": 4342,
+      "sha256": "41d9cbe9f931b8edbe33ec8400432d385745f91a446b0ddc59e6d4aed4f2afd8"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+# Final Employee mobile design record
+
+This ordinary refinement preserves Jose’s selected clean teal Employee mobile direction. The unavailable named Impeccable documenter was replaced by this documentation executor using the existing contract and `impeccable/reference/document.md`. No new visual world or metadata refresh was requested or performed.
+
+Reviewed deliverable: [Employee mobile prototype](index.html), HTML SHA-256 `06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469`. Frozen baseline: `6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56`.
+
+Only four source modules changed. Notifications adds a local back-row marker and heading selector, with authored discretionary hyphens in its source title. The shared Heading strips those characters only from the accessible name when present; other title strings retain their prior output. The heading remains an h1 with its existing focus target. Missing-deletion-receipt copy now directs the employee to the existing Support action instead of claiming legal information appears below. It creates no receipt and changes no legal gate.
+
+The existing system continues to own colors, system typography, spacing, radii, official wordmark, Phosphor symbols, controls, native inputs and navigation. No colors, spacing, icons, tokens, domain policies or permission gates changed. `PRODUCT.md`, `DESIGN.md`, `.21st/design.json` and `.impeccable/design.json` remain byte-identical to the baseline. Existing schema omissions were not repaired during this pass.
+
+I personally compared all 104 source files with the frozen baseline, regenerated the four-module diff, verified metadata and all 38 capture hashes, and checked 23 Light color entries and 20 Dark roles against CSS. I visually inspected four original captures: Notifications Light/Dark at 320px/200%, missing receipt Dark at 320px/200%, and Calendar Dark at 320px/200%. Notifications visibly breaks as “Notifica- / tions”; the fallback visibly points to Support. Exact invocations and observed results are in the [private evidence record](../../work/employee-mobile/evidence/final-mobile-review/design-record.md).
+
+The independent [UI review](final-mobile-review-ui.md) recommends shipping this precise local build with no blockers. Its inherited LOW Calendar observation remains: “subscription” splits at 320px/200%. The [QA report](final-mobile-review-qa.md) records 20 current scenarios and two baseline reproductions per browser engine, with no final failures. I inspected the underlying result files but did not execute those browser runs. Its 14 source-only workflows remain distinct from exercised journeys; parent regression execution is separately owned.
+
+Application authority remains the documented read-only development revision `46e2027`. This projectless prototype has no Git branch or commit; this documentation pass performs no production write, commit or deployment. Own Employee actions and fictional sample boundaries remain intact. Live authorization, durable operations, native device behavior and screen-reader certification remain integration work. No user action is required for this design record.

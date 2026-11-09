@@ -1,0 +1,4 @@
+import {createRequire} from 'node:module';import {readFile} from 'node:fs/promises';
+const {Client}=createRequire('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/package.json')('pg');
+const client=new Client({host:'127.0.0.1',port:60343,user:'nevora_test',database:'nevora_exchange_test_c1_6a2655065288',connectionTimeoutMillis:3000,query_timeout:5000});
+try{await client.connect();const results=await client.query(await readFile(new URL('./quiet-hours-observation-text.sql',import.meta.url),'utf8'));console.log(JSON.stringify(results.map(result=>({command:result.command,rowCount:result.rowCount,rows:result.rows})),null,2));}finally{await client.end();}

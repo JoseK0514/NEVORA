@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+
+ Test Files  3 passed (3)
+      Tests  30 passed (30)
+   Start at  20:11:33
+   Duration  210ms (import 37%, transform 37%, tests 23%, worker 3%)
+

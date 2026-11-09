@@ -1,0 +1,114 @@
+{
+  "at": "2026-10-27T21:51:51.936664+00:00",
+  "head": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+  "trackedStatus": "",
+  "manifests": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/owned-next-9ClGEK/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/owned-next-ifA9Rx/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/owned-next-qBaAJL/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/owned-next-XCDdkG/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/owned-next-W7Gnel/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/owned-next-SRVvpL/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/owned-next-sQQuIC/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/owned-next-fApaCM/source-manifest.json",
+      "checkpoint": "4bf7257950f898b97b93293470f0677bdb70b6bf",
+      "entryCount": 2016,
+      "mismatches": []
+    }
+  ],
+  "directPostRunClosure": [
+    {
+      "pid": 23752,
+      "port": 62851,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 26685,
+      "port": 65073,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 33256,
+      "port": 53711,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 34324,
+      "port": 54282,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 35261,
+      "port": 54900,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 30229,
+      "port": 51982,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 31247,
+      "port": 52734,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 31931,
+      "port": 53103,
+      "pidAlive": false,
+      "portOpen": false
+    },
+    {
+      "pid": 19444,
+      "port": 58719,
+      "pidAlive": false,
+      "portOpen": false
+    }
+  ],
+  "observerErrors": [],
+  "sourceUnchanged": true,
+  "gitUnchanged": true
+}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { validateShift } from "./validate-shift";
 
-const baseInput = {
+const baseInput = { workspace: {id:"test-workspace",active:true,timeZone:"America/Puerto_Rico"}, location: {id:"loc-1",workspaceId:"test-workspace",active:true},
   candidate: {
     employeeId: "FC-001",
     locationId: "loc-1",
@@ -9,8 +9,9 @@ const baseInput = {
     startTime: "08:00",
     endTime: "16:00",
   },
-  employee: {
+  employee: { positionIds: [],
     active: true,
+    role: "EMPLOYEE",
     eligibleLocationIds: ["loc-1", "loc-2"],
   },
   existingShifts: [],
@@ -68,7 +69,7 @@ describe("validateShift", () => {
     );
   });
 
-  it("warns managers when a shift is outside normal availability", () => {
+  it("blocks manager assignments outside normal availability", () => {
     const result = validateShift({
       ...baseInput,
       candidate: { ...baseInput.candidate, startTime: "18:00", endTime: "20:00" },
@@ -76,7 +77,7 @@ describe("validateShift", () => {
     });
 
     expect(result.issues).toContainEqual(
-      expect.objectContaining({ code: "OUTSIDE_AVAILABILITY", severity: "warning" }),
+      expect.objectContaining({ code: "OUTSIDE_AVAILABILITY", severity: "error" }),
     );
   });
 
@@ -92,14 +93,14 @@ describe("validateShift", () => {
     );
   });
 
-  it("warns when the candidate pushes weekly hours over 40", () => {
+  it("blocks when the dated scheduled ledger pushes weekly hours over 40", () => {
     const result = validateShift({
       ...baseInput,
-      existingWeeklyMinutes: 35 * 60,
+      existingShifts: ["2026-09-29", "2026-09-30", "2026-10-01", "2026-10-02", "2026-10-03"].map(date => ({ ...baseInput.candidate, date, startTime: "08:00", endTime: "15:00" })),
     });
 
     expect(result.issues).toContainEqual(
-      expect.objectContaining({ code: "WEEKLY_HOURS", severity: "warning" }),
+      expect.objectContaining({ code: "MAX_WEEKLY_HOURS", severity: "error" }),
     );
   });
 

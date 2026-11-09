@@ -1,0 +1,31 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1[39m
+
+ [31m❯[39m src/test/integration/employee-mobile-communications.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 29803[2mms[22m[39m
+[31m   [31m×[31m integrates employee mobile messages with current audience, explicit receipts and original submission recovery[39m[33m 29802[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/employee-mobile-communications.integration.ts[2m > [22mintegrates employee mobile messages with current audience, explicit receipts and original submission recovery
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m matrix src/test/integration/employee-mobile-communications.integration.ts:[2m61:263[22m[39m
+
+[90m [2m❯[22m src/test/integration/employee-mobile-communications.integration.ts:[2m66:101[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 13:21:03
+[2m   Duration [22m 30.36s[2m (tests 99%, transform 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

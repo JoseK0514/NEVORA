@@ -1,0 +1,37 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/app/app/api/push/push-routes.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/app/app/api/push/push-routes.test.ts (16 tests | 1 failed) 148ms
+   × a device page bound to another session cannot read status or enroll 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/app/app/api/push/push-routes.test.ts > a device page bound to another session cannot read status or enroll
+AssertionError: expected 200 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 200
+
+ ❯ src/app/app/api/push/push-routes.test.ts:18:110
+     16|  const s=await setup();
+     17|  const headers={'X-Nevora-Device-Authority':'foreign-session'};
+     18|  expect((await s.handlers.status(new Request('https://fuel.example/app…
+       |                                                                                                              ^
+     19|  expect((await s.handlers.mutation(s.request({subscription:s.sub},head…
+     20|  expect(s.enroll).not.toHaveBeenCalled();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 15 passed (16)
+   Start at  21:33:29
+   Duration  223ms (tests 88%, transform 8%, import 3%, worker 1%)
+

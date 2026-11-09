@@ -1,0 +1,371 @@
+{
+  "version": 1,
+  "project": {
+    "name": "NEVORA Workforce",
+    "productType": "Workforce scheduling and timekeeping",
+    "stack": [
+      "nextjs",
+      "react"
+    ]
+  },
+  "sources": {
+    "tokens": [
+      "src/app/globals.css",
+      "src/app/mobile-workforce.css",
+      "src/components/manager-home-mobile.css",
+      "src/app/app/portal-refinement.css"
+    ],
+    "components": [
+      "src/components/app-shell.tsx",
+      "src/components/action-menu.tsx",
+      "src/components/mobile-home-disclosure.tsx",
+      "src/components/clocker-shell.tsx",
+      "src/components/payroll-review-copy.ts",
+      "src/components/timecards.tsx",
+      "src/components/payroll-period-close.tsx"
+    ],
+    "assets": [
+      "public/assets",
+      "public/images"
+    ],
+    "instructions": [
+      "DESIGN.MD",
+      "AGENTS.md"
+    ]
+  },
+  "design": {
+    "colorMode": "light",
+    "colors": {
+      "--nevora-accent-rgb": {
+        "value": "7, 86, 217",
+        "source": "src/app/globals.css"
+      },
+      "--nuvora-muted": {
+        "value": "#676A73",
+        "source": "src/app/globals.css"
+      },
+      "--color-bg-main": {
+        "value": "color-mix(in srgb, var(--fuel-canvas) 55%, var(--color-bg-surface))",
+        "source": "src/app/globals.css"
+      },
+      "--color-bg-surface": {
+        "value": "var(--nuvora-surface)",
+        "source": "src/app/globals.css"
+      },
+      "--color-brand-primary": {
+        "value": "var(--nuvora-text)",
+        "source": "src/app/globals.css"
+      },
+      "--color-brand-accent": {
+        "value": "var(--nevora-blue)",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-success": {
+        "value": "#1D6F42",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-success-bg": {
+        "value": "#EAF5EA",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-warning": {
+        "value": "#A05200",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-warning-bg": {
+        "value": "#FFF4E5",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-danger": {
+        "value": "#B42318",
+        "source": "src/app/globals.css"
+      },
+      "--color-state-danger-bg": {
+        "value": "#FDECEC",
+        "source": "src/app/globals.css"
+      },
+      "--color-border-subtle": {
+        "value": "rgba(24, 25, 31, 0.07)",
+        "source": "src/app/globals.css"
+      },
+      "--muted": {
+        "value": "var(--nuvora-muted)",
+        "source": "src/app/globals.css"
+      },
+      "--employee-rail-muted": {
+        "value": "color-mix(in srgb, var(--soft-caramel) 80%, var(--fuel-coffee-dark))",
+        "source": "src/app/globals.css"
+      }
+    },
+    "typography": {
+      "--nuvora-text": {
+        "value": "#18191F",
+        "source": "src/app/globals.css"
+      },
+      "--font-family-apple": {
+        "value": "-apple-system, BlinkMacSystemFont, \"SF Pro Display\", sans-serif",
+        "source": "src/app/globals.css"
+      },
+      "--font-ui": {
+        "value": "var(--font-family-apple)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "spacing": {
+      "--space-xs": {
+        "value": "8px",
+        "source": "src/app/globals.css"
+      },
+      "--space-sm": {
+        "value": "12px",
+        "source": "src/app/globals.css"
+      },
+      "--space-md": {
+        "value": "20px",
+        "source": "src/app/globals.css"
+      },
+      "--space-lg": {
+        "value": "32px",
+        "source": "src/app/globals.css"
+      }
+    },
+    "radius": {
+      "--radius-premium": {
+        "value": "12px",
+        "source": "src/app/globals.css"
+      },
+      "--radius": {
+        "value": "var(--radius-premium)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "shadows": {
+      "--shadow-premium": {
+        "value": "0 4px 12px rgba(24, 25, 31, 0.035), 0 1px 3px rgba(24, 25, 31, 0.025)",
+        "source": "src/app/globals.css"
+      },
+      "--shadow": {
+        "value": "var(--shadow-premium)",
+        "source": "src/app/globals.css"
+      }
+    },
+    "motion": {},
+    "density": "Readable mobile task UI"
+  },
+  "components": {
+    "installed": [],
+    "preferredPrimitives": [],
+    "patterns": []
+  },
+  "constraints": {
+    "must": [
+      "Preserve approved Home/auth and desktop",
+      "Mobile remaining route scope <=760px",
+      "Preserve all existing data and mutation authority"
+    ],
+    "avoid": [
+      "Decorative animation",
+      "Demo data",
+      "Raster UI stand-ins",
+      "New dependencies"
+    ]
+  },
+  "decisions": [
+    {
+      "date": "2026-10-13",
+      "scope": "Remaining mobile workforce routes, excluding approved authentication and Home",
+      "direction": "Extend approved Gusto Mobile-inspired NEVORA world: local Inter and Phosphor, deep blue masthead, focused white surfaces, grouped rows, readable native fields and compact action sheets. Preserve desktop and business/authorization contracts.",
+      "references": [
+        "https://mobbin.com/screens/06042184-b5dd-4e9c-be17-f969ee4b6819",
+        "https://mobbin.com/screens/615a1c68-9a32-4425-90eb-17f6a318a269",
+        "https://21st.dev/@ssychui/components/preferences-card",
+        "https://21st.dev/@halaska-studio/components/calendar",
+        "https://21st.dev/@kevingirelli/components/sheet"
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "scope": "Role EMPLOYEE, exact /app/my-time and /app/timecards, mobile screen <=760px",
+      "direction": "Approved Gusto-inspired native21st ports: coherent blue/white grouped surfaces, soft-blue Today totals, aligned typography,48px peer buttons,52px native fields, quiet record/navigation rows and neutral routine period information. Preserve original controllers, corrections, exact records, manager eligibility and all desktop/other-role/sibling presentation.",
+      "references": [
+        "https://mobbin.com/screens/b9bf269f-2d5e-4f19-9ada-338ae6cdebdf",
+        "https://mobbin.com/screens/615a1c68-9a32-4425-90eb-17f6a318a269",
+        "https://21st.dev/@shadcn/components/item"
+      ],
+      "componentProvenance": {
+        "retrieval": "Existing authenticated21st CLI catalog; MCP unavailable; source snapshots retained with proposal/evidence",
+        "nativePorts": {
+          "Button": 143,
+          "Input": 167,
+          "Button Group": 8608,
+          "Item": 8663,
+          "Card": 15582,
+          "Badge": 27366,
+          "Accordion": 494,
+          "Separator": 1556,
+          "Alert": 1170
+        },
+        "newDependencies": false,
+        "hostedAiGeneration": false
+      },
+      "implementation": "src/app/employee-mobile-corporate.css and native class helpers; one live business/control tree per route",
+      "handoff": "docs/execution/2026-10-13-employee-time-mobile-refinement.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Phase 1: shared navigation and Home/Schedule, bounded Calendar heading/deep-link fix; desktop and other roles retain incumbent system",
+      "direction": "Jose selected the new Owner concept clean teal style. Reuse actual controllers, canonical permissions and real React primitives; scoped semantic palette/type/spacing tokens, original wordmark and regular Phosphor. See docs/product/specs/employee-mobile-teal/README.md.",
+      "references": [
+        "Approved local prototype SHA25606c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469"
+      ],
+      "componentProvenance": {
+        "retrieval": "Free21st metadata search only; no code retrieval/generation/new dependencies",
+        "searchResults": [
+          7499,
+          470,
+          29180
+        ]
+      },
+      "implementation": "src/components/employee-mobile/mobile.css, use-mobile.ts, navigation-layout.ts and week-picker.tsx over existing AppShell/Home/Schedule",
+      "handoff": "docs/execution/employee-mobile-phase1/plan.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Requests hub and eligible open coverage; existing desktop/management rendering retained",
+      "direction": "Continue the Jose-approved Phase 1 clean teal system; native disclosure, clear pickup consequences and current server eligibility",
+      "componentProvenance": {
+        "retrieval": "Free metadata search only; no paid code retrieval, generation or new dependency",
+        "searchResults": [
+          25171,
+          2554,
+          29211
+        ],
+        "selection": "Existing private controller, Employee guards, shift-change planner/operation owner, Phosphor and semantic tokens fit better than catalog alternatives"
+      },
+      "implementation": "src/components/employee-mobile/requests.tsx and requests.css with protected minimal own-data transport",
+      "handoff": "docs/execution/employee-mobile-requests/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile incoming swap responses and own request detail/history; preserve desktop and management",
+      "direction": "Continue approved teal components and native full-page review. Compare the two consent-bound shifts, explain automatic or manager-review outcomes, show current permitted responses and progressively disclose safe history. Match withdrawal consequences to swap versus pickup; keep navigation opaque in Light/Dark.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval, generation, new library or dependency",
+        "searchResults": [
+          12387,
+          24840,
+          37491
+        ],
+        "selection": "Existing Employee guards/private snapshot, incumbent command/history/operation owners, Phosphor and semantic primitives fit the actual task"
+      },
+      "implementation": "src/components/employee-mobile/exchange.tsx, exchange-view.tsx and exchange.css over minimal guarded own-data transport",
+      "handoff": "docs/execution/employee-mobile-responses/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile swap and cover creation plus own Unable-to-work submission",
+      "direction": "Continue approved teal Operate surfaces, shared reviewed-shift summary, native fieldsets/radios/note and explicit 48px submission. Retain existing native intercepted task and direct-page navigation, with origin shift focus return. Keep mounted drafts private during pause; require deliberate review for changed shift terms.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          757,
+          34672,
+          17925
+        ],
+        "selection": "Existing semantic tokens, RequestShiftSlot, native HTML controls/dialog, current read/planner and immutable operation owner fit the product"
+      },
+      "implementation": "src/components/employee-mobile/creation.tsx, creation-view.tsx and creation.css with current guarded own-data read",
+      "handoff": "docs/execution/employee-mobile-creation/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile own time off and usual/weekly availability",
+      "direction": "Continue approved teal Operate system: visible segmented links, native full/partial date/time forms, expandable day periods, clear own status/timeline, 48px primary actions and 44px navigation targets. Retain mounted drafts and immutable recovery; require deliberate stale-day rebase and explicit whole-week unavailability. Preserve desktop and current own-only permissions.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          474,
+          25171,
+          24924
+        ],
+        "selection": "Existing semantic tokens, request/availability owners and native labelled controls fit the task"
+      },
+      "implementation": "src/components/employee-mobile/planning.tsx, timeoff.tsx, availability.tsx, planning.css and minimal protected planning transport",
+      "handoff": "docs/execution/employee-mobile-planning/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile own Hours, timecards and correction requests",
+      "direction": "Approved teal Operate tokens, original wordmark and regular Phosphor. Separate original Clocker punches, effective adjustments and proposals. Native explicitly labelled fields, 48px actions, clear mounted original-operation recovery. Preserve desktop and management authority.",
+      "componentProvenance": {
+        "retrieval": "Free metadata only; no paid retrieval/generation/new package",
+        "searchResults": [
+          25171,
+          8703,
+          29211,
+          40157
+        ],
+        "selection": "Existing native controls, semantic mobile tokens and canonical time owners fit the workflow."
+      },
+      "implementation": "src/components/employee-mobile/hours*.tsx, hours.css and guarded own Hours adapters",
+      "handoff": "docs/execution/employee-mobile-hours/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-27",
+      "scope": "Employee/Lead mobile Notifications, Updates/detail, own today-team publication and withdrawal; desktop and management preserved",
+      "direction": "Continue the approved scoped teal Operate tokens and native labelled fields. Distinguish own reading from acknowledgement; keep source-safe exact destinations, current audience review and honest immutable original-operation recovery. No visual exploration or replacement business owner.",
+      "componentProvenance": {
+        "retrieval": "Recorded free metadata search only; no paid code retrieval, generation, new dependency or new competitor audit",
+        "searchResults": [
+          27135,
+          36949,
+          31789,
+          28458
+        ],
+        "selection": "Existing shared private reader, canonical communications/destination/recovery owners, native forms and regular Phosphor fit the approved workflow.",
+        "cloudCliReview": "21st CLI unavailable; independent browser/UI evidence is the actual review, not a claimed CLI result."
+      },
+      "implementation": "src/components/employee-mobile/message*.tsx, use-messages.ts, messages.css and protected paged own adapters",
+      "handoff": "docs/execution/employee-mobile-communications/HANDOFF.md"
+    },
+    {
+      "date": "2026-10-26",
+      "scope": "Opt-in frozen Access v1 public access/onboarding on mobile <=767px; existing role dashboards and desktop retain current presentation",
+      "direction": "Integrate Jose-approved frozen warm-white, deep-teal mobile Access design. Scoped --ma tokens, system UI typography, official NEVORA wordmark, Phosphor icons, 52px fields, 48px primary actions, 44px utility targets, 24px/20px content insets. Retain real auth controllers, full43-character proof protocol, roles and data. Default-off rollout and separate default-off Support gate.",
+      "frozenAccessSha256": "6212ecbe602c799bb75228045b70942993be57badd842666249df8ca2d2480a3",
+      "newDependencies": false,
+      "handoff": "docs/handoffs/2026-10-26-mobile-access-onboarding-integration.md"
+    }
+  ],
+  "evidence": [
+    {
+      "fact": "design.colorMode:light",
+      "source": "src/app/globals.css"
+    },
+    {
+      "fact": "design.tokens",
+      "source": "src/app/globals.css"
+    },
+    {
+      "fact": "project.instructions",
+      "source": "AGENTS.md"
+    },
+    {
+      "fact": "project.instructions",
+      "source": "DESIGN.md"
+    },
+    {
+      "fact": "project.stack:nextjs",
+      "source": "package.json"
+    },
+    {
+      "fact": "project.stack:react",
+      "source": "package.json"
+    },
+    {
+      "fact": "employee.mobile.communications:local-verified-candidate8435c3d8",
+      "source": "docs/execution/employee-mobile-communications/EVIDENCE_HISTORY.md"
+    }
+  ],
+  "generatedAt": "2026-10-13T18:05:53.669Z"
+}

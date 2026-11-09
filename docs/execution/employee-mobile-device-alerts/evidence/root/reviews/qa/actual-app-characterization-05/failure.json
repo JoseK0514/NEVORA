@@ -1,0 +1,1078 @@
+{
+  "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\n",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Owned Next dev-indicator preference disabled through its middleware; application error observers unchanged"
+    },
+    {
+      "engine": "chromium",
+      "name": "Protected own Employee/Lead page, no native prompt or subscription on entry"
+    },
+    {
+      "engine": "chromium",
+      "name": "Postponement and deliberate re-entry never request permission"
+    },
+    {
+      "engine": "chromium",
+      "name": "Old/foreign session binding refused before any enrollment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause removes current status/actions; focus checks canonical current ownership without enrollment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Deliberate permission, one native subscribe, actual encrypted SQL enrollment and matching local worker ownership"
+    },
+    {
+      "engine": "chromium",
+      "name": "Independent keyboard and viewport/fullPage diagnostic completed; no product DOM/tabindex changes"
+    },
+    {
+      "engine": "webkit",
+      "name": "Owned Next dev-indicator preference disabled through its middleware; application error observers unchanged"
+    },
+    {
+      "engine": "webkit",
+      "name": "Protected own Employee/Lead page, no native prompt or subscription on entry"
+    },
+    {
+      "engine": "webkit",
+      "name": "Postponement and deliberate re-entry never request permission"
+    },
+    {
+      "engine": "webkit",
+      "name": "Old/foreign session binding refused before any enrollment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Pause removes current status/actions; focus checks canonical current ownership without enrollment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Deliberate permission, one native subscribe, actual encrypted SQL enrollment and matching local worker ownership"
+    }
+  ],
+  "captures": [
+    "chromium-ready.png",
+    "chromium-enabled.png",
+    "chromium-light-Tab-Keep-current-setup.png",
+    "chromium-light-Tab-Turn-off-alerts.png",
+    "chromium-dark-Tab-Keep-current-setup.png",
+    "chromium-dark-Tab-Turn-off-alerts.png",
+    "chromium-light-landscape-viewport-1.png",
+    "chromium-light-landscape-viewport-2.png",
+    "chromium-dark-landscape-viewport-1.png",
+    "chromium-dark-landscape-viewport-2.png",
+    "chromium-dark-landscape-fullpage.png",
+    "webkit-ready.png",
+    "webkit-enabled.png",
+    "webkit-FAILURE-keyboard-diagnostic.png"
+  ],
+  "errors": [
+    {
+      "engine": "chromium",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    }
+  ],
+  "contrasts": [],
+  "transport": [
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    }
+  ],
+  "diagnostics": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "chord": "Tab",
+      "expected": "Keep current setup",
+      "observed": {
+        "tag": "BUTTON",
+        "text": "Keep current setup",
+        "outline": "solid",
+        "width": "3px",
+        "rect": {
+          "x": 41,
+          "y": 644.1875,
+          "width": 238,
+          "height": 115.59375,
+          "top": 644.1875,
+          "right": 279,
+          "bottom": 759.78125,
+          "left": 41
+        }
+      },
+      "box": {
+        "x": 41,
+        "y": 364.1875,
+        "width": 238,
+        "height": 115.59375
+      },
+      "nav": {
+        "x": 0,
+        "y": 595.4375,
+        "width": 320,
+        "height": 248.5625
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "chord": "Tab",
+      "expected": "Turn off alerts",
+      "observed": {
+        "tag": "BUTTON",
+        "text": "Turn off alerts",
+        "outline": "solid",
+        "width": "3px",
+        "rect": {
+          "x": 41,
+          "y": 491.78125,
+          "width": 238,
+          "height": 70.796875,
+          "top": 491.78125,
+          "right": 279,
+          "bottom": 562.578125,
+          "left": 41
+        }
+      },
+      "box": {
+        "x": 41,
+        "y": 386.78125,
+        "width": 238,
+        "height": 70.796875
+      },
+      "nav": {
+        "x": 0,
+        "y": 595.4375,
+        "width": 320,
+        "height": 248.5625
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "chord": "Tab",
+      "expected": "Keep current setup",
+      "observed": {
+        "tag": "BUTTON",
+        "text": "Keep current setup",
+        "outline": "solid",
+        "width": "3px",
+        "rect": {
+          "x": 41,
+          "y": 644.1875,
+          "width": 238,
+          "height": 115.59375,
+          "top": 644.1875,
+          "right": 279,
+          "bottom": 759.78125,
+          "left": 41
+        }
+      },
+      "box": {
+        "x": 41,
+        "y": 364.1875,
+        "width": 238,
+        "height": 115.59375
+      },
+      "nav": {
+        "x": 0,
+        "y": 595.4375,
+        "width": 320,
+        "height": 248.5625
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "chord": "Tab",
+      "expected": "Turn off alerts",
+      "observed": {
+        "tag": "BUTTON",
+        "text": "Turn off alerts",
+        "outline": "solid",
+        "width": "3px",
+        "rect": {
+          "x": 41,
+          "y": 491.78125,
+          "width": 238,
+          "height": 70.796875,
+          "top": 491.78125,
+          "right": 279,
+          "bottom": 562.578125,
+          "left": 41
+        }
+      },
+      "box": {
+        "x": 41,
+        "y": 386.78125,
+        "width": 238,
+        "height": 70.796875
+      },
+      "nav": {
+        "x": 0,
+        "y": 595.4375,
+        "width": 320,
+        "height": 248.5625
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "stage": "landscape-before",
+      "before": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": true,
+          "(pointer:fine)": false,
+          "(any-pointer:coarse)": true
+        },
+        "maxTouchPoints": 1,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": true,
+        "marker": "true",
+        "color": "rgb(95, 109, 104)",
+        "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "cardBackground": "rgb(255, 255, 255)",
+        "bodyBackground": "rgb(250, 250, 250)",
+        "rootBackground": "rgb(244, 247, 246)",
+        "teal": "#0b6e69",
+        "nav": {
+          "x": 0,
+          "y": 311.40625,
+          "width": 844,
+          "height": 78.59375,
+          "top": 311.40625,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": []
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "before": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": true,
+          "(pointer:fine)": false,
+          "(any-pointer:coarse)": true
+        },
+        "maxTouchPoints": 1,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": true,
+        "marker": "true",
+        "color": "rgb(95, 109, 104)",
+        "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "cardBackground": "rgb(255, 255, 255)",
+        "bodyBackground": "rgb(250, 250, 250)",
+        "rootBackground": "rgb(244, 247, 246)",
+        "teal": "#0b6e69",
+        "nav": {
+          "x": 0,
+          "y": 311.40625,
+          "width": 844,
+          "height": 78.59375,
+          "top": 311.40625,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": []
+      },
+      "after": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": true,
+          "(pointer:fine)": false,
+          "(any-pointer:coarse)": true
+        },
+        "maxTouchPoints": 1,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": true,
+        "marker": "true",
+        "color": "rgb(95, 109, 104)",
+        "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "cardBackground": "rgb(255, 255, 255)",
+        "bodyBackground": "rgb(250, 250, 250)",
+        "rootBackground": "rgb(244, 247, 246)",
+        "teal": "#0b6e69",
+        "nav": {
+          "x": 0,
+          "y": 311.40625,
+          "width": 844,
+          "height": 78.59375,
+          "top": 311.40625,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": []
+      },
+      "contrast": {
+        "ratio": 5.420851497656459,
+        "samples": [
+          {
+            "foreground": [
+              95,
+              109,
+              104,
+              1
+            ],
+            "background": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "ratio": 5.420851497656459
+          },
+          {
+            "foreground": [
+              95,
+              109,
+              104,
+              1
+            ],
+            "background": [
+              255,
+              255,
+              255,
+              1
+            ],
+            "ratio": 5.420851497656459
+          }
+        ],
+        "layers": [
+          {
+            "tag": "P",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 89.0625,
+              "y": 338.578125,
+              "width": 665.859375,
+              "height": 20.296875,
+              "top": 338.578125,
+              "right": 754.921875,
+              "bottom": 358.875,
+              "left": 89.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "SECTION",
+            "color": "rgb(255, 255, 255)",
+            "image": "none",
+            "bounds": {
+              "x": 68.0625,
+              "y": 257.578125,
+              "width": 707.859375,
+              "height": 186.6875,
+              "top": 257.578125,
+              "right": 775.921875,
+              "bottom": 444.265625,
+              "left": 68.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 68.0625,
+              "y": 257.578125,
+              "width": 707.859375,
+              "height": 449.671875,
+              "top": 257.578125,
+              "right": 775.921875,
+              "bottom": 707.25,
+              "left": 68.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "ARTICLE",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 44.0625,
+              "y": 233.578125,
+              "width": 755.859375,
+              "height": 590.0625,
+              "top": 233.578125,
+              "right": 799.921875,
+              "bottom": 823.640625,
+              "left": 44.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(244, 247, 246)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 68,
+              "width": 844,
+              "height": 787.640625,
+              "top": 68,
+              "right": 844,
+              "bottom": 855.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "MAIN",
+            "color": "rgb(244, 247, 246)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 68,
+              "width": 844,
+              "height": 787.640625,
+              "top": 68,
+              "right": 844,
+              "bottom": 855.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(244, 247, 246)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(244, 247, 246)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "BODY",
+            "color": "rgb(250, 250, 250)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "HTML",
+            "color": "rgb(250, 250, 250)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          }
+        ],
+        "method": "conservative sRGB gradient bounds with alpha compositing"
+      },
+      "boxes": [
+        {
+          "text": "Turn off alerts",
+          "box": {
+            "x": 89.0625,
+            "y": 134.875,
+            "width": 665.859375,
+            "height": 48.390625
+          },
+          "nav": {
+            "x": 0,
+            "y": 311.40625,
+            "width": 844,
+            "height": 78.59375
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 68.0625,
+            "y": 206.25,
+            "width": 707.859375,
+            "height": 48.390625
+          },
+          "nav": {
+            "x": 0,
+            "y": 311.40625,
+            "width": 844,
+            "height": 78.59375
+          }
+        }
+      ]
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "stage": "landscape-before",
+      "before": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": true,
+          "(pointer:fine)": false,
+          "(any-pointer:coarse)": true
+        },
+        "maxTouchPoints": 1,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": true,
+        "marker": "true",
+        "color": "rgb(184, 183, 176)",
+        "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "cardBackground": "rgb(23, 39, 37)",
+        "bodyBackground": "rgb(12, 24, 23)",
+        "rootBackground": "rgb(12, 24, 23)",
+        "teal": "#a9e2da",
+        "nav": {
+          "x": 0,
+          "y": 311.40625,
+          "width": 844,
+          "height": 78.59375,
+          "top": 311.40625,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": []
+      }
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "before": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": true,
+          "(pointer:fine)": false,
+          "(any-pointer:coarse)": true
+        },
+        "maxTouchPoints": 1,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": true,
+        "marker": "true",
+        "color": "rgb(184, 183, 176)",
+        "font": "14px / 20.3px -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+        "cardBackground": "rgb(23, 39, 37)",
+        "bodyBackground": "rgb(12, 24, 23)",
+        "rootBackground": "rgb(12, 24, 23)",
+        "teal": "#a9e2da",
+        "nav": {
+          "x": 0,
+          "y": 311.40625,
+          "width": 844,
+          "height": 78.59375,
+          "top": 311.40625,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": []
+      },
+      "after": {
+        "queries": {
+          "(max-width:900px)": true,
+          "(max-height:430px)": true,
+          "(orientation:landscape)": true,
+          "(pointer:coarse)": false,
+          "(pointer:fine)": true,
+          "(any-pointer:coarse)": false
+        },
+        "maxTouchPoints": 0,
+        "screen": {
+          "width": 844,
+          "height": 390
+        },
+        "visualViewport": {
+          "width": 844,
+          "height": 390,
+          "scale": 1
+        },
+        "width": 844,
+        "height": 390,
+        "scrollWidth": 844,
+        "media": false,
+        "marker": "true",
+        "color": "rgb(242, 242, 240)",
+        "font": "17px / 22px -apple-system, \"system-ui\", \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", Roboto, \"Helvetica Neue\", sans-serif",
+        "cardBackground": "rgb(0, 0, 0)",
+        "bodyBackground": "rgb(12, 24, 23)",
+        "rootBackground": "rgb(12, 24, 23)",
+        "teal": "",
+        "nav": {
+          "x": 0,
+          "y": 265,
+          "width": 844,
+          "height": 125,
+          "top": 265,
+          "right": 844,
+          "bottom": 390,
+          "left": 0
+        },
+        "events": [
+          {
+            "type": "viewport/media",
+            "width": 844,
+            "height": 390,
+            "matches": false
+          },
+          {
+            "type": "viewport/media",
+            "width": 844,
+            "height": 390,
+            "matches": false
+          }
+        ]
+      },
+      "contrast": {
+        "ratio": 7.712974522476015,
+        "samples": [
+          {
+            "foreground": [
+              184,
+              183,
+              176,
+              1
+            ],
+            "background": [
+              23,
+              39,
+              37,
+              1
+            ],
+            "ratio": 7.712974522476015
+          },
+          {
+            "foreground": [
+              184,
+              183,
+              176,
+              1
+            ],
+            "background": [
+              23,
+              39,
+              37,
+              1
+            ],
+            "ratio": 7.712974522476015
+          }
+        ],
+        "layers": [
+          {
+            "tag": "P",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 89.0625,
+              "y": 338.578125,
+              "width": 665.859375,
+              "height": 20.296875,
+              "top": 338.578125,
+              "right": 754.921875,
+              "bottom": 358.875,
+              "left": 89.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "SECTION",
+            "color": "rgb(23, 39, 37)",
+            "image": "none",
+            "bounds": {
+              "x": 68.0625,
+              "y": 257.578125,
+              "width": 707.859375,
+              "height": 186.6875,
+              "top": 257.578125,
+              "right": 775.921875,
+              "bottom": 444.265625,
+              "left": 68.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 68.0625,
+              "y": 257.578125,
+              "width": 707.859375,
+              "height": 449.671875,
+              "top": 257.578125,
+              "right": 775.921875,
+              "bottom": 707.25,
+              "left": 68.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "ARTICLE",
+            "color": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "bounds": {
+              "x": 44.0625,
+              "y": 233.578125,
+              "width": 755.859375,
+              "height": 590.0625,
+              "top": 233.578125,
+              "right": 799.921875,
+              "bottom": 823.640625,
+              "left": 44.0625
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 68,
+              "width": 844,
+              "height": 787.640625,
+              "top": 68,
+              "right": 844,
+              "bottom": 855.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "MAIN",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 68,
+              "width": 844,
+              "height": 787.640625,
+              "top": 68,
+              "right": 844,
+              "bottom": 855.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "DIV",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "BODY",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          },
+          {
+            "tag": "HTML",
+            "color": "rgb(12, 24, 23)",
+            "image": "none",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 844,
+              "height": 934.640625,
+              "top": 0,
+              "right": 844,
+              "bottom": 934.640625,
+              "left": 0
+            },
+            "overlays": []
+          }
+        ],
+        "method": "conservative sRGB gradient bounds with alpha compositing"
+      },
+      "boxes": [
+        {
+          "text": "Turn off alerts",
+          "box": {
+            "x": 89.0625,
+            "y": 134.875,
+            "width": 665.859375,
+            "height": 48.390625
+          },
+          "nav": {
+            "x": 0,
+            "y": 311.40625,
+            "width": 844,
+            "height": 78.59375
+          }
+        },
+        {
+          "text": "Sign out",
+          "box": {
+            "x": 68.0625,
+            "y": 206.25,
+            "width": 707.859375,
+            "height": 48.390625
+          },
+          "nav": {
+            "x": 0,
+            "y": 311.40625,
+            "width": 844,
+            "height": 78.59375
+          }
+        }
+      ]
+    }
+  ]
+}

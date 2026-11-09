@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-27T21:50:17.730727+00:00",
+  "argv": [
+    "node",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/inspect-owned-cluster-shared.cjs",
+    "58719"
+  ],
+  "environmentKeys": [
+    "HOME",
+    "PATH",
+    "TMPDIR"
+  ],
+  "exitCode": 0,
+  "rows": [
+    {
+      "oid": 385542,
+      "datname": "nevora_exchange_test_c1_3a7999b407df",
+      "marker": "fuel-phase3-disposable:cc932208-8cfb-4ae4-82bb-ebc1864012ed"
+    }
+  ],
+  "stderr": ""
+}

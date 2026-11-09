@@ -1,0 +1,329 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "playwrightVersion": "1.62.1",
+  "serverPid": 44629,
+  "port": 63553,
+  "portStillOpen": false,
+  "browserPids": [
+    44644,
+    44650,
+    44645,
+    44646,
+    44720,
+    44732,
+    44726,
+    44928,
+    44949,
+    44941
+  ],
+  "browserPidsStillAlive": [],
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "after": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "gitUnchanged": true,
+  "cases": [
+    {
+      "engine": "chromium",
+      "mode": "immediate",
+      "path": "/probe/chromium/immediate/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 19.700000002980232
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "immediate",
+      "path": "/probe/chromium/immediate/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 28.5
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "microtask",
+      "path": "/probe/chromium/microtask/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 30.400000005960464
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "microtask",
+      "path": "/probe/chromium/microtask/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 32
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "observed",
+      "path": "/probe/chromium/observed/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 46.20000000298023
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "complete",
+      "path": "/probe/chromium/complete/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 50.900000005960464
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "chromium",
+      "mode": "held",
+      "path": "/probe/chromium/held/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 570.5
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "immediate",
+      "path": "/probe/webkit/immediate/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 27
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "immediate",
+      "path": "/probe/webkit/immediate/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 42
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "microtask",
+      "path": "/probe/webkit/microtask/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 44
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "microtask",
+      "path": "/probe/webkit/microtask/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 47
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "observed",
+      "path": "/probe/webkit/observed/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 51
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "complete",
+      "path": "/probe/webkit/complete/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 59
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "webkit",
+      "mode": "held",
+      "path": "/probe/webkit/held/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 592
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "firefox",
+      "mode": "immediate",
+      "path": "/probe/firefox/immediate/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 161
+      },
+      "serverHits": 0,
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false
+    },
+    {
+      "engine": "firefox",
+      "mode": "immediate",
+      "path": "/probe/firefox/immediate/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 223
+      },
+      "serverHits": 0,
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false
+    },
+    {
+      "engine": "firefox",
+      "mode": "microtask",
+      "path": "/probe/firefox/microtask/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 228
+      },
+      "serverHits": 0,
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false
+    },
+    {
+      "engine": "firefox",
+      "mode": "microtask",
+      "path": "/probe/firefox/microtask/1",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 248
+      },
+      "serverHits": 0,
+      "requestObserved": false,
+      "pageTerminal": false,
+      "contextTerminal": false
+    },
+    {
+      "engine": "firefox",
+      "mode": "observed",
+      "path": "/probe/firefox/observed/0",
+      "outcome": {
+        "phase": "rejected",
+        "errorName": "AbortError",
+        "at": 271
+      },
+      "serverHits": 0,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "firefox",
+      "mode": "complete",
+      "path": "/probe/firefox/complete/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 294
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    },
+    {
+      "engine": "firefox",
+      "mode": "held",
+      "path": "/probe/firefox/held/0",
+      "outcome": {
+        "phase": "complete",
+        "ok": true,
+        "at": 844
+      },
+      "serverHits": 1,
+      "requestObserved": true,
+      "pageTerminal": true,
+      "contextTerminal": true
+    }
+  ],
+  "orphanAbortedRequests": [],
+  "outcome": "not_reproduced"
+}

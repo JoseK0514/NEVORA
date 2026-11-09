@@ -1,0 +1,6 @@
+
+> fuel-scheduler@0.1.0 check:development-sources
+> node scripts/development-source-inventory.mjs
+
+Unclassified branch: claude/employee-mobile-phase2-20261027
+Remote branch ceiling exceeded: 4 > 3

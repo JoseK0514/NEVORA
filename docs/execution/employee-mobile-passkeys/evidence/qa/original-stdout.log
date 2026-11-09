@@ -1,0 +1,1806 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run --reporter=default
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+stdout | src/lib/scheduling/generation/planner.test.ts > measures deterministic 50-worker 7-day 3-location planning
+PLANNER_PERFORMANCE {"locations":3,"employees":50,"milliseconds":2657,"status":"COMPLETE","additions":42,"nodes":43,"evaluations":5499,"cacheHits":62793,"periods":882}
+
+ ✓ src/test/phase-e-process.test.ts (13 tests) 19284ms
+   ✓ a short graceful timeout stops detached Next/browser process resources and fails 1245ms
+   ✓ a short forced timeout stops detached Next/browser process resources and fails 1677ms
+   ✓ a short forced-title-worker timeout stops detached Next/browser process resources and fails 2227ms
+   ✓ retained Linux marker observation: stable-member 2544ms
+   ✓ retained Linux marker observation: changed-member 2517ms
+   ✓ retained Linux marker observation: changed-leader 1547ms
+   ✓ retained Linux marker observation: outside-group 1555ms
+   ✓ retained Linux marker observation: recycled-birth 1686ms
+   ✓ retained Linux marker observation: changed-ancestry 1354ms
+   ✓ retained Linux marker observation: departed-member 2474ms
+ ✓ src/test/phase-e-retirement.test.ts (15 tests) 19483ms
+   ✓ owned retirement boundary: member-environment 1418ms
+   ✓ owned retirement boundary: root-environment 840ms
+   ✓ owned retirement boundary: root-with-live-member 2003ms
+   ✓ owned retirement boundary: member-eacces 1496ms
+   ✓ owned retirement boundary: member-eio 1329ms
+   ✓ owned retirement boundary: member-missing-marker 1435ms
+   ✓ owned retirement boundary: ambiguous-exit 1307ms
+   ✓ owned retirement boundary: ambiguous-exit-stderr 1249ms
+   ✓ owned retirement boundary: ambiguous-exit-malformed 1327ms
+   ✓ owned retirement boundary: root-ambiguous-exit 861ms
+   ✓ owned retirement boundary: darwin-environment-stderr 1353ms
+   ✓ owned retirement boundary: member-retired-eacces 1305ms
+   ✓ owned retirement boundary: root-retired-eacces 782ms
+   ✓ owned retirement boundary: root-retired-eacces-with-live-member 1862ms
+   ✓ owned retirement boundary: root-retired-eacces-ambiguous 910ms
+ ✓ src/lib/tenancy/migrations/typed-key-comparators.test.ts (113 tests) 19706ms
+   ✓ pure supplied source SQL key comparator observations (113)
+     ✓ observes every row across all68 complete original column sets, including JSON/arrays without projection 347ms
+     ✓ uses only opaque SQL classes; unequal text wires may share a supplied class without JS casing/inequality 371ms
+     ✓ detaches caller data deeply, hashes deterministically and never reissues serialized/cloned results 795ms
+     ✓ accepts closed supplied effective ICU/builtin metadata without transforming raw default collation attributes 475ms
+     ✓ rejects incomplete/coherently rebound order capture 320ms
+     ✓ rejects coherently captured original key NOT NULL guard deferrable drift 338ms
+     ✓ rejects incomplete/duplicate btree vectors rather than matching only projected entries 379ms
+     ✓ keeps its private issuer trap-free and rejects foreign failed/clone/proxy output without reads 436ms
+ ✓ src/lib/tenancy/migrations/typed-journal-contract.test.ts (64 tests) 27292ms
+   ✓ pure explicitly separate typed journal descriptor and structural observation contract (64)
+     ✓ describes all68 empty tables and full typed original boundary without database/effects claims 477ms
+     ✓ retains exact original typed chunk/key/count/retry and per-entry source/wire/mirror/ownership/effect checksums 557ms
+     ✓ represents only structural observed stateNOT_STARTED with no automatic transition or target claim 414ms
+     ✓ represents only structural observed stateSTARTED with no automatic transition or target claim 623ms
+     ✓ represents only structural observed stateUNKNOWN with no automatic transition or target claim 671ms
+     ✓ canonicalizes complete state rows to original ordinal order without altering retry identities 358ms
+     ✓ accepts exact serialized structural descriptor/state only alongside the genuine original compiler plan 453ms
+     ✓ always blocks completion stateCOMPLETE even with matching hashes/false flag 338ms
+     ✓ blocks effectsVerifiedtrue, caller fresh/committed markers and fake reconciliation even on empty plans 452ms
+     ✓ rejects changed original sourceDigest boundary without partial observations 353ms
+     ✓ rejects changed original currentSchemaDigest boundary without partial observations 313ms
+     ✓ rejects changed original snapshotId boundary without partial observations 363ms
+     ✓ rejects changed original planDigest boundary without partial observations 335ms
+     ✓ rejects changed original manifestChecksum boundary without partial observations 310ms
+     ✓ rejects changed original namespaceCaptureChecksum boundary without partial observations 398ms
+     ✓ rejects changed original constraintsDigest boundary without partial observations 317ms
+     ✓ rejects changed original keyComparatorDigest boundary without partial observations 320ms
+     ✓ rejects descriptor complete68tableextra drift 423ms
+     ✓ rejects descriptor complete68tableduplicate drift 382ms
+     ✓ rejects descriptor complete68tablechanged drift 308ms
+     ✓ rejects descriptor complete68tableempty drift 317ms
+     ✓ rejects journal state rowmissing coverage 341ms
+     ✓ rejects journal state rowextra coverage 319ms
+     ✓ rejects journal state rowduplicate coverage 343ms
+     ✓ rejects changed observed chunkid 407ms
+     ✓ rejects changed observed chunkordinal 339ms
+     ✓ rejects changed observed chunkfirstKey 599ms
+     ✓ rejects changed observed chunklastKey 330ms
+     ✓ rejects changed observed chunkkeys 607ms
+     ✓ rejects changed observed chunkkeysChecksum 439ms
+     ✓ rejects changed observed chunksourceChecksum 477ms
+     ✓ rejects changed observed chunkexpectedMetadataChecksum 416ms
+     ✓ rejects changed observed chunkrowsChecksum 397ms
+     ✓ rejects changed observed chunkplanDigest 303ms
+     ✓ rejects any per-row source/wire/mirror/review ownership/effect checksum substitution 380ms
+     ✓ blocks rehashed changed descriptor and retry identity rather than authorizing from hash coherence 602ms
+     ✓ rejects changed state retry identities independently of chunkdescriptor 463ms
+     ✓ rejects missing/extra observationboundary fields 408ms
+     ✓ rejects missing/extra observationrows fields 423ms
+     ✓ rejects missing/extra observationdescriptorChecksum fields 386ms
+     ✓ rejects missing/extra observationeffectsVerified fields 391ms
+     ✓ rejects missing/extra observationreconciliation fields 318ms
+     ✓ rejects missing/extra observationformat fields 309ms
+     ✓ rejects plan clones/proxies/accessor/revoked envelopes without reissuing authority 311ms
+     ✓ rejects nested descriptor/state proxy/accessor/cycles without reading behavior or coercion 362ms
+     ✓ rejects sparse/accessor/extra/prototype arrays, unsafe numbers and nonJSON input 485ms
+     ✓ preserves padded/long keys, SQLNULLvsJSONNULL/numeric lexemes/nativearray bounds solely through exact source/wire identity 2878ms
+     ✓ changes exact descriptor/retry binding for altered original source/options while refusing old observation reuse 918ms
+     ✓ deeply freezes deterministic descriptions and detached assessments without mutating inputs or retaining mutable state aliases 1089ms
+ ❯ src/test/phase-e-root-group-process.test.ts (10 tests | 1 failed) 17755ms
+   ✓ root-group actual exec: exec-clean-exit 1024ms
+   ✓ root-group actual exec: registered-exec 1014ms
+   ✓ root-group actual exec: registration-after-exec 1114ms
+   × root-group actual exec: root-exit 1807ms
+   ✓ root-group actual exec: forced-root 3429ms
+   ✓ root-group actual exec: changed-root 2309ms
+   ✓ root-group actual exec: root-marker-lost 1937ms
+   ✓ root-group actual exec: member-marker-lost 1911ms
+   ✓ root-group actual exec: recycled-member 1699ms
+   ✓ root-group actual exec: reparented-member 1508ms
+ ❯ src/test/phase-e-runner.test.ts (90 tests | 11 failed) 44273ms
+   ✓ rejects_DATABASE_URL before starting any owned process 62ms
+   ✓ rejects an inherited test database rather than reusing it 58ms
+   ✓ rejects_unowned_non_loopback_fixture before browser/runtime access 79ms
+   ✓ ownership_marker_required even for a loopback fixture 198ms
+   ✓ propagates_child_failure and stops the invocation-owned cluster 1058ms
+   ✓ supports_each_allowlisted_suite: SQL assignments executes only its exact config/fixture 813ms
+   ✓ supports_each_allowlisted_suite: SQL attention executes only its exact config/fixture 871ms
+   ✓ supports_each_allowlisted_suite: SQL communications-schema executes only its exact config/fixture 930ms
+   × supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture 800ms
+   ✓ supports_each_allowlisted_suite: SQL communication-ack executes only its exact config/fixture 948ms
+   ✓ supports_each_allowlisted_suite: SQL communication-notifications executes only its exact config/fixture 922ms
+   ✓ supports_each_allowlisted_suite: SQL home executes only its exact config/fixture 799ms
+   × supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture 858ms
+   ✓ supports_each_allowlisted_suite: SQL calendar-feed executes only its exact config/fixture 865ms
+   ✓ supports_each_allowlisted_suite: SQL employee-navigation executes only its exact config/fixture 851ms
+   ✓ binds SQL selector employee-navigation to its owned database prefix nevora_foundation_test_ 51ms
+   ✓ binds SQL selector employee-navigation to its owned database prefix fuel_phase3_test_ 58ms
+   ✓ binds SQL selector assignments to its owned database prefix nevora_foundation_test_ 47ms
+   ✓ binds SQL selector assignments to its owned database prefix fuel_phase3_test_ 42ms
+   ✓ binds SQL selector communication-notifications to its owned database prefix fuel_phase3_test_ 46ms
+   ✓ binds SQL selector communication-notifications to its owned database prefix nevora_foundation_test_ 49ms
+   × all dispatches all ten SQL suites without accepting unknown arguments 1463ms
+   ✓ supports_each_allowlisted_suite: browser home fails closed while its fixture is absent 295ms
+   ✓ supports_each_allowlisted_suite: browser communications fails closed while its fixture is absent 291ms
+   ✓ supports_each_allowlisted_suite: browser calendar fails closed while its fixture is absent 309ms
+   ✓ supports_each_allowlisted_suite: browser navigation fails closed while its fixture is absent 242ms
+   ✓ supports_each_allowlisted_suite: browser attention fails closed while its fixture is absent 322ms
+   ✓ dispatches browser home through the owned child and propagates its exit 810ms
+   ✓ dispatches browser communications through the owned child and propagates its exit 972ms
+   ✓ dispatches browser calendar through the owned child and propagates its exit 932ms
+   ✓ dispatches browser navigation through the owned child and propagates its exit 847ms
+   ✓ dispatches browser attention through the owned child and propagates its exit 816ms
+   ✓ dispatches browser all through the owned child and propagates its exit 728ms
+   ✓ absent SQL suites fail before PostgreSQL setup 272ms
+   ✓ refuses teardown if the invocation ownership marker is replaced 618ms
+   ✓ stops a partially started owned PostgreSQL process after a startup failure 893ms
+   ✓ rejects zero executed tests and skipped SQL tests even when the child exits zero 1692ms
+   ✓ requires exact clean source and external evidence before resource acquisition 534ms
+   × accepts a tracked environment template while never forwarding application credentials 1272ms
+   ✓ source_manifest_mismatch_fails for modified source or an unapproved mirror substitution 862ms
+   ✓ executed_engine_width_requirement_check rejects missing, skipped or failed browser executions 400ms
+   ✓ a skipped required E or D job fails CI evidence acceptance on the exact candidate 269ms
+   × evidence acceptance rejects modified manifest custody 1857ms
+   × evidence acceptance rejects modified ownership custody 1891ms
+   × rejects a successful unrelated SQL fixture during execution 2175ms
+   × later SQL evidence rejects fixture substitution 2913ms
+   × later SQL evidence rejects duplicate-selector substitution 1590ms
+   × later SQL evidence rejects command substitution 1300ms
+   × later SQL evidence rejects case-identity substitution 1206ms
+   ✓ rejects changing both the mirror DB adapter and its declared manifest hash 518ms
+   ✓ pins complete generated next-env bytes and rejects mirror-only alteration 607ms
+   ✓ pins complete generated next-env bytes and rejects mirror-and-hash alteration 730ms
+   ✓ pins complete generated next-env bytes and rejects third-line alteration 834ms
+   ✓ pins complete generated next-env bytes and rejects extra-import alteration 651ms
+   ✓ later browser evidence rejects adapter-and-hash substitution 310ms
+   ✓ later browser evidence rejects next-env-and-hash substitution 234ms
+   ✓ refuses a missing original Next type import when deriving the allowed dev bytes 290ms
+   ✓ refuses a duplicate original Next type import when deriving the allowed dev bytes 495ms
+   ✓ workflow verifies integrated push ref development 5ms
+   ✓ workflow verifies integrated push ref main 0ms
+   ✓ candidate phase-c/punch runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate phase-d/timecards runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate codex/phase-d-audit runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate fix/authority runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate release/candidate runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate phase-e/employee runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate codex/phase-e-employee-experience-20261008 runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate phase-f/tenancy runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate codex/phase-f-inventory runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ candidate codex/par-001-remediation-20261008 runs every mandatory gate through its PR without a duplicate push 0ms
+   ✓ workflow ignores unrelated pushes and schedules every E/D/regression job for E push and E PR 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/development head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/main head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/phase-c/punch head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/phase-d/timecards head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/codex/phase-d-audit head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/fix/authority head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/heads/release/candidate head= base= 0ms
+   ✓ requires every SQL/browser regression for triggered refs/pull/12/merge head=feature/unrelated base=development 1ms
+   ✓ requires every SQL/browser regression for triggered refs/pull/12/merge head=codex/phase-e-example base=development 0ms
+   ✓ requires every SQL/browser regression for triggered refs/pull/13/merge head=codex/phase-f-inventory base=main 0ms
+   ✓ all jobs checkout github.sha and acceptance depends on every required E/D job 1ms
+   ✓ source safeguards hold all Git deployments through quarantine and integration 0ms
+   ✓ workflow contract rejects omitted-suite 207ms
+   ✓ workflow contract rejects budget 198ms
+   ✓ workflow contract rejects skip-aggregate 207ms
+   ✓ workflow contract rejects missing-verifier 183ms
+   ✓ workflow contract rejects duplicate-artifact 268ms
+   ✓ workflow contract rejects merge-artifacts 170ms
+   ✓ workflow contract rejects ignore-failure 177ms
+ ✓ src/lib/notifications/device-client.test.ts (45 tests) 2935ms
+   ✓ hanging native unsubscribe keeps exclusion after the UI wait, while server detach and native logout stay independent 2562ms
+ ✓ src/lib/tenancy/migrations/typed-constraints.test.ts (71 tests) 28187ms
+   ✓ pure complete typed source constraint observations (41)
+     ✓ binds every row/column checksum and accepts independently issued identical supplied facts 326ms
+     ✓ is deterministic and deeply frozen without issuing serializations, clones or digests as authority 352ms
+     ✓ blocks independently genuine ownership from a different schema boundary 519ms
+   ✓ genuine supplied SQL key-class successor (27)
+     ✓ keeps all existing three-input V1 behavior and unsupported pair blocks, including explicit undefined 999ms
+     ✓ issues explicit V2 complete metadata for every original GLOBAL key and all five candidate contracts even without rows 1262ms
+     ✓ uses issued SQL key classes to resolve required text-key comparisons while retaining every original component 523ms
+     ✓ honors opaque equality for unequal wires instead of JS wire, casing or coercion inequality 630ms
+     ✓ retains source GLOBAL singleton uniqueness across fictional resolved workspaces 542ms
+     ✓ applies global original key classes across different owners while candidate tenant classes remain owner-scoped 958ms
+     ✓ uses supplied SQL classes for clocker_key candidate collisions, never temporal/key wire inequality 395ms
+     ✓ uses supplied SQL classes for publication_number candidate collisions, never temporal/key wire inequality 613ms
+     ✓ keeps active endpoint and installation tuples GLOBAL across resolved tenants 1065ms
+     ✓ preserves excluded inactive witnesses, NULL expression cells, raw security fences and every row checksum 710ms
+     ✓ preserves independent expression namespaces and separate approved employee selector normalization 724ms
+     ✓ does not bypass genuine lower-expression collisions even when original key classes differ 441ms
+     ✓ preserves JSON exact numbers/null, SQL NULL and array native lower bounds without legacy conversion 810ms
+     ✓ uses opaque classes even for differing exact bigint/security-bucket wires 487ms
+     ✓ blocks genuine key observations from a different source boundary 652ms
+     ✓ blocks genuine key observations from a different schema boundary 876ms
+     ✓ blocks genuine key observations from a different snapshot boundary 686ms
+     ✓ blocks genuine key observations from a different fence boundary 789ms
+     ✓ blocks genuine key observations from a different rows boundary 566ms
+     ✓ rejects serialized, shallow and revoked key observations without reading getters/proxy traps 642ms
+     ✓ checks all four issuers before any input property read, hostile slot0 361ms
+     ✓ checks all four issuers before any input property read, hostile slot1 321ms
+     ✓ checks all four issuers before any input property read, hostile slot2 496ms
+     ✓ checks all four issuers before any input property read, hostile slot3 628ms
+     ✓ accepts independently genuinely issued identical source facts and never reissues cloned V2 output 1637ms
+     ✓ blocks malformed/unknown/incomplete key captures before any successor comparison without mutating original observations 999ms
+   ✓ successor preserved evidence boundaries (3)
+     ✓ never applies local bigint, casing or raw comparator inequality when issued key observations are supplied 1076ms
+     ✓ retains UUID, char digest and temporal components while resolving only through explicit SQL classes 735ms
+     ✓ binds V2 digest to exact independently issued key witness checksum and retained source metadata 2224ms
+ ✓ src/lib/tenancy/migrations/journal-contract.test.ts (60 tests) 20268ms
+   ✓ original-plan durable journal preparation (42)
+     ✓ retains exact padded and long existing identifiers and NULL global ownership 376ms
+     ✓ returns one deterministic original retry identity per chunk despite observation order 497ms
+     ✓ rejects changed sourceDigest at the persisted boundary 361ms
+     ✓ rejects changed registryDigest at the persisted boundary 368ms
+     ✓ rejects changed mappingDigest at the persisted boundary 315ms
+     ✓ rejects changed writeFenceDigest at the persisted boundary 353ms
+     ✓ rejects changed chunk id 412ms
+     ✓ rejects changed chunk table 331ms
+     ✓ rejects changed chunk ordinal 327ms
+     ✓ rejects changed chunk firstKey 609ms
+     ✓ rejects changed chunk sourceChecksum 447ms
+     ✓ rejects extra journal rows instead of hiding unobserved operations 355ms
+     ✓ rejects duplicate journal rows instead of hiding unobserved operations 315ms
+     ✓ rejects undeclared state and extra asserted authority/completion fields 416ms
+     ✓ rejects changed current ownership sourceChecksum 470ms
+     ✓ rejects changed current ownership mirroredIdentityChecksum 537ms
+     ✓ rejects alleged uncommitted or nonfresh reconciliation and a changed reconciliation boundary 821ms
+     ✓ rejects changed saved ownership or chunk in the original plan 634ms
+     ✓ returns detached deeply frozen descriptors and assessments 476ms
+   ✓ untrusted journal data boundary before reflection or coercion (18)
+     ✓ rejects a root proxy without invoking any trap 390ms
+     ✓ rejects a root accessor without executing it 448ms
+     ✓ rejects a nested accessor without executing it 418ms
+     ✓ rejects hole without invoking conversion hooks 515ms
+     ✓ rejects array extra without invoking conversion hooks 458ms
+     ✓ rejects prototype without invoking conversion hooks 412ms
+     ✓ rejects cycle without invoking conversion hooks 328ms
+     ✓ rejects bigint without invoking conversion hooks 515ms
+     ✓ rejects undefined without invoking conversion hooks 512ms
+     ✓ rejects NaN without invoking conversion hooks 556ms
+     ✓ rejects infinity without invoking conversion hooks 407ms
+     ✓ rejects unsafe integer without invoking conversion hooks 403ms
+     ✓ rejects negative zero without invoking conversion hooks 586ms
+ ✓ src/lib/tenancy/migrations/typed-backfill.test.ts (44 tests) 38914ms
+   ✓ pure typed tenant backfill compilation (38)
+     ✓ includes all68 empty source tables, complete SQL metadata and no effects claim 507ms
+     ✓ derives only exact0026 actions and preserves all original columns/ownership ancestry 395ms
+     ✓ retains exactly sorted registry mirrors with original SQL types, wires and lineages 370ms
+     ✓ preserves exact unsafe JSON numeric lexemes, SQLNULL and JSONNULL distinctly 890ms
+     ✓ retains native array lower bounds, SQL-null elements and every calendar credential fence 404ms
+     ✓ retains inactive and historical source rows, full reviews and retained-history witnesses 368ms
+     ✓ orders rows canonically and chunks deterministically per table with original-plan retry identity 1557ms
+     ✓ changes original retry identities for source/evidence/chunk boundaries, never suggests new operation on uncertainty 2589ms
+     ✓ preserves explicit singleton installation coverage while proposing only added metadata 673ms
+     ✓ retains exact empty root identity rather than inventing a tenant fallback 651ms
+     ✓ binds alternate genuinely supplied SQL classes into distinct plans/retries, not source authority 2632ms
+     ✓ cannot grant plan provenance to an accessor envelope or a revoked proxy without traps 1177ms
+     ✓ accepts independently genuine equivalent supplied observations by exact value, not object identity 1225ms
+     ✓ blocks independent genuine source boundary drift with no partial plan 1768ms
+     ✓ blocks independent genuine schema boundary drift with no partial plan 1130ms
+     ✓ blocks independent genuine snapshot boundary drift with no partial plan 1028ms
+     ✓ blocks independent genuine fence boundary drift with no partial plan 744ms
+     ✓ blocks independent genuine rows boundary drift with no partial plan 833ms
+     ✓ blocks independently genuine alternative namespace witnesses 1096ms
+     ✓ rejects genuinely issued V1 rather than silently upgrade incomplete key observations 478ms
+     ✓ rejects unissued input0 before proxy/accessor traps 851ms
+     ✓ rejects unissued input1 before proxy/accessor traps 605ms
+     ✓ rejects unissued input2 before proxy/accessor traps 692ms
+     ✓ rejects serialized/shape/digest clones and revoked proxies without private reissuance 582ms
+     ✓ requires explicit technical integer chunkSize1–1000: 0 474ms
+     ✓ requires explicit technical integer chunkSize1–1000: 1001 346ms
+     ✓ requires explicit technical integer chunkSize1–1000: -1 673ms
+     ✓ requires explicit technical integer chunkSize1–1000: 1.5 406ms
+     ✓ requires explicit technical integer chunkSize1–1000: null 517ms
+     ✓ requires explicit technical integer chunkSize1–1000: null 370ms
+     ✓ requires explicit technical integer chunkSize1–1000: "2" 429ms
+     ✓ requires explicit technical integer chunkSize1–1000: null 379ms
+     ✓ requires explicit technical integer chunkSize1–1000: undefined 625ms
+     ✓ accepts explicit technical range endpoints without inventing workload policy 917ms
+     ✓ rejects hostile options proxy, accessor, prototype, extra/non-enumerable fields without reads 1408ms
+     ✓ deeply freezes a deterministic plan without freezing/mutating input or accepting output copies 859ms
+   ✓ complete legacy employee-number enrollment compiler (6)
+     ✓ retains complete original plan, inactive employments, raw identities and actual JS Unicode preimages 1526ms
+     ✓ supports a complete genuinely issued empty capture without inventing empty expression namespace rows 1152ms
+     ✓ rejects raw format characters permitted by the older narrow selector without rewriting them 871ms
+     ✓ rejects plan clones, serialization and revoked/hostile proxies before any traps 1459ms
+     ✓ distinguishes empty from exact full identical and rejects every partial/foreign/renormalized tuple 1711ms
+     ✓ rejects hostile target envelopes/UTF8 data without property invocation or structural reissuance 893ms
+ ✓ src/lib/tenancy/migrations/typed-ownership.test.ts (73 tests) 12894ms
+   ✓ complete pure typed ownership source observations (73)
+     ✓ requires reviews for nullable SQLNULL cells rather than silently skipping them 480ms
+     ✓ resolves explicit WORKSPACE scope and rejects padded scope IDs exactly 369ms
+     ✓ preserves empty retained history owner bound to an actual empty source workspace 333ms
+     ✓ preserves the permanent ledger after a device has no current credential 337ms
+     ✓ checks current device hash against the permanent exact version ledger 324ms
+     ✓ rejects unknown reference literal coercion even with a matching retained hash 323ms
+     ✓ rejects hostile assignments and nested reviews without invoking accessors/proxy traps 320ms
+     ✓ rejects unsupported assignment structure array-extra 444ms
+     ✓ never issues cloned/serialized/coherently rehashed observations or failed outcomes 1079ms
+     ✓ rejects forged/null/hostile/revoked issuance candidates without reads or proxy traps 535ms
+ ✓ src/lib/tenancy/migrations/key-comparator-recheck.server.test.ts (36 tests) 40541ms
+   ✓ locked current key comparator recheck, genuine pure observations and mocked SQL only (36)
+     ✓ rechecks all104 complete metadata under every70 held lock without acquiring locks or issuing effects 695ms
+     ✓ returns distinctly tagged derived current metadata while preserving the original issued cells and facts 502ms
+     ✓ supports exact original manifest with actornull for retry/postDML/final observations 483ms
+     ✓ supports exact original manifest with actorfictional_operator for retry/postDML/final observations 593ms
+     ✓ requires every exact granted source/sidecar lock:missing 519ms
+     ✓ requires every exact granted source/sidecar lock:weak 920ms
+     ✓ requires every exact granted source/sidecar lock:ungranted 1606ms
+     ✓ requires every exact granted source/sidecar lock:foreign 864ms
+     ✓ accepts exact AccessExclusiveLock without inferring operator/first-read authority 1572ms
+     ✓ requires active transactionI before SQL 1066ms
+     ✓ requires active transactionE before SQL 1274ms
+     ✓ rejects unissued clones/serialized/proxy/accessor/null observations before any other input reads 1246ms
+     ✓ rejects facts/request proxies, accessors and cycles before reflection/getters or SQL 1051ms
+     ✓ requires genuinely issued typed cells rather than coherent serialized facts 993ms
+     ✓ rejects genuinely issued original observations from different raw source/schema/snapshot 1688ms
+     ✓ rejects unsupported protocol before SQL:{"manifestDigest":"bad","actor":null} 728ms
+     ✓ rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","actor":"foreign"} 817ms
+     ✓ rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"} 995ms
+     ✓ rejects unsupported protocol before SQL:{"manifestDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","actor":null,"extra":true} 587ms
+     ✓ rejects accessor/proxy protocol without traps 838ms
+     ✓ rejects actual mismatched actor/manifest without protocol fallback 889ms
+     ✓ detaches facts/request/protocol before first await, preserving exact original cell provenance 1592ms
+     ✓ rejects same-key original wire drift and incomplete source coverage 2155ms
+     ✓ rejects valid but changed actual equality class rather than matching only source hashes 1168ms
+     ✓ rejects observed semanticSUPPORT/7 drift 793ms
+     ✓ rejects observed semanticOPERATOR/9 drift 758ms
+     ✓ rejects observed semanticCOLLATION/10 drift 1050ms
+     ✓ rejects observed semanticINDEX/5 drift 991ms
+     ✓ rejects observed semanticDATABASE_COLLATION/7 drift 1372ms
+     ✓ rejects invalid live SQL snapshot without relabelling original evidence 1159ms
+     ✓ compares actual current engine version and effective default collation against original observations 3927ms
+     ✓ rejects changed full original source catalog before independent index/class reads 1957ms
+     ✓ keeps failure issuer trap-free for revoked proxies and accessor envelopes 1227ms
+     ✓ never forwards arbitrary SQL exception/secret text or reads forged failure fields 2210ms
+ ✓ src/test/notification-worker-startup.test.ts (5 tests) 3471ms
+   ✓ the actual npm worker command retains its exact bounded error with package-manager diagnostic false 1756ms
+   ✓ the actual npm worker command retains its exact bounded error with package-manager diagnostic true 1201ms
+   ✓ the explicit Node server entry loads the actual worker and executes an injected disabled dispatch without any IO 355ms
+ ❯ src/components/employee-home-actions.test.tsx (2 tests | 1 failed) 7303ms
+   × late_former_authority_reply_discarded 6289ms
+   ✓ complete authorized zero-item Home displays exact all-set copy and communications links to Updates 1013ms
+ ✓ src/test/qa-server-context.test.ts (12 tests) 9433ms
+   ✓ standalone QA can load current server services while keeping the normal React renderer 864ms
+   ✓ foundation SQL config loads current server services in its real Vitest process 2322ms
+   ✓ phase-b-c-authority SQL config loads current server services in its real Vitest process 1257ms
+   ✓ generation SQL config loads current server services in its real Vitest process 1488ms
+   ✓ exchanges SQL config loads current server services in its real Vitest process 1356ms
+   ✓ notifications SQL config loads current server services in its real Vitest process 1588ms
+ ✓ src/test/integration/owned-next-initializer.test.ts (7 tests) 5576ms
+   ✓ initializer failure closes the allocated owned database before any child start 609ms
+   ✓ pending initialization is awaited with zero child starts and zero early disposal 720ms
+   ✓ successful initializer receives only owned context and finishes before the refusing child boundary 1042ms
+   ✓ changed ownership during initialization refuses a child start and enters owned cleanup 654ms
+   ✓ abort during initialization stops before a child and closes its allocated database once 668ms
+   ✓ the default absent initializer retains the existing child-start lifecycle 1149ms
+   ✓ verified closure releases copied dependencies and generated cache while preserving source custody 720ms
+ ✓ src/lib/tenancy/runtime/installed-policy-observation.test.ts (54 tests) 8232ms
+   ✓ installed Portal policy source-coherence decoder (54)
+     ✓ blocks explicit expected installationEpoch drift 553ms
+     ✓ rejects extra/symbol/hidden/accessor keys without invoking getters 329ms
+     ✓ consumes independent root-native Base64 boundaries through the whole decoder; empty source remains ineligible 1720ms
+ ✓ src/lib/tenancy/migrations/typed-journal-storage.test.ts (38 tests | 23 skipped) 3756ms
+   ✓ typed durable journal source preparation (12)
+     ✓ retains string generation from the exact genuine typed boundary 854ms
+   ✓ genuine typed journal descriptor prerequisite, pure only (3)
+     ✓ preserves all68 tables, original chunks/rows, native wire hashes and gates 722ms
+     ✓ requires genuine original plan beside every serialized structural observation 664ms
+     ✓ binds unsafe JSON/native array/SQLNULL wire digests without legacy projection 1444ms
+ ✓ src/test/payroll-worker-startup.test.ts (3 tests) 3800ms
+   ✓ the actual payroll npm launcher reaches its disabled guard with flag false before database or payroll work 1599ms
+   ✓ the actual payroll npm launcher reaches its disabled guard with flag unset before database or payroll work 1445ms
+   ✓ real imported payroll schedule and worker retain their disabled checks and execute zero SQL 755ms
+ ✓ src/components/manager-action-center.test.tsx (41 tests) 199ms
+ ✓ src/lib/tenancy/inventory/schema-reducer.test.ts (26 tests) 3113ms
+   ✓ read-only exact M0 explicit ALTER declaration folds (3)
+     ✓ folds0024 actual communication head composite FK while preserving unknown generated-name drops 444ms
+     ✓ folds0025 calendar additions followed by the actual multi-action SET NOT NULL declarations 721ms
+ ✓ src/components/action-menu.test.tsx (3 tests) 2085ms
+   ✓ renders one labelled popover trigger and bounded shared menu surface 2081ms
+stderr | src/components/employee-my-schedule.test.tsx > a published empty day is distinguished from an unpublished date
+Received `false` for a non-boolean attribute `scroll`.
+
+If you want to write it to the DOM, pass a string instead: scroll="false" or scroll={value.toString()}.
+
+If you used to conditionally omit it with scroll={condition && value}, pass scroll={condition ? value : undefined} instead.
+
+ ✓ src/components/report-lifetime.test.tsx (49 tests) 3725ms
+   ✓ R01 true non-print window blur removes names totals and export controls without losing period filters 334ms
+ ✓ src/test/phase-e-root-exit.test.ts (6 tests) 1710ms
+   ✓ initial root observation: missing-marker 344ms
+   ✓ initial root observation: zombie-stderr 364ms
+ ✓ src/components/employee-my-schedule.test.tsx (15 tests) 334ms
+ ✓ src/lib/tenancy/migrations/key-comparator-capture.server.test.ts (43 tests) 2510ms
+stderr | src/components/app-shell.test.tsx > does not add clean Manager operational shortcuts without current scope
+Received `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ ✓ src/lib/data/exchanges-notifications.test.ts (34 tests) 413ms
+ ✓ src/lib/auth/password.malformed.test.ts (39 tests) 1334ms
+ ✓ src/components/app-shell.test.tsx (66 tests) 723ms
+ ✓ src/lib/tenancy/migrations/typed-reference.test.ts (80 tests) 1949ms
+ ✓ src/test/clocker-runner.test.ts (2 tests) 535ms
+   ✓ stops a partially started owned PostgreSQL cluster before deleting its files 482ms
+ ✓ src/lib/tenancy/migrations/namespace-comparators.test.ts (27 tests) 2814ms
+   ✓ shared pinned namespace comparator validation on typed source (27)
+     ✓ blocksmissing excluded row with a coherently rebound outer checksum 969ms
+ ✓ src/lib/tenancy/inventory/ddl.test.ts (28 tests) 2256ms
+ ✓ src/lib/tenancy/migrations/typed-snapshot.test.ts (48 tests) 3085ms
+   ✓ complete typed snapshot integrity, separate from ownership and namespace semantics (48)
+     ✓ blocks missing column without trusting a recomputed full facts hash 810ms
+ ✓ src/components/clocker-recovery-review.test.tsx (5 tests) 355ms
+ ✓ src/lib/tenancy/migrations/ownership.test.ts (19 tests) 1128ms
+   ✓ source-bound immutable tenant ownership registry (7)
+     ✓ rejects changed SQL bytes, duplicate/absent migrations and unexpected source 881ms
+ ✓ src/lib/attendance/project.test.ts (38 tests) 158ms
+ ✓ src/app/app/schedule/settings/page.test.tsx (15 tests) 685ms
+ ✓ src/lib/workspace-presentation/derive.test.ts (9 tests) 2079ms
+   ✓ deriveBrand (7)
+     ✓ meets every contrast floor for 2,000 random seeds and the edge colours 1196ms
+     ✓ keeps brand hues clear of the status colours 822ms
+ ✓ src/app/app/exchange/page.test.tsx (31 tests) 876ms
+ ✓ src/lib/data/employee-home.server.test.ts (11 tests) 502ms
+   ✓ protected aggregate exposes all six complete current sources and zero items is all set 447ms
+ ✓ src/lib/scheduling/generation/explanation-view.test.ts (93 tests) 1620ms
+ ✓ src/lib/payroll/native/paystub-document.test.ts (55 tests) 1012ms
+ ✓ src/components/payroll-export-lifetime.test.tsx (73 tests) 6077ms
+   ✓ expires the rendered payroll snapshot on its original server deadline 301ms
+ ✓ src/components/generation-explanation-panel.test.tsx (69 tests) 1052ms
+ ✓ src/lib/scheduling/publish-warning-policy.test.ts (91 tests) 341ms
+ ✓ src/app/api/employee/home/route.test.ts (5 tests) 244ms
+ ✓ src/components/payroll/private-statements.test.tsx (6 tests) 281ms
+ ✓ src/lib/communications/http.server.test.ts (4 tests) 418ms
+   ✓ authorized list stays private and cannot select another employee 408ms
+ ✓ src/app/app/api/push/push-routes.test.ts (15 tests) 563ms
+   ✓ forged_identity_is_rejected 422ms
+ ✓ src/lib/payroll/native/provisional-vectors.test.ts (68 tests) 1315ms
+ ✓ src/lib/imports/csv.test.ts (128 tests) 1122ms
+   ✓ F9 strict parser and explicit mapping (55)
+     ✓ accepts exactly2MiB with bounded excluded cells and rejects one added byte, without retaining excluded content 581ms
+stderr | src/components/employee-account-panel-lifetime.test.tsx > clears source-expired rows without inventing lost access and recovers through Retry
+Received `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ ✓ src/components/employee-account-panel-lifetime.test.tsx (10 tests) 246ms
+ ✓ src/lib/notifications/reminders.test.ts (20 tests) 344ms
+ ✓ src/lib/notifications/manifest.test.ts (6 tests) 942ms
+   ✓ portal links manifest and theme without leaking metadata to root or Clocker 694ms
+ ✓ src/lib/scheduling/generation/reservations.test.ts (18 tests) 801ms
+   ✓ throws explicit claim overflow rather than silently dropping demand metadata 758ms
+ ✓ src/lib/payroll/native/workweek-consumer.test.ts (23 tests) 675ms
+ ✓ src/lib/notifications/config-cli.test.ts (1 test) 853ms
+   ✓ loads the real notification CLI modules through the declared server entry without a top-level-await CommonJS failure 851ms
+ ✓ src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts (14 tests) 254ms
+ ✓ src/lib/tenancy/migrations/journal-storage.test.ts (44 tests | 39 skipped) 755ms
+   ✓ durable journal source preparation, never PostgreSQL verification (5)
+     ✓ constructs an actual accepted pure description fixture without assuming database or effect evidence 744ms
+ ✓ src/test/phase-e-browser-runtime.test.ts (141 tests) 850ms
+   ✓ connects the actual Home stage reader before registering scenario page listeners 702ms
+ ✓ src/test/release-source-custody.test.ts (3 tests) 980ms
+   ✓ refuses untracked application input before allocating a database 400ms
+   ✓ refuses changed tracked application input before allocating a database 577ms
+ ✓ src/lib/payroll/native/sr01-professional-rounding.test.ts (15 tests) 949ms
+ ✓ src/components/employee-home-reviewed.test.tsx (30 tests) 1400ms
+ ✓ src/components/clocker-device-manager.test.tsx (14 tests) 193ms
+ ✓ src/components/employee-updates.test.tsx (8 tests) 562ms
+   ✓ keeps required updates in the review group until acknowledged, even if marked read 483ms
+ ✓ src/test/no-page-entrance-motion.test.ts (1 test) 239ms
+ ✓ src/components/communication-detail.test.tsx (10 tests) 197ms
+ ✓ src/components/company-access/operational-unavailable.test.tsx (2 tests) 22ms
+ ✓ src/lib/payroll/native/replacement-context.test.ts (22 tests) 194ms
+ ✓ src/components/timecards.employee-unchanged.test.tsx (1 test) 152ms
+ ✓ src/lib/payroll/native/employer-counter-consistency.test.ts (12 tests) 310ms
+ ✓ src/lib/data/callouts-notifications.test.ts (11 tests) 219ms
+ ✓ src/components/timecards.batch.test.tsx (48 tests) 4214ms
+   ✓ action change clears the old selected set and review instead of reusing approval confirmation 313ms
+   ✓ replaces the original unknown per-card result with a verified blocked retry without submitting remaining cards 317ms
+ ✓ src/lib/data/coverage-repair.server.test.ts (24 tests) 204ms
+ ✓ src/lib/tenancy/runtime/portal-root-source-observation.test.ts (27 tests) 100ms
+ ✓ src/lib/tenancy/resolve.server.test.ts (72 tests) 259ms
+ ✓ src/lib/data/push-deliveries.test.ts (11 tests) 195ms
+ ✓ src/lib/attendance/client.test.ts (8 tests) 19ms
+ ✓ src/app/app/settings/foundation-pages.test.tsx (4 tests) 23ms
+ ✓ src/lib/payroll/native/document-mapping.test.ts (7 tests) 375ms
+ ✓ src/components/payroll/native-review-regressions.test.tsx (16 tests) 227ms
+stderr | src/app/app/schedule/page.test.tsx > loads actual history and renders own changes behind authenticated access
+Received `false` for a non-boolean attribute `scroll`.
+
+If you want to write it to the DOM, pass a string instead: scroll="false" or scroll={value.toString()}.
+
+If you used to conditionally omit it with scroll={condition && value}, pass scroll={condition ? value : undefined} instead.
+
+ ✓ src/lib/payroll/native/document-manifest.test.ts (2 tests) 335ms
+ ✓ src/test/nevora-visible-branding.test.ts (8 tests) 232ms
+ ✓ src/lib/payroll/native/preparation.test.ts (7 tests) 210ms
+ ✓ src/app/app/schedule/page.test.tsx (32 tests) 880ms
+ ✓ src/lib/tenancy/resolve.portal-current-source.test.ts (32 tests) 187ms
+ ✓ src/app/app/notifications/open/route.test.ts (22 tests) 260ms
+ ✓ src/lib/notifications/logout.test.ts (34 tests) 218ms
+ ✓ src/components/employee-time-panel.test.tsx (17 tests) 169ms
+ ✓ src/app/app/schedule/edit/page.test.tsx (13 tests) 629ms
+   ✓ retains the editable assignment, notes, lead, and shift identity and restricts date to its existing week 543ms
+ ✓ src/lib/payroll/native/sr01-cent-vectors.test.ts (67 tests) 10ms
+ ✓ src/components/payroll/native-review.test.tsx (8 tests) 664ms
+ ✓ src/lib/payroll/native/calculate-extended.test.ts (25 tests) 386ms
+ ✓ src/lib/tenancy/runtime/portal-current-issuance-source.test.ts (27 tests) 157ms
+ ✓ src/components/payroll-export.selection.test.tsx (3 tests) 771ms
+   ✓ selects at most 100 visible finalized cards and explicitly reports overflow 471ms
+ ✓ src/lib/notifications/provider.test.ts (18 tests) 246ms
+ ✓ src/lib/payroll/native/provisional-history.test.ts (2 tests) 149ms
+ ✓ src/components/manager-weekly-roster.test.tsx (13 tests) 325ms
+ ✓ src/lib/notifications/worker.test.ts (36 tests) 250ms
+ ✓ src/app/login/actions.test.ts (18 tests) 341ms
+   ✓ login and invitation success preserve only the validated return destination: valid notification 312ms
+ ✓ src/components/employee-home-reviewed-wiring.test.tsx (16 tests) 150ms
+ ✓ src/components/payroll-period-close-lifetime.test.tsx (17 tests) 152ms
+ ✓ src/lib/data/schedule-generation-review.test.ts (8 tests) 14ms
+ ✓ src/components/payroll/api.test.ts (12 tests) 61ms
+ ✓ src/lib/tenancy/executor.server.test.ts (32 tests) 78ms
+ ✓ src/app/app/schedule/employee-review.test.tsx (2 tests) 75ms
+ ✓ src/lib/notifications/service-worker.test.ts (78 tests) 100ms
+ ✓ src/lib/action-center/intelligence.test.ts (112 tests) 218ms
+ ✓ src/components/brand-lockup.test.tsx (6 tests) 23ms
+ ✓ src/lib/tenancy/resolve.transport.test.ts (27 tests) 268ms
+ ✓ src/lib/tenancy/query-contract.test.ts (13 tests) 17ms
+ ✓ src/lib/tenancy/executor.transport.test.ts (20 tests) 148ms
+ ✓ src/app/app/employees/[employeeId]/clocker-pin/page.test.tsx (9 tests) 24ms
+ ✓ src/components/activity-history-panel.test.tsx (46 tests) 147ms
+ ✓ src/app/app/schedule/generation-actions.test.ts (34 tests) 125ms
+ ✓ src/lib/payroll/documents.test.ts (3 tests) 219ms
+ ✓ src/lib/scheduling/generation/demand.test.ts (18 tests) 144ms
+ ✓ src/app/api/internal/notifications/worker-routes.test.ts (6 tests) 318ms
+   ✓ http_and_cli_adapters_share_worker 306ms
+ ✓ src/components/payroll/native-settings.test.tsx (3 tests) 81ms
+ ✓ src/lib/payroll/native/exact-cent.test.ts (11 tests) 200ms
+ ✓ src/test/integration/owned-next-artifacts.test.ts (16 tests) 285ms
+ ✓ src/lib/data/push-subscriptions.test.ts (8 tests) 183ms
+ ✓ src/components/app-error-screen.test.tsx (3 tests) 60ms
+ ✓ src/lib/payroll/native/ytd.test.ts (8 tests) 309ms
+ ✓ src/components/payroll/native-profile-form.test.ts (12 tests) 164ms
+ ✓ src/lib/payroll/native/provisional-policy.test.ts (26 tests) 410ms
+ ❯ src/lib/tenancy/migrations/backfill.test.ts (66 tests | 3 failed) 100053ms
+   ✓ complete-row migration preflight without SQL or rewritten history (23)
+     ✓ plans inactive/historical rows with stable legacy IDs and full original-column checksums 816ms
+     ✓ refuses missing employee mapping even when current primary location resolves 659ms
+     ✓ rejects conflicting direct/actor/location ancestry rather than defaulting to Fuel 859ms
+     ✓ requires a complete capture of every classified table, even empty ones 769ms
+     ✓ rejects duplicate PKs, row count drift and checksum drift 2539ms
+     ✓ rejects source or original-column shape drift and emits no partial executable plan 1377ms
+     ✓ rejects an orphan immutable parent 849ms
+     ✓ does not accept current-active-only or unfenced snapshot capture 1344ms
+     ✓ does not accept unreconciled new writes or schema/source mismatched writer protocol 1402ms
+     ✓ preserves global hashed recovery scopes without hash inversion or guessed tenant 758ms
+     ✓ discriminates DEVICE versus WORKSPACE PIN limiter ancestry 1709ms
+     ✓ requires row-specific installation evidence while retaining calendar serial/time and original singleton key 849ms
+     ✓ detects normalized tenant-local legacy number collisions without changing either ID or excluding inactive employees 1048ms
+     ✓ requires historical captured lineage even if a deleted source ID has been reused by a different live tenant 755ms
+     ✓ blocks absent/incomplete JSON or array lineage capture and validates each literal reference 949ms
+     ✓ refuses array identity leaves mislabeled as nonidentity data 746ms
+     ✓ uses a typed metadata sidecar whose identity mirror cannot alter historical actors 558ms
+     ✓ requires declared JSON identity literals to be references and fails closed for unresolved captured leaves 717ms
+     ✓ blocks historical witness row/source mismatch and conflicting tenant ancestry without inspecting a current replacement row 1114ms
+     ✓ rejects source capture precision loss in retained bigint security counters 954ms
+     ✓ checks current device credential lineage against the preserved global retired-hash ledger 1205ms
+     ✓ validates participant employee identities encoded as JSON object keys without hash inversion 955ms
+     ✓ produces the same plan/chunks after input row/table/mapping enumeration changes 1641ms
+   ✓ interruption/resume and atomic new immutable-row protocol (9)
+     ✓ treats identical metadata retry as no-op and resumes only absent source keys 1933ms
+     ✓ rejects changed ownership/history checksum and changed plan receipts 2029ms
+     ✓ does not trust a COMPLETE journal receipt if matching metadata is missing 2417ms
+     ✓ orders tenant gate and parent checks before deferred typed sidecar/source insertion without bypassing append-only history guards 66ms
+     ✓ rejects a foreign actor, missing current parent and ownership reattribution for new rows 83ms
+     ✓ rejects metadata outside the complete captured row set instead of hiding a conflicting leftover row 2389ms
+     ✓ rejects a saved plan whose typed owner or chunk changed after its digest was captured 3327ms
+     ✓ rejects changed immutable history or actor mirrors even when both employees remain in the same tenant 303ms
+     ✓ returns an explicit blocked diagnostic for incomplete new-write row shape rather than throwing while traversing references 65ms
+   ❯ source/schema/snapshot/row-bound database namespace witnesses (15)
+     ✓ includes empty email in the retained IS NOT NULL namespace and excludes NULL 3239ms
+     ✓ uses captured DB casing instead of guessing JavaScript lower-case equality 1570ms
+     ✓ uses actual DB collation equality classes even when lower-result bytes differ 1711ms
+     ✓ uses DB result witnesses for positions names and its original predicate 1936ms
+     ✓ uses DB result witnesses for clocker_break_types names and its original predicate 1869ms
+     ✓ uses DB result witnesses for schedule_templates names and its original predicate 2063ms
+     × requires every closed catalog even for empty tables and rejects absent result witnesses 5640ms
+     ✓ rejects sourceDigest drift at the capture boundary 2254ms
+     ✓ rejects schemaDigest drift at the capture boundary 2948ms
+     ✓ rejects snapshotId drift at the capture boundary 1964ms
+     ✓ rejects rowSetChecksum drift at the capture boundary 1966ms
+     ✓ rejects whole-row witness drift even after source row and table checksums are refreshed 2329ms
+     × rejects changed catalog expression, predicate, source evidence and collation checksum 7812ms
+     × rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records 6005ms
+     ✓ binds witnessed DB results into the saved plan and stays independent of capture order 1076ms
+   ✓ malformed comparator capture rejection without executing data accessors (6)
+     ✓ blocks null-catalog deterministically without throwing 1107ms
+     ✓ blocks null-row deterministically without throwing 1281ms
+     ✓ blocks missing-definition deterministically without throwing 1249ms
+     ✓ blocks missing-binding deterministically without throwing 976ms
+     ✓ does not execute an accessor or serialize a mutated sparse original payload 3326ms
+     ✓ retains inactive template rows but excludes them from the exact active name predicate 1417ms
+   ✓ internal consistency of captured DB comparison classes (1)
+     ✓ rejects different equality classes for identical DB expression output 1366ms
+   ✓ saved comparator manifest obligations (2)
+     ✓ blocks omit witnesses in a rehashed empty-work saved plan 945ms
+     ✓ blocks checksum witnesses in a rehashed empty-work saved plan 1047ms
+   ✓ root capture ingestion regression (10)
+     ✓ blocks malformed top-level JSON without throwing (null) 21ms
+     ✓ blocks malformed top-level JSON without throwing (undefined) 17ms
+     ✓ blocks malformed top-level JSON without throwing ({}) 12ms
+     ✓ blocks malformed top-level JSON without throwing ({"migrations":[]}) 15ms
+     ✓ blocks a null snapshot capture component without throwing 1259ms
+     ✓ blocks a null tables capture component without throwing 1105ms
+     ✓ blocks a null mappings capture component without throwing 938ms
+     ✓ blocks a null historicalReferences capture component without throwing 831ms
+     ✓ blocks a null payloadCaptures capture component without throwing 846ms
+     ✓ blocks a null writeFence capture component without throwing 706ms
+ ✓ src/app/activate/activation-invitation.test.tsx (24 tests) 21ms
+ ✓ src/components/payroll/provisional-consumer.test.tsx (11 tests) 222ms
+ ✓ src/components/payroll/native-evidence.test.tsx (8 tests) 118ms
+ ✓ src/lib/payroll/native/recorded-source.server.test.ts (61 tests) 186ms
+ ✓ src/lib/capabilities/policy.test.ts (347 tests) 63ms
+ ✓ src/lib/notifications/subscription-service.test.ts (3 tests) 56ms
+ ✓ src/components/configuration-choice-controls.test.tsx (4 tests) 25ms
+ ✓ src/lib/payroll/native/federal-employee-tax.test.ts (15 tests) 89ms
+ ✓ src/lib/payroll/native/calculate.test.ts (19 tests) 159ms
+ ✓ src/components/manager-reviewed-views.test.tsx (71 tests) 242ms
+ ✓ src/test/evidence/complete-native-jsonl.test.ts (35 tests) 166ms
+ ✓ src/lib/business-improvements/company-policies/model.test.ts (324 tests) 142ms
+ ✓ src/components/publish-warning-review-surface.test.tsx (64 tests) 190ms
+ ✓ src/lib/activity/project.test.ts (80 tests) 95ms
+ ✓ src/components/employee-mobile/hours-records.test.tsx (3 tests) 92ms
+stderr | src/app/app/schedule/coverage/page.test.tsx > actual manager position/Lead action opens the matching location/interval and excludes unqualified employees
+Received `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ ✓ src/app/app/schedule/coverage/page.test.tsx (7 tests) 70ms
+ ✓ src/components/manager-profile/manager-profile.test.tsx (16 tests) 72ms
+ ✓ src/lib/data/notification-transactions.test.ts (3 tests) 55ms
+ ✓ src/components/employee-core-profile-form.test.tsx (4 tests) 18ms
+stderr | src/app/legal-pages.test.tsx > public policy pages > the sign-in footer and Profile link the policies and Delete my account in production
+Received `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ ✓ src/app/legal-pages.test.tsx (16 tests) 61ms
+ ✓ src/lib/employee-creation.test.ts (3 tests) 30ms
+ ✓ src/lib/passkeys/management.test.ts (15 tests) 39ms
+ ❯ src/lib/data/scheduling-inputs.test.ts (19 tests | 5 failed) 18ms
+   ✓ scheduling context repository (1)
+     ✓ loads actual dated cross-location shifts, explicit submission metadata, normal hours and dated exceptions 2ms
+   ✓ target and maximum persistence (2)
+     ✓ reads distinct target and maximum values, defaulting only a missing maximum to 40 0ms
+     ✓ saves target and maximum into the existing settings record 1ms
+   ❯ normal-based weekly submissions (5)
+     × confirmation without changes persists submission metadata without inventing day overrides 4ms
+     × unavailable all week writes seven dated full-day exceptions 1ms
+     × changes only the selected date, preserving other overrides 0ms
+     ✓ reads current normal hours for an unsubmitted week rather than stale seeded hours 0ms
+     ✓ preserves legacy zero-window submitted weeks as unavailable 0ms
+   ✓ a deadline failure during the transaction propagates as a locked submission 2ms
+   ✓ health reads Sunday carry-in work by business date rather than schedule ownership 0ms
+   × the final deadline guard uses the current clock after the lock wait 1ms
+   ✓ missing staffing configuration stays explicit instead of inventing staff or Lead 0ms
+   × retries a stale legacy conversion after locking and preserves another saved day's override 1ms
+   ✓ repeated concurrent availability changes stop after bounded retries 1ms
+   ✓ notification cancellation joins availability transactions (3)
+     ✓ deadline change/removal cancels superseded work atomically: undefined 1ms
+     ✓ deadline change/removal cancels superseded work atomically: 2026-10-06T12:00:00Z 0ms
+     ✓ zero-hour submission cancels its reminder in the same transaction 1ms
+   ✓ loads target workspace/location/active qualifications without erasing inactive assigned position 0ms
+   ✓ coverage reads retain named quotas including inactive catalog requirements 0ms
+ ✓ src/app/api/employee/time-corrections/route.test.ts (12 tests) 48ms
+ ✓ src/components/company-policy-editor.test.tsx (11 tests) 86ms
+ ✓ src/app/app/exchange/swap/page.test.tsx (23 tests) 127ms
+ ✓ src/lib/attendance/validation.test.ts (15 tests) 49ms
+ ✓ src/app/api/timecards/route.test.ts (12 tests) 42ms
+ ✓ src/lib/notifications/config.test.ts (3 tests) 87ms
+ ✓ src/components/portal-device-setup.test.tsx (4 tests) 12ms
+ ✓ src/components/manager-clock-monitor.test.tsx (7 tests) 81ms
+ ✓ src/components/manager-workflows.test.tsx (18 tests) 155ms
+ ✓ src/lib/notifications/installation.test.ts (6 tests) 48ms
+ ❯ src/app/app/requests/hub/page.test.tsx (6 tests | 3 failed) 8ms
+   × retains both request destinations for EMPLOYEE 5ms
+   × retains both request destinations for LEAD 1ms
+   ✓ redirects MANAGER before rendering employee request content 1ms
+   ✓ redirects OWNER before rendering employee request content 0ms
+   ✓ does not render the hub when session verification rejects access 0ms
+   × lists the person's own time off, waiting first, and never turns a failed read into no requests 0ms
+ ✓ src/lib/payroll/native/workweek-boundaries.test.ts (75 tests) 185ms
+ ✓ src/lib/auth/invitations/privacy.test.ts (2 tests) 14ms
+ ✓ src/lib/tenancy/migrations/validate.test.ts (38 tests | 36 skipped) 7ms
+ ✓ src/app/api/manager/inbox-count/route.test.ts (2 tests) 19ms
+ ✓ src/lib/tenancy/inventory/module-graph.test.ts (22 tests) 47ms
+ ✓ src/lib/data/requests-notifications.test.ts (6 tests) 30ms
+ ✓ src/lib/payroll-export/service.test.ts (26 tests) 92ms
+ ✓ src/lib/scheduling/positions.test.ts (19 tests) 19ms
+ ✓ src/lib/tenancy/runtime/portal-administrative-authority-storage.test.ts (21 tests) 81ms
+ ✓ src/components/time-off-withdrawal.test.tsx (7 tests) 65ms
+ ✓ src/lib/tenancy/migrations/lossless-json.test.ts (61 tests) 43ms
+ ✓ src/app/app/schedule/settings/shift-policy-actions.test.ts (3 tests) 20ms
+ ✓ src/lib/owner-advisor/loop.test.ts (18 tests) 37ms
+ ✓ src/app/app/settings/locations/[locationId]/page.test.tsx (5 tests) 19ms
+ ✓ src/test/integration/owned-setup-trace.test.ts (6 tests) 15ms
+ ✓ src/components/mobile-home-overview.test.tsx (3 tests) 7ms
+ ✓ src/lib/business-improvements/labor-budget/model.test.ts (31 tests) 17ms
+ ✓ src/lib/tenancy/migrations/typed-lineage.test.ts (70 tests) 16ms
+ ✓ src/app/app/settings/positions/page.test.tsx (4 tests) 157ms
+ ✓ src/lib/data/schedules-notifications.test.ts (21 tests) 103ms
+ ✓ src/lib/employee-home/project.test.ts (13 tests) 22ms
+ ✓ src/lib/clock-monitor.test.ts (30 tests) 14ms
+ ✓ src/lib/calendar/http.server.test.ts (8 tests) 31ms
+ ✓ src/lib/data/publication-revisions.test.ts (18 tests) 103ms
+ ✓ src/lib/employee-view-route.test.ts (12 tests) 42ms
+ ✓ src/app/app/availability/actions.test.ts (5 tests) 24ms
+ ✓ src/lib/auth/portal-request.server.test.ts (20 tests) 62ms
+ ✓ src/lib/tenancy/runtime/control-storage.test.ts (10 tests) 17ms
+ ✓ scripts/clocker-recovery-privacy.test.ts (33 tests) 10ms
+ ✓ src/app/app/timecards/page.test.tsx (5 tests) 71ms
+ ✓ src/lib/tenancy/runtime/portal-native-installation-producer.test.ts (93 tests) 157ms
+ ✓ src/lib/tenancy/runtime/portal-original-source-invalidation.test.ts (23 tests) 11ms
+ ✓ src/app/app/employees/page.test.tsx (8 tests) 64ms
+ ✓ src/lib/payroll/native/workweek-policy.test.ts (24 tests) 87ms
+ ✓ src/components/calendar-subscription-panel-lifetime.test.tsx (20 tests) 45ms
+ ✓ src/components/kit/kit.test.tsx (16 tests) 53ms
+ ✓ src/lib/data/manager-location-scope.test.ts (17 tests) 17ms
+ ✓ src/components/employee-home-clock.test.tsx (11 tests) 43ms
+ ✓ src/lib/celebrations.test.ts (13 tests) 9ms
+ ✓ src/lib/action-center/canonical-source.test.ts (36 tests) 61ms
+ ✓ src/lib/data/employee-notification-list.payroll.test.ts (16 tests) 32ms
+ ✓ src/app/app/schedule/copy-receipt/page.test.tsx (2 tests) 6ms
+ ✓ src/lib/scheduling/generation/periods.test.ts (12 tests) 27ms
+ ✓ src/components/assisted-recovery.test.tsx (7 tests) 40ms
+ ✓ src/app/app/schedule/new/scoped.test.tsx (9 tests) 28ms
+ ✓ src/lib/notifications/recipients.test.ts (25 tests) 43ms
+ ✓ src/lib/scheduling/shift-change-evaluation.test.ts (35 tests) 65ms
+ ✓ src/lib/data/weekly-approved-absences.server.test.ts (5 tests) 16ms
+ ✓ src/lib/timecards/reviewed-batch.test.ts (14 tests) 75ms
+ ✓ src/lib/employee-time-client.test.ts (11 tests) 44ms
+ ✓ src/components/employee-mobile/messages-view.test.tsx (8 tests) 40ms
+ ✓ src/lib/tenancy/runtime/original-runtime-login.test.ts (16 tests) 12ms
+ ✓ src/components/schedule-generation-controls-state.test.tsx (2 tests) 127ms
+ ✓ src/app/app/schedule/coverage-repair.test.ts (5 tests) 16ms
+ ✓ src/lib/tenancy/runtime/audited-helper-storage.test.ts (11 tests) 28ms
+ ✓ src/app/app/schedule/actions.test.ts (30 tests) 222ms
+ ✓ src/lib/calendar/command-http.test.ts (32 tests) 96ms
+ ✓ src/components/employee-mobile/creation-operation.test.ts (1 test) 16ms
+ ✓ src/lib/tenancy/runtime/portal-source-observation.test.ts (19 tests) 29ms
+ ✓ src/lib/payroll-export/model.test.ts (70 tests) 26ms
+ ✓ src/lib/notifications/policy.test.ts (22 tests) 27ms
+ ✓ src/app/api/reports/route.test.ts (19 tests) 57ms
+ ✓ src/app/api/company-policies/route.test.ts (23 tests) 44ms
+ ✓ src/lib/data/workspaces.test.ts (2 tests) 12ms
+ ✓ src/lib/owner-advisor/briefing.test.ts (10 tests) 12ms
+ ✓ src/app/brand-pages.test.tsx (4 tests) 14ms
+ ✓ src/lib/notification-inbox-view.test.ts (3 tests) 21ms
+ ✓ src/app/api/manager/timecards/route.test.ts (5 tests) 56ms
+ ✓ src/app/app/self-service-guards.test.ts (11 tests) 25ms
+ ✓ src/components/select-field.test.tsx (3 tests) 8ms
+ ✓ src/lib/payroll/backlog.test.ts (5 tests) 18ms
+stderr | src/components/employee-account-panel.test.tsx > renders safe-open links without read/ack or consent actions
+Received `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ ✓ src/components/employee-account-panel.test.tsx (6 tests) 26ms
+stderr | src/components/app-shell-management-signout.test.tsx > OWNER has native sign-out in the account menu
+Received `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ ✓ src/components/app-shell-management-signout.test.tsx (2 tests) 63ms
+ ✓ src/lib/time-corrections/client.test.ts (13 tests) 19ms
+ ✓ src/app/app/employees/[employeeId]/clocker-pin/actions.test.ts (11 tests) 43ms
+ ✓ src/lib/owner-advisor/adversarial.test.ts (25 tests) 58ms
+ ✓ src/lib/data/portal-notification-list.server.test.ts (4 tests) 12ms
+ ✓ src/test/phase-c-release-migrations.test.ts (3 tests) 11ms
+ ❯ src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts (68 tests | 5 failed) 107239ms
+   ✓ owned local whole-plan typed executor pure boundaries (10)
+     ✓ requires genuine plan before reading hostile facts or using transport 3ms
+     ✓ rejects plan clone without reading nested data 566ms
+     ✓ rejects proxy plan without invoking any traps 419ms
+     ✓ rejects proxy request without invoking any traps 1ms
+     ✓ rejects facts accessor before any await without executing it 560ms
+     ✓ rejects cycles and unknown request fields 897ms
+     ✓ rejects unissued serialized cell even when raw bytes/digests are unchanged 311ms
+     ✓ rejects exact facts/authority/source drift before transport 1090ms
+     ✓ rejects ambient transaction without BEGIN or ROLLBACK 418ms
+     ✓ requires matching owned localhost socket before any query 254ms
+   ✓ whole-plan typed executor fictional transport lifecycle (10)
+     ✓ locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata 1497ms
+     ✓ preserves issued cells while detaching mutable request before first await 1480ms
+     ✓ denies superuser original login despite substituted session/current operator role 302ms
+     ✓ denies wrong original backend role OID and selected role separately 583ms
+     ✓ rolls back own lost BEGIN acknowledgement without claiming caller transaction ownership 296ms
+     ✓ returns UNCERTAIN if rollback cannot be confirmed after own BEGIN attempt 356ms
+     ✓ never attempts rollback after COMMIT has begun, returning original plan reconciliation 1625ms
+     ✓ identical complete retry does no DML and retains original manifest 2697ms
+     ✓ refuses mixedpartial ownership with an absent protocol manifest 678ms
+     ✓ does not passthrough arbitrary SQL error code/message or invoke hostile error accessors 372ms
+   ❯ typed atomic source, target and hostile-input regressions (14)
+     ✓ rejects nested proxy without invoking reflection traps 335ms
+     ✓ does not call an unissued plan getter 1ms
+     ✓ retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors 2215ms
+     ✓ blocks pre-BEGIN INSTALLED_SOURCE field1 drift 358ms
+     ✓ blocks pre-BEGIN ROLE field2 drift 503ms
+     ✓ blocks pre-BEGIN PRIVILEGES field0 drift 482ms
+     ✓ blocks pre-BEGIN PROTOCOL field1 drift 528ms
+     ✓ blocks a source original wire change before arming 516ms
+     ✓ blocks changed opaque old expression equality witness without calculating JS lower 564ms
+     ✓ rolls back when exact direct attribution affects zero rows 916ms
+     ✓ rolls back when exact sidecar insertion affects zero rows 802ms
+     ✓ blocks wrong complete retry workspace with same original manifest 4149ms
+     × blocks wrong sidecar mirror on complete retry 5787ms
+     ✓ rejects concurrent invocation on the same client without a second transaction 4446ms
+   ✓ post-effect and genuine SQL-key helper failures (4)
+     ✓ blocks changed supplied opaque SQL-key class through genuine helper error issuer 1586ms
+     ✓ rolls back post-attribution role drift before commit 1926ms
+     ✓ rolls back if original source bytes change after attribution 2142ms
+     ✓ sanitizes an arbitrary thrown proxy without any getter/prototype traps 994ms
+   ✓ typed journal atomic successor pure boundaries (3)
+     ✓ requires genuine original plan before any hostile reads or SQL 1ms
+     ✓ rejects proxy requests without any reflection traps 0ms
+     ✓ requires exact child journal installation before BEGIN while old API remains valid 636ms
+   ❯ typed journal whole-plan successor fictional transaction regressions (17)
+     ✓ rejects installation JOURNAL_SCHEMA[0,1] drift before BEGIN 700ms
+     ✓ rejects installation JOURNAL_TABLES[0,5] drift before BEGIN 676ms
+     ✓ rejects installation JOURNAL_FUNCTION[0,2] drift before BEGIN 758ms
+     ✓ rejects installation JOURNAL_FUNCTION[0,4] drift before BEGIN 592ms
+     ✓ rejects installation JOURNAL_TRIGGERS[0,4] drift before BEGIN 875ms
+     ✓ rejects installation JOURNAL_ACLS[0,3] drift before BEGIN 778ms
+     ✓ rejects installation JOURNAL_ACLS[0,5] drift before BEGIN 879ms
+     × locks source70 then fixed journal2 before all transaction reads and commits matching structural state 5727ms
+     × exact applied retry reads durable state and issues no source/control/journal DML 8927ms
+     ✓ rejects applied metadata with journalnull, never retrospectively repairing 4670ms
+     ✓ rejects applied metadata with journalNOT_STARTED, never retrospectively repairing 4394ms
+     × retains preexisting STARTED journal after fresh original source/target reconciliation 6121ms
+     × retains preexisting UNKNOWN journal after fresh original source/target reconciliation 5044ms
+     ✓ storage-registration failure rolls back every journal/source/control effect 2328ms
+     ✓ metadata failure rolls back previously inserted journal and STARTED states together 3033ms
+     ✓ refuses changed or partial persisted coverage without arming metadata 1503ms
+     ✓ lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation 3924ms
+   ✓ typed journal original-attempt reconciliation boundaries (10)
+     ✓ rejects unissued uncertain receipt null before any client read 1ms
+     ✓ rejects unissued uncertain receipt undefined before any client read 0ms
+     ✓ rejects unissued uncertain receipt {} before any client read 0ms
+     ✓ rejects unissued uncertain receipt undefined before any client read 0ms
+     ✓ rejects unissued uncertain receipt {"status":"UNCERTAIN","code":"COMMIT_OUTCOME_UNKNOWN","planDigest":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","reconciliation":"FRESH_OWNED_CLIENT_ORIGINAL_PLAN_REQUIRED"} before any client read 0ms
+     ✓ rejects proxy/accessor/symbol receipts without observing their public data 0ms
+     ✓ does not enroll uncertainty from the original journal-free entrypoint 3130ms
+     ✓ refuses originating client before SQL and preserves original uncertain result 3187ms
+     ✓ refuses cloned/serialized/wrapped genuine receipts before SQL 3394ms
+     ✓ does not enroll acknowledged successful or blocked journal results 3302ms
+ ✓ src/app/app/inbox/page.test.tsx (4 tests) 21ms
+ ✓ src/components/employee-mobile/profile-preferences.test.tsx (5 tests) 27ms
+ ✓ src/components/quiet/quiet-skeleton.test.tsx (3 tests) 11ms
+ ✓ src/components/shift-change-form-state.test.ts (4 tests) 53ms
+ ✓ src/lib/data/time-clock.test.tsx (9 tests) 16ms
+ ✓ src/lib/dev/capture.test.ts (5 tests) 25ms
+ ✓ src/components/payroll/my-pay.test.tsx (1 test) 5ms
+ ✓ src/app/app/settings/breaks/page.test.tsx (4 tests) 71ms
+ ✓ src/app/api/payroll-export/route.test.ts (7 tests) 32ms
+ ✓ src/components/manager-dashboard.test.tsx (3 tests) 14ms
+ ✓ src/lib/tenancy/resolve.incarnation.test.ts (46 tests) 28ms
+ ✓ src/app/app/schedule/templates/page.test.tsx (12 tests) 29ms
+ ✓ src/components/owner-advisor/attention.test.tsx (3 tests) 26ms
+ ✓ src/lib/tenancy/runtime/role-guard-installers.test.ts (18 tests) 7ms
+ ✓ src/lib/scheduling/generation-claims.test.ts (6 tests) 30ms
+ ✓ src/lib/shift-changes/maintenance.test.ts (7 tests) 19ms
+ ✓ src/lib/tenancy/migrations/typed-journal-binding.server.test.ts (19 tests) 13ms
+ ✓ src/app/app/employees/new/page.test.tsx (5 tests) 37ms
+ ✓ src/components/employee-mobile/passkeys.test.tsx (10 tests) 37ms
+ ✓ src/lib/tenancy/runtime/portal-native-root-observation.test.ts (18 tests) 79ms
+ ✓ src/components/owner-advisor/controller.test.ts (10 tests) 55ms
+ ✓ src/app/api/payroll-export/profiles/route.test.ts (16 tests) 53ms
+ ✓ src/components/manager-week-overview.test.tsx (2 tests) 21ms
+ ✓ src/components/signature/hex-guard.test.ts (2 tests) 69ms
+ ✓ src/components/shift-change-policy-fields.test.tsx (3 tests) 19ms
+ ✓ src/lib/calendar/service-worker.test.ts (1 test) 20ms
+ ✓ src/app/clocker/clocker-page.test.tsx (6 tests) 36ms
+ ✓ src/components/owner-advisor/render.test.tsx (4 tests) 19ms
+ ✓ src/lib/tenancy/identity.test.ts (42 tests) 14ms
+ ✓ src/app/api/reports/export/route.test.ts (19 tests) 36ms
+ ✓ src/components/manager-inbox.test.tsx (9 tests) 223ms
+ ✓ src/lib/business-improvements/attendance-policy/model.test.ts (5 tests) 35ms
+ ✓ src/lib/company-access/operational-scope.server.test.ts (4 tests) 24ms
+ ✓ src/lib/business-time.test.ts (19 tests) 16ms
+ ✓ src/components/employee-mobile/request-operation.test.ts (2 tests) 24ms
+ ✓ src/lib/action-center/present.test.ts (5 tests) 75ms
+ ✓ src/lib/business-improvements/company-policies/history.test.ts (11 tests) 15ms
+ ✓ src/lib/tenancy/migrations/expand.test.ts (26 tests | 21 skipped) 65ms
+ ✓ src/components/coverage-assistant.test.tsx (8 tests) 91ms
+ ✓ src/components/ui-preview/home-preview.test.tsx (4 tests) 24ms
+ ✓ src/components/employee-mobile/pickup-operation.test.ts (3 tests) 17ms
+ ✓ src/lib/workspace-presentation/current.server.test.ts (3 tests) 3ms
+ ✓ src/lib/payroll/native/model.test.ts (30 tests) 57ms
+ ✓ src/app/app/settings/clocker/page.test.tsx (3 tests) 17ms
+ ✓ src/lib/communications/recovery.test.ts (11 tests) 14ms
+ ✓ src/components/callout-view.test.tsx (2 tests) 97ms
+ ✓ src/lib/payroll/native/workweek-source.test.ts (3 tests) 104ms
+ ✓ src/lib/tenancy/resolve.administrative-scope.test.ts (66 tests) 190ms
+ ✓ src/components/payroll/money.test.ts (8 tests) 26ms
+ ✓ src/app/api/manager/finder/route.test.ts (8 tests) 33ms
+ ✓ src/lib/clocker/schedule-candidates.test.ts (27 tests) 162ms
+ ✓ src/lib/tenancy/runtime/workspace-locator-storage.test.ts (12 tests) 17ms
+ ✓ src/lib/owner-advisor/citations.test.ts (3 tests) 67ms
+ ✓ src/lib/scheduling/scheduling-rules.test.ts (59 tests) 43ms
+ ✓ src/app/app/schedule/new/review.test.tsx (8 tests) 47ms
+ ✓ src/components/account-recovery.test.tsx (9 tests) 33ms
+ ✓ src/app/app/schedule/settings/actions.test.ts (27 tests) 30ms
+ ✓ src/app/reset-access/page.test.tsx (2 tests) 10ms
+ ✓ src/lib/tenancy/resolve.observation-boundary.test.ts (21 tests) 34ms
+ ✓ src/app/api/manager/time-corrections/route.test.ts (9 tests) 35ms
+ ✓ src/lib/employee-exchange.test.ts (4 tests) 14ms
+ ✓ src/components/notification-bell-lifetime.test.tsx (7 tests) 47ms
+ ✓ src/lib/time-corrections/read-model.test.ts (16 tests) 23ms
+ ✓ src/lib/dev/inspection.test.ts (14 tests) 20ms
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx (3 tests | 3 failed) 3ms
+   × marks a waiting request amber and an approval green, with a timeline 2ms
+   × offers a confirmed withdrawal only for the current employee pending request 0ms
+   × keeps withdrawal inside its own request row, next to the facts and the waiting status 0ms
+ ✓ src/lib/scheduling/coverage-ranking.test.ts (5 tests) 12ms
+ ✓ src/components/rules-hours-list.test.tsx (2 tests) 69ms
+ ✓ src/lib/communications/policy.test.ts (4 tests) 33ms
+ ✓ src/lib/notifications/destinations.cfr002-carry-forward.test.ts (68 tests) 12ms
+ ✓ src/lib/tenancy/runtime/portal-policy-joint-locks.test.ts (16 tests) 43ms
+ ✓ src/app/api/workspaces/[locator]/session/route.test.ts (10 tests) 24ms
+ ✓ src/lib/activity/project.boundary.test.ts (45 tests) 55ms
+ ✓ src/lib/tenancy/runtime/workspace-incarnation-storage.test.ts (12 tests) 18ms
+ ✓ src/lib/tenancy/runtime/portal-policy-complete-dependency.test.ts (12 tests) 26ms
+ ✓ src/components/employee-mobile/calendar.test.tsx (5 tests) 62ms
+ ✓ src/lib/tenancy/runtime/audited-role-guard.test.ts (38 tests) 56ms
+ ✓ src/lib/tenancy/inventory/consumers.test.ts (34 tests) 74ms
+ ✓ src/components/manager-time-corrections.test.tsx (18 tests) 52ms
+ ✓ src/lib/communications/validation.test.ts (12 tests) 8ms
+ ✓ src/app/app/schedule/manual-conflict-actions.test.ts (12 tests) 79ms
+ ✓ src/lib/scheduling/operational-rules.test.ts (35 tests) 32ms
+ ✓ src/components/payroll/payroll-stepper.test.tsx (4 tests) 33ms
+ ✓ src/test/integration/owned-next-invitation.test.ts (25 tests) 23ms
+ ✓ src/lib/data/management-profile.server.test.ts (15 tests) 13ms
+ ✓ src/app/api/manager/action-center/route.test.ts (13 tests) 32ms
+ ✓ src/test/integration/owned-next-path.test.ts (2 tests) 9ms
+ ✓ src/components/availability-team-list.test.tsx (4 tests) 42ms
+ ✓ src/app/app/settings/page.test.tsx (8 tests) 91ms
+ ✓ src/lib/capabilities/policy.verifier-capability.test.ts (54 tests) 9ms
+ ✓ src/lib/timecards/project.test.ts (13 tests) 59ms
+ ✓ src/lib/auth/invitations/delivery.test.ts (5 tests) 98ms
+ ✓ src/app/app/schedule/assignment-actions.test.ts (6 tests) 121ms
+ ✓ src/app/app/requests/actions.test.ts (10 tests) 32ms
+ ✓ src/components/calendar-subscription-panel.test.tsx (6 tests) 83ms
+ ✓ src/lib/private-snapshot-client.test.ts (12 tests) 14ms
+ ✓ src/lib/data/notification-state.test.ts (32 tests) 100ms
+ ✓ src/lib/tenancy/runtime/portal-policy-joint-observation.test.ts (16 tests) 92ms
+ ✓ src/app/app/settings/clocker/actions.test.ts (11 tests) 41ms
+ ✓ src/app/api/manager/today/route.test.ts (10 tests) 57ms
+ ✓ src/app/app/settings/company-policies/page.test.tsx (3 tests) 133ms
+ ✓ src/app/login/page-message.test.tsx (2 tests) 53ms
+ ❯ src/app/app/requests/page.test.tsx (2 tests | 2 failed) 6ms
+   × marks a waiting request amber and an approval green, with a timeline 4ms
+   × names who decided a request and when, and never names anyone on a withdrawal 1ms
+ ✓ src/lib/attendance/historical-schedule.test.ts (18 tests) 86ms
+ ✓ src/components/premium-home.test.tsx (9 tests) 64ms
+ ✓ src/lib/payroll/native/minimum-wage.test.ts (8 tests) 44ms
+ ✓ src/app/api/auth/recovery/route.test.ts (6 tests) 60ms
+ ✓ src/lib/data/schedule-generation.test.ts (13 tests) 9ms
+ ✓ src/lib/tenancy/runtime/portal-source-dependency.test.ts (27 tests) 66ms
+ ✓ src/lib/data/shift-change-notification-versions.test.ts (3 tests) 17ms
+ ✓ src/lib/tenancy/runtime/portal-source-binding.test.ts (84 tests) 41ms
+ ✓ src/app/activate/page.test.tsx (1 test) 140ms
+ ✓ src/lib/tenancy/migrations/typed-wire.test.ts (91 tests) 39ms
+ ✓ src/app/app/employees/[employeeId]/page.test.tsx (9 tests) 43ms
+ ✓ src/lib/tenancy/resolve.portal-native-version.test.ts (57 tests) 57ms
+ ✓ src/lib/owner-advisor/http.test.ts (3 tests) 44ms
+ ✓ src/lib/scheduling/generation/operational-parity.test.ts (2 tests) 89ms
+ ✓ src/lib/employee-hours.test.ts (5 tests) 25ms
+ ✓ src/app/api/manager/attendance/route.test.ts (15 tests) 35ms
+ ✓ src/components/schedule-generation-controls.test.tsx (5 tests) 17ms
+ ✓ src/app/app/exchange/actions.test.ts (7 tests) 23ms
+ ✓ src/components/owner-setup-card.test.tsx (8 tests) 52ms
+ ✓ src/lib/payroll/native/rules/pr-2026.test.ts (52 tests) 11ms
+ ✓ src/app/api/manager/clock-monitor/route.test.ts (13 tests) 30ms
+ ✓ src/lib/tenancy/runtime/portal-session-issuance-storage.test.ts (17 tests) 22ms
+ ✓ src/lib/tenancy/runtime/portal-authority-storage.test.ts (19 tests) 38ms
+ ✓ src/app/app/schedule/new/location.test.tsx (5 tests) 69ms
+ ✓ src/app/not-found.test.tsx (2 tests) 8ms
+ ✓ src/app/app/operational-page-composition.test.tsx (4 tests) 45ms
+ ✓ src/components/signature/sig-button.test.tsx (13 tests) 22ms
+ ✓ src/lib/scheduling/schedule-health.test.ts (7 tests) 8ms
+ ✓ src/app/app/exchange/callout/actions.test.ts (4 tests) 14ms
+ ✓ src/lib/payroll/native/ytd-base-consistency.test.ts (9 tests) 34ms
+ ✓ src/components/communication-compose.test.tsx (6 tests) 23ms
+ ✓ src/app/api/auth/activate/route.test.ts (3 tests) 31ms
+ ✓ src/lib/management-profile-route.test.ts (5 tests) 28ms
+ ✓ src/app/app/requests/actions.withdrawal-carry-forward.test.ts (13 tests) 26ms
+ ✓ src/lib/account-deletion/requests.server.test.ts (7 tests) 9ms
+ ✓ src/lib/tenancy/runtime/portal-source-locks.test.ts (19 tests) 26ms
+ ✓ src/lib/employee-time.test.ts (40 tests) 38ms
+ ✓ src/lib/tenancy/runtime/portal-installed-policy-observation.test.ts (8 tests) 18ms
+ ✓ src/app/app/schedule/acknowledge-actions.test.ts (6 tests) 24ms
+ ✓ src/components/payroll/native-config.test.tsx (11 tests) 35ms
+ ✓ src/lib/capabilities/policy.observation-boundary.test.ts (25 tests) 9ms
+ ✓ src/lib/business-improvements/attendance-policy/runtime.test.ts (6 tests) 72ms
+ ✓ src/lib/employee-requests.test.ts (2 tests) 85ms
+ ✓ src/lib/reports/project.test.ts (12 tests) 124ms
+ ✓ src/lib/time-corrections/authority.server.test.ts (6 tests) 17ms
+ ✓ src/lib/auth/portal-credential-session.server.test.ts (31 tests) 14ms
+ ✓ src/app/api/payroll/documents/[id]/view/route.test.ts (4 tests) 25ms
+ ✓ src/lib/tenancy/runtime/workspace-incarnation.test.ts (48 tests) 21ms
+ ✓ src/app/app/settings/workspace/page.test.tsx (3 tests) 16ms
+ ✓ src/lib/data/scheduling-operational-parity.test.ts (1 test) 11ms
+ ✓ src/components/employee-mobile/creation-view.test.tsx (5 tests) 29ms
+ ✓ src/lib/employee-view.test.ts (3 tests) 4ms
+ ✓ src/components/ui-preview/home-preview-shell.test.tsx (3 tests) 246ms
+ ✓ src/lib/tenancy/migrations/lossless-array.test.ts (106 tests) 24ms
+ ✓ src/lib/workspace-presentation/model.test.ts (14 tests) 57ms
+ ✓ src/lib/tenancy/inventory/sql-lexer.test.ts (20 tests) 15ms
+ ✓ src/app/app/reports/page.test.tsx (5 tests) 25ms
+ ✓ src/app/app/employees/actions.test.ts (16 tests) 35ms
+ ✓ src/lib/data/employee-published-assignments.server.test.ts (4 tests) 15ms
+ ✓ src/lib/tenancy/runtime/portal-runtime-startup-loader.test.ts (29 tests) 36ms
+ ✓ src/components/company-access/commands.test.ts (16 tests) 68ms
+ ✓ src/lib/notifications/payloads.test.ts (19 tests) 11ms
+ ✓ src/lib/notifications/worker-auth.test.ts (1 test) 156ms
+ ✓ src/lib/payroll-export/client.test.ts (6 tests) 5ms
+ ✓ src/app/app/exchange/callout/page.test.tsx (3 tests) 22ms
+ ✓ src/lib/workspace/validation.test.ts (12 tests) 76ms
+ ✓ src/lib/tenancy/migrations/portal-access-lineage.source.test.ts (4 tests) 9ms
+ ✓ src/components/employee-mobile/exchange-view.test.tsx (4 tests) 22ms
+ ✓ src/lib/scheduling/location-readiness.test.ts (11 tests) 27ms
+ ✓ src/components/signature/sig-components.test.tsx (10 tests) 159ms
+ ✓ src/test/phase-e-navigation-diagnostic.test.ts (37 tests) 329ms
+ ✓ src/app/app/dashboard-access.test.tsx (8 tests) 270ms
+stderr | src/components/app-shell-identity-refresh.test.tsx > revalidates the retained server layout after an identity change through the navigation barrier
+Received `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ ✓ src/components/app-shell-identity-refresh.test.tsx (1 test) 177ms
+ ✓ src/lib/clock-monitor-client.test.ts (13 tests) 148ms
+ ✓ src/lib/tenancy/migrations/key-comparator-installer-recheck.server.test.ts (6 tests) 11ms
+ ✓ src/lib/shift-changes/command-parser.test.ts (11 tests) 70ms
+ ✓ src/app/app/settings/breaks/actions.test.ts (14 tests) 24ms
+ ✓ scripts/company-setup.test.ts (6 tests) 55ms
+ ✓ src/lib/company-policy-time.test.ts (2 tests) 10ms
+ ✓ src/lib/reports/period.test.ts (16 tests) 8ms
+ ✓ src/app/app/settings/actions.test.ts (7 tests) 27ms
+ ✓ src/app/api/employee/my-time/route.test.ts (10 tests) 30ms
+ ✓ src/lib/navigation.test.ts (14 tests) 9ms
+ ✓ src/lib/owner-advisor/workflows.test.ts (6 tests) 35ms
+ ✓ src/test/integration/owned-dependency-copy.test.ts (2 tests) 15ms
+ ✓ src/lib/attendance/format.test.ts (14 tests) 8ms
+ ✓ src/lib/scheduling/validate-shift.test.ts (7 tests) 12ms
+ ✓ src/app/app/settings/layout.test.tsx (4 tests) 38ms
+ ✓ src/app/app/settings/locations/new/page.test.tsx (3 tests) 44ms
+ ✓ src/lib/finder.test.ts (7 tests) 7ms
+ ✓ src/components/company-access/scoped-read-frame.test.tsx (8 tests) 9ms
+ ✓ src/components/company-access/scoped-read-frame-checking.test.tsx (2 tests) 8ms
+ ✓ src/test/integration/local-postgres.test.ts (4 tests) 27ms
+ ✓ src/components/manager-attendance-review.test.tsx (4 tests) 110ms
+ ✓ src/lib/shift-changes/policy-form.test.ts (3 tests) 20ms
+ ✓ src/components/auth-premium/lang-switch.test.tsx (1 test) 8ms
+ ✓ src/lib/notifications/destinations.test.ts (44 tests) 14ms
+ ✓ src/lib/employee-hours-draft.test.ts (2 tests) 10ms
+ ✓ src/lib/payroll/http.test.ts (11 tests) 34ms
+ ✓ src/lib/communications/notification-intents.test.ts (3 tests) 62ms
+ ✓ src/lib/assistance/manager-actions.test.ts (10 tests) 9ms
+ ✓ src/components/company-access/scoped-read-frame-tab-fence.test.tsx (11 tests) 17ms
+ ✓ src/app/app/settings/locations/page.test.tsx (11 tests) 102ms
+ ✓ src/components/schedule-template-controls.test.tsx (2 tests) 10ms
+ ✓ src/lib/tenancy/runtime/portal-current-source-enrollment.source.test.ts (10 tests) 10ms
+ ✓ src/test/phase-c-governance-cleanup.test.ts (3 tests) 58ms
+ ✓ src/lib/auth/session.test.ts (5 tests) 19ms
+ ✓ src/components/employee-mobile/profile.test.tsx (3 tests) 13ms
+ ✓ src/app/app/employees/recovery-composition.test.tsx (4 tests) 42ms
+ ✓ src/components/shift-change-history.test.tsx (1 test) 10ms
+ ✓ src/lib/capabilities/policy.rule-observations.test.ts (11 tests) 22ms
+ ✓ src/components/swap-shift-summary.test.tsx (3 tests) 142ms
+ ✓ src/components/legal/employee-context.test.tsx (1 test) 20ms
+ ✓ src/lib/tenancy/runtime/portal-generated-publication.test.ts (13 tests) 5ms
+ ✓ src/lib/clocker/punch-command.test.ts (23 tests) 8ms
+ ✓ src/lib/data/locations.test.ts (6 tests) 7ms
+ ✓ src/lib/passkeys/client.test.ts (5 tests) 17ms
+ ✓ src/lib/payroll/model.test.ts (14 tests) 36ms
+ ✓ src/lib/data/operational-profile.test.ts (6 tests) 7ms
+ ✓ src/lib/tenancy/runtime/original-runtime-login-installer.test.ts (12 tests) 28ms
+ ✓ src/lib/data/acknowledgements.test.ts (5 tests) 21ms
+ ✓ src/components/employee-mobile/hours-operation.test.ts (3 tests) 44ms
+ ✓ src/components/reports-periods.test.ts (1 test) 7ms
+ ✓ src/lib/time-corrections/service.test.ts (4 tests) 9ms
+ ✓ src/components/employee-mobile/message-draft.test.ts (2 tests) 9ms
+ ✓ src/lib/time-corrections/validation.test.ts (6 tests) 11ms
+ ✓ src/components/clocker-language.test.tsx (2 tests) 329ms
+ ✓ src/lib/clocker/punch-inherited-command.test.ts (25 tests) 8ms
+ ✓ src/lib/navigation-coordinator.test.ts (45 tests) 15ms
+ ✓ src/lib/data/employee-attention-receipts.server.test.ts (3 tests) 275ms
+ ✓ src/components/signature/sig-pending-label.test.tsx (1 test) 13ms
+ ✓ src/lib/scheduling/coverage-repair.test.ts (15 tests) 156ms
+ ✓ src/lib/notifications/device-state.test.ts (9 tests) 7ms
+ ✓ src/lib/clocker/break-types.test.ts (21 tests) 7ms
+ ✓ src/lib/timecards/client.test.ts (3 tests) 5ms
+ ✓ src/lib/reports/csv.test.ts (8 tests) 8ms
+ ✓ src/app/app/schedule/new/page.test.tsx (4 tests) 11ms
+ ✓ src/lib/assistance/publication-diff.test.ts (9 tests) 10ms
+ ✓ src/lib/navigation-sidebar.test.ts (4 tests) 8ms
+ ✓ src/lib/tenancy/migrations/guarded-backfill.server.test.ts (23 tests | 20 skipped) 11ms
+ ✓ src/lib/data/requests.withdrawal-carry-forward.test.ts (14 tests | 12 skipped) 12ms
+ ✓ src/components/schedule-publication-change.test.tsx (3 tests) 12ms
+ ✓ src/lib/shift-changes/lifecycle.test.ts (9 tests) 6ms
+ ✓ src/lib/clocker/punch-client.test.ts (22 tests) 11ms
+ ✓ src/lib/assistance/notification-events.test.ts (16 tests) 7ms
+ ✓ src/lib/tenancy/migrations/portal-legacy-reconciliation.test.ts (12 tests) 94ms
+ ✓ src/lib/scheduling/generation/fairness.test.ts (6 tests) 6ms
+ ✓ src/components/employee-mobile/requests.test.tsx (3 tests) 201ms
+ ✓ src/lib/navigation-access.test.ts (12 tests) 12ms
+ ✓ src/lib/employee-message-page.test.ts (2 tests) 7ms
+ ✓ src/test/migration-order.test.ts (3 tests) 4ms
+ ✓ src/test/phase-e-home-response.test.ts (5 tests) 7ms
+ ✓ src/lib/tenancy/migrations/capture.server.test.ts (27 tests | 21 skipped) 11ms
+ ✓ src/components/employee-dashboard.test.ts (4 tests) 29ms
+ ✓ src/app/app/settings/catalog-revisions.test.tsx (2 tests) 116ms
+ ✓ src/lib/employee-messages.test.ts (3 tests) 5ms
+ ✓ src/lib/calendar/ical.test.ts (3 tests) 4ms
+ ✓ src/lib/today/project.test.ts (6 tests) 6ms
+ ✓ src/test/integration/owned-next-advisor.test.ts (2 tests) 3ms
+ ✓ src/lib/tenancy/runtime/role-guard.test.ts (56 tests | 54 skipped) 7ms
+ ✓ src/components/owner-advisor/lifecycle.test.ts (1 test) 3ms
+ ✓ src/components/employee-profile-tabs.test.tsx (1 test) 21ms
+ ✓ src/components/portal-device-setup-focus.test.tsx (6 tests) 78ms
+ ✓ src/components/portal-signout.test.tsx (2 tests) 8ms
+ ✓ src/lib/tenancy/inventory/source.test.ts (11 tests) 38ms
+ ✓ src/lib/dashboard-status.test.ts (4 tests) 9ms
+ ✓ src/components/payroll/workflow-status.test.ts (9 tests) 3ms
+ ✓ src/lib/scheduling/weekly-availability.test.ts (5 tests) 5ms
+ ✓ src/components/employee-mobile/planning-operation.test.ts (5 tests) 5ms
+ ✓ src/lib/data/employee-requests.server.test.ts (2 tests) 6ms
+ ✓ src/lib/data/employee-notification-list.server.test.ts (5 tests) 33ms
+ ✓ src/lib/navigation-ownership.test.ts (6 tests) 27ms
+ ✓ src/lib/data/employee-profile.server.test.ts (2 tests) 4ms
+ ✓ src/lib/calendar/contract.test.ts (23 tests) 7ms
+ ✓ src/lib/reports/insights.test.ts (3 tests) 5ms
+ ✓ src/components/configuration-form.test.tsx (2 tests) 4ms
+ ✓ src/lib/tenancy/inventory/serialize.test.ts (7 tests) 6ms
+ ✓ src/lib/employee-planning.test.ts (11 tests) 12ms
+ ✓ src/lib/retired-views.test.ts (3 tests) 3ms
+ ✓ src/lib/assistance/acknowledgement-state.test.ts (5 tests) 7ms
+ ✓ src/components/owner-advisor/client.test.ts (2 tests) 6ms
+ ✓ src/test/fixture-company-access.test.ts (3 tests) 6ms
+ ✓ src/test/phase-d-correction-migration.test.ts (2 tests) 7ms
+ ✓ src/lib/auth/passkeys/config.test.ts (9 tests) 7ms
+ ✓ src/test/integration/owned-test-resources.test.ts (4 tests) 4ms
+ ✓ src/test/employee-mobile-communications-fixtures.test.ts (2 tests) 4ms
+ ✓ src/lib/theme.test.ts (6 tests) 6ms
+ ✓ src/lib/employee-view-authority.test.ts (1 test) 3ms
+ ✓ src/lib/auth/recovery-delivery.test.ts (7 tests) 7ms
+ ✓ src/lib/data/generation-exclusions.test.ts (4 tests) 50ms
+ ✓ src/lib/shift-changes/policy.test.ts (7 tests) 40ms
+ ✓ src/lib/tenancy/inventory/cli.test.ts (3 tests) 6ms
+ ✓ src/app/workspace-presentation.test.tsx (3 tests) 17ms
+ ✓ src/components/command-finder.test.ts (2 tests) 5ms
+ ✓ src/lib/data/attendance-review.test.tsx (6 tests) 16ms
+ ✓ src/lib/data/action-request-facts.server.test.ts (3 tests) 69ms
+ ✓ src/components/app-shell.prefetch.test.ts (1 test) 3ms
+ ✓ src/lib/communications/service.server.test.ts (2 tests) 4ms
+ ✓ src/test/phase-c-release-ci.test.ts (2 tests) 6ms
+ ✓ src/test/phase-e-navigation-request.test.ts (4 tests) 4ms
+ ✓ src/lib/date-utils.test.ts (13 tests) 4ms
+ ✓ src/lib/tenancy/migrations/employee-number-enrollment-binding.server.test.ts (4 tests) 5ms
+ ✓ src/lib/data/exchanges-history.test.ts (1 test) 4ms
+ ✓ src/lib/data/schedule-templates.test.ts (3 tests) 4ms
+ ✓ src/test/phase-c-qa-harness.test.ts (1 test) 4ms
+ ✓ src/lib/shift-changes/terms.test.ts (3 tests) 4ms
+ ✓ src/lib/auth-copy.test.ts (3 tests) 5ms
+ ✓ src/lib/auth/login-limits.server.test.ts (4 tests) 78ms
+ ✓ src/lib/shift-changes/eligibility-reasons.test.ts (5 tests) 4ms
+ ✓ src/lib/data/hour-fairness.test.ts (1 test) 5ms
+ ✓ src/lib/data/requests.test.ts (1 test) 3ms
+ ✓ src/lib/employee-message-navigation.test.ts (1 test) 3ms
+ ✓ src/lib/employee-directory.test.ts (6 tests) 4ms
+ ✓ src/lib/exchange-marketplace.test.ts (4 tests) 3ms
+ ✓ src/lib/action-center/needs-you.test.ts (6 tests) 63ms
+ ✓ src/test/integration/calendar-log-redaction.test.ts (2 tests) 4ms
+ ✓ src/components/private-fragment-focus.test.ts (7 tests) 6ms
+ ✓ src/components/owner-advisor/page.test.tsx (1 test) 2ms
+ ✓ src/lib/availability-presets.test.ts (3 tests) 3ms
+ ✓ src/lib/tenancy/migrations/portal-legacy-access-enrollment.test.ts (5 tests) 3ms
+ ✓ src/lib/calendar/token.server.test.ts (2 tests) 3ms
+ ✓ src/lib/employee-compensation.test.ts (3 tests) 3ms
+ ✓ src/test/fixtures/nevora-workspace.test.ts (1 test) 4ms
+ ✓ src/lib/employee-display.test.ts (2 tests) 3ms
+ ✓ src/lib/data/database-date.test.ts (11 tests) 3ms
+ ✓ src/lib/payroll/schedule.test.ts (1 test) 3ms
+ ✓ src/lib/data/premium-projections.test.ts (4 tests) 10ms
+ ✓ src/lib/scheduling/generation-provenance.test.ts (2 tests) 4ms
+ ✓ src/lib/calendar/command.test.ts (17 tests) 4ms
+ ✓ src/lib/time-corrections/review-recovery.test.ts (3 tests) 3ms
+ ✓ src/lib/payroll/open-period.test.ts (5 tests) 5ms
+ ✓ src/lib/assistance/availability-submission.test.ts (4 tests) 6ms
+ ✓ src/lib/action-center/inbox.test.ts (6 tests) 5ms
+ ✓ src/lib/data/scheduling-source-facts.test.ts (2 tests) 19ms
+ ✓ src/components/action-menu-geometry.test.ts (6 tests) 4ms
+ ✓ src/lib/data/notifications.test.ts (2 tests) 5ms
+ ✓ src/lib/legal/policies.test.ts (3 tests) 8ms
+ ✓ src/lib/scheduling/exchange-validation.test.ts (7 tests) 3ms
+ ✓ src/components/time-clock-widget.test.ts (4 tests) 4ms
+ ✓ src/test/integration/owned-next-payroll.test.ts (1 test) 2ms
+ ✓ src/lib/payroll-export/selection.test.ts (2 tests) 4ms
+ ✓ src/lib/company-access/operational-unavailable.test.ts (2 tests) 3ms
+ ✓ src/lib/scheduling/copy-week.test.ts (3 tests) 3ms
+ ✓ src/lib/data/positions.test.ts (2 tests) 4ms
+ ✓ src/components/notification-inbox.prefetch.test.ts (2 tests) 5ms
+ ✓ src/lib/scheduling/publish-readiness.test.ts (4 tests) 2ms
+ ✓ src/components/payroll-review-copy.test.ts (2 tests) 3ms
+ ✓ src/lib/data/shift-change-policy.test.ts (4 tests) 4ms
+ ✓ src/lib/time-off-withdrawal.test.ts (1 test) 3ms
+ ✓ src/lib/tenancy/types.test.ts (2 tests) 3ms
+ ✓ src/lib/keep-whole.test.ts (3 tests) 5ms
+ ✓ src/lib/data/employee-exchange.server.test.ts (1 test) 4ms
+ ✓ src/lib/company-access/scope-selection.test.ts (1 test) 3ms
+ ✓ src/lib/scheduling/generation/explanations.test.ts (1 test) 2ms
+ ✓ src/components/employee-timecard-presentation.test.ts (3 tests) 3ms
+ ✓ src/lib/mobile-keyboard.test.ts (4 tests) 3ms
+ ✓ src/lib/payroll/native/scope.test.ts (2 tests) 2ms
+ ✓ src/lib/scheduling/capabilities.test.ts (1 test) 2ms
+ ✓ src/lib/phone.test.ts (4 tests) 2ms
+ ✓ src/lib/data/employee-creation.server.test.ts (1 test) 4ms
+ ✓ src/lib/time-zone-label.test.ts (1 test) 2ms
+ ✓ src/components/owner-advisor/signout.test.tsx (1 test) 3ms
+ ✓ src/lib/publication-note.test.ts (2 tests) 9ms
+ ✓ src/lib/duration-text.test.ts (1 test) 3ms
+ ↓ src/lib/tenancy/migrations/lossless-array.postgres.test.ts (35 tests | 35 skipped)
+ ↓ src/test/integration/coverage-repair.integration.test.ts (39 tests | 39 skipped)
+ ↓ src/test/integration/f1-canonical-native.postgres.test.ts (12 tests | 12 skipped)
+ ↓ src/test/integration/employee-notification-capacity.integration.test.ts (9 tests | 9 skipped)
+ ↓ src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/migrations/typed-key-comparators.postgres.test.ts (11 tests | 11 skipped)
+ ↓ src/lib/auth/portal-credential-session.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/runtime/catalog-fence.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/migrations/typed-ownership.postgres.test.ts (9 tests | 9 skipped)
+ ↓ src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts (58 tests | 58 skipped)
+ ↓ src/lib/tenancy/runtime/employee-login-identity-storage.postgres.test.ts (12 tests | 12 skipped)
+ ↓ src/lib/tenancy/runtime/control-storage.postgres.test.ts (14 tests | 14 skipped)
+ ↓ src/lib/tenancy/runtime/executor-catalog-fence.postgres.test.ts (4 tests | 4 skipped)
+ ↓ src/lib/tenancy/runtime/original-runtime-login-installer.postgres.test.ts (8 tests | 8 skipped)
+ ↓ src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts (40 tests | 40 skipped)
+ ↓ src/lib/tenancy/runtime/portal-authority-storage.postgres.test.ts (25 tests | 25 skipped)
+ ↓ src/lib/tenancy/runtime/portal-administrative-authority-storage.postgres.test.ts (24 tests | 24 skipped)
+ ↓ src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts (12 tests | 12 skipped)
+ ↓ src/lib/tenancy/runtime/portal-session-issuance-storage.postgres.test.ts (24 tests | 24 skipped)
+ ✓ src/components/payroll/payroll-settings-today.test.ts (1 test) 3ms
+ ↓ src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts (30 tests | 30 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts (39 tests | 39 skipped)
+ ↓ src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts (57 tests | 2 skipped)
+ ↓ src/lib/tenancy/runtime/portal-source-locks.postgres.test.ts (20 tests | 20 skipped)
+ ↓ src/lib/tenancy/runtime/role-guard-installers.postgres.test.ts (16 tests | 16 skipped)
+ ↓ src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts (46 tests | 46 skipped)
+ ↓ src/lib/tenancy/runtime/workspace-locator-storage.postgres.test.ts (20 tests | 20 skipped)
+ ❯ src/test/phase-e-browser-evidence.test.ts (47 tests | 8 failed) 147728ms
+   ✓ accepts five relocated suite artifacts with 70 unique executed cells 3032ms
+   ✓ rejects a lone suite through the unchanged default full-browser verifier 272ms
+   ✓ rejects matrix job result failure 2279ms
+   ✓ rejects matrix job result cancelled 2050ms
+   ✓ rejects matrix job result skipped 2232ms
+   ✓ rejects matrix job result neutral 2246ms
+   ✓ rejects matrix job result missing 2218ms
+   ✓ rejects matrix job result extra 2310ms
+   ✓ rejects relocated missing-suite 2056ms
+   ✓ rejects relocated extra-suite 2607ms
+   ✓ rejects relocated duplicate-suite 3759ms
+   × rejects relocated missing-cell 6294ms
+   × rejects relocated duplicate-cell 5714ms
+   ✓ rejects relocated extra-cell 3794ms
+   ✓ rejects relocated failed-cell 4423ms
+   ✓ rejects relocated skipped-cell 4881ms
+   × rejects relocated empty-checks 5498ms
+   × rejects relocated sha 7309ms
+   × rejects relocated tree 5800ms
+   ✓ rejects relocated source-hash 3962ms
+   ✓ rejects relocated mirror-hash 4949ms
+   ✓ rejects relocated runtime-error 3173ms
+   ✓ rejects relocated pg-open 3440ms
+   ✓ rejects relocated next-open 3745ms
+   ✓ rejects relocated resource-open 4465ms
+   ✓ rejects relocated missing-resource 3539ms
+   ✓ rejects relocated observation-failure 2780ms
+   ✓ rejects relocated command 2323ms
+   ✓ rejects relocated missing-preload 2536ms
+   ✓ rejects relocated wrong-preload 2910ms
+   ✓ rejects relocated partial-command-checks 2647ms
+   ✓ rejects relocated leaf-proof 3266ms
+   ✓ rejects relocated missing-receipt 3825ms
+   × rejects relocated owner-mismatch 5365ms
+   × rejects relocated traversal 6609ms
+   × rejects relocated symlink 5858ms
+   ✓ rejects relocated duplicate-layout 4398ms
+   ✓ rejects non-leaf selector unknown 344ms
+   ✓ rejects non-leaf selector all 300ms
+   ✓ rejects local leaf mirror failure before attesting mirror proof 534ms
+   ✓ rejects local leaf command failure before attesting mirror proof 523ms
+   ✓ rejects local leaf resource failure before attesting mirror proof 740ms
+   ✓ rejects local leaf error failure before attesting mirror proof 962ms
+   ✓ rejects local leaf next-owner failure before attesting mirror proof 732ms
+   ✓ rejects local leaf missing-cell failure before attesting mirror proof 346ms
+   ✓ rejects leaf without echoing untrusted artifact text 498ms
+   ✓ rejects aggregate without echoing untrusted artifact text 4176ms
+stdout | src/lib/scheduling/generation/planner.test.ts > measures deterministic 50-worker 7-day 20-location planning
+PLANNER_PERFORMANCE {"locations":20,"employees":50,"milliseconds":164404,"status":"COMPLETE","additions":280,"nodes":281,"evaluations":86750,"cacheHits":2867530,"periods":39200}
+
+ ✓ src/lib/scheduling/generation/planner.test.ts (56 tests) 217805ms
+   ✓ allows 40, prevents 41, and allows target24/max40/projected32 569ms
+   ✓ measures deterministic 50-worker 7-day 3-location planning 4465ms
+   ✓ measures deterministic 50-worker 7-day 20-location planning 211919ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 42 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated missing-cell
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated duplicate-cell
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated empty-checks
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated sha
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated tree
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated owner-mismatch
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated traversal
+ FAIL  src/test/phase-e-browser-evidence.test.ts > rejects relocated symlink
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/test/phase-e-browser-evidence.test.ts:108:470
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/42]⎯
+
+ FAIL  src/test/phase-e-root-group-process.test.ts > root-group actual exec: root-exit
+AssertionError: expected 'Owned resource observation failed' to be 'Owned child left runtime resources ru…' // Object.is equality
+
+Expected: "Owned child left runtime resources running"
+Received: "Owned resource observation failed"
+
+ ❯ rootGroupExecution src/test/phase-e-root-group-process.test.ts:58:33
+     56|   }else if(mode==='root-exit'){
+     57|    expect(receipt.rootExited).toBe(true);expect(receipt.result.status)…
+     58|    expect(receipt.result.error).toBe('Owned child left runtime resourc…
+       |                                 ^
+     59|    expect(receipt.result.observationFailure).toBeUndefined();
+     60|    expect(receipt.signals).toContainEqual({pid:-parent.pid,signal:'SIG…
+ ❯ src/test/phase-e-root-group-process.test.ts:79:234
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture
+AssertionError: Phase E child failed: communications (exit 1): Owned resource observation failed
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:84:40
+     82| it.each(sqlSuites)('supports_each_allowlisted_suite: SQL %s executes o…
+     83|   const f = fixture(), result = invoke(['sql', '--suite', suite], f.en…
+     84|   expect(result.status, result.stderr).toBe(0);
+       |                                        ^
+     85|   const lines = readFileSync(f.trace, 'utf8').split('\n').filter(line …
+     86|   expect(lines).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture
+AssertionError: Phase E child failed: calendar-tokens (exit 1): Owned resource observation failed
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:84:40
+     82| it.each(sqlSuites)('supports_each_allowlisted_suite: SQL %s executes o…
+     83|   const f = fixture(), result = invoke(['sql', '--suite', suite], f.en…
+     84|   expect(result.status, result.stderr).toBe(0);
+       |                                        ^
+     85|   const lines = readFileSync(f.trace, 'utf8').split('\n').filter(line …
+     86|   expect(lines).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > all dispatches all ten SQL suites without accepting unknown arguments
+AssertionError: Phase E child failed: communication-notifications (exit 1): Owned resource observation failed
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:108:40
+    106| it('all dispatches all ten SQL suites without accepting unknown argume…
+    107|   const f = fixture(), result = invoke(['sql', '--suite', 'all'], f.en…
+    108|   expect(result.status, result.stderr).toBe(0);
+       |                                        ^
+    109|   const suites = readFileSync(f.trace, 'utf8').split('\n').filter(line…
+    110|   expect(suites).toEqual(sqlSuites);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > accepts a tracked environment template while never forwarding application credentials
+AssertionError: Phase E child failed: assignments (exit 1): Owned resource observation failed
+: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:181:40
+    179|   f.env.PHASE_E_EXPECTED_SHA = execFileSync('git', ['rev-parse', 'HEAD…
+    180|   const result = invoke(['sql', '--suite', 'assignments'], f.env, f.ro…
+    181|   expect(result.status, result.stderr).toBe(0);
+       |                                        ^
+    182|   const record = JSON.parse(readFileSync(f.trace, 'utf8').split('\n').…
+    183|   expect(record.database).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > evidence acceptance rejects modified manifest custody
+ FAIL  src/test/phase-e-runner.test.ts > evidence acceptance rejects modified ownership custody
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:210:88
+    208| });
+    209| it.each(['manifest', 'ownership'])('evidence acceptance rejects modifi…
+    210|   const f = fixture(); expect(invoke(['sql', '--suite', 'all'], f.env,…
+       |                                                                                        ^
+    211|   const report = JSON.parse(readFileSync(join(f.evidence, 'sql-report.…
+    212|   if (mutation === 'manifest') writeFileSync(join(f.evidence, 'source-…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > rejects a successful unrelated SQL fixture during execution
+AssertionError: expected 'Phase E child failed: assignments (ex…' to contain 'owning fixture'
+
+- Expected
++ Received
+
+- owning fixture
++ Phase E child failed: assignments (exit 1): Owned resource observation failed
++
+
+ ❯ src/test/phase-e-runner.test.ts:222:60
+    220|   put(f.root, 'node_modules/vitest/vitest.mjs', child);
+    221|   const result = invoke(['sql', '--suite', 'assignments'], f.env, f.ro…
+    222|   expect(result.status).not.toBe(0); expect(result.stderr).toContain('…
+       |                                                            ^
+    223| });
+    224| it.each(['fixture', 'duplicate-selector', 'command', 'case-identity'])…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/42]⎯
+
+ FAIL  src/test/phase-e-runner.test.ts > later SQL evidence rejects fixture substitution
+ FAIL  src/test/phase-e-runner.test.ts > later SQL evidence rejects duplicate-selector substitution
+ FAIL  src/test/phase-e-runner.test.ts > later SQL evidence rejects command substitution
+ FAIL  src/test/phase-e-runner.test.ts > later SQL evidence rejects case-identity substitution
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/test/phase-e-runner.test.ts:225:88
+    223| });
+    224| it.each(['fixture', 'duplicate-selector', 'command', 'case-identity'])…
+    225|   const f = fixture(); expect(invoke(['sql', '--suite', 'all'], f.env,…
+       |                                                                                        ^
+    226|   const path = join(f.evidence, 'sql-report.json'), report = JSON.pars…
+    227|   if (mutation === 'fixture') {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/42]⎯
+
+ FAIL  src/components/employee-home-actions.test.tsx > late_former_authority_reply_discarded
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/components/employee-home-actions.test.tsx:5:1
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/42]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > confirmation without changes persists submission metadata without inventing day overrides
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:163:7
+    161|     expect(
+    162|       mocks.statements.some((s) => s.text.includes("uses_normal_availa…
+    163|     ).toBe(true);
+       |       ^
+    164|     expect(
+    165|       mocks.statements.filter((s) =>
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/42]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > unavailable all week writes seven dated full-day exceptions
+AssertionError: expected [] to have a length of 7 but got +0
+
+- Expected
++ Received
+
+- 7
++ 0
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:183:24
+    181|       s.text.includes("INSERT INTO availability_exceptions"),
+    182|     );
+    183|     expect(exceptions).toHaveLength(7);
+       |                        ^
+    184|     expect(
+    185|       exceptions.every(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/42]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > normal-based weekly submissions > changes only the selected date, preserving other overrides
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/lib/data/scheduling-inputs.test.ts:201:21
+    199|       s.text.includes("DELETE FROM availability_exceptions"),
+    200|     );
+    201|     expect(deletes).toHaveLength(1);
+       |                     ^
+    202|     expect(deletes[0].values).toContain("2026-10-05");
+    203|     expect(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/42]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > the final deadline guard uses the current clock after the lock wait
+AssertionError: the given combination of arguments (undefined and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ src/lib/data/scheduling-inputs.test.ts:260:5
+    258|       statement.text.includes("deadline_guard"),
+    259|     )?.text,
+    260|   ).toContain("availability_deadline < clock_timestamp()");
+       |     ^
+    261| });
+    262| it("missing staffing configuration stays explicit instead of inventing…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/42]⎯
+
+ FAIL  src/lib/data/scheduling-inputs.test.ts > retries a stale legacy conversion after locking and preserves another saved day's override
+TypeError: Cannot read properties of undefined (reading 'includes')
+ ❯ src/lib/data/scheduling-inputs.test.ts:338:45
+    336|   }>;
+    337|   expect(
+    338|     retryQueries.some((query) => query.text.includes("version_guard")),
+       |                                             ^
+    339|   ).toBe(true);
+    340|   const deletes = retryQueries.filter((query) =>
+ ❯ src/lib/data/scheduling-inputs.test.ts:338:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/42]⎯
+
+ FAIL  src/app/app/requests/page.test.tsx > marks a waiting request amber and an approval green, with a timeline
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.test.tsx:17:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/42]⎯
+
+ FAIL  src/app/app/requests/page.test.tsx > names who decided a request and when, and never names anyone on a withdrawal
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.test.tsx:28:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/42]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > marks a waiting request amber and an approval green, with a timeline
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:19:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/42]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > offers a confirmed withdrawal only for the current employee pending request
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:30:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/42]⎯
+
+ FAIL  src/app/app/requests/page.withdrawal-carry-forward.test.tsx > keeps withdrawal inside its own request row, next to the facts and the waiting status
+Error: [vitest] No "requireSessionMutationProof" export is defined on the "@/lib/auth/session" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+vi.mock(import("@/lib/auth/session"), async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    // your mocked methods
+  }
+})
+
+ ❯ Module.RequestsPage src/app/app/requests/page.tsx:80:21
+
+ ❯ src/app/app/requests/page.withdrawal-carry-forward.test.tsx:44:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/backfill.test.ts > source/schema/snapshot/row-bound database namespace witnesses > requires every closed catalog even for empty tables and rejects absent result witnesses
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/backfill.test.ts:176:2
+    174|   expect(preflightTenantBackfill(c).status).toBe('READY_FOR_GUARDED_EX…
+    175|  });
+    176|  it('requires every closed catalog even for empty tables and rejects a…
+       |  ^
+    177|   const c=fixture();delete (c as Partial<FixtureCapture>).namespaceCom…
+    178|   const d=fixture();d.namespaceComparators.catalogs.pop();resealCompar…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/backfill.test.ts > source/schema/snapshot/row-bound database namespace witnesses > rejects changed catalog expression, predicate, source evidence and collation checksum
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/backfill.test.ts:188:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/backfill.test.ts > source/schema/snapshot/row-bound database namespace witnesses > rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/backfill.test.ts:193:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts > typed atomic source, target and hostile-input regressions > blocks wrong sidecar mirror on complete retry
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:286:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts > typed journal whole-plan successor fictional transaction regressions > locks source70 then fixed journal2 before all transaction reads and commits matching structural state
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:308:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts > typed journal whole-plan successor fictional transaction regressions > exact applied retry reads durable state and issues no source/control/journal DML
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:309:2
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/42]⎯
+
+ FAIL  src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts > typed journal whole-plan successor fictional transaction regressions > retains preexisting STARTED journal after fresh original source/target reconciliation
+ FAIL  src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts > typed journal whole-plan successor fictional transaction regressions > retains preexisting UNKNOWN journal after fresh original source/target reconciliation
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts:311:41
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/42]⎯
+
+ FAIL  src/app/app/requests/hub/page.test.tsx > retains both request destinations for EMPLOYEE
+ FAIL  src/app/app/requests/hub/page.test.tsx > retains both request destinations for LEAD
+TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+ ❯ employeeViewAuthority src/lib/employee-view-authority.server.ts:10:4
+      8| export function employeeViewAuthority(proof:SessionMutationProof,view:…
+      9|  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+     10|   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+       |    ^
+     11| }
+     12|
+ ❯ Module.RequestsHubPage src/app/app/requests/hub/page.tsx:21:60
+ ❯ src/app/app/requests/hub/page.test.tsx:26:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/42]⎯
+
+ FAIL  src/app/app/requests/hub/page.test.tsx > lists the person's own time off, waiting first, and never turns a failed read into no requests
+TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+ ❯ employeeViewAuthority src/lib/employee-view-authority.server.ts:10:4
+      8| export function employeeViewAuthority(proof:SessionMutationProof,view:…
+      9|  return createHash('sha256').update('nevora:employee-view:lifetime:v1\…
+     10|   .update(proof.employee.id).update('\0').update(proof.sessionTokenHas…
+       |    ^
+     11| }
+     12|
+ ❯ Module.RequestsHubPage src/app/app/requests/hub/page.tsx:21:60
+ ❯ src/app/app/requests/hub/page.test.tsx:51:37
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/42]⎯
+
+
+ Test Files  10 failed | 600 passed | 27 skipped (637)
+      Tests  42 failed | 9757 passed | 801 skipped (10655)
+   Start at  20:12:42
+   Duration  218.90s (tests 81%, import 14%, transform 4%)
+

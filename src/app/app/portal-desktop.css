@@ -1,0 +1,238 @@
+/* Desktop shell and page grid (D1, 2026-10-16). Every page starts at the same
+ * left edge. Work surfaces (schedules, tables, lists, Home) use the wide
+ * measure; forms, settings and payroll steps use the reading measure. Nothing
+ * is centred, so moving between pages never shifts the content. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal {
+    --page-wide: 1440px;
+    --page-reading: 1120px;
+  }
+  html body .app-shell.nevora-portal .page-frame.page-frame { width: auto; margin: 0; padding: 28px 32px 64px; }
+  /* Each page's root wrapper: left-aligned, wide by default. Doubled classes
+   * outrank the per-page caps and auto margins. */
+  html body .app-shell.nevora-portal .page-frame.page-frame > *:not(.ui-preview-shell) {
+    width: auto; max-width: var(--page-wide); margin-inline: 0;
+  }
+  html body .app-shell.nevora-portal .page-frame.page-frame > :is(.settings-hub, .branding-page, .payroll-page, .communication-view, .employee-account-view, .configuration-page:not(.locations-page), .module-off) {
+    max-width: var(--page-reading);
+  }
+
+  /* One page header: title, one-line description, actions to the right.
+   * Header icon tiles are retired on desktop so every title sits on the same line. */
+  html body .app-shell.nevora-portal .page-frame :is(.payroll-page-mark, [class*="reports-module"][class*="headerIcon"]) { display: none; }
+  html body .app-shell.nevora-portal .page-frame :is(.payroll-page-heading, [class*="reports-module"][class*="pageHeader"]) { gap: 0; padding-left: 0; }
+  html body .app-shell.nevora-portal .page-frame .settings-hub-heading { margin-top: 0; padding-top: 0; }
+  /* Inner wrappers that centred themselves inside the page root. */
+  html body .app-shell.nevora-portal .page-frame.page-frame > * > :is(.timeoff-page, [class*="employee-home-reviewed-module"][class*="root"]) { margin-inline: 0; max-width: none; }
+  html body .app-shell.nevora-portal .page-frame.page-frame > :is(.manager-schedule-page, .settings-hub) { margin-top: 0; padding-top: 0; }
+
+  /* Top bar: where you are, then search, notifications and the account menu. */
+  html body .app-shell.nevora-portal .portal-location {
+    display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0; padding: 0; list-style: none;
+    font: 500 14px/1.3 var(--design-font-body); color: var(--g-muted);
+  }
+  html body .app-shell.nevora-portal .portal-location li { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; }
+  html body .app-shell.nevora-portal .portal-location li + li::before { content: "›"; color: var(--g-border); font-weight: 400; }
+  html body .app-shell.nevora-portal .portal-location [aria-current="page"] { color: var(--g-ink); }
+  html body .app-shell.nevora-portal .portal-location a { display: inline-flex; align-items: center; min-height: 44px; color: var(--g-ink); text-decoration: none; border-radius: 4px; }
+  html body .app-shell.nevora-portal .portal-location a:hover { color: var(--g-accent); }
+  html body .app-shell.nevora-portal .portal-location a:focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
+  /* The workspace name leads the location trail instead of standing alone. */
+  html body .app-shell.nevora-portal .mobile-header .portal-workspace-name { display: none; }
+  html body .app-shell.nevora-portal .portal-location .portal-location-workspace { display: block; max-width: 260px; overflow: hidden; text-overflow: ellipsis; color: var(--g-ink); }
+  html body .app-shell.nevora-portal .portal-location-workspace + li::before { margin-left: 4px; }
+}
+
+/* Sidebar for mouse and trackpad: denser rows so the whole list fits a laptop
+ * screen, and Workspace stays pinned at the bottom of the list while it scrolls. */
+@media (min-width: 761px) and (pointer: fine) {
+  html body .app-shell.nevora-portal .sidebar .nav-link { min-height: 36px; }
+  html body .app-shell.nevora-portal .sidebar-nav { gap: 10px; }
+  html body .app-shell.nevora-portal .sidebar-group-label { padding-bottom: 2px; }
+}
+@media (min-width: 761px) {
+  /* The hairline border separates the sidebar; the older drop shadow left a grey band over the page. */
+  html body .app-shell.nevora-portal .sidebar.sidebar { box-shadow: none; }
+  html body .app-shell.nevora-portal .sidebar-nav-group[data-group="Workspace"] {
+    position: sticky; bottom: 0; z-index: 1; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--g-hairline); background: var(--g-canvas);
+  }
+}
+@media (prefers-contrast: more) {
+  html body .app-shell.nevora-portal .sidebar-nav-group[data-group="Workspace"] { border-top-color: var(--g-ink); }
+}
+
+/* The location trail is desktop chrome; phones keep their own header. */
+html body .app-shell.nevora-portal .portal-location-nav { flex: 1 1 auto; min-width: 0; margin-right: auto; }
+@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+  html body .app-shell.nevora-portal .portal-location-nav { display: none; }
+}
+@media (min-width: 761px) {
+  /* Section tabs match the measure of the page under them. */
+  html body .app-shell.nevora-portal .page-frame.page-frame > .section-tabs:has(+ :is(.settings-hub, .branding-page, .payroll-page, .communication-view, .employee-account-view, .configuration-page:not(.locations-page))) { max-width: var(--page-reading); }
+}
+
+/* D2: Home tasks and Inbox groups read as lists, not stacks of cards. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list {
+    gap: 0; border: 1px solid var(--g-border); border-radius: 12px; overflow: hidden; background: var(--g-canvas);
+  }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > :is(article, details) {
+    padding: 12px 16px 12px 20px; border: 0; border-top: 1px solid var(--g-hairline); border-radius: 0; box-shadow: none;
+  }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > :is(article, details):first-child { border-top: 0; }
+  /* Only urgent work keeps a coloured edge, so it stands out. */
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > :is(article:has(.task-tag[data-priority="URGENT"]), details:has(> summary .task-tag[data-priority="URGENT"])) { box-shadow: inset 3px 0 0 var(--g-urgent); }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > details > summary { min-height: 44px; }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list article h3 { margin: 2px 0; font-size: 15px; }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > details > summary strong { font-size: 15px; }
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list article > a { min-height: 32px; margin: 0; }
+
+  html body .app-shell.nevora-portal .page-frame .inbox-group summary { display: grid; box-sizing: border-box; width: 100%; grid-template-columns: 32px minmax(0, 1fr) auto 18px; min-height: 56px; padding: 10px 16px; }
+  html body .app-shell.nevora-portal .page-frame .inbox-group summary > :first-child { width: 32px; height: 32px; }
+}
+
+/* D3: Today as one stat strip. Zeros recede; a started-not-clocked-in count is
+ * the only coloured number, so it is the first thing seen when it matters. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame .today-tiles:not(.today-tiles-unavailable) {
+    gap: 0; border: 1px solid var(--g-border); border-radius: 12px; overflow: hidden; background: var(--g-canvas);
+  }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile {
+    gap: 6px; min-height: 0; padding: 14px 20px; border: 0; border-left: 1px solid var(--g-hairline); border-radius: 0; box-shadow: none;
+  }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile:first-of-type { border-left: 0; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile:hover { background: var(--g-inset); box-shadow: none; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile:focus-visible { outline-offset: -2px; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile strong { font-size: 24px; font-weight: 600; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile[data-zero] strong { color: var(--g-muted); font-weight: 500; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile[data-urgent] { box-shadow: inset 0 3px 0 var(--g-urgent); }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tile[data-urgent] strong { color: #A8361F; }
+  html body .app-shell.nevora-portal .page-frame .today-tiles .today-tiles-note { padding: 8px 20px; border-top: 1px solid var(--g-hairline); background: var(--g-inset); font-size: 13px; }
+}
+
+/* D3: task priority tags. Urgent and setup work read at a glance; colour is never the only signal (the word is the tag). */
+html body .app-shell.nevora-portal .task-tag {
+  display: inline-flex; align-items: center; padding: 1px 7px; margin-right: 4px; border-radius: 999px;
+  background: var(--g-inset); color: var(--g-ink); font-size: 12px; font-weight: 600; line-height: 1.5;
+}
+html body .app-shell.nevora-portal .task-tag[data-priority="URGENT"] { background: #FDECE8; color: #A8361F; }
+html body .app-shell.nevora-portal .task-tag[data-priority="MISSING_INPUT"] { background: #FBF1E2; color: #8A4B00; }
+@media (forced-colors: active) { html body .app-shell.nevora-portal .task-tag { border: 1px solid CanvasText; } }
+
+/* D3: Home rail sits below Tasks in the hierarchy, and repeats nothing the strip says. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame .home-layout > :not(.home-layout-tasks):not(.home-layout-today) h2 { font-size: 16px; font-weight: 600; letter-spacing: 0; }
+  /* With the Today strip on screen, an empty "Clocked in now" card only repeats its 0. */
+  html body .app-shell.nevora-portal .page-frame .home-layout:has(.today-tiles .today-tile) .home-layout-live:has(.manager-home-empty) { display: none; }
+}
+/* ...and its grid row goes with it, so the rail doesn't keep an empty gap. */
+@media (min-width: 900px) {
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home .home-layout:has(.today-tiles .today-tile):has(.home-layout-live .manager-home-empty) {
+    grid-template-areas: "today today" "tasks week" "tasks activity" "tasks shortcuts" "tasks ."; grid-template-rows: auto auto auto auto 1fr;
+  }
+}
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame .home-layout .mobile-home-tools a { min-height: 44px; }
+  html body .app-shell.nevora-portal .page-frame .manager-tasks-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 12px; }
+}
+
+/* D4: one segmented control. A light pill track; the chosen segment is white with
+ * ink text, the rest are muted. Black and teal selected states are retired, so teal
+ * stays the action colour. (The Employees control already matches with its sliding thumb.) */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) {
+    display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px; width: fit-content; max-width: 100%; padding: 4px;
+    border: 1px solid #E6E7E9; border-radius: 999px; background: var(--g-inset); box-shadow: none;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button) {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--g-muted); box-shadow: none; font: 500 14px/1.2 var(--design-font-body); text-decoration: none; white-space: nowrap; cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):hover { color: var(--g-ink); background: transparent; }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):is([aria-pressed="true"], [aria-current="page"], [aria-selected="true"], .selected) {
+    background: #FFFFFF; color: var(--g-ink); font-weight: 600; box-shadow: 0 1px 3px rgb(17 24 39 / .1);
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .manager-portal-home [aria-label="Filter tasks by category"], .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs, [class*="notification-inbox-module"][class*="filters"]) > :is(a, button):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 1px; }
+  /* Counts inside a chosen segment were styled for the old dark pill; on white they are neutral chips. */
+  html body .app-shell.nevora-portal .page-frame .inbox-filters button[aria-pressed="true"] .inbox-filter-count,
+  html body .app-shell.nevora-portal .page-frame .locations-filters a[aria-current="page"] > span { background: #E9EAEC; color: var(--g-ink); }
+  /* The Schedule location switcher keeps its status chips; the chosen location reads in ink, not teal. */
+  html body .app-shell.nevora-portal .page-frame .schedule-location-control .segmented > a.selected { color: var(--g-ink); font-weight: 600; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .page-frame :is(.inbox-filters, .locations-filters, .my-schedule-views, .brand-views, .manager-workflow-tabs, .nto-tabs, .updates-filters, .employee-view-tabs) > :is(a, button) { transition: none; }
+}
+
+/* D4: one button size. Primary and secondary buttons are 44px tall with 8px corners
+ * and 14px labels everywhere on desktop; the stragglers below had 11–22px corners,
+ * 45–52px heights or 12–13px labels. */
+@media (min-width: 761px) {
+  html body .app-shell.nevora-portal .page-frame :is(.button.primary, .button.secondary, .pw-button, .ncc-button, .request-hub-action, .av-button, .nto-button,
+    .schedule-generation-action, .locations-search button, [class*="employee-directory-module"][class*="primaryAction"], [class*="employee-directory-module"][class*="applyAction"], [class*="payroll-export-module"][class*="__button"]) {
+    min-height: 44px; border-radius: var(--g-control-radius); font-size: 14px; font-weight: 600;
+  }
+  html body .app-shell.nevora-portal .page-frame :is(.request-hub-action, .av-button, [class*="employee-directory-module"][class*="primaryAction"]) { height: auto; min-height: 44px; padding-block: 0; }
+}
+
+/* D4: teal is for actions. Status labels use the status ladder at every width:
+ * grey for neutral or waiting, amber for something to review, green for done. */
+html body .app-shell.nevora-portal .payroll-workflow .pw-badge:not(.pw-badge-success) { background: #F1F2F4; color: var(--g-ink); }
+html body .app-shell.nevora-portal .payroll-workflow .pw-badge[data-status="REVIEW_REQUIRED"] { background: #FBF1E2; color: #8A4B00; }
+html body .app-shell.nevora-portal .exchange-review .exchange-count { background: #F1F2F4; color: var(--g-ink); }
+html body .app-shell.nevora-portal .page-frame .branding-access { background: #F1F2F4; color: var(--g-ink); }
+/* People's initials are identity, not status: neutral like Gusto's directory. */
+html body .app-shell.nevora-portal .page-frame [class*="employee-directory-module"][class*="avatar"] { background: #F1F2F4; color: var(--g-ink); border-color: #E2E4E7; }
+@media (forced-colors: active) { html body .app-shell.nevora-portal :is(.pw-badge, .exchange-count, .branding-access) { border: 1px solid CanvasText; } }
+
+/* D5: employee desktop details. */
+/* Empty states centre their icon (an older rule pinned it to the top-left corner). */
+html body .app-shell.nevora-portal .page-frame .employee-view-empty > .employee-empty-icon { position: static; justify-self: center; }
+/* "Review needed" is something to do: amber like the other review labels; reviewed stays grey. */
+html body .app-shell.nevora-portal .page-frame .updates-status:not(.is-reviewed) { color: #8A4B00; }
+@media (min-width: 761px) {
+  /* Availability: one compact row per day, the switch and hours beside the day name. */
+  html body .app-shell.nevora-portal .page-frame .av-day-row { grid-template-columns: 160px 154px minmax(0, 1fr); min-height: 60px; padding: 8px 0; }
+}
+
+/* D6: date and time fields show the focus ring when their inner parts take keyboard focus. */
+html body .app-shell.nevora-portal .page-frame input:is([type="date"], [type="time"], [type="datetime-local"]):focus-within { outline: 2px solid var(--g-accent); outline-offset: 1px; border-color: var(--g-accent); }
+
+/* D6: one calm empty state. A quiet hairline box, centred, no dashed "drop zone" edge. */
+html body .app-shell.nevora-portal .page-frame :is(.nevora-empty, .mws-empty, .updates-empty, .rules-empty, .positions-empty, .nto-empty-state, .employee-view-empty, .swap-empty, .st-empty-state, .locations-empty, .coverage-empty, .av-empty, .dashboard-empty-state, .attendance-review-empty, .manager-corrections-empty, .timeoff-empty-state) {
+  border: 1px solid var(--g-hairline); border-radius: 12px; padding: 40px 24px; background: var(--g-canvas); box-shadow: none;
+}
+@media (min-width: 761px) {
+  /* Insights: date fields sized to a date, not half the page. */
+  html body .app-shell.nevora-portal .page-frame form[class*="reports-module"][class*="toolbar"] { grid-template-columns: minmax(0, 220px) minmax(0, 220px) auto auto; justify-content: start; }
+}
+/* D6: one row hover for mouse users (Employees and Timecards already use it). */
+@media (min-width: 761px) and (hover: hover) {
+  html body .app-shell.nevora-portal .page-frame .manager-portal-home #manager-action-list > :is(article, details):hover,
+  html body .app-shell.nevora-portal .page-frame .inbox-group summary:hover { background-color: var(--g-inset); }
+  html body .app-shell.nevora-portal .page-frame :is(.manager-portal-home #manager-action-list > *, .inbox-group summary) { transition: background-color 120ms ease; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .page-frame :is(.manager-portal-home #manager-action-list > *, .inbox-group summary) { transition: none; }
+}
+
+/* Round 2: the Employee and Lead desktop text floor (TCD-16). Legacy page styles set 12–13px; desktop's floor is 14px
+ * in rem, so it follows text size. Phones keep their own 15px rules (Phase 3). */
+@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+  html body .app-shell.nevora-portal.nevora-portal.employee-shell .page-frame.page-frame [data-nv-page] :is(
+    .profile-setting-copy small, .profile-setting-note, .profile-supporting-copy, .employee-corporate-desktop-copy, .employee-corporate-desktop-copy *,
+    [class*="timecards-module"][class*="__status"], [class*="timecards-module"][class*="__identity"] small, [class*="timecards-module"][class*="__definition"],
+    [class*="timecards-module"][class*="__issues"] p, [class*="timecards-module"][class*="__toolbar"] label, [class*="timecards-module"][class*="__totals"] dt,
+    .employee-time-section-heading p, .employee-time-metrics dt, .employee-time-empty, .employee-time-note,
+    .av-editor-heading p, .av-editor-footer p, .av-no-hours, .av-input-hint,
+    .updates-refresh span, .updates-footnote, .nto-next-step p, .nto-next-step strong, .nto-next-step span, .nto-summary-facts p,
+    .my-week-title p, .my-shift-options-body p, .my-shift-options-body .my-schedule-link, .employee-agenda-date small, .employee-designated-lead,
+    .profile-settings-list li, .employee-account-panel li, .updates-row-action, .updates-row-action *,
+    [class*="employee-home-reviewed-module"][class*="__currentNote"], [class*="employee-home-reviewed-module"][class*="__zone"],
+    .employee-time-footer .employee-time-refresh, .employee-time-footer .employee-time-link, .employee-time-footer small, .employee-time-footer small *,
+    .employee-time-entry-range, .employee-time-entry-range *, .employee-time-entry-location, .employee-time-entry-total small, .employee-time-punches p,
+    .employee-time-punches dt, .employee-time-punches dd, .employee-time-punches dd *, [class*="timecards-module"] ul > li,
+    [class*="timecards-module"] dl:not([class*="__overview"]):not([class*="__totals"]) > div > :is(dt, dd)) {
+    font-size: .875rem; line-height: 1.25rem;
+  }
+}

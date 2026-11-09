@@ -1,0 +1,15 @@
+import {beforeEach,afterEach,it,expect} from 'vitest';
+import {createPunchFixture} from './clocker-punch-fixture';
+import {readEmployeeSchedule} from '../../lib/data/employee-schedule';
+import type {SessionMutationProof} from '../../lib/shift-changes/types';
+let f:Awaited<ReturnType<typeof createPunchFixture>>;
+const proof:SessionMutationProof={employee:{id:'c34-a',firstName:'Avery',lastName:'QA',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
+beforeEach(async()=>{f=await createPunchFixture();await f.q("INSERT INTO employee_sessions VALUES(repeat('b',64),'c34-a',now()+interval '1 day',now()); INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('UX3-1','loc-1','2026-10-05','DRAFT','c34-owner'),('UX3-2','loc-2','2026-10-05','DRAFT','c34-owner'); INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time,notes) VALUES('UX3-D','UX3-1','c34-a','2026-10-05','08:00','12:00','PRIVATE DRAFT')");});
+afterEach(async()=>{await f?.db.dispose();});
+const read=()=>readEmployeeSchedule(proof,'2026-10-05',f.db.executor);
+it('UX-03 unpublished schedules return no draft information',async()=>{const r=await read();expect(r.state).toBe('unpublished');expect(r.shifts).toEqual([]);expect(JSON.stringify(r)).not.toContain('PRIVATE DRAFT');});
+it('UX-03 partial publication retains confirmed assignments without confirming empty days',async()=>{await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='UX3-1'");const r=await read();expect(r.state).toBe('unpublished');expect(r.shifts.map(s=>s.id)).toEqual(['UX3-D']);expect(JSON.stringify(r)).not.toContain('PRIVATE DRAFT');});
+it('UX-03 published empty coverage is distinct from unpublished',async()=>{await f.q("DELETE FROM shifts WHERE id='UX3-D'; UPDATE schedules SET status='PUBLISHED' WHERE week_start='2026-10-05'");expect(await read()).toMatchObject({state:'published',shifts:[]});});
+it('UX-03 ignores publication in an ineligible location and clears data after current role loss',async()=>{await f.q("DELETE FROM employee_location_eligibility WHERE employee_id='c34-a' AND location_id='loc-2'; UPDATE schedules SET status='PUBLISHED' WHERE id='UX3-2'");expect((await read()).state).toBe('unpublished');await f.q("UPDATE employees SET role='MANAGER' WHERE id='c34-a'");expect(await read()).toEqual({state:'unavailable',shifts:[],locations:[]});});
+it('UX-03 infrastructure failure cannot confirm time off',async()=>{const broken={...f.db.executor,transaction:async()=>{throw Error('offline');}};expect(await readEmployeeSchedule(proof,'2026-10-05',broken)).toEqual({state:'unavailable',shifts:[],locations:[]});});
+it('UX-03 logout after the source observation returns no private rows',async()=>{let reads=0;const executor={...f.db.executor,transaction:async(statements:Parameters<typeof f.db.executor.transaction>[0])=>{if(++reads===2)await f.q("DELETE FROM employee_sessions WHERE employee_id='c34-a'");return f.db.executor.transaction(statements);}};expect(await readEmployeeSchedule(proof,'2026-10-05',executor)).toEqual({state:'unavailable',shifts:[],locations:[]});});

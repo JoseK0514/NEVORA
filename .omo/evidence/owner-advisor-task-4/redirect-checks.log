@@ -1,0 +1,18 @@
+$ npx vitest run src/test/integration/owned-next-advisor.test.ts src/test/integration/owned-next-payroll.test.ts src/test/integration/owned-next-invitation.test.ts src/test/integration/owned-next-initializer.test.ts src/test/integration/owned-next-path.test.ts
+
+ RUN  v5.0.2 /Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel Scheduler
+
+
+ Test Files  5 passed (5)
+      Tests  36 passed (36)
+   Start at  16:38:53
+   Duration  640ms (tests 64%, transform 19%, import 16%, worker 1%)
+
+
+exit=0
+$ npx tsc --noEmit
+
+exit=0
+$ npx eslint src/test/integration/owned-next-app.ts src/test/integration/owned-next-advisor.test.ts src/test/integration/owner-advisor-pilot.mts src/test/integration/owner-advisor-pilot-preload.mts src/test/integration/owner-advisor-pilot.check.mts
+
+exit=0

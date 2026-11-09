@@ -1,0 +1,53 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+ ❯ src/lib/communications/recovery.test.ts (6 tests | 1 failed) 8ms
+   × keeps the original intent unknown when a receipt belongs to a different operation or update 2ms
+ ❯ src/lib/employee-message-page.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/employee-message-page.test.ts [ src/lib/employee-message-page.test.ts ]
+Error: Cannot find module './employee-message-page' imported from /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1/src/lib/employee-message-page.test.ts
+ ❯ src/lib/employee-message-page.test.ts:2:1
+      1| import {it,expect} from 'vitest';
+      2| import {encodeMessageCursor,parseMessageCursor} from './employee-messa…
+       | ^
+      3| it('retains the database microsecond boundary and actor-owned text key…
+      4|  const value={at:'2026-10-27T16:00:01.123456Z',id:'own-notice_19'};con…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/communications/recovery.test.ts > keeps the original intent unknown when a receipt belongs to a different operation or update
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "id": "wrong-update",
+        "operationId": "other-operation",
+        "status": "committed",
+        "version": "wrong-version",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ src/lib/communications/recovery.test.ts:45:24
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  1 failed | 5 passed (6)
+   Start at  12:42:37
+   Duration  141ms (transform 44%, tests 30%, import 14%, worker 11%)
+

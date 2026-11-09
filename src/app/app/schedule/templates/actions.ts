@@ -1,28 +1,24 @@
 "use server";
+import {assertOperationalAccess,isOperationalAuthorizationError} from '@/lib/company-access/operational-scope.server';
+import { requireSessionMutationProof } from "@/lib/auth/session";
 
+import { executeScheduleCopy } from "@/lib/data/schedule-copy";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
-import { addDays, isValidWeekStart } from "@/lib/date-utils";
+import { isValidWeekStart } from "@/lib/date-utils";
 import {
   archiveScheduleTemplate,
   createTemplateFromWeek,
-  listTemplateShifts,
 } from "@/lib/data/schedule-templates";
-import {
-  ensureSchedule,
-  getShiftValidationContext,
-  insertShift,
-} from "@/lib/data/schedules";
-import { clearWeekAcknowledgements } from "@/lib/data/acknowledgements";
-import { validateShift } from "@/lib/scheduling/validate-shift";
-
 function templateUrl(weekStart: string, suffix = "") {
   return `/app/schedule/templates?week=${encodeURIComponent(weekStart)}${suffix}`;
 }
 
+/** Saves a named week template under current company authority; does not apply or publish it. */
 export async function saveTemplateAction(formData: FormData) {
   const session = await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const name = String(formData.get("name") ?? "").trim();
 
@@ -35,10 +31,12 @@ export async function saveTemplateAction(formData: FormData) {
   }
 
   try {
+    await assertOperationalAccess(proof,{kind:'COMPANY'});
     await createTemplateFromWeek({
       name,
       weekStart,
       createdBy: session.id,
+      proof,
     });
   } catch {
     redirect(templateUrl(weekStart, "&error=save"));
@@ -48,106 +46,20 @@ export async function saveTemplateAction(formData: FormData) {
   redirect(templateUrl(weekStart, "&saved=1"));
 }
 
+/** Applies a template via the shared copy transaction and redirects to its operation receipt. */
 export async function applyTemplateAction(formData: FormData) {
-  const session = await requireRoles(MANAGER_ROLES);
-  const weekStart = String(formData.get("weekStart") ?? "");
-  const templateId = String(formData.get("templateId") ?? "");
-
-  if (!isValidWeekStart(weekStart) || !templateId) {
-    redirect(templateUrl(weekStart, "&error=invalid"));
-  }
-
-  const templateShifts = await listTemplateShifts(templateId);
-  if (templateShifts === null) {
-    redirect(templateUrl(weekStart, "&error=unavailable"));
-  }
-
-  let applied = 0;
-  let skipped = 0;
-  let warnings = 0;
-
-  for (const templateShift of templateShifts) {
-    if (!templateShift.employeeId) {
-      skipped += 1;
-      continue;
-    }
-
-    const date = addDays(weekStart, templateShift.dayOffset);
-    const context = await getShiftValidationContext({
-      employeeId: templateShift.employeeId,
-      date,
-      weekStart,
-    });
-
-    if (!context) {
-      skipped += 1;
-      continue;
-    }
-
-    if (
-      templateShift.isDesignatedLead &&
-      !["OWNER", "MANAGER", "LEAD"].includes(context.employee.role)
-    ) {
-      skipped += 1;
-      continue;
-    }
-
-    const validation = validateShift({
-      candidate: {
-        employeeId: templateShift.employeeId,
-        locationId: templateShift.locationId,
-        date,
-        startTime: templateShift.startTime,
-        endTime: templateShift.endTime,
-      },
-      ...context,
-      mode: "MANAGER_SCHEDULE",
-    });
-
-    if (validation.issues.some((issue) => issue.severity === "error")) {
-      skipped += 1;
-      continue;
-    }
-
-    const scheduleId = await ensureSchedule({
-      locationId: templateShift.locationId,
-      weekStart,
-      createdBy: session.id,
-    });
-
-    await insertShift({
-      scheduleId,
-      employeeId: templateShift.employeeId,
-      date,
-      startTime: templateShift.startTime,
-      endTime: templateShift.endTime,
-      notes: templateShift.notes,
-      isDesignatedLead: templateShift.isDesignatedLead,
-    });
-
-    applied += 1;
-
-    if (validation.issues.some((issue) => issue.severity === "warning")) {
-      warnings += 1;
-    }
-  }
-
-  if (applied) {
-    await clearWeekAcknowledgements(weekStart);
-  }
-
-  revalidatePath("/app/schedule");
-  revalidatePath("/app/schedule/templates");
-  redirect(
-    templateUrl(
-      weekStart,
-      `&applied=${applied}&skipped=${skipped}&warnings=${warnings}`,
-    ),
-  );
+ await requireRoles(MANAGER_ROLES);
+ const proof=await requireSessionMutationProof();
+ try{await assertOperationalAccess(proof,{kind:'COMPANY'});}catch(error){if(isOperationalAuthorizationError(error))redirect('/app/schedule?error=ACCESS_DENIED');throw error;}
+ const receipt=await executeScheduleCopy(proof,{operationId:String(formData.get('operationId')??''),kind:'TEMPLATE',weekStart:String(formData.get('weekStart')??''),templateId:String(formData.get('templateId')??'')});
+ revalidatePath('/app/schedule');
+ redirect(`/app/schedule/copy-receipt?operation=${receipt.operationId}`);
 }
 
+/** Archives a template under current company authority while preserving its history. */
 export async function archiveTemplateAction(formData: FormData) {
   await requireRoles(MANAGER_ROLES);
+  const proof = await requireSessionMutationProof();
   const weekStart = String(formData.get("weekStart") ?? "");
   const templateId = String(formData.get("templateId") ?? "");
 
@@ -155,7 +67,8 @@ export async function archiveTemplateAction(formData: FormData) {
     redirect(templateUrl(weekStart, "&error=invalid"));
   }
 
-  await archiveScheduleTemplate(templateId);
+  try{await assertOperationalAccess(proof,{kind:'COMPANY'});await archiveScheduleTemplate(templateId,proof);}
+  catch(error){if(isOperationalAuthorizationError(error))redirect(templateUrl(weekStart,'&error=ACCESS_DENIED'));throw error;}
   revalidatePath("/app/schedule/templates");
   redirect(templateUrl(weekStart, "&archived=1"));
 }

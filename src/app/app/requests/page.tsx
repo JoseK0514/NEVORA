@@ -1,54 +1,26 @@
+import {ResponsiveEmployeePlanning} from '@/components/employee-mobile/planning';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {requireSessionMutationProof} from '@/lib/auth/session';
+import { keepWhole } from "@/lib/keep-whole";
+import { TimeOffWithdrawal } from "@/components/time-off-withdrawal";
+import { moduleGate } from "@/lib/workspace-presentation/current.server";
 import { randomUUID } from "node:crypto";
-import Link from "next/link";
-import "./timeoff-premium.css";
-import { NavIcon } from "@/components/nav-icon";
-import { StatusPill } from "@/components/status-pill";
+import { ManagerTimeOff } from "@/components/manager-time-off";
 import { isTimeOffReviewerRole } from "@/lib/auth/permissions";
 import { requireSession } from "@/lib/auth/session";
-import {
-  listEmployeeTimeOffRequests,
-  listPendingTimeOffRequests,
-} from "@/lib/data/requests";
-import { reviewTimeOffAction } from "@/app/app/requests/actions";
-import { TimeOffForm } from "@/app/app/requests/time-off-form";
-import { currentDateInPuertoRico, formatTime } from "@/lib/date-utils";
+import { listEmployeeTimeOffRequests } from "@/lib/data/requests";
+import { TimeOffHashLink, TimeOffSheet } from "./time-off-signature";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { CorpButtonLink, CorpNav, CorpNote, CorpPage, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
+import { TimeOffListRow, TimeOffRequestCard, canWithdrawTimeOff, timeOffDates, type TimeOffView } from "@/components/employee-mobile/timeoff-parts";
+import "@/components/employee-mobile/timeoff-corp.css";
+import { TimeOffWaitB } from "@/components/employee-b/timeoff-b";
+import "./owner-lists.css";
 
-function dateLabel(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(`${date}T12:00:00Z`));
-}
+/* Employee Time off on the corporate kit (Release 1, boards E-TimeOffDetail and E-TimeOffSheet), in the desktop column.
+ * The phone draws the same pages from its planning read (employee-mobile/timeoff). Same reads, actions and fields. */
 
-function requestRange(request: {
-  startDate: string;
-  endDate: string;
-  startTime?: string;
-  endTime?: string;
-}) {
-  const dates =
-    request.startDate === request.endDate
-      ? dateLabel(request.startDate)
-      : `${dateLabel(request.startDate)} – ${dateLabel(request.endDate)}`;
-
-  if (request.startTime && request.endTime) {
-    return `${dates} · ${formatTime(request.startTime)} – ${formatTime(request.endTime)}`;
-  }
-
-  return `${dates} · Full day`;
-}
-
-function statusTone(status: string) {
-  if (status === "APPROVED") return "success" as const;
-  if (status === "PENDING") return "warning" as const;
-  return "neutral" as const;
-}
-
-function statusLabel(status: string) {
-  return status[0] + status.slice(1).toLowerCase();
-}
+export const metadata = { title: "Time off" };
 
 export default async function RequestsPage({
   searchParams,
@@ -58,265 +30,61 @@ export default async function RequestsPage({
     submitted?: string;
     reviewed?: string;
     tab?: string;
+    requestId?: string;
+    from?: string;
+    filter?: string;
   }>;
 }) {
+  const moduleOff = await moduleGate("timeOff");
+  if (moduleOff) return moduleOff;
+
   const session = await requireSession();
   const manager = isTimeOffReviewerRole(session.role);
   const params = await searchParams;
 
-  const [mine, pending] = await Promise.all([
-    listEmployeeTimeOffRequests(session.id),
-    manager ? listPendingTimeOffRequests() : Promise.resolve([]),
-  ]);
+  if (manager) return ManagerTimeOff(params);
 
-  const activeTab =
-    params.tab === "my"
-      ? "my"
-      : params.tab === "team" && manager
-        ? "team"
-        : "new";
+  const mine = await listEmployeeTimeOffRequests(session.id);
+  // ?tab=new (or a failed send) opens the request sheet over the list.
+  const sheetOpen = params.tab === "new" || !!params.error;
+  const view = params.filter === "decided" ? "decided" : "waiting";
+  const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
 
-  const currentYear = currentDateInPuertoRico().slice(0, 4);
-  const pendingMine = mine.filter((request) => request.status === "PENDING").length;
-  const approvedMine = mine.filter((request) => request.status === "APPROVED").length;
-  const deniedMine = mine.filter((request) => request.status === "DENIED").length;
-  const thisYearMine = mine.filter((request) => request.startDate.startsWith(currentYear)).length;
+  const notice = params.error ? <p className="c-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
+  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "The request was reviewed." : null;
 
-  return (
-    <div className="timeoff-page">
-      <section className="timeoff-hero">
-        <div className="timeoff-hero-copy">
-          <p>Time off</p>
-          <h1>Request Time Off</h1>
-          <span>Request time away and keep track of approvals.</span>
-        </div>
+  type Request = (typeof mine)[number];
+  const shape = (request: Request): TimeOffView => ({ id: request.id, status: request.status, startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null,
+    note: request.reason ?? null, createdAt: request.createdAt ?? null, reviewedAt: request.reviewedAt ?? null, reviewer: request.reviewerName ?? null });
+  const shown = mine.filter(request => view === "decided" ? request.status !== "PENDING" : request.status === "PENDING");
+  const detail = !sheetOpen && params.requestId ? mine.find(request => request.id === params.requestId) ?? null : undefined;
+  const listHref = view === "decided" ? "/app/requests?filter=decided" : "/app/requests";
+
+  const proof = await requireSessionMutationProof();
+  return <ResponsiveEmployeePlanning authority={employeeViewAuthority(proof,'planning')} view="timeoff" selection={sheetOpen?'new':params.requestId??'list'} filter={view}><CorpPage className="tof-desk c-page--narrow">
+    {/* Direction B: before the phone's private read starts, its first frame is this page's hero, checking (phones only). */}
+    <TimeOffWaitB selection={sheetOpen ? "new" : params.requestId ?? "list"} filter={view} />
+    <CorpNav back={{ href: "/app/requests/hub", label: "Requests" }} title="Time off" phoneOnly />
+    <CorpTitle title="Time off" wide />
+    {status ? <CorpNote><span role="status">{status}</span></CorpNote> : null}
+    {detail !== undefined ? detail ? <>
+      <TimeOffRequestCard request={shape(detail)} zone={zone} headingId={`request-${detail.id}-dates`} />
+      {detail.status === "PENDING" && detail.employeeId === session.id ? canWithdrawTimeOff(detail.id)
+        ? <section className="c-card tof-withdraw" aria-label="Withdraw request"><TimeOffWithdrawal requestId={detail.id} dateLabel={keepWhole(timeOffDates(shape(detail)))} /></section>
+        : <CorpNote>To change this request, contact your manager.</CorpNote> : null}
+    </> : <CorpNote><span role="status">This request isn’t available to your current account. Return to Time off to review your requests.</span></CorpNote> : <>
+      <TimeOffHashLink />
+      <CorpSegments label="Time-off requests" items={[
+        { href: "/app/requests", label: "Waiting", current: view === "waiting" },
+        { href: "/app/requests?filter=decided", label: "Decided", current: view === "decided" },
+      ]} />
+      <section className="c-card" aria-label={view === "decided" ? "Decided requests" : "Waiting requests"}>
+        {shown.length ? <CorpRows>{shown.map(request => <TimeOffListRow key={request.id} id={`request-${request.id}`} request={shape(request)}
+          href={`/app/requests?requestId=${encodeURIComponent(request.id)}${view === "decided" ? "&filter=decided" : ""}`} />)}</CorpRows>
+          : <p className="c-empty"><b>{view === "decided" ? "No decisions yet" : "Nothing waiting"}</b>{view === "decided" ? "Approved, declined and withdrawn requests will appear here." : mine.length ? "When you send a request, you can follow its status here." : "No time-off requests yet."}</p>}
       </section>
-
-      {params.error ? (
-        <p className="form-error">The request could not be saved. Check the dates and times.</p>
-      ) : null}
-      {params.submitted ? (
-        <p className="form-success">Your request was submitted for manager review.</p>
-      ) : null}
-      {params.reviewed ? (
-        <p className="form-success">The request was reviewed.</p>
-      ) : null}
-
-      <nav className="timeoff-tabs" aria-label="Time off sections">
-        <Link
-          className={activeTab === "new" ? "selected" : ""}
-          href="/app/requests?tab=new"
-          aria-current={activeTab === "new" ? "page" : undefined}
-        >
-          <NavIcon name="requests" size={16} />
-          New Request
-        </Link>
-        <Link
-          className={activeTab === "my" ? "selected" : ""}
-          href="/app/requests?tab=my"
-          aria-current={activeTab === "my" ? "page" : undefined}
-        >
-          <NavIcon name="clock" size={16} />
-          My Requests
-        </Link>
-        {manager ? (
-          <Link
-            className={activeTab === "team" ? "selected" : ""}
-            href="/app/requests?tab=team"
-            aria-current={activeTab === "team" ? "page" : undefined}
-          >
-            <NavIcon name="employees" size={16} />
-            Team Requests
-            <span className={pending.length ? "tab-count attention" : "tab-count"}>
-              {pending.length}
-            </span>
-          </Link>
-        ) : null}
-      </nav>
-
-      <section className="timeoff-workspace">
-        {activeTab === "new" ? (
-          <div className="timeoff-new-layout">
-            <article className="panel timeoff-panel timeoff-form-panel">
-              <div className="timeoff-panel-heading timeoff-new-heading">
-                <div>
-                  <h2>Request Time Off</h2>
-                  <p>Choose your dates and request type. Add a note only if needed.</p>
-                </div>
-              </div>
-              <TimeOffForm requestId={randomUUID()} />
-            </article>
-
-            <aside className="timeoff-side-rail">
-              <section className="timeoff-side-card timeoff-overview-card">
-                <div className="timeoff-side-heading">
-                  <span>
-                    <NavIcon name="calendar" size={18} />
-                    <strong>Request Overview</strong>
-                  </span>
-                  <Link href="/app/requests?tab=my">View All</Link>
-                </div>
-
-                <div className="timeoff-overview-grid">
-                  <div className="pending">
-                    <span><NavIcon name="clock" size={20} /></span>
-                    <strong>{pendingMine}</strong>
-                    <small>Pending</small>
-                  </div>
-                  <div className="approved">
-                    <span><NavIcon name="coverage" size={20} /></span>
-                    <strong>{approvedMine}</strong>
-                    <small>Approved</small>
-                  </div>
-                  <div className="declined">
-                    <span><NavIcon name="alert" size={20} /></span>
-                    <strong>{deniedMine}</strong>
-                    <small>Declined</small>
-                  </div>
-                  <div className="total">
-                    <span><NavIcon name="requests" size={20} /></span>
-                    <strong>{thisYearMine}</strong>
-                    <small>Total this year</small>
-                  </div>
-                </div>
-              </section>
-
-              <section className="timeoff-side-card timeoff-how-card">
-                <div className="timeoff-side-heading">
-                  <span>
-                    <NavIcon name="templates" size={18} />
-                    <strong>How It Works</strong>
-                  </span>
-                </div>
-
-                <div className="timeoff-steps">
-                  <div>
-                    <span>1</span>
-                    <p><strong>Submit Your Request</strong><small>Fill in your dates and request type.</small></p>
-                  </div>
-                  <div>
-                    <span>2</span>
-                    <p><strong>Manager Reviews</strong><small>You’ll be notified once a decision is made.</small></p>
-                  </div>
-                  <div>
-                    <span>3</span>
-                    <p><strong>Track the Status</strong><small>Check My Requests to see the latest updates.</small></p>
-                  </div>
-                </div>
-              </section>
-
-              <section className="timeoff-recharge-card" aria-label="Fuel Coffee Drive">
-                <div>
-                  <strong>Take time<br />to recharge.</strong>
-                  <small>People Fuel Possibility.</small>
-                </div>
-              </section>
-            </aside>
-          </div>
-        ) : null}
-
-        {activeTab === "my" ? (
-          <article className="panel timeoff-panel request-history-panel">
-            <div className="timeoff-panel-heading">
-              <div>
-                <p className="eyebrow">MY REQUESTS</p>
-                <h2>Request History</h2>
-                <p>Track the status of your submitted time-off requests.</p>
-              </div>
-            </div>
-
-            <div className="request-list timeoff-request-list">
-              {mine.length ? (
-                mine.map((request) => (
-                  <div className="request-list-row timeoff-request-row" key={request.id}>
-                    <div className="request-row-copy">
-                      <strong>{requestRange(request)}</strong>
-                      {request.reason ? (
-                        <span>{request.reason}</span>
-                      ) : (
-                        <span>{request.startTime ? "Partial-day request" : "Full-day request"}</span>
-                      )}
-                    </div>
-                    <StatusPill tone={statusTone(request.status)}>
-                      {statusLabel(request.status)}
-                    </StatusPill>
-                  </div>
-                ))
-              ) : (
-                <div className="timeoff-empty-state">
-                  <span className="empty-state-mark" aria-hidden="true">—</span>
-                  <strong>No time-off requests yet</strong>
-                  <span>Your submitted requests will appear here.</span>
-                </div>
-              )}
-            </div>
-          </article>
-        ) : null}
-
-        {activeTab === "team" && manager ? (
-          <div className="team-request-view">
-            <div className="team-request-heading">
-              <div>
-                <p className="eyebrow">MANAGER REVIEW</p>
-                <h2>Team Requests</h2>
-                <p>
-                  {pending.length
-                    ? `${pending.length} request${pending.length === 1 ? "" : "s"} waiting for review.`
-                    : "No requests are waiting for review."}
-                </p>
-              </div>
-            </div>
-
-            {pending.length ? (
-              <div className="request-review-grid timeoff-review-grid">
-                {pending.map((request) => (
-                  <article className="panel request-card timeoff-review-card" key={request.id}>
-                    <div className="review-card-copy">
-                      <div className="review-card-topline">
-                        <span className="review-avatar" aria-hidden="true">
-                          {request.employeeName
-                            .split(" ")
-                            .map((part) => part[0])
-                            .join("")
-                            .slice(0, 2)
-                            .toUpperCase()}
-                        </span>
-                        <div>
-                          <h2>{request.employeeName}</h2>
-                          <p>{requestRange(request)}</p>
-                        </div>
-                      </div>
-                      {request.reason ? (
-                        <p className="review-reason">{request.reason}</p>
-                      ) : (
-                        <p className="review-reason muted">No reason provided.</p>
-                      )}
-                    </div>
-
-                    <form action={reviewTimeOffAction} className="request-actions">
-                      <input type="hidden" name="requestId" value={request.id} />
-                      <button className="button secondary" name="decision" value="DENIED" type="submit">
-                        Decline
-                      </button>
-                      <button className="button primary" name="decision" value="APPROVED" type="submit">
-                        Approve
-                      </button>
-                    </form>
-                  </article>
-                ))}
-              </div>
-            ) : (
-              <article className="panel timeoff-panel compact-empty-panel">
-                <div className="timeoff-empty-state">
-                  <span className="empty-state-mark" aria-hidden="true">✓</span>
-                  <strong>You&apos;re all caught up</strong>
-                  <span>New employee time-off requests will appear here.</span>
-                </div>
-              </article>
-            )}
-          </div>
-        ) : null}
-      </section>
-    </div>
-  );
+      <CorpButtonLink href="/app/requests?tab=new" full className="tof-new">Request time off</CorpButtonLink>
+    </>}
+    <TimeOffSheet open={sheetOpen} closeHref={listHref} requestId={randomUUID()} draftOwner={session.id} notice={notice} />
+  </CorpPage></ResponsiveEmployeePlanning>;
 }

@@ -1,0 +1,89 @@
+{
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "expectedApplicationInputs": 2007,
+  "sourceMatchesCommittedCandidate": true,
+  "runtimeCount": 2,
+  "expectedRuntimeCount": 2,
+  "runtimes": [
+    {
+      "suite": "planning",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/1ada3f1c/affected/planning/owned-next-9yA4sd",
+      "checkpoint": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "921713e99678d2dd66e85436d482c7affbcae3987c4b4f82174222b199348811",
+      "ownershipSha256": "ad931fdb5fb765276a60dfe5e0dfa5e8cf2c804c679735f9cab24ef4d0026443",
+      "pid": 39173,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 33561,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_04a307395720",
+        "oid": 16384,
+        "marker": "fuel-phase3-disposable:7affc279-d3f0-40ea-984c-a0fd0877fc8b"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "responses",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/1ada3f1c/affected/responses/owned-next-ihLTiR",
+      "checkpoint": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "921713e99678d2dd66e85436d482c7affbcae3987c4b4f82174222b199348811",
+      "ownershipSha256": "706ec72344dbb2cc76e2f177440152107a396bdda424b4fd6123902a5eb569e5",
+      "pid": 40642,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 42739,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_04a307395720",
+        "oid": 19182,
+        "marker": "fuel-phase3-disposable:d5e8126e-da8e-45b1-8995-8ce745140d13"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "runnerClusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-Mrbg5X",
+      "directoryExists": false,
+      "pid": 39096,
+      "livePid": false,
+      "port": 40677,
+      "portOpen": false
+    }
+  ],
+  "supplementalDatabaseCustody": {
+    "runnerLive": false,
+    "clusters": [
+      {
+        "directory": "/tmp/nevora-payroll-owned-Mrbg5X",
+        "directoryExists": false,
+        "pid": 39096,
+        "livePid": false,
+        "port": 40677,
+        "portOpen": false,
+        "pidLive": false
+      }
+    ]
+  },
+  "databaseObservationMethod": "Recorder queries actual owned cluster through existing pg package with scrubbed environment; any query failures are retained.",
+  "gateSourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterStopLogged": true,
+  "artifactsCount": 219,
+  "passed": true
+}

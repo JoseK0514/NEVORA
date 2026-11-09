@@ -1,0 +1,112 @@
+{
+  "run": "Started at 17d8089; exploratory run overlapped build, lint and later expectation-only updates. Not final-candidate evidence.",
+  "summary": {
+    "passed": 7318,
+    "failed": 17,
+    "skipped": 801
+  },
+  "failures": [
+    {
+      "file": "src/lib/data/coverage-repair.server.test.ts",
+      "test": "a known position/Lead save returns an explicit chooser for the remaining staffing gap, with no automatic candidate substitution",
+      "error": "AssertionError: expected [ { target: 'STAFFING', \u2026(2) } ] to deeply equal [ { target: 'STAFFING', \u2026(2) } ]",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/data/notification-state.test.ts",
+      "test": "configured_coverage_uses_health_lead_rules_and_never_invents_location_windows",
+      "error": "AssertionError: expected { kind: 'MANAGER_SUMMARY', \u2026(5) } to match object { items: [ { \u2026(2) } ] }",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/data/shift-change-notification-versions.test.ts",
+      "test": "A061 invitation includes known position and Lead responsibility with shift context",
+      "error": "AssertionError: expected '2035-10-02 \u00b7 08:00\u201316:00 \u00b7 L \u00b7 Barist\u2026' to contain 'Lead'",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "whole-plan typed executor fictional transport lifecycle > preserves issued cells while detaching mutable request before first await",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "whole-plan typed executor fictional transport lifecycle > identical complete retry does no DML and retains original manifest",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed atomic source, target and hostile-input regressions > retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed atomic source, target and hostile-input regressions > blocks wrong complete retry workspace with same original manifest",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > locks source70 then fixed journal2 before all transaction reads and commits matching structural state",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > exact applied retry reads durable state and issues no source/control/journal DML",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > rejects applied metadata with journalnull, never retrospectively repairing",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > rejects applied metadata with journalNOT_STARTED, never retrospectively repairing",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > retains preexisting STARTED journal after fresh original source/target reconciliation",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal whole-plan successor fictional transaction regressions > retains preexisting UNKNOWN journal after fresh original source/target reconciliation",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts",
+      "test": "typed journal original-attempt reconciliation boundaries > does not enroll uncertainty from the original journal-free entrypoint",
+      "error": "Error: Test timed out in 5000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/lib/scheduling/generation/planner.test.ts",
+      "test": "measures deterministic 50-worker 7-day 20-location planning",
+      "error": "Error: Test timed out in 300000ms.",
+      "owner": "Codex backend"
+    },
+    {
+      "file": "src/app/app/schedule/coverage/page.test.tsx",
+      "test": "several missing positions expose all targets and require an explicit choice before candidates",
+      "error": "AssertionError: expected '<div class=\"coverage-assistant\"><a cl\u2026' to contain 'barista: 1 missing'",
+      "owner": "Claude Wave A (coverage page assertions)"
+    },
+    {
+      "file": "src/app/app/schedule/coverage/page.test.tsx",
+      "test": "known successful position/Lead return truthfully shows the remaining staffing chooser without a refresh loop",
+      "error": "AssertionError: expected '<div class=\"coverage-assistant\"><a cl\u2026' to contain '1 employees missing'",
+      "owner": "Claude Wave A (coverage page assertions)"
+    }
+  ]
+}

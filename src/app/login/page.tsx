@@ -1,83 +1,73 @@
+import {mobileAccessMetadata} from "@/components/mobile-access/metadata.server";
 import Link from "next/link";
-import { BrandMark } from "@/components/brand-mark";
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {MOBILE_ACCESS_COPY} from "@/components/mobile-access/copy";
+import {AccessEmployeeIdInput} from "@/components/mobile-access/journey";
+import {AccessCard, AccessOutside} from "@/components/mobile-access/chrome";
+import {CaretRightIcon} from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { getPublicWorkspaceName } from "@/lib/data/workspaces";
+import { safeReturnTo } from "@/lib/notifications/destinations";
 import { login } from "@/app/login/actions";
+import { AUTH_COPY } from "@/lib/auth-copy";
+import { readAuthLang } from "@/lib/auth-lang.server";
+import { QuietAuthShell } from "@/components/auth-premium/auth-shell";
+import { Greeting } from "@/components/auth-premium/greeting";
+import { PasswordInput } from "@/components/auth-premium/password-input";
+import { PasskeySlot, PasswordSignInMarker } from "@/components/auth-premium/passkey-slot";
+import "@/components/quiet/quiet.css";
+import { LoginSubmit } from "./login-submit";
+import "./auth-premium.css";
+import "./auth-signature.css";
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; activated?: string }>;
+  searchParams: Promise<{ error?: string; activated?: string; returnTo?: string | string[] }>;
 }) {
   const params = await searchParams;
+  const [workspaceName, lang] = await Promise.all([getPublicWorkspaceName(), readAuthLang()]);
+  const t = AUTH_COPY[lang], mobile=mobileAccessEnabled(), mt=MOBILE_ACCESS_COPY[lang];
+  const returnTo = typeof params.returnTo === "string" ? safeReturnTo(params.returnTo) : null;
+  const returnQuery = returnTo ? `?returnTo=${encodeURIComponent(returnTo)}` : "";
+  const errorId = params.error ? "login-error" : undefined;
 
+  // Quiet (v4, approved Oct 23): the wordmark and Español, the greeting and the workspace, two fields, Sign in, Face ID,
+  // then Forgot password? and Activate account on one line. With mobile Access on, phones show the form on a card
+  // with Forgot password? under the password field and the other links below the card (approved Oct 27).
   return (
-    <main className="auth-page employee-login-page">
-      <div className="employee-login-overlay" aria-hidden="true" />
-      <div className="employee-login-scene-copy" aria-hidden="true">
-        <span>GOOD PEOPLE</span>
-        <strong>GREAT COFFEE</strong>
-      </div>
-
-      <div className="employee-login-shell">
-        <header className="employee-login-brand">
-          <BrandMark large />
-          <div>
-            <strong>Fuel Coffee Drive</strong>
-            <span>Employee Portal</span>
+    <QuietAuthShell lang={lang} t={t}>
+      <AccessCard mobile={mobile}>
+        <div className="q-hd q-auth__hd"><Greeting words={t.greeting} className="" mobileTitle={mobile ? mt.signInTitle : undefined}/><p>{workspaceName ?? t.workspaceUnavailable}</p></div>
+        <form action={login} className="q-auth__form" data-invalid={params.error ? "" : undefined}>
+          {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+          {/* Direction B (Nov 8, 2026): the error and the activated notice read at the top of the form card. */}
+          {params.error ? <p className="q-error q-auth__alert" id="login-error" role="alert">{params.error === "deleting" ? t.loginDeleting : params.error === "busy" ? t.loginBusy : t.loginError}</p> : null}
+          {params.activated ? <p className="q-help q-auth__alert" role="status">{t.activated}</p> : null}
+          <PasswordSignInMarker />
+          <div className="q-fl">
+            <label htmlFor="login-employee-id">{t.employeeId}</label>
+            <AccessEmployeeIdInput id="login-employee-id" className="q-in" name="employeeId" placeholder={t.quiet.idPlaceholder}
+              autoComplete="username" autoCapitalize="none" spellCheck={false} aria-describedby={errorId} required />
           </div>
-        </header>
-
-        <section className="auth-card employee-login-card">
-          <div className="employee-login-heading">
-            <p className="eyebrow">EMPLOYEE PORTAL</p>
-            <h1>Employee Login</h1>
-            <p>
-              Access your schedule, availability, requests, time, and profile.
-            </p>
+          <div className="q-fl">
+            <label htmlFor="login-password">{t.password}</label>
+            <PasswordInput quiet id="login-password" name="password" placeholder={t.quiet.passwordPlaceholder} autoComplete="current-password"
+              aria-describedby={errorId} required showLabel={t.showPassword} hideLabel={t.hidePassword} />
+            {mobile ? <Link className="ma-forgot ma-only" href="/forgot-access">{t.forgotAccess}</Link> : null}
           </div>
-
-          {params.error ? (
-            <p className="form-error">Employee ID or password is incorrect.</p>
-          ) : null}
-          {params.activated ? (
-            <p className="form-success">Account activated. You can sign in now.</p>
-          ) : null}
-
-          <form action={login} className="form-stack employee-login-form">
-            <label>
-              Employee ID
-              <input
-                name="employeeId"
-                placeholder="Enter your employee ID"
-                autoComplete="username"
-                required
-              />
-            </label>
-            <label>
-              Password
-              <input
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                required
-              />
-            </label>
-            <button type="submit" className="button primary full employee-login-submit">
-              Sign In
-            </button>
-          </form>
-
-          <div className="auth-secondary employee-login-secondary">
-            <span>New employee?</span>
-            <Link href="/activate">Activate Account</Link>
-          </div>
-        </section>
-
-        <footer className="employee-login-footer">
-          <span>Fuel Coffee Drive • Employee Portal</span>
-          <small>People fuel possibility.</small>
-        </footer>
-      </div>
-    </main>
+          <LoginSubmit idle={t.signIn} busy={t.signingIn} className="q-btn" />
+        </form>
+        <PasskeySlot t={mobile ? {...t,passkeyPhone:t.passkeyDesktop,passkeyBusyPhone:t.passkeyBusyDesktop,passkeyNotFoundPhone:t.passkeyNotFoundDesktop,passkeyUnavailablePhone:t.passkeyUnavailableDesktop} : t} quiet />
+      </AccessCard>
+      <AccessOutside mobile={mobile}>
+        <nav className="q-auth__links" aria-label={t.signIn}>
+          <Link className={mobile ? "ma-desktop" : undefined} href="/forgot-access">{t.forgotAccess}</Link>
+          <Link href={`/activate${returnQuery}`}>{t.activateAccount}</Link>
+        </nav>
+        {mobile ? <details id="login-id-help" className="ma-details ma-only"><summary><CaretRightIcon size={16} aria-hidden="true"/>{mt.idHelp}</summary><p>{mt.idHelpBody}</p></details> : null}
+      </AccessOutside>
+    </QuietAuthShell>
   );
 }
+
+export const generateMetadata=()=>mobileAccessMetadata("signin");

@@ -1,0 +1,32 @@
+{
+  "gate": "profile",
+  "candidate": "be21663949eee3f5a60f5ffcb7994edc3389d3d5",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-profile.config.mts",
+    "src/test/integration/employee-mobile-profile.integration.ts"
+  ],
+  "startedAt": "2026-10-27T20:52:02.020753+00:00",
+  "completedAt": "2026-10-27T20:52:22.181633+00:00",
+  "exitCode": 1,
+  "durationSeconds": 20.16,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [],
+  "finalProcesses": [],
+  "summaryLines": [
+    " \u276f  employee  src/test/integration/employee-mobile-profile.integration.ts (1 test | 1 failed) 17513ms",
+    "\u23af\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 1 \u23af\u23af\u23af\u23af\u23af\u23af\u23af",
+    " FAIL   employee  src/test/integration/employee-mobile-profile.integration.ts > integrates current own Profile, preferences, contextual help and native signout in three engines",
+    "AssertionError: expected [ 'Check NEVORA' ] to deeply equal []",
+    " Test Files  1 failed (1)",
+    "      Tests  1 failed (1)",
+    "   Duration  18.03s (tests 98%, transform 1%, import 1%)",
+    "[Payroll PostgreSQL] Owned cluster stopped."
+  ],
+  "stdoutSha256": "bf873dadd6620f1812db33ea3d84b1b9a04a635a075e21cbb31a124be29c08eb"
+}

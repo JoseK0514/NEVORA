@@ -12,6 +12,11 @@ export type AvailabilitySubmissionStatus = {
   updatedAt?: string;
 };
 
+/**
+ * Distinguishes no submission from explicitly submitted unavailability (zero
+ * windows). A passed deadline locks either state without changing whether the
+ * employee submitted; persistence must enforce the actual cutoff separately.
+ */
 export function buildAvailabilitySubmissionState(input: {
   submitted: boolean;
   windowCount: number;

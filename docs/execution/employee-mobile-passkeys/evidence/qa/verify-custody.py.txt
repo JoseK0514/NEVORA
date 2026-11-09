@@ -1,0 +1,51 @@
+from pathlib import Path
+import json,hashlib,subprocess,sys
+root=Path(sys.argv[1]);repo=Path(sys.argv[2]);candidate=sys.argv[3]
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+inputs=json.loads((root/'source-inputs.json').read_text())
+expected={k:v for k,v in inputs.items() if k.startswith(('src/','public/')) or k in ['package.json','package-lock.json','tsconfig.json','next-env.d.ts','next.config.ts']}
+adapter=subprocess.check_output(['node','--import','tsx','--input-type=module','-e',"import {createOwnedDbAdapter} from './src/test/integration/owned-next-app.ts';import fs from 'node:fs';process.stdout.write(createOwnedDbAdapter(fs.readFileSync('src/lib/db.ts','utf8')));"],cwd=repo)
+adapterHash=hashlib.sha256(adapter).hexdigest()
+checks=[]
+for mf in root.rglob('source-manifest.json'):
+ if not mf.parent.name.startswith('owned-next-'):continue
+ m=json.loads(mf.read_text());own=json.loads((mf.parent/'ownership.json').read_text());mirror=mf.parent/'app'
+ errors=[]
+ if m['checkpoint']!=candidate:errors.append('candidate mismatch')
+ if m['hashes']!=expected:errors.append('source inventory/hash mismatch')
+ if sorted(m['substitutedFiles'])!=sorted(['src/lib/db.ts','next-env.d.ts']):errors.append('unexpected substitution')
+ actual=set()
+ for directory in ['src','public']:
+  for file in (mirror/directory).rglob('*'):
+   if file.is_file() or file.is_symlink():actual.add(str(file.relative_to(mirror)))
+   if file.is_symlink():errors.append('unexpected mirror symlink '+str(file.relative_to(mirror)))
+ for name in ['package.json','package-lock.json','tsconfig.json','next-env.d.ts','next.config.ts']:
+  if (mirror/name).is_file():actual.add(name)
+ if actual!=set(expected):errors.append('actual mirror input inventory mismatch')
+ if list(mirror.glob('.env*')):errors.append('unexpected ambient environment file')
+ observed={}
+ for f,h in expected.items():
+  p=mirror/f
+  if not p.is_file():errors.append('missing mirror '+f);continue
+  expectedHash=m['substitutedDbHash'] if f=='src/lib/db.ts' else m['generatedTypeReferences']['derivedHash'] if f=='next-env.d.ts' else h
+  observed[f]=sha(p)
+  if observed[f]!=expectedHash:errors.append('mirror bytes mismatch '+f)
+ if sha(repo/'src/lib/db.ts')!=m['originalDbHash']:errors.append('original DB mismatch')
+ if m['substitutedDbHash']!=adapterHash or (mirror/'src/lib/db.ts').read_bytes()!=adapter:errors.append('unapproved DB adapter bytes')
+ original=(repo/'next-env.d.ts').read_text();derived=original.replace('./.next/types/routes.d.ts','./.next/dev/types/routes.d.ts').replace('./.next/types/root-params.d.ts','./.next/dev/types/root-params.d.ts')
+ if (mirror/'next-env.d.ts').read_text()!=derived:errors.append('type substitution mismatch')
+ if not all(own.get(k) is True for k in ['started','closed','sourceVerified','mirrorVerified']):errors.append('ownership closure incomplete')
+ if own['source']!=str(repo) or own['root']!=str(mf.parent):errors.append('ownership location mismatch')
+ checks.append({'manifest':str(mf),'manifestSHA256':sha(mf),'ownership':str(mf.parent/'ownership.json'),'filesIndependentlyHashed':len(observed),'errors':errors,'passed':not errors})
+observations=json.loads((root/'observations.json').read_text());databases=[]
+for obs in observations:
+ for entry in obs.get('databases',[]):
+  if entry['exitCode']!=0:continue
+  for line in entry['rows']:
+   for db in json.loads(line):
+    if isinstance(db,dict) and db not in databases:databases.append(db)
+prefixes=['nevora_exchange_test_','nevora_foundation_test_','fuel_phase3_test_']
+namespace={prefix:[db for db in databases if db['datname'].startswith(prefix)] for prefix in prefixes}
+run=json.loads((root/'result.json').read_text())
+result={'candidate':candidate,'sourceUnchanged':run['sourceUnchanged'],'gitUnchanged':run['gitUnchanged'],'mirrors':checks,'namespaces':namespace,'allNamespacesObserved':all(namespace.values()),'clusterTeardownVerified':all(not c['directoryExists'] and not c['pidStillAlive'] and not c['portStillOpen'] for c in run['clusters']),'allMirrorHashesMatch':bool(checks) and all(c['passed'] for c in checks)}
+(root/'independent-custody-verification.json').write_text(json.dumps(result,indent=2));print(json.dumps({k:v for k,v in result.items() if k not in ['mirrors','namespaces']},indent=2))

@@ -1,0 +1,36 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/updates/compose",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/updates/compose",
+ "path": "/app/updates/compose",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 796
+ },
+ "page": {
+  "w": 440,
+  "h": 1980
+ },
+ "title": "NEVORA Workforce",
+ "heading": "Message today's team",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 434,
+   "y": 1624,
+   "text": "",
+   "t": 1792354946050,
+   "target": {
+    "tag": "input",
+    "id": "communication-expiration",
+    "cls": "",
+    "text": ""
+   }
+  }
+ ],
+ "note": "Button overlaps the edge ",
+ "updatedAt": "2026-10-18T20:22:26.653Z"
+}

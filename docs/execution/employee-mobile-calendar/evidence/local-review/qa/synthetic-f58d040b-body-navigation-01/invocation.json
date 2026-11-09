@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "/usr/local/bin/node",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/synthetic-body-navigation.cjs"
+  ],
+  "cwd": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume",
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "scriptSha256": "ee09c835edc32c3125d93b61cc5e946231b293471f8c9b19f087166abacced7b",
+  "playwrightVersion": "1.62.1",
+  "runtimePath": "/Users/josek0514/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright",
+  "serverPid": 45952,
+  "port": 63819,
+  "before": {
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "status": "",
+    "index": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": {
+    "terminalObservationMs": 11000,
+    "maxFirefoxAdditionalRaces": 20
+  }
+}

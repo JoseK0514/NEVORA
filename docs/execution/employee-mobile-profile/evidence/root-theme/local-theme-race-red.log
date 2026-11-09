@@ -1,0 +1,35 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [31m❯[39m src/lib/theme.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 6[2mms[22m[39m
+   [32m✓[39m reads system when nothing is stored, the stored choice otherwise, and system on junk or blocked storage[32m 1[2mms[22m[39m
+   [32m✓[39m stores light and dark, removes the key for system, and applies the theme even when storage is blocked[32m 0[2mms[22m[39m
+   [32m✓[39m ships an inline script that sets data-theme before first paint from the stored key[32m 0[2mms[22m[39m
+[31m   [31m×[31m reconciles System at the next paint when native media changes coalesce around the choice[39m[32m 3[2mms[22m[39m
+   [32m✓[39m a pending System reconciliation respects the latest choice from explicit[32m 0[2mms[22m[39m
+   [32m✓[39m a pending System reconciliation respects the latest choice from another tab[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/theme.test.ts[2m > [22mreconciles System at the next paint when native media changes coalesce around the choice
+[31m[1mAssertionError[22m: expected 'dark' to be 'light' // Object.is equality[39m
+
+Expected: [32m"light"[39m
+Received: [31m"dark"[39m
+
+[36m [2m❯[22m src/lib/theme.test.ts:[2m61:38[22m[39m
+    [90m 59|[39m   device.media.matches = false;
+    [90m 60|[39m   device.frame();
+    [90m 61|[39m   expect(device.attrs['data-theme']).toBe('light');
+    [90m   |[39m                                      [31m^[39m
+    [90m 62|[39m   expect(device.attrs['data-theme-choice']).toBe('system');
+    [90m 63|[39m   expect(device.storage.getItem(THEME_KEY)).toBeNull();
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+[2m   Start at [22m 17:53:38
+[2m   Duration [22m 95ms[2m (transform 56%, tests 21%, import 17%, worker 6%)[22m
+

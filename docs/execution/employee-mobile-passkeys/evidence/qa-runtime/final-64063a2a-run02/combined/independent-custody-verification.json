@@ -1,0 +1,976 @@
+{
+  "candidate": "64063a2ac10f946f1268f325cd0de99555d87257",
+  "sourceUnchanged": true,
+  "gitUnchanged": true,
+  "mirrors": [
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/messages/owned-next-zp3GWJ/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/messages/owned-next-zp3GWJ/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/calendar/owned-next-pToeQk/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/calendar/owned-next-pToeQk/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/responses/owned-next-BIHJvX/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/responses/owned-next-BIHJvX/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/planning/owned-next-UOcdnf/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/planning/owned-next-UOcdnf/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/owned-next-H1zFD5/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkeys/owned-next-H1zFD5/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/requests/owned-next-2lEBow/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/requests/owned-next-2lEBow/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/messages-review/owned-next-z6kJ34/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/messages-review/owned-next-z6kJ34/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/creation/owned-next-pBO4xN/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/creation/owned-next-pBO4xN/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/profile/owned-next-L0s8zb/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/profile/owned-next-L0s8zb/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkey-network/owned-next-UwjmKH/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/passkey-network/owned-next-UwjmKH/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    },
+    {
+      "manifest": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/hours/owned-next-2yEtk9/source-manifest.json",
+      "manifestSHA256": "93565f047c43945f4616363decd99be40c509d84877fb1a6955862f0d4696502",
+      "ownership": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/.omo/evidence/passkeys-independent-qa/final-64063a2a-run02/combined/hours/owned-next-2yEtk9/ownership.json",
+      "filesIndependentlyHashed": 2031,
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "namespaces": {
+    "nevora_exchange_test_": [
+      {
+        "oid": 553474,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5c540d81-c1d0-4494-855a-49ec1f10d262"
+      },
+      {
+        "oid": 556276,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:7cfd6c00-679b-45c3-bc28-9768a410e576"
+      },
+      {
+        "oid": 559084,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:8ca0bfaa-e2d4-48bd-9b0e-f346f0709759"
+      },
+      {
+        "oid": 561881,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2f294dc2-4528-4390-a775-4f9ad79b65f5"
+      },
+      {
+        "oid": 564678,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:0005037d-e27b-46a5-8945-996f591e2c67"
+      },
+      {
+        "oid": 567478,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c030a7f5-900e-4f48-a856-bef749b3c342"
+      },
+      {
+        "oid": 570275,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:11ba60e2-fc02-429b-af21-439ea87bfd82"
+      },
+      {
+        "oid": 573072,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:fadfdf22-714a-4145-9881-53913210679d"
+      },
+      {
+        "oid": 575869,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:dc6a2551-76c1-415b-aee1-6599cd454b17"
+      },
+      {
+        "oid": 578666,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6d300625-4dfb-420d-9b06-709b12bc8202"
+      },
+      {
+        "oid": 581463,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5a91a46b-0fc9-48c7-976e-5260cc29b76e"
+      },
+      {
+        "oid": 586679,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9290d495-bdce-47d2-901f-a5019f6732a8"
+      },
+      {
+        "oid": 589473,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b89d652a-6ade-4310-a6ff-7a9fb9f9a4dc"
+      },
+      {
+        "oid": 592268,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:59497212-36a9-4064-b3f0-f4cd1f0246dd"
+      },
+      {
+        "oid": 597856,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:403cff1e-087a-4486-97fd-e10ebb0cd441"
+      },
+      {
+        "oid": 600650,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:bfab7221-b75d-4659-b4a3-1ad00113e187"
+      },
+      {
+        "oid": 606238,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e3377352-4435-45ab-ae9b-278d972ba2cb"
+      },
+      {
+        "oid": 609032,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e0a43575-37df-469e-93f6-2b2fcc96822b"
+      },
+      {
+        "oid": 611826,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:d8499f7a-2277-48f1-9dc3-f127c2288920"
+      },
+      {
+        "oid": 617414,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6bc1a6bb-f706-41c5-9d5b-948d520bbf7b"
+      },
+      {
+        "oid": 620208,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:551846e4-bd91-4d47-806b-2a76faf807ca"
+      },
+      {
+        "oid": 623002,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:75c00924-c2db-487c-b1ae-f00ac7f7f034"
+      },
+      {
+        "oid": 625796,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:cbce88ae-3f01-4058-b352-14dbce5995fa"
+      },
+      {
+        "oid": 628590,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a1dbf242-4aed-4d48-991c-6f1de47be616"
+      },
+      {
+        "oid": 631384,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f50df25f-373a-487a-ab56-fd9be50feb55"
+      },
+      {
+        "oid": 634178,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:607bc892-25f3-4a03-bb5c-cdb7a14a34ac"
+      },
+      {
+        "oid": 636973,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:cf051aba-1f90-4d49-bc87-f38ed17d4d00"
+      },
+      {
+        "oid": 639767,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:083b4c92-6e14-464a-ba3b-36cdbde10e90"
+      },
+      {
+        "oid": 642561,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:3cbe481c-1c9d-4b8c-90d8-d45f5e15eb9f"
+      },
+      {
+        "oid": 648149,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:8c6cfb83-98d9-479d-be1b-79e3f19dbe6a"
+      },
+      {
+        "oid": 650943,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b5836f55-36ba-4666-b4c1-ad02b6336835"
+      },
+      {
+        "oid": 653737,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:871be891-5740-480c-9bcd-f13c4077d089"
+      },
+      {
+        "oid": 659325,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:7766f0d7-3c74-415d-91e6-ce228263bffc"
+      },
+      {
+        "oid": 662119,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9d6b3850-be4b-4c35-86df-4f2c6843284a"
+      },
+      {
+        "oid": 664913,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:37b92a5d-a847-46ef-849c-4015ce4ed9a8"
+      },
+      {
+        "oid": 667707,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:623bc9fc-e5d5-48d3-8b07-b620d1fcfed4"
+      },
+      {
+        "oid": 670501,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f6209773-9199-4d23-bc9a-93b3cad7284a"
+      },
+      {
+        "oid": 673295,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:4b665ec0-c5f9-4d74-a9f1-aece9ea9d84a"
+      },
+      {
+        "oid": 676089,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b65ff245-9224-4a0a-8682-fdc3b375bfd7"
+      },
+      {
+        "oid": 678883,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9a665d65-5da9-44e7-b324-030db793e25f"
+      },
+      {
+        "oid": 681677,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2fa1c6b0-1653-4153-909d-89b7ec285699"
+      },
+      {
+        "oid": 684471,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f2cbd98b-c45f-4ec5-bcda-7c78998e074d"
+      },
+      {
+        "oid": 687265,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:94768e9a-6e04-44b4-bf07-ee6f82af2fe7"
+      },
+      {
+        "oid": 690059,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:40eefa31-4d6c-4d1d-a9a4-66a389b83bfd"
+      },
+      {
+        "oid": 692853,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:408db7d8-24c0-467b-b2f2-ebd4f6af2bb0"
+      },
+      {
+        "oid": 695647,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2d42c13d-3237-44ad-8e38-16dafeb07a68"
+      },
+      {
+        "oid": 698441,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2472690e-d262-4591-bf3a-31f922f598af"
+      },
+      {
+        "oid": 701235,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:caae0d9b-bcec-43fb-8ff9-62c58e1f8487"
+      },
+      {
+        "oid": 704029,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1bfc10db-8e67-469c-9ac0-5c5281d10ccd"
+      },
+      {
+        "oid": 706826,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": null
+      },
+      {
+        "oid": 706826,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c929673e-64d0-48e3-bb3f-a32b6ce394cc"
+      },
+      {
+        "oid": 712414,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e2ba055e-fee1-4701-bd79-770dde2a1482"
+      },
+      {
+        "oid": 715208,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1af982a4-c37c-41e7-b07a-cf4acf4cd557"
+      },
+      {
+        "oid": 720796,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f8085bf4-e381-4cd3-8f14-7170b8d4f862"
+      },
+      {
+        "oid": 723590,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6b82f884-6ebf-463e-8d5c-66e01e049bd9"
+      },
+      {
+        "oid": 726384,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2cec1f06-4e3f-473d-be43-d17ae8fb866f"
+      },
+      {
+        "oid": 729178,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c930e014-568c-4384-ac75-afd61ca59dd3"
+      },
+      {
+        "oid": 731972,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1f52fb4e-b4c8-4e8a-a2e0-c58439138d9e"
+      },
+      {
+        "oid": 734766,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5ee33dab-1c5e-4b44-9d02-e5c3b3436f0c"
+      },
+      {
+        "oid": 740354,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:eaed96c3-d477-4337-b73f-6f0148bdfff4"
+      },
+      {
+        "oid": 743148,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9364d154-df40-4a0e-a930-6016ff66ca6d"
+      },
+      {
+        "oid": 745942,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1b315077-5a07-4dc6-982c-358a4bdfb790"
+      },
+      {
+        "oid": 748736,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:bf975536-2b07-409d-9a92-ca5ec453b618"
+      },
+      {
+        "oid": 754324,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b9822784-0a41-4848-a81c-5a461d392a1d"
+      },
+      {
+        "oid": 757118,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:062cbc93-a543-45c7-a9ae-1a31204df04f"
+      },
+      {
+        "oid": 759912,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:89407b77-f4dc-44de-8709-8fba1ca1f890"
+      },
+      {
+        "oid": 762706,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:25a74dbe-536d-4ea4-bfd4-31a0fe4fd9e9"
+      },
+      {
+        "oid": 765500,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:23db0483-372d-4784-bb68-a1bbcf25e3c3"
+      },
+      {
+        "oid": 768294,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:3a14a097-d2e7-43bd-8d8d-205e214725d3"
+      },
+      {
+        "oid": 771088,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:bdddf5f0-e7fc-41a1-a5e3-9c712228cb44"
+      },
+      {
+        "oid": 773882,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c0d5a214-e21a-4799-9a05-20b6f5dc4c19"
+      },
+      {
+        "oid": 776676,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e1f4e1a0-bd7f-45b6-a90b-97381074e969"
+      },
+      {
+        "oid": 779470,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:68cf1308-4484-40d1-a6cb-cf7e33c01582"
+      },
+      {
+        "oid": 782264,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:dfbbe87a-43be-4bd6-bc4e-68e01866d370"
+      },
+      {
+        "oid": 787852,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1ff9f5ca-1360-4686-8a82-873d19d2c66d"
+      },
+      {
+        "oid": 793440,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b7528973-789e-4a75-b6cd-a576c1707f0b"
+      },
+      {
+        "oid": 796234,
+        "datname": "nevora_exchange_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e15229ab-48f0-435e-b06e-57329f33cca1"
+      }
+    ],
+    "nevora_foundation_test_": [
+      {
+        "oid": 16384,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:57d35e12-93ce-45b5-860a-73b9697c1e7c"
+      },
+      {
+        "oid": 21972,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:89907fbb-b6cc-4f09-85f5-2576a98452b8"
+      },
+      {
+        "oid": 24766,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:74657525-5b20-46dd-9197-54514cccdeb3"
+      },
+      {
+        "oid": 30354,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:fd232959-5a42-4358-ad76-7dcdca055fac"
+      },
+      {
+        "oid": 35942,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5b86888b-2c8d-4e3f-bfff-69a8978fb5fc"
+      },
+      {
+        "oid": 38736,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:73777be0-29f9-4e56-ad4d-4a3eb943d6d2"
+      },
+      {
+        "oid": 44324,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e81eb4eb-86c0-4bc8-98c8-d30a1663657d"
+      },
+      {
+        "oid": 47118,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:cf07a506-f061-4aa6-9cef-c3b067d9a911"
+      },
+      {
+        "oid": 52706,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:eef91486-e68e-4b74-957a-829b27fe3b50"
+      },
+      {
+        "oid": 55500,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a41784ce-e27f-4ce8-bcaa-43a0a776c7e6"
+      },
+      {
+        "oid": 61088,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1c2756fc-5f85-42c4-b911-e0733f30373a"
+      },
+      {
+        "oid": 66676,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9347a096-5552-48e9-9828-bbeb10cf5f85"
+      },
+      {
+        "oid": 69470,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5716a124-9fea-47ee-9668-d51b9d5ba690"
+      },
+      {
+        "oid": 72264,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:32d6ea7b-996b-4d24-82a5-0e710e346e46"
+      },
+      {
+        "oid": 75058,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:ad997402-0eac-47f7-ad0c-024c50960892"
+      },
+      {
+        "oid": 80646,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:66cb0b2a-1227-4717-9ca0-68fa55901513"
+      },
+      {
+        "oid": 86234,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2ffa02ba-a8c0-47f2-9869-378c85afaa88"
+      },
+      {
+        "oid": 89028,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:230a2d1d-ef5d-4718-bd7c-f1e10a2016a5"
+      },
+      {
+        "oid": 94616,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b6c29bc5-9d0d-4891-8268-7829fd84a16c"
+      },
+      {
+        "oid": 100204,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b0406fb2-c6b9-4adf-9ef5-f4be607ff7fe"
+      },
+      {
+        "oid": 105792,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b163b3ad-177b-4e7c-a3a7-b9d1c9b5ee69"
+      },
+      {
+        "oid": 111380,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:8579f6a7-b7bc-4f86-863a-5c431f575638"
+      },
+      {
+        "oid": 114174,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:dca91b0d-41a2-4fc0-81bb-79d03966cdeb"
+      },
+      {
+        "oid": 116968,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:38a35587-5c73-44cc-8afa-d1db7d789639"
+      },
+      {
+        "oid": 119762,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:3b4f416c-9344-473c-88f7-8fd608c6cf39"
+      },
+      {
+        "oid": 122556,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c9f311c8-e1c4-4c2e-82cb-6063b7447e8b"
+      },
+      {
+        "oid": 125350,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6c4bfaf1-5770-40f0-9bf1-f10013c4c302"
+      },
+      {
+        "oid": 128144,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e1666eb8-ac24-4eb9-ab59-d1f59c2bdf58"
+      },
+      {
+        "oid": 133732,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:dd798798-55e9-4daf-83b4-b893e6076877"
+      },
+      {
+        "oid": 139320,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:4ee9487a-9d43-4f92-84c6-c5f94f75d7a0"
+      },
+      {
+        "oid": 153290,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c5a1b18f-6cd7-4cba-8eda-76635355fde0"
+      },
+      {
+        "oid": 156084,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c56814fd-6d62-49b5-b3ec-0486c2ce2312"
+      },
+      {
+        "oid": 161672,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:35d7ad82-67f1-4baa-89c2-99268abce76f"
+      },
+      {
+        "oid": 170054,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9d94cf5a-d565-4ccf-b674-edbafd871eec"
+      },
+      {
+        "oid": 175642,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:407d2d22-a7b0-456c-84ab-d4d7a7cd82b3"
+      },
+      {
+        "oid": 189612,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b4af81e2-c6fe-443e-8142-ff19ad467d11"
+      },
+      {
+        "oid": 195200,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a3842d8a-0304-4b32-8086-2b8e6dfd5ce2"
+      },
+      {
+        "oid": 206376,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f2f422e9-a407-48ae-8085-b9881cefb921"
+      },
+      {
+        "oid": 211964,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:4fdf3631-0225-4dd7-9afc-9b7fb38747ff"
+      },
+      {
+        "oid": 217554,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:343b3880-78cf-4f89-8d78-6ba497aa8681"
+      },
+      {
+        "oid": 220348,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:ecda97d9-7627-4ee5-b0ff-5a80696f8a16"
+      },
+      {
+        "oid": 225936,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2f5d89b9-661e-41c9-a8b2-dfea4be9dcd9"
+      },
+      {
+        "oid": 228730,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6cfbbe56-3058-4388-8bbb-071976be2144"
+      },
+      {
+        "oid": 234318,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b13c0e2b-5b36-4086-831f-b948625ade25"
+      },
+      {
+        "oid": 237112,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:5a5db666-5dad-4b3b-9de4-f7d6f17c556d"
+      },
+      {
+        "oid": 242700,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c967e4f1-2dcd-4e3b-a71b-7523c77c77b5"
+      },
+      {
+        "oid": 248288,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:cd40e90b-4ed7-458a-8d92-6061b7939e39"
+      },
+      {
+        "oid": 255920,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:7b4391cd-b5ff-4d94-bb30-8a972e12c86c"
+      },
+      {
+        "oid": 258714,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:89764548-a1d8-4b0b-9b40-f75bc2a85df0"
+      },
+      {
+        "oid": 264302,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:851c5a9b-5350-438f-9e8d-4777148ae99e"
+      },
+      {
+        "oid": 269890,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:71ee6308-8f0d-4538-a653-f9c021c4c398"
+      },
+      {
+        "oid": 275478,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:27b6b64e-7300-4174-bf23-2bdd0c04ee4d"
+      },
+      {
+        "oid": 278272,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:f630df30-41c8-4f9b-86c8-1b8210991978"
+      },
+      {
+        "oid": 286279,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:14c2cc99-679e-4988-849f-3ab5307c5b35"
+      },
+      {
+        "oid": 290440,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:507f9d2e-8610-4fa9-8de1-b14796bf6790"
+      },
+      {
+        "oid": 296028,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:15e06bcd-31a1-4b92-9670-f343031f2832"
+      },
+      {
+        "oid": 301616,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:10860068-3dfa-4659-b7d7-abb751a14e5e"
+      },
+      {
+        "oid": 306829,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:33533689-aeca-4595-a033-bd4664ed4f56"
+      },
+      {
+        "oid": 315211,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:228d0ed8-bd3f-44d3-a1f9-b54153d1e362"
+      },
+      {
+        "oid": 320799,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a19fc69d-9a8e-4eb2-91ac-2599db5be8b8"
+      },
+      {
+        "oid": 329181,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2b896f04-6864-4fc6-a686-a2aaabe36d9c"
+      },
+      {
+        "oid": 337563,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": null
+      },
+      {
+        "oid": 343151,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:79d84ca4-eded-4b49-b0a8-55e055d9daae"
+      },
+      {
+        "oid": 351533,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6fe80d55-79f5-4255-ad76-f4467f5c8e07"
+      },
+      {
+        "oid": 357121,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:ba3f463e-7a04-4df8-9cde-23bbaf210b60"
+      },
+      {
+        "oid": 365503,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:775d5c37-ab9b-43a9-b0cd-fd56cfdbc5ea"
+      },
+      {
+        "oid": 373510,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:c6e90f55-1f07-4fa0-b296-6fcebbacf076"
+      },
+      {
+        "oid": 380767,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:ddfa36c2-0106-42be-834f-22d50d42f881"
+      },
+      {
+        "oid": 388024,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:3f8d9053-4a67-40a1-9a8e-cc8f989590eb"
+      },
+      {
+        "oid": 392862,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a8658594-6eaf-4c2f-b4b8-5e69ea004d39"
+      },
+      {
+        "oid": 404957,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1a4c0444-1363-426f-a8b7-5fb33e3b8c6b"
+      },
+      {
+        "oid": 419471,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:bcff7026-eabf-4770-8ef8-1c1f4a041e37"
+      },
+      {
+        "oid": 426728,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:e6cda532-7648-4df8-ae88-9a654f7822b9"
+      },
+      {
+        "oid": 431941,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:fa6d1eae-d1d9-4879-a2e9-d763bf5f172d"
+      },
+      {
+        "oid": 434735,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1018a648-eb8a-4986-95e6-3db05fc255de"
+      },
+      {
+        "oid": 440323,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:15fc1615-ce2f-46e8-965a-b00073af0656"
+      },
+      {
+        "oid": 443117,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:887b4d73-088b-4868-af15-22e4cb8ce4d4"
+      },
+      {
+        "oid": 453543,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:2f23ca10-bf09-4af0-b9ae-dc96f7514abd"
+      },
+      {
+        "oid": 460800,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:b46d179e-b439-4348-ab52-b2df32aca190"
+      },
+      {
+        "oid": 468057,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:52c29dde-2d75-4a6b-9eb4-2d242940c6c3"
+      },
+      {
+        "oid": 472895,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:393a77fb-e20a-4be4-b69f-05e6649ab49e"
+      },
+      {
+        "oid": 476957,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:41deab34-6f40-441b-8607-9aacda23030a"
+      },
+      {
+        "oid": 484214,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:6c3f15d7-bcb0-402e-8b73-5ccfd2af3832"
+      },
+      {
+        "oid": 491471,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:26cec8d8-b20d-462f-ac00-1c7445949d04"
+      },
+      {
+        "oid": 498728,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:232a121d-f3e4-4996-a104-649911e9ed68"
+      },
+      {
+        "oid": 503566,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:36e93037-425d-4738-a0f3-fc32c8e58578"
+      },
+      {
+        "oid": 509154,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:97e6f442-5813-4942-89ff-58df2c41d257"
+      },
+      {
+        "oid": 511948,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:135870e0-3d39-4a3d-a868-a4ef7ab721b8"
+      },
+      {
+        "oid": 517536,
+        "datname": "nevora_foundation_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:9adee037-9aa7-42f7-ab3d-a986e897041c"
+      }
+    ],
+    "fuel_phase3_test_": [
+      {
+        "oid": 520330,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:18a9d0e3-1418-45ab-b6c3-815bcd9ce2f4"
+      },
+      {
+        "oid": 525918,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:75549485-4cf5-4bd9-ad9e-8ff534abaea6"
+      },
+      {
+        "oid": 528712,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:3eadcb5f-aadc-4544-b911-e0b5a339f53f"
+      },
+      {
+        "oid": 531506,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:a19bc3eb-ad5c-4dc9-aeec-545b7afb7a58"
+      },
+      {
+        "oid": 537094,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:1b001145-6648-4849-a239-d53e3bac460c"
+      },
+      {
+        "oid": 539888,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:4982faa4-ece1-4efc-9e49-48b8fa78ea79"
+      },
+      {
+        "oid": 545477,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:7faacf39-5994-4e2f-9d60-34bee9a4feb4"
+      },
+      {
+        "oid": 550680,
+        "datname": "fuel_phase3_test_c1_49553e2af403",
+        "marker": "fuel-phase3-disposable:ce75eb55-dbce-4f5d-92d5-5bbe9d40ebd1"
+      }
+    ]
+  },
+  "allNamespacesObserved": true,
+  "clusterTeardownVerified": true,
+  "allMirrorHashesMatch": true
+}

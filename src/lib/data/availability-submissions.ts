@@ -4,7 +4,11 @@ import {
   type AvailabilitySubmissionStatus,
 } from "@/lib/assistance/availability-submission";
 
+import { readAvailabilityInputs, readTeamAvailabilityInputs } from "./availability-inputs";
+import { resolveAvailabilityWeek } from "../scheduling/availability";
+
 type SubmissionStatusRow = {
+  uses_normal_availability?: boolean;
   submitted_at: Date | string | null;
   updated_at: Date | string | null;
   window_count: string | number;
@@ -24,6 +28,7 @@ export async function getAvailabilitySubmissionStatus(
   const rows = queryRows<SubmissionStatusRow>(
     await sql.query(
       `SELECT
+         (SELECT uses_normal_availability FROM weekly_availability_submissions WHERE employee_id = $1 AND week_start = $2) AS uses_normal_availability,
          (
            SELECT submitted_at
            FROM weekly_availability_submissions
@@ -57,7 +62,7 @@ export async function getAvailabilitySubmissionStatus(
 
   const row = rows[0];
   const submitted = Boolean(row?.submitted_at);
-  const windowCount = Number(row?.window_count ?? 0);
+  const windowCount = row?.uses_normal_availability ? resolveAvailabilityWeek({ weekStart, ...await readAvailabilityInputs(employeeId, weekStart) }).length : Number(row?.window_count ?? 0);
   const base = buildAvailabilitySubmissionState({
     submitted,
     windowCount,
@@ -74,55 +79,25 @@ export async function getAvailabilitySubmissionStatus(
 
 export async function getAvailabilitySubmissionSummary(weekStart: string) {
   const sql = getDb();
-  const rows = queryRows<{
-    active_employees: string | number;
-    submitted_employees: string | number;
-    unavailable_all_week: string | number;
-    missing_employee_ids: string[] | null;
-  }>(
-    await sql.query(
-      `WITH active AS (
-         SELECT id
-         FROM employees
-         WHERE active = true
-       ),
-       submissions AS (
-         SELECT employee_id
-         FROM weekly_availability_submissions
-         WHERE week_start = $1
-       ),
-       window_counts AS (
-         SELECT employee_id, count(*) AS window_count
-         FROM weekly_availability_windows
-         WHERE week_start = $1
-         GROUP BY employee_id
-       )
-       SELECT
-         count(*) AS active_employees,
-         count(s.employee_id) AS submitted_employees,
-         count(*) FILTER (
-           WHERE s.employee_id IS NOT NULL
-             AND COALESCE(w.window_count, 0) = 0
-         ) AS unavailable_all_week,
-         COALESCE(
-           array_agg(a.id ORDER BY a.id)
-             FILTER (WHERE s.employee_id IS NULL),
-           ARRAY[]::text[]
-         ) AS missing_employee_ids
-       FROM active a
-       LEFT JOIN submissions s ON s.employee_id = a.id
-       LEFT JOIN window_counts w ON w.employee_id = a.id`,
-      [weekStart],
+  const [active, statuses] = await Promise.all([
+    sql.query(
+      `SELECT count(*) AS active_employees FROM employees WHERE active = true`,
     ),
-  );
-
-  const row = rows[0];
-
+    listAvailabilitySubmissionStatuses(weekStart),
+  ]);
   return {
-    activeEmployees: Number(row?.active_employees ?? 0),
-    submittedEmployees: Number(row?.submitted_employees ?? 0),
-    unavailableAllWeek: Number(row?.unavailable_all_week ?? 0),
-    missingEmployeeIds: row?.missing_employee_ids ?? [],
+    activeEmployees: Number(
+      (queryRows(active)[0] as { active_employees?: number })
+        ?.active_employees ?? 0,
+    ),
+    eligibleEmployees: statuses.length,
+    submittedEmployees: statuses.filter((status) => status.submitted).length,
+    unavailableAllWeek: statuses.filter(
+      (status) => status.submitted && status.windowCount === 0,
+    ).length,
+    missingEmployeeIds: statuses
+      .filter((status) => !status.submitted)
+      .map((status) => status.employeeId),
   };
 }
 
@@ -136,6 +111,7 @@ export async function listAvailabilitySubmissionStatuses(
 ): Promise<AvailabilitySubmissionListItem[]> {
   const sql = getDb();
   const rows = queryRows<{
+    uses_normal_availability?: boolean;
     employee_id: string;
     employee_name: string;
     submitted_at: Date | string | null;
@@ -158,6 +134,7 @@ export async function listAvailabilitySubmissionStatuses(
        SELECT
          e.id AS employee_id,
          e.first_name || ' ' || e.last_name AS employee_name,
+         s.uses_normal_availability,
          s.submitted_at,
          s.updated_at,
          COALESCE(w.window_count, 0) AS window_count,
@@ -167,15 +144,17 @@ export async function listAvailabilitySubmissionStatuses(
          ON s.employee_id = e.id
         AND s.week_start = $1
        LEFT JOIN window_counts w ON w.employee_id = e.id
-       WHERE e.active = true
+       WHERE e.active = true AND e.role IN ('EMPLOYEE', 'LEAD')
        ORDER BY e.first_name, e.last_name`,
       [weekStart],
     ),
   );
 
+  const team = rows.some(row => row.uses_normal_availability) ? await readTeamAvailabilityInputs(weekStart) : new Map();
   return rows.map((row) => {
     const submitted = Boolean(row.submitted_at);
-    const windowCount = Number(row.window_count ?? 0);
+    const inputs = team.get(row.employee_id);
+    const windowCount = row.uses_normal_availability && inputs ? resolveAvailabilityWeek({ weekStart, ...inputs }).length : Number(row.window_count ?? 0);
     const state = buildAvailabilitySubmissionState({
       submitted,
       windowCount,

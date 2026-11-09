@@ -1,0 +1,35 @@
+@import url("p1.css");
+/* Phase 1, refined: the page's key fact lives in the band as a large light figure (private-bank style);
+ * the sheet is calmer — fewer boxes, hairline rules, units set small beside figures. */
+.u1 .hero2 { position: relative; z-index: 2; padding: 26px 24px 0; color: #fff; }
+.u1 .hero2 .eyebrow { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.62); }
+.u1 .hero2 .eyebrow i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.45); }
+.u1 .hero2 .eyebrow i.live { background: #A9E2DA; box-shadow: 0 0 0 4px rgba(169,226,218,.16); }
+.u1 .hero2 .fig { display: block; margin-top: 12px; font: 200 54px/56px var(--disp); letter-spacing: -2.4px; font-variant-numeric: tabular-nums; }
+.u1 .hero2 .fig em.u { font-size: 26px; letter-spacing: -.6px; margin-left: 2px; color: rgba(255,255,255,.7); font-weight: 300; }
+.u1 .hero2 .fig.word { font-size: 46px; line-height: 50px; letter-spacing: -1.8px; font-weight: 300; }
+.u1 .hero2 p { margin-top: 10px; font: 400 16px/22px var(--sys); color: rgba(255,255,255,.72); }
+.u1 .hero2 .pair { display: grid; grid-template-columns: 1fr 1fr; margin-top: 22px; border-top: 1px solid rgba(255,255,255,.14); }
+.u1 .hero2 .pair div { padding: 14px 0 0; }
+.u1 .hero2 .pair div + div { padding-left: 18px; border-left: 1px solid rgba(255,255,255,.14); }
+.u1 .hero2 .pair small { display: block; font: 600 11px/14px var(--sys); letter-spacing: 1.4px; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.u1 .hero2 .pair strong { display: block; margin-top: 6px; font: 300 28px/32px var(--disp); letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.u1 .hero2 .pair strong em.u { font-size: 17px; color: rgba(255,255,255,.65); }
+.u1 .stmt { display: flex; align-items: center; gap: 16px; margin: 0 16px; padding: 20px 18px; border: 1px solid var(--rule); border-radius: 20px; background: var(--paper); }
+.u1 .stmt .tx b { display: block; font: 500 17px/22px var(--sys); letter-spacing: -.2px; }
+.u1 .stmt .tx span { display: block; margin-top: 3px; font: 400 15px/20px var(--sys); color: var(--ink2); }
+.u1 .stmt .tx { flex: 1; min-width: 0; }
+.u1 .pill2 { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 999px; background: var(--deep); color: #fff; font: 500 15px/1 var(--sys); }
+.u1 .ring2 { flex: none; display: inline-flex; width: 40px; height: 40px; border-radius: 50%; align-items: center; justify-content: center; border: 1px solid var(--rule); color: var(--deep); }
+.u1 .quietbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 24px 0; font: 400 15px/21px var(--sys); color: var(--ink3); }
+.u1 .quietbar .ulink { min-height: 44px; }
+.u1 .navrow { display: flex; align-items: center; justify-content: space-between; margin: 0 16px; padding: 4px 4px 4px 18px; border: 1px solid var(--rule); border-radius: 999px; background: var(--paper); }
+.u1 .navrow b { font: 500 16px/20px var(--sys); }
+.u1 .navrow span.s { font: 400 15px/20px var(--sys); color: var(--ink2); }
+.u1 .navrow .arrows { display: flex; }
+.u1 .navrow .arrows i { display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; font-style: normal; color: var(--ink); }
+.u1 .navrow .arrows i.dim { color: var(--faint); }
+.u1 .note2 { display: flex; gap: 10px; margin: 16px 24px 0; font: 400 15px/21px var(--sys); color: var(--ink2); }
+.u1 .note2 i { flex: none; width: 7px; height: 7px; margin-top: 7px; border-radius: 50%; background: #B8892F; }
+.u1 .hero2 em.u { font-style: normal; }
+.u1 .hero2 .pair strong em.u { margin-left: 1px; font-weight: 300; }

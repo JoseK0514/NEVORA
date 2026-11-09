@@ -1,0 +1,24 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1
+
+ ❯ src/lib/employee-message-navigation.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/employee-message-navigation.test.ts [ src/lib/employee-message-navigation.test.ts ]
+Error: Cannot find module './employee-message-navigation' imported from /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-app-phase1/src/lib/employee-message-navigation.test.ts
+ ❯ src/lib/employee-message-navigation.test.ts:2:1
+      1| import {it,expect} from 'vitest';
+      2| import {safeMessageDestination} from './employee-message-navigation';
+       | ^
+      3| it('admits only canonical local notification destinations including ex…
+      4|  expect(safeMessageDestination('/app/updates/11111111-1111-4111-8111-1…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  13:09:31
+   Duration  78ms (worker 97%, environment 3%)
+

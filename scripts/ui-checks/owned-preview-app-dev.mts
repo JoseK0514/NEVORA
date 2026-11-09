@@ -1,0 +1,225 @@
+import { createHash, randomUUID } from 'node:crypto';
+import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
+import { createWriteStream } from 'node:fs';
+import { access, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:net';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { createDisposableExchangeDatabase } from '../../src/test/integration/local-postgres';
+import type { OwnedDatabaseIdentity } from '../../src/test/integration/owned-pg-transport';
+import {createCalendarLogRedactor} from '../../src/test/integration/calendar-log-redaction';
+
+const hash = (bytes: string | Buffer) => createHash('sha256').update(bytes).digest('hex');
+const applicationInput = (name: string) => ['src/', 'public/', 'scripts/'].some(prefix => name.startsWith(prefix)) || ['package.json', 'package-lock.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts'].includes(name);
+function trackedApplicationFiles(source: string): string[] {
+  const gitPaths = (args: string[]) => execFileSync('git', args, { cwd: source, encoding: 'utf8' }).split('\0').filter(Boolean);
+  if (gitPaths(['ls-files', '-o', '--exclude-standard', '-z']).some(applicationInput)) throw Error('Untracked application source cannot produce exact-SHA evidence');
+  if (gitPaths(['diff', '--name-only', 'HEAD', '-z']).some(applicationInput)) throw Error('Tracked application source differs from HEAD');
+  return gitPaths(['ls-files', '-c', '-z']).filter(applicationInput).sort();
+}
+/** The sole approved scratch DB substitution, derived from the original source. */
+export function createOwnedDbAdapter(originalDb: string): string {
+  const queryRows = originalDb.slice(originalDb.indexOf('export function queryRows'));
+  if (!queryRows.startsWith('export function queryRows')) throw new Error('Unexpected production DB contract');
+  const tenantRuntime=originalDb.slice(0,originalDb.indexOf('export function getDb()')).replace(/let database: ReturnType<typeof neon> \| null = null;\n/, '');
+  return `${tenantRuntime}\nimport { createOwnedPgTransport } from '../test/integration/owned-pg-transport';\nimport { ownedAppBarriers } from '../test/integration/owned-app-barriers';\nlet sql: ReturnType<typeof createOwnedPgTransport> | undefined;\nexport function getDb() {\n if (!sql) {\n  const url=process.env.NEVORA_OWNED_APP_DATABASE;\n  const identity=process.env.NEVORA_OWNED_APP_IDENTITY;\n  const directory=process.env.NEVORA_OWNED_APP_BARRIERS;\n  if(!url||!identity||!directory) throw new Error('Owned application test setup missing');\n  sql=createOwnedPgTransport(url,JSON.parse(identity),ownedAppBarriers(directory));\n }\n return sql;\n}\n${queryRows}`;
+}
+/** E's exact generated-only dev change; preserve the complete source file. */
+export function createOwnedDevTypeReferences(original: string): string {
+  let derived = original;
+  for (const name of ['routes.d.ts', 'root-params.d.ts']) {
+    const production = `import "./.next/types/${name}";`;
+    if (original.split(`./.next/types/${name}`).length !== 2 || original.split(/\r?\n/).filter(line => line === production).length !== 1) throw Error('Unexpected source-pinned Next type imports');
+    derived = derived.replace(production, `import "./.next/dev/types/${name}";`);
+  }
+  return derived;
+}
+async function availablePort(): Promise<number> {
+  const server = createServer();
+  await new Promise<void>((ready, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', ready); });
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('No loopback port');
+  await new Promise<void>((ready, reject) => server.close(error => error ? reject(error) : ready()));
+  return address.port;
+}
+async function stopOwnedProcess(child: ChildProcess): Promise<void> {
+  if (child.exitCode !== null || child.signalCode !== null || !child.pid) return;
+  const wait = new Promise<void>(resolve => child.once('exit', () => resolve()));
+  const signal = (kind: NodeJS.Signals) => {
+    try { process.kill(process.platform === 'win32' ? child.pid! : -child.pid!, kind); }
+    catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error; }
+  };
+  signal('SIGTERM');
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try { await Promise.race([wait, new Promise<void>(resolve => { timer = setTimeout(resolve, 5000); })]); }
+  finally { if (timer) clearTimeout(timer); }
+  if (child.exitCode === null && child.signalCode === null) { signal('SIGKILL'); await wait; }
+}
+
+/** Resolve the nearest existing parent, including symlinked ancestors. */
+async function canonicalDestination(path:string):Promise<string>{
+ try {return await realpath(path);}
+ catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;return join(await canonicalDestination(dirname(path)),basename(path));}
+}
+export async function assertExternalEvidencePath(source:string,evidenceDirectory:string) {
+ const outside=(base:string,path:string)=>{const distance=relative(base,path);return distance==='..'||distance.startsWith('..'+sep)||isAbsolute(distance);};
+ if (!isAbsolute(evidenceDirectory) || !outside(resolve(source),resolve(evidenceDirectory)) || !outside(await realpath(source),await canonicalDestination(resolve(evidenceDirectory)))) {
+  throw new Error('Application evidence must be an explicit directory outside the repository.');
+ }
+}
+
+export function ownedPayrollEnvironment(options: {payrollEnabled?:boolean} = {}) {
+  return {NEVORA_PAYROLL_ENABLED: options.payrollEnabled === true ? 'true' : 'false'};
+}
+
+/**
+ * Real Next development runtime, real login/session/actions and canonical local
+ * SQL. The scratch DB adapter is replaced; E can additionally pin Next's exact
+ * generated dev type-reference paths. Production source,
+ * existing databases and existing processes are never edited or reused.
+ */
+export async function createOwnedNextApp(evidenceDirectory: string, options: { clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; recoverySmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+  if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
+  if(options.recoverySmtpPort!==undefined&&(!Number.isInteger(options.recoverySmtpPort)||options.recoverySmtpPort<1||options.recoverySmtpPort>65535))throw Error('Owned SMTP port must be explicit.');
+  if (options.processOwnerId !== undefined && !/^[a-f0-9]{32}$/.test(options.processOwnerId)) throw Error('Owned process marker must identify the invocation.');
+  if (options.onProcessStarted && !options.processOwnerId) throw Error('Owned process registration requires its invocation marker.');
+  options.signal?.throwIfAborted();
+  const source = resolve(process.cwd());
+  // Validate before allocating a runtime or database. Only committed input is
+  // eligible for an exact-SHA mirror; a clean tracked status alone is insufficient.
+  const files = trackedApplicationFiles(source);
+  const pinDevTypeReferences = options.pinDevTypeReferences ?? true;
+  const evidence = resolve(evidenceDirectory);
+  await assertExternalEvidencePath(source,evidenceDirectory);
+  await mkdir(evidence, { recursive: true });
+  const root = await mkdtemp(join(evidence, 'owned-next-'));
+  const mirror = join(root, 'app');
+  const barriers = join(root, 'barriers');
+  await mkdir(mirror); await mkdir(barriers);
+  const ownerId = randomUUID();
+  const database = await createDisposableExchangeDatabase({ mode: options.emptyDatabase ? 'empty' : 'current-runtime' });
+  let child: ChildProcess | undefined;
+  let closed = false;
+  let closing: Promise<void> | undefined;
+  let closureFailure: unknown;
+  let mirrorPrepared = false;
+  let sourceManifestHash: string;
+  const mirrorHashes: Record<string, string> = {};
+  const hashes: Record<string, string> = {};
+  const verifySource = async () => {
+    if (JSON.stringify(trackedApplicationFiles(source)) !== JSON.stringify(files)) throw Error('Application source inventory changed during verification');
+    for (const [name, expected] of Object.entries(hashes)) if (hash(await readFile(join(source, name))) !== expected) throw Error('Application source changed during verification: ' + name);
+  };
+  const verifyMirror = async () => {
+    if (hash(await readFile(join(root, 'source-manifest.json'))) !== sourceManifestHash) throw Error('Application mirror source manifest changed');
+    const actual: string[] = [];
+    const queue = [''];
+    for (const directory of queue) for (const entry of await readdir(join(mirror, directory), { withFileTypes: true })) {
+      const name = directory ? directory + '/' + entry.name : entry.name;
+      if (entry.isDirectory() && (name === 'src' || name === 'public' || name === 'scripts' || name.startsWith('src/') || name.startsWith('public/') || name.startsWith('scripts/'))) queue.push(name);
+      else if (applicationInput(name)) {
+        if (!entry.isFile()) throw Error('Application mirror contains unsafe input: ' + name);
+        actual.push(name);
+      } else if (!directory && entry.name.startsWith('.env')) throw Error('Application mirror contains unapproved environment input');
+    }
+    if (JSON.stringify(actual.sort()) !== JSON.stringify(Object.keys(mirrorHashes).sort())) throw Error('Application mirror inventory changed');
+    for (const [name, expected] of Object.entries(mirrorHashes)) if (hash(await readFile(join(mirror, name))) !== expected) throw Error('Application mirror bytes changed: ' + name);
+  };
+  const manifestPath = join(root, 'ownership.json');
+  const metadata: Record<string, unknown> = { ownerId, source, root, runtime: 'Next production-mode review build + owned PostgreSQL; substituted DB transport', started: false };
+  await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+  const close = (): Promise<void> => {
+    if (closed) return closureFailure ? Promise.reject(closureFailure) : Promise.resolve();
+    if (!closing) closing = (async () => {
+      const actual = JSON.parse(await readFile(manifestPath, 'utf8'));
+      if (actual.ownerId !== ownerId) throw new Error('Owned application identity changed; refusing teardown');
+      if (child) await stopOwnedProcess(child);
+      await database.dispose();
+      metadata.closed = true; metadata.closedAt = new Date().toISOString();
+      await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+      closed = true; options.signal?.removeEventListener('abort', abort);
+      await verifySource();
+      if (mirrorPrepared) await verifyMirror();
+      metadata.sourceVerified = true; metadata.mirrorVerified = mirrorPrepared;
+      await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+    })().catch(async error => { closureFailure = error; metadata.verificationError = String(error); await writeFile(manifestPath, JSON.stringify(metadata, null, 2)); closing = undefined; throw error; });
+    return closing;
+  };
+  const abort = () => { void close().catch(() => { /* The setup/caller still awaits and reports close failures. */ }); };
+  options.signal?.addEventListener('abort', abort, { once: true });
+  try {
+    options.signal?.throwIfAborted();
+    const [identity] = await database.executor.query<OwnedDatabaseIdentity>({
+      text: "SELECT datname AS name,oid::int AS oid,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname=current_database()", values: [],
+    });
+    for (const name of files) {
+      if (isAbsolute(name) || name.split('/').includes('..')) throw new Error('Unsafe tracked source path');
+      await mkdir(dirname(join(mirror, name)), { recursive: true });
+      hashes[name] = hash(await readFile(join(source, name)));
+      await copyFile(join(source, name), join(mirror, name));
+      if (hash(await readFile(join(mirror, name))) !== hashes[name]) throw Error('Application mirror differs from captured source: ' + name);
+    }
+    await verifySource();
+    await access(join(source, 'node_modules/next/dist/bin/next'));
+    execFileSync('cp', process.platform === 'darwin' ? ['-cR', join(source, 'node_modules'), join(mirror, 'node_modules')] : ['-R', join(source, 'node_modules'), join(mirror, 'node_modules')]);
+    const originalDb = await readFile(join(source, 'src/lib/db.ts'), 'utf8');
+    const adapter = createOwnedDbAdapter(originalDb);
+    await writeFile(join(mirror, 'src/lib/db.ts'), adapter);
+    Object.assign(mirrorHashes, hashes, { 'src/lib/db.ts': hash(adapter) });
+    let generatedTypeReferences;
+    if (pinDevTypeReferences) {
+      const originalTypes = await readFile(join(source, 'next-env.d.ts'), 'utf8');
+      const derivedTypes = createOwnedDevTypeReferences(originalTypes);
+      await writeFile(join(mirror, 'next-env.d.ts'), derivedTypes);
+      generatedTypeReferences = { originalHash: hash(originalTypes), derivedHash: hash(derivedTypes), reason: 'Next 16.4.2 dev generated type-reference paths' };
+      mirrorHashes['next-env.d.ts'] = hash(derivedTypes);
+    }
+    const manifestBytes = JSON.stringify({ checkpoint: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: source, encoding: 'utf8' }).trim(), hashes, originalDbHash: hash(originalDb), substitutedDbHash: hash(adapter), substitutedFiles: pinDevTypeReferences ? ['src/lib/db.ts', 'next-env.d.ts'] : ['src/lib/db.ts'], generatedTypeReferences }, null, 2);
+    await writeFile(join(root, 'source-manifest.json'), manifestBytes);
+    sourceManifestHash = hash(manifestBytes); mirrorPrepared = true;
+    await verifyMirror();
+    const port = await availablePort(), url = `http://127.0.0.1:${port}`;
+    const env: NodeJS.ProcessEnv = {
+      PATH: process.env.PATH, HOME: process.env.HOME, NODE_ENV: 'development', CI: '1',
+      NEVORA_CLOCKER_PIN_KEY: options.clockerPinKey,
+      ...ownedPayrollEnvironment(options),
+      NEVORA_CLOCKER_PUNCH_ENABLED: options.clockerPunchEnabled === true ? 'true' : 'false',
+      ...(options.recoverySmtpPort?{FUEL_PORTAL_ORIGIN:url,NEVORA_RECOVERY_SMTP_HOST:'127.0.0.1',NEVORA_RECOVERY_SMTP_PORT:String(options.recoverySmtpPort),NEVORA_RECOVERY_FROM:'recovery@example.invalid'}:{}),
+      NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
+      NEVORA_OWNED_APP_DATABASE: database.connectionString,
+      NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
+      ...(options.processOwnerId ? { NEVORA_OWNED_PROCESS_OWNER: options.processOwnerId } : {}),
+    };
+    options.signal?.throwIfAborted();
+    const log = createWriteStream(join(root, 'next.log'));
+    // Review-only runtime: production build of the exact source mirror;
+    // no package build/start hook or hosted database is used.
+    // Kiosk review: development server so the Clocker accepts the local http origin.
+    child = spawn(process.execPath, [join(mirror, 'node_modules/next/dist/bin/next'), 'dev', '--hostname', '127.0.0.1', '--port', String(port)], {
+      cwd: mirror, env, detached: process.platform !== 'win32', stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    // Credentials must never reach the persistent sink, even across chunks.
+    let endedStreams=0;
+    for(const stream of [child.stdout!,child.stderr!]){
+      const redactor=createCalendarLogRedactor();
+      stream.pipe(redactor).pipe(log,{end:false});
+      redactor.once('end',()=>{if(++endedStreams===2)log.end();});
+    }
+    Object.assign(metadata, { pid: child.pid, port, url, identity, started: true });
+    await writeFile(manifestPath, JSON.stringify(metadata, null, 2));
+    await options.onProcessStarted?.(child, { ownerId, root, source });
+    options.signal?.throwIfAborted();
+    const deadline = Date.now() + 90000;
+    let ready = false;
+    while (Date.now() < deadline) {
+      options.signal?.throwIfAborted();
+      if (child.exitCode !== null) throw new Error('Owned Next process exited before readiness');
+      try { const response = await fetch(`${url}/login`, { redirect: 'manual', signal: options.signal ? AbortSignal.any([options.signal, AbortSignal.timeout(3000)]) : AbortSignal.timeout(3000) }); if (response.ok) { ready = true; break; } }
+      catch { /* A cold compilation can exceed one poll; retain the bounded startup window. */ }
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+    if (!ready) throw new Error(`Owned Next did not become ready; see ${join(root, 'next.log')}`);
+    options.signal?.throwIfAborted();
+    await verifySource();
+    return { root, mirror, barriers, url, database, close, sourceHashes: hashes };
+  } catch (error) { try { await close(); } catch (closureError) { throw new AggregateError([error, closureError], 'Owned application setup and closure failed'); } throw error; }
+}

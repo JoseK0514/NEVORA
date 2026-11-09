@@ -1,0 +1,335 @@
+{
+  "findingId": "NQAF001",
+  "candidateSha": "42bb62cd39990619fc6acb43f90aa6820a4a5e39",
+  "request": {
+    "workspaceId": "workspace-fuel",
+    "employeeId": "AS_POLICY",
+    "timeZone": "America/Puerto_Rico",
+    "period": {
+      "endDate": "2026-10-04",
+      "startDate": "2026-09-28"
+    },
+    "contexts": [
+      {
+        "startAt": "2026-09-15T04:00:00Z",
+        "endAt": "2026-10-05T04:01:00Z"
+      }
+    ],
+    "coverage": [
+      {
+        "startDate": "2026-09-08",
+        "endDate": "2026-09-28"
+      },
+      {
+        "startDate": "2026-09-15",
+        "endDate": "2026-10-05"
+      }
+    ]
+  },
+  "custody": [
+    {
+      "start_date": "2026-05-05",
+      "end_date": "2026-05-25",
+      "revision": 2,
+      "action": "FINALIZE",
+      "source_hash": "7c32bcb509febfbd2f0b9021f3ce5654"
+    },
+    {
+      "start_date": "2026-09-08",
+      "end_date": "2026-09-28",
+      "revision": 3,
+      "action": "REOPEN",
+      "source_hash": "4357b17e8ee3b1451166dacdd86681b0"
+    },
+    {
+      "start_date": "2026-09-15",
+      "end_date": "2026-10-05",
+      "revision": 2,
+      "action": "FINALIZE",
+      "source_hash": "a7735d9519e50a98ddf0825ef78541b3"
+    }
+  ],
+  "rawCapture": [
+    {
+      "capture": {
+        "cards": [
+          {
+            "action": "REOPEN",
+            "period": {
+              "endDate": "2026-09-28",
+              "startDate": "2026-09-08"
+            },
+            "revision": 3,
+            "snapshot": {
+              "endDate": "2026-09-28",
+              "entries": [
+                {
+                  "id": "r2-current",
+                  "endAt": "2026-09-23 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-09-23 08:00:00-04",
+                  "rawEndAt": "2026-09-23 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-09-23 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                }
+              ],
+              "timeZone": "America/Puerto_Rico",
+              "startDate": "2026-09-08",
+              "employeeId": "AS_POLICY",
+              "corrections": [],
+              "employeeName": "Fictional policy",
+              "pendingCorrections": 0
+            },
+            "sourceHash": "4357b17e8ee3b1451166dacdd86681b0",
+            "operationId": "c56ea251-eedd-40b1-839f-673678e1bcfc",
+            "currentSource": {
+              "endDate": "2026-09-28",
+              "entries": [
+                {
+                  "id": "r2-current",
+                  "endAt": "2026-09-23 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-09-23 08:00:00-04",
+                  "rawEndAt": "2026-09-23 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-09-23 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                }
+              ],
+              "timeZone": "America/Puerto_Rico",
+              "startDate": "2026-09-08",
+              "employeeId": "AS_POLICY",
+              "corrections": [],
+              "employeeName": "Fictional policy",
+              "pendingCorrections": 0
+            },
+            "actorEmployeeId": "AS_OPERATOR",
+            "approvalRevision": null,
+            "currentSourceHash": "4357b17e8ee3b1451166dacdd86681b0",
+            "approvalSourceHash": null,
+            "approvalOperationId": null,
+            "approvalActorEmployeeId": null
+          },
+          {
+            "action": "FINALIZE",
+            "period": {
+              "endDate": "2026-10-05",
+              "startDate": "2026-09-15"
+            },
+            "revision": 2,
+            "snapshot": {
+              "endDate": "2026-10-05",
+              "entries": [
+                {
+                  "id": "r2-current",
+                  "endAt": "2026-09-23 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-09-23 08:00:00-04",
+                  "rawEndAt": "2026-09-23 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-09-23 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                },
+                {
+                  "id": "cap-policy-oct1",
+                  "endAt": "2026-10-01 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-10-01 08:00:00-04",
+                  "rawEndAt": "2026-10-01 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-10-01 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                }
+              ],
+              "timeZone": "America/Puerto_Rico",
+              "startDate": "2026-09-15",
+              "employeeId": "AS_POLICY",
+              "corrections": [],
+              "employeeName": "Fictional policy",
+              "pendingCorrections": 0
+            },
+            "sourceHash": "a7735d9519e50a98ddf0825ef78541b3",
+            "operationId": "a0034586-a916-4bce-befd-b242964947b9",
+            "currentSource": {
+              "endDate": "2026-10-05",
+              "entries": [
+                {
+                  "id": "r2-current",
+                  "endAt": "2026-09-23 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-09-23 08:00:00-04",
+                  "rawEndAt": "2026-09-23 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-09-23 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                },
+                {
+                  "id": "cap-policy-oct1",
+                  "endAt": "2026-10-01 16:00:00-04",
+                  "breaks": [],
+                  "startAt": "2026-10-01 08:00:00-04",
+                  "rawEndAt": "2026-10-01 16:00:00-04",
+                  "locationId": "loc-1",
+                  "positionId": null,
+                  "rawStartAt": "2026-10-01 08:00:00-04",
+                  "sourceKind": "RECORDED",
+                  "adjustmentId": null,
+                  "locationName": "FUEL - 2",
+                  "positionName": null,
+                  "recordedVersion": 1
+                }
+              ],
+              "timeZone": "America/Puerto_Rico",
+              "startDate": "2026-09-15",
+              "employeeId": "AS_POLICY",
+              "corrections": [],
+              "employeeName": "Fictional policy",
+              "pendingCorrections": 0
+            },
+            "actorEmployeeId": "AS_OPERATOR",
+            "approvalRevision": 1,
+            "currentSourceHash": "a7735d9519e50a98ddf0825ef78541b3",
+            "approvalSourceHash": "a7735d9519e50a98ddf0825ef78541b3",
+            "approvalOperationId": "13ece4f9-5bf9-4c95-8bee-baec4c5653c8",
+            "approvalActorEmployeeId": "AS_OPERATOR"
+          }
+        ],
+        "entries": [
+          {
+            "id": "r2-current",
+            "endAt": "2026-09-23 16:00:00-04",
+            "breaks": [],
+            "status": "CLOCKED_OUT",
+            "startAt": "2026-09-23 08:00:00-04",
+            "rawEndAt": "2026-09-23 16:00:00-04",
+            "employeeId": "AS_POLICY",
+            "locationId": "loc-1",
+            "positionId": null,
+            "rawStartAt": "2026-09-23 08:00:00-04",
+            "sourceKind": "RECORDED",
+            "adjustmentId": null,
+            "locationName": "FUEL - 2",
+            "positionName": null,
+            "recordedVersion": 1
+          },
+          {
+            "id": "cap-policy-oct1",
+            "endAt": "2026-10-01 16:00:00-04",
+            "breaks": [],
+            "status": "CLOCKED_OUT",
+            "startAt": "2026-10-01 08:00:00-04",
+            "rawEndAt": "2026-10-01 16:00:00-04",
+            "employeeId": "AS_POLICY",
+            "locationId": "loc-1",
+            "positionId": null,
+            "rawStartAt": "2026-10-01 08:00:00-04",
+            "sourceKind": "RECORDED",
+            "adjustmentId": null,
+            "locationName": "FUEL - 2",
+            "positionName": null,
+            "recordedVersion": 1
+          }
+        ],
+        "lineage": {
+          "events": [],
+          "requests": [],
+          "locations": [
+            {
+              "id": "loc-1",
+              "workspaceId": "workspace-fuel"
+            }
+          ],
+          "adjustments": []
+        },
+        "employee": {
+          "id": "AS_POLICY",
+          "workspaceId": "workspace-fuel"
+        },
+        "workspace": {
+          "id": "workspace-fuel",
+          "active": true,
+          "timeZone": "America/Puerto_Rico"
+        },
+        "observedAt": "2026-10-13 16:15:39.691316-04",
+        "limitExceeded": false
+      }
+    }
+  ],
+  "projected": {
+    "state": "blocked",
+    "reason": "not_finalized"
+  },
+  "run": {
+    "id": "184c213d-82f6-46d2-a105-a77d8ca443f7",
+    "rows": null,
+    "payday": "2026-10-13",
+    "period": {
+      "endDate": "2026-10-04",
+      "startDate": "2026-09-28"
+    },
+    "status": "BLOCKED",
+    "totals": null,
+    "coverage": {
+      "complete": false,
+      "locationIds": [
+        "loc-1",
+        "loc-3"
+      ]
+    },
+    "revision": 2,
+    "createdAt": "2026-10-13T20:13:17.705Z",
+    "documents": [],
+    "approvedAt": null,
+    "approvedBy": null,
+    "exceptions": [
+      "RECORDED_SOURCE_NOT_FINALIZED:AS_POLICY",
+      "LOCATION_COVERAGE_REQUIRED",
+      "NATIVE_INPUT_REQUIRED:AS_POLICY"
+    ],
+    "sourceName": "NEVORA actual recorded time",
+    "reviewToken": null,
+    "correctionOf": null,
+    "importRevision": 0,
+    "sourceAuthority": "NATIVE_RECORDED_TIME",
+    "sourceReference": "e6ed391423d035ac92c640e07ef247f070357b318207c60f521b8b8d5084d9c6",
+    "settingsRevision": 1,
+    "nativeCalculation": {
+      "state": "blocked",
+      "version": "NATIVE_RUN_V1",
+      "employees": [],
+      "ruleRevision": 1,
+      "templateVersion": "NEVORA_NATIVE_PAYSTUB_PDF_V1"
+    },
+    "exceptionRevisions": [],
+    "populationRevision": 1
+  },
+  "knownClosedContext": true,
+  "widerApprovedAndFinalizedViaActualService": true,
+  "noClockOrGuardBypass": true
+}

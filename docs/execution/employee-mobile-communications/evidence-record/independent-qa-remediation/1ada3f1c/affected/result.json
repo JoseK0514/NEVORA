@@ -1,0 +1,38 @@
+{
+  "gate": "affected",
+  "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-communications.config.mts",
+    "src/test/integration/employee-mobile-responses.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts"
+  ],
+  "startedAt": "2026-10-27T19:12:08.373594+00:00",
+  "completedAt": "2026-10-27T19:15:39.603250+00:00",
+  "exitCode": 0,
+  "durationSeconds": 211.229,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-Mrbg5X",
+      "directoryExists": false,
+      "pid": 39096,
+      "livePid": false,
+      "port": 40677,
+      "portOpen": false
+    }
+  ],
+  "finalProcesses": [],
+  "summaryLines": [
+    " Test Files  2 passed (2)",
+    "      Tests  2 passed (2)",
+    "   Duration  209.89s (tests 100%)",
+    "[Payroll PostgreSQL] Owned cluster stopped."
+  ],
+  "stdoutSha256": "5716bab2ccfe01aa57c134af890d5141b0d385e20aedc9bb9db429bcb46ec9f3"
+}

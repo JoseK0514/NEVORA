@@ -1,0 +1,45 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/passkeys/management.test.ts (18 tests | 3 failed) 21ms
+   × rejects a non-204 removal response {"error":"unavailable"} even when a later list happens to be absent 2ms
+   × rejects a non-204 removal response {} even when a later list happens to be absent 0ms
+   × rejects a non-204 removal response null even when a later list happens to be absent 0ms
+ ❯ src/components/employee-mobile/passkeys.test.tsx (11 tests | 1 failed) 26ms
+   × keeps desktop saved metadata and native confirmation in the incumbent presentation 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/passkeys/management.test.ts > rejects a non-204 removal response {"error":"unavailable"} even when a later list happens to be absent
+ FAIL  src/lib/passkeys/management.test.ts > rejects a non-204 removal response {} even when a later list happens to be absent
+ FAIL  src/lib/passkeys/management.test.ts > rejects a non-204 removal response null even when a later list happens to be absent
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ src/lib/passkeys/management.test.ts:63:289
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/components/employee-mobile/passkeys.test.tsx > keeps desktop saved metadata and native confirmation in the incumbent presentation
+AssertionError: expected '<section class="nv-card pk-section em…' to contain '<dialog'
+
+Expected: "<dialog"
+Received: "<section class="nv-card pk-section em-passkeys" aria-labelledby="passkeys-title" data-passkey-state="ready"><div class="nv-card__head"><h2 class="nv-card__title" id="passkeys-title">Face ID and passkeys</h2></div><div class="nv-card__body pk-body"><p class="pk-muted em-passkeys-intro">Sign in with your device’s screen lock instead of typing your password.</p><ul class="pk-list"><li class="pk-item"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256" class="em-passkeys-key" aria-hidden="true"><path d="M216.57,39.43A80,80,0,0,0,83.91,120.78L28.69,176A15.86,15.86,0,0,0,24,187.31V216a16,16,0,0,0,16,16H72a8,8,0,0,0,8-8V208H96a8,8,0,0,0,8-8V184h16a8,8,0,0,0,5.66-2.34l9.56-9.57A79.73,79.73,0,0,0,160,176h.1A80,80,0,0,0,216.57,39.43ZM224,98.1c-1.09,34.09-29.75,61.86-63.89,61.9H160a63.7,63.7,0,0,1-23.65-4.51,8,8,0,0,0-8.84,1.68L116.69,168H96a8,8,0,0,0-8,8v16H72a8,8,0,0,0-8,8v16H40V187.31l58.83-58.82a8,8,0,0,0,1.68-8.84A63.72,63.72,0,0,1,96,95.92c0-34.14,27.81-62.8,61.9-63.89A64,64,0,0,1,224,98.1ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path></svg><span class="pk-item__text"><span class="pk-item__name">My phone</span><span class="pk-item__meta">Added Oct 27, 2026</span><span class="pk-item__meta">Not used yet</span></span><button type="button" class="nv-link pk-remove" aria-label="Remove My phone" disabled="">Remove</button></li></ul><div class="em-passkeys-confirmation" role="group" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body" tabindex="-1"><h3 id="passkey-remove-title">Remove “My phone”?</h3><p id="passkey-remove-body">This stops this passkey from signing in to NEVORA. It does not delete it from your device or sign you out.</p><p>This is your last saved passkey. You can still sign in with your password.</p><div class="em-passkeys-actions"><button type="button" class="nv-btn" data-kind="secondary">Keep passkey</button><button type="button" class="nv-btn" data-kind="danger">Remove passkey</button></div></div><p class="em-passkeys-feedback" role="status" aria-live="polite" tabindex="-1"></p><details class="em-passkeys-help"><summary><span>How passkeys work</span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path></svg></summary><div><p>Your device may use a fingerprint, face scan, screen-lock code or security key. NEVORA does not receive your biometric data.</p><p>A saved name describes where a passkey was added. Your device or password manager may sync it to other devices.</p><p>Removing a passkey here stops future sign-ins with it. To remove its saved copy too, use your device or password manager.</p></div></details></div></section>"
+
+ ❯ src/components/employee-mobile/passkeys.test.tsx:25:15
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 25 passed (29)
+   Start at  20:16:46
+   Duration  128ms (tests 40%, transform 33%, import 24%, worker 3%)
+

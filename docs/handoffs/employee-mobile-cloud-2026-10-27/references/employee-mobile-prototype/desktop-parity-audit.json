@@ -1,0 +1,350 @@
+{
+  "scope": "Source-based desktop Employee vs new mobile prototype; not live feature configuration or authorization certification",
+  "audited_at": "2026-10-27T03:26:50.468809+00:00",
+  "application_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "prototype_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+  "workflows": [
+    {
+      "id": "home",
+      "area": "Home",
+      "feature": "Own current/next shifts and attention",
+      "prototype_status": "Partial sample",
+      "gate": "Own current records",
+      "source": "src/components/employee-home-quiet.tsx",
+      "line": 198,
+      "source_marker": "export function EmployeeHomeQuietView"
+    },
+    {
+      "id": "schedule",
+      "area": "Schedule",
+      "feature": "Own published shifts across weeks/locations",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own published assignments",
+      "source": "src/app/app/schedule/page.tsx",
+      "line": 83,
+      "source_marker": "export default"
+    },
+    {
+      "id": "schedule-review",
+      "area": "Schedule",
+      "feature": "Revision-bound weekly review and recovery",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own current schedule revision",
+      "source": "src/components/employee-weekly-confirmation.tsx",
+      "line": 11,
+      "source_marker": "export function EmployeeWeeklyConfirmation"
+    },
+    {
+      "id": "open-shifts",
+      "area": "Requests",
+      "feature": "Find/request eligible open coverage",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Marketplace module and current eligibility/policy",
+      "source": "src/app/app/exchange/page.tsx",
+      "line": 167,
+      "source_marker": "const claimable="
+    },
+    {
+      "id": "swap-create",
+      "area": "Requests",
+      "feature": "Request a shift swap",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own qualifying shift and eligibility",
+      "source": "src/app/app/exchange/swap/page.tsx",
+      "line": 27,
+      "source_marker": "requireSelfService("
+    },
+    {
+      "id": "swap-incoming",
+      "area": "Requests",
+      "feature": "Respond to incoming swaps",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Named recipient and current revision",
+      "source": "src/app/app/exchange/page.tsx",
+      "line": 161,
+      "source_marker": "const incoming="
+    },
+    {
+      "id": "callout",
+      "area": "Requests",
+      "feature": "Offer cover / report unable to work",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own future assignment and current policy",
+      "source": "src/app/app/exchange/callout/page.tsx",
+      "line": 21,
+      "source_marker": "requireSelfService("
+    },
+    {
+      "id": "exchange-history",
+      "area": "Requests",
+      "feature": "Own exchange/callout history and cancellation",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own involvement and permitted transition",
+      "source": "src/app/app/exchange/page.tsx",
+      "line": 140,
+      "source_marker": "const myExchangeActivity"
+    },
+    {
+      "id": "timeoff-full",
+      "area": "Requests",
+      "feature": "Full-day time-off request/review",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Time-off module and own request",
+      "source": "src/app/app/requests/time-off-signature.tsx",
+      "line": 13,
+      "source_marker": "Full days"
+    },
+    {
+      "id": "timeoff-partial",
+      "area": "Requests",
+      "feature": "Partial-day time-off request",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Time-off module and own dates/times",
+      "source": "src/app/app/requests/time-off-signature.tsx",
+      "line": 74,
+      "source_marker": "Part of a day"
+    },
+    {
+      "id": "timeoff-history",
+      "area": "Requests",
+      "feature": "Own pending/decided time-off history",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own requests only",
+      "source": "src/app/app/requests/page.tsx",
+      "line": 74,
+      "source_marker": "const pending = mine"
+    },
+    {
+      "id": "timeoff-withdraw",
+      "area": "Requests",
+      "feature": "Withdraw own Pending request",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Pending and request.employeeId equals session.id",
+      "source": "src/app/app/requests/page.tsx",
+      "line": 98,
+      "source_marker": "request.employeeId === session.id"
+    },
+    {
+      "id": "availability-usual",
+      "area": "Requests",
+      "feature": "View/edit usual availability",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own availability preferences",
+      "source": "src/components/availability-signature.tsx",
+      "line": 112,
+      "source_marker": "export function"
+    },
+    {
+      "id": "availability-week",
+      "area": "Requests",
+      "feature": "Weekly availability and deadlines",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own week and current submission rules",
+      "source": "src/components/availability-signature.tsx",
+      "line": 112,
+      "source_marker": "export function"
+    },
+    {
+      "id": "recorded-time",
+      "area": "Hours",
+      "feature": "Own clock status, punches and breaks",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own recorded time",
+      "source": "src/components/employee-time-panel.tsx",
+      "line": 57,
+      "source_marker": "export function"
+    },
+    {
+      "id": "timecards",
+      "area": "Hours",
+      "feature": "Own period timecard/details/history",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own card; no Employee approval/finalization/export",
+      "source": "src/app/app/timecards/page.tsx",
+      "line": 32,
+      "source_marker": "manager={false}"
+    },
+    {
+      "id": "entry-correction",
+      "area": "Hours",
+      "feature": "Propose completed-entry correction",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own completed/effective source entry",
+      "source": "src/components/employee-time-corrections.tsx",
+      "line": 82,
+      "source_marker": "export function"
+    },
+    {
+      "id": "missing-time",
+      "area": "Hours",
+      "feature": "Missing entries and completed-break corrections",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own time and permitted source/location",
+      "source": "src/components/employee-time-corrections.tsx",
+      "line": 298,
+      "source_marker": "employee-missing-time-correction"
+    },
+    {
+      "id": "correction-history",
+      "area": "Hours",
+      "feature": "Correction decisions/effective-time history",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own proposals and source baseline",
+      "source": "src/components/employee-time-corrections.tsx",
+      "line": 318,
+      "source_marker": "Correction history is unavailable"
+    },
+    {
+      "id": "notification-inbox",
+      "area": "Home / More",
+      "feature": "Own notifications and deep links",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own inbox; generic Mark read is management-only",
+      "source": "src/app/app/notifications/page.tsx",
+      "line": 15,
+      "source_marker": "if(!manager)return"
+    },
+    {
+      "id": "company-updates",
+      "area": "More",
+      "feature": "Read permitted updates and acknowledge",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Updates module, audience grant, revision/content",
+      "source": "src/components/communication-detail.tsx",
+      "line": 30,
+      "source_marker": "export function CommunicationDetail"
+    },
+    {
+      "id": "team-post",
+      "area": "More",
+      "feature": "Post to today\u2019s assigned team / withdraw own permitted post",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Current-day published assignment; no required acknowledgement or broad announcements",
+      "source": "src/lib/communications/policy.ts",
+      "line": 14,
+      "source_marker": "export function canAuthorCommunication"
+    },
+    {
+      "id": "profile-read",
+      "area": "Profile",
+      "feature": "Own identity, work locations/access/timezone",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Work details updated by manager; no self role/contact editor",
+      "source": "src/components/employee-account-panel.tsx",
+      "line": 17,
+      "source_marker": "if(quiet&&kind==='profile')"
+    },
+    {
+      "id": "language",
+      "area": "Profile",
+      "feature": "English/Spanish sign-in language",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own preference; currently sign-in pages only",
+      "source": "src/components/employee-profile-rows.tsx",
+      "line": 43,
+      "source_marker": "title=\"Language\""
+    },
+    {
+      "id": "appearance",
+      "area": "Profile",
+      "feature": "System/light/dark appearance",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own device preference",
+      "source": "src/components/employee-profile-rows.tsx",
+      "line": 45,
+      "source_marker": "title=\"Appearance\""
+    },
+    {
+      "id": "device-alerts",
+      "area": "Profile",
+      "feature": "Alerts on this device",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Workplace notification feature and device permission",
+      "source": "src/app/app/profile/page.tsx",
+      "line": 23,
+      "source_marker": "const notificationsEnabled="
+    },
+    {
+      "id": "calendar",
+      "area": "Profile",
+      "feature": "Create/copy/replace/revoke private calendar link",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Own calendar authority and current subscription state",
+      "source": "src/components/calendar-subscription-panel.tsx",
+      "line": 25,
+      "source_marker": "export function CalendarSubscriptionView"
+    },
+    {
+      "id": "passkeys",
+      "area": "Profile",
+      "feature": "Register/list/remove own passkeys",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Feature flag, supported device and own account",
+      "source": "src/components/passkeys/passkey-section.tsx",
+      "line": 51,
+      "source_marker": "registerPasskey(deviceName())"
+    },
+    {
+      "id": "support-legal",
+      "area": "Profile",
+      "feature": "Support/privacy/terms",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Support; legal links depend on policy visibility",
+      "source": "src/app/app/profile/page.tsx",
+      "line": 53,
+      "source_marker": "policiesVisible()?<>"
+    },
+    {
+      "id": "account-delete",
+      "area": "Profile",
+      "feature": "Own account deletion request",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Current own session and policy gates",
+      "source": "src/app/app/account/delete/page.tsx",
+      "line": 16,
+      "source_marker": "const session = await requireSession()"
+    },
+    {
+      "id": "sign-out",
+      "area": "Profile",
+      "feature": "Sign out",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Current session",
+      "source": "src/app/app/profile/page.tsx",
+      "line": 61,
+      "source_marker": "aria-label=\"Session\""
+    },
+    {
+      "id": "pay-statements",
+      "area": "Pay / Hours",
+      "feature": "Own published statements / view/download / payday",
+      "prototype_status": "Local sample flow; live integration pending",
+      "gate": "Payroll enabled AND payStatements module",
+      "source": "src/app/app/my-pay/page.tsx",
+      "line": 15,
+      "source_marker": "if (!payrollFeatureEnabled())"
+    },
+    {
+      "id": "modules",
+      "area": "Shared",
+      "feature": "Capability-driven menus and refusal states",
+      "prototype_status": "Missing integration states",
+      "gate": "Current workplace modules and authority",
+      "source": "src/lib/workspace-presentation/modules.ts",
+      "line": 43,
+      "source_marker": "export function moduleForPath"
+    },
+    {
+      "id": "recovery",
+      "area": "Shared",
+      "feature": "Offline/session/re-entry/stale and uncertain-result recovery",
+      "prototype_status": "Partial fixtures",
+      "gate": "Current actor and fresh server reads",
+      "source": "src/components/employee-account-panel.tsx",
+      "line": 43,
+      "source_marker": "export function EmployeeAccountPanel"
+    }
+  ],
+  "ui_changed": false,
+  "source_references_validated": true
+}

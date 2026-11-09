@@ -1,0 +1,14 @@
+import {it,expect} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/index.js';
+import {createElement} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/react/index.js';
+import {renderToStaticMarkup} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/react-dom/server.node.js';
+import {writeFileSync} from 'node:fs';
+import {EmployeeDeviceAlertsView} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/components/employee-mobile/device-alerts';
+it('QA-A11Y-1 closure: feature-off and paused are settled while real loading remains busy',()=>{
+ const noop=()=>{};
+ for(const scenario of [{id:'disabled',enabled:false,paused:false,busy:false},{id:'paused',enabled:true,paused:true,busy:false},{id:'loading',enabled:true,paused:false,busy:true}]){
+  const html=renderToStaticMarkup(createElement(EmployeeDeviceAlertsView,{snapshot:null,enabled:scenario.enabled,paused:scenario.paused,canInstall:false,confirm:false,onEnable:noop,onRefresh:noop,onPostpone:noop,onInstall:noop,onReview:noop,onKeep:noop,onTurnOff:noop,onTest:noop}));
+  writeFileSync('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/final-'+scenario.id+'-busy.html',html);
+  expect(html).toContain('aria-busy="'+scenario.busy+'"');
+  expect(html).not.toContain('Turn on alerts');
+ }
+});

@@ -1,15 +1,35 @@
+import { ManagerAttendanceReview } from "./manager-attendance-review";
+import { WhosWorkingCorp } from "./whos-working-corp";
+import { TeamOverviewCorp } from "./team/team-overview";
+import { ManagerTimeCorrections } from "./manager-time-corrections";
+import {HomeActionCenterProvider} from './manager-action-center';
+import {OwnerSetupCorpLive} from './owner-setup-card';
+import { formatBusinessTimestamp } from "@/lib/business-time";
 import Link from "next/link";
-import type { CSSProperties } from "react";
-import { ManagerActionList } from "@/components/manager-action-list";
-import { NavIcon } from "@/components/nav-icon";
-import { StatusPill } from "@/components/status-pill";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
+import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
+import './manager-home.css';
+import './manager-home-mobile.css';
+import './manager-home-gusto.css';
+import type { ReactNode } from 'react';
+import type { ClockMonitor } from '@/lib/time-clock';
+import { PremiumHomeLive, PremiumHomeSurface, type PremiumHomeWeek } from './premium-home';
+import type { NextPay } from './payroll/my-pay';
+import { Avatar, Card, CardBody, FilterPills, KitLink, MetaParts, PageBand, Row, Rows, StatGrid, Status } from './kit/kit';
+import { presentItem } from '@/lib/action-center/present';
+import { ArrowsLeftRightIcon, CalendarBlankIcon, CalendarXIcon, PaperPlaneTiltIcon, PhoneXIcon } from '@phosphor-icons/react/ssr';
+import { CorpBody, CorpCard, CorpLink, CorpNav, CorpPage, CorpRows, CorpTitle } from './corp/corp';
+import './schedule-activity.css';
+import type { Today } from '@/lib/today/project';
+import type { ActionCenter } from '@/lib/action-center/project';
 
+
+/** Home's own views. Schedule and Requests have one destination each
+ * (/app/schedule, Inbox filtered to Requests); /app redirects old links (R1). */
 export type ManagerDashboardView =
   | "overview"
-  | "schedule"
+  | "attendance"
   | "team"
-  | "requests"
   | "activity";
 
 export type DashboardLocationItem = {
@@ -45,6 +65,17 @@ export type DashboardRevisionItem = {
 } | null;
 
 type Props = {
+  /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
+  nextPay?: NextPay;
+  /** Display-only compositions can supply prepared panels without mounting readers. */
+  overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
+  /** Workspace date for the Home band, e.g. "Sunday, October 18". */
+  dateLabel?: string;
+  role?: "OWNER" | "MANAGER";
+  actorId?: string;
+  correctionAuthority?:string;
+  workspaceName: string;
+  timeZone: string;
   firstName: string;
   weekStart: string;
   weekLabel: string;
@@ -54,6 +85,8 @@ type Props = {
   readyLocationCount: number;
   totalLocations: number;
   availabilitySubmitted: number;
+  /** Employees and leads asked for availability this week; the submission denominator (O2). */
+  availabilityEligible: number;
   activeEmployees: number;
   unavailableAllWeek: number;
   coverageIssueCount: number;
@@ -63,19 +96,13 @@ type Props = {
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
   hours: DashboardHourItem[];
-  requestCounts: {
-    timeOff: number;
-    exchange: number;
-    callout: number;
-  };
   latestRevision: DashboardRevisionItem;
 };
 
 const tabs: Array<{ id: ManagerDashboardView; label: string }> = [
   { id: "overview", label: "Overview" },
-  { id: "schedule", label: "Schedule" },
-  { id: "team", label: "Team" },
-  { id: "requests", label: "Requests" },
+  { id: "attendance", label: "Who’s working" },
+  { id: "team", label: "Hours this week" },
   { id: "activity", label: "Activity" },
 ];
 
@@ -88,25 +115,6 @@ function dashboardHref(
     : `/app?week=${encodeURIComponent(weekStart)}&view=${view}`;
 }
 
-function metricTone(
-  kind: "schedule" | "availability" | "coverage" | "requests",
-) {
-  return `dashboard-metric-icon ${kind}`;
-}
-
-function locationStateLabel(state: DashboardLocationItem["state"]) {
-  if (state === "PUBLISHED") return "Published";
-  if (state === "READY") return "Ready";
-  if (state === "NEEDS_ATTENTION") return "Needs attention";
-  return "Not started";
-}
-
-function locationTone(state: DashboardLocationItem["state"]) {
-  if (state === "PUBLISHED" || state === "READY") return "success" as const;
-  if (state === "NEEDS_ATTENTION") return "warning" as const;
-  return "neutral" as const;
-}
-
 function revisionSourceLabel(sourceType: string) {
   if (sourceType === "PUBLISH") return "Schedule published";
   if (sourceType === "EXCHANGE") return "Shift exchange applied";
@@ -114,561 +122,165 @@ function revisionSourceLabel(sourceType: string) {
   return "Published schedule updated";
 }
 
-function OverviewMetrics(props: Props) {
-  const metrics = [
-    {
-      label: "Schedule",
-      value: `${props.readyLocationCount}/${props.totalLocations}`,
-      detail: "locations ready",
-      icon: "schedule" as const,
-      tone: "schedule" as const,
-      visualState: "neutral",
-      href: dashboardHref(props.weekStart, "schedule"),
-    },
-    {
-      label: "Availability",
-      value: `${props.availabilitySubmitted}/${props.activeEmployees}`,
-      detail: "submitted",
-      icon: "availability" as const,
-      tone: "availability" as const,
-      visualState:
-        props.activeEmployees > 0 &&
-        props.availabilitySubmitted === props.activeEmployees
-          ? "healthy"
-          : "neutral",
-      href: dashboardHref(props.weekStart, "team"),
-    },
-    {
-      label: "Coverage",
-      value: props.coverageConfigured
-        ? String(props.coverageIssueCount)
-        : "Setup",
-      detail: props.coverageConfigured ? "issues" : "rules needed",
-      icon: "coverage" as const,
-      tone: "coverage" as const,
-      visualState: !props.coverageConfigured
-        ? "neutral"
-        : props.coverageIssueCount > 0
-          ? "attention"
-          : "healthy",
-      href: dashboardHref(props.weekStart, "schedule"),
-    },
-    {
-      label: "Requests",
-      value: String(props.pendingRequestCount),
-      detail: "pending",
-      icon: "requests" as const,
-      tone: "requests" as const,
-      visualState: "neutral",
-      href: dashboardHref(props.weekStart, "requests"),
-    },
-  ];
 
-  return (
-    <section className="dashboard-metric-grid" aria-label="Weekly manager summary">
-      {metrics.map((metric) => (
-        <Link
-          className={`dashboard-metric-card ${metric.visualState}`}
-          href={metric.href}
-          key={metric.label}
-        >
-          <span className={metricTone(metric.tone)}>
-            <NavIcon name={metric.icon} size={22} />
-          </span>
-          <span className="dashboard-metric-copy">
-            <small>{metric.label}</small>
-            <strong>{metric.value}</strong>
-            <span>{metric.detail}</span>
-          </span>
-          <b aria-hidden="true">›</b>
-        </Link>
-      ))}
-    </section>
-  );
-}
-
-function LocationReadiness({
-  locations,
-  weekStart,
-}: {
-  locations: DashboardLocationItem[];
-  weekStart: string;
-}) {
-  return (
-    <section className="dashboard-panel dashboard-location-panel">
-      <div className="dashboard-panel-heading">
-        <h2>Location Readiness</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View All</Link>
-      </div>
-
-      <div className="dashboard-location-list">
-        {locations.map((location) => (
-          <Link
-            className="dashboard-location-row"
-            href={`/app/schedule?week=${weekStart}&location=${location.locationId}`}
-            key={location.locationId}
-          >
-            <span className="dashboard-location-icon">
-              <NavIcon name="location" size={20} />
-            </span>
-            <span className="dashboard-location-copy">
-              <span>
-                <strong>{location.locationName}</strong>
-                <StatusPill tone={locationTone(location.state)}>
-                  {locationStateLabel(location.state)}
-                </StatusPill>
-              </span>
-              <small>
-                {location.totalBlocks
-                  ? `${location.coveredBlocks}/${location.totalBlocks} coverage periods · ${location.uncoveredBlocks} gap${location.uncoveredBlocks === 1 ? "" : "s"}`
-                  : "No schedule coverage yet"}
-              </small>
-            </span>
-            <b aria-hidden="true">›</b>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function WeekSummary({
-  days,
-  weekStart,
-}: {
-  days: DashboardDayItem[];
-  weekStart: string;
-}) {
-  const maxShifts = Math.max(1, ...days.map((day) => day.shiftCount));
-  const totalShifts = days.reduce((sum, day) => sum + day.shiftCount, 0);
-
-  return (
-    <section className="dashboard-panel dashboard-week-panel">
-      <div className="dashboard-panel-heading">
-        <h2>This Week</h2>
-        <Link href={`/app/schedule?week=${weekStart}`}>View Schedule</Link>
-      </div>
-
-      <div className="dashboard-week-scroll">
-        <div className="dashboard-week-grid">
-          {days.map((day) => {
-            const fill = Math.max(10, Math.round((day.shiftCount / maxShifts) * 100));
-            return (
-              <div className="dashboard-week-day" key={day.date}>
-                <small>{day.weekday}</small>
-                <strong>{day.day}</strong>
-                <span className="dashboard-day-bar" aria-hidden="true">
-                  <i style={{ height: `${fill}%` }} />
-                </span>
-                <b>{day.shiftCount}</b>
-                <em>{day.shiftCount === 1 ? "shift" : "shifts"}</em>
-                {day.gapCount ? (
-                  <span className="dashboard-gap-count">{day.gapCount} gap{day.gapCount === 1 ? "" : "s"}</span>
-                ) : null}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {totalShifts === 0 ? (
-        <div className="dashboard-week-empty">
-          <span className="dashboard-week-empty-icon" aria-hidden="true">
-            <NavIcon name="calendar" size={17} />
-          </span>
-          <span>
-            <strong>No shifts scheduled yet</strong>
-            <small>Once shifts are assigned, you’ll see the weekly distribution here.</small>
-          </span>
-        </div>
-      ) : null}
-    </section>
-  );
-}
-
-function TeamAvailability({
-  submitted,
-  active,
-  unavailable,
-  weekStart,
-}: {
-  submitted: number;
-  active: number;
-  unavailable: number;
-  weekStart: string;
-}) {
-  const percentage = active ? Math.round((submitted / active) * 100) : 0;
-  const ringStyle = {
-    "--dashboard-availability-progress": `${percentage}%`,
-  } as CSSProperties;
-
-  return (
-    <section className="dashboard-panel dashboard-availability-panel">
-      <div className="dashboard-panel-heading">
-        <h2>Team Availability</h2>
-        <Link href={`/app/availability?week=${weekStart}`}>View Details</Link>
-      </div>
-
-      <div className="dashboard-availability-body">
-        <div className="dashboard-availability-ring" style={ringStyle}>
-          <span>
-            <strong>{percentage}%</strong>
-            <small>{submitted}/{active}</small>
-            <em>submitted</em>
-          </span>
-        </div>
-
-        <div className="dashboard-availability-legend">
-          <div>
-            <span className="legend-dot submitted" />
-            <span>Submitted</span>
-            <strong>{submitted}</strong>
-          </div>
-          <div>
-            <span className="legend-dot missing" />
-            <span>Not submitted</span>
-            <strong>{Math.max(0, active - submitted)}</strong>
-          </div>
-          {unavailable ? (
-            <small>{unavailable} submitted unavailable all week</small>
-          ) : (
-            <small>Weekly availability status updates automatically.</small>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function DashboardBrandStrip() {
-  return (
-    <section className="dashboard-brand-strip" aria-label="Fuel Coffee Drive">
-      <div className="dashboard-quote-card">
-        <span className="dashboard-quote-mark" aria-hidden="true">
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M6.2 8.2h12.7v8.1c0 4-2.8 6.5-6.4 6.5s-6.3-2.5-6.3-6.5V8.2Z" />
-            <path d="M18.9 10.3h1.5c2 0 3.4 1.3 3.4 3.1 0 2-1.5 3.3-3.7 3.3h-1.2" />
-            <path d="M9 4.8c0 1 1.1 1.3 1.1 2.2M13 4.2c0 1.1 1.2 1.4 1.2 2.4" />
-          </svg>
-        </span>
-        <div>
-          <blockquote>
-            “Great teams aren’t built by chance, they’re scheduled with purpose.”
-          </blockquote>
-          <small>People Fuel Possibility.</small>
-        </div>
-      </div>
-
-      <div className="dashboard-brand-art" aria-hidden="true" />
-    </section>
-  );
-}
-
-function ScheduleTab(props: Props) {
-  const scheduleActions = props.managerActions.filter((item) =>
-    [
-      "COVERAGE_GAP",
-      "HOURS_REVIEW",
-      "TARGET_MISSING",
-      "ACKNOWLEDGEMENT_MISSING",
-      "DEADLINE_MISSING",
-      "COVERAGE_RULES_MISSING",
-    ].includes(item.type),
-  );
-
-  return (
-    <div className="dashboard-tab-layout">
-      <div className="dashboard-tab-two-column">
-        <LocationReadiness locations={props.locations} weekStart={props.weekStart} />
-        <WeekSummary days={props.days} weekStart={props.weekStart} />
-      </div>
-      <section className="dashboard-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Schedule Review</h2>
-            <p>Coverage, hours, publishing, and acknowledgement items.</p>
-          </div>
-          <Link href={`/app/schedule?week=${props.weekStart}`}>Open Schedule</Link>
-        </div>
-        <ManagerActionList
-          items={scheduleActions}
-          emptyTitle="No schedule issues"
-          emptyDetail="Coverage, publishing, hour targets, and acknowledgements are clear for this week."
-        />
-      </section>
-    </div>
-  );
-}
-
+/** Team overview (Phase 7 rebuild): kit stats and rows from the dashboard's existing read. */
 function TeamTab(props: Props) {
-  const targetMissing = props.hours.filter((item) => item.status === "TARGET_MISSING").length;
-  const underOrOver = props.hours.filter(
-    (item) => item.status === "UNDER" || item.status === "OVER",
-  );
-
-  return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-team-summary">
-        <div><span>Active employees</span><strong>{props.activeEmployees}</strong></div>
-        <div><span>Availability submitted</span><strong>{props.availabilitySubmitted}/{props.activeEmployees}</strong></div>
-        <div><span>Hour targets missing</span><strong>{targetMissing}</strong></div>
-        <div><span>Hours to review</span><strong>{underOrOver.length}</strong></div>
-      </section>
-
-      <div className="dashboard-tab-two-column">
-        <TeamAvailability
-          submitted={props.availabilitySubmitted}
-          active={props.activeEmployees}
-          unavailable={props.unavailableAllWeek}
-          weekStart={props.weekStart}
-        />
-
-        <section className="dashboard-panel dashboard-hours-panel">
-          <div className="dashboard-panel-heading">
-            <h2>Employee Hours</h2>
-            <Link href="/app/schedule/settings">Manage Targets</Link>
-          </div>
-          <div className="dashboard-hours-list">
-            {props.hours.length ? props.hours.slice(0, 8).map((item) => (
-              <div key={item.employeeId}>
-                <span>
-                  <strong>{item.employeeName}</strong>
-                  <small>
-                    {item.targetHours === undefined
-                      ? "Weekly target not set"
-                      : `${item.scheduledHours}h scheduled · ${item.targetHours}h target`}
-                  </small>
-                </span>
-                <StatusPill
-                  tone={
-                    item.status === "ON_TARGET"
-                      ? "success"
-                      : item.status === "TARGET_MISSING"
-                        ? "neutral"
-                        : "warning"
-                  }
-                >
-                  {item.status === "UNDER"
-                    ? "Below target"
-                    : item.status === "OVER"
-                      ? "Above target"
-                      : item.status === "TARGET_MISSING"
-                        ? "Target missing"
-                        : "On target"}
-                </StatusPill>
-              </div>
-            )) : (
-              <div className="dashboard-empty-state compact">
-                <strong>No hour data yet</strong>
-                <span>Hour balance appears as shifts are scheduled.</span>
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-    </div>
-  );
+  const targetMissing = props.hours.filter(item => item.status === "TARGET_MISSING").length;
+  const outside = props.hours.filter(item => item.status === "UNDER" || item.status === "OVER").length;
+  const plural = (n: number, one: string, many: string) => `${n}\u00a0${n === 1 ? one : many}`;
+  return <>
+    <Card id="team-week" title="This week" meta={<KitLink href={`/app/availability?week=${encodeURIComponent(props.weekStart)}`}>View availability</KitLink>}>
+      <StatGrid stats={[
+        { label: "Active employees", value: props.activeEmployees },
+        { label: "Availability received", value: `${props.availabilitySubmitted} of ${props.availabilityEligible}`, ariaLabel: `${props.availabilitySubmitted} of ${props.availabilityEligible} employees and leads sent availability` },
+      ]} />
+      <StatGrid stats={[
+        { label: "No weekly hour target", value: targetMissing },
+        { label: "Outside hour target", value: outside },
+      ]} />
+    </Card>
+    <Card id="team-hours" title="Hours this week" meta={<KitLink href="/app/schedule/settings">Manage targets</KitLink>}
+      foot={props.hours.length > 8 ? `Showing 8 of ${plural(props.hours.length, "person", "people")}` : undefined}>
+      {props.hours.length ? <Rows label="Hours this week">{props.hours.slice(0, 8).map(item => <Row key={item.employeeId}
+        leading={<Avatar initials={item.employeeName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()} />}
+        title={item.employeeName}
+        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${item.scheduledHours}h scheduled · ${item.targetHours}h target`}
+        status={<Status tone={item.status === "ON_TARGET" ? "done" : item.status === "TARGET_MISSING" ? "neutral" : "review"}>
+          {item.status === "UNDER" ? "Below target" : item.status === "OVER" ? "Above target" : item.status === "TARGET_MISSING" ? "Not set" : "On target"}</Status>} />)}
+      </Rows> : <CardBody><p className="premium-note">Hours appear here as shifts are added.</p></CardBody>}
+    </Card>
+  </>;
 }
 
-function RequestsTab(props: Props) {
-  const requestActions = props.managerActions.filter((item) =>
-    ["TIME_OFF", "EXCHANGE", "CALLOUT"].includes(item.type),
-  );
-
-  return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-team-summary three">
-        <div><span>Time off</span><strong>{props.requestCounts.timeOff}</strong></div>
-        <div><span>Shift requests</span><strong>{props.requestCounts.exchange}</strong></div>
-        <div><span>Call-outs</span><strong>{props.requestCounts.callout}</strong></div>
-      </section>
-
-      <section className="dashboard-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Pending Requests</h2>
-            <p>Items waiting for a manager decision.</p>
-          </div>
-        </div>
-        <ManagerActionList
-          items={requestActions}
-          emptyTitle="No pending requests"
-          emptyDetail="There are no time-off, shift-exchange, or call-out requests waiting for review."
-        />
-      </section>
+/** Schedule activity (Release 1, board O-Activity): "‹ Schedule", Activity, the week and its locations, then one card per
+ * day with the week's publication and dated items as rows (a grey round icon, the title, a 13px line). Same read as before. */
+const ACTIVITY_ICON: Partial<Record<ManagerActionItem["type"], typeof CalendarBlankIcon>> = {
+  COVERAGE_GAP: CalendarBlankIcon, TIME_OFF: CalendarXIcon, EXCHANGE: ArrowsLeftRightIcon, CALLOUT: PhoneXIcon,
+};
+const ACTIVITY_SHOWN = 8;
+function ActivityCorp(props: Props) {
+  const dated = props.managerActions.filter(item => Boolean(item.dateTime));
+  // A coverage window's time is workspace-local with no zone ("2026-11-03T00:00"): its day is its own date, never
+  // re-read as UTC (that moved a midnight shift onto the previous day). Instants (with Z or an offset) convert.
+  const local = (iso: string) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(iso);
+  const dayKey = (iso: string) => { if (local(iso)) return iso.slice(0, 10); try { return new Intl.DateTimeFormat("en-CA", { timeZone: props.timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso)); } catch { return iso.slice(0, 10); } };
+  const clock = (iso: string) => { if (local(iso)) { const [h, m] = iso.slice(11, 16).split(":").map(Number); return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; } try { return new Intl.DateTimeFormat("en-US", { timeZone: props.timeZone, hour: "numeric", minute: "2-digit" }).format(new Date(iso)); } catch { return ""; } };
+  const today = dayKey(new Date().toISOString());
+  type Event = { key: string; at: string; title: string; detail: ReactNode; href?: string; label?: string; Icon: typeof CalendarBlankIcon; tint?: boolean };
+  const events: Event[] = [
+    ...(props.latestRevision ? [{ key: "revision", at: props.latestRevision.createdAt, title: revisionSourceLabel(props.latestRevision.sourceType),
+      detail: `${props.weekLabel} · ${clock(props.latestRevision.createdAt)}`, Icon: PaperPlaneTiltIcon, tint: true }] : []),
+    ...dated.slice(0, ACTIVITY_SHOWN).map((item): Event => {
+      const shown = presentItem({ ...item, category: item.type === "TIME_OFF" || item.type === "EXCHANGE" || item.type === "CALLOUT" ? "requests" : "scheduling" }, "Open");
+      return { key: item.id, at: item.dateTime!, title: shown.title, detail: <MetaParts text={shown.detail} />, href: item.href,
+        label: `${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, Icon: ACTIVITY_ICON[item.type] ?? CalendarBlankIcon };
+    }),
+  ];
+  const days = [...new Set(events.map(event => dayKey(event.at)))].sort().reverse();
+  const dayLabel = (key: string) => { const text = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`)); return key === today ? `Today · ${text}` : text; };
+  const row = (event: Event) => {
+    const body = <>
+      <span className={event.tint ? "c-act__icon c-act__icon--tint" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
+      <span className="c-row__main"><span className="c-row__title c-row__title--b">{event.title}</span><span className="c-row__detail"><span>{event.detail}</span></span></span>
+    </>;
+    return <li key={event.key}>{event.href ? <Link className="c-row c-act__row" href={event.href} aria-label={event.label}>{body}</Link> : <div className="c-row c-act__row">{body}</div>}</li>;
+  };
+  return <CorpPage className="c-act" labelledBy="activity-title">
+    <CorpNav back={{ href: `/app/schedule?week=${encodeURIComponent(props.weekStart)}`, label: "Schedule" }} title="Activity" titleId="activity-title" phoneOnly />
+    <CorpTitle title="Activity" wide />
+    <div className="c-act__sub">
+      <span>{`${props.weekLabel} · All locations`}</span>
+      <span className="c-act__weeks">
+        <Link className="c-act__arrow" href={dashboardHref(props.previousWeek, "activity")} aria-label="Previous week"><CaretLeftIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></Link>
+        <Link className="c-act__arrow" href={dashboardHref(props.nextWeek, "activity")} aria-label="Next week"><CaretRightIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true" /></Link>
+      </span>
     </div>
-  );
+    {days.length ? days.map((key, index) => <CorpCard key={key} id={`activity-${key}`} label={dayLabel(key)}
+      footer={index === days.length - 1 && dated.length > ACTIVITY_SHOWN ? <CorpLink href="/app/inbox" large>{`Show ${dated.length - ACTIVITY_SHOWN} more in Things to do`}</CorpLink> : undefined}>
+      <CorpRows label={dayLabel(key)}>{events.filter(event => dayKey(event.at) === key).sort((a, b) => b.at.localeCompare(a.at)).map(row)}</CorpRows>
+    </CorpCard>) : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+  </CorpPage>;
 }
 
-function ActivityTab(props: Props) {
-  const datedActions = props.managerActions
-    .filter((item) => Boolean(item.dateTime))
-    .slice(0, 8);
+/** The shared read runs only on live Home; the preview mounts no private reader. */
+function SharedHomeRead({live, children, ...read}: {live: boolean; weekStart: string; actorId: string; owner: boolean; initialItems: ManagerActionItem[]; children: ReactNode}) {
+  return live ? <HomeActionCenterProvider {...read}>{children}</HomeActionCenterProvider> : <>{children}</>;
+}
 
-  return (
-    <div className="dashboard-tab-layout">
-      <section className="dashboard-panel dashboard-activity-panel">
-        <div className="dashboard-panel-heading">
-          <div>
-            <h2>Current Activity</h2>
-            <p>Recent schedule publication and active operational events.</p>
-          </div>
-        </div>
+/** The week facts Home shows, from the dashboard's existing read. */
+export function homeWeek(props: Props): PremiumHomeWeek {
+  return {
+    weekStart: props.weekStart, weekLabel: props.weekLabel,
+    plannedShifts: props.days.reduce((total, day) => total + day.shiftCount, 0),
+    availabilitySubmitted: props.availabilitySubmitted, availabilityEligible: props.availabilityEligible,
+    locations: props.locations.map(location => ({ name: location.locationName, state: location.scheduleStatus === 'PUBLISHED' ? 'published' as const : location.scheduleStatus === 'DRAFT' ? 'draft' as const : 'not_started' as const })),
+    lastPublished: props.latestRevision ? formatBusinessTimestamp(props.latestRevision.createdAt, props.timeZone) : null,
+  };
+}
 
-        <div className="dashboard-activity-list">
-          {props.latestRevision ? (
-            <div>
-              <span className="dashboard-activity-icon">
-                <NavIcon name="schedule" size={18} />
-              </span>
-              <span>
-                <strong>{revisionSourceLabel(props.latestRevision.sourceType)}</strong>
-                <small>
-                  Revision {props.latestRevision.revisionNumber} · {new Date(props.latestRevision.createdAt).toLocaleString("en-US", {
-                    timeZone: "America/Puerto_Rico",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })}
-                </small>
-              </span>
-            </div>
-          ) : null}
+function homeDateLabel(timeZone: string) {
+  try { return new Intl.DateTimeFormat('en-US', { timeZone, weekday: 'long', month: 'long', day: 'numeric' }).format(new Date()); }
+  catch { return ''; }
+}
 
-          {datedActions.map((item) => (
-            <div key={item.id}>
-              <span className="dashboard-activity-icon">
-                <NavIcon name={item.type === "TIME_OFF" ? "timeOff" : item.type === "EXCHANGE" || item.type === "CALLOUT" ? "exchange" : "coverage"} size={18} />
-              </span>
-              <span>
-                <strong>{item.title}</strong>
-                <small>{item.detail}</small>
-              </span>
-              <Link href={item.href}>Open</Link>
-            </div>
-          ))}
+/** Manager and Owner Home (premium direction, phase 2): band, Today, Next up, This week. */
+function PremiumOverview(props: Props) {
+  // Corporate (Release 1, board C-Owner): "Welcome back, Carmen".
+  // Direction B (phones): This week's hours, shifts per day and people come from this page's own reads; nothing is estimated.
+  const homeB = { firstName: props.firstName, days: props.days.map(day => ({ date: day.date, weekday: day.weekday, shiftCount: day.shiftCount })),
+    scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
+    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined };
+  const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
+  const slots = props.overviewSlots;
+  if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
+    today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
+  return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
+    owner={props.role === 'OWNER'} initialItems={props.managerActions}>
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
+  </SharedHomeRead>;
+}
 
-          {!props.latestRevision && !datedActions.length ? (
-            <div className="dashboard-empty-state">
-              <strong>No recent activity</strong>
-              <span>New schedule publications and employee requests will appear here.</span>
-            </div>
-          ) : null}
-        </div>
-      </section>
+const viewTitle: Record<Exclude<ManagerDashboardView, 'overview'>, { title: string; summary: string }> = {
+  // Owner premium (A3): one name per place, the names the pages use (Who's working, Hours this week, Activity).
+  attendance: { title: 'Who’s working', summary: 'Clock-ins today and corrections to review.' },
+  team: { title: 'Hours this week', summary: 'Hours and availability by person.' },
+  activity: { title: 'Activity', summary: 'Publications and changes.' },
+};
+
+/** Home's other views (Phase 7, IS-9): the band, a Back to Home, and the views as pills on the band. */
+function PremiumHomeView(props: Props & { view: Exclude<ManagerDashboardView, 'overview'> }) {
+  const copy = viewTitle[props.view];
+  return <div className="manager-dashboard-v3 premium-legacy-page premium-home-view" data-nv-page="">
+    <PageBand back={{ href: `/app?week=${encodeURIComponent(props.weekStart)}`, label: 'Home' }} title={copy.title} summary={copy.summary}
+      aside={props.view === 'attendance' ? <span className="nv-masthead__eyebrow premium-band-aside">Today</span> : <span className="premium-week-eyebrow">
+        <Link className="nv-band-control premium-week-arrow" href={dashboardHref(props.previousWeek, props.view)} aria-label="Previous week"><CaretLeftIcon size={18} weight="bold" aria-hidden="true" /></Link>
+        <span>{props.weekLabel}</span>
+        <Link className="nv-band-control premium-week-arrow" href={dashboardHref(props.nextWeek, props.view)} aria-label="Next week"><CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
+      </span>}
+      extra={<FilterPills label="Home views" items={tabs.filter(tab => tab.id !== 'overview').map(tab => ({ href: dashboardHref(props.weekStart, tab.id), label: tab.label, current: tab.id === props.view }))} />} />
+    <div className="nv-content premium-legacy-content">
+      {props.view === 'attendance' ? <div className="manager-attendance-stack">
+        <ManagerAttendanceReview />
+        <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
+        {props.role==='OWNER' ? <Link className="nv-link" href="/app/clocker-recovery">Clocker recovery</Link> : null}
+      </div> : props.view === 'team' ? <TeamTab {...props} /> : <ActivityCorp {...props} />}
     </div>
-  );
+  </div>;
 }
 
 export function ManagerDashboard(props: Props) {
-  return (
-    <div
-      className={
-        props.view === "overview"
-          ? "manager-dashboard-v3 dashboard-overview-active"
-          : "manager-dashboard-v3"
-      }
-    >
-      <section className="dashboard-hero">
-        <div className="dashboard-hero-copy">
-          <p>MANAGER DASHBOARD</p>
-          <h1>Welcome Back, {props.firstName}.</h1>
-          <span>Here’s what’s happening this week at Fuel.</span>
-        </div>
-
-        <div className="dashboard-hero-actions">
-          <div className="dashboard-week-nav">
-            <Link
-              href={dashboardHref(props.previousWeek, props.view)}
-              aria-label="Previous week"
-            >
-              ‹
-            </Link>
-            <span className="dashboard-week-label">
-              <NavIcon name="calendar" size={16} />
-              <strong>{props.weekLabel}</strong>
-            </span>
-            <Link
-              href={dashboardHref(props.nextWeek, props.view)}
-              aria-label="Next week"
-            >
-              ›
-            </Link>
-          </div>
-          <Link className="button primary" href={`/app/schedule?week=${props.weekStart}`}>
-            <NavIcon name="calendar" size={17} />
-            Open Schedule
-          </Link>
-        </div>
-      </section>
-
-      <OverviewMetrics {...props} />
-
-      <nav className="dashboard-tabs" aria-label="Dashboard views">
-        {tabs.map((tab) => (
-          <Link
-            className={props.view === tab.id ? "active" : ""}
-            href={dashboardHref(props.weekStart, tab.id)}
-            key={tab.id}
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
-
-      {props.view === "overview" ? (
-        <div className="dashboard-overview">
-          <div className="dashboard-overview-main">
-            <section className="dashboard-panel dashboard-attention-panel">
-              <div className="dashboard-panel-heading">
-                <div className="dashboard-panel-title-with-count">
-                  <h2>Needs Attention</h2>
-                  {props.managerActions.length ? (
-                    <span
-                      className={
-                        props.managerActions.some((item) => item.priority === "URGENT")
-                          ? "urgent"
-                          : props.managerActions.some((item) => item.priority === "REVIEW")
-                            ? "review"
-                            : "setup"
-                      }
-                    >
-                      {props.managerActions.length}
-                    </span>
-                  ) : null}
-                </div>
-                <Link href={dashboardHref(props.weekStart, "activity")}>View All</Link>
-              </div>
-              <ManagerActionList items={props.managerActions} limit={6} />
-            </section>
-
-            <div className="dashboard-overview-side">
-              <LocationReadiness locations={props.locations} weekStart={props.weekStart} />
-              <WeekSummary days={props.days} weekStart={props.weekStart} />
-            </div>
-          </div>
-
-          <DashboardBrandStrip />
-        </div>
-      ) : props.view === "schedule" ? (
-        <ScheduleTab {...props} />
-      ) : props.view === "team" ? (
-        <TeamTab {...props} />
-      ) : props.view === "requests" ? (
-        <RequestsTab {...props} />
-      ) : (
-        <ActivityTab {...props} />
-      )}
-    </div>
-  );
+  // Clean Manager (v3): Home is "Today"; its views keep their addresses. The old Home layout is gone (deleted, not restyled).
+  if (props.view === 'overview') return <PremiumOverview {...props} />;
+  // Release 1 (Team → Hours this week): the kit page, from the same read.
+  if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
+  // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
+  if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
+    <ManagerAttendanceReview />
+    <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
+    {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
+  </WhosWorkingCorp>;
+  // Release 1 (board O-Activity): Schedule activity is its own page under Schedule.
+  if (props.view === 'activity') return <ActivityCorp {...props} />;
+  return <PremiumHomeView {...props} view={props.view} />;
 }

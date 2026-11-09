@@ -1,0 +1,69 @@
+{
+  "originalArtifactManifestsChecked": 2,
+  "originalArtifactsVerified": [
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.bundle",
+      "bytes": 128706,
+      "sha256": "9dbbdcf21e173b6aef4edc22a9b6734da67627086ea0fb8f71deaf9e1c70447b",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.patch",
+      "bytes": 493137,
+      "sha256": "f5ecab199641548b2b9b5cf29e38629e03bca5b4d1a187cfbf45fd3dcec17d17",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.transfer.json",
+      "bytes": 3112,
+      "sha256": "746630a1e3235b72b2fbe60a70cc0f2941e43f5ce4e1ac8526ad65530e8b8965",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.README.md",
+      "bytes": 2088,
+      "sha256": "df9fd59acdd1c5412c9e01ecafd432cb9206024a8f057b7219d230646c198d89",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.zip",
+      "bytes": 43166599,
+      "sha256": "664d81cfbf0e1b7ea50c1bb14b29ccbe76b42bbfb5a9da0dc07dcca028afff7b",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.bundle",
+      "bytes": 59780,
+      "sha256": "0c519777dadde2ca899dea2121a0298226375eb998fde84f029264be8a308ded",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.patch",
+      "bytes": 250306,
+      "sha256": "f597275a531ad66ccd9ee1eb0e7970c660da94bfac24bc5c30ba9433c69bd90d",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.transfer.json",
+      "bytes": 2159,
+      "sha256": "ebf6977ba9ed4320e07efe25393dffe1d622df22b926387936ec996b86e18042",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.README.md",
+      "bytes": 1736,
+      "sha256": "3b93b35524cb9261fb331200e30b42ba8715bbb37e648c617f49917cb336a3fb",
+      "matchesOriginalManifest": true
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.zip",
+      "bytes": 165672,
+      "sha256": "7086175401c07b2171ee2f0e30eb0edbe12131df0c980862b1fde8db38bc1f6a",
+      "matchesOriginalManifest": true
+    }
+  ],
+  "oldEmployeeAndTestWorktrees": "Preserved untouched at c21ac528 and80b711f6. No cleanup or ref movement.",
+  "priorIgnoredLedgers": "Copied byte-for-byte as received; originals remain in place.",
+  "failedEvidence": "All failed records retained; compact archive omits only redundant passing screenshots and externally indexed raw traces.",
+  "noDependencyOrRuntimeEnvironmentTransfer": true
+}

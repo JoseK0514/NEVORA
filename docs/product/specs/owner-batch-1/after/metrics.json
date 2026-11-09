@@ -1,0 +1,273 @@
+{
+  "inbox-390": {
+    "height": 2261,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [
+      "/app/timecards#timecard-AUDIT-M | Review timecard › for Morgan Rivera",
+      "/app/timecards#timecard-AUDIT-E | Review timecard › for Alexandra Rivera",
+      "/app/timecards#timecard-AUDIT-LONG | Review timecard › for María José Rivera Santiago With A Long Name"
+    ],
+    "text": "Workforce\nSearch\nInbox\n\nExceptions first, then requests from your team.\n\nUpdated 4:25 PM\nRefresh\nMissed punches\n3\n\nPublished shifts today with no clock-in recorded. Started means more than 5 minutes ago.\n\nMorgan Rivera\nNo punches recorded · 7:00 AM–3:00 PM · Main Office\nReview timecard\n›\nfor Morgan Rivera\nAlexandra Rivera\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor Alexandra Rivera\nMaría José Rivera Santiago With A Long Name\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor María José Rivera Santiago With A Long Name\nAll\n,\n40\nTo review\n,\n39\nRequests\n,\n1\nNeeds attention now\n,\n21\nCoverage gap at Main Office\n\n14 items · earliest first\n\n14\nCoverage gap at West Office\n\n7 items · earliest first\n\n7\nTo review\n,\n18\nWeekly hour target missing\n\n10 items · earliest first\n\n10\nAvailability deadline not set\n\nSet the weekly cutoff before employees finalize availability.\n\nSet deadline\nAvailability not submitted\n\n5 items · earliest first\n\n5\nSchedule acknowledgement pending\n\nAlexandra Rivera has not acknowledged their current published schedule.\n\nView schedule\nSchedule acknowledgement pending\n\nMaría José Rivera Santiago With A Long Name has not acknowledged their current published schedule.\n\nView schedule\nRequests\n,\n1\nTime-off request\n\nAlexandra Rivera is waiting for review.\n\nReview time off\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "home-390": {
+    "height": 2124,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\nHome\n\nNorthside QA Workforce\n\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n10 employees have no weekly hour target.\n\nToday\nScheduled today\n3\nClocked in now\n0\nClocked in after start\n0\nStarted, not clocked in\n0\n\nPublished shifts only · Updated 4:25 PM\n\nThis week\nOct 12 – Oct 18\nPlanned shifts\nIncludes drafts\n21\nAvailability received\nEmployees and leads\n0 of 5\nLocations published\n1 of 2\nView schedule\nTasks\n\nUpdated 4:25 PM\n\n30\nRefresh\nScheduling\n29\nRequests\n1\nReview 30 tasks\nClocked in now\nNo one is clocked in right now\nUpdated 4:25 PM\nRefresh\nRecent activity\n\nSchedule published\nRevision 1 · Oct 18, 4:14 PM\n\nView all activity\nShortcuts\nReview attendance\nTeam overview\nPending requests\nSchedule activity\nClocker recovery\nAccount recovery\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "team-390": {
+    "height": 1868,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\n\nMANAGER DASHBOARD\n\nWelcome back, Fictional.\nHere’s what’s happening this week at Northside QA Workforce.\nOct 12 – Oct 18\nOpen schedule\nOverview\nAttendance\nSchedule\nTeam\nRequests\nActivity\nTEAM\nTeam overview\n\nAvailability and scheduled hours for this week.\n\nView availability\n10\nActive employees\n0%\nAvailability submitted\n0 of 5 employees and leads\n10\nTargets missing\n0\nHours to Review\nEmployee hours\nManage targets\nFictional Owner\nWeekly target not set\nTarget missing\nowner Fictional QA\nWeekly target not set\nTarget missing\nMorgan Rivera\nWeekly target not set\nTarget missing\nmanager Fictional QA\nWeekly target not set\nTarget missing\nreviewer Fictional QA\nWeekly target not set\nTarget missing\nTaylor Rivera\nWeekly target not set\nTarget missing\nAlexandra Rivera\nWeekly target not set\nTarget missing\nMaría José Fictional QA\nWeekly target not set\nTarget missing\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "rules-390": {
+    "height": 7826,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\nScheduling rules\n\nSet staffing, weekly hours, and recurring coverage so your team knows what a complete schedule needs.\n\nBack to schedule\nLocation staffing\nWeekly hours\nRecurring coverage\nTrade & coverage\nLocation staffing\n\nChoose the minimum staff needed during overlapping shift times, and whether a designated Lead must be present.\n\nMain Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWest Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWeekly hours\n\nTargets guide balanced schedules. Maximums flag excess scheduled hours. Leave a target blank to leave it out of the hours review.\n\nFictional Owner\nQAOWNER · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nowner Fictional QA\npayroll-qa-owner · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nMorgan Rivera\nAUDIT-M · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nmanager Fictional QA\npayroll-qa-manager · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nreviewer Fictional QA\npayroll-qa-reviewer · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nTaylor Rivera\nAUDIT-LEAD · Lead · Main Office\nTarget\nhrs\nMaximum\nhrs\nAlexandra Rivera\nAUDIT-E · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Fictional QA\npayroll-qa-a · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Rivera Santiago With A Long Name\nAUDIT-LONG · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nb Fictional QA\npayroll-qa-b · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nStaffing & weekly hours\n\nSaved changes apply right away.\n\nSave staffing & hours\nRecurring coverage\n\nAdd the periods you expect every week. Schedule Health can then flag missing coverage, even when no shift has been scheduled.\n\nAdd coverage period\nSun\nMain Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nMain Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nMain Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nMain Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nMain Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nMain Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nMain Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSun\nWest Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nWest Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nWest Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nWest Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nWest Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nWest Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nWest Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTrade & coverage policy\n\nReview how shift trades and coverage requests are approved, and how far in advance they must be submitted and completed.\n\nShift trade & coverage policy\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "timecards-390": {
+    "height": 2991,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n0\nReview selected timecards\n0 selected\nEmployee\nAlexandra Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Alexandra Rivera\nb Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor b Fictional QA\nFictional Owner\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Morgan Rivera\nowner Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Taylor Rivera\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "timecards-closed-390": {
+    "height": 3607,
+    "width": 390,
+    "decisionButtons": 0,
+    "timecardButtons": [
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      },
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      }
+    ],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n1\nReview selected timecards\n0 selected\nEmployee\nAlexandra Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Alexandra Rivera\nb Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor b Fictional QA\nFictional Owner\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nSep 21, 2026 – Sep 27, 2026\nFinalized\nRecorded\n8h 0m\nBreaks\n0h 0m\nNo issues found\nReopen in Details\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Morgan Rivera\nowner Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Taylor Rivera\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "timeoff-390": {
+    "height": 844,
+    "width": 390,
+    "decisionButtons": 2,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Workforce\nSearch\nTime off\nShift requests\nAvailability\nTime off\n\nReview time away and keep your team informed.\n\nAll requests\nPending\nApproved\nDeclined\nAwaiting your review\n\nCheck the dates and note, then choose a decision.\n\n1 request\nAR\nAlexandra Rivera\nPending\nOct 28, 2026 – Oct 29, 2026\nFull day\n\nFictional family appointment\n\nDecline\nApprove\nHome\nSchedule\nInbox\nTeam\nMore"
+  },
+  "inbox-1024": {
+    "height": 1642,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [
+      "/app/timecards#timecard-AUDIT-M | Review timecard › for Morgan Rivera",
+      "/app/timecards#timecard-AUDIT-E | Review timecard › for Alexandra Rivera",
+      "/app/timecards#timecard-AUDIT-LONG | Review timecard › for María José Rivera Santiago With A Long Name"
+    ],
+    "text": "Northside QA Workforce\nPlan\nInbox\nSearch\n⌘K\nFO\nFictional Owner\nInbox\n\nExceptions first, then requests from your team.\n\nUpdated 4:26 PM\nRefresh\nMissed punches\n3\n\nPublished shifts today with no clock-in recorded. Started means more than 5 minutes ago.\n\nMorgan Rivera\nNo punches recorded · 7:00 AM–3:00 PM · Main Office\nReview timecard\n›\nfor Morgan Rivera\nAlexandra Rivera\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor Alexandra Rivera\nMaría José Rivera Santiago With A Long Name\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor María José Rivera Santiago With A Long Name\nAll\n,\n40\nTo review\n,\n39\nRequests\n,\n1\nNeeds attention now\n,\n21\nCoverage gap at Main Office\n\n14 items · earliest first\n\n14\nCoverage gap at West Office\n\n7 items · earliest first\n\n7\nTo review\n,\n18\nWeekly hour target missing\n\n10 items · earliest first\n\n10\nAvailability deadline not set\n\nSet the weekly cutoff before employees finalize availability.\n\nSet deadline\nAvailability not submitted\n\n5 items · earliest first\n\n5\nSchedule acknowledgement pending\n\nAlexandra Rivera has not acknowledged their current published schedule.\n\nView schedule\nSchedule acknowledgement pending\n\nMaría José Rivera Santiago With A Long Name has not acknowledged their current published schedule.\n\nView schedule\nRequests\n,\n1\nTime-off request\n\nAlexandra Rivera is waiting for review.\n\nReview time off"
+  },
+  "home-1024": {
+    "height": 1515,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nPlan\nHome\nSearch\n⌘K\nFO\nFictional Owner\nGood afternoon, Fictional\nHere’s what’s going on with your team at Northside QA Workforce.\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n10 employees have no weekly hour target.\n\nToday\nScheduled today\n3\nClocked in now\n0\nClocked in after start\n0\nStarted, not clocked in\n0\n\nPublished shifts only · Updated 4:26 PM\n\nThis week\nOct 12 – Oct 18\nPlanned shifts\nIncludes drafts\n21\nAvailability received\nEmployees and leads\n0 of 5\nLocations published\n1 of 2\nView schedule\nTasks\n\nUpdated 4:26 PM\n\n30\nRefresh\nAll tasks\nScheduling\n29\nRequests\n1\nTimekeeping\n0\n\nShowing 20 of 30 tasks\n\nUrgent Scheduling\n14 coverage gaps at Main Office\nReview\nUrgent Scheduling\n7 coverage gaps at West Office\nReview\nReview Request\nTime-off request\n\nAlexandra Rivera is waiting for review.\n\nReview time off\nReview Scheduling\n2 employees haven’t acknowledged the schedule\nReview\nSetup needed Scheduling\n5 employees haven’t submitted availability\nReview\nSetup needed Scheduling\nAvailability deadline not set\n\nSet the weekly cutoff before employees finalize availability.\n\nSet deadline\nShow all 30 tasks\nOpen inbox\nAbout these tasks\nRecent activity\n\nSchedule published\nRevision 1 · Oct 18, 4:14 PM\n\nView all activity\nShortcuts\nReview attendance\nTeam overview\nPending requests\nSchedule activity\nClocker recovery\nAccount recovery"
+  },
+  "team-1024": {
+    "height": 1203,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nPlan\nHome\nSearch\n⌘K\nFO\nFictional Owner\n\nMANAGER DASHBOARD\n\nWelcome back, Fictional.\nHere’s what’s happening this week at Northside QA Workforce.\nOct 12 – Oct 18\nOpen schedule\nOverview\nAttendance\nSchedule\nTeam\nRequests\nActivity\nTEAM\nTeam overview\n\nAvailability and scheduled hours for this week.\n\nView availability\n10\nActive employees\n0%\nAvailability submitted\n0 of 5 employees and leads\n10\nTargets missing\n0\nHours to Review\nEmployee hours\nManage targets\nFictional Owner\nWeekly target not set\nTarget missing\nowner Fictional QA\nWeekly target not set\nTarget missing\nMorgan Rivera\nWeekly target not set\nTarget missing\nmanager Fictional QA\nWeekly target not set\nTarget missing\nreviewer Fictional QA\nWeekly target not set\nTarget missing\nTaylor Rivera\nWeekly target not set\nTarget missing\nAlexandra Rivera\nWeekly target not set\nTarget missing\nMaría José Fictional QA\nWeekly target not set\nTarget missing"
+  },
+  "rules-1024": {
+    "height": 4841,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nWorkspace\nSettings\nSearch\n⌘K\nFO\nFictional Owner\nScheduling rules\n\nSet staffing, weekly hours, and recurring coverage so your team knows what a complete schedule needs.\n\nBack to schedule\nLocation staffing\nWeekly hours\nRecurring coverage\nTrade & coverage\nLocation staffing\n\nChoose the minimum staff needed during overlapping shift times, and whether a designated Lead must be present.\n\nMain Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWest Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWeekly hours\n\nTargets guide balanced schedules. Maximums flag excess scheduled hours. Leave a target blank to leave it out of the hours review.\n\nFictional Owner\nQAOWNER · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nowner Fictional QA\npayroll-qa-owner · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nMorgan Rivera\nAUDIT-M · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nmanager Fictional QA\npayroll-qa-manager · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nreviewer Fictional QA\npayroll-qa-reviewer · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nTaylor Rivera\nAUDIT-LEAD · Lead · Main Office\nTarget\nhrs\nMaximum\nhrs\nAlexandra Rivera\nAUDIT-E · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Fictional QA\npayroll-qa-a · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Rivera Santiago With A Long Name\nAUDIT-LONG · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nb Fictional QA\npayroll-qa-b · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nStaffing & weekly hours\n\nSaved changes apply right away.\n\nSave staffing & hours\nRecurring coverage\n\nAdd the periods you expect every week. Schedule Health can then flag missing coverage, even when no shift has been scheduled.\n\nAdd coverage period\nSun\nMain Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nMain Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nMain Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nMain Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nMain Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nMain Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nMain Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSun\nWest Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nWest Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nWest Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nWest Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nWest Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nWest Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nWest Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTrade & coverage policy\n\nReview how shift trades and coverage requests are approved, and how far in advance they must be submitted and completed.\n\nShift trade & coverage policy"
+  },
+  "timecards-1024": {
+    "height": 1761,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTime & Pay\nTimecards\nSearch\n⌘K\nFO\nFictional Owner\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh timecards\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n0\nReview selected timecards\n0 selected\nEmployee\nStatus\nRecorded\nBreaks\nAttention\nAlexandra Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Alexandra Rivera\nb Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor b Fictional QA\nFictional Owner\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Morgan Rivera\nowner Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Taylor Rivera"
+  },
+  "timecards-closed-1024": {
+    "height": 1832,
+    "width": 1024,
+    "decisionButtons": 0,
+    "timecardButtons": [
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      },
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      }
+    ],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTime & Pay\nTimecards\nSearch\n⌘K\nFO\nFictional Owner\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh timecards\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n1\nReview selected timecards\n0 selected\nEmployee\nStatus\nRecorded\nBreaks\nAttention\nAlexandra Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Alexandra Rivera\nb Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor b Fictional QA\nFictional Owner\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nSep 21, 2026 – Sep 27, 2026\nFinalized\nRecorded\n8h 0m\nBreaks\n0h 0m\nNo issues found\nReopen in Details\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Morgan Rivera\nowner Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Taylor Rivera"
+  },
+  "timeoff-1024": {
+    "height": 1000,
+    "width": 1024,
+    "decisionButtons": 2,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTeam\nRequests\nSearch\n⌘K\nFO\nFictional Owner\nTime off\nShift requests\nAvailability\nTime off\n\nReview time away and keep your team informed.\n\nAll requests\nPending\nApproved\nDeclined\nAwaiting your review\n\nCheck the dates and note, then choose a decision.\n\n1 request\nAR\nAlexandra Rivera\nPending\nOct 28, 2026 – Oct 29, 2026\nFull day\n\nFictional family appointment\n\nDecline\nApprove"
+  },
+  "inbox-1440": {
+    "height": 1620,
+    "width": 1440,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [
+      "/app/timecards#timecard-AUDIT-M | Review timecard › for Morgan Rivera",
+      "/app/timecards#timecard-AUDIT-E | Review timecard › for Alexandra Rivera",
+      "/app/timecards#timecard-AUDIT-LONG | Review timecard › for María José Rivera Santiago With A Long Name"
+    ],
+    "text": "Northside QA Workforce\nPlan\nInbox\nSearch\n⌘K\nFO\nFictional Owner\nInbox\n\nExceptions first, then requests from your team.\n\nUpdated 4:26 PM\nRefresh\nMissed punches\n3\n\nPublished shifts today with no clock-in recorded. Started means more than 5 minutes ago.\n\nMorgan Rivera\nNo punches recorded · 7:00 AM–3:00 PM · Main Office\nReview timecard\n›\nfor Morgan Rivera\nAlexandra Rivera\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor Alexandra Rivera\nMaría José Rivera Santiago With A Long Name\nNo punches recorded · 8:00 AM–4:00 PM · Main Office\nReview timecard\n›\nfor María José Rivera Santiago With A Long Name\nAll\n,\n40\nTo review\n,\n39\nRequests\n,\n1\nNeeds attention now\n,\n21\nCoverage gap at Main Office\n\n14 items · earliest first\n\n14\nCoverage gap at West Office\n\n7 items · earliest first\n\n7\nTo review\n,\n18\nWeekly hour target missing\n\n10 items · earliest first\n\n10\nAvailability deadline not set\n\nSet the weekly cutoff before employees finalize availability.\n\nSet deadline\nAvailability not submitted\n\n5 items · earliest first\n\n5\nSchedule acknowledgement pending\n\nAlexandra Rivera has not acknowledged their current published schedule.\n\nView schedule\nSchedule acknowledgement pending\n\nMaría José Rivera Santiago With A Long Name has not acknowledged their current published schedule.\n\nView schedule\nRequests\n,\n1\nTime-off request\n\nAlexandra Rivera is waiting for review.\n\nReview time off"
+  },
+  "home-1440": {
+    "height": 1353,
+    "width": 1440,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nPlan\nHome\nSearch\n⌘K\nFO\nFictional Owner\nGood afternoon, Fictional\nHere’s what’s going on with your team at Northside QA Workforce.\nFinish setting up\n\n1 of 2 done\n\nCoverage periods\nDone\n\nSet weekly hour targets\n\n10 employees have no weekly hour target.\n\nToday\nScheduled today\n3\nClocked in now\n0\nClocked in after start\n0\nStarted, not clocked in\n0\n\nPublished shifts only · Updated 4:26 PM\n\nThis week\nOct 12 – Oct 18\nPlanned shifts\nIncludes drafts\n21\nAvailability received\nEmployees and leads\n0 of 5\nLocations published\n1 of 2\nView schedule\nTasks\n\nUpdated 4:26 PM\n\n30\nRefresh\nAll tasks\nScheduling\n29\nRequests\n1\nTimekeeping\n0\n\nShowing 20 of 30 tasks\n\nUrgent Scheduling\n14 coverage gaps at Main Office\nReview\nUrgent Scheduling\n7 coverage gaps at West Office\nReview\nReview Request\nTime-off request\n\nAlexandra Rivera is waiting for review.\n\nReview time off\nReview Scheduling\n2 employees haven’t acknowledged the schedule\nReview\nSetup needed Scheduling\n5 employees haven’t submitted availability\nReview\nSetup needed Scheduling\nAvailability deadline not set\n\nSet the weekly cutoff before employees finalize availability.\n\nSet deadline\nShow all 30 tasks\nOpen inbox\nAbout these tasks\nRecent activity\n\nSchedule published\nRevision 1 · Oct 18, 4:14 PM\n\nView all activity\nShortcuts\nReview attendance\nTeam overview\nPending requests\nSchedule activity\nClocker recovery\nAccount recovery"
+  },
+  "rules-1440": {
+    "height": 4713,
+    "width": 1440,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nWorkspace\nSettings\nSearch\n⌘K\nFO\nFictional Owner\nScheduling rules\n\nSet staffing, weekly hours, and recurring coverage so your team knows what a complete schedule needs.\n\nBack to schedule\n\nOn this page\n\nLocation staffing\nWeekly hours\nRecurring coverage\nTrade & coverage\n\nStaffing and hours save together. Coverage periods and policies save separately.\n\nLocation staffing\n\nChoose the minimum staff needed during overlapping shift times, and whether a designated Lead must be present.\n\nMain Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWest Office\nStaffing per shift\nMinimum staff\npeople\nDesignated lead required\nWeekly hours\n\nTargets guide balanced schedules. Maximums flag excess scheduled hours. Leave a target blank to leave it out of the hours review.\n\nFictional Owner\nQAOWNER · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nowner Fictional QA\npayroll-qa-owner · Owner · Main Office\nTarget\nhrs\nMaximum\nhrs\nMorgan Rivera\nAUDIT-M · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nmanager Fictional QA\npayroll-qa-manager · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nreviewer Fictional QA\npayroll-qa-reviewer · Manager · Main Office\nTarget\nhrs\nMaximum\nhrs\nTaylor Rivera\nAUDIT-LEAD · Lead · Main Office\nTarget\nhrs\nMaximum\nhrs\nAlexandra Rivera\nAUDIT-E · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Fictional QA\npayroll-qa-a · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nMaría José Rivera Santiago With A Long Name\nAUDIT-LONG · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nb Fictional QA\npayroll-qa-b · Employee · Main Office\nTarget\nhrs\nMaximum\nhrs\nStaffing & weekly hours\n\nSaved changes apply right away.\n\nSave staffing & hours\nRecurring coverage\n\nAdd the periods you expect every week. Schedule Health can then flag missing coverage, even when no shift has been scheduled.\n\nAdd coverage period\nSun\nMain Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nMain Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nMain Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nMain Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nMain Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nMain Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nMain Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSun\nWest Office · Sunday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nMon\nWest Office · Monday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTue\nWest Office · Tuesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nWed\nWest Office · Wednesday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nThu\nWest Office · Thursday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nFri\nWest Office · Friday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nSat\nWest Office · Saturday\n\nAll day\n\nUses location staffing requirement\nRemove\nPosition quantities\nOptional\nTrade & coverage policy\n\nReview how shift trades and coverage requests are approved, and how far in advance they must be submitted and completed.\n\nShift trade & coverage policy"
+  },
+  "timecards-1440": {
+    "height": 1326,
+    "width": 1440,
+    "decisionButtons": 0,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTime & Pay\nTimecards\nSearch\n⌘K\nFO\nFictional Owner\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh timecards\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n0\nReview selected timecards\n0 selected\nEmployee\nStatus\nRecorded\nBreaks\nAttention\nActions\nAlexandra Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Alexandra Rivera\nb Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor b Fictional QA\nFictional Owner\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Morgan Rivera\nowner Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nOct 12, 2026 – Oct 18, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nPeriod is still open\nApprove after Oct 18\nDetails\nfor Taylor Rivera"
+  },
+  "timecards-closed-1440": {
+    "height": 1474,
+    "width": 1440,
+    "decisionButtons": 0,
+    "timecardButtons": [
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      },
+      {
+        "text": "Approve timecard",
+        "disabled": false,
+        "opacity": "1",
+        "bg": "rgb(7, 117, 114)",
+        "color": "rgb(255, 255, 255)",
+        "cursor": "pointer"
+      },
+      {
+        "text": "Finalize period",
+        "disabled": true,
+        "opacity": "1",
+        "bg": "rgb(246, 247, 248)",
+        "color": "rgb(95, 99, 104)",
+        "cursor": "not-allowed"
+      }
+    ],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTime & Pay\nTimecards\nSearch\n⌘K\nFO\nFictional Owner\nTimecards\nPayroll runs\nTime exports\nPayroll settings\nTimecards\n\nReview hours and close each pay period.\n\nPeriod start\nPeriod end\nView period\nRefresh timecards\n\n10 timecards in this period.\n\nTimecards\n10\nNeed attention\n0\nFinalized\n1\nReview selected timecards\n0 selected\nEmployee\nStatus\nRecorded\nBreaks\nAttention\nActions\nAlexandra Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Alexandra Rivera\nb Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor b Fictional QA\nFictional Owner\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nNeeds a different manager\nDetails\nfor Fictional Owner\nmanager Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor manager Fictional QA\nMaría José Fictional QA\nSep 21, 2026 – Sep 27, 2026\nFinalized\nRecorded\n8h 0m\nBreaks\n0h 0m\nNo issues found\nReopen in Details\nDetails\nfor María José Fictional QA\nMaría José Rivera Santiago With A Long Name\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor María José Rivera Santiago With A Long Name\nMorgan Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Morgan Rivera\nowner Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor owner Fictional QA\nreviewer Fictional QA\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor reviewer Fictional QA\nTaylor Rivera\nSep 21, 2026 – Sep 27, 2026\nDraft\nRecorded\n0h 0m\nBreaks\n0h 0m\nNo issues found\nApprove timecard\nFinalize period\nDetails\nfor Taylor Rivera"
+  },
+  "timeoff-1440": {
+    "height": 1000,
+    "width": 1440,
+    "decisionButtons": 2,
+    "timecardButtons": [],
+    "missedLinks": [],
+    "text": "Northside QA Workforce\nTeam\nRequests\nSearch\n⌘K\nFO\nFictional Owner\nTime off\nShift requests\nAvailability\nTime off\n\nReview time away and keep your team informed.\n\nAll requests\nPending\nApproved\nDeclined\nAwaiting your review\n\nCheck the dates and note, then choose a decision.\n\n1 request\nAR\nAlexandra Rivera\nPending\nOct 28, 2026 – Oct 29, 2026\nFull day\n\nFictional family appointment\n\nDecline\nApprove"
+  }
+}

@@ -1,0 +1,72 @@
+8672d76ecd4000fd61a515d6559a0ace1321d503 docs(employee-mobile): preserve precise Cloud transfer checkpoint
+6110790f48cd6563de05c8cb7e1fcc496dfda135 Exercise pending module revocation and canonical message regressions
+2ff4c014cd07e30a31c363d005a5b43380a11f58 Bound uncertain message transport and verify current capability lifecycles
+6d8ea8f52113f955d648d8d2c2b8d4b7bd76b90e Restore deliberate audience review after source refusal
+ed3a76def4b65abc59f901f7c59296550af86eb4 Cover current audience changes and explicit read with settled fault injection
+fb1e2a29d5cf516faf2cf9fc2b564c9f46a6e789 Verify message recovery after withdrawal and exact not-found replay
+2d56a7f26ff5839406b113c50c063df9a067348b Keep enlarged notification headings readable at deliberate syllables
+5788ba712cd5f3eb184085fb0ff100bb6ca6021f Record message navigation clearance at the assertion boundary
+b460b8eff2cb5f00c78c4219a9401db2ca51e19d Capture message layout geometry on browser failure
+04ace97694078ec20ea6ebd4a2d9632863beb311 Build scoped teal employee notification and update workflows
+1ade15c0f052191ba71aed4a29aa98f4bc1e844f Add bounded current employee message reads and original operation binding
+564c71371e16f528a94aa242e42bf906d5890314 docs(employee-mobile): record verified Hours acceptance and remaining work
+e17a8e7479988a1b7159b714f8a2af9c146f2cd3 test(employee-mobile): verify settled correction link navigation
+80877d534e9f690478e2926e8529725d7580a58f fix(employee-mobile): refresh a correction read crossed by a manager decision
+9f36e71c09edf36d831466ed4cd44b0f30e4b7db test(employee-mobile): isolate empty-account login from active page polling
+c0c1d6c8a0eca7594f0669984cc62535287a864c test(employee-mobile): verify settled desktop and retained own correction details
+bc6bf5c11c644d980b5e66a9de750c808b29b0d4 fix(employee-mobile): give native correction selectors explicit labels
+4a71e02bed47e3ce69f1c484941ed5a76fe722f9 fix(employee-mobile): retain original correction recovery and readable layouts
+7efc194a8e72c0df866649ca6e84831876446806 fix(employee-mobile): refine time comparison reflow and validation
+babc0fcb8751aaf8ff4ce20b706855a2a2e63973 feat(employee-mobile): integrate own hours timecards and correction requests
+1f88fc70e4ea8d5f2cf1727f5f2384fa280ee58e docs: record verified employee mobile planning acceptance
+9034533e0e8a55e5e168affcccbb90b850ddeee8 test: enter planning after the existing sign-in surface settles
+fd5e89adc9edfb3f478a642dce1c0eaee3f53bd7 test: bind mobile planning readiness to the intended selection
+95aae39b362cf2fef260227fb07d2f9741fd2528 test: separate mounted request recovery from full-page navigation
+1b51dbc64d3e3b710cdb4f45b8e0b27f71d86a21 fix: refine planning controls, exact recovery and native field guidance
+3a8c9769f544220e85728462d3a66eaa5ce0a2ea test: cover planning controls, legacy reads and concurrent edits
+8c8c55b2642e324dd980b7fe0d7fc91084c4313e test: scope planning validation checks to the employee task
+4ae859d2888da7b6bb46be3cef99c131664c03eb feat: add employee mobile time off and availability workflows
+4e622abd76e9fe01c05aed312eb48becaf356134 docs: normalize independent QA report line breaks
+2ec539d8c7fd0cb4cf340df2e7f9d42abdcb2466 docs: record independently verified employee creation workflows
+351e33a1a7ecb04dfb6de01a9674953ea7eff903 test: keep creation state checks focused on behavior
+2db6f316a30ca308aad79b71bc46fa59e7329fbd fix: clarify creation states and verify native page focus recovery
+cfa97247df63720baeae6592a0080fe3d8e5df6a test: record native task focus boundaries and review copy regressions
+8125d881ac9f3924852a2855b99ee647893492ab test: cover all mobile creation forms and native focus paths
+7a64f571cb6375524733ba91692fc46bd7545208 fix: return mobile creation focus to the originating shift
+76ea7b3a18b18559964f66d0aa6d3762180e9007 feat: add guarded employee mobile shift creation and reporting
+f3a72860d9737fa7e4d9b3b86415bb0a99d69d91 docs: record independently verified employee response batch
+333c476250b6727f72b8746404b25ab53a3b88ed test: await canonical settlement without empty-action visibility
+a2758f8932d5893f59d77f0f6c3c03ee8ed94eae fix: bind response read scope and clarify canonical withdrawal states
+42237d75f3d05981c3b5c34438b88de432c03dff test: capture without mutating streamed form input styles
+8f24a4ec3d55ec382015289b194254cf22be7e42 test: preserve canonical stale-request decline semantics
+b25db5fa6382a028329e46a378a8b8977be0f03e test: verify Lead read, stale publication and native WebKit keyboard path
+a465bef57f6aa17f0f8dfff173181c704dbe3627 fix: describe canonical pickup withdrawal and preserve viewport evidence
+5feb4283e9be31d140d5982b594b20815af39669 feat: port Employee mobile responses and own-request details
+583b39b4f383d07602164b8d523e6360e3a88062 docs: require complete Phase 2 acceptance before Phase 3
+771d42f1640092876578321cb45dc0470417a373 docs: record verified Employee Requests mobile handoff
+7abcd315ae0f978b74d4a06c2cc1525cc67f362b fix: show unavailable incoming swaps and retain dark mobile canvas
+e20b3e8e4468f65ecaa2d5c6618e7d9612b3999e test: reproduce unavailable inbox and mismatched mobile canvas
+d70487c649970931c5b98d458d3f2cb4e4851962 fix: fence stale pickup handlers and preserve desktop structure
+b86eb441a055577db1edc9f44ede771c2b0ee3f9 fix: scope pickup outcome metadata and verify manual review readback
+bc53321ee714a4e21c91910d897d73795a0af2bf test: isolate pickup scenarios and verify failure and approval modes
+0cdec64437be98115cf88d020bbbea9c66d7333e fix: preserve teal Requests header ownership and await navigation
+7d4396e7e87b4cbe08755342af26e6f9a1f2609f feat: port employee mobile Requests and eligible pickup
+ae6767980ec21c5a0751eced6e0e60a23ea75cdf docs: record accepted Employee mobile Phase 1 and verification handoff
+74979bbb6e2694eb54a57191f0a8f1267f56d7b8 fix: preserve legacy cascade weight and prove clock control contrast
+cb55275f829adf3cbb3799782f041df279a6f822 fix: preserve visible Employee Home recovery and clock control contrast
+07538eec5b00cc067076c7a1106f04e452d024f9 test: capture exact refusal responses before browser navigation
+2628cfc397a1681bb903ee63a9692c88cbe9acf7 test: assert exact overnight end date and navigation content clearance
+4d2f7ec19102d4141cd0a676a8d1610ce4891c19 test: match canonical nonbreaking shift-time formatting
+9df755c60965ecf9014ee6bf317c3b91bc83669d test: cover past shifts, workspace loss and explicit denial responses
+daba481c2dbd1f41a602c5308ea59dd33a68541a fix: preserve Calendar hydration and finish mobile recovery contrast
+461276bde82cbf6f0201c4e3ff363031b714557c fix: align mobile component tokens, hierarchy and measured contrast
+e15a353fba2aba4c0257165eab4207d56d15bc75 fix: preserve full calendar touch targets on narrow phones
+af7d315c3fc515e59232f68f8c5c994873d30899 fix: preserve visible mobile brand ink and expand Phase 1 acceptance coverage
+86c13df64cc083b72e529a042c3063dfc482fc35 test: synchronize mobile hydration and verify each browser confirmation reload
+64c29a4eb72bda92df3404181f50b92ed01e6ce2 fix: isolate Employee mobile chrome and verify actual theme and release behavior
+3c49d6769bb1827d609a8034649516776e78ca3a fix: give Employee mobile navigation its own accessible layout
+0fe07f2e3ca8e74f253cc47f37a8a9158ff03169 test: preserve strict Home query-target refusal in integration checks
+5a9166a976fe03cdd59c373640582db027f0bed2 test: verify explicit accessible schedule confirmation and persisted receipt
+5620aa517e0ab692c0a8bfa4009e284f316e34d6 test: await canonical Employee week navigation before assertions
+6135229eae2dcf3a5e3f12cfd3b61596dcd19bef fix: preserve Employee mobile header and recorded-time contrast
+1e9d63f50091287ad6a7eb2c7d8d3172d838c782 feat: integrate approved Employee mobile foundation and schedule controls

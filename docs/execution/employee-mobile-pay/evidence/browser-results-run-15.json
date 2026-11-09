@@ -1,0 +1,1258 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "More opens teal Pay: own published statements, correction first, replaced original labelled, no figures, no peer document"
+    },
+    {
+      "engine": "chromium",
+      "name": "Replaced statement leads with Use the corrected statement, keeps its own files secondary, and moves focus to the correction"
+    },
+    {
+      "engine": "chromium",
+      "name": "Keyboard Tab and Enter open the verified PDF in a new tab (never cached); focus is on View after returning"
+    },
+    {
+      "engine": "chromium",
+      "name": "Download delivers the exact published bytes without leaving Pay"
+    },
+    {
+      "engine": "chromium",
+      "name": "A Download whose access ended navigates back to Pay instead of saving a file"
+    },
+    {
+      "engine": "chromium",
+      "name": "Light/dark at 320/390/430, contrast, 44px targets, token type, 200% text clear of navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "A notification opens its exact own statement; a statement that is not own and published is never revealed"
+    },
+    {
+      "engine": "chromium",
+      "name": "Coworker, missing and integrity-failed PDFs return to Pay with calm recovery; scripted reads keep the JSON 404"
+    },
+    {
+      "engine": "chromium",
+      "name": "Held read shows loading; a refused read shows a retryable error with no stale statement; Try again recovers"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause and offline hide statements; turning Pay statements off mid-session removes them and their PDF access; turning it on restores"
+    },
+    {
+      "engine": "chromium",
+      "name": "An ended session hides statements, offers Sign in, and a PDF link returns to Pay after sign-in"
+    },
+    {
+      "engine": "chromium",
+      "name": "Genuine coarse landscape (1 touch points): empty state, no overflow"
+    },
+    {
+      "engine": "chromium",
+      "name": "Manager at phone width keeps the incumbent Quiet My pay"
+    },
+    {
+      "engine": "webkit",
+      "name": "More opens teal Pay: own published statements, correction first, replaced original labelled, no figures, no peer document"
+    },
+    {
+      "engine": "webkit",
+      "name": "Replaced statement leads with Use the corrected statement, keeps its own files secondary, and moves focus to the correction"
+    },
+    {
+      "engine": "webkit",
+      "name": "Keyboard Alt+Tab and Enter open the verified PDF in a new tab (never cached); focus is on View after returning"
+    },
+    {
+      "engine": "webkit",
+      "name": "Download delivers the exact published bytes without leaving Pay"
+    },
+    {
+      "engine": "webkit",
+      "name": "A Download whose access ended navigates back to Pay instead of saving a file"
+    },
+    {
+      "engine": "webkit",
+      "name": "Light/dark at 320/390/430, contrast, 44px targets, token type, 200% text clear of navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "A notification opens its exact own statement; a statement that is not own and published is never revealed"
+    },
+    {
+      "engine": "webkit",
+      "name": "Coworker, missing and integrity-failed PDFs return to Pay with calm recovery; scripted reads keep the JSON 404"
+    },
+    {
+      "engine": "webkit",
+      "name": "Held read shows loading; a refused read shows a retryable error with no stale statement; Try again recovers"
+    },
+    {
+      "engine": "webkit",
+      "name": "Pause and offline hide statements; turning Pay statements off mid-session removes them and their PDF access; turning it on restores"
+    },
+    {
+      "engine": "webkit",
+      "name": "An ended session hides statements, offers Sign in, and a PDF link returns to Pay after sign-in"
+    },
+    {
+      "engine": "webkit",
+      "name": "Genuine coarse landscape (0 touch points): empty state, no overflow"
+    },
+    {
+      "engine": "firefox",
+      "name": "More opens teal Pay: own published statements, correction first, replaced original labelled, no figures, no peer document"
+    },
+    {
+      "engine": "firefox",
+      "name": "Replaced statement leads with Use the corrected statement, keeps its own files secondary, and moves focus to the correction"
+    },
+    {
+      "engine": "firefox",
+      "name": "Keyboard Tab and Enter open the verified PDF in a new tab (never cached); focus is on View after returning"
+    },
+    {
+      "engine": "firefox",
+      "name": "Download delivers the exact published bytes without leaving Pay"
+    },
+    {
+      "engine": "firefox",
+      "name": "A Download whose access ended navigates back to Pay instead of saving a file"
+    },
+    {
+      "engine": "firefox",
+      "name": "Light/dark at 320/390/430, contrast, 44px targets, token type, 200% text clear of navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "A notification opens its exact own statement; a statement that is not own and published is never revealed"
+    },
+    {
+      "engine": "firefox",
+      "name": "Coworker, missing and integrity-failed PDFs return to Pay with calm recovery; scripted reads keep the JSON 404"
+    },
+    {
+      "engine": "firefox",
+      "name": "Held read shows loading; a refused read shows a retryable error with no stale statement; Try again recovers"
+    },
+    {
+      "engine": "firefox",
+      "name": "Pause and offline hide statements; turning Pay statements off mid-session removes them and their PDF access; turning it on restores"
+    },
+    {
+      "engine": "firefox",
+      "name": "An ended session hides statements, offers Sign in, and a PDF link returns to Pay after sign-in"
+    },
+    {
+      "engine": "firefox",
+      "name": "No coarse pointer: 844px landscape keeps the desktop Pay (recorded, not claimed as mobile)"
+    }
+  ],
+  "captures": [
+    "chromium-next-payday.png",
+    "chromium-download-after-access-ended.png",
+    "chromium-pay-light-320-top.png",
+    "chromium-pay-light-320.png",
+    "chromium-pay-light-390-top.png",
+    "chromium-pay-light-390.png",
+    "chromium-pay-light-430-top.png",
+    "chromium-pay-light-430.png",
+    "chromium-pay-dark-320-top.png",
+    "chromium-pay-dark-320.png",
+    "chromium-pay-dark-390-top.png",
+    "chromium-pay-dark-390.png",
+    "chromium-pay-dark-430-top.png",
+    "chromium-pay-dark-430.png",
+    "chromium-pay-text200-top.png",
+    "chromium-pay-text200.png",
+    "chromium-notification-statement.png",
+    "chromium-notification-missing-dark.png",
+    "chromium-document-integrity-failed.png",
+    "chromium-document-integrity-failed-dark.png",
+    "chromium-document-unavailable.png",
+    "chromium-loading.png",
+    "chromium-error.png",
+    "chromium-paused.png",
+    "chromium-module-off.png",
+    "chromium-signed-out.png",
+    "chromium-landscape-empty.png",
+    "chromium-empty-portrait.png",
+    "chromium-manager-390.png",
+    "webkit-next-payday.png",
+    "webkit-download-after-access-ended.png",
+    "webkit-pay-light-320-top.png",
+    "webkit-pay-light-320.png",
+    "webkit-pay-light-390-top.png",
+    "webkit-pay-light-390.png",
+    "webkit-pay-light-430-top.png",
+    "webkit-pay-light-430.png",
+    "webkit-pay-dark-320-top.png",
+    "webkit-pay-dark-320.png",
+    "webkit-pay-dark-390-top.png",
+    "webkit-pay-dark-390.png",
+    "webkit-pay-dark-430-top.png",
+    "webkit-pay-dark-430.png",
+    "webkit-pay-text200-top.png",
+    "webkit-pay-text200.png",
+    "webkit-notification-statement.png",
+    "webkit-notification-missing-dark.png",
+    "webkit-document-integrity-failed.png",
+    "webkit-document-integrity-failed-dark.png",
+    "webkit-document-unavailable.png",
+    "webkit-loading.png",
+    "webkit-error.png",
+    "webkit-paused.png",
+    "webkit-module-off.png",
+    "webkit-signed-out.png",
+    "webkit-landscape-empty.png",
+    "webkit-empty-portrait.png",
+    "firefox-next-payday.png",
+    "firefox-download-after-access-ended.png",
+    "firefox-pay-light-320-top.png",
+    "firefox-pay-light-320.png",
+    "firefox-pay-light-390-top.png",
+    "firefox-pay-light-390.png",
+    "firefox-pay-light-430-top.png",
+    "firefox-pay-light-430.png",
+    "firefox-pay-dark-320-top.png",
+    "firefox-pay-dark-320.png",
+    "firefox-pay-dark-390-top.png",
+    "firefox-pay-dark-390.png",
+    "firefox-pay-dark-430-top.png",
+    "firefox-pay-dark-430.png",
+    "firefox-pay-text200-top.png",
+    "firefox-pay-text200.png",
+    "firefox-notification-statement.png",
+    "firefox-notification-missing-dark.png",
+    "firefox-document-integrity-failed.png",
+    "firefox-document-integrity-failed-dark.png",
+    "firefox-document-unavailable.png",
+    "firefox-loading.png",
+    "firefox-error.png",
+    "firefox-paused.png",
+    "firefox-module-off.png",
+    "firefox-signed-out.png",
+    "firefox-empty-portrait.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "title",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 15.709442826878028
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "period",
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 13.99556745580012
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "view",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "download",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 5.028921154815613
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "title",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "latest",
+      "ratio": 13.8788410741722
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "period",
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "chip",
+      "ratio": 10.253689134485551
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "view",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "download",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "subject": "privacy",
+      "ratio": 9.009023941533343
+    }
+  ],
+  "media": [
+    {
+      "engine": "chromium",
+      "coarse": true,
+      "landscape": true,
+      "touchPoints": 1,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "engine": "webkit",
+      "coarse": true,
+      "landscape": true,
+      "touchPoints": 0,
+      "width": 844,
+      "height": 390
+    },
+    {
+      "engine": "firefox",
+      "coarse": false,
+      "landscape": true,
+      "touchPoints": 0,
+      "width": 844,
+      "height": 390
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "protected-documents"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true,
+      "stage": "loading-and-error"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "module-off"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "module-off"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true,
+      "stage": "session-ended"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:57774/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": true,
+      "stage": "download-fails"
+    },
+    {
+      "engine": "webkit",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "protected-documents"
+    },
+    {
+      "engine": "webkit",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "module-off"
+    },
+    {
+      "engine": "webkit",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "expected": true,
+      "stage": "module-off"
+    },
+    {
+      "engine": "webkit",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true,
+      "stage": "session-ended"
+    }
+  ],
+  "limits": [
+    "Controlled loopback browsers and fictional statements written in the publication shape; no payroll run, amount or provider was exercised. Native PDF viewers, Files/Downloads, physical devices, screen readers and hosted transport remain separate."
+  ]
+}

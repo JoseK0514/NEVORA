@@ -22,9 +22,9 @@ const locations: HealthLocation[] = [
 ];
 
 const employees: HealthEmployee[] = [
-  { id: "E-1", name: "Ana", targetWeeklyHours: 40 },
-  { id: "E-2", name: "Luis", targetWeeklyHours: 32 },
-  { id: "E-3", name: "Mia", targetWeeklyHours: 24 },
+  { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "E-1", name: "Ana", role: "LEAD", active: true, targetWeeklyHours: 40 },
+  { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [], active: true,  id: "E-2", name: "Luis", targetWeeklyHours: 32 },
+  { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [], active: true,  id: "E-3", name: "Mia", targetWeeklyHours: 24 },
 ];
 
 describe("calculateScheduleHealth", () => {
@@ -154,7 +154,7 @@ describe("calculateScheduleHealth", () => {
       locations,
       employees,
       coverageWindows: [
-        {
+        { positionRequirements: [],
           locationId: "loc-2",
           dayOfWeek: 1,
           startTime: "06:00",
@@ -208,8 +208,8 @@ describe("calculateScheduleHealth", () => {
       shifts,
       locations,
       employees: [
-        { id: "E-1", name: "Ana", targetWeeklyHours: 40 },
-        { id: "E-9", name: "No target" },
+        { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "E-1", name: "Ana", role: "LEAD", active: true, targetWeeklyHours: 40 },
+        { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [], active: true,  id: "E-9", name: "No target" },
       ],
     });
 
@@ -246,7 +246,7 @@ describe("calculateScheduleHealth", () => {
       },
     ];
 
-    const health = calculateScheduleHealth({ shifts, locations, employees: [] });
+    const health = calculateScheduleHealth({ shifts, locations, employees: [{ eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "A", name: "Lead", role: "LEAD", active: true }, { eligibleLocationIds: ["loc-1", "loc-2"], positionIds: [],  id: "B", name: "Barista", role: "EMPLOYEE", active: true }] });
     const fuel2 = health.locationCoverage.find((item) => item.locationId === "loc-1");
 
     expect(fuel2).toMatchObject({

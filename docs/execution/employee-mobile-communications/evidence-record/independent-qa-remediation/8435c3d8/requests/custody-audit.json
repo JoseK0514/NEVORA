@@ -1,0 +1,65 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "expectedApplicationInputs": 2007,
+  "sourceMatchesCommittedCandidate": true,
+  "runtimeCount": 1,
+  "expectedRuntimeCount": 1,
+  "runtimes": [
+    {
+      "suite": "mobile",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests/mobile/owned-next-iaTwUj",
+      "checkpoint": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "ownershipSha256": "11fe4952c58e22cf446fcecd37579a8e37d0e589c6e871ee21f4715dcdff40ea",
+      "pid": 941,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 34113,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_046681600ec4",
+        "oid": 16384,
+        "marker": "fuel-phase3-disposable:1a86d49e-f535-4fda-a9e1-bd2f9397e20c"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "runnerClusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-EjcAq8",
+      "directoryExists": false,
+      "pid": 860,
+      "livePid": false,
+      "port": 42123,
+      "portOpen": false
+    }
+  ],
+  "supplementalDatabaseCustody": {
+    "runnerLive": false,
+    "clusters": [
+      {
+        "directory": "/tmp/nevora-payroll-owned-EjcAq8",
+        "directoryExists": false,
+        "pid": 860,
+        "livePid": false,
+        "port": 42123,
+        "portOpen": false,
+        "pidLive": false
+      }
+    ]
+  },
+  "databaseObservationMethod": "Recorder queries actual owned cluster through existing pg package with scrubbed environment; any query failures are retained.",
+  "gateSourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterStopLogged": true,
+  "artifactsCount": 47,
+  "passed": true
+}

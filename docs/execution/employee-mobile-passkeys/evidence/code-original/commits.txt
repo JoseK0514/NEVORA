@@ -1,0 +1,5 @@
+$ git log --oneline 592d421225e8266a5079f2a1381dc3b4175b9635..HEAD
+exit=0
+d36ea8b0 test: exercise own mobile passkeys through canonical server in three engines
+7ef428de feat: adapt own passkeys to Employee mobile teal Profile
+96525a91 feat: bind own passkey management to current session and finite reads

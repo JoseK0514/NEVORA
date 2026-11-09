@@ -1,0 +1,45 @@
+/* Team updates (employee) in the Signature style (tokens and pieces from signature.module.css). */
+.euRoot :global(.updates-inbox):not(#eu) { display: flex; flex-direction: column; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.euFilters:not(#eu) { display: flex; min-width: 0; margin: 0 16px; padding: 3px; border: 0; border-radius: 12px; background: var(--sg-track); }
+.euFilters > legend:not(#eu) { position: absolute; }
+.euFilters button:not(#eu) { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 0; min-height: 44px; padding: 0 8px; border: 0; border-radius: 9px; background: none; color: var(--sg-ink-2); font: 500 .9375rem/1 var(--sg-font); white-space: nowrap; cursor: pointer; }
+.euFilters button[aria-pressed="true"]:not(#eu) { background: var(--sg-card); color: var(--sg-ink); box-shadow: 0 1px 2px rgba(22, 28, 27, .08); }
+.euFilters button:focus-visible:not(#eu) { outline: 2px solid var(--sg-ink); outline-offset: -2px; }
+.euFilters :global(.updates-filter-count):not(#eu) { min-width: 0; height: auto; padding: 0; border-radius: 0; background: none; color: var(--sg-ink-3); font: inherit; font-variant-numeric: tabular-nums; }
+.euRoot :global(.updates-inbox) > :global(.sg-h):first-of-type:not(#eu) { margin-top: 32px; }
+.euRoot :global(.updates-inbox) :global(.sg-h):not(#eu) { margin-top: 32px; }
+.euPartial:not(#eu) { margin-top: 20px !important; color: var(--sg-amber) !important; }
+
+/* Updates to review: a card that is one link, with a dark foot. */
+.euStack:not(#eu) { display: flex; flex-direction: column; gap: 12px; }
+.euFeature:not(#eu) { display: block; color: var(--sg-ink); text-decoration: none; }
+.euFeature:focus-visible:not(#eu) { outline: 2px solid var(--sg-ink); outline-offset: 3px; }
+.euFeature :global(.sg-card-head):not(#eu) { padding-bottom: 14px; }
+.euHeadCopy:not(#eu) { flex: 1; min-width: 0; }
+.euHeadCopy b:not(#eu) { display: block; font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
+.euHeadCopy small:not(#eu) { display: block; font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.euBody:not(#eu) { display: block; padding: 0 20px 20px; }
+.euBody b:not(#eu) { display: block; font: 300 1.75rem/2.0625rem var(--sg-display); letter-spacing: -.028em; color: var(--sg-ink); text-wrap: balance; overflow-wrap: anywhere; }
+.euBody span:not(#eu) { display: -webkit-box; margin-top: 10px; overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font: 400 .9375rem/1.375rem var(--sg-font); color: var(--sg-ink-2); overflow-wrap: anywhere; white-space: pre-line; }
+.euFoot:not(#eu) { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 20px; background: var(--sg-deep); color: #FFFFFF; font: 500 1rem/1 var(--sg-font); }
+.euFoot svg:not(#eu) { color: var(--sg-mint); transition: transform .18s ease; }
+@media (hover: hover) { .euFeature:hover .euFoot svg:not(#eu) { transform: translateX(3px); } }
+
+/* Reviewed updates: rows. */
+.euRow:not(#eu) { color: var(--sg-ink); text-decoration: none; }
+@media (hover: hover) { .euRow:hover:not(#eu) { background: var(--sig-hover-bg); } }
+.euRow:focus-visible:not(#eu) { outline: 2px solid var(--sg-ink); outline-offset: -3px; border-radius: 20px; }
+.euDone:not(#eu) { display: inline-flex; align-items: center; gap: 4px; color: var(--sg-teal); font-weight: 500; }
+.euChev:not(#eu) { flex: none; color: var(--sig-glyph, #8A8378); }
+
+/* States */
+.euState:not(#eu) { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 32px !important; padding: 32px 24px; text-align: center; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.euState h2:not(#eu) { margin-top: 8px !important; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.euState :global(.sg-cta):not(#eu) { width: auto; margin: 14px 0 0; }
+.euRoot :global(.sg-quiet):not(#eu) { margin-top: 18px; }
+
+@media (min-width: 768px) { .euFilters:not(#eu) { margin-inline: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .euFoot svg:not(#eu) { transition: none; }
+}

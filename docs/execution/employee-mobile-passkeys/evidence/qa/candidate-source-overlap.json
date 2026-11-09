@@ -1,0 +1,34 @@
+{
+  "baseline": "592d421225e8266a5079f2a1381dc3b4175b9635",
+  "candidate": "c98c982db25d6867377a36be0111cacf63ed90b0",
+  "allChangedFiles": [
+    "docs/execution/employee-mobile-passkeys/passkeys-plan.md",
+    "scripts/payroll-postgres.mjs",
+    "src/app/app/profile/page.tsx",
+    "src/components/employee-mobile/passkeys.css",
+    "src/components/employee-mobile/passkeys.test.tsx",
+    "src/components/employee-mobile/passkeys.tsx",
+    "src/components/passkeys/passkey-desktop-view.tsx",
+    "src/components/passkeys/passkey-section.tsx",
+    "src/lib/auth/passkeys/http.server.ts",
+    "src/lib/auth/passkeys/service.server.ts",
+    "src/lib/auth/passkeys/store.server.ts",
+    "src/lib/employee-view-authority.server.ts",
+    "src/lib/passkeys/client.ts",
+    "src/lib/passkeys/management.test.ts",
+    "src/lib/passkeys/management.ts",
+    "src/test/integration/employee-mobile-passkeys.integration.ts",
+    "src/test/integration/passkeys-http.integration.ts",
+    "vitest.employee-mobile-passkeys.config.mts"
+  ],
+  "reproducedFailureDependenciesUnchanged": {
+    "scripts/phase-e-owned.mjs": true,
+    "scripts/phase-e-browser-evidence.mjs": true,
+    "src/lib/data/week-settings.ts": true,
+    "src/lib/data/notification-transactions.ts": true,
+    "src/app/app/requests/hub/page.tsx": true,
+    "src/app/app/requests/page.tsx": true,
+    "src/components/employee-home-actions.tsx": true
+  },
+  "sharedAuthorityDifference": "diff --git a/src/lib/employee-view-authority.server.ts b/src/lib/employee-view-authority.server.ts\nindex a2baa9da..031a530b 100644\n--- a/src/lib/employee-view-authority.server.ts\n+++ b/src/lib/employee-view-authority.server.ts\n@@ -2,7 +2,7 @@ import 'server-only';\n import {createHash} from 'node:crypto';\n import type {SessionMutationProof} from './shift-changes/types';\n \n-export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours' | 'communications';\n+export type EmployeeView = 'profile' | 'notifications' | 'requests' | 'exchange' | 'creation' | 'planning' | 'hours' | 'communications' | 'passkeys';\n /** Public lifetime binding, never authentication. Each GET still requires the\n  * actual HttpOnly session and protected SQL guards. No raw hash is serialized. */\n export function employeeViewAuthority(proof:SessionMutationProof,view:EmployeeView):string {\n"
+}

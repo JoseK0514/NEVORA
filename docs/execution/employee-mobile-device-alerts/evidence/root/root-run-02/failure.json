@@ -1,0 +1,295 @@
+{
+  "error": "TimeoutError: locator.waitFor: Timeout 15000ms exceeded.\n",
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Protected own Employee/Lead page, no native prompt or subscription on entry"
+    },
+    {
+      "engine": "chromium",
+      "name": "Old/foreign session binding refused before any enrollment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Deliberate permission, one native subscribe, actual encrypted SQL enrollment and matching local worker ownership"
+    },
+    {
+      "engine": "chromium",
+      "name": "Responsive/profile navigation and theme changes preserve one enrollment; light/dark320/390/430 and sampled contrast"
+    },
+    {
+      "engine": "chromium",
+      "name": "Enlarged removal review explains scope; protected focus and exact Keep return preserve enrollment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Unknown turn-off stays suppressed through passive refresh without reclaiming worker ownership"
+    },
+    {
+      "engine": "chromium",
+      "name": "Original-generation retry detaches actual canonical enrollment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Fresh explicit opt-in rotates tombstone; lost committed detach reply stays unknown until canonical check, without invented original success"
+    },
+    {
+      "engine": "chromium",
+      "name": "Blocked permission gives device-settings guidance and never prompts again on refresh"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual short session lease and session deletion retire device controls"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native sign-out remains reachable and removes the portal session cookie"
+    },
+    {
+      "engine": "webkit",
+      "name": "Protected own Employee/Lead page, no native prompt or subscription on entry"
+    },
+    {
+      "engine": "webkit",
+      "name": "Old/foreign session binding refused before any enrollment"
+    }
+  ],
+  "captures": [
+    "chromium-ready.png",
+    "chromium-enabled.png",
+    "chromium-light-320.png",
+    "chromium-light-390.png",
+    "chromium-light-430.png",
+    "chromium-dark-320.png",
+    "chromium-dark-390.png",
+    "chromium-dark-430.png",
+    "chromium-turnoff-text200.png",
+    "chromium-cleanup-pending.png",
+    "chromium-off.png",
+    "chromium-lost-cleanup-reply.png",
+    "chromium-permission-blocked.png",
+    "chromium-access-changed.png",
+    "webkit-ready.png",
+    "webkit-FAILURE-enroll.png"
+  ],
+  "errors": [
+    {
+      "engine": "chromium",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "blocked-cleanup",
+      "message": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lease",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "lease",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "authority",
+      "message": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "enroll",
+      "message": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "expected": false
+    }
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "ratio": 5.420851497656459
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 7.712974522476015
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 7.712974522476015
+    }
+  ],
+  "transport": [
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/unsubscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/unsubscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/unsubscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "chromium",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/status",
+      "method": "GET"
+    },
+    {
+      "engine": "webkit",
+      "path": "/app/api/push/subscribe",
+      "method": "POST"
+    }
+  ]
+}

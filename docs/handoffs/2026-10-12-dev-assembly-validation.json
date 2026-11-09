@@ -1,0 +1,131 @@
+{
+  "recordedAt": "2026-10-12T16:07:23.378Z",
+  "source": "ab211e0bd420b4152843550613a63b92d93763a4",
+  "unit": {
+    "checkpoint": "7d71866ab63621c624f84e8fde9145f27dadc940",
+    "success": true,
+    "statuses": {
+      "passed": 7012,
+      "skipped": 801,
+      "pending": 55
+    },
+    "testFiles": 428,
+    "subsequentDelta": "ea2d8ec / ab211e0 changes only historical notice wording, its regression and its browser assertion; 36 affected focused tests and all 63 browser cases rerun on that source."
+  },
+  "releasePostgres": {
+    "passed": 737,
+    "suites": {
+      "foundation": 275,
+      "authority": 46,
+      "generation": 176,
+      "exchanges": 163,
+      "notifications": 77
+    },
+    "ownedClusterClosed": true
+  },
+  "payrollPostgres": {
+    "passed": 36,
+    "ownedClusterClosed": true
+  },
+  "migrationParity": {
+    "passed": 1
+  },
+  "companyBrowser": {
+    "passed": 19,
+    "fixture": "New generic fictional company, disposable PostgreSQL, owned Chromium, 390/1440px",
+    "runtimeClosed": true
+  },
+  "payrollBrowser": {
+    "passed": 63,
+    "errors": [],
+    "checkpoint": "ab211e0bd420b4152843550613a63b92d93763a4",
+    "matchingApplicationHashes": 1239,
+    "mismatches": [],
+    "runtimeClosed": true,
+    "substitutedFiles": [
+      "src/lib/db.ts",
+      "next-env.d.ts"
+    ],
+    "engines": [
+      "chromium",
+      "webkit"
+    ],
+    "widths": [
+      320,
+      390,
+      768,
+      1024,
+      1440
+    ]
+  },
+  "finalTypecheck": "PASS",
+  "finalBuild": "PASS",
+  "finalLint": {
+    "errors": 0,
+    "warnings": 1,
+    "preexisting": "employee-weekly-confirmation.tsx:18 react-hooks/exhaustive-deps cleanup generation.current"
+  },
+  "focusedNoticeContractsMoneyNavigationSettings": {
+    "passed": 36
+  },
+  "processCustody": {
+    "passed": 83,
+    "unchangedDefaultTimeout": true
+  },
+  "tooling": {
+    "regressionsPassed": 36,
+    "auditVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "lifecycleScriptsDuringInstall": false,
+    "auditedCheckpoint": "007be1c",
+    "packageLockToolingCiUnchanged": true
+  },
+  "designDetector": {
+    "primaryFindings": 0,
+    "advisoryFindings": 14,
+    "missingFirstPassTarget": "Erroneous settings-hub.tsx path; actual settings CSS/motion were scanned in the supplemental pass.",
+    "sidecar": "STALE_RETAINED",
+    "exception": "Scoped sanctioned Inter inputs and narrow existing Inter-file-alias false-positive exception only."
+  },
+  "payrollEngineeringReview": {
+    "source": "ea2d8ec47096dcca7ebba27bc252c82bd3389b14",
+    "recommendation": "APPROVE",
+    "codeQualityStatus": "WATCH",
+    "blockers": [],
+    "retainedException": "Backend M3 bounded module-maintenance exception",
+    "finalUiDeltaFilesCompared": 15,
+    "mismatches": [],
+    "report": "owner-review/payroll-final-recheck.md",
+    "sha256": "8654639fc1fde0492ae10ca97de3de6476502f9b1209e969af8e33a77f148f79",
+    "scope": "Bounded frozen payroll engineering correction; independent finding closure and release authorization remain separate."
+  },
+  "evidenceHashes": {
+    "final-unit.json": "4836af6e4b41ab1db6845302676f8af38c193b29d7af2c1bd1b8e343a84dab48",
+    "final-unit.log": "3deb908583ddbcceec6d7e8cb02d98e093f9e47c5178fda76457b64665321942",
+    "final-notice-copy-focused.log": "cb7c5e486e665838e04af1b3ab969dac33049c1cf73418b7d220898d9ee969ed",
+    "final-notice-copy-typecheck.log": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "final-notice-copy-lint.log": "91c8872ef43a5c3b18ea319c500e10d17b22c218fbff13936552148cc56369e0",
+    "final-notice-copy-build.log": "21505d9ffd5c163088f5ed0a3a100dc29c080e239cf7201d847b407666283ea3",
+    "final-notice-copy-browser.log": "adddb9366f92b5cf24846008beb754cf21219675f18dcb13dbcbac233c09dcfa",
+    "assembled-release-sql.log": "676afb7ed49a92566fbe8bc5e8a0f1c31ca893f71a6c96b5f2cd7d41e8d04a81",
+    "assembled-payroll-sql-rerun.log": "cac195360ebb3adb75b1aa0404a80a81ee2d51766ee0a6f93b3daf74313093ca",
+    "assembled-migration-parity.log": "a0c7df981bb06f1c53e78b16648bb01a7a9518341945a2626097e5e00c26073e",
+    "assembled-company-setup-browser-accepted.log": "c077ab42d16954853460d6efb4ec2c56f995aed7ebe98303587d1c3326e43b69",
+    "final-process-evidence-rerun.log": "7c1227ae0ad5e6547ff4caa7716acdcd60ee333371aab7d4a21b07de9f6d8170",
+    "tooling-audit.json": "97db56fe3a0c94d3b55a7cbb1d2997dd061cc82bb24b40d53d8b1b7a854edc28",
+    "tooling-regressions.log": "d869e93e8154fa461e494c5758cedf96a133402a4045b5efc00fd65877eaabda",
+    "final-design-detector.json": "a71b811ec9bbbb98f932ba5525c6035b642628a4ab649bf29b6067d9de51fb6f",
+    "final-settings-design-detector.json": "067dce1d0f348151e933debd0ada2d4eef54869a851567cf0f052d414b178f63"
+  },
+  "limitations": [
+    "Local synthetic validation; no hosted CI result for the assembled SHA.",
+    "801 prerequisite-guarded skipped and 55 existing pending unit assertions remain unexecuted.",
+    "No dev/production deployment, actual customer changes, real notice delivery or bank submission."
+  ]
+}

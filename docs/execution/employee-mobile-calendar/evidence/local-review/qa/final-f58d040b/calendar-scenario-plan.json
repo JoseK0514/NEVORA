@@ -1,0 +1,84 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "surface": "Owned local Next browser UI + fictional disposable PostgreSQL",
+  "invocation": [
+    "node",
+    "scripts/payroll-postgres.mjs",
+    "vitest.employee-mobile-calendar.config.mts",
+    "--reporter=default",
+    "--reporter=json",
+    "--outputFile=/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-calendar/local-review/qa/final-f58d040b/combined/suite-results.json"
+  ],
+  "engines": [
+    "chromium",
+    "webkit",
+    "firefox"
+  ],
+  "scenarios": [
+    {
+      "id": "CAL-01",
+      "criterion": "Schedule fixed hash opens the native Profile disclosure and focuses its summary; one current Calendar owner",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-02",
+      "criterion": "HTTP rejects an employee selector; no peer link or data exposed",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-03",
+      "criterion": "Actual own issue and peer isolation; controlled clipboard failure/success, native full-link selection; evidence redacts the secret",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-04",
+      "criterion": "Native Tab traversal uses visible focus, Copy then Select; Enter activates native selection",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-05",
+      "criterion": "Provider-specific native guides,320/390/430 light/dark and200% text plus coarse landscape; no overflow,44/48 targets and sampled text contrast",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-06",
+      "criterion": "Pause releases the URL; resume reads actual active state without reconstructing its one-time credential",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-07",
+      "criterion": "Replacement requires explicit consequence review; cancel returns exact focus, confirmed rotation invalidates the former feed",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-08",
+      "criterion": "Lost actual committed rotation reply times out; media resize keeps owner/original; unrelated theme storage does not lose it; exact replay creates no second credential",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-09",
+      "criterion": "Confirmed own revoke stops future feed access and leaves truthful copied-event limits",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-10",
+      "criterion": "Read failure removes all source actions and recovers only through an actual canonical read",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-11",
+      "criterion": "Actual DB session budget expires before polling; no stale actions; recovery requires current canonical session",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-12",
+      "criterion": "Actual session loss clears private facts and denies all Calendar actions",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    },
+    {
+      "id": "CAL-13",
+      "criterion": "Native signout ends the mounted Calendar owner and removes the portal cookie",
+      "invocation": "Same selector-free combined invocation; employee-mobile-calendar.integration.ts corresponding recorded checkpoint"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "delivery": "e06eeff35960336b2c33f1bd1037823d62a8405a",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "changedInputs": [
+    "src/components/employee-mobile/use-messages.ts"
+  ],
+  "inventoryCount": 2004
+}

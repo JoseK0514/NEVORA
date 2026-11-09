@@ -1,0 +1,45 @@
+# Employee mobile: time off and availability
+
+## Scope and implementation
+
+Application/test candidate `9034533e0e8a55e5e168affcccbb90b850ddeee8` on local branch `codex/employee-mobile-planning-20261027`. Documentation may advance HEAD; compare the recorded application manifest rather than equating that with a product change. This continues accepted unassembled employee work from `4e622abd`; fresh development at discovery was `84c3fc357b006220ef6bbf29580e7327228c9659`, with only source-inventory/policy changes since the previous comparison. Reconciliation remains mandatory before integration. No push, PR, merge or deployment was performed; the coordinated remote-push pause is respected.
+
+Implemented for Employee/Lead only:
+
+- Full/partial-day time off, own Waiting/Decided history and exact own details, dates, note and reviewer timeline. Existing calendar-day midnight boundary remains valid. Pending own withdrawal requires explicit confirmation and uses its existing first terminal receipt. Stable request identity prevents a different submission from overwriting an original one.
+- Native usual/weekly availability, multiple intervals, existing union semantics for overlapping/adjacent legacy normal windows, and existing weekly/dated override behavior. Not submitted remains distinct from intentionally unavailable all week. Weekly deadlines are checked under the business lock; usual availability stays independent of the Time-off module and selected-week deadline.
+- Mounted drafts survive refresh, pause and soft task navigation. Private facts/editor DOM release on pause/denial; full reload or a new account lifetime starts fresh. Stale drafts require deliberate review before reapplying edited days. Explicit whole-week unavailability retains all seven days during rebase.
+- Unknown outcomes retain immutable original commands. Status checking precedes missing-only resend. Availability uses canonical matching saved hours and an exact guarded basis; it does not fabricate an operation receipt or overwrite a newer device edit. Request results cannot cross their original request identity.
+- Exact own request links and retained legacy fragments, list-row return focus, actual invalid-day/period focus and linked field errors. Current role, workspace and actual session authority remain server-owned; no new location prerequisite or management capability was introduced.
+
+The responsive owners preserve existing desktop and management surfaces. Existing tokens, regular Phosphor and native controls carry the approved teal system. Selected filters have44px targets; primary actions48px. Partial-day date and paired time fields, separate recovery decisions, enlarged text and light/dark variants were checked. No dependency, schema, migration, paid retrieval or new business-policy engine was added.
+
+Main code: `src/components/employee-mobile/{planning.tsx,planning-frame.tsx,timeoff.tsx,availability.tsx,planning-feedback.tsx,planning-operation.ts,use-planning.ts,planning.css}`, `src/lib/{employee-planning.ts,data/employee-planning*.ts}`, protected `/api/employee/planning/[view]/[selection]`, structured planning actions, responsive route adapters and scoped shell marker. Existing request/availability writers gained optional transaction admission; the weekly owner gained the existing SqlExecutor contract without changing default business behavior.
+
+## Verification and independent ownership
+
+- Independent35-file unit/render suite: **250/250 pass**, zero skipped,6.09s, exact saved argv and unchanged default5s timeout. TypeScript `--noEmit --incremental false` and targeted ESLint exit0.
+- New9 PostgreSQL cases cover own Employee/Lead versus foreign/manager, current session/role, no-location identity-only access, immutable request replay/withdrawal, module separation, usual/weekly split hours, deliberate empty submission, stale basis, concurrent normal drafts, deadline crossing, legacy conversion and midnight records. Final combined replay owns the acceptance result below.
+- Independent affected planning journey: **63 named checkpoints**, **114 captures**, **72 primary-action contrast samples**, minimum6.089:1, Chromium/WebKit/Firefox. Actual login/actions/SQL, full/partial forms, light/dark320/390/430,200%root text/nav clearance, native focus, paused/private recovery, exact/legacy links, lost responses, explicit rebase, intentional empty week, closed week, desktop and current denial. These checkpoints/captures are not additional test cases.
+- Independent UI: **APPROVE / GO WITH CONDITIONS**; UI01–04 and UI-RUNTIME-01 closed by their author after actual corrected captures, strict diagnostic inspection and1,961 matching manifest inputs. Code review: **APPROVE / WATCH**, M1 closed by its author; L1 below is nonblocking. Root/QA do not self-close their findings.
+- Independent combined suite: **58/58 pass**,9files,zero skipped,279.67s:54 PostgreSQL cases and4 browser orchestration cases covering all3engines. All4 owned runtimes match9034533e with1,961 source/mirror inputs each; independently reconstructed approved derived DB/type references match. All4 runtimes closed, processes/ports absent and owned build/dependency artifacts released. No disposable PG cluster remains. See `qa-review.md` for exact invocation, diagnostics, custody and acceptance limits.
+
+Independent reports: [code](code-review.md), [UI](ui-review.md), [QA](qa-review.md). The exact execution ledger is `EXECUTION.md`. Historical `.superpowers/sdd/employee-mobile-planning-plan/` log/brief references map byte-for-byte to `outputs/employee-mobile-planning/execution-record/` in the design workspace; only that owned ignored scratch directory is removed after archival. Evidence root: `outputs/employee-mobile-planning/independent-qa/` in the design workspace. Planning captures: `planning/`; earlier creation/response/pickup orchestration artifacts use separate directories. Invocation, exit, diagnostics and source/mirror custody records retain exact candidate and runtime identity.
+
+## Preserved failures and limits
+
+The initial browser run stopped on a validation selector also matching Next's route announcer; the assertion was scoped to the employee form. Subsequent tests incorrectly expected a prior saved screen after full navigation and could match outgoing ready content during a soft transition. Corrected tests distinguish mounted versus full-load behavior and bind readiness to the intended selection; strict note/URL/focus assertions remain.
+
+The `fd5e89ad` journey completed every scenario but failed the unchanged diagnostic gate: two WebKit Home/notification startup pageerrors and a Firefox boundary console error occurred when the test forced navigation immediately after login URL change. Logs include abandoned chunk/NS_BINDING_ABORTED requests. Final setup waits actual Home and recorded-time readiness, as incumbent accepted journeys already do, before entering planning. The independent planning replay then recorded zero pageerrors/unexpected console errors. No diagnostic allowlist was broadened. This establishes the tested settled-entry path; it does not certify every startup/fast-navigation/background scenario. Historical failed runs are retained and never relabeled passed.
+
+An earlier root broad-unit invocation during owned Next startup passed245 and hit the existing Home test's unchanged5s timeout. Root and independent full serial invocations passed250 with unchanged assertions/timeouts. Concurrency contention is an observed association, not a proven universal cause.
+
+**Deferred minor L1:** the operation unit file shares a command fixture mutated by one immutable-copy test. The reviewer found no false product success; current invariants pass, but per-test construction is a nonblocking cleanup. Retained under the execution skill's minor rule.
+
+Physical iPhone/Android native pickers, keyboard/safe areas, OS text scaling/backgrounding, VoiceOver/TalkBack and hosted/CI performance/environment checks remain separate gates. No production build/deployment or company-wide security/performance certification is claimed. The21st metadata search informed native calendar/week patterns; CLI review was unavailable (`21st: command not found`,127), not a passed plugin review.
+
+## Delivery state and next gate
+
+Implementation owner: root. Independent reviewers own code/UI/QA evidence and closure. Product/experience position: own planning is now a coherent mobile task group. Engineering/security position: existing guarded owners and actual session authority remain the source of truth. Delivery/governance position: Phase2 stays active; complete remaining authorized mobile ports before Phase3 combined/device acceptance. This bounded batch adds no release or production authorization.
+
+Next mapped group after acceptance: own Hours/timecards/corrections. Remaining notifications/updates, profile/support/sign-out, capability-dependent account tools and Pay remain Phase2. Source-inventory reconciliation and actual release approval precede any assembly/release. No user decision is currently required to preserve this local branch.

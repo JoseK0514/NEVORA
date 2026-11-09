@@ -1,0 +1,18 @@
+{
+  "kind": "STATIC_CHECK_ONLY",
+  "command": [
+    "git",
+    "diff",
+    "1121f24e50190172d1fa40d931fd064715f31554",
+    "--check"
+  ],
+  "cwd": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "sourceParent": "67fbd50d3154e7e36e2abd9652ac9f847ed83d25",
+  "followupSourceDiffSha256": "391098852cd84949cf3638c7564ab19ac00cc392415ef69705325054e5038adc",
+  "startedAt": "2026-10-30T10:56:22.101266+00:00",
+  "endedAt": "2026-10-30T10:56:22.123341+00:00",
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": "",
+  "functionalTests": "NOT_RUN"
+}

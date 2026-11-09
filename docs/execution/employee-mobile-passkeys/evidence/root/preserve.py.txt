@@ -1,0 +1,118 @@
+from pathlib import Path
+import os, re, json, hashlib, shutil, stat
+
+task = Path('/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying')
+repo = task/'work/employee-mobile-local-resume'
+out = repo/'docs/execution/employee-mobile-passkeys'
+roots = [
+ (task/'outputs/employee-mobile-passkeys', 'root'),
+ (task/'.omo/evidence/passkeys-independent-qa', 'qa-runtime'),
+ (repo/'.omo/evidence/passkeys-independent-qa', 'qa'),
+ (repo/'.omo/evidence/passkeys-independent-ui', 'ui'),
+ (repo/'.omo/evidence/passkeys-code-review-d36ea8b0', 'code-original'),
+ (repo/'.omo/evidence/passkeys-code-rereview-b93a155b', 'code-rereview'),
+ (repo/'.omo/evidence/passkeys-cancellation-closure', 'code-closure'),
+ (repo/'.superpowers/sdd/passkeys-plan', 'execution'),
+]
+code = {'.py','.js','.mjs','.cjs','.jsx','.ts','.tsx','.mts','.cts','.sh','.bash'}
+textual = {'.log','.json','.jsonl','.html','.txt'}
+cookie = re.compile(r'((?:fuel_session|nevora_pk_register|nevora_pk_login)=)[A-Za-z0-9_-]{20,}')
+feed = re.compile(r'(/api/calendar/)[A-Za-z0-9_-]{43}(?=/|\\|\s|[\"\'])')
+entries, excluded, by_source = [], [], {}
+digest = lambda b: hashlib.sha256(b).hexdigest()
+
+# Remove only the generated cache copy made by this preservation job's first
+# pass. The original QA scratch and every source artifact remain untouched.
+generated_copy = out/'evidence/qa/owned-tmp'
+if generated_copy.exists():
+    prior = json.loads((out/'PRESERVATION_MANIFEST.json').read_text())
+    assert any(e['target'].startswith('evidence/qa/owned-tmp/') for e in prior['entries'])
+    shutil.rmtree(generated_copy)
+
+def redact(data, source):
+    if source.suffix not in textual:
+        return data, []
+    try:
+        text = data.decode('utf-8')
+    except UnicodeDecodeError:
+        return data, []
+    reasons = []
+    text, n = cookie.subn(r'\1[REDACTED_DISPOSABLE_FIXTURE_COOKIE]', text)
+    if n: reasons.append({'kind':'disposable fixture cookie','occurrences':n})
+    text, n = feed.subn(r'\1[REDACTED_DISPOSABLE_FEED]', text)
+    if n: reasons.append({'kind':'disposable calendar feed capability','occurrences':n})
+    if source.suffix == '.json':
+        try:
+            value = json.loads(text)
+            secrets = set()
+            def visit(obj):
+                if isinstance(obj,dict):
+                    if obj.get('name') in {'fuel_session','nevora_pk_register','nevora_pk_login'} and isinstance(obj.get('value'),str) and len(obj['value'])>=20:
+                        secrets.add(obj['value'])
+                    for child in obj.values(): visit(child)
+                elif isinstance(obj,list):
+                    for child in obj: visit(child)
+            visit(value)
+            for secret in secrets:
+                if secret.startswith('[REDACTED'): continue
+                text = text.replace(secret,'[REDACTED_DISPOSABLE_FIXTURE_COOKIE]')
+                reasons.append({'kind':'disposable cookie record','occurrences':1})
+        except (ValueError,TypeError):
+            pass
+    return text.encode('utf-8'), reasons
+
+for root, label in roots:
+    if not root.exists(): raise RuntimeError('Missing preservation source '+str(root))
+    for parent, dirs, files in os.walk(root,followlinks=False):
+        parent = Path(parent)
+        kept = []
+        for name in dirs:
+            path = parent/name
+            reason = None
+            if path.is_symlink(): reason = 'symlink'
+            elif name in {'node_modules','.next','.git','__pycache__','publish','owned-tmp','node-compile-cache'}: reason = 'runtime/dependency/generated or staging directory'
+            elif name == 'app' and parent.name.startswith('owned-next-'): reason = 'verified runtime mirror; inputs/provenance preserved, source in Git'
+            elif (path/'PG_VERSION').exists(): reason = 'database bytes'
+            if reason: excluded.append({'source':str(path),'reason':reason})
+            else: kept.append(name)
+        dirs[:] = kept
+        for name in files:
+            source = parent/name
+            if source.is_symlink() or not stat.S_ISREG(source.stat().st_mode):
+                excluded.append({'source':str(source),'reason':'nonregular/symlink'}); continue
+            if name.startswith('.env'):
+                excluded.append({'source':str(source),'reason':'environment file'}); continue
+            relative = Path(label)/source.relative_to(root)
+            if source.suffix in code: relative = Path(str(relative)+'.txt')
+            target = out/'evidence'/relative
+            data = source.read_bytes()
+            portable, redactions = redact(data,source)
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(portable)
+            entry = {'source':str(source),'target':str(target.relative_to(out)),'sourceBytes':len(data),'portableBytes':len(portable),'sourceSHA256':digest(data),'portableSHA256':digest(portable),'redactions':redactions}
+            if digest(target.read_bytes()) != entry['portableSHA256']: raise RuntimeError('Copy hash mismatch')
+            entries.append(entry); by_source[str(source)] = entry
+
+qa_source = task/'outputs/employee-mobile-passkeys/reviews/qa/QA_REVIEW.md'
+qa_report = qa_source.read_text()
+refs = sorted(set(re.findall(r'\]\((/[^)]+)\)',qa_report)))
+resolved = []
+for source in refs:
+    if source not in by_source: raise RuntimeError('Unpreserved QA reference '+source)
+    entry = by_source[source]
+    target = out/entry['target']
+    if not target.exists() or target.stat().st_size == 0: raise RuntimeError('Empty QA reference '+source)
+    resolved.append({'source':source,'target':entry['target'],'sourceSHA256':entry['sourceSHA256'],'portableSHA256':entry['portableSHA256'],'redactions':entry['redactions']})
+
+for source in (task/'outputs/employee-mobile-passkeys/reviews').rglob('*.md'):
+    entry = by_source[str(source)]
+    if entry['sourceSHA256'] != entry['portableSHA256']: raise RuntimeError('Authored report bytes changed '+str(source))
+
+manifest = {'candidate':'64063a2ac10f946f1268f325cd0de99555d87257','policy':'Authored reports and unredacted artifacts copied byte-exact. Disposable fixture cookies/feed capabilities redacted only in portable raw text/JSON/HTML, with original and portable hashes recorded. Raw external originals remain intact. Scripts receive .txt suffix only; bytes unchanged. Runtime mirrors/dependencies/generated output/database/environment files excluded.','entries':entries,'excluded':excluded,'qaReferencesVerified':len(resolved)}
+(out/'PRESERVATION_MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
+(out/'PORTABLE_QA_REFERENCES.json').write_text(json.dumps(resolved,indent=2)+'\n')
+lines = ['# Verified QA artifact links','','The independent report remains byte-exact at [QA review](evidence/root/reviews/qa/QA_REVIEW.md). Its original absolute references resolve below. The manifest records original/portable hashes and any declared fixture-cookie redaction.','']
+for i, entry in enumerate(resolved,1):
+    lines.append(f"{i}. [{Path(entry['source']).name}]({entry['target']}) — `{entry['source']}`")
+(out/'QA_REFERENCES.md').write_text('\n'.join(lines)+'\n')
+print(json.dumps({'files':len(entries),'portableBytes':sum(e['portableBytes'] for e in entries),'largestBytes':max(e['portableBytes'] for e in entries),'redactedFiles':sum(bool(e['redactions']) for e in entries),'qaReferences':len(resolved),'excludedDirectoriesOrFiles':len(excluded)}))

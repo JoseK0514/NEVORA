@@ -1,0 +1,202 @@
+{
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "expectedApplicationInputs": 2004,
+  "sourceMatchesCommittedCandidate": true,
+  "runtimeCount": 6,
+  "expectedRuntimeCount": 6,
+  "runtimes": [
+    {
+      "suite": "creation",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/creation/owned-next-evn8bE",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "37c30688c3891a860bd160abf79a4afc1bc296cf75bdea1c6bac50e82cbe6524",
+      "pid": 17708,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 36335,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 117003,
+        "marker": "fuel-phase3-disposable:7e5c5eb8-2600-434f-81b0-192fe6882994"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "hours",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/hours/owned-next-MZRRtD",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "80b9b470a0aa94e4cc3795d35909cfca2a833086875257c42eaf8d56b29a0eb2",
+      "pid": 19197,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 34709,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 119800,
+        "marker": "fuel-phase3-disposable:3452b32e-e4a4-4671-b39c-951844a74f5d"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "messages",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/messages/owned-next-khdRkt",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "19de65d1f7222ed05d496bb326eb0ded82eeec29ca40d645c9d2bddeaeae0374",
+      "pid": 9751,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 39989,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 16384,
+        "marker": "fuel-phase3-disposable:a6df4139-deba-4ac1-aecb-cb7b1ac6493c"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "mobile",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/mobile/owned-next-fRNmId",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "d590190380f585135ccc4ee6f5304e17d539caa28f3e4c3511bc21d7a27e7f8d",
+      "pid": 22066,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 45797,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 125394,
+        "marker": "fuel-phase3-disposable:774971e9-68fa-4c5d-8b90-94213ddaf4a3"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "planning",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/planning/owned-next-SLkPGS",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "89c0a8bfebb7a5755f942c5c2af97222560a128e45171ab53e795a0ab55fca5d",
+      "pid": 20537,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 35609,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 122597,
+        "marker": "fuel-phase3-disposable:ec3ce6c2-5eea-4ffa-85e5-e2b43170c407"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    },
+    {
+      "suite": "responses",
+      "root": "/workspace/nevora-evidence/independent-qa/combined/responses/owned-next-vfktQS",
+      "checkpoint": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "sourceCount": 2004,
+      "sourceManifestSha256": "e65dacf17ced29d09abf1978534649d36268918b607480b3b456c587ca535b3c",
+      "ownershipSha256": "32205bce69379ad27542434f19b316a7963abcd648baa931ff4e2f772316c27a",
+      "pid": 13338,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 40989,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_edad253c114c",
+        "oid": 19201,
+        "marker": "fuel-phase3-disposable:4bc76a52-c934-472d-bc4b-d1429f6f5f8c"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "runnerClusterClosure": [],
+  "supplementalDatabaseCustody": {
+    "completedAt": "2026-10-27T18:43:10.057Z",
+    "runnerPid": 9623,
+    "runnerLive": false,
+    "clusters": [
+      {
+        "path": "/tmp/nevora-payroll-owned-lHViIx",
+        "pid": 9647,
+        "port": 42795,
+        "data": "/tmp/nevora-payroll-owned-lHViIx/data",
+        "owner": "edad253c114c0584cf4ef5018518f515",
+        "postmasterOpts": "/workspace/scratch/nevora-runtime/node_modules/@embedded-postgres/linux-x64/native/bin/postgres \"-D\" \"/tmp/nevora-payroll-owned-lHViIx/data\" \"-h\" \"127.0.0.1\" \"-p\" \"42795\" \"-k\" \"/tmp/nevora-payroll-owned-lHViIx\"",
+        "portOpen": false,
+        "databases": [
+          {
+            "name": "nevora_exchange_test_c1_edad253c114c",
+            "oid": 212014,
+            "marker": "fuel-phase3-disposable:d45dfdbf-3c5d-4cc9-a80c-f5f62246a210"
+          },
+          {
+            "name": "postgres",
+            "oid": 5,
+            "marker": "default administrative connection database"
+          },
+          {
+            "name": "template0",
+            "oid": 4,
+            "marker": "unmodifiable empty database"
+          },
+          {
+            "name": "template1",
+            "oid": 1,
+            "marker": "default template for new databases"
+          }
+        ],
+        "directoryExists": false,
+        "pidLive": false
+      }
+    ]
+  },
+  "initialObserverLimit": "Initial Python observer could not execute absent psql; original diagnostics retained in observations.jsonl. Supplemental pg observer independently records actual database identity and cluster closure.",
+  "gateSourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterStopLogged": true,
+  "artifactsCount": 799,
+  "passed": true
+}

@@ -1,0 +1,24 @@
+@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-exchange .em-request-back { gap:var(--em-space-1); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-status { display:flex; flex-direction:column; gap:var(--em-space-2); padding:var(--em-space-4); background:var(--em-wash); color:var(--em-ink); border-radius:var(--em-small); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-status strong { font-size:var(--em-size-body); line-height:var(--em-line-heading); font-weight:var(--em-weight-label); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-status :is(span,small) { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-comparison { padding:0 var(--em-space-5); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot { padding:var(--em-space-5) 0; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot + .em-response-slot { border-top:1px solid var(--em-line); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot h2 { margin:0 0 var(--em-space-3); color:var(--em-teal); font-size:var(--em-size-support); font-weight:var(--em-weight-label); line-height:var(--em-line-label); letter-spacing:normal; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot p { margin:var(--em-space-2) 0 0; color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot .em-response-date { color:var(--em-ink); font-size:var(--em-size-body); font-weight:var(--em-weight-label); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-slot .em-response-time { color:var(--em-ink); font-size:var(--em-size-shift); font-weight:var(--em-weight-label); line-height:var(--em-line-shift); letter-spacing:-.02em; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-actions { display:flex; flex-direction:column; gap:var(--em-space-3); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-actions p { margin:0; color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history { padding:0 var(--em-space-4); border:1px solid var(--em-line); border-radius:var(--em-card); background:var(--em-surface); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history > summary { display:flex; align-items:center; justify-content:space-between; gap:var(--em-space-3); min-height:var(--em-action); padding:var(--em-space-3) 0; color:var(--em-ink); font-size:var(--em-size-body); font-weight:var(--em-weight-label); list-style:none; cursor:pointer; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history > summary::-webkit-details-marker { display:none; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history > summary svg { width:20px; height:20px; flex:none; color:var(--em-teal); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history[open] > summary svg { transform:rotate(180deg); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history ol { padding:0; margin:0; list-style:none; }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history li { display:flex; flex-direction:column; gap:var(--em-space-2); padding:var(--em-space-4) 0; border-top:1px solid var(--em-line); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history li strong { font-weight:var(--em-weight-label); color:var(--em-ink); font-size:var(--em-size-body); line-height:var(--em-line-heading); }
+  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .em-response-history li :is(span,time) { color:var(--em-muted); font-size:var(--em-size-support); line-height:var(--em-line-body); }
+}

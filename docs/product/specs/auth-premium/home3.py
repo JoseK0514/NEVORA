@@ -1,0 +1,47 @@
+"""Home, calm version (mockup). Run: python3 -I home3.py"""
+from pathlib import Path
+
+HERE = Path(__file__).parent
+
+
+def ln(d, s=24, w=1.6):
+    return f'<svg width="{s}" height="{s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{w}" stroke-linecap="round" stroke-linejoin="round">{d}</svg>'
+
+
+HOME = ln('<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z"/>')
+CAL = ln('<rect x="4" y="5.5" width="16" height="14.5" rx="2.5"/><path d="M4 10h16M8.5 3.5v3.5M15.5 3.5v3.5"/>')
+REQ = ln('<path d="M8 4.5h8M7 4.5H6a1.5 1.5 0 0 0-1.5 1.5v13A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5V6A1.5 1.5 0 0 0 18 4.5h-1M9 11h6M9 15h4"/><rect x="8" y="3" width="8" height="3" rx="1"/>')
+PAY = ln('<rect x="3.5" y="6" width="17" height="12.5" rx="2.5"/><path d="M3.5 10h17M7 14.5h3"/>')
+MORE = ln('<circle cx="6" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="18" cy="12" r="1.2" fill="currentColor"/>')
+BELL = ln('<path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15ZM10 20.5a2 2 0 0 0 4 0"/>', 22)
+CHEV = '<svg class="c" width="8" height="14" viewBox="0 0 8 14"><path d="m1 1 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+MARK = '<svg class="mk" viewBox="0 0 360 340" aria-hidden="true"><path class="l" d="M20 330 L180 30 L340 330 L276 330 L180 150 L84 330 Z"/><path class="t" d="M146 330 L180 266 L214 330 Z"/></svg>'
+SB = ('<div class="sb"><span>9:41</span><span class="ic"><svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>'
+      '<svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2"/></svg></span></div>')
+
+HELLO = '<div class="hello"><p class="d">Tuesday, October 20</p><h1>Good afternoon, Alexandra</h1></div>'
+SHIFT = (f'<div class="shift">{MARK}<div class="grain"></div><p class="k">Today</p><p class="t1">8:00 – 4:00 PM</p>'
+         '<p class="w">Main Office · Customer Support</p><div class="line"><i></i></div>'
+         '<div class="meta"><span>Not clocked in</span><span>1h 37m left</span></div></div>')
+G1 = ('<div class="grp"><div class="r"><b>To review</b><span class="n">3</span>' + CHEV + '</div>'
+      '<div class="r"><b>Tomorrow</b><span>8:00 – 4:00 PM</span>' + CHEV + '</div></div>')
+G2 = ('<div class="grp"><div class="r"><b>Request time off</b>' + CHEV + '</div>'
+      '<div class="r"><b>Swap a shift</b>' + CHEV + '</div>'
+      '<div class="r"><b>Availability</b>' + CHEV + '</div></div>')
+FOOT = '<p class="foot">Times in Puerto Rico time.</p>'
+TABS = ('<div class="tabs">' + f'<span class="on">{HOME}Home</span><span>{CAL}Schedule</span><span>{REQ}Requests</span><span>{PAY}Pay</span><span>{MORE}More</span>' + '</div>')
+
+phone = (f'<div class="ios">{SB}<div class="top"><span class="wm">NEVORA</span><span class="bell">{BELL}<i></i></span></div>'
+         f'{HELLO}{SHIFT}{G1}{G2}{TABS}</div>')
+desk = ('<div class="desk"><div class="side"><span class="wm">NEVORA</span><ul>'
+        + ''.join(f'<li{" class=on" if i == 0 else ""}>{t}</li>' for i, t in enumerate(["Home", "My schedule", "My time", "Requests", "Updates", "My pay", "Profile"]))
+        + f'</ul></div><div class="main">{HELLO}<div class="cols"><div>{SHIFT}{FOOT}</div><div>{G1}{G2}</div></div></div></div>')
+
+
+def page(b, t):
+    return f'<!doctype html><html><head><meta charset="utf-8"><title>{t}</title><link rel="stylesheet" href="../home3.css"></head><body>{b}</body></html>'
+
+
+(HERE / "html" / "h3-phone-390.html").write_text(page(phone, "Home"))
+(HERE / "html" / "h3-desk-1440.html").write_text(page(desk, "Home"))
+print("ok")

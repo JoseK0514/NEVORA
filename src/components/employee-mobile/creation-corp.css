@@ -1,0 +1,99 @@
+/* Swap shift, Offer for cover and Can't work this shift (Release 1, boards E-SwapSheet, E-CoverSheet, E-CantWorkSheet).
+ * From a shift: a white bottom sheet as tall as its content over the dimmed page (radius 16, grabber, 52px Cancel · title
+ * bar, 16px gutters and gaps). By its URL: the same content in a white card under the pushed-page header. Kit values only. */
+
+/* The sheet itself (the Quiet dialog that holds this content). Outranks the corp/quiet bridge's grey sheet canvas. */
+:is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) {
+  height: auto; max-height: calc(100dvh - max(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px, 24px));
+  padding: 0; border-radius: 16px 16px 0 0; background: #FFFFFF; box-shadow: none;
+}
+:is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet)::backdrop { background: rgba(26, 28, 30, 0.40); }
+:is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) > .q-sheet__in { min-height: 0; padding-bottom: 0; background: #FFFFFF; }
+:is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) .q-sheet__top { height: 13px; background: #FFFFFF; }
+:is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) .q-sheet__grab { background: #D5D8DA; transform: translateY(8px); }
+
+:is(#c-root, html) .c-page.c-xsheet { gap: 0; }
+:is(#c-root, html) .c-page.c-xsheet.c-embed { background: #FFFFFF; }
+:is(#c-root, html) .c-xsheet .c-sheet-head { position: sticky; top: 13px; z-index: 1; background: #FFFFFF; }
+:is(#c-root, html) .c-xsheet .c-sheet-head h2 { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+:is(#c-root, html) .c-xsheet .c-sheet-head__l { display: inline-flex; align-items: center; font-family: inherit; }
+:is(#c-root, html) .c-xsheet .c-sheet-body { padding: 16px 16px max(34px, calc(16px + env(safe-area-inset-bottom, 0px))); }
+
+/* By URL (upscale S15): no outer card. On the grey page the shift summary, the choices and the note are each their own
+ * white card, 12px apart; the action follows. */
+:is(#c-root, html) .c-page.c-xsheet--page { gap: 16px; }
+:is(#c-root, html) .c-xsheet--page > .c-sheet-body { display: flex; flex-direction: column; gap: 12px; padding: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#c-root, html) .c-xsheet--page .c-xs-fields { gap: 12px; }
+:is(#c-root, html) .c-xsheet--page .c-xs-shift { padding: 14px 16px; border-radius: 12px; background: #FFFFFF; box-shadow: var(--c-shadow-card); }
+:is(#c-root, html) .c-xsheet--page .c-xs-options, :is(#c-root, html) .c-xsheet--page .c-xs-who { border-radius: 12px; box-shadow: var(--c-shadow-card); }
+:is(#c-root, html) .c-xsheet--page .c-xs-who--fill { min-height: 52px; padding: 10px 16px; background: #FFFFFF; }
+:is(#c-root, html) .c-xsheet--page .c-xs-option { padding: 8px 16px; }
+
+/* The shift on a grey block. */
+:is(#c-root, html) .c-xsheet .c-xs-shift { display: flex; flex-direction: column; padding: 12px 14px; border-radius: 8px; background: #F5F6F6; }
+:is(#c-root, html) .c-xsheet .c-xs-shift__label { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-xsheet .c-xs-shift__label + .c-xs-shift__time { margin-top: 2px; }
+:is(#c-root, html) .c-xsheet .c-xs-shift__time { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
+:is(#c-root, html) .c-xsheet .c-xs-shift__place { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+
+/* Form: fields stacked 16px apart; a fieldset's legend is the kit's 13/600 label, 6px above its list. */
+:is(#c-root, html) .c-xsheet .c-xs-form { margin: 0; }
+:is(#c-root, html) .c-xsheet fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+:is(#c-root, html) .c-xsheet .c-xs-fields { display: flex; flex-direction: column; gap: 16px; }
+:is(#c-root, html) .c-xsheet .c-xs-group > legend { float: left; width: 100%; padding: 0 0 6px; }
+:is(#c-root, html) .c-xsheet .c-xs-group > legend + * { clear: both; }
+:is(#c-root, html) .c-xsheet .c-xs-group > .c-field__help, :is(#c-root, html) .c-xsheet .c-xs-group > .c-xs-notice { margin-top: 6px; }
+:is(#c-root, html) .c-xsheet .c-xs-optional { font-weight: 600; }
+
+/* One bordered list of choices; the radio sits on the right. */
+:is(#c-root, html) .c-xsheet .c-xs-options { margin: 0; padding: 0; list-style: none; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-xsheet .c-xs-options > li + li > .c-xs-option { box-shadow: inset 0 1px 0 var(--c-line); }
+:is(#c-root, html) .c-xsheet .c-xs-option { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 14px; cursor: pointer; }
+:is(#c-root, html) .c-xsheet .c-xs-option--one { min-height: 48px; padding-top: 4px; padding-bottom: 4px; }
+:is(#c-root, html) .c-xsheet .c-xs-option--one .c-xs-option__main b { font-weight: 400; }
+:is(#c-root, html) .c-xsheet .c-xs-option:has(.c-xs-radio:focus-visible) { outline: 2px solid var(--c-teal); outline-offset: -2px; border-radius: 8px; }
+:is(#c-root, html) .c-xsheet .c-xs-option__main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+:is(#c-root, html) .c-xsheet .c-xs-option__main b { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:is(#c-root, html) .c-xsheet .c-xs-option__main span { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-xsheet .c-xs-radio { flex: none; width: 20px; height: 20px; margin: 0; padding: 0; border: 0; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--c-grey);
+  appearance: none; -webkit-appearance: none; cursor: pointer; outline: none; }
+:is(#c-root, html) .c-xsheet .c-xs-radio:checked { background: var(--c-teal); box-shadow: inset 0 0 0 2px var(--c-teal), inset 0 0 0 6px #FFFFFF; }
+:is(#c-root, html) .c-xsheet .c-xs-radio:disabled { cursor: default; opacity: .6; }
+:is(#c-root, html) .c-xsheet fieldset:disabled .c-xs-option { cursor: default; }
+
+/* Who can take it (white, bordered) and who gets the report (grey fill): one 60px row each. */
+:is(#c-root, html) .c-xsheet .c-xs-who { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); }
+:is(#c-root, html) .c-xsheet .c-xs-who--fill { min-height: 0; background: #F5F6F6; box-shadow: none; }
+:is(#c-root, html) .c-xsheet .c-xs-who .c-xs-option__main b { white-space: normal; }
+:is(#c-root, html) .c-xsheet .c-xs-who .c-ic { width: 16px; height: 16px; }
+
+:is(#c-root, html) .c-xsheet textarea.c-in.c-xs-note { height: 68px; padding: 12px 14px; resize: none; }
+:is(#c-root, html) .c-xsheet .c-xs-foot, :is(#c-root, html) .c-xsheet .c-xs-notice { margin: 0; font-size: 13px; line-height: 18px; color: var(--c-grey); }
+:is(#c-root, html) .c-xsheet .c-xs-fields > .c-xs-foot { margin-top: -10px; }
+:is(#c-root, html) .c-xsheet .c-xs-inline { display: inline; min-height: 0; margin: 0; padding: 0; border: 0; background: none; color: var(--c-teal); font: inherit; font-weight: 600; cursor: pointer; }
+:is(#c-root, html) .c-xsheet .c-xs-inline { position: relative; }
+:is(#c-root, html) .c-xsheet .c-xs-inline::after { content: ""; position: absolute; inset: -12px -4px; }
+:is(#c-root, html) .c-xsheet .c-xs-callout { align-items: center; justify-content: space-between; }
+:is(#c-root, html) .c-xsheet .c-xs-callout .c-btn { flex: none; }
+:is(#c-root, html) .c-xsheet a.c-xs-alt { align-self: center; justify-content: center; min-height: 44px; margin-top: -4px; color: var(--c-teal); }
+:is(#c-root, html) .c-xsheet .c-sheet-body > .c-error { margin: 0; }
+
+/* States and the receipt. */
+:is(#c-root, html) .c-xsheet .c-xs-state { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-xsheet .c-xs-state p { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+:is(#c-root, html) .c-xsheet .c-xs-receipt { display: flex; flex-direction: column; gap: 12px; }
+:is(#c-root, html) .c-xsheet .c-xs-receipt h2 { margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; color: var(--c-ink); outline: none; }
+:is(#c-root, html) .c-xsheet .c-xs-receipt p { margin: 0 0 4px; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
+
+/* Loading: the same frame with grey blocks where the content lands. */
+:is(#c-root, html) .c-xsheet--skel .c-xsk { display: block; border-radius: 8px; background: #F5F6F6; }
+:is(#c-root, html) .c-xsheet--skel .c-sheet-head .c-xsk--s { width: 52px; height: 16px; }
+:is(#c-root, html) .c-xsheet--skel .c-sheet-head .c-xsk--m { width: 128px; height: 18px; }
+:is(#c-root, html) .c-xsheet--skel .c-xsk--shift { height: 76px; }
+:is(#c-root, html) .c-xsheet--skel .c-xsk--label { width: 45%; height: 14px; margin-bottom: -10px; }
+:is(#c-root, html) .c-xsheet--skel .c-xsk--list { box-shadow: 0 0 0 1px var(--c-line); background: #FFFFFF; }
+:is(#c-root, html) .c-xsheet--skel .c-xsk--btn { height: 44px; }
+
+@media (min-width: 768px) {
+  :is(#c-root, html) body dialog.q-page.q-sheet[open]:has(.c-xsheet) { border-radius: 16px; }
+}

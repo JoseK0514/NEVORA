@@ -1,0 +1,60 @@
+const Module=require('node:module');
+const fs=require('node:fs');
+const path=require('node:path');
+const log=process.env.NEVORA_PROFILE_EVENT_LOG;
+if(log){
+ const originalLoad=Module._load;
+ const seen=new WeakSet();let pageSequence=0,requestSequence=0;
+ const write=row=>fs.appendFileSync(log,JSON.stringify({nodeTime:performance.now(),pid:process.pid,...row})+'\n');
+ const safeError=e=>String(e??'').replace(/https?:\/\/\S+/g,'[URL]').slice(0,500);
+ function observePage(page,engine){
+  const pageId=++pageSequence,ids=new WeakMap();
+  const identity=request=>{if(!ids.has(request))ids.set(request,++requestSequence);return ids.get(request);};
+  const fields=request=>({pageId,engine,requestId:identity(request),method:request.method(),path:new URL(request.url()).pathname});
+  const included=request=>{const p=new URL(request.url()).pathname;return p.startsWith('/api/')||p.startsWith('/app');};
+  page.on('request',r=>{if(included(r))write({event:'request',...fields(r)});});
+  page.on('response',response=>{const r=response.request();if(!included(r))return;write({event:'response',...fields(r),status:response.status(),timing:r.timing()});response.finished().then(error=>write({event:'response.finished',...fields(r),error:error?safeError(error):null,timing:r.timing()})).catch(error=>write({event:'response.finished.reject',...fields(r),error:safeError(error)}));});
+  page.on('requestfinished',r=>{if(included(r))write({event:'requestfinished',...fields(r),timing:r.timing()});});
+  page.on('requestfailed',r=>{if(included(r))write({event:'requestfailed',...fields(r),failure:safeError(r.failure()?.errorText),timing:r.timing()});});
+  page.on('close',()=>write({event:'page.close',pageId,engine}));
+  write({event:'page.observed',pageId,engine});
+ }
+ Module._load=function(request,parent,isMain){
+  const exported=originalLoad.apply(this,arguments);
+  if(exported?.chromium?.launch&&exported?.firefox?.launch&&exported?.webkit?.launch&&!seen.has(exported)){
+   seen.add(exported);write({event:'playwright.instrumented'});
+   for(const engine of ['chromium','webkit','firefox']){
+    const launch=exported[engine].launch;
+    exported[engine].launch=async function(...args){
+     const browser=await launch.apply(this,args),newContext=browser.newContext;
+     browser.newContext=async function(...contextArgs){
+      const context=await newContext.apply(this,contextArgs);
+      context.on('page',page=>observePage(page,engine));
+      await context.exposeBinding('__qaCalendarFetchObservation',(source,row)=>write({event:'consumer',engine,...row}));
+      await context.addInitScript(()=>{
+       const originalFetch=globalThis.fetch;let fetchId=0;
+       const emit=row=>{void globalThis.__qaCalendarFetchObservation({browserTime:performance.now(),...row}).catch(()=>{});};
+       globalThis.fetch=function(input,init){
+        const method=init?.method??(input instanceof Request?input.method:'GET');
+        const raw=input instanceof Request?input.url:String(input);
+        let target=false;try{target=method==='GET'&&new URL(raw,location.href).pathname==='/api/employee/calendar-subscriptions';}catch{}
+        if(!target)return originalFetch.apply(this,arguments);
+        const id=++fetchId;emit({phase:'fetch.started',fetchId:id});
+        return originalFetch.apply(this,arguments).then(response=>{
+         emit({phase:'fetch.headers',fetchId:id,status:response.status});
+         const json=response.json.bind(response);
+         response.json=async function(){try{const data=await json();emit({phase:'json.resolved',fetchId:id,state:['none','active','revoked','unavailable','unauthorized'].includes(data?.state)?data.state:'other'});return data;}catch(error){emit({phase:'json.rejected',fetchId:id,errorName:error?.name??'unknown'});throw error;}};
+         return response;
+        },error=>{emit({phase:'fetch.rejected',fetchId:id,errorName:error?.name??'unknown'});throw error;});
+       };
+      });
+      return context;
+     };
+     return browser;
+    };
+   }
+  }
+  return exported;
+ };
+ write({event:'preload.ready'});
+}

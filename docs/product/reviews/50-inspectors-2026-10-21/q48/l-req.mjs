@@ -1,0 +1,14 @@
+import { start, go, shot, BASE } from "./h.mjs";
+const w = Number(process.argv[2]);
+const { b, p, log } = await start("AUDIT-M", w, { touch: true });
+const main = async () => (await p.locator("main").first().innerText()).replace(/\s+/g, " ");
+await go(p, "/app/requests");
+const a = p.getByRole("link", { name: /Open request/ }).first(); const href = await a.getAttribute("href"); console.log("open href", href);
+await a.click(); await p.waitForURL(u => !u.toString().endsWith("/app/requests"), { timeout: 30000 }).catch(() => {}); await p.waitForLoadState("networkidle"); await p.waitForTimeout(1000);
+console.log("landed", p.url().replace(BASE, ""), "h1", await p.locator("h1").allInnerTexts(), (await main()).slice(0, 500));
+await shot(p, `request-open-${w}`);
+await go(p, "/app/requests?tab=declined"); console.log("declined", (await main()).slice(0, 300));
+await go(p, "/app/exchange?tab=coverage"); console.log("coverage", (await main()).slice(0, 300));
+await go(p, "/app/availability"); await p.getByRole("button", { name: /^Submitted/ }).click(); await p.waitForTimeout(600); console.log("avail submitted", (await main()).slice(100, 400)); await shot(p, `availability-submitted-${w}`);
+console.log("blocked", log.blocked, log.pageerr);
+await b.close();

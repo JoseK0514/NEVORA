@@ -1,0 +1,84 @@
+RELEASE 1 FINAL GATE f5fa463b111e263c9b863b16b6c2bca502571a7b Wed Nov  4 13:09:02 AST 2026
+typecheck exit=0 15s 
+lint exit=0 23s 
+unit exit=0 369s  Tests 10514 passed | 801 skipped (11370)
+advisor-pilot exit=0 2s 
+ci-custody exit=0 0s 
+ci-config-qa exit=0 11s 
+audit-prod exit=0 1s 
+audit-all exit=0 22s 
+release-build exit=0 23s 
+migrations exit=0 8s  Tests 11 passed (11)
+release exit=0 284s  Tests 77 passed (77)
+advisor-integration exit=0 11s  Tests 38 passed (38)
+clocker-1 exit=0 90s  Tests 147 passed (147)
+clocker-2 exit=0 71s  Tests 132 passed (132)
+clocker-3 exit=0 117s  Tests 151 passed (151)
+clocker-4 exit=0 64s  Tests 142 passed (142)
+phase-e-startup exit=0 1s 
+phase-e-sql exit=0 98s  Tests 23 passed (23)
+int-native-payroll-integration exit=0 25s  Tests 44 passed (44)
+int-configurable-payroll-integration exit=0 20s  Tests 37 passed (37)
+int-payroll-export-integration exit=0 5s  Tests 8 passed (8)
+int-timecards-integration exit=0 8s  Tests 14 passed (14)
+int-punches-integration exit=0 40s  Tests 72 passed (72)
+int-corrections-integration exit=0 17s  Tests 36 passed (36)
+int-company-setup-integration exit=0 3s  Tests 3 passed (3)
+int-account-recovery-integration exit=0 10s  Tests 13 passed (13)
+int-action-center-integration exit=0 3s  Tests 5 passed (5)
+int-management-profile-integration exit=0 4s  Tests 14 passed (14)
+int-employee-schedule-integration exit=0 4s  Tests 6 passed (6)
+int-reports-integration exit=0 3s  Tests 6 passed (6)
+int-phase-d-corrections exit=0 28s  Tests 53 passed (53)
+int-phase-d-remediation exit=0 8s  Tests 13 passed (13)
+int-six-findings exit=0 2s  Tests 15 passed (15)
+int-passkeys-integration exit=0 9s  Tests 37 passed (37)
+int-employee-mobile-phase1-sql exit=0 41s  Tests 68 passed (68)
+int-clocker-breaks-integration exit=0 49s  Tests 31 passed (31)
+int-clocker-c6-integration exit=0 38s  Tests 29 passed (29)
+int-clocker-owner-policy-integration exit=0 31s  Tests 65 passed (65)
+int-clocker-punch-integration exit=0 67s  Tests 72 passed (72)
+int-clocker-recovery-integration exit=0 46s  Tests 50 passed (50)
+B-advisor-browser exit=0 111s  Tests 1 passed (1)
+B-attendance-ui exit=0 71s  "checks": 48,
+B-phase-d-browser exit=0 273s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","sourceClean":true,"checks":207,"errors":0,"evidence":"(local)"…
+B-phase-d-remediation exit=0 201s  "checks": 6,
+B-corrections-ui exit=0 203s  "checks": 282,
+B-e-home-held exit=0 5s 
+B-phase-e-home exit=0 381s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","executions":14,"status":"passed","errors":0}
+B-phase-e-communications exit=0 267s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","executions":14,"status":"passed","errors":0}
+B-phase-e-calendar exit=0 157s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","executions":14,"status":"passed","errors":0}
+B-phase-e-navigation exit=0 300s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","executions":14,"status":"passed","errors":0}
+B-phase-e-attention exit=0 263s {"checkpoint":"f5fa463b111e263c9b863b16b6c2bca502571a7b","executions":14,"status":"passed","errors":0}
+B-clocker-ipad exit=0 111s 
+B-clocker-breaks exit=0 45s  "checks": 46,
+B-clocker-punch exit=0 198s  "checks": 90,
+B-mobile-access exit=0 168s  Tests 3 passed (3)
+B-employee-mobile-phase1 exit=0 118s  Tests 1 passed (1)
+B-employee-mobile-requests exit=0 60s  Tests 39 passed (39)
+B-employee-mobile-planning exit=0 255s  Tests 58 passed (58)
+B-employee-mobile-creation exit=0 169s  Tests 48 passed (48)
+B-employee-mobile-responses exit=0 107s  Tests 44 passed (44)
+B-employee-mobile-communications exit=0 565s  Tests 178 passed (178)
+B-employee-mobile-hours exit=1 288s  Tests 1 failed | 70 passed (71)
+B-employee-mobile-profile exit=1 649s  Tests 1 failed | 184 passed (185)
+B-employee-mobile-calendar exit=1 934s  Tests 1 failed | 255 passed (256)
+B-employee-mobile-pay exit=0 82s  Tests 1 passed (1)
+B-employee-mobile-closure exit=0 141s  Tests 1 passed (1)
+B-employee-mobile-deletion exit=0 56s  Tests 15 passed (15)
+B-employee-mobile-device-alerts exit=0 1191s  Tests 374 passed (374)
+B-employee-mobile-passkeys exit=1 900s  Tests 1 failed | 294 passed (295)
+B-owner-inbox-browser exit=0 48s  Tests 1 passed (1)
+RELEASE 1 FINAL GATE DONE Wed Nov  4 15:55:50 AST 2026 tree:0
+
+RERUN f5fa463b111e263c9b863b16b6c2bca502571a7b Wed Nov  4 15:57:01 AST 2026
+R-employee-mobile-hours exit=1 311s  Tests 1 failed | 70 passed (71)
+R-employee-mobile-profile exit=0 621s  Tests 185 passed (185)
+R-employee-mobile-calendar exit=0 816s  Tests 256 passed (256)
+R-employee-mobile-passkeys exit=1 914s  Tests 1 failed | 294 passed (295)
+RERUN DONE Wed Nov  4 16:41:23 AST 2026 tree:0
+
+RERUN f5fa463b111e263c9b863b16b6c2bca502571a7b Wed Nov  4 16:41:53 AST 2026
+R-employee-mobile-hours exit=0 500s  Tests 71 passed (71)
+R-employee-mobile-passkeys exit=0 899s  Tests 295 passed (295)
+RERUN DONE Wed Nov  4 17:05:12 AST 2026 tree:0

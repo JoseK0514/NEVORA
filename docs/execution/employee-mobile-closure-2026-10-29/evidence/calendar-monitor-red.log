@@ -1,0 +1,38 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ src/test/calendar-request-monitor.test.ts (7 tests | 1 failed) 4ms
+   × retires only an exactly identified aborted Calendar fetch with no server receipt after a verified positive control 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/calendar-request-monitor.test.ts > retires only an exactly identified aborted Calendar fetch with no server receipt after a verified positive control
+AssertionError: expected [ { …(3) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "id": "11111111-1111-4111-8111-111111111111",
++     "path": "/api/employee/calendar-subscriptions",
++     "response": false,
++   },
++ ]
+
+ ❯ src/test/calendar-request-monitor.test.ts:13:54
+     11| const orphan = {path:CALENDAR_READ_PATH,id,response:false};
+     12| it('retires only an exactly identified aborted Calendar fetch with no …
+     13|   expect(pendingReads([orphan],[id],trace,finished)).toEqual([]);
+       |                                                      ^
+     14| });
+     15| it.each(['not-aborted','server-started','response-seen','observer-unpr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  11:54:55
+   Duration  72ms (transform 51%, import 22%, tests 19%, worker 8%)

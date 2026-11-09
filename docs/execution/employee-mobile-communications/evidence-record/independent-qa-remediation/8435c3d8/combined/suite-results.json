@@ -1,0 +1,148 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "tests": 176,
+  "passed": 176,
+  "failed": 0,
+  "suites": [
+    {
+      "project": "canonical-communications",
+      "file": "src/test/integration/phase-e-communications-schema.integration.ts",
+      "tests": 11,
+      "failed": 0,
+      "durationMs": 4303
+    },
+    {
+      "project": "canonical-communications",
+      "file": "src/test/integration/company-access-communications.integration.ts",
+      "tests": 40,
+      "failed": 0,
+      "durationMs": 30234
+    },
+    {
+      "project": "canonical-communications",
+      "file": "src/test/integration/phase-e-communications.integration.ts",
+      "tests": 17,
+      "failed": 0,
+      "durationMs": 10989
+    },
+    {
+      "project": "canonical-communications",
+      "file": "src/test/integration/communications-gap-remediation.integration.ts",
+      "tests": 7,
+      "failed": 0,
+      "durationMs": 5515
+    },
+    {
+      "project": "canonical-communications",
+      "file": "src/test/integration/phase-e-communication-ack.integration.ts",
+      "tests": 6,
+      "failed": 0,
+      "durationMs": 4889
+    },
+    {
+      "project": "canonical-notifications",
+      "file": "src/test/integration/phase-e-communication-notifications.integration.ts",
+      "tests": 11,
+      "failed": 0,
+      "durationMs": 8335
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-communications.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 209077
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-communications-review.integration.ts",
+      "tests": 4,
+      "failed": 0,
+      "durationMs": 163868
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-creation.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 102503
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-planning.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 98989
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-hours.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 93067
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-responses.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 87828
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-requests.integration.ts",
+      "tests": 1,
+      "failed": 0,
+      "durationMs": 47631
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/shift-change-hardening.integration.ts",
+      "tests": 34,
+      "failed": 0,
+      "durationMs": 21339
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-communications-sql.integration.ts",
+      "tests": 8,
+      "failed": 0,
+      "durationMs": 19988
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-hours-sql.integration.ts",
+      "tests": 12,
+      "failed": 0,
+      "durationMs": 9778
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-planning-sql.integration.ts",
+      "tests": 9,
+      "failed": 0,
+      "durationMs": 6329
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-exchange-privacy.integration.ts",
+      "tests": 4,
+      "failed": 0,
+      "durationMs": 4521
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/employee-mobile-creation-privacy.integration.ts",
+      "tests": 3,
+      "failed": 0,
+      "durationMs": 4074
+    },
+    {
+      "project": "employee",
+      "file": "src/test/integration/shift-change-views.integration.ts",
+      "tests": 4,
+      "failed": 0,
+      "durationMs": 1329
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "author": "/root/communications_qa_acceptance",
+  "at": "2026-10-27T19:45:13.448535+00:00",
+  "captures": [
+    {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests/mobile/webkit-desktop-preserved.png",
+      "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sha256": "f1075f67443a9af35436aea33ed3f488a1fcff6a3568dc96a31f691e23fa315c",
+      "dimensions": [
+        1440,
+        1000
+      ],
+      "method": "functions view_image; personally inspected full image",
+      "finding": "Existing desktop Requests hub visible, native sidebar/task layout retained, mobile view absent."
+    },
+    {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests/mobile/webkit-access-denied.png",
+      "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+      "sha256": "7799f2b408ac21d9f324f7b8dd1975a0b1893c5dee3477fd4708a7ae2c4f79b8",
+      "dimensions": [
+        390,
+        844
+      ],
+      "method": "functions view_image; personally inspected full image",
+      "finding": "Requests sign-in recovery visible with no time-off request or pickup facts after actual employee deactivation."
+    }
+  ],
+  "limit": "Two Requests regression states only; independent UI author owns UI findings and broader pixel review."
+}

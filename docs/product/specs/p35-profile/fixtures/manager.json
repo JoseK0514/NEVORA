@@ -1,0 +1,43 @@
+{
+  "state": "ready",
+  "kind": "management-profile",
+  "observedAt": "2026-10-19T14:00:00.000Z",
+  "validForMs": 600000,
+  "contact": {
+    "email": "morgan.rivera@northside-qa.example",
+    "phone": "787-555-0101"
+  },
+  "locations": {
+    "scope": "assigned",
+    "names": [
+      "Main Office",
+      "West Office"
+    ]
+  },
+  "alerts": [
+    {
+      "id": "time-off",
+      "label": "Time-off requests",
+      "detail": "When someone asks for time off",
+      "on": true
+    },
+    {
+      "id": "shift-changes",
+      "label": "Shift requests",
+      "detail": "When someone asks to swap or give up a shift",
+      "on": true
+    },
+    {
+      "id": "unable-to-work",
+      "label": "Unable to work",
+      "detail": "When someone can’t make a shift",
+      "on": true
+    },
+    {
+      "id": "clock-review",
+      "label": "Clock-ins to review",
+      "detail": "When a clock-in needs your review",
+      "on": false
+    }
+  ]
+}

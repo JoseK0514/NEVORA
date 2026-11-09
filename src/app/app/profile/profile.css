@@ -1,0 +1,77 @@
+.employee-shell .profile-view { max-width: 1120px; width: 100%; min-width: 0; color: var(--design-text-primary); }
+.profile-view .employee-view-heading { margin-bottom: 28px; }
+.profile-view #employee-calendar-title { scroll-margin-top: 96px; }
+.profile-view .employee-view-heading h1 { font-size: clamp(calc(28 * var(--type-unit, 1px)), 3vw, calc(36 * var(--type-unit, 1px))); font-weight: 500; letter-spacing: -.03em; }
+.profile-view .employee-view-heading p { margin: 12px 0 0; max-width: 680px; color: var(--design-text-secondary); font-size: calc(15 * var(--type-unit, 1px)); line-height: 1.6; }
+.profile-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr); grid-auto-flow: dense; gap: 24px; align-items: start; }
+.profile-view .employee-view-surface { background: var(--design-surface-elevated); border-color: var(--design-border); box-shadow: 0 2px 8px rgb(17 24 39 / 3%); border-radius: var(--design-radius-card); }
+.employee-shell .profile-view .employee-profile-panel { padding: 28px; }
+.profile-section-heading { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+.profile-icon-tile { display: flex; width: 48px; height: 48px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 15px; background: var(--nevora-soft); color: var(--design-accent-ink); }
+.employee-shell .profile-view .profile-section-heading h2 { margin: 0; font-size: calc(18 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.35; }
+.employee-shell .profile-view .profile-section-heading p { margin: 4px 0 0; font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.5; color: var(--design-text-secondary); }
+.employee-shell .profile-view .employee-profile-details { display: block; margin: 0; }
+.employee-shell .profile-view .employee-profile-details > div { display: grid; grid-template-columns: minmax(100px, .8fr) minmax(0, 1.3fr); align-items: start; gap: 16px; padding: 17px 0; border-bottom: 1px solid var(--design-surface); }
+.employee-shell .profile-view .employee-profile-details > div:last-child { border: 0; }
+.employee-shell .profile-view .employee-profile-details dt { margin: 0; color: var(--design-text-secondary); font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.6; }
+.employee-shell .profile-view .employee-profile-details dd { font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.employee-shell .profile-view .employee-account-settings { margin-top: 20px; padding-top: 24px; }
+.profile-view .employee-account-settings .profile-section-heading { gap: 10px; margin-bottom: 10px; }
+.profile-view .employee-account-settings > p { margin: 0 0 16px; font-size: calc(14 * var(--type-unit, 1px)); color: var(--design-text-secondary); }
+.profile-view .profile-setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 12px 16px; margin: 8px 0; border: 0; border-radius: 12px; text-decoration: none; background: var(--design-surface-inset); color: var(--design-text-primary); font: 500 calc(14 * var(--type-unit, 1px))/1.5 var(--design-font-body); cursor: pointer; text-align: left; transition: background-color .18s ease; }
+.profile-view .profile-setting-row:hover { background: var(--design-surface); }
+.profile-view .profile-setting-row svg { flex-shrink: 0; }
+.employee-shell .profile-view .employee-account-footer { padding-top: 20px; margin-top: 20px; border-top: 1px solid var(--design-surface); }
+.profile-view .button { min-height: 44px; padding: 11px 18px; font: 600 calc(14 * var(--type-unit, 1px))/1.5 var(--design-font-body); border-radius: var(--design-radius-control); gap: 8px; }
+.profile-view .button.secondary { background: var(--design-surface-elevated); color: var(--design-text-primary); border: 1px solid var(--design-border); }
+.profile-view .button.secondary:hover { background: var(--design-surface-inset); }
+.profile-view .button.calendar-primary { background: var(--design-primary); color: #FFFFFF; border: 1px solid transparent; box-shadow: none; }
+.profile-view .button.calendar-primary:hover { background: var(--design-accent); }
+.profile-view :is(a, button, summary, textarea):focus-visible { outline: 3px solid var(--design-accent-ink); outline-offset: 3px; }
+.profile-view button:disabled { cursor: not-allowed; opacity: .65; }
+.profile-view .profile-supporting-copy { font-size: calc(14 * var(--type-unit, 1px)); line-height: 1.6; color: var(--design-text-secondary); }
+.profile-view .profile-supporting-copy a { color: var(--design-accent-ink); text-decoration: underline; text-underline-offset: 3px; }
+.profile-signout { margin-top: 24px; padding: 24px 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--design-border); border-radius: var(--design-radius-card); background: var(--design-surface-elevated); }
+.profile-signout h2 { margin: 0; font-size: calc(16 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.5; }
+.profile-signout p { margin: 4px 0 0; font-size: calc(14 * var(--type-unit, 1px)); color: var(--design-text-secondary); line-height: 1.6; }
+.profile-signout form { flex-shrink: 0; }
+@media (max-width: 1023px) { .profile-layout { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) {
+  .profile-layout { gap: 20px; }
+  .employee-shell .profile-view .employee-profile-panel { padding: 20px; }
+  .profile-section-heading { gap: 12px; margin-bottom: 20px; }
+  .profile-icon-tile { width: 44px; height: 44px; border-radius: 14px; }
+  .employee-shell .profile-view .employee-profile-details > div { grid-template-columns: minmax(84px, .85fr) minmax(0, 1.25fr); gap: 12px; }
+  .profile-signout { padding: 20px; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { .profile-view *, .profile-view *::before, .profile-view *::after { transition: none; scroll-behavior: auto; } }
+
+/* Codex mobile review M1-M4 (2026-10-18): Work details, App settings as one grouped list, compact Sign out. */
+.profile-view .profile-settings { min-width: 0; }
+.profile-view .profile-settings > h2 { margin: 0 0 8px 4px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; letter-spacing: 0; }
+.profile-view .profile-settings-list { border: 1px solid var(--color-border-subtle, var(--design-border)); border-radius: 14px; background: var(--design-surface-elevated, #fff); overflow: hidden; }
+.profile-view .profile-settings-list > * + * { border-top: 1px solid var(--color-border-subtle, var(--design-border)); }
+.profile-view .profile-settings-list .profile-setting-row,
+.profile-view .profile-signout-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 60px; margin: 0; padding: 12px 16px; border: 0; border-radius: 0; background: transparent; color: var(--g-ink, #111827); font: inherit; text-align: left; text-decoration: none; cursor: pointer; }
+.profile-view .profile-setting-copy { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.profile-view .profile-setting-copy > svg { flex: none; color: var(--g-accent, #077572); }
+.profile-view .profile-setting-copy strong { display: block; font-size: calc(15 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; }
+.profile-view .profile-setting-copy small { display: block; margin-top: 2px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.45; }
+.profile-view .profile-setting-caret { flex: none; color: var(--design-text-secondary); transition: transform 150ms ease-out; }
+.profile-view .profile-setting-note { margin: 0; padding: 12px 16px 12px 48px; color: var(--design-text-secondary); font-size: calc(13 * var(--type-unit, 1px)); line-height: 1.5; }
+.profile-view .profile-calendar-disclosure > summary { list-style: none; }
+.profile-view .profile-calendar-disclosure > summary::-webkit-details-marker { display: none; }
+.profile-view .profile-calendar-disclosure[open] .profile-setting-caret { transform: rotate(180deg); }
+/* Inside the disclosure the row is the heading; the panel's own heading stays for its anchor and screen readers. */
+.profile-view .profile-calendar-disclosure .employee-calendar { margin: 0; border: 0; border-radius: 0; box-shadow: none; padding-top: 4px; }
+.profile-view .profile-calendar-disclosure .employee-calendar > .profile-section-heading { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.profile-view .profile-signout { margin-top: 20px; padding: 0; border: 1px solid var(--color-border-subtle, var(--design-border)); border-radius: 14px; background: var(--design-surface-elevated, #fff); display: block; overflow: hidden; }
+.profile-view .profile-signout form { display: block; }
+.profile-view .profile-signout-row .profile-setting-copy > svg { color: var(--design-text-secondary); }
+.profile-view :is(.profile-setting-row, .profile-signout-row):focus-visible { outline: 2px solid var(--g-accent, #077572); outline-offset: -2px; }
+@media (hover: hover) { .profile-view :is(.profile-settings-list .profile-setting-row, .profile-signout-row):hover { background: var(--g-inset, #f4f5f6); } }
+.profile-view .profile-refresh-link { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 0; border: 0; background: transparent; color: var(--g-accent, #077572); font: inherit; font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; cursor: pointer; }
+.profile-view .profile-refresh-link:disabled { color: var(--design-text-secondary); cursor: default; }
+@media (prefers-reduced-motion: reduce) { .profile-view .profile-setting-caret { transition: none; } }
+/* The calendar link scrolls the disclosure clear of the sticky phone header. */
+.profile-view .profile-calendar-disclosure { scroll-margin-top: 88px; }

@@ -1,0 +1,50 @@
+/* Team update detail (employee) in the Signature style. The sections, roles and controls are the shared ones;
+ * this file dresses them: the message reads like an article, the review sits in one card with a full-width action. */
+.cdTitle:not(#cd) { margin-top: 12px !important; font: 300 2rem/2.3125rem var(--sg-display); letter-spacing: -.03em; color: #FFFFFF; text-wrap: balance; overflow-wrap: anywhere; }
+.cdByline:not(#cd) { display: flex; align-items: center; gap: 10px; margin-top: 14px !important; font: 400 .9375rem/1.25rem var(--sg-font); color: rgba(255, 255, 255, .74); }
+.cdByline > span:first-child:not(#cd) { flex: none; display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255, 255, 255, .14); color: #FFFFFF; font: 500 .75rem/1 var(--sg-font); letter-spacing: .02em; }
+
+.cdRoot :global(.nv-content):not(#cd) { display: flex; flex-direction: column; gap: 0; width: auto; max-width: none; margin: 0; padding: 0; }
+.cdRoot :global(.wb-focus-target):focus-visible:not(#cd) { outline: none; }
+
+/* The message: no card, an editorial column. */
+.cdRoot :global(section[aria-label="Update content"]):not(#cd) { margin: 4px 24px 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.cdRoot :global(section[aria-label="Update content"] .nv-card__head):not(#cd) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cdRoot :global(section[aria-label="Update content"] .wb-body):not(#cd) { padding: 0; }
+.cdRoot :global(.wb-update-body):not(#cd) { white-space: pre-wrap; overflow-wrap: anywhere; font: 400 1.0625rem/1.75rem var(--sg-font); color: var(--sg-ink); }
+.cdRoot :global(.wb-update-body):not(#cd)::first-line { font-size: 1.1875rem; }
+.cdRoot :global(.wb-update-facts):not(#cd) { display: flex; flex-direction: column; gap: 6px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--sg-rule); font: 400 .875rem/1.25rem var(--sg-font); color: var(--sg-ink-3); }
+.cdRoot :global(.wb-update-facts p):not(#cd) { display: flex; align-items: center; gap: 8px; margin: 0; }
+
+/* Review, delivery and notices: Signature cards. */
+.cdRoot :global(section.nv-card:not([aria-label="Update content"])):not(#cd), .cdRoot :global(.wb-notice):not(#cd) { margin: 28px 16px 0; padding: 0; border: 0; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), var(--sg-card-shadow); overflow: hidden; }
+.cdRoot :global(section.nv-card:not([aria-label="Update content"]) + section.nv-card):not(#cd) { margin-top: 12px; }
+.cdRoot :global(section.nv-card:not([aria-label="Update content"]) .wb-body):not(#cd) { padding: 20px; }
+.cdRoot :global(.wb-receipt):not(#cd) { display: flex; align-items: flex-start; gap: 14px; }
+.cdRoot :global(.wb-receipt .nv-tile):not(#cd), .cdRoot :global(.communication-result-icon > span):not(#cd) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; }
+.cdRoot :global(.wb-strong):not(#cd) { margin: 0; font: 500 1.0625rem/1.375rem var(--sg-font); color: var(--sg-ink); }
+.cdRoot :global(.wb-note):not(#cd) { margin: 4px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.cdRoot :global(.wb-check):not(#cd) { display: flex; align-items: center; gap: 12px; min-height: 48px; margin-top: 16px; padding: 0 14px; border-radius: 14px; background: var(--sg-page); font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); cursor: pointer; }
+.cdRoot :global(.wb-check input):not(#cd) { width: 20px; height: 20px; margin: 0; accent-color: var(--sg-deep); }
+.cdRoot :global(.wb-actions):not(#cd) { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.cdRoot :global(.wb-actions .nv-btn):not(#cd) { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: var(--sig-control-h, 56px); padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-card, #FFFFFF); box-shadow: inset 0 0 0 1px var(--sig-rule, #E8E5DF), 0 1px 2px rgba(22, 28, 27, .06); color: var(--sig-ink, #161C1B); font: 500 1.0625rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
+.cdRoot :global(.wb-actions .nv-btn[data-kind="primary"]):not(#cd) { background: var(--sig-fill); box-shadow: none; color: var(--sig-on-fill); }
+.cdRoot :global(.wb-actions .nv-btn):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#cd) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); box-shadow: none; opacity: 1; cursor: not-allowed; }
+/* Acknowledging / marking read: aria-busy keeps the button in its own colours (the kit would grey it). */
+.cdRoot :global(.wb-actions .nv-btn[aria-busy="true"]):not(#cd) { opacity: 1; cursor: progress; }
+.cdRoot :global(.wb-actions .nv-btn[data-kind="danger"]):not(#cd), .cdRoot :global(.wb-actions .nv-btn[data-tone="urgent"]):not(#cd) { color: var(--sg-red); }
+.cdRoot :global(.wb-actions .nv-btn):focus-visible:not(#cd), .cdRoot :global(.wb-check):focus-within:not(#cd) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+.cdRoot :global(.wb-notice):not(#cd) { display: flex; gap: 12px; padding: 18px 20px; }
+.cdRoot :global(.wb-notice[data-tone="review"]):not(#cd) { background: var(--sig-tint-review); box-shadow: inset 0 0 0 1px var(--sig-tint-review-line); color: var(--sg-amber); }
+.cdRoot :global(.wb-notice[data-tone="urgent"]):not(#cd) { background: var(--sig-tint-urgent); box-shadow: inset 0 0 0 1px var(--sig-tint-urgent-line); color: var(--sg-red); }
+.cdRoot :global(.wb-notice__title):not(#cd) { margin: 0; font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
+.cdRoot :global(.wb-notice p):not(#cd) { margin: 4px 0 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.cdRoot :global(.wb-confirm):not(#cd) { display: flex; flex-direction: column; gap: 4px; }
+
+/* The read failed, paused or signed out: the card holds only what to do next. */
+.cdRoot :global(.nv-content > section.nv-card:only-child):not(#cd) { margin-top: 4px; }
+
+@media (min-width: 768px) {
+  .cdRoot :global(section[aria-label="Update content"]):not(#cd) { margin-inline: 4px; }
+  .cdRoot :global(section.nv-card:not([aria-label="Update content"])):not(#cd), .cdRoot :global(.wb-notice):not(#cd) { margin-inline: 0; }
+}

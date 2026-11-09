@@ -1,0 +1,71 @@
+name: Mobile Access
+
+on:
+  push:
+    branches: [development, main, claude-codex-collab-nevora]
+  pull_request:
+    branches: [development, main, claude-codex-collab-nevora]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-access-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  mobile-access:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Use Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.19.0
+          cache: npm
+      - name: Install locked application and browser runtimes
+        shell: bash
+        run: |
+          npm ci
+          PW_ROOT="$GITHUB_WORKSPACE/tools/ci-browser-runtime"
+          npm ci --prefix "$PW_ROOT" --no-audit --no-fund
+          echo "NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE=$PW_ROOT/package.json" >> "$GITHUB_ENV"
+          echo "NEVORA_PLAYWRIGHT_BIN=$PW_ROOT/node_modules/.bin/playwright" >> "$GITHUB_ENV"
+      - name: Prefer official Ubuntu archive
+        run: sudo --preserve-env=GITHUB_ACTIONS,RUNNER_OS "$(command -v node)" scripts/ci-ubuntu-mirrors.mjs
+      - name: Install all three native engines and owned PostgreSQL runtime
+        shell: bash
+        run: |
+          "$NEVORA_PLAYWRIGHT_BIN" install --with-deps chromium webkit firefox
+          sudo apt-get update
+          sudo apt-get install --yes postgresql-16
+          test -x /usr/lib/postgresql/16/bin/initdb
+          test -x /usr/lib/postgresql/16/bin/pg_ctl
+          echo "NEVORA_TEST_PG_BIN=/usr/lib/postgresql/16/bin" >> "$GITHUB_ENV"
+      - name: Verify real Access, rotation and Quick guide
+        env:
+          NEVORA_MOBILE_ACCESS_EVIDENCE: ${{ runner.temp }}/nevora-mobile-access
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          env -u DATABASE_URL npm run test:mobile-access:owned -- --reporter=default --reporter=json --outputFile="$NEVORA_MOBILE_ACCESS_EVIDENCE/vitest-results.json"
+      - name: Upload viewport captures and result receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: mobile-access-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/nevora-mobile-access/*.png
+            ${{ runner.temp }}/nevora-mobile-access/*results.json
+            ${{ runner.temp }}/nevora-mobile-access/onboarding/*.png
+            ${{ runner.temp }}/nevora-mobile-access/onboarding/results.json
+            ${{ runner.temp }}/nevora-mobile-access/landscape/*.png
+            ${{ runner.temp }}/nevora-mobile-access/landscape/results.json
+            ${{ runner.temp }}/nevora-mobile-access/**/source-manifest.json
+          if-no-files-found: error
+          retention-days: 14

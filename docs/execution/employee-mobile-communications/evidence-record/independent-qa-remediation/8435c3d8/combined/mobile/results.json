@@ -1,0 +1,322 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Real SQL: persisted disabled modules release no module-owned requests or pickup facts"
+    },
+    {
+      "engine": "chromium",
+      "name": "Real SQL: own minimal projection, positive vs refused eligibility, actual role guard and no private reasons"
+    },
+    {
+      "engine": "chromium",
+      "name": "Controlled incoming-null presentation has a recovery action and destination; retry restores actual checked zero"
+    },
+    {
+      "engine": "chromium",
+      "name": "Mobile hub navigation, distinct eligibility, keyboard disclosure and actual overnight pickup terms"
+    },
+    {
+      "engine": "chromium",
+      "name": "Light/dark 320/390/430, actual primary contrast, minimum targets, visible focus and no page overflow"
+    },
+    {
+      "engine": "chromium",
+      "name": "Enlarged root text reflows with measured navigation clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current company review mode changes the explicit pickup consequence without changing the command planner"
+    },
+    {
+      "engine": "chromium",
+      "name": "Interrupted read clears facts and offers recovery, never a false empty or eligible result"
+    },
+    {
+      "engine": "chromium",
+      "name": "Offline/background release removes private facts and actions; resume rereads current eligibility"
+    },
+    {
+      "engine": "chromium",
+      "name": "Automatic pickup survives lost response, reconciles one receipt and canonical assignment"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop retains existing RequestHub and does not mount the new mobile view"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current authority loss clears request facts and refuses further actions"
+    },
+    {
+      "engine": "webkit",
+      "name": "Real SQL: own minimal projection, positive vs refused eligibility, actual role guard and no private reasons"
+    },
+    {
+      "engine": "webkit",
+      "name": "Mobile hub navigation, distinct eligibility, keyboard disclosure and actual overnight pickup terms"
+    },
+    {
+      "engine": "webkit",
+      "name": "Light/dark 320/390/430, actual primary contrast, minimum targets, visible focus and no page overflow"
+    },
+    {
+      "engine": "webkit",
+      "name": "Enlarged root text reflows with measured navigation clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Offline/background release removes private facts and actions; resume rereads current eligibility"
+    },
+    {
+      "engine": "webkit",
+      "name": "Automatic pickup survives lost response, reconciles one receipt and canonical assignment"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop retains existing RequestHub and does not mount the new mobile view"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current authority loss clears request facts and refuses further actions"
+    },
+    {
+      "engine": "firefox",
+      "name": "Real SQL: own minimal projection, positive vs refused eligibility, actual role guard and no private reasons"
+    },
+    {
+      "engine": "firefox",
+      "name": "Mobile hub navigation, distinct eligibility, keyboard disclosure and actual overnight pickup terms"
+    },
+    {
+      "engine": "firefox",
+      "name": "Light/dark 320/390/430, actual primary contrast, minimum targets, visible focus and no page overflow"
+    },
+    {
+      "engine": "firefox",
+      "name": "Enlarged root text reflows with measured navigation clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Offline/background release removes private facts and actions; resume rereads current eligibility"
+    },
+    {
+      "engine": "firefox",
+      "name": "Manual-review pickup survives lost response, reconciles one receipt and does not fabricate assignment"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop retains existing RequestHub and does not mount the new mobile view"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current authority loss clears request facts and refuses further actions"
+    }
+  ],
+  "captures": [
+    "chromium-requests-hub.png",
+    "chromium-incoming-unavailable.png",
+    "chromium-open-light-320.png",
+    "chromium-open-light-390.png",
+    "chromium-open-light-430.png",
+    "chromium-open-dark-320.png",
+    "chromium-open-dark-390.png",
+    "chromium-open-dark-430.png",
+    "chromium-open-text-200.png",
+    "chromium-manual-review-terms.png",
+    "chromium-read-unavailable.png",
+    "chromium-pickup-reconciled.png",
+    "chromium-desktop-preserved.png",
+    "chromium-access-denied.png",
+    "webkit-requests-hub.png",
+    "webkit-open-light-320.png",
+    "webkit-open-light-390.png",
+    "webkit-open-light-430.png",
+    "webkit-open-dark-320.png",
+    "webkit-open-dark-390.png",
+    "webkit-open-dark-430.png",
+    "webkit-open-text-200.png",
+    "webkit-pickup-reconciled.png",
+    "webkit-desktop-preserved.png",
+    "webkit-access-denied.png",
+    "firefox-requests-hub.png",
+    "firefox-open-light-320.png",
+    "firefox-open-light-390.png",
+    "firefox-open-light-430.png",
+    "firefox-open-dark-320.png",
+    "firefox-open-dark-390.png",
+    "firefox-open-dark-430.png",
+    "firefox-open-text-200.png",
+    "firefox-pickup-reconciled.png",
+    "firefox-desktop-preserved.png",
+    "firefox-access-denied.png"
+  ],
+  "contrast": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true,
+      "stage": "interrupted-read",
+      "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true,
+      "stage": "lost-pickup-response",
+      "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+    },
+    {
+      "engine": "chromium",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true,
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:40343/app/requests/hub"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "requests",
+      "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "requests",
+      "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+    },
+    {
+      "engine": "webkit",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:40343/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false,
+      "stage": "requests",
+      "url": "http://127.0.0.1:40343/app/exchange?tab=available"
+    },
+    {
+      "engine": "webkit",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true,
+      "stage": "authority-loss",
+      "url": "http://127.0.0.1:40343/app/requests/hub"
+    }
+  ]
+}

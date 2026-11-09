@@ -1,0 +1,105 @@
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { randomUUID } from "node:crypto";
+import { companyAccessFixture } from "@/test/integration/company-access-fixture";
+import { fictionalProfile } from "@/test/fixtures/shift-changes";
+import { advisorService } from "./service.server";
+import { readCoverageRepairSelection } from "@/lib/data/coverage-repair.server";
+import { createCoverageRepairShift } from "@/lib/data/schedules";
+import { newRun } from "@/lib/payroll/service";
+let f: Awaited<ReturnType<typeof companyAccessFixture>>;
+beforeEach(async () => { f = await companyAccessFixture(); });
+afterEach(async () => { vi.unstubAllEnvs(); await f?.db.dispose(); });
+const env = { NEVORA_OWNER_ADVISOR_ENABLED: "true" };
+const coverage = { name: "coverage_proposals", args: { date: "2026-10-22" } };
+const period = (language = "en") => ({ name: "attendance_payroll_review", args: { startDate: "2026-10-01", endDate: "2026-10-07", language } });
+const inspect = (tool: unknown, proof = f.owner) => advisorService(proof, f.db.executor, env, new AbortController().signal, { op: "inspect", requestId: randomUUID(), tool });
+async function seedCoverage() {
+  await f.q(`UPDATE location_staffing_settings SET minimum_staff_per_shift=1,requires_designated_lead=false WHERE location_id='loc-1';
+    INSERT INTO positions(id,workspace_id,name) VALUES('advisor-position','workspace-fuel','Barista');
+    INSERT INTO employee_positions(employee_id,position_id) VALUES('target','advisor-position');
+    INSERT INTO employee_location_eligibility(employee_id,location_id) VALUES('target','loc-1');
+    INSERT INTO location_coverage_windows(id,location_id,day_of_week,start_time,end_time) VALUES('advisor-window','loc-1',4,'08:00','12:00');
+    INSERT INTO coverage_window_position_requirements(coverage_window_id,position_id,quantity) VALUES('advisor-window','advisor-position',1);
+    INSERT INTO availability_windows(id,employee_id,day_of_week,start_time,end_time) VALUES('advisor-av','target',4,'00:00','24:00');
+    INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('target','2026-10-19',true);`);
+  await f.q("INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) VALUES('target',20,80,$1::jsonb)", [JSON.stringify(fictionalProfile())]);
+}
+it("prepares exact eligible proposals without inference or writes; confirmation adds a draft once", async () => {
+  await seedCoverage();
+  const result = await inspect(coverage);
+  expect(result.state).toBe("answered");
+  if (result.state !== "answered") throw Error("Expected answer");
+  const proposal = result.answer.proposals?.find(p => p.positionName === "Barista");
+  expect(proposal).toMatchObject({ employeeName: "Target QA", locationId: "loc-1", date: "2026-10-22", startTime: "08:00", endTime: "12:00", publication: "DRAFT" });
+  expect(await f.q("SELECT count(*)::int n FROM shifts")).toEqual([{ n: 0 }]);
+  expect(await f.q("SELECT count(*)::int n FROM owner_advisor_requests")).toEqual([{ n: 0 }]);
+  const selected = await readCoverageRepairSelection(proposal!.review, f.owner, f.db.executor);
+  const command = { ...selected.locator, employeeId: selected.employeeId, isDesignatedLead: selected.isDesignatedLead, actorEmployeeId: f.owner.employee.id, proof: f.owner, review: proposal!.review };
+  const outcomes = await Promise.allSettled([createCoverageRepairShift(command, f.db.executor), createCoverageRepairShift(command, f.db.executor)]);
+  expect(outcomes.filter(r => r.status === "fulfilled")).toHaveLength(1);
+  expect(await f.q("SELECT count(*)::int n FROM shifts")).toEqual([{ n: 1 }]);
+  expect(await f.q("SELECT status FROM schedules")).toEqual([{ status: "DRAFT" }]);
+  expect(await f.q("SELECT count(*)::int n FROM schedule_publication_revisions")).toEqual([{ n: 0 }]);
+  expect(await f.q("SELECT count(*)::int n FROM notifications")).toEqual([{ n: 0 }]);
+});
+it("reports unconfigured coverage as incomplete even when there are no computed gap blocks", async () => {
+  const result = await inspect(coverage);
+  expect(result).toMatchObject({ state: "answered", answer: { text: expect.stringContaining("Some information or options are unavailable or omitted."), proposals: [] } });
+});
+it("rejects stale and revoked previews without assigning anyone", async () => {
+  await seedCoverage(); const result = await inspect(coverage);
+  if (result.state !== "answered") throw Error("Expected answer");
+  const proposal = result.answer.proposals![0];
+  await f.q("DELETE FROM employee_positions WHERE employee_id='target'");
+  await expect(readCoverageRepairSelection(proposal.review, f.owner, f.db.executor)).rejects.toThrow();
+  await expect(inspect(coverage, f.manager)).rejects.toThrow();
+  await f.q("DELETE FROM employee_sessions WHERE employee_id='owner'");
+  await expect(inspect(coverage)).rejects.toThrow();
+  expect(await f.q("SELECT count(*)::int n FROM shifts")).toEqual([{ n: 0 }]);
+});
+it("requires publication approval separately and records the canonical published change once", async () => {
+  await seedCoverage();
+  await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('published','loc-1','2026-10-19','PUBLISHED','owner')");
+  const result = await inspect(coverage);
+  if (result.state !== "answered") throw Error("Expected answer");
+  const proposal = result.answer.proposals![0];
+  expect(proposal.publication).toBe("PUBLISHED");
+  const selected = await readCoverageRepairSelection(proposal.review, f.owner, f.db.executor);
+  const command = { ...selected.locator, employeeId: selected.employeeId, isDesignatedLead: selected.isDesignatedLead, actorEmployeeId: f.owner.employee.id, proof: f.owner, review: proposal.review };
+  await expect(createCoverageRepairShift(command, f.db.executor)).rejects.toThrow("Coverage changed");
+  expect(await f.q("SELECT count(*)::int n FROM shifts")).toEqual([{ n: 0 }]);
+  expect(await f.q("SELECT count(*)::int n FROM schedule_publication_revisions")).toEqual([{ n: 0 }]);
+  const receipt = await createCoverageRepairShift({ ...command, publicationConsent: true }, f.db.executor);
+  expect(await f.q("SELECT id FROM shifts")).toEqual([{ id: receipt.id }]);
+  expect(await f.q("SELECT source_id FROM schedule_publication_revisions")).toEqual([{ source_id: receipt.id }]);
+  await expect(createCoverageRepairShift({ ...command, publicationConsent: true }, f.db.executor)).rejects.toThrow();
+});
+it("reviews canonical timecards in English/Spanish and never reports financial readiness", async () => {
+  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "false");
+  const en = await inspect(period()); const es = await inspect(period("es"));
+  expect(en).toMatchObject({ state: "answered", answer: { periodReview: { language: "en", readiness: "unverified", payroll: { state: "disabled" }, attendance: { state: "ready" } } } });
+  expect(es).toMatchObject({ state: "answered", answer: { text: expect.stringContaining("nómina"), periodReview: { language: "es", readiness: "unverified" } } });
+  expect(await f.q("SELECT count(*)::int n FROM timecard_revisions")).toEqual([{ n: 0 }]);
+});
+it("reports an open recorded entry with its location, without inferring an end or absence", async () => {
+  await f.q("INSERT INTO clocker_devices(id,location_id,name) VALUES('advisor-device','loc-1','Fictional device')");
+  await f.q("INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('advisor-time','target','loc-1','advisor-device','2026-10-02T08:00:00-04:00','CLOCKED_IN')");
+  const result = await inspect(period("es"));
+  expect(result).toMatchObject({ state: "answered", answer: { periodReview: { attendance: { state: "ready", employees: expect.arrayContaining([expect.objectContaining({ name: "Target QA", issues: expect.arrayContaining(["open_entry", "review_required"]), locations: expect.arrayContaining([expect.any(String)]) })]) } } } });
+  expect(await f.q("SELECT clock_out_at FROM time_entries WHERE id='advisor-time'")).toEqual([{ clock_out_at: null }]);
+});
+it("shows only current run revisions and safe exception categories, including superseded/incomplete runs", async () => {
+  vi.stubEnv("NEVORA_PAYROLL_ENABLED", "true");
+  const id = randomUUID(), correction = randomUUID();
+  const original = { ...newRun(id, { startDate: "2026-10-01", endDate: "2026-10-07" }, "2026-10-09"), exceptions: ["SECRET_OLD_REVISION"] };
+  await f.q("INSERT INTO payroll_runs(workspace_id,id,start_date,end_date) VALUES('workspace-fuel',$1,'2026-10-01','2026-10-07')", [id]);
+  await f.q("INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES('workspace-fuel',$1,1,$2::jsonb)", [id, JSON.stringify(original)]);
+  const current = { ...original, revision: 2, status: "BLOCKED", exceptions: ["RULE_ACCEPTANCE_REQUIRED:target", "POPULATION_SOURCE_CONFLICT", "CORRECTION_REASON:SECRET MEDICAL NOTE"], sourceName: "SECRET BANK", totals: { grossMinor: "999999999" }, coverage: { complete: false, locationIds: [] } };
+  await f.q("INSERT INTO payroll_run_revisions(workspace_id,run_id,revision,payload) VALUES('workspace-fuel',$1,2,$2::jsonb)", [id, JSON.stringify(current)]);
+  await f.q("INSERT INTO payroll_runs(workspace_id,id,start_date,end_date,correction_of) VALUES('workspace-fuel',$1,'2026-10-01','2026-10-07',$2)", [correction, id]);
+  const result = await inspect(period("es"));
+  expect(result).toMatchObject({ state: "answered", answer: { periodReview: { readiness: "unverified", payroll: { state: "ready", runs: [{ revision: 2, status: "BLOCKED", superseded: true, ruleRevision: null, coverageComplete: false, codes: ["RULE_ACCEPTANCE_REQUIRED", "POPULATION_SOURCE_CONFLICT", "OTHER"] }] } } } });
+  expect(JSON.stringify(result)).not.toMatch(/SECRET|999999999|MEDICAL|target|sourceName|grossMinor/);
+  expect(await f.q("SELECT count(*)::int n FROM payroll_run_revisions")).toEqual([{ n: 2 }]);
+  expect(await f.q("SELECT count(*)::int n FROM payroll_jobs")).toEqual([{ n: 0 }]);
+});

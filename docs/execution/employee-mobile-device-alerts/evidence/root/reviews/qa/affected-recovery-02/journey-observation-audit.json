@@ -1,0 +1,152 @@
+{
+  "communications": {
+    "checks": 69,
+    "captures": 216,
+    "unexpectedErrors": [],
+    "unexpectedWarnings": [
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "notifications",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "stage": "updates",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:65305/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:65305/_next/static/chunks/src_components_1-x67_9n8_h4a._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:65305/app/updates/compose\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:65305/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:65305/app/updates/compose\" line: 0}]",
+        "expected": false
+      },
+      {
+        "engine": "firefox",
+        "stage": "publication-recovery",
+        "type": "warning",
+        "text": "[JavaScript Warning: \"The resource at \u201chttp://127.0.0.1:65305/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css\u201d preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:65305/app/updates/compose\" line: 0}]",
+        "expected": false
+      }
+    ]
+  },
+  "communications-review": {
+    "checks": 21,
+    "captures": 39,
+    "unexpectedErrors": [],
+    "unexpectedWarnings": [
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:64348/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:64348/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:64348/_next/static/chunks/src_components_quiet_quiet_0thpcrus4i4cz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:64348/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      },
+      {
+        "engine": "webkit",
+        "scenario": "open-recovery",
+        "type": "warning",
+        "text": "The resource http://127.0.0.1:64348/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+        "expected": false
+      }
+    ]
+  },
+  "deviceGates": {
+    "status": "passed",
+    "checks": [
+      {
+        "mode": "EMPLOYEE",
+        "role": "EMPLOYEE",
+        "result": "passed"
+      },
+      {
+        "mode": "LEAD",
+        "role": "LEAD",
+        "result": "passed"
+      },
+      {
+        "mode": "MANAGER",
+        "role": "MANAGER",
+        "result": "passed"
+      },
+      {
+        "mode": "OWNER",
+        "role": "OWNER",
+        "result": "passed"
+      },
+      {
+        "mode": "install",
+        "role": "EMPLOYEE",
+        "result": "passed"
+      },
+      {
+        "mode": "unsupported",
+        "role": "EMPLOYEE",
+        "result": "passed"
+      }
+    ],
+    "limits": [
+      "Chromium-only supplement with fictional native boundaries. No physical installation or delivery."
+    ]
+  }
+}

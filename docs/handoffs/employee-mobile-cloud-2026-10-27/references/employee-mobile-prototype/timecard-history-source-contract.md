@@ -1,0 +1,10 @@
+# Employee Timecards · source contract
+
+Authority: the clean, detached development checkout at `46e202786863279302026ee03a0e225c359fa55c`, inspected read-only. Twelve exact files and their hashes are frozen in `work/employee-mobile/references/timecard-history-source/manifest.json`.
+
+- Employee and Lead reads are for their own active employee/workspace/session. Source reads bind current proof and scope before and after the transactional read. A coherent response includes both the period projection and its history; there is no independently trusted history fallback.
+- Inclusive periods contain1–31 business dates. The latest Finalize serves preserved snapshot facts. Reopen serves current facts with Reopened status. Approve remains Approved while the current source fingerprint matches, otherwise Needs review. No revision means Draft. Historical chains must be exact-period, descending, gapless and own.
+- Recorded time includes breaks, separately reported; it is not payroll time. Historical calculations use their captured observation time. Raw/effective entry and break boundaries remain distinct. Missing-time adjustments have no device-captured punches. Pending and Declined proposals do not change effective time.
+- A correction is refused when either the original or proposed interval overlaps any latest finalized period for the own employee/workspace. The selected period is not the complete lock boundary. A workplace reviewer must reopen; Employee cannot approve, finalize, reopen or export management timecards.
+
+The prototype applies these boundaries through root-memory context, immutable fictional snapshots, current review/send checks, visible read expiry/pause and exact result receipts. Its proof tokens, actors, decisions and submissions are illustrative; no live request, auth service, durable correction, production policy configuration or security certification is provided. Actual unknown transport outcomes and durable source concurrency remain application integration work. The standalone source projection and existing domain fixtures remain separate from UI components.

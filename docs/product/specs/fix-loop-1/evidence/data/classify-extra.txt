@@ -1,0 +1,40 @@
+employee-timeoff-320: {"height":10,"gap":1,"y":2}
+  loyee-view.employee-timeoff-view.nto-page>section.timeoff-workspace>article.nto-panel.nto-request-panel>form.nto-form>footer.nto-form-footer gap: 10px -> 12px
+employee-timeoff-390: {"gap":1,"width":2,"x":1}
+  loyee-view.employee-timeoff-view.nto-page>section.timeoff-workspace>article.nto-panel.nto-request-panel>form.nto-form>footer.nto-form-footer gap: 10px -> 12px
+owner-payroll-export-430: {"grid-template-columns":10,"width":20,"x":20}
+  payroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:1 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:2 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:3 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:4 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:5 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:6 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:7 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:8 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:9 grid-template-columns: 18px 100.656px 100.672px 100.656px -> 18px 157px 157px
+owner-payroll-export-540: {"grid-template-columns":10,"width":20,"x":20}
+  payroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:1 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:2 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:3 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:4 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:5 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:6 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:7 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:8 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:9 grid-template-columns: 18px 100px 100px 100px 100px -> 18px 212px 212px
+owner-payroll-export-600: {"grid-template-columns":10,"width":20,"x":20}
+  payroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:1 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:2 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:3 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:4 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:5 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:6 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:7 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:8 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+  yroll-export-module__card.payroll-export-module__employeeCard>div>label.payroll-export-module__employee.payroll-export-module__unavailable:9 grid-template-columns: 18px 115px 115px 115px 115px -> 18px 242px 242px
+owner-reports-430: {"height":9,"gap":1,"y":386}
+  iew.reports-module__page>div.reports-module__root>section.reports-module__controls>div.reports-module__exportRow>div.reports-module__exports gap: 8px -> 12px
+VIEWS WITH DIFFERENCES 6

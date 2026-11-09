@@ -1,0 +1,16 @@
+employee-320-_app_timecards: {"height":10,"y":31}
+employee-375-_app_timecards: {"height":10,"y":30}
+employee-390-_app_timecards: {"height":10,"y":30}
+owner-320-_app_employees_new: {"height":10,"gap":1,"y":12}
+  loyee-panel>form#[object HTMLInputElement].employee-form.new-employee-form>fieldset.configuration-fields>div.form-footer.new-employee-footer gap: 8px -> 12px
+owner-320-_app_reports: {"height":9,"gap":1,"y":386}
+  iew.reports-module__page>div.reports-module__root>section.reports-module__controls>div.reports-module__exportRow>div.reports-module__exports gap: 8px -> 12px
+owner-375-_app_employees_new: {"height":10,"gap":1,"y":12}
+  loyee-panel>form#[object HTMLInputElement].employee-form.new-employee-form>fieldset.configuration-fields>div.form-footer.new-employee-footer gap: 8px -> 12px
+owner-375-_app_reports: {"height":9,"gap":1,"y":386}
+  iew.reports-module__page>div.reports-module__root>section.reports-module__controls>div.reports-module__exportRow>div.reports-module__exports gap: 8px -> 12px
+owner-390-_app_employees_new: {"height":10,"gap":1,"y":12}
+  loyee-panel>form#[object HTMLInputElement].employee-form.new-employee-form>fieldset.configuration-fields>div.form-footer.new-employee-footer gap: 8px -> 12px
+owner-390-_app_reports: {"height":9,"gap":1,"y":386}
+  iew.reports-module__page>div.reports-module__root>section.reports-module__controls>div.reports-module__exportRow>div.reports-module__exports gap: 8px -> 12px
+VIEWS WITH DIFFERENCES 9

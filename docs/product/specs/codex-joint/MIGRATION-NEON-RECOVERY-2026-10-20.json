@@ -1,0 +1,26 @@
+{
+  "checkedAtUTC": "2026-10-20 14:42:19 UTC",
+  "scope": "Read-only branch metadata only; no writes.",
+  "id": "br-green-night-b87vx3ud",
+  "project_id": "rough-fire-63258908",
+  "name": "main",
+  "current_state": "ready",
+  "primary": true,
+  "default": true,
+  "protected": false,
+  "parent_id": "not returned by connector",
+  "restricted_actions": [
+    {
+      "name": "delete",
+      "reason": "vercel production branch"
+    },
+    {
+      "name": "delete-rw-endpoint",
+      "reason": "vercel production branch read-write endpoint"
+    },
+    {
+      "name": "move-rw-endpoint-using-api",
+      "reason": "vercel production branch read-write endpoint"
+    }
+  ]
+}

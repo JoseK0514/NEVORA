@@ -1,0 +1,95 @@
+{
+  "authoredBy": "/root/communications_qa_acceptance",
+  "at": "2026-10-27T19:49:37.631482+00:00",
+  "candidateUnderTest": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "ownFailedInvocations": [
+    {
+      "owner": "independent QA",
+      "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "gate": "full19",
+      "outcome": "RED94failed/78passed of172;92canonicalsetup+Responses/Planning strict diagnostics",
+      "artifact": "/workspace/nevora-evidence/independent-qa/combined/result.json",
+      "sha256": "8790cb58246895e7c78bf07216c9e237af7493c04cdbbb288386cc785f9dc666",
+      "exists": true
+    },
+    {
+      "owner": "independent QA",
+      "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+      "gate": "changed-source lint",
+      "outcome": "RED1module-name rule error;0warnings",
+      "artifact": "/workspace/nevora-evidence/independent-qa/eslint/result.json",
+      "sha256": "16563ff7d9ac335102a18f7fedf6632a09273fcec5dce1902f0a151fa33c90d3",
+      "exists": true
+    },
+    {
+      "owner": "independent QA",
+      "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+      "gate": "affected Responses+Planning",
+      "outcome": "RED2/2;childproject scheduling database collision+WebKit desktop notification pageerror",
+      "artifact": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/result.json",
+      "sha256": "352647576071444418d935e24ffd24788992d1aacfe75bd29b794f50ebcdeb69",
+      "exists": true
+    },
+    {
+      "owner": "independent QA",
+      "candidate": "1ada3f1c748e120e50e5ad7012e3eea3d1c8b901",
+      "gate": "full20",
+      "outcome": "RED2failed/174passed of176;missing PHASE_E_EVIDENCE_DIR plusRequests WebKit2desktop pageerrors",
+      "artifact": "/workspace/nevora-evidence/independent-qa-remediation/1ada3f1c/combined/result.json",
+      "sha256": "db55f5e0b9ad3e94fdea375c60e8e1666059b13a81b625eb48da2c2796f2eba9",
+      "exists": true
+    }
+  ],
+  "implementationOwnerLogs": [
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-red.log",
+      "bytes": 1448,
+      "sha256": "2c73c56ad2b6ecb6776f6f1d3e7c4da6b1e1ec0b022bb550a66c7501fb3714ab",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-source-units-red.log",
+      "bytes": 7583,
+      "sha256": "edca41b454a0b349c6386f04b5055bb39d67cb4d7b4acf9e4c675a13c365c2d7",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-red.log",
+      "bytes": 4676,
+      "sha256": "166e5cf3e1abb5a88e3b4c7fa50cbb848c077da044b5d25e3cd45efbc66a262a",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-units-red.log",
+      "bytes": 5657,
+      "sha256": "ff5f36470cd6335f693e2c77676a296b9924d5a01557dcda819307253c92ed82",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-green.log",
+      "bytes": 4007,
+      "sha256": "ea9d94a21629673427f0d3125e68f38526b41862b2911022fefe1f34fe1c302f",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-green-2.log",
+      "bytes": 4573,
+      "sha256": "8ad49346c83c3bef95716d4665dd0ff8a20522931b89ccd373150ed649f7d24e",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-lookup-race-green.log",
+      "bytes": 2850,
+      "sha256": "1172993ead03057f98995ece5e37041dba599b6c14db084fa31e1b56bb3fc1bc",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    },
+    {
+      "path": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-lookup-race-green-2.log",
+      "bytes": 1755,
+      "sha256": "0ed799920038b0f17e78abf4e98e31e2f2ed42b625374d4f3ad55c698faa4028",
+      "interpretation": "Preserved implementation-owner invocation; directory/log names do not assert passing. Original code/UI closure reports describe the404 preflight, post-lock writer timeout and preliminary-context503 unsuccessful race oracles."
+    }
+  ],
+  "preservation": "All original recorder stdout,invocations,results,mirror/evidence directories and reports remain in place. This index supplements them; nothing is relabelled GREEN or erased. The current selector-free full is pending.",
+  "outage": "No8435runtime launched before outage; initial restored-process scan/recorder was clear before first Requests launch."
+}

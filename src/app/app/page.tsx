@@ -1,122 +1,43 @@
-import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
-import { StatusPill } from "@/components/status-pill";
-import {
-  ManagerDashboard,
-  type ManagerDashboardView,
-} from "@/components/manager-dashboard";
-import { requireSession } from "@/lib/auth/session";
-import { isManagerRole } from "@/lib/auth/permissions";
-import {
-  addDays,
-  currentDateInPuertoRico,
-  durationMinutes,
-  formatWeekRange,
-  isValidWeekStart,
-  weekDates,
-  weekStartFor,
-} from "@/lib/date-utils";
-import { listPendingTimeOffRequests } from "@/lib/data/requests";
-import { listManagerPendingExchanges } from "@/lib/data/exchanges";
-import { listPendingCallouts } from "@/lib/data/callouts";
-import {
-  listCoverageWindows,
-  listEmployeeHourTargets,
-  listLocationStaffingSettings,
-} from "@/lib/data/schedule-health";
-import {
-  listScheduleStatuses,
-  listWeekShifts,
-} from "@/lib/data/schedules";
-import {
-  getAcknowledgementSummary,
-  listUnacknowledgedEmployeeIds,
-} from "@/lib/data/acknowledgements";
-import { getAvailabilitySubmissionSummary } from "@/lib/data/availability-submissions";
-import { getWeekSettings } from "@/lib/data/week-settings";
-import { listLocations } from "@/lib/data/employees";
-import { getLatestPublicationRevision } from "@/lib/data/publication-revisions";
-import { calculateScheduleHealth } from "@/lib/scheduling/schedule-health";
-import { buildManagerDashboardStatus } from "@/lib/dashboard-status";
-import { buildManagerActionItems } from "@/lib/assistance/manager-actions";
-
-function employeeDashboard(firstName: string) {
-  return (
-    <>
-      <PageHeader
-        eyebrow="FUEL COFFEE DRIVE"
-        title={`Welcome, ${firstName}`}
-        description="Your schedule, availability, and shift requests are all in one place."
-        actions={
-          <Link className="button primary" href="/app/schedule">
-            My Schedule
-          </Link>
-        }
-      />
-
-      <section className="metric-grid">
-        <article className="metric-card">
-          <span>This week</span>
-          <strong>My Shifts</strong>
-          <StatusPill tone="info">Schedule</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Availability</span>
-          <strong>Weekly</strong>
-          <StatusPill>Manage</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Requests</span>
-          <strong>My Requests</strong>
-          <StatusPill tone="warning">Open</StatusPill>
-        </article>
-        <article className="metric-card">
-          <span>Shift exchange</span>
-          <strong>Coverage</strong>
-          <StatusPill tone="success">Available</StatusPill>
-        </article>
-      </section>
-
-      <section className="content-grid two">
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">SCHEDULE</p>
-              <h2>See Your Upcoming Shifts</h2>
-            </div>
-            <Link href="/app/schedule" className="text-link">
-              Open
-            </Link>
-          </div>
-          <p className="muted">
-            Only published schedule changes appear in your employee view.
-          </p>
-        </article>
-
-        <article className="panel">
-          <div className="panel-heading">
-            <div>
-              <p className="eyebrow">SELF-SERVICE</p>
-              <h2>Requests &amp; Coverage</h2>
-            </div>
-          </div>
-          <p className="muted">
-            Time off, offered shifts, and swaps all use the same scheduling
-            rules before approval.
-          </p>
-        </article>
-      </section>
-    </>
-  );
-}
+import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
+import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
+import {readAuthLang} from "@/lib/auth-lang.server";
+import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
+import {correctionAuthority} from '@/lib/time-corrections/authority.server';
+import Link from 'next/link';
+import {Card,CardBody,KitStack,PageBand} from '@/components/kit/kit';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {ManagerCorrectionRecoveryBoundary} from '@/components/manager-correction-recovery';
+import {managerReviewRecoveryKey} from '@/lib/time-corrections/review-recovery';
+import {readOperationalAuthority} from '@/lib/company-access/operational-scope.server';
+import {ScopedManagementHome} from '@/components/company-access/scoped-operational-views';
+import {loadManagerDashboardData} from '@/lib/data/manager-dashboard';
+import {getWorkspace} from '@/lib/data/workspaces';
+import {businessDate} from '@/lib/business-time';
+import {EmployeeDashboard} from '@/components/employee-dashboard';
+import type {HomeWeek} from '@/components/employee-home-quiet';
+import {readEmployeeWeeklyReview} from '@/lib/data/employee-weekly-review.server';
+import {ManagerDashboard,type ManagerDashboardView} from '@/components/manager-dashboard';
+import {requireSession,requireSessionMutationProof} from '@/lib/auth/session';
+import {homeAuthority} from '@/lib/data/employee-home.server';
+import {isManagerRole} from '@/lib/auth/permissions';
+import {currentPresentation} from '@/lib/workspace-presentation/current.server';
+import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
+import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
+import {redirect} from 'next/navigation';
+import {readNextPay} from './my-pay/next-pay';
+import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
+import {payrollFeatureEnabled} from '@/lib/payroll/service';
+import {retiredViewDestination} from '@/lib/retired-views';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
   "overview",
-  "schedule",
+  "attendance",
   "team",
-  "requests",
   "activity",
 ];
+
 
 function validDashboardView(value?: string): ManagerDashboardView {
   return DASHBOARD_VIEWS.includes(value as ManagerDashboardView)
@@ -125,243 +46,83 @@ function validDashboardView(value?: string): ManagerDashboardView {
 }
 
 function validWeek(value?: string) {
-  return Boolean(value && isValidWeekStart(value));
+  return (
+    value && isValidWeekStart(value)
+  );
 }
+
+export const metadata = { title: { absolute: "Home · NEVORA" } };
 
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; week?: string }>;
+  searchParams: Promise<{ view?: string; week?: string; day?: string; location?: string; employee?: string }>;
 }) {
   const session = await requireSession();
+  const workspace = await getWorkspace();
   const manager = isManagerRole(session.role);
   const params = await searchParams;
+  const currentDate = businessDate(new Date(), workspace.timeZone);
+  const currentWeek = weekStartFor(currentDate);
 
   if (!manager) {
-    return employeeDashboard(session.firstName);
+    const proof=await requireSessionMutationProof();
+    // v5 Home's week at a glance: the same own published-schedule read the Schedule page uses (read only).
+    // Upscale M7: the following week too (same read), so "Coming up" can list the next shifts across the week boundary.
+    const followingWeek=addDays(currentWeek,7);
+    const [review,following]=await Promise.all([readEmployeeWeeklyReview(proof,currentWeek),readEmployeeWeeklyReview(proof,followingWeek)]);
+    const own=(read:typeof review)=>read.shifts.map(({id,date,startTime,endTime,locationId,positionName,isDesignatedLead})=>({id,date,startTime,endTime,lead:isDesignatedLead,where:[positionName,read.locations.find(location=>location.id===locationId)?.shortName].filter(Boolean).join(' · ')}));
+    const week:HomeWeek|null=review.state==='unavailable'?null:{weekStart:currentWeek,today:currentDate,dates:Array.from({length:7},(_,day)=>addDays(currentWeek,day)),shifts:own(review),next:following.state==='unavailable'?null:{weekStart:followingWeek,shifts:own(following)}};
+    // A Lead's Home adds Today's team: message everyone on today's team (the existing Updates compose), when Updates is on.
+    const presentation=await currentPresentation();
+    const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
+    // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
+    const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
-  const currentWeek = weekStartFor(currentDateInPuertoRico());
+  const proof=await requireSessionMutationProof();
+  const authority=await readOperationalAuthority(proof);
+  if(authority.state==='unavailable')return <OperationalUnavailable title="Home unavailable" reason={authority.reason}/>;
+  if(authority.scope?.mode!=='COMPANY')return <ScopedManagementHome view={authority}/>;
+  const retired = retiredViewDestination(params);
+  if (retired) redirect(retired);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
   const view = validDashboardView(params.view);
   const previousWeek = addDays(weekStart, -7);
   const nextWeek = addDays(weekStart, 7);
 
-  const [
-    shifts,
-    scheduleStatuses,
-    staffingSettings,
-    employeeTargets,
-    coverageWindows,
-    pendingTimeOff,
-    pendingExchanges,
-    pendingCallouts,
-    acknowledgements,
-    weekSettings,
-    availabilitySubmissionSummary,
-    unacknowledgedEmployeeIds,
-    locations,
-    latestRevision,
-  ] = await Promise.all([
-    listWeekShifts({ weekStart }),
-    listScheduleStatuses(weekStart),
-    listLocationStaffingSettings(),
-    listEmployeeHourTargets(),
-    listCoverageWindows(),
-    listPendingTimeOffRequests(),
-    listManagerPendingExchanges(),
-    listPendingCallouts(),
-    getAcknowledgementSummary(weekStart),
-    getWeekSettings(weekStart),
-    getAvailabilitySubmissionSummary(weekStart),
-    listUnacknowledgedEmployeeIds(weekStart),
-    listLocations(),
-    getLatestPublicationRevision(weekStart),
-  ]);
+  const source=await withOperationalCompany(proof,()=>loadManagerDashboardData(weekStart,proof));
+  if(source.state==='unavailable'&&source.reason!=='read_failed')return <OperationalUnavailable title="Home unavailable" reason={source.reason}/>;
+  const dashboardData=source.state==='ready'?source.data:null;
+  const reviewAuthority=correctionAuthority(proof);
+  const recoveryKey=managerReviewRecoveryKey(session.id,reviewAuthority,source.state==='ready'?source.authority:authority.authority,view);
+  // WR-59: the same kit error page as app/app/error.tsx. IS-50: "Try again" reloads this exact view (week, day, location, person).
+  // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
+  const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
+  if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
+    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
+    <KitStack><Card><CardBody><div className="premium-error__body">
+      <p className="premium-error__text">Try loading the page again before taking an action.</p>
+      <div className="premium-error__actions">
+        <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
+        {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}
+      </div>
+    </div></CardBody></Card></KitStack>
+  </div></ManagerCorrectionRecoveryBoundary>;
+  const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
 
-  const effectiveShifts = shifts.filter((shift) => !shift.isCalloutApproved);
-  const targetMap = new Map(
-    employeeTargets.map((target) => [
-      target.employeeId,
-      target.targetWeeklyHours,
-    ]),
-  );
-
-  const health = calculateScheduleHealth({
-    shifts: effectiveShifts.map((shift) => ({
-      id: shift.id,
-      employeeId: shift.employeeId,
-      employeeName: shift.employeeName,
-      locationId: shift.locationId,
-      date: shift.date,
-      startTime: shift.startTime,
-      endTime: shift.endTime,
-      isDesignatedLead: shift.isDesignatedLead,
-    })),
-    locations: staffingSettings.map((location) => ({
-      id: location.locationId,
-      name: location.locationName,
-      minimumStaffPerShift: location.minimumStaffPerShift,
-      requiresDesignatedLead: location.requiresDesignatedLead,
-    })),
-    employees: employeeTargets.map((employee) => ({
-      id: employee.employeeId,
-      name: employee.employeeName,
-      targetWeeklyHours: targetMap.get(employee.employeeId),
-    })),
-    coverageWindows,
-    weekDates: weekDates(weekStart),
-  });
-
-  const coverageRulesConfigured =
-    staffingSettings.length > 0 &&
-    staffingSettings.every((location) =>
-      coverageWindows.some(
-        (window) => window.locationId === location.locationId,
-      ),
-    );
-  const hasPublishedSchedule = scheduleStatuses.some(
-    (schedule) => schedule.status === "PUBLISHED",
-  );
-
-  const employeeNameMap = new Map(
-    employeeTargets.map((employee) => [
-      employee.employeeId,
-      employee.employeeName,
-    ]),
-  );
-
-  const managerActions = buildManagerActionItems({
-    weekStart,
-    coverageGaps: health.coverageBlocks
-      .filter((block) => !block.covered)
-      .map((block) => ({
-        key: block.key,
-        locationId: block.locationId,
-        locationName: block.locationName,
-        date: block.date,
-        startTime: block.startTime,
-        endTime: block.endTime,
-        gap: block.gap,
-      })),
-    hourIssues: [
-      ...health.hourBalances.flatMap((balance) =>
-        balance.status === "ON_TARGET"
-          ? []
-          : [
-              {
-                employeeId: balance.employeeId,
-                employeeName: balance.employeeName,
-                kind: balance.status as "UNDER" | "OVER",
-                scheduledHours: balance.scheduledHours,
-                targetHours: balance.targetHours,
-              },
-            ],
-      ),
-      ...employeeTargets
-        .filter((employee) => employee.targetWeeklyHours === undefined)
-        .map((employee) => ({
-          employeeId: employee.employeeId,
-          employeeName: employee.employeeName,
-          kind: "TARGET_MISSING" as const,
-        })),
-    ],
-    pendingRequests: [
-      ...pendingTimeOff.map((request) => ({
-        id: request.id,
-        kind: "TIME_OFF" as const,
-        employeeName: request.employeeName,
-        createdAt: request.createdAt,
-      })),
-      ...pendingExchanges.map((request) => ({
-        id: request.id,
-        kind: "EXCHANGE" as const,
-        employeeName: request.requestedByName,
-        createdAt: request.createdAt,
-      })),
-      ...pendingCallouts.map((request) => ({
-        id: request.id,
-        kind: "CALLOUT" as const,
-        employeeName: request.employeeName,
-        createdAt: request.createdAt,
-      })),
-    ],
-    missingAvailability: availabilitySubmissionSummary.missingEmployeeIds.map(
-      (employeeId) => ({
-        employeeId,
-        employeeName: employeeNameMap.get(employeeId) ?? employeeId,
-      }),
-    ),
-    unacknowledgedEmployees: unacknowledgedEmployeeIds.map((employeeId) => ({
-      employeeId,
-      employeeName: employeeNameMap.get(employeeId) ?? employeeId,
-    })),
-    availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
-    coverageRulesConfigured,
-  });
-
-  const dashboard = buildManagerDashboardStatus({
-    locations: health.locationCoverage,
-    scheduleStatuses,
-    underTargetCount: health.underTargetCount,
-    overTargetCount: health.overTargetCount,
-    unconfiguredTargetCount: health.unconfiguredTargetCount,
-    pendingTimeOffCount: pendingTimeOff.length,
-    pendingExchangeCount: pendingExchanges.length,
-    pendingCalloutCount: pendingCallouts.length,
-    scheduledEmployees: acknowledgements.scheduledEmployees,
-    acknowledgedEmployees: acknowledgements.acknowledgedEmployees,
-    hasPublishedSchedule,
-    availabilityDeadlineSet: Boolean(weekSettings?.availabilityDeadline),
-    coverageRulesConfigured,
-    managerActions,
-  });
-
-  const dates = weekDates(weekStart);
-  const coverageGaps = health.coverageBlocks.filter((block) => !block.covered);
-  const daySummaries = dates.map((date) => ({
-    date,
-    weekday: new Date(`${date}T12:00:00Z`).toLocaleDateString("en-US", {
-      weekday: "short",
-      timeZone: "UTC",
-    }),
-    day: String(Number(date.slice(-2))),
-    shiftCount: effectiveShifts.filter((shift) => shift.date === date).length,
-    gapCount: coverageGaps.filter((block) => block.date === date).length,
-  }));
-
-  const balanceMap = new Map(
-    health.hourBalances.map((balance) => [balance.employeeId, balance]),
-  );
-  const hourRows = employeeTargets.map((employee) => {
-    const balance = balanceMap.get(employee.employeeId);
-    const scheduledHours = balance
-      ? balance.scheduledHours
-      : Math.round(
-          (effectiveShifts
-            .filter((shift) => shift.employeeId === employee.employeeId)
-            .reduce(
-              (sum, shift) =>
-                sum + durationMinutes(shift.startTime, shift.endTime),
-              0,
-            ) /
-            60) *
-            100,
-        ) / 100;
-
-    return {
-      employeeId: employee.employeeId,
-      employeeName: employee.employeeName,
-      scheduledHours,
-      targetHours: employee.targetWeeklyHours,
-      status: balance
-        ? balance.status
-        : ("TARGET_MISSING" as const),
-    };
-  });
-
-  return (
+  const {modules}=await currentPresentation();
+  // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
+  const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
+  return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
+    {session.role === "OWNER" && process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
+      role={session.role === "OWNER" ? "OWNER" : "MANAGER"}
+      actorId={session.id}
+      correctionAuthority={reviewAuthority}
+      workspaceName={workspace.name}
+      timeZone={workspace.timeZone}
       firstName={session.firstName}
       weekStart={weekStart}
       weekLabel={formatWeekRange(weekStart)}
@@ -371,20 +132,17 @@ export default async function DashboardPage({
       readyLocationCount={dashboard.readyLocationCount}
       totalLocations={locations.length}
       availabilitySubmitted={availabilitySubmissionSummary.submittedEmployees}
+      availabilityEligible={availabilitySubmissionSummary.eligibleEmployees}
       activeEmployees={availabilitySubmissionSummary.activeEmployees}
       unavailableAllWeek={availabilitySubmissionSummary.unavailableAllWeek}
       coverageIssueCount={dashboard.totalCoverageGaps}
       coverageConfigured={coverageRulesConfigured}
       pendingRequestCount={dashboard.pendingRequestCount}
-      managerActions={managerActions}
+      managerActions={managerActions.filter(item=>requestTypeAllowed(item.type,modules))}
       locations={dashboard.locationReadiness}
       days={daySummaries}
       hours={hourRows}
-      requestCounts={{
-        timeOff: pendingTimeOff.length,
-        exchange: pendingExchanges.length,
-        callout: pendingCallouts.length,
-      }}
+      nextPay={nextPay}
       latestRevision={
         latestRevision
           ? {
@@ -395,5 +153,5 @@ export default async function DashboardPage({
           : null
       }
     />
-  );
+  </ScopedReadFrame></ManagerCorrectionRecoveryBoundary>);
 }

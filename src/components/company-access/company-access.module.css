@@ -1,0 +1,61 @@
+.stack {display:grid;gap:1rem;min-width:0}
+.heading {display:flex;align-items:center;gap:.5rem}
+.heading svg {flex:0 0 auto;color:var(--design-accent-ink)}
+:global(.app-shell.nevora-portal) .fields[aria-describedby] {display:grid;gap:.75rem;min-width:0;border:0;padding:0;margin:0}
+.fields legend {font-size:1rem;font-weight:550;line-height:1.5;margin-bottom:.5rem;padding:0}
+.fields p {margin:0;line-height:1.5}
+:global(.app-shell.nevora-portal) .fields .choice {display:flex;align-items:flex-start;gap:.75rem;min-height:44px;padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);font-size:14px;font-weight:400;cursor:pointer;overflow-wrap:anywhere}
+:global(.app-shell.nevora-portal) .fields .choice > input:is([type=radio],[type=checkbox]) {flex:0 0 20px;width:20px;min-width:20px;height:20px;min-height:20px;margin:.15rem 0 0;padding:0;appearance:auto;accent-color:var(--design-accent-ink);box-shadow:none}
+.fields .choice > span {display:grid;gap:.25rem;min-width:0;color:var(--design-text-primary);font-weight:400}
+.fields .choice strong {font-weight:550}
+.fields .choice small {font-size:.875rem;color:var(--design-text-secondary);font-weight:400;line-height:1.5}
+.fields .choice:has(input:checked) {border-color:var(--design-accent-ink);background:var(--design-surface-inset)}
+.fields .choice:focus-within {outline:2px solid var(--design-accent-ink);outline-offset:2px}
+.fields:disabled .choice {cursor:default;opacity:.7}
+.locations {display:grid;gap:.5rem;min-width:0;padding-inline-start:1rem}
+.current {display:grid;gap:.25rem;line-height:1.5;margin:0;padding:.75rem 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.current span {color:var(--muted)}
+.status {display:grid;gap:.5rem;line-height:1.5;overflow-wrap:anywhere}
+.status p {margin:0}
+.actions {display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+:global(.app-shell.nevora-portal) .coreForm :global(.configuration-fields) :global(.form-footer) {display:grid;width:100%;grid-template-columns:minmax(0,1fr)}
+.receipt {padding:.75rem;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-inset);line-height:1.5}
+.scopedPage {display:grid;gap:24px;min-width:0}
+.scopedPage .stack {align-content:start}
+.scopedPage .stack>:is(h2,p) {margin:0}
+.scopedPage header p {color:var(--design-text-secondary);line-height:1.6;max-width:70ch}
+.search {display:grid;gap:8px;min-width:0;font-size:14px}
+.search :is(input,select) {width:100%;min-height:48px;padding:10px 14px;border:1px solid var(--design-border);border-radius:var(--design-radius-control);background:var(--design-surface-elevated);color:var(--design-text-primary)}
+.search :global(.nevora-select) {padding-right:40px}
+.rosterRow {display:flex;align-items:center;gap:12px;min-width:0;padding:12px 0;border-bottom:1px solid var(--design-surface);overflow-wrap:anywhere}
+.rosterRow>div {min-width:0}
+:global(.app-shell.nevora-portal) .scopedPage .rosterRow h2 {font-size:16px;margin:0}
+.previousIcon {transform:rotate(180deg)}
+.weekNavigation {display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:12px;align-items:center;max-width:520px}
+.weekNavigation strong {font-size:1rem;line-height:1.5;text-align:center;overflow-wrap:anywhere}
+.weekNavigation>a {min-width:48px;padding:12px}
+.rosterRow p {margin:4px 0}
+.rosterRow small,.shiftRow small {color:var(--design-text-secondary);line-height:1.5}
+.avatar {display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:var(--design-surface-inset);color:var(--design-text-primary);font-size:14px;font-weight:550}
+.scopeDays {display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.scopeDays>section {align-content:start}
+.scopeDays h2,.scopeDays p {margin:0}
+.shiftRow {display:flex;justify-content:space-between;align-items:start;gap:12px;min-width:0;padding:12px 0;border-bottom:1px solid var(--design-surface);overflow-wrap:anywhere}
+.shiftRow>div {flex:1;min-width:0}
+.shiftRow>:global(.status-pill) {flex:0 0 auto;max-width:100%;overflow-wrap:normal}
+.recordedMinutes {flex:0 0 auto;white-space:nowrap}
+.shiftRow h3 {margin:0;font-size:15px;font-weight:550}
+.shiftRow p {margin:6px 0}
+@media(max-width:760px){.scopeDays{grid-template-columns:minmax(0,1fr)}.shiftRow{flex-direction:column}}
+@media(max-width:480px){.actions>*{flex:1 1 100%}.locations{padding-inline-start:.5rem}}
+.scopedForm :global(.configuration-fields),.scopedForm fieldset {display:grid;gap:16px;min-width:0;border:0;padding:0;margin:0}
+.scopedForm textarea {width:100%;min-height:112px;border:1px solid var(--design-border);border-radius:var(--design-radius-control);padding:12px 14px;background:var(--design-surface-elevated);color:var(--design-text-primary)}
+.scopedTimes {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.scopedLead {display:flex;align-items:flex-start;gap:12px;min-height:44px;padding:12px 0;font-weight:400}
+:global(.app-shell.nevora-portal) .scopedLead>input {flex:0 0 20px;width:20px;height:20px;min-height:20px;padding:0;margin:2px 0 0;appearance:auto}
+.scopedLead>span {display:grid;gap:4px}
+.scopedLead small {font-weight:400;color:var(--design-text-secondary);line-height:1.5}
+@media(max-width:480px){.scopedTimes{grid-template-columns:minmax(0,1fr)}}
+.shiftLink {display:inline-flex;align-items:center;gap:8px;min-height:44px;color:var(--design-text-primary);text-decoration:none;overflow-wrap:anywhere}
+.shiftLink>svg {flex:0 0 auto;color:var(--design-accent-ink)}
+.shiftLink:hover {color:var(--design-accent-ink)}

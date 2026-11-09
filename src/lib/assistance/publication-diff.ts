@@ -7,6 +7,8 @@ export type PublishedShiftSnapshot = {
   startTime: string;
   endTime: string;
   notes?: string;
+  positionId?: string | null;
+  positionName?: string | null;
   isDesignatedLead: boolean;
   isCalloutApproved: boolean;
 };
@@ -17,6 +19,7 @@ export type PublicationChangeType =
   | "TIME_CHANGED"
   | "EMPLOYEE_REASSIGNED"
   | "LOCATION_CHANGED"
+  | "POSITION_CHANGED"
   | "LEAD_CHANGED"
   | "CALLOUT_CHANGED";
 
@@ -27,6 +30,7 @@ export type PublicationChange = {
   affectedEmployeeIds: string[];
 };
 
+/** Prefer stable shift identity; legacy rows without it can match only on unchanged fallback facts. */
 function snapshotIdentity(snapshot: PublishedShiftSnapshot) {
   if (snapshot.sourceShiftId) {
     return `shift:${snapshot.sourceShiftId}`;
@@ -81,6 +85,8 @@ function matchedChanges(
     add("TIME_CHANGED");
   }
 
+  if ((before.positionId || null) !== (after.positionId || null)) add("POSITION_CHANGED");
+
   if (before.isDesignatedLead !== after.isDesignatedLead) {
     add("LEAD_CHANGED");
   }
@@ -92,6 +98,12 @@ function matchedChanges(
   return changes;
 }
 
+/**
+ * Compares captured publication facts, not mutable draft rows. Returns ordered
+ * field-level changes with both affected employees for reassignments. Notes and
+ * position display-name edits alone are outside this change vocabulary.
+ * Callers must supply at most one snapshot per resolved identity.
+ */
 export function diffPublishedShifts(
   previous: PublishedShiftSnapshot[],
   next: PublishedShiftSnapshot[],

@@ -1,0 +1,26 @@
+[
+  {
+    "antipattern": "design-system-radius",
+    "name": "Radius outside DESIGN.md",
+    "description": "A border-radius value is outside the DESIGN.md rounded scale. Use a documented radius token or update the design system if the new shape is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/components/employee-mobile/device-alerts.css",
+    "line": 3,
+    "snippet": "border-radius: 16px is outside the DESIGN.md rounded scale",
+    "advisory": true,
+    "ignoreValue": "16px"
+  },
+  {
+    "antipattern": "design-system-font-size",
+    "name": "Font size outside DESIGN.md",
+    "description": "A literal font-size is off the type ramp documented in DESIGN.md typography. Use a documented size step or update the design system if the new step is intentional.",
+    "severity": "advisory",
+    "category": "quality",
+    "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/components/employee-mobile/device-alerts.css",
+    "line": 5,
+    "snippet": "font-size: 1.1875rem is off the DESIGN.md type ramp",
+    "advisory": true,
+    "ignoreValue": "1.1875rem"
+  }
+]

@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-27T22:07:14.303125+00:00",
+  "scope": "Six fresh screenshots personally inspected using view_image. Full-page images may place fixed navigation at the captured scroll position; viewport images used for enlarged clearance.",
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/firefox-profile-system-light.png",
+      "bytes": 99578,
+      "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b",
+      "observation": "Personally viewed: System selected and light Profile rendered, matching the unchanged assertion which previously failed."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/chromium-profile-system-light.png",
+      "bytes": 85398,
+      "sha256": "4f2d7a21f257d71686c728d4cfaa992aa549e44d3253a2cf73da5ccb2d7204d9",
+      "observation": "Personally viewed: System selected and light Profile rendered with existing work/settings/account hierarchy and inset native selectors."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/webkit-profile-system-light.png",
+      "bytes": 106212,
+      "sha256": "3781e1e778906e518841aaec1760b0f24a5c0b73e3cf90a7e97068a090ea5166",
+      "observation": "Personally viewed: Lead profile follows System into light appearance; current work facts, native selectors and calendar disclosure retained."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/firefox-profile-signout-held-native-submission.png",
+      "bytes": 22623,
+      "sha256": "4d8af6c8d922b6d26b2044f60f34d86a789ac31437506eb1bd41e645f43db608",
+      "observation": "Personally viewed: actual held native signout removes private content; notice and disabled submit align; semantic dark canvas reaches navigation."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/webkit-profile-text200-viewport.png",
+      "bytes": 43890,
+      "sha256": "51a728bb71ce8ff615b37ea031b597cc123f3371c91a38623bd938ad959374c5",
+      "observation": "Personally viewed: enlarged account labels wrap legibly and Sign out clears the enlarged navigation."
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/firefox-terms-text200-viewport.png",
+      "bytes": 46117,
+      "sha256": "76731f824793a84c40993b3f6bee57a84b636e4804fb5a0855f13fac9de60697",
+      "observation": "Personally viewed: previously unreachable Firefox later legal stage now renders enlarged Terms header and Profile return within320px; this is not full legal-content certification."
+    }
+  ]
+}

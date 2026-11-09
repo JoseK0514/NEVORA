@@ -1,0 +1,172 @@
+/* The employee Signature frame. Same tokens as Home, My schedule and Requests; sg-prefixed classes and `:not(#sg)`
+ * keep the shared premium layers out. Page-specific pieces live in each page's own module. */
+
+.sgRoot:not(#sg) {
+  --sg-page: var(--sig-page); --sg-card: var(--sig-card); --sg-ink: var(--sig-ink-1); --sg-ink-2: var(--sig-ink-2); --sg-ink-3: var(--sig-ink-3); --sg-faint: var(--sig-faint);
+  --sg-rule: var(--sig-rule); --sg-track: var(--sig-track); --sg-deep: var(--sig-deep); --sg-mark: var(--sig-mark); --sg-teal: var(--sig-action); --sg-mint: var(--sig-mint); --sg-sky: var(--sig-sky);
+  --sg-amber: var(--sig-review-ink); --sg-red: var(--sig-urgent-ink);
+  --sg-font: var(--sig-font);
+  --sg-display: var(--sig-font-display);
+  --sg-grain: var(--sig-grain);
+  container: sg / inline-size;
+  display: flex; flex-direction: column; min-width: 0; margin: 0 auto; padding: 0 0 36px; background: var(--sg-page); color: var(--sg-ink);
+  font-family: var(--sg-font); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+.sgRoot :where(h1, h2, h3, p, ul, ol, dl, dd, small, strong, b):not(#sg) { margin: 0; padding: 0; }
+.sgRoot :where(ul, ol):not(#sg) { list-style: none; }
+.sgRoot :is(a, button, summary, input):focus-visible:not(#sg) { outline: 2px solid var(--sg-ink); outline-offset: 2px; }
+
+/* Band */
+.sgBand:not(#sg) { position: relative; isolation: isolate; overflow: hidden; padding: 22px 24px 62px; background: var(--sg-deep); color: #FFFFFF; }
+.sgBand:not(#sg)::after { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--sg-grain); opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+.sgMark:not(#sg) { position: absolute; z-index: -1; right: -90px; bottom: -6px; width: 280px; height: auto; pointer-events: none; }
+.sgMarkL:not(#sg) { fill: var(--sg-mark); }
+.sgMarkT:not(#sg) { fill: var(--sg-sky); }
+.sgEyebrow:not(#sg) { display: flex; align-items: center; gap: 8px; min-height: 1rem; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.sgEyebrow i:not(#sg) { flex: none; width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, .45); }
+.sgEyebrow i.sgLive:not(#sg) { background: var(--sg-mint); box-shadow: 0 0 0 4px rgba(169, 226, 218, .16); }
+/* Hero sizes: a word ("Off clock"), a date ("Oct 27"), a duration. */
+.sgBand :global(.sg-word):not(#sg) { display: block; margin-top: 12px; font: 300 2.875rem/3.125rem var(--sg-display); letter-spacing: -.04em; color: #FFFFFF; }
+.sgBand :global(.sg-date):not(#sg) { display: block; margin-top: 12px; font: 200 3.75rem/3.875rem var(--sg-display); letter-spacing: -.045em; font-variant-numeric: tabular-nums; color: #FFFFFF; }
+.sgBand :global(.sg-sub):not(#sg) { display: flex; flex-wrap: wrap; gap: 0 10px; margin-top: 10px; font: 400 1rem/1.375rem var(--sg-font); color: rgba(255, 255, 255, .74); }
+.sgBand :global(.sg-sub b):not(#sg) { font-weight: 500; color: var(--sg-mint); }
+.sgBand :global(.sg-pair):not(#sg) { display: grid; grid-template-columns: 1fr 1fr; margin-top: 22px; border-top: 1px solid rgba(255, 255, 255, .14); }
+.sgBand :global(.sg-pair > div):not(#sg) { min-width: 0; padding-top: 14px; }
+.sgBand :global(.sg-pair > div + div):not(#sg) { padding-left: 18px; border-left: 1px solid rgba(255, 255, 255, .14); }
+.sgBand :global(.sg-pair dt):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .6); }
+.sgBand :global(.sg-pair dd):not(#sg) { margin: 6px 0 0; }
+.sgDurHero:not(#sg) { display: block; margin-top: 12px; font: 200 3.375rem/3.5rem var(--sg-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: #FFFFFF; word-spacing: .1em; }
+.sgDurPair:not(#sg) { display: block; font: 300 1.75rem/2rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: #FFFFFF; word-spacing: .05em; }
+.sgDurHero em:not(#sg), .sgDurPair em:not(#sg) { margin-left: 2px; font-style: normal; font-weight: 300; font-size: .44em; letter-spacing: 0; color: rgba(255, 255, 255, .78); }
+.sgDurPair em:not(#sg) { font-size: .58em; }
+
+/* Sheet */
+.sgSheet:not(#sg) { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; margin-top: -30px; padding-top: 26px; border-radius: 28px 28px 0 0; background: var(--sg-page); }
+.sgSection:not(#sg) { display: flex; flex-direction: column; min-width: 0; margin-top: 30px; }
+.sgSheet > .sgSection:first-child:not(#sg) { margin-top: 0; }
+.sgHead:not(#sg) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 1rem; margin: 0 24px 12px; }
+.sgHead h2:not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
+
+/* Shared pieces pages compose (global so page modules can use them on their own markup). */
+.sgRoot :global(.sg-list):not(#sg) { margin: 0 16px; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); overflow: hidden; }
+.sgRoot :global(.sg-list > li):not(#sg), .sgRoot :global(.sg-list > *):not(#sg) { position: relative; }
+.sgRoot :global(.sg-list > * + *):not(#sg)::before { content: ""; position: absolute; top: 0; left: 18px; right: 0; height: 1px; background: var(--sg-rule); pointer-events: none; }
+.sgRoot :global(.sg-row):not(#sg) { display: flex; align-items: center; gap: 14px; min-height: 72px; padding: 14px 16px 14px 18px; color: var(--sg-ink); text-decoration: none; }
+.sgRoot :global(.sg-copy):not(#sg) { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.sgRoot :global(.sg-copy > b):not(#sg), .sgRoot :global(.sg-copy > strong):not(#sg) { font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; color: var(--sg-ink); }
+.sgRoot :global(.sg-copy > span):not(#sg), .sgRoot :global(.sg-copy > small):not(#sg) { font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+.sgRoot :global(.sg-empty):not(#sg) { padding: 24px 18px; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); text-align: center; }
+.sgRoot :global(.sg-quiet):not(#sg) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 16px; margin: 14px 24px 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); }
+.sgRoot :global(.sg-link):not(#sg) { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; color: var(--sg-ink); font: 500 .9375rem/1.25rem var(--sg-font); text-decoration: underline; text-decoration-color: var(--sg-rule); text-decoration-thickness: 1px; text-underline-offset: 5px; cursor: pointer; white-space: nowrap; }
+@media (hover: hover) { .sgRoot :global(.sg-link):hover:not(:disabled):not(#sg) { text-decoration-color: var(--sg-ink); } }
+.sgRoot :global(.sg-link):disabled:not(#sg) { color: var(--sg-ink-3); cursor: default; }
+.sgRoot :global(.sg-primary):not(#sg) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--sig-control-h-compact, 44px); padding: 0 18px; border: 0; border-radius: var(--sig-radius-compact, 12px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 .9375rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
+/* .sg-primary is the compact in-row primary (beside 44px fields, in a statement card): 44px, radius 12, same fill and states. */
+@media (hover: hover) { .sgRoot :global(.sg-primary):hover:not(:disabled):not([aria-disabled="true"]):not(#sg) { background: var(--sig-fill-hover); } }
+.sgRoot :global(.sg-primary[aria-busy="true"]):not(#sg) { cursor: progress; }
+.sgRoot :global(.sg-primary):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sg) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); cursor: not-allowed; }
+.sgRoot :global(.sg-round):not(#sg) { flex: none; display: inline-flex; width: 44px; height: 44px; align-items: center; justify-content: center; border-radius: 50%; color: var(--sig-deep-ink); text-decoration: none; }
+.sgRoot :global(.sg-round):not(#sg)::before { content: ""; position: absolute; width: 40px; height: 40px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--sg-rule); }
+.sgRoot :global(.sg-round):not(#sg) { position: relative; }
+.sgRoot :global(.sg-note):not(#sg) { display: flex; gap: 10px; margin: 14px 24px 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.sgRoot :global(.sg-note > i):not(#sg) { flex: none; width: 7px; height: 7px; margin-top: 7px; border-radius: 50%; background: #B8892F; }
+.sgRoot :global(.sg-alert):not(#sg) { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin: 0 16px; padding: 20px 18px; border: 1px solid var(--sg-rule); border-radius: 18px; background: var(--sg-card); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.sgRoot :global(.sg-alert strong):not(#sg) { font: 500 1rem/1.3125rem var(--sg-font); color: var(--sg-ink); }
+.sgLinkRow:not(#sg) { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 12px 16px 12px 18px; color: var(--sg-ink); text-decoration: none; }
+.sgLinkRow > span:not(#sg) { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sgLinkRow b:not(#sg) { font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; }
+.sgLinkRow small:not(#sg) { font: 400 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink-2); }
+@media (hover: hover) { .sgLinkRow:hover:not(#sg), .sgRoot :global(a.sg-row):hover:not(#sg) { background: var(--sig-hover-bg); } }
+.sgLinkRow:focus-visible:not(#sg), .sgRoot :global(a.sg-row):focus-visible:not(#sg) { outline-offset: -3px; border-radius: 18px; }
+/* Lists and cards clip (overflow:hidden), so row links and disclosures inside them take the ring inside; outweighs the
+ * root ring rule. Buttons keep the outside ring (an inset ink ring would vanish on a deep fill). */
+.sgRoot :global(:is(.sg-list, .sg-card)) :is(a, summary):not(:global(.sig-btn), :global(.sg-cta), :global(.sg-primary), :global(.sg-round), :global(.employee-action), [data-sig-press="button"]):focus-visible:not(#sg):not(#sg) { outline-offset: -3px; }
+.sgChevron:not(#sg) { flex: none; fill: none; stroke: var(--sig-glyph, #8A8378); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sgIcon:not(#sg) { flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (min-width: 768px) {
+  .sgRoot:not(#sg) { width: min(100%, 760px); padding: 16px 24px 48px; }
+  .sgBand:not(#sg) { padding: 28px 32px 34px; border-radius: 24px; }
+  .sgSheet:not(#sg) { margin-top: 0; padding-top: 24px; border-radius: 0; background: none; }
+  .sgHead:not(#sg) { margin-inline: 4px; }
+  .sgRoot :global(.sg-list):not(#sg), .sgRoot :global(.sg-alert):not(#sg) { margin-inline: 0; }
+  .sgRoot :global(.sg-quiet):not(#sg), .sgRoot :global(.sg-note):not(#sg) { margin-inline: 4px; }
+}
+
+/* Phase 3 pieces (approved Oct 20, 2026; target: docs/product/specs/employee-style/signature/phase-3/p3c-*.png):
+ * one card, one icon tile, one status pill, a date ticket and a full-width action, on an 8-point rhythm
+ * (section gap 40, heading to card 14, card padding 20, row 76). */
+.sgRoot:not(#sg) { --sg-card-shadow: var(--sig-shadow-card-lift); }
+.sgRoot :global(.sg-h):not(#sg) { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 40px 24px 14px; }
+.sgSheet > :global(.sg-h:first-child):not(#sg) { margin-top: 4px; }
+.sgRoot :global(.sg-h h2):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .13em; text-transform: uppercase; color: var(--sg-ink-2); }
+.sgRoot :global(.sg-h h2 label):not(#sg) { font: inherit; letter-spacing: inherit; color: inherit; }
+.sgRoot :global(.sg-h h2 em):not(#sg) { margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: var(--sg-track); font-style: normal; letter-spacing: .04em; color: var(--sg-ink-2); }
+.sgRoot :global(.sg-h > span):not(#sg) { font: 400 .875rem/1.125rem var(--sg-font); color: var(--sg-ink-3); }
+.sgRoot :global(.sg-card):not(#sg) { margin: 0 16px; border-radius: 22px; background: var(--sg-card); box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), var(--sg-card-shadow); overflow: hidden; }
+.sgRoot :global(.sg-card + .sg-card):not(#sg) { margin-top: 12px; }
+.sgRoot :global(.sg-card[data-tone="tint"]):not(#sg) { background: var(--sig-tint-done); box-shadow: none; }
+.sgRoot :global(.sg-card[data-tone="amber"]):not(#sg) { background: var(--sig-tint-review); box-shadow: inset 0 0 0 1px var(--sig-tint-review-line); }
+.sgRoot :global(.sg-card-head):not(#sg) { display: flex; align-items: center; gap: 14px; padding: 18px 20px; }
+.sgRoot :global(.sg-card-body):not(#sg) { padding: 0 20px 20px; }
+.sgRoot :global(.sg-card-foot):not(#sg) { display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px; border-top: 1px solid var(--sg-rule); font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-2); }
+.sgRoot :global(.sg-card-foot > svg):not(#sg) { flex: none; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-card-foot[data-tone="amber"]):not(#sg) { border-top-color: #F2E4CD; background: var(--sig-tint-review-2); color: var(--sg-amber); }
+.sgRoot :global(.sg-card-foot[data-tone="amber"] > svg):not(#sg) { color: var(--sg-amber); }
+.sgRoot :global(.sg-tile):not(#sg) { flex: none; display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 13px; background: var(--sig-tint-teal); color: var(--sig-deep-ink); }
+.sgRoot :global(.sg-tile[data-tone="amber"]):not(#sg) { background: var(--sig-tint-review-3); color: var(--sg-amber); }
+.sgRoot :global(.sg-tile[data-tone="white"]):not(#sg) { background: var(--sig-card); color: var(--sg-teal); }
+.sgRoot :global(.sg-pill):not(#sg), .sgRoot :global(.sg-card .nv-status):not(#sg) { flex: none; display: inline-flex; align-items: center; gap: 0; height: 24px; padding: 0 9px; border: 0; border-radius: 999px; background: var(--sig-tint-neutral); color: var(--sig-tint-neutral-ink); font: 500 .8125rem/1 var(--sg-font); letter-spacing: .01em; white-space: nowrap; }
+.sgRoot :global(.sg-card .nv-status svg):not(#sg) { display: none; }
+.sgRoot :global(:is(.sg-pill[data-tone="amber"], .sg-card .nv-status[data-tone="review"])):not(#sg) { background: var(--sig-review-wash); color: var(--sig-tint-review-ink); }
+.sgRoot :global(:is(.sg-pill[data-tone="teal"], .sg-card .nv-status[data-tone="done"])):not(#sg) { background: var(--sig-done-wash); color: var(--sig-done-ink); }
+.sgRoot :global(.sg-r):not(#sg) { position: relative; display: flex; align-items: center; gap: 16px; min-height: 76px; padding: 16px 20px; color: var(--sg-ink); text-decoration: none; }
+.sgRoot :global(.sg-r + .sg-r):not(#sg)::before { content: ""; position: absolute; top: 0; left: 78px; right: 0; height: 1px; background: var(--sg-rule); pointer-events: none; }
+.sgRoot :global(.sg-r .sg-copy > span + span):not(#sg) { color: var(--sg-ink-3); }
+.sgRoot :global(.sg-t1):not(#sg) { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.sgRoot :global(.sg-t1 > b):not(#sg) { font: 500 1.0625rem/1.375rem var(--sg-font); letter-spacing: -.012em; color: var(--sg-ink); }
+.sgRoot :global(.sg-day):not(#sg) { flex: none; width: auto; min-width: 42px; text-align: center; }
+.sgRoot :global(.sg-day small):not(#sg) { display: block; font: 600 .75rem/1rem var(--sg-font); letter-spacing: .12em; text-transform: uppercase; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-day strong):not(#sg) { display: block; margin-top: 2px; font: 300 1.75rem/1.875rem var(--sg-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
+.sgRoot :global(.sg-time):not(#sg), .sgRoot :global(.sg-copy > .sg-time):not(#sg) { font: 300 1.3125rem/1.625rem var(--sg-display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
+.sgRoot :global(.sg-ticket):not(#sg) { display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr); align-items: center; padding: 22px 20px; }
+.sgRoot :global(.sg-card-head + .sg-ticket):not(#sg) { padding-top: 6px; }
+.sgRoot :global(.sg-ticket > :is(div, label, section)):not(#sg) { position: relative; display: flex; flex-direction: column; min-width: 0; border-radius: 14px; }
+.sgRoot :global(.sg-ticket > :is(div, label, section):last-child):not(#sg) { align-items: flex-end; text-align: right; }
+.sgRoot :global(.sg-ticket small):not(#sg) { font: 600 .75rem/1rem var(--sg-font); letter-spacing: .14em; text-transform: uppercase; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-ticket b):not(#sg) { margin: 8px 0 6px; font: 200 3.5rem/3.375rem var(--sg-display); letter-spacing: -.045em; font-variant-numeric: tabular-nums; color: var(--sg-ink); }
+/* Empty figure ("—"): ink-3, 5.3:1 on the white card (the faint grey was 2.0:1). */
+.sgRoot :global(.sg-ticket b[data-empty]):not(#sg) { color: var(--sig-ink-3, #6F6C66); }
+.sgRoot :global(.sg-ticket span):not(#sg) { font: 500 .9375rem/1.25rem var(--sg-font); color: var(--sg-ink); }
+.sgRoot :global(.sg-ticket span + span):not(#sg) { font-weight: 400; color: var(--sg-ink-3); }
+.sgRoot :global(.sg-ticket > i):not(#sg) { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; margin: 0 auto; border-radius: 50%; background: var(--sg-page); color: var(--sg-teal); box-shadow: inset 0 0 0 1px var(--sg-rule); }
+.sgRoot :global(.sg-cta):not(#sg) { display: flex; align-items: center; justify-content: center; gap: 8px; width: calc(100% - 32px); min-height: var(--sig-control-h, 56px); margin: 32px 16px 0; padding: 0 20px; border: 0; border-radius: var(--sig-radius-control, 16px); background: var(--sig-fill); color: var(--sig-on-fill); font: 500 1.0625rem/1 var(--sg-font); text-decoration: none; cursor: pointer; }
+@media (hover: hover) {
+  .sgRoot :global(.sg-cta):hover:not(:disabled):not([aria-disabled="true"]):not(#sg) { background: var(--sig-fill-hover); }
+  .sgRoot :global(.sg-cta[data-kind="ghost"]):hover:not(:disabled):not([aria-disabled="true"]):not(#sg) { background: var(--sig-card-hover, #FBFAF8); }
+}
+.sgRoot :global(.sg-cta[data-kind="ghost"]):not(#sg) { background: var(--sig-card, #FFFFFF); color: var(--sig-ink, #161C1B); box-shadow: inset 0 0 0 1px var(--sig-rule, #E8E5DF), 0 1px 2px rgba(22, 28, 27, .06); }
+/* Pending (aria-busy) keeps the fill and shows the spinner; only true disabled goes quiet, never a working button. */
+.sgRoot :global(.sg-cta[aria-busy="true"]):not(#sg) { cursor: progress; }
+.sgRoot :global(.sg-cta):is(:disabled, [aria-disabled="true"]):not([aria-busy="true"]):not(#sg) { background: var(--sig-disabled, #ECEAE5); color: var(--sig-ink-disabled, #5F625E); box-shadow: none; cursor: not-allowed; }
+.sgRoot :global(.sg-after):not(#sg) { margin: 14px 28px 0; font: 400 .9375rem/1.3125rem var(--sg-font); color: var(--sg-ink-3); text-align: center; text-wrap: balance; }
+.sgRoot :global(.sg-center):not(#sg) { display: flex; justify-content: center; margin-top: 6px; }
+.sgBand :global(.sg-head2):not(#sg) { display: block; margin-top: 12px; font: 300 2.5rem/2.75rem var(--sg-display); letter-spacing: -.035em; color: #FFFFFF; }
+.sgBand :global(.sg-head2 em):not(#sg) { font-style: normal; color: var(--sg-mint); }
+.sgBand :global(.sg-band-link):not(#sg) { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 16px; padding: 0 16px; border-radius: 999px; background: rgba(255, 255, 255, .1); color: #FFFFFF; font: 500 .9375rem/1 var(--sg-font); text-decoration: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+.sgBand :global(.sg-band-link em):not(#sg) { font-style: normal; color: var(--sg-mint); font-variant-numeric: tabular-nums; }
+@media (hover: hover) { .sgBand :global(.sg-band-link):hover:not(#sg) { background: rgba(255, 255, 255, .16); } }
+@container sg (max-width: 359px) {
+  .sgRoot :global(.sg-r):not(#sg) { gap: 12px; padding: 14px 16px; }
+  .sgRoot :global(.sg-r + .sg-r):not(#sg)::before { left: 70px; }
+  .sgRoot :global(.sg-card-head):not(#sg) { gap: 12px; padding: 16px; flex-wrap: wrap; }
+  .sgRoot :global(.sg-ticket):not(#sg) { grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); padding: 18px 16px; }
+  .sgRoot :global(.sg-ticket b):not(#sg) { font-size: 2.875rem; line-height: 2.875rem; }
+  .sgRoot :global(.sg-time):not(#sg) { font-size: 1.1875rem; }
+}
+@media (min-width: 768px) {
+  .sgRoot :global(.sg-card):not(#sg) { margin-inline: 0; }
+  .sgRoot :global(.sg-h):not(#sg) { margin-inline: 4px; }
+  .sgRoot :global(.sg-cta):not(#sg) { width: 100%; margin-inline: 0; }
+}
+.sgRoot :global(.sg-ticket em):not(#sg) { margin-top: 6px; font: 400 .8125rem/1.125rem var(--sg-font); font-style: normal; color: var(--sg-ink-3); overflow-wrap: anywhere; }

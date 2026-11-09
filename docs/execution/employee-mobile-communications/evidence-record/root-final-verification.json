@@ -1,0 +1,164 @@
+{
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "branch": "codex/employee-mobile-cloud-handoff-20261027",
+  "gates": {
+    "requests": {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/requests",
+      "resultSha256": "b22471b6ab080c794a897d696335ff87417f451d34be3bc67eded7727f4d2377",
+      "stdoutSha256": "a528adba5b9493091b1105a37e30766f94f54b7596bfa9760d3ff46863040bcf",
+      "sourceCount": 2247,
+      "durationSeconds": 51.305,
+      "expectedFilesTests": [
+        1,
+        1
+      ]
+    },
+    "combined": {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined",
+      "resultSha256": "e7dc8c1863872e19a5b85a7b22438c41905a3eff20c34575b9308d89ef81d127",
+      "stdoutSha256": "1a6b604cdcb0f6894814aa7d88c682fb16947a8437e5e76d8f1fccb797c340cb",
+      "sourceCount": 2247,
+      "durationSeconds": 941.404,
+      "expectedFilesTests": [
+        20,
+        176
+      ]
+    },
+    "units": {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/units",
+      "resultSha256": "596d1686e0ceb332da21893b7010f325f80c0931729a0f431121fc1297440f38",
+      "stdoutSha256": "524a902e338f9411ab6a9a0bf842e771babc0596442b0167265729f17a2523d7",
+      "sourceCount": 2247,
+      "durationSeconds": 30.142,
+      "expectedFilesTests": [
+        77,
+        609
+      ]
+    },
+    "typescript": {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/recovery-1/typescript",
+      "resultSha256": "fdd2955c310fba91f283101a236ce8c11872435f881fa88bd09914691bb9adcc",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCount": 2247,
+      "durationSeconds": 33.235,
+      "expectedFilesTests": null
+    },
+    "eslint": {
+      "path": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/eslint",
+      "resultSha256": "e460559940d968d27a6b314e04590c0887f54c34f22949ec320b96411d1594b9",
+      "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceCount": 2247,
+      "durationSeconds": 5.148,
+      "expectedFilesTests": null
+    }
+  },
+  "mirrors": [
+    {
+      "gate": "requests",
+      "suite": "mobile",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 941,
+      "port": 34113,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "creation",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 12756,
+      "port": 44661,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "hours",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 15766,
+      "port": 33687,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "messages",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 6278,
+      "port": 44647,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "mobile",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 19090,
+      "port": 40343,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "planning",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 14254,
+      "port": 42779,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "responses",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 17457,
+      "port": 46845,
+      "closedNow": true
+    },
+    {
+      "gate": "combined",
+      "suite": "review",
+      "sourceInputs": 2007,
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "manifestSha256": "e1869352b0340d87b9683df5e8324c1388798918fa9f42288045530d1d8b5507",
+      "pid": 9798,
+      "port": 43097,
+      "closedNow": true
+    }
+  ],
+  "kind": "Root directly read final raw outputs/source manifests and checked current bytes/process/ports; this does not rerun the suites",
+  "originalHandoffTreeUnchanged": true,
+  "passed": true
+}

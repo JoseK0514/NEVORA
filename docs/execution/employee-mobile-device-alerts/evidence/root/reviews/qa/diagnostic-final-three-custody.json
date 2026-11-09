@@ -1,0 +1,53 @@
+[
+  {
+    "run": "actual-app-characterization-05",
+    "exit": "1",
+    "tmpAbsent": true,
+    "mirrors": [
+      {
+        "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-05/owned-next-p84e3Y/ownership.json",
+        "closed": true,
+        "hashMismatches": [],
+        "pidAbsent": true,
+        "portRefused": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedRemoved": true
+      }
+    ]
+  },
+  {
+    "run": "actual-app-characterization-06",
+    "exit": "1",
+    "tmpAbsent": true,
+    "mirrors": [
+      {
+        "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-06/owned-next-Ag8KnT/ownership.json",
+        "closed": true,
+        "hashMismatches": [],
+        "pidAbsent": true,
+        "portRefused": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedRemoved": true
+      }
+    ]
+  },
+  {
+    "run": "actual-app-characterization-07",
+    "exit": "0",
+    "tmpAbsent": true,
+    "mirrors": [
+      {
+        "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization-07/owned-next-rq77u8/ownership.json",
+        "closed": true,
+        "hashMismatches": [],
+        "pidAbsent": true,
+        "portRefused": true,
+        "sourceVerified": true,
+        "mirrorVerified": true,
+        "derivedRemoved": true
+      }
+    ]
+  }
+]

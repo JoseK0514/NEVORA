@@ -1,0 +1,34 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/lib/notifications/device-client.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/lib/notifications/device-client.test.ts (48 tests | 1 failed) 2854ms
+   × a stale turn-off confirmation cannot target a replacement generation 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/notifications/device-client.test.ts > a stale turn-off confirmation cannot target a replacement generation
+AssertionError: expected [ 'replacement' ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "replacement",
++ ]
+
+ ❯ src/lib/notifications/device-client.test.ts:61:15
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 47 passed (48)
+   Start at  21:58:14
+   Duration  2.95s (tests 99%, transform 1%)
+

@@ -1,0 +1,1500 @@
+{
+  "sourceCandidate": "bf2051f74e70682dd71a3fb0fc695a6a284293ad",
+  "base": "e06eeff35960336b2c33f1bd1037823d62a8405a",
+  "createdAt": "2026-10-27T21:12:29.687199+00:00",
+  "preservationOnly": true,
+  "copiedFileCount": 212,
+  "copiedBytes": 15582491,
+  "exclusions": [
+    "dependency folders",
+    "owned source-mirror app trees",
+    "build caches and binaries",
+    "runtime installation/environment files and credentials"
+  ],
+  "records": [
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/broad-units.log",
+      "path": "active-execution/employee-mobile-communications-plan/broad-units.log",
+      "bytes": 556,
+      "sha256": "48424f3c86414c18119022840461c4080f5c5e65e1e00cacdd50921723222aed"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-1.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-1.log",
+      "bytes": 1651,
+      "sha256": "d237aac2457095c164debdbd0c538e5f6cfec256b5f679a4b2114cf815ddda0e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-2.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-2.log",
+      "bytes": 1637,
+      "sha256": "692000d708ea32c4df6a62123ce62d44dbb50ee74e057ae366811c30598a1ea0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-3.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-3.log",
+      "bytes": 1662,
+      "sha256": "04f19ee49bd6032b676de1308736529ead2b3af032cc9454b7caeed04dd7af05"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-4.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-4.log",
+      "bytes": 807,
+      "sha256": "dcde43bfa7567802732f71c55686aa225d55c2d0d3971fbe959fab66a0791de0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-5.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-5.log",
+      "bytes": 2985,
+      "sha256": "36333db1ab63ff7171930563094e3367711710c9fc18b63008da08fded9189fb"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-6.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-6.log",
+      "bytes": 1568,
+      "sha256": "790813d02e609b0cc96fcc0845c92a18e79c7e5db5c4b949484dc45b6bddf3ac"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-7.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-7.log",
+      "bytes": 2132,
+      "sha256": "10cddbb51e627d710a645dec9955d9b87271d01d0518131e55cf00151cfa112c"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-8.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-8.log",
+      "bytes": 810,
+      "sha256": "efc8fe679d26b1ced09897d01f70cf8fc6bd17de5390258e303449ec0f556f14"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-preflight-9.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-preflight-9.log",
+      "bytes": 1524,
+      "sha256": "949ce99693a7b13ad77f0d56df2c03ecb5196df19ee12a2d52938771b64cf5ef"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/browser-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/browser-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fix-craft-floor.txt",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fix-craft-floor.txt",
+      "bytes": 5500,
+      "sha256": "e802e4f7bdc89050a9c0f2ca506e1d493a2316e6e810c0336c57aa073717ef3e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fix-lint-invocation.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fix-lint-invocation.json",
+      "bytes": 2376,
+      "sha256": "36544b6386122c0a4c03efe30eebe43018e50c12c3db252ae1d50c3a9e7864a8"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fix-lint.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fix-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fix-typescript.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fix-typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fixture-map-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fixture-map-green.log",
+      "bytes": 462,
+      "sha256": "80194b171efaef9e65c483594cdbcdd62b3abdfd255bb0214233eb7455979dfc"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-fixture-map-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-fixture-map-red.log",
+      "bytes": 1393,
+      "sha256": "cadd1cc3d1bbf026da7f85ead8367dab6e32ad506e4ac7bf43dded65d40533f5"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-focused.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-focused.log",
+      "bytes": 687,
+      "sha256": "65708abf2b936682876f70e1742e68ecf7011d0a083db604aaed1332dfb440df"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-green.log",
+      "bytes": 1088,
+      "sha256": "c206db2cd80a9ee00dc9b87de8a911177117c5eb885ea55a55db0046eeb66cfa"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-impeccable-context.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-impeccable-context.log",
+      "bytes": 3724,
+      "sha256": "d27bb5ce366a234ecdeaa168af61a3404eea4f96246a1c32caefb14c69e87ddd"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-impeccable-detect.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-impeccable-detect.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-input-delta.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-input-delta.json",
+      "bytes": 225,
+      "sha256": "57f0d60e17e8ddbe89f67d14a129cb4810273453b2315c70852db9c07b1bab0e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-lookup-race-green-2.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-lookup-race-green-2.log",
+      "bytes": 1755,
+      "sha256": "0ed799920038b0f17e78abf4e98e31e2f2ed42b625374d4f3ad55c698faa4028"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-lookup-race-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-lookup-race-green.log",
+      "bytes": 2850,
+      "sha256": "1172993ead03057f98995ece5e37041dba599b6c14db084fa31e1b56bb3fc1bc"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-originals-audit.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-originals-audit.json",
+      "bytes": 154,
+      "sha256": "0ced7eebebbc4fe9fa892f84b0bd679260f8cadb0f245c47f38f77bb49fbe991"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-red.log",
+      "bytes": 1448,
+      "sha256": "2c73c56ad2b6ecb6776f6f1d3e7c4da6b1e1ec0b022bb550a66c7501fb3714ab"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-green-2.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-review-browser-green-2.log",
+      "bytes": 4573,
+      "sha256": "8ad49346c83c3bef95716d4665dd0ff8a20522931b89ccd373150ed649f7d24e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-review-browser-green.log",
+      "bytes": 4007,
+      "sha256": "ea9d94a21629673427f0d3125e68f38526b41862b2911022fefe1f34fe1c302f"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-browser-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-review-browser-red.log",
+      "bytes": 4676,
+      "sha256": "166e5cf3e1abb5a88e3b4c7fa50cbb848c077da044b5d25e3cd45efbc66a262a"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-units-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-review-units-green.log",
+      "bytes": 827,
+      "sha256": "4b7bef2a849bb7a927aa8d3ce6794f7b3ac9bb89bced1ea61ac6ef6411996baa"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-review-units-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-review-units-red.log",
+      "bytes": 5657,
+      "sha256": "ff5f36470cd6335f693e2c77676a296b9924d5a01557dcda819307253c92ed82"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-runtime.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-runtime.json",
+      "bytes": 832,
+      "sha256": "92e3f715e9d6d27ea8293d10a5695306d3ba766053455fb9dab2fb9661eaeca2"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-serial-navigation-lint.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-serial-navigation-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-source-units-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-source-units-red.log",
+      "bytes": 7583,
+      "sha256": "edca41b454a0b349c6386f04b5055bb39d67cb4d7b4acf9e4c675a13c365c2d7"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-source-verification.json",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-source-verification.json",
+      "bytes": 315,
+      "sha256": "804f2eae7214b7fe032a4cf857ee455a60ef08aaa4080165468e6ffaf78555e6"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/cloud-sql.log",
+      "path": "active-execution/employee-mobile-communications-plan/cloud-sql.log",
+      "bytes": 1753,
+      "sha256": "c8e5c73e2ae393e0182142e4c2e6c76e241f698ff3649bad8ea82362ee45015a"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/contracts-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/contracts-green.log",
+      "bytes": 255,
+      "sha256": "72f6db7b9343ceb033d4cb9ae2c1f3998d2a6348d9953baa5e777bb2581bf723"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/contracts-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/contracts-red.log",
+      "bytes": 1933,
+      "sha256": "eed976eca6476e45f2753d14bad89b04f7dfecf293bbff02300e947a616aa8ae"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/contracts-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/contracts-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/craft-floor-read.txt",
+      "path": "active-execution/employee-mobile-communications-plan/craft-floor-read.txt",
+      "bytes": 5500,
+      "sha256": "e802e4f7bdc89050a9c0f2ca506e1d493a2316e6e810c0336c57aa073717ef3e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/destination-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/destination-red.log",
+      "bytes": 2551,
+      "sha256": "76062ed150182eaaf95e5e5a339ed6e019f20f0b971a549891fde387f6339d67"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/envelope-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/envelope-green.log",
+      "bytes": 256,
+      "sha256": "da2c10174ded35daa79230bff064a36ce92e9ad99afef147e431fbc92dc66550"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/envelope-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/envelope-red.log",
+      "bytes": 731,
+      "sha256": "3ef171cc6ac6ef303b83588563ece118aed9ef82a107dacc6e25854b16114d10"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/grant-page-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/grant-page-red.log",
+      "bytes": 2366,
+      "sha256": "a1afa89dca46b682ea12b6eb940731183baaa5b6d8b0f6a98656c8ff23a7007e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/hung-command-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/hung-command-green.log",
+      "bytes": 256,
+      "sha256": "e5d23f15fe678721ecd8f1e9b98e18119f57ea2436ba39580229e33bd5433c46"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/hung-command-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/hung-command-red.log",
+      "bytes": 1088,
+      "sha256": "e6e1c1980c3b52b092f1ebd1d5989d0491ce5355a7ea1cca6b1556cce5e0aca0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/mobile-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/mobile-green.log",
+      "bytes": 254,
+      "sha256": "75385e4c4cad9af8d594dfc2095b66fda9af014b6b9901795d8329752a35621d"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/mobile-lint.log",
+      "path": "active-execution/employee-mobile-communications-plan/mobile-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/mobile-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/mobile-red.log",
+      "bytes": 1139,
+      "sha256": "fbaf56f7e9898d0cf8f501f05813733a4e3807f978afd013904ebded71cbb8b0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/mobile-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/mobile-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/mobile-units.log",
+      "path": "active-execution/employee-mobile-communications-plan/mobile-units.log",
+      "bytes": 258,
+      "sha256": "dead894efe50dbf17d481ffc295907b19a0e374fe86d74a975283231d7fc5a50"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/module-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/module-green.log",
+      "bytes": 1380,
+      "sha256": "5579e1c06f6927cbce487e6f326d245259b6c0942a561b46dda881684451224a"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/module-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/module-red.log",
+      "bytes": 2145,
+      "sha256": "c61ed0a4d800b373e8c02f71cc629c38e1c1d32cf652f119487bfefd3b3b0062"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/module-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/module-typecheck.log",
+      "bytes": 239,
+      "sha256": "3ff3dd1a69c0e6b65196d688aefe8106ea4713a46f8b373e0daaa39a34c29aaf"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/navigation-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/navigation-red.log",
+      "bytes": 1089,
+      "sha256": "17622b13f90392791f41c1be3da7479123f3e3506695413bbcaf89ac18b218cb"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/notification-modules-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/notification-modules-red.log",
+      "bytes": 2235,
+      "sha256": "ba8ab22a05d59349c6cfff4e51b061c56f3243595a942057574ced0393487ea3"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/own-audience-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/own-audience-red.log",
+      "bytes": 1579,
+      "sha256": "47c1864407aa851771eb7659e97e9248b47ea86fa6881fdc52fa626609405c6e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/paging-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/paging-green.log",
+      "bytes": 829,
+      "sha256": "afa762f5b4f298865eabc21f32e930314efe97d284df2dad768dbcf112dd2cad"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/paging-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/paging-red.log",
+      "bytes": 2091,
+      "sha256": "96759959282be9127d85eede7e6b8b6ab9d49a7006522d1f1c381dac54531eb4"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/paging-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/paging-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/plan-path",
+      "path": "active-execution/employee-mobile-communications-plan/plan-path",
+      "bytes": 72,
+      "sha256": "6c5f04b9555898e361e4b633d1848c3c6cbe743da955d22cb54ad6679e0038ee"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/progress.md",
+      "path": "active-execution/employee-mobile-communications-plan/progress.md",
+      "bytes": 28470,
+      "sha256": "d06f95312929a0f3ea456348cdfe5eac9d96bf9ae59ee25dde25e67fc17744fd"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/read-regression.log",
+      "path": "active-execution/employee-mobile-communications-plan/read-regression.log",
+      "bytes": 256,
+      "sha256": "924dd1525da3a227152972721f05c1ac603e997b7e14153d915a999d678110b5"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/reader-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/reader-green.log",
+      "bytes": 1657,
+      "sha256": "5aa38062c9ecaf88992ee14ea729ac247a314cd130678ad9cf99ea8858562c41"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/reader-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/reader-red.log",
+      "bytes": 2381,
+      "sha256": "a9f1a5b63c35c3989a00f25de3c6dff1170d255bccbfbc38cc343f306cea0d2f"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/reader-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/reader-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task-1-brief.md",
+      "path": "active-execution/employee-mobile-communications-plan/task-1-brief.md",
+      "bytes": 1447,
+      "sha256": "af3e5d7dc44f2a6455a835f0cfdf7e0620298cb18f60bb99987dec510b44837e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task-1-tests.log",
+      "path": "active-execution/employee-mobile-communications-plan/task-1-tests.log",
+      "bytes": 1825,
+      "sha256": "c238f8813fe24dd9ae32e135f47e6657ab73ff6424df17efc78bbe95da32f0b0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task-2-brief.md",
+      "path": "active-execution/employee-mobile-communications-plan/task-2-brief.md",
+      "bytes": 1611,
+      "sha256": "0d0e093e57abaf9ad4c852f1f896f62acbf63a16ce2b52039b498be779e14be8"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task1-sql.log",
+      "path": "active-execution/employee-mobile-communications-plan/task1-sql.log",
+      "bytes": 1825,
+      "sha256": "8756bb3aa04d9a8ff7f609996fd2b019e6fb15a94cc4593eed5f79f7cd0fb834"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task1-typecheck.log",
+      "path": "active-execution/employee-mobile-communications-plan/task1-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task1-units-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/task1-units-green.log",
+      "bytes": 256,
+      "sha256": "2b708fcda8a09d6d8ecd3b00c2477fc0dbb5df012e61a4ee9a29021f6bf3d991"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/task1-units.log",
+      "path": "active-execution/employee-mobile-communications-plan/task1-units.log",
+      "bytes": 9672,
+      "sha256": "f6c26dd51775a246db9aaf209e0afc27b52b364f45b305e1ef0be44adfdb7a48"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/units-invocation.json",
+      "path": "active-execution/employee-mobile-communications-plan/units-invocation.json",
+      "bytes": 4085,
+      "sha256": "1cf511681e72e059b7d6a0e32deb906c6c2c510ab7ee5a6e7d05702aae7a5f93"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/update-page-green.log",
+      "path": "active-execution/employee-mobile-communications-plan/update-page-green.log",
+      "bytes": 1247,
+      "sha256": "0b8f44f8a4bc6255986561c0ba603e3eae03c7069b35b9c5f0272e90a83b6c41"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-communications-plan/update-page-red.log",
+      "path": "active-execution/employee-mobile-communications-plan/update-page-red.log",
+      "bytes": 2484,
+      "sha256": "a95a3484d154e5cb2399cea114f63d3bd6310e82848344479fa79b88a9177c44"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/browser-lint.log",
+      "path": "active-execution/employee-mobile-profile-plan/browser-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/legal-context-red.log",
+      "path": "active-execution/employee-mobile-profile-plan/legal-context-red.log",
+      "bytes": 1634,
+      "sha256": "109324afb57b7bd52446980efc95accad32a0b5c5ba5ded1bbabbc0640b27eeb"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/plan-path",
+      "path": "active-execution/employee-mobile-profile-plan/plan-path",
+      "bytes": 65,
+      "sha256": "ba1c018a5d22f2aadbdd80fe04fcaa74c1d2abce16ca32c57cfa25d8d3a166b0"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/preflight-lint.log",
+      "path": "active-execution/employee-mobile-profile-plan/preflight-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/preflight-typescript.log",
+      "path": "active-execution/employee-mobile-profile-plan/preflight-typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/progress.md",
+      "path": "active-execution/employee-mobile-profile-plan/progress.md",
+      "bytes": 5721,
+      "sha256": "9bc6baf6964ae4a2200e29ec097dd8e12317d8603a0aa2ae7518091c156b6b83"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/task1-sql.log",
+      "path": "active-execution/employee-mobile-profile-plan/task1-sql.log",
+      "bytes": 2061,
+      "sha256": "b0e0e5c12a8f2392cf18aa619f6b2387ca7cc1f949a3586b2aa9e7b8c2964921"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/task1-typescript.log",
+      "path": "active-execution/employee-mobile-profile-plan/task1-typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/task2-lint.log",
+      "path": "active-execution/employee-mobile-profile-plan/task2-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/task2-typescript.log",
+      "path": "active-execution/employee-mobile-profile-plan/task2-typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/task2-units.log",
+      "path": "active-execution/employee-mobile-profile-plan/task2-units.log",
+      "bytes": 378,
+      "sha256": "bf1d9a2d706f7d2bc05c3765e4b3f588e0bdf98572d3a5bd02d7fe8d834a6ffa"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/units-green.log",
+      "path": "active-execution/employee-mobile-profile-plan/units-green.log",
+      "bytes": 379,
+      "sha256": "45d1e81119862b126cac416dad95835f1ac7a2030a4a3eb6b6cb110b424e4d0e"
+    },
+    {
+      "kind": "active-ledger",
+      "originalPath": "/workspace/NEVORA/.superpowers/sdd/employee-mobile-profile-plan/units-red.log",
+      "path": "active-execution/employee-mobile-profile-plan/units-red.log",
+      "bytes": 2919,
+      "sha256": "d1dbe6a39d49de3041614ff5f1c5b480563c30ad7561505667931273029cc0d1"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/invocation.json",
+      "path": "evidence/profile-red/profile/invocation.json",
+      "bytes": 2318,
+      "sha256": "f2f361f178edb7648d21381ac2eaddcaf96965cdcb6a1c5dc122ea55f6355a4c"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/observations.jsonl",
+      "path": "evidence/profile-red/profile/observations.jsonl",
+      "bytes": 330,
+      "sha256": "236d93d16a86f968ae7fef361178bd9cdf463225ece16e8b38462ef02f2fa7ff"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/process.json",
+      "path": "evidence/profile-red/profile/process.json",
+      "bytes": 70,
+      "sha256": "787280129572faace368bdd847ff93eb915f6821c356e65bd274044e56c4091a"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/chromium-failure.html",
+      "path": "evidence/profile-red/profile/profile/chromium-failure.html",
+      "bytes": 48397,
+      "sha256": "abbca51279575da5ab6a21da10e73f3a64fba813a1d3166d74460fbae77efe10"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/chromium-failure.png",
+      "path": "evidence/profile-red/profile/profile/chromium-failure.png",
+      "bytes": 46299,
+      "sha256": "43ad36cc8b0042bd63baceb26e92c8689d459a1f32ebeb6d42db82f3db766861"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/chromium-profile-ready.png",
+      "path": "evidence/profile-red/profile/profile/chromium-profile-ready.png",
+      "bytes": 50116,
+      "sha256": "d5b51a74228fc8c309b7c1f85e3152e9699bb821d40f30a3b5259f4c982fc2bf"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/owned-next-uuoGgO/next.log",
+      "path": "evidence/profile-red/custody/owned-next-uuoGgO/next.log",
+      "bytes": 1357,
+      "sha256": "0cb9586086106389021c0779e481dd5d62d0d9d9e268c65a1ec67b06bf03dad1"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/owned-next-uuoGgO/ownership.json",
+      "path": "evidence/profile-red/custody/owned-next-uuoGgO/ownership.json",
+      "bytes": 807,
+      "sha256": "43dd8823412f0c642e1bc5e80d6195e0106ff7020aebd45863530d98e0e4f4d6"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/owned-next-uuoGgO/source-manifest.json",
+      "path": "evidence/profile-red/custody/owned-next-uuoGgO/source-manifest.json",
+      "bytes": 238720,
+      "sha256": "9904462053518e1664b5bd72e44fb2b1a2d2931b431ec0a46d9920caecb0eb0f"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/profile/results.json",
+      "path": "evidence/profile-red/profile/profile/results.json",
+      "bytes": 2918,
+      "sha256": "0b52bd43ef4f26af31200f5fdf6e165b1abf6e0f7fd0110e98fcfdbc492d004b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/result.json",
+      "path": "evidence/profile-red/profile/result.json",
+      "bytes": 1418,
+      "sha256": "579b29d2fb17af6c72c0053432e02a7bf3085045ef355e4e6bdc6c134e78f99b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/source-after.json",
+      "path": "evidence/profile-red/profile/source-after.json",
+      "bytes": 261219,
+      "sha256": "5ed600d333b8915cf255f897abd9f610e1ae104d7f6d05f2bb40dfbfc2a57d84"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/source-before.json",
+      "path": "evidence/profile-red/profile/source-before.json",
+      "bytes": 261219,
+      "sha256": "5ed600d333b8915cf255f897abd9f610e1ae104d7f6d05f2bb40dfbfc2a57d84"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-red/profile/stdout.log",
+      "path": "evidence/profile-red/profile/stdout.log",
+      "bytes": 3507,
+      "sha256": "b71655318644efa84ca0a34c017ff9468dbfa36b7fe611f18d074bacf0b81dc8"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/invocation.json",
+      "path": "evidence/profile-preflight-1/profile/invocation.json",
+      "bytes": 2382,
+      "sha256": "a0e6c79ffe83b53e194026d93f0e3f7092a0161313b54ccb6e8aecffd53dec0d"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/observations.jsonl",
+      "path": "evidence/profile-preflight-1/profile/observations.jsonl",
+      "bytes": 328,
+      "sha256": "3b5a26d2e2cd31ebfbfb0c814adaebbdd1e2d72c67993986fd52948fcbd69f68"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/process.json",
+      "path": "evidence/profile-preflight-1/profile/process.json",
+      "bytes": 70,
+      "sha256": "c2b1737888af95ee36bff6727dee41e6114b8faedc6976d2f758471758bd09db"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-failure.html",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-failure.html",
+      "bytes": 52723,
+      "sha256": "20e71c60a5e2d8c4084b4aa7a111c58c4cf34d51e1725477e6fc4bd02ec23ae3"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-failure.png",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-failure.png",
+      "bytes": 75950,
+      "sha256": "2d0d87bb5287eb3da88770cfb5440a3916877a59ffa3cbc4ea3a0b4480274ef6"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-profile-loading.png",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-profile-loading.png",
+      "bytes": 59632,
+      "sha256": "708c671ce70d98e461fcdf49051509b8a7c941d80f4b2bc11e85a6d8866c47ac"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-profile-paused.png",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-profile-paused.png",
+      "bytes": 61293,
+      "sha256": "a69c1c711c77b5230b96d05dfa3ac9a78e68aa20b3b390126dec9c7c65c2404b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-profile-read-unavailable.png",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-profile-read-unavailable.png",
+      "bytes": 60082,
+      "sha256": "56f9157775b618b5eea31b4e27400117ed59a3eb32fbbb4ce039168fc403bb00"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/chromium-profile-ready.png",
+      "path": "evidence/profile-preflight-1/profile/profile/chromium-profile-ready.png",
+      "bytes": 77123,
+      "sha256": "4a71b369f0ba999f8fff7095ef3f76147868f2e23ed42b5d4586c8d37c9dc92b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/owned-next-61XkUk/next.log",
+      "path": "evidence/profile-preflight-1/custody/owned-next-61XkUk/next.log",
+      "bytes": 1683,
+      "sha256": "3e68e78f623d69843e22206615a665141460af376027851719927a5654da910b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/owned-next-61XkUk/ownership.json",
+      "path": "evidence/profile-preflight-1/custody/owned-next-61XkUk/ownership.json",
+      "bytes": 815,
+      "sha256": "590e9b55bb9756f87cc532c28aa994f014a6629ed436ecd5d07b9b486d2f59d2"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/owned-next-61XkUk/source-manifest.json",
+      "path": "evidence/profile-preflight-1/custody/owned-next-61XkUk/source-manifest.json",
+      "bytes": 239328,
+      "sha256": "0e1b11fba5e92be2f1386bb5416bb3c5d0a5b01ab7f43be405474e7bca816222"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/profile/results.json",
+      "path": "evidence/profile-preflight-1/profile/profile/results.json",
+      "bytes": 1780,
+      "sha256": "2bcf11acc320db554f70c3af6d1b5d17a874668c75af641976963c5be82f6948"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/result.json",
+      "path": "evidence/profile-preflight-1/profile/result.json",
+      "bytes": 1371,
+      "sha256": "45427f31e11234e2c30340790ae409395e13a2ce0cb2184f5be297975b3f9845"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/source-after.json",
+      "path": "evidence/profile-preflight-1/profile/source-after.json",
+      "bytes": 261817,
+      "sha256": "7d79e8b7d644741b0c436cbf819267917718fbb70dfda08a3e4c86065d7a3be0"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/source-before.json",
+      "path": "evidence/profile-preflight-1/profile/source-before.json",
+      "bytes": 261817,
+      "sha256": "7d79e8b7d644741b0c436cbf819267917718fbb70dfda08a3e4c86065d7a3be0"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-1/profile/stdout.log",
+      "path": "evidence/profile-preflight-1/profile/stdout.log",
+      "bytes": 2245,
+      "sha256": "bf873dadd6620f1812db33ea3d84b1b9a04a635a075e21cbb31a124be29c08eb"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/invocation.json",
+      "path": "evidence/profile-preflight-2/profile/invocation.json",
+      "bytes": 2382,
+      "sha256": "2799e300c707e48a879ac991067293b73e64f7a6e9187baa1c3ca7971aef5795"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/observations.jsonl",
+      "path": "evidence/profile-preflight-2/profile/observations.jsonl",
+      "bytes": 16712,
+      "sha256": "397c7e8f67c549f46658b70eec06c43374dcd41c0b5d55878307524684357df4"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/process.json",
+      "path": "evidence/profile-preflight-2/profile/process.json",
+      "bytes": 70,
+      "sha256": "54bb112e3c4ed7088e9e3a9b10b23ba7e7d556787a3b8fbed7b27b9531d7ac73"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-failure.html",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-failure.html",
+      "bytes": 70518,
+      "sha256": "3e0d511568c91ac0e2c097e249c63635c86b8e8266f82a6fe77300f7ccf30a0c"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-failure.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-failure.png",
+      "bytes": 62339,
+      "sha256": "4f0e69d0f5318bb1427924f8488259d9052592fc19ed72bc5ba1825abe36ba2e"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-privacy-context.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-privacy-context.png",
+      "bytes": 164749,
+      "sha256": "a121d4aacd3d0723c7de88b0bba073b65714af9a83df982e6317da2674a158a6"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-current-denial.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-current-denial.png",
+      "bytes": 62339,
+      "sha256": "4f0e69d0f5318bb1427924f8488259d9052592fc19ed72bc5ba1825abe36ba2e"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-320-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-320-viewport.png",
+      "bytes": 45386,
+      "sha256": "88493717746709457789d19fe4b9e15f14850a5981f7851c02421e750b5f1041"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-320.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-320.png",
+      "bytes": 79162,
+      "sha256": "e76c8ddf66c8f864331398175677dcf97562619a5925db596dfe34425f7559da"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-390-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-390-viewport.png",
+      "bytes": 47399,
+      "sha256": "efd32cedeb3c526c39ad1b5825ca638cb2502a845b276a41348403a76753e003"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-390.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-390.png",
+      "bytes": 80203,
+      "sha256": "4cc993f6481b8a15fdd71441b6750f88e175257f37a4eb244de79bb7c7e47f00"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-430-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-430-viewport.png",
+      "bytes": 50178,
+      "sha256": "6ca984a4fef3523d61f391e177749f4fae711c04b25265c7ca963e58d2f31cd1"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-dark-430.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-dark-430.png",
+      "bytes": 79702,
+      "sha256": "ee1cb4ad6a66b01ca316884c961cc3ac1e75be2bf5115dc2bd90dc9f7616791f"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-desktop-preserved.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-desktop-preserved.png",
+      "bytes": 80618,
+      "sha256": "61d8b1e93c2bffd7f2a8eb34a8118dbe06f9dc7ad19563c24ed867f777e86b93"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-language-device-persistence.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-language-device-persistence.png",
+      "bytes": 77513,
+      "sha256": "2a08b0bfe0f86effa52366dae1184fa35e658e7c61da4f8cbc3c755be76317e2"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-320-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-320-viewport.png",
+      "bytes": 44877,
+      "sha256": "38160e6bc31888d4c9acd80e62148c64a5d31142772639d2c7d0556fc10b6cac"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-320.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-320.png",
+      "bytes": 76989,
+      "sha256": "f80ccc05394bcdd8d2e10ced61cda1e22967f6b4959e25f09aafd8d5dc2a1793"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-390-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-390-viewport.png",
+      "bytes": 47083,
+      "sha256": "e9efe4de2fb997069df1321abc18a903e4b9529031500c4f73d8533bd93df601"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-390.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-390.png",
+      "bytes": 77845,
+      "sha256": "9e7db6ca14ea23c10626cd5e7135116c76c2b20776e524970abed19ce685def4"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-430-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-430-viewport.png",
+      "bytes": 49213,
+      "sha256": "ce04f710992d8b5ce42f2afbe8c58929397b3c26fbee4b171c12dabf7391644d"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-light-430.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-light-430.png",
+      "bytes": 79166,
+      "sha256": "3478f43d5c569d568d775239b74d2d7fd68b722d69d608c2cf3d17736ef2eedc"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-loading.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-loading.png",
+      "bytes": 59632,
+      "sha256": "708c671ce70d98e461fcdf49051509b8a7c941d80f4b2bc11e85a6d8866c47ac"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-paused.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-paused.png",
+      "bytes": 61293,
+      "sha256": "a69c1c711c77b5230b96d05dfa3ac9a78e68aa20b3b390126dec9c7c65c2404b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-read-unavailable.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-read-unavailable.png",
+      "bytes": 60082,
+      "sha256": "56f9157775b618b5eea31b4e27400117ed59a3eb32fbbb4ce039168fc403bb00"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-ready.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-ready.png",
+      "bytes": 77123,
+      "sha256": "4a71b369f0ba999f8fff7095ef3f76147868f2e23ed42b5d4586c8d37c9dc92b"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-text200-viewport.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-text200-viewport.png",
+      "bytes": 42320,
+      "sha256": "4a7df2ecf2d5c6662c04d786c6887c1695bd127a8b4906623e94292aeb477215"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-profile-text200.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-profile-text200.png",
+      "bytes": 175248,
+      "sha256": "4a3e3d7c3c188f3f76544fe5e66454471331daf4de853f46c61a9566659969d8"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-support-context.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-support-context.png",
+      "bytes": 93910,
+      "sha256": "1db2f7ebbe2e440bce8118b53e8a8cc3e48b5f3818d9acab3f1d9b5d5b00e6fe"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/chromium-terms-context.png",
+      "path": "evidence/profile-preflight-2/profile/profile/chromium-terms-context.png",
+      "bytes": 76464,
+      "sha256": "69527b4e072608f35bf49875977189c9cf2b7b074f99698a52a4b90445d87d23"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/owned-next-pLi95z/next.log",
+      "path": "evidence/profile-preflight-2/custody/owned-next-pLi95z/next.log",
+      "bytes": 2502,
+      "sha256": "a61cf1e8942a298e030c81ce69156c4eace37c9ae67d35db192848f943968996"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/owned-next-pLi95z/ownership.json",
+      "path": "evidence/profile-preflight-2/custody/owned-next-pLi95z/ownership.json",
+      "bytes": 815,
+      "sha256": "b52852dea02ed415c66fea60afb4fc31d4b1d6f27d56b498b813666e35892d06"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/owned-next-pLi95z/source-manifest.json",
+      "path": "evidence/profile-preflight-2/custody/owned-next-pLi95z/source-manifest.json",
+      "bytes": 239328,
+      "sha256": "469812f7db9ecc25f1928b4cb5ce68058a9dc1e26599de61d9a2faf2a394c9f1"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/profile/results.json",
+      "path": "evidence/profile-preflight-2/profile/profile/results.json",
+      "bytes": 7731,
+      "sha256": "df9d6e1934fb9b072a7607605eacb5eeae16e2bd852a0f412f7fed431ea18c97"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/result.json",
+      "path": "evidence/profile-preflight-2/profile/result.json",
+      "bytes": 1591,
+      "sha256": "f97041bd9779a79ca77fc71870fb608f6e5861153c08f9e4075d402dcf32a86a"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/source-after.json",
+      "path": "evidence/profile-preflight-2/profile/source-after.json",
+      "bytes": 261817,
+      "sha256": "838d2944adb5c855c97c3970fe037d3711e8640b35c2b91ef57c5a55fd791b80"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/source-before.json",
+      "path": "evidence/profile-preflight-2/profile/source-before.json",
+      "bytes": 261817,
+      "sha256": "838d2944adb5c855c97c3970fe037d3711e8640b35c2b91ef57c5a55fd791b80"
+    },
+    {
+      "kind": "original-profile-evidence",
+      "originalPath": "/workspace/nevora-evidence/profile-preflight-2/profile/stdout.log",
+      "path": "evidence/profile-preflight-2/profile/stdout.log",
+      "bytes": 2447,
+      "sha256": "fe5f3997a904911c59a18aecdda5ba417d0aeecc65605966c206738547d0ff00"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/CODE_FINDING_CLOSURE.md",
+      "path": "reviews/communications/CODE_FINDING_CLOSURE.md",
+      "bytes": 10308,
+      "sha256": "8cb053f513f7e62bfc4f1488329ef857b08569dcfd0536bb00b42c0b5f1811ce"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/FINAL_CODE_ACCEPTANCE.md",
+      "path": "reviews/communications/FINAL_CODE_ACCEPTANCE.md",
+      "bytes": 8198,
+      "sha256": "07b1c83e87e6fb3bda660d0b75dd787b6fb64e5fe3dba0d269ea22eb008e6301"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/FINAL_CODE_REVIEW.md",
+      "path": "reviews/communications/FINAL_CODE_REVIEW.md",
+      "bytes": 13441,
+      "sha256": "ee9c70a90b96c0106da82e13a73f506a774012fb817e618e006337c9bd83ea1f"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/FINAL_UI_ACCEPTANCE.md",
+      "path": "reviews/communications/FINAL_UI_ACCEPTANCE.md",
+      "bytes": 10412,
+      "sha256": "ded4da657673712f820c53758dc0fc8fc02a2e51dd14d8bda31feade1ae65c32"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/INDEPENDENT_QA_REVIEW.md",
+      "path": "reviews/communications/INDEPENDENT_QA_REVIEW.md",
+      "bytes": 11703,
+      "sha256": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/INDEPENDENT_UI_REVIEW.md",
+      "path": "reviews/communications/INDEPENDENT_UI_REVIEW.md",
+      "bytes": 16471,
+      "sha256": "fd02a147838bf7746b62bd9591d63c8ecca857a4010aca2cb7a4f5d008bdb33c"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/QA_FINDING_CLOSURE.md",
+      "path": "reviews/communications/QA_FINDING_CLOSURE.md",
+      "bytes": 11769,
+      "sha256": "27ff6bc50d23952b238e030d345074c843efb275dbb66fd82fb01e8bbfe41204"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/UI_FINDING_CLOSURE.md",
+      "path": "reviews/communications/UI_FINDING_CLOSURE.md",
+      "bytes": 10355,
+      "sha256": "5b7fd5e34c0dfae81a4a0daf952da24bd0a165ee26b130d19c9a1e31ddb9105e"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/PERSONALLY_INSPECTED_CLOSURE_PIXELS.json",
+      "path": "reviews/communications/ui-closure-inspection/PERSONALLY_INSPECTED_CLOSURE_PIXELS.json",
+      "bytes": 17149,
+      "sha256": "3f2092d4461f21b1d9eed4bd3416cf38751610e4c13201df84a7fead6e50fcc7"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/chromium-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/chromium-default-error-fullpages.jpg",
+      "bytes": 503579,
+      "sha256": "91db9a836c4073325dcb8206dcb37a48f1052d308cf3cf68aeda68802ed1501a"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/chromium-final-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/chromium-final-default-error-fullpages.jpg",
+      "bytes": 504440,
+      "sha256": "6043d8606bb59f2c0e3f4f33fb2950cbce0d5942b1f351a30ff6eb608e00b7f4"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/chromium-title-error-320-text200-strips.jpg",
+      "path": "reviews/communications/ui-closure-inspection/chromium-title-error-320-text200-strips.jpg",
+      "bytes": 184087,
+      "sha256": "c84ace8e9fa67056039b3d41f60f170b28f6693fae4447cfd45cf64a89286177"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/final-late-committed-after-release-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/final-late-committed-after-release-fullpages.jpg",
+      "bytes": 146836,
+      "sha256": "1970904008a1f0a6a5b7de47538492cdb94aeb6c2699a6e4abe35c677f1708aa"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/firefox-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/firefox-default-error-fullpages.jpg",
+      "bytes": 485678,
+      "sha256": "3edff46d4629c120952bb9453eb36ce1a18c8291d8cb86f62afef4fc8f761762"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/firefox-final-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/firefox-final-default-error-fullpages.jpg",
+      "bytes": 486787,
+      "sha256": "cfc580f236612c2de680d709c0482732354008557845326a5112a24437b1d043"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/firefox-title-error-320-text200-strips.jpg",
+      "path": "reviews/communications/ui-closure-inspection/firefox-title-error-320-text200-strips.jpg",
+      "bytes": 183422,
+      "sha256": "349739bd3292370b43d21ee0c15df3ccfcbf71a59eaba5be2771fa5846f98cdb"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/late-committed-after-release-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/late-committed-after-release-fullpages.jpg",
+      "bytes": 146836,
+      "sha256": "1970904008a1f0a6a5b7de47538492cdb94aeb6c2699a6e4abe35c677f1708aa"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/webkit-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/webkit-default-error-fullpages.jpg",
+      "bytes": 452183,
+      "sha256": "c5859735c16d484229e8ef2fe90eb6f6b75c39439fd147d11d3d8ab152f18306"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/webkit-final-default-error-fullpages.jpg",
+      "path": "reviews/communications/ui-closure-inspection/webkit-final-default-error-fullpages.jpg",
+      "bytes": 452873,
+      "sha256": "12d2cb3c2282ed2375785c154354e6b0bd9081ce92917c5f6ef0a920717d7543"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-closure-inspection/webkit-title-error-320-text200-strips.jpg",
+      "path": "reviews/communications/ui-closure-inspection/webkit-title-error-320-text200-strips.jpg",
+      "bytes": 195894,
+      "sha256": "5c9a9c6dba62fafda3f7436077bddc4c5352ca2dee8cbd0e0aea2a95b13a91b4"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/PERSONALLY_INSPECTED_FINAL_PIXELS.json",
+      "path": "reviews/communications/ui-final-inspection/PERSONALLY_INSPECTED_FINAL_PIXELS.json",
+      "bytes": 10785,
+      "sha256": "58d730dc57a0f2679d116997c47672b9f60ba950a0b01d97a5813d61cb533fae"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/SOURCE_CONSISTENCY.json",
+      "path": "reviews/communications/ui-final-inspection/SOURCE_CONSISTENCY.json",
+      "bytes": 1203,
+      "sha256": "410f134be0d66e3bef15aa1e066a0f3f54e836bebcfc5adf0dfe04870c633449"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/centered-enlarged-title-errors.jpg",
+      "path": "reviews/communications/ui-final-inspection/centered-enlarged-title-errors.jpg",
+      "bytes": 175145,
+      "sha256": "f49eea134b0e97ce99bccc08d863e21f74307ac9303a624aafc85b210d6882dd"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/committed-after-release-fullpages.jpg",
+      "path": "reviews/communications/ui-final-inspection/committed-after-release-fullpages.jpg",
+      "bytes": 146836,
+      "sha256": "1970904008a1f0a6a5b7de47538492cdb94aeb6c2699a6e4abe35c677f1708aa"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/current-chromium-audience-text200-strips.jpg",
+      "path": "reviews/communications/ui-final-inspection/current-chromium-audience-text200-strips.jpg",
+      "bytes": 237737,
+      "sha256": "7c1b95b78eaa7c19e0f463fd89df4c914eeb11e3e3bee55bf5013518514feb8a"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/current-chromium-detail-text200-strips.jpg",
+      "path": "reviews/communications/ui-final-inspection/current-chromium-detail-text200-strips.jpg",
+      "bytes": 145277,
+      "sha256": "c378b7eca47d1b60151da7692699ae2e0ec3c9afeafc0bc517e59db2fb7d82eb"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/current-representative-viewports.jpg",
+      "path": "reviews/communications/ui-final-inspection/current-representative-viewports.jpg",
+      "bytes": 191479,
+      "sha256": "abc4818addeca9450eeb13d50eca3368199685510a33b6c0c706bac90f6a3b7f"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/main-module-after-release-viewports.jpg",
+      "path": "reviews/communications/ui-final-inspection/main-module-after-release-viewports.jpg",
+      "bytes": 146836,
+      "sha256": "1970904008a1f0a6a5b7de47538492cdb94aeb6c2699a6e4abe35c677f1708aa"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/recorded-original-fullpages.jpg",
+      "path": "reviews/communications/ui-final-inspection/recorded-original-fullpages.jpg",
+      "bytes": 167617,
+      "sha256": "4735ddcfee4be0a55473293858fa6083a8a24144eff9cd6a536dfc6a9ca36324"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-final-inspection/refused-original-fullpages.jpg",
+      "path": "reviews/communications/ui-final-inspection/refused-original-fullpages.jpg",
+      "bytes": 145003,
+      "sha256": "549c262010a3ce767e56051a6b983ac7d4b10a520e839a6d425caaf1ce3d59a9"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/PERSONALLY_INSPECTED_PIXELS.json",
+      "path": "reviews/communications/ui-inspection/PERSONALLY_INSPECTED_PIXELS.json",
+      "bytes": 22847,
+      "sha256": "d3623d506eea3330c79d3ea63c6c540b087ceab18a70e21c8828aa4070c47845"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-audience-light390-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-audience-light390-strips.jpg",
+      "bytes": 104345,
+      "sha256": "054a3a7fdbb98fafae13cee758d764e29a80f98b2940632965dbe237e4128f3c"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-audience-text200-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-audience-text200-strips.jpg",
+      "bytes": 237440,
+      "sha256": "20a1d63d26ccf0ccb66d64c6faa934e7b7437ca9e11f058e56ff10a73a549fa0"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-compose-light390-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-compose-light390-strips.jpg",
+      "bytes": 91669,
+      "sha256": "fe532d6df44b567365bd804f1926ec3599be1797e761a8983f995b9dd9ed40a0"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-compose-text200-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-compose-text200-strips.jpg",
+      "bytes": 181940,
+      "sha256": "526980c5a4fcd337ad80a480536246ccc96b5ec4fd260ffffa1b230aa227d813"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-dark-320-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-dark-320-viewports.jpg",
+      "bytes": 259838,
+      "sha256": "e016f3abd04a05233037524f0b40fa1d4a29b3b43b9ea450d58f1aeb4d56ebc4"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-dark-390-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-dark-390-viewports.jpg",
+      "bytes": 298148,
+      "sha256": "fe186bbf0db41ba043c82bf3d180ea51b502cd1df6ea27dffa6a38341a9b8c5d"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-dark-430-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-dark-430-viewports.jpg",
+      "bytes": 287816,
+      "sha256": "8864854eb2d19f1ab7cb3fa7872102d3ae938f4437cb459e97a50a23c77ca49a"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-detail-text200-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-detail-text200-strips.jpg",
+      "bytes": 145177,
+      "sha256": "d35ecd306abfb5f127e1550b1f02fa3b5e0f35f20702bd6d03c4df21897868fa"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-light-320-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-light-320-viewports.jpg",
+      "bytes": 261265,
+      "sha256": "bcb683f0b40efeb739d7340d8f3953ec0ac2bec5a2c3411ebde4aa258d092f6e"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-light-390-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-light-390-viewports.jpg",
+      "bytes": 281058,
+      "sha256": "3057c583f1c3f402aaf440d0cfb1879c8280881cc41cb0eed2bcd70394c209be"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-light-430-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-light-430-viewports.jpg",
+      "bytes": 309086,
+      "sha256": "09a32d40bf087cf725a4b018763412a2fbbf259b12737c4e3f430e4f94eb94a3"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-notifications-text200-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-notifications-text200-strips.jpg",
+      "bytes": 537994,
+      "sha256": "c641f91f6990aa87ff67a904f9fd3a40ec0f3c21041ad03499e4d827e70e739d"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/chromium-updates-text200-strips.jpg",
+      "path": "reviews/communications/ui-inspection/chromium-updates-text200-strips.jpg",
+      "bytes": 624773,
+      "sha256": "92b52b5da718b6d6f2226c19e43329644fcf825b84c934d3da3a90ef4e5e5a20"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/firefox-dark-430-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/firefox-dark-430-viewports.jpg",
+      "bytes": 299236,
+      "sha256": "a6db860cb6fc5a579c837f84191aa6cdfdbb61d4cb00a5f79a70b49f560cccf6"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/firefox-light-320-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/firefox-light-320-viewports.jpg",
+      "bytes": 270828,
+      "sha256": "6db16d1ed230e22dd1c146e23d215398c27fc2852741d72b097f9fd83375300d"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/firefox-text-200-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/firefox-text-200-viewports.jpg",
+      "bytes": 246978,
+      "sha256": "e5e04e1b962f3b77ae24407567c799f852723d87c286902972e283b4cc1d5470"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/webkit-dark-430-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/webkit-dark-430-viewports.jpg",
+      "bytes": 303199,
+      "sha256": "9db74e9916a5479d514b7c86a84fa89771f6717329bfb75ab4d2e44edb70cfda"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/webkit-light-320-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/webkit-light-320-viewports.jpg",
+      "bytes": 264529,
+      "sha256": "d40832ce73d69d16cc3baaf8d0aecc70c6c37fe52cff72c510fca8a180356ea2"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/webkit-text-200-viewports.jpg",
+      "path": "reviews/communications/ui-inspection/webkit-text-200-viewports.jpg",
+      "bytes": 238442,
+      "sha256": "e1de9c4d473b3cf697d4ed44af2e7283b6681d2cc6632aff7e5a10a5af783f9b"
+    },
+    {
+      "kind": "authored-review-and-inspection-record",
+      "originalPath": "/workspace/nevora-evidence/reviews/ui-inspection/word-readability-regions.jpg",
+      "path": "reviews/communications/ui-inspection/word-readability-regions.jpg",
+      "bytes": 105030,
+      "sha256": "f84e190e18075c4bb40df7a506cb312d189fe054fdea3a04c490b52b6a821f45"
+    },
+    {
+      "kind": "original-discovery-draft",
+      "originalPath": "/workspace/scratch/nevora-profile-plan-draft.md",
+      "path": "discovery/nevora-profile-plan-draft.md",
+      "bytes": 5255,
+      "sha256": "a8231318e1cce119d708bdb48d5c959af91149a99cda417dfcac3df932524a78"
+    },
+    {
+      "kind": "original-discovery-draft",
+      "originalPath": "/workspace/scratch/nevora-profile-source-discovery.md",
+      "path": "discovery/nevora-profile-source-discovery.md",
+      "bytes": 4996,
+      "sha256": "6f1f9fd5032d16f51add65d0c1394fd153bf94769b33e46700e258041896dd93"
+    },
+    {
+      "kind": "original-discovery-draft",
+      "originalPath": "/workspace/scratch/nevora-capabilities-pay-source-discovery.md",
+      "path": "discovery/nevora-capabilities-pay-source-discovery.md",
+      "bytes": 6414,
+      "sha256": "e1fc5cb215c81079cc92786d3795c26870c1829c9b01a18af80d3e92e6622726"
+    },
+    {
+      "kind": "unexecuted-current-recorder-source",
+      "originalPath": "/workspace/nevora-evidence/profile-tools/run_gate.py",
+      "path": "discovery/cloud-diagnostic-recorder.py",
+      "bytes": 10313,
+      "sha256": "17ddde2fbb13dab2278f673e9c01967f0f1373c91fd97b03bf702fccbc82f1f5"
+    }
+  ]
+}

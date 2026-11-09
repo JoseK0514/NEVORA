@@ -1,0 +1,1916 @@
+[
+  {
+    "at": "2026-10-27T23:25:13.370121+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  },
+  {
+    "at": "2026-10-27T23:25:13.914766+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  },
+  {
+    "at": "2026-10-27T23:25:14.471713+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:15.090042+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:15.670555+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:16.267066+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:16.863589+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:17.477131+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:18.106435+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:18.692800+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:19.298084+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:19.883182+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:20.496880+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:21.123110+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:21.748106+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:22.348140+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:22.927265+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:23.526370+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:24.141438+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:24.749032+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:25.382534+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:25.991450+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:26.572156+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:27.164694+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:27.773035+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:28.389784+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:29.016401+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:29.645054+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:30.236479+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:30.841411+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:31.456362+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:32.048319+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:32.724549+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:33.356336+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:33.963040+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:34.564692+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:35.164924+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:35.810073+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:36.412188+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:37.026781+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:37.622851+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:38.205763+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:38.808009+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:39.399178+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:40.002055+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:40.590625+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:41.178904+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:41.780417+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:42.401255+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:43.047591+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:43.694993+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:44.289997+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:44.887547+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:45.482735+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:46.121361+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:46.757735+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:47.348136+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:47.950094+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:48.568866+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:49.156305+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:49.738588+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:50.366586+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:50.963998+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:51.578083+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:52.158026+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:52.752877+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:53.362389+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:53.964643+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:54.556886+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:55.145218+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:55.742196+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:56.345038+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:56.945627+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:57.564590+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:58.156269+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:58.743301+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:59.339624+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[{\"oid\":16384,\"datname\":\"nevora_exchange_test_c1_0392ea7392f1\",\"marker\":\"fuel-phase3-disposable:8a4e1f4d-4715-4fa7-8213-fc7f840f3c5a\"}]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:25:59.941264+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:26:00.572964+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:26:01.154422+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:26:01.775081+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true,
+    "clusters": [
+      {
+        "directory": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-1eoktF",
+        "pid": 41053,
+        "port": 61780,
+        "ownerHash": "cb5503044fa7bdb1ec044cfc9c8b392647a3e86d3194fdbc63fe5052f5e5de2b"
+      }
+    ],
+    "databases": [
+      {
+        "port": 61780,
+        "exitCode": 0,
+        "rows": [
+          "[]"
+        ],
+        "stderr": ""
+      }
+    ]
+  },
+  {
+    "at": "2026-10-27T23:26:02.398002+00:00",
+    "runnerPid": 41036,
+    "head": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+    "frozenCandidateMatches": true
+  }
+]

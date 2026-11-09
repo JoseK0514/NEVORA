@@ -1,0 +1,463 @@
+{
+  "schema": 1,
+  "repository": "JoseK0514/NEVORA",
+  "status": "AUTHORIZED_EXECUTION_PLAN",
+  "observedAt": "2026-10-23",
+  "integrationBranch": "codex/development-ci-consolidation-20261022",
+  "guards": [
+    "Refresh every remote head and active owner/open-PR state before mutation.",
+    "Integrate only after complete exact-candidate CI and fresh review.",
+    "Verify remote archive equals exact retiring commit before deleting the unchanged branch.",
+    "Preserve local worktrees, all uncommitted work, main and active owner inputs.",
+    "Archive and remove this integration branch only after its merged commit is reachable from development.",
+    "Resolve exactly one reviewed-integration-head row from the final reviewed PR head in the execution receipt; require unchanged remote head, exact recovery tag and verified development ancestry before its deletion. The plan cannot contain its own future commit hash."
+  ],
+  "maximumActiveBranches": 5,
+  "branches": [
+    {
+      "sha": "b5f474e3861b8b3ec6c83289c7dc82095921b671",
+      "branch": "FIXING-RELEASE-DEV-NEVORA",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/FIXING-RELEASE-DEV-NEVORA"
+    },
+    {
+      "sha": "39ee9d1dbfd9e69dee8ffdfe9662465919e1aa33",
+      "branch": "NEVORA-50-inspectors",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "The 409-file original review archive is incorporated unchanged into this prepared candidate, with custody checks. Development merge and current release acceptance are still pending; historical findings are not self-certified.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/NEVORA-50-inspectors"
+    },
+    {
+      "sha": "1cc082779d7f958d6cc095c88cec6c7812a52080",
+      "branch": "claude/auth-premium",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/auth-premium"
+    },
+    {
+      "sha": "3c281cdb09bc2912e6ab007714e482ec02649dc9",
+      "branch": "claude/bold-joliot-ec227c",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "held",
+      "reason": "Older Phase C browser drivers and a Clocker component label change; excluded from this bounded UI integration pending comparison with current drivers.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/bold-joliot-ec227c"
+    },
+    {
+      "sha": "cb35605b33e6151125518ecfa45de3735d708105",
+      "branch": "claude/business-foundations",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "held",
+      "reason": "Optional bilingual public landing and business notes are retained separately while the R1 release checks are completed.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/business-foundations"
+    },
+    {
+      "sha": "9220b210df72c8e785701c4af4dbc20e77d4f46f",
+      "branch": "claude/ci-fixes-preview-33",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/ci-fixes-preview-33"
+    },
+    {
+      "sha": "837b13ad96c1cb223cdb3ad4c91c7ba3fd7974d4",
+      "branch": "claude/clean-manager",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/clean-manager"
+    },
+    {
+      "sha": "44a8b751cb1c51ce297d26fc9c1af77d964c94eb",
+      "branch": "claude/clean-manager-docs",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "reference",
+      "reason": "All 31 added spec/mockup files are byte-identical in the included Claude handoff at 0c365e5a; no separate historical merge is needed.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/clean-manager-docs"
+    },
+    {
+      "sha": "ac89563240c215d7249dfc58b4c7c56d8b52adf1",
+      "branch": "claude/clean-manager-qa-fixes",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/clean-manager-qa-fixes"
+    },
+    {
+      "sha": "33a71167719eae7d85b5d8d87667e804e129cddb",
+      "branch": "claude/code-inspection-2026-10-21",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/code-inspection-2026-10-21"
+    },
+    {
+      "sha": "0c365e5a434cd5ff59ea41b0a2d60fb5cdd633ad",
+      "branch": "claude/codex-handoff-20261021",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Claude handoff, gap reviews and UI design record integrated without application changes.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/codex-handoff-20261021"
+    },
+    {
+      "sha": "def6ff3625d441062d5e3107738ba0fb38619a44",
+      "branch": "claude/d1-preview-company-access",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/d1-preview-company-access"
+    },
+    {
+      "sha": "8858413224aa88a89de45c4e5f70a084b21e23b5",
+      "branch": "claude/d3-runbook-migrations",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/d3-runbook-migrations"
+    },
+    {
+      "sha": "145fa06e2311e2a84850773e76b2d57b7a8ff576",
+      "branch": "claude/multi-company-plan",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/multi-company-plan"
+    },
+    {
+      "sha": "d0b6d1f5e12f8602b947ad18cc40e04fc1180a6a",
+      "branch": "claude/nevora-compliance",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/nevora-compliance"
+    },
+    {
+      "sha": "9935bad099fda1d155f02e054396f5406153d6d9",
+      "branch": "claude/p35-profile-6cdee8",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/p35-profile-6cdee8"
+    },
+    {
+      "sha": "6d67e36229e925999d61c151c57f71b88cd443e0",
+      "branch": "claude/preview-full-chain",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/preview-full-chain"
+    },
+    {
+      "sha": "898e99d4380a35e9cc4bbb4b6abd3b15fe05945e",
+      "branch": "claude/release-integration",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/release-integration"
+    },
+    {
+      "sha": "e62f8c591337348737a625603459c2155da0121d",
+      "branch": "claude/review-combined",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/review-combined"
+    },
+    {
+      "sha": "13f0ba64437373602f7e0334254dd9bac5c0e87a",
+      "branch": "claude/saas-tenant-investigation",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/saas-tenant-investigation"
+    },
+    {
+      "sha": "19e84f4a00e6b204a0797b515885ef8fc2676424",
+      "branch": "claude/sig-components-631f6c",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/sig-components-631f6c"
+    },
+    {
+      "sha": "3e3021e474e3e2ba11f8910f169ad1faedef832a",
+      "branch": "claude/tenancy-defect-fixes",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/tenancy-defect-fixes"
+    },
+    {
+      "sha": "ac53477182752abc4742ef4412d6ad31b6331282",
+      "branch": "claude/test-suite-repairs",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/test-suite-repairs"
+    },
+    {
+      "sha": "56334f0b81a67f85d8ca464cc01aa067d2fd8724",
+      "branch": "claude/upscale-quick-wins",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Owner/Manager quick wins reconciled with current development, preserving newer recovery/privacy behavior and the held My pay redesign.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/claude/upscale-quick-wins"
+    },
+    {
+      "sha": "98c63b9ef3879e5b0e9721aed860bba1efb4bf48",
+      "branch": "codex/all-ui-development-20261020",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/all-ui-development-20261020"
+    },
+    {
+      "sha": "43a7ad087a3c2be78d897986a6a4c969d144ae6c",
+      "branch": "codex/browser-probe-20261019",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "reference",
+      "reason": "Earlier optional diagnostic workflow; current mandatory browser gates and later diagnostics are integrated.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/browser-probe-20261019"
+    },
+    {
+      "sha": "3632f23207e4498a7cbd20544fa112d1c5baaaed",
+      "branch": "codex/browser-probe-20261022",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "reference",
+      "reason": "Active diagnostic owner branch; preserve current work and evidence.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/browser-probe-20261022"
+    },
+    {
+      "sha": "0affe6ec1f94dda84bfa065ac15769021e7b5761",
+      "branch": "codex/clean-ui-development-20261020",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/clean-ui-development-20261020"
+    },
+    {
+      "branch": "codex/ci-spend-controls-20261023",
+      "sha": "e49edcd8607be18a40fd2c7ae3fc48542d801597",
+      "action": "retain",
+      "disposition": "held",
+      "reason": "Active draft CI spending PR27 is outside this approved integration. Preserve its remote and all local work; reconcile its exact head before cleanup."
+    },
+    {
+      "branch": "codex/development-ci-consolidation-20261022",
+      "action": "archive-final-integration-head-after-verified-merge",
+      "disposition": "integration",
+      "headSource": "reviewed-integration-head",
+      "priorReviewedSha": "78fae30a5b6ecf7c842efa2f750cce717c73035b",
+      "reason": "Retire this unchanged remote only after final review, merge and matching development CI. Pin the actual final PR head and its exact archive in the execution receipt, preserving local branch/worktree and both unrelated active PR branches within the five-branch limit.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/development-ci-consolidation-20261022"
+    },
+    {
+      "sha": "838c77325272696c5f9cc29fab14d664708d2e3c",
+      "branch": "codex/f10-original-owner-bootstrap-20261011",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "held",
+      "reason": "Separate original-owner tenant bootstrap; not activated by this single-company release.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/f10-original-owner-bootstrap-20261011"
+    },
+    {
+      "sha": "f3a1a7c4b8d10ca76094f7c819f1fa59615998c2",
+      "branch": "codex/inspections",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "reference",
+      "reason": "Historical inspection/evidence branch. Unique commits add evidence and documentation, not missing application sources; retain this exact reference.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/inspections"
+    },
+    {
+      "sha": "ef5212dd7ced6d1e7de77a80e847f245733172bd",
+      "branch": "codex/inspectors-ci-20261022",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact head is merged into development through PR23. Preserve the recovery tag and all local branches/worktrees; retire only the unchanged remote after final development CI, keeping the new active Owner AI branch within the five-branch limit.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/inspectors-ci-20261022"
+    },
+    {
+      "sha": "4e262c1e27aeb58d7cb5ab65316059b144eb99ef",
+      "branch": "codex/nevora-mobile-launch",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Mobile launch baseline/branch-specific CI is separate. Its activation-label fix uses older title case; the current form and setup check both use Activate account.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/nevora-mobile-launch"
+    },
+    {
+      "branch": "codex/owner-ai-release-testing-20261023",
+      "sha": "2530a701bf554020a696e30ebb7fbb1131dcec44",
+      "action": "retain",
+      "disposition": "held",
+      "reason": "Active unrelated Owner AI PR25 is outside this approved integration. Preserve this remote and local work; reconcile its exact head before cleanup."
+    },
+    {
+      "sha": "c6b2db6a8ee8ab8171d9247c6e117f86b4680104",
+      "branch": "codex/par-001-remediation-20261008",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Current source retains the same global deployment hold, Node24/serial CI, mirror custody, cleanup and candidate regression controls, with later owned-runtime changes.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/par-001-remediation-20261008"
+    },
+    {
+      "sha": "48ededa576f3951054dbf6d9394d10670b831c60",
+      "branch": "codex/passkey-server-20261020",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/passkey-server-20261020"
+    },
+    {
+      "sha": "1361c90318e695911269e75e27a314f2f2765d0f",
+      "branch": "codex/phase-d-d3-d8-execution-20261007",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/phase-d-d3-d8-execution-20261007"
+    },
+    {
+      "sha": "0484eba196bb54799af1fd0072cc0f51f96aed8b",
+      "branch": "codex/pr16-database-rehearsal-v2-20261021",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/pr16-database-rehearsal-v2-20261021"
+    },
+    {
+      "sha": "a38e088f85d8babe33dec19de24170d6231d810e",
+      "branch": "codex/pr16-database-restore-rehearsal-20261020",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Replaced by merged rehearsal v2 at0484eba1; earlier receipts remain exact historical evidence, not current-source acceptance.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/pr16-database-restore-rehearsal-20261020"
+    },
+    {
+      "sha": "2d425b4b19ad86e9b19e23498e92269e871f2a1f",
+      "branch": "codex/premium-backend",
+      "action": "retain",
+      "disposition": "reference",
+      "reason": "Legacy scripts/ui-checks/cloud-run.mjs publication dependency; preserve operational ref."
+    },
+    {
+      "sha": "724b430f3693bc5a9d37677ad250581e33d0f866",
+      "branch": "codex/ready-desktop",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Only remaining unique application patch is the desktop shortcut font rule, already present in premium-desktop.css.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/ready-desktop"
+    },
+    {
+      "sha": "563bf65a83f6ff4ce97da4dc7eb131a18f9e9fea",
+      "branch": "codex/ready-wave-a",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "No unique non-equivalent commits remain under Git cherry comparison against the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/ready-wave-a"
+    },
+    {
+      "sha": "368e98a18c16d47df04a93f2bea560843e461e0e",
+      "branch": "codex/ready-wave-b",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "No unique non-equivalent commits remain under Git cherry comparison against the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/ready-wave-b"
+    },
+    {
+      "sha": "de8b15851d6280fd31fba3db63dcbe976a19584a",
+      "branch": "codex/ready-wave-c",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "No unique non-equivalent commits remain under Git cherry comparison against the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/ready-wave-c"
+    },
+    {
+      "sha": "290ce8909ad65495726a17f649c10131d9e227eb",
+      "branch": "codex/release-assembly-20261021",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Previously verified assembly merged through PR21 into development f27216df; retained as an incorporated source.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/release-assembly-20261021"
+    },
+    {
+      "sha": "6fece2934b42f0176a473047ed13ac588eb1ce82",
+      "branch": "codex/release-candidate",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/release-candidate"
+    },
+    {
+      "sha": "516739a855d3b30a2e7445c3fcf9b8dd1095429d",
+      "branch": "codex/ui-quick-wins-integration-20261021",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "PR 22 is incorporated into development 0f8ffee5, the base of the single CI repair candidate.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/ui-quick-wins-integration-20261021"
+    },
+    {
+      "sha": "985c8a7a6bd31fe65d392a93556a36971eb00d7b",
+      "branch": "codex/validate-preview-followups",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/validate-preview-followups"
+    },
+    {
+      "sha": "c3fcc75fa8e8e2a9e8389d8684f2329d2d10b3c1",
+      "branch": "codex/verify-preview-33",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/codex/verify-preview-33"
+    },
+    {
+      "sha": "0f8ffee52d85f48cd2fe890dc9aa682e995de4eb",
+      "branch": "development",
+      "action": "retain",
+      "disposition": "target",
+      "reason": "Combined application target."
+    },
+    {
+      "sha": "9220b210df72c8e785701c4af4dbc20e77d4f46f",
+      "branch": "fix/ci-preview-33",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "included",
+      "reason": "Exact branch head is an ancestor of the assembly.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/fix/ci-preview-33"
+    },
+    {
+      "sha": "7ed42652dab9780386f6bb86b81583fd9d14df72",
+      "branch": "governance/streamlined-phase-review-20261007",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "reference",
+      "reason": "Historical governance proposal/skills, not application code. Current repository governance remains authoritative.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/governance/streamlined-phase-review-20261007"
+    },
+    {
+      "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+      "branch": "main",
+      "action": "retain",
+      "disposition": "protected",
+      "reason": "Protected production branch; no update authorized."
+    },
+    {
+      "sha": "bc646baa434505083754cdea94472218bf2713dc",
+      "branch": "v0/replicating-gusto-ui-62ce164a",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Earlier UI prototype replaced by the current merged Signature and Manager implementations.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/v0/replicating-gusto-ui-62ce164a"
+    },
+    {
+      "sha": "f995a79a1053860024f5e19689900f00c2f87ecc",
+      "branch": "v0/resolve-login-runtime-errors-01fd3e6c",
+      "action": "archive-then-delete-after-verified-merge",
+      "disposition": "superseded",
+      "reason": "Earlier UI/login prototype replaced by later authenticated application and auth implementations.",
+      "archiveRef": "refs/tags/archive/branches/2026-10-23/v0/resolve-login-runtime-errors-01fd3e6c"
+    }
+  ],
+  "executionReceipt": "PR #23 final integration handoff; exact remote tags and branch count must be verified after deletion."
+}

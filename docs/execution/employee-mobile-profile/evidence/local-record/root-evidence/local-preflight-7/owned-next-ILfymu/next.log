@@ -1,0 +1,24 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:52397
+- Network:       http://127.0.0.1:52397
+✓ Ready in 234ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 915ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 312ms (next.js: 113ms, application-code: 198ms)
+ GET /login 200 in 28ms (next.js: 0.8ms, application-code: 27ms)
+ GET /app 200 in 196ms (next.js: 28ms, application-code: 168ms)
+ POST /login 200 in 1030ms (next.js: 0.5ms, application-code: 1029ms)
+  └─ ƒ login({}) in 43ms login/actions.ts
+ GET /api/notifications 200 in 101ms (next.js: 37ms, application-code: 64ms)
+ GET /api/employee/home 200 in 153ms (next.js: 23ms, application-code: 130ms)
+ GET /api/employee/my-time 200 in 36ms (next.js: 16ms, application-code: 20ms)
+ GET /app/profile 200 in 328ms (next.js: 10ms, application-code: 318ms)
+ GET /api/employee/my-time 200 in 28ms (next.js: 0.6ms, application-code: 27ms)
+ GET /api/notifications 200 in 144ms (next.js: 5ms, application-code: 139ms)
+ GET /api/employee/home 200 in 177ms (next.js: 2ms, application-code: 175ms)
+[?25h

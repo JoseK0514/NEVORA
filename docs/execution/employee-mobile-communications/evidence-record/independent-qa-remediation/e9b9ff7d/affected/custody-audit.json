@@ -1,0 +1,65 @@
+{
+  "candidate": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+  "expectedApplicationInputs": 2007,
+  "sourceMatchesCommittedCandidate": true,
+  "runtimeCount": 1,
+  "expectedRuntimeCount": 1,
+  "runtimes": [
+    {
+      "suite": "planning",
+      "root": "/workspace/nevora-evidence/independent-qa-remediation/e9b9ff7d/affected/planning/owned-next-V3ahZw",
+      "checkpoint": "e9b9ff7dae7687a1d3099b04b792b293f1e5299a",
+      "sourceCount": 2007,
+      "sourceManifestSha256": "823f6ca146adf80d44d1d98ba7c5113fc64068f7cb9bb475390f08aeefacc687",
+      "ownershipSha256": "5552b4feb5cdbafcaab900fa05bd34f69fe3819a3c6248ad229d8b2a0faad496",
+      "pid": 37372,
+      "pidLive": false,
+      "processGroupLiveMembers": [],
+      "port": 44551,
+      "portOpen": false,
+      "identity": {
+        "name": "nevora_exchange_test_c1_65beaa13f21d",
+        "oid": 16384,
+        "marker": "fuel-phase3-disposable:de396327-69a8-4285-bf46-95c9dbb8b48a"
+      },
+      "approvedSubstitutions": [
+        "src/lib/db.ts",
+        "next-env.d.ts"
+      ],
+      "failures": [],
+      "passed": true
+    }
+  ],
+  "runnerClusterClosure": [
+    {
+      "directory": "/tmp/nevora-payroll-owned-nmvnju",
+      "directoryExists": false,
+      "pid": 37267,
+      "livePid": false,
+      "port": 35411,
+      "portOpen": false
+    }
+  ],
+  "supplementalDatabaseCustody": {
+    "runnerLive": false,
+    "clusters": [
+      {
+        "directory": "/tmp/nevora-payroll-owned-nmvnju",
+        "directoryExists": false,
+        "pid": 37267,
+        "livePid": false,
+        "port": 35411,
+        "portOpen": false,
+        "pidLive": false
+      }
+    ]
+  },
+  "databaseObservationMethod": "Recorder queries actual owned cluster through existing pg package with scrubbed environment; any query failures are retained.",
+  "gateSourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterStopLogged": true,
+  "artifactsCount": 125,
+  "passed": true
+}

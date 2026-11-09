@@ -1,0 +1,58 @@
+{
+  "authoredBy": "/root/communications_qa_acceptance",
+  "at": "2026-10-27T19:43:38.420199+00:00",
+  "candidate": "8435c3d81734b1fc4bb8ac574368b331a9e99b9d",
+  "base": "564c71371e16f528a94aa242e42bf906d5890314",
+  "productFixAnchor": "8ec15116c1ee37b8b46304d1cbcca439c7778dc7",
+  "changesSinceProductFix": [
+    "src/test/integration/employee-mobile-communications-review.integration.ts",
+    "src/test/integration/employee-mobile-planning.integration.ts",
+    "src/test/integration/employee-mobile-requests.integration.ts",
+    "vitest.employee-mobile-communications.config.mts"
+  ],
+  "protectedRuntimeFiles": [
+    {
+      "path": "src/test/integration/local-postgres.ts",
+      "currentSha256": "99df92479e7a15db74090427f9c3a28b8c09bac725c9c194950e407301912189",
+      "unchangedSinceOriginalCandidate": true
+    },
+    {
+      "path": "src/test/integration/owned-next-app.ts",
+      "currentSha256": "d72eee087b7c9fa701a3d14d8757d7f38299795bcfbb86e61609640b8ad2eb5b",
+      "unchangedSinceOriginalCandidate": true
+    },
+    {
+      "path": "src/test/integration/owned-pg-transport.ts",
+      "currentSha256": "14616fb666beb3864abf1227d4088bd3b6530170fc4dd1184a701c177852b4e6",
+      "unchangedSinceOriginalCandidate": true
+    },
+    {
+      "path": "scripts/payroll-postgres.mjs",
+      "currentSha256": "25dfe64828d83159e97d8786e655d19b28ae4cbfeb7dba3835b772487f5b6820",
+      "unchangedSinceOriginalCandidate": true
+    }
+  ],
+  "reviewHashes": {
+    "INDEPENDENT_QA_REVIEW.md": "32aa46940fff91d52a672167c8bd96b81e8379d63d0a79def62e8fa8e38f8c9c",
+    "FINAL_CODE_REVIEW.md": "ee9c70a90b96c0106da82e13a73f506a774012fb817e618e006337c9bd83ea1f",
+    "INDEPENDENT_UI_REVIEW.md": "fd02a147838bf7746b62bd9591d63c8ecca857a4010aca2cb7a4f5d008bdb33c",
+    "CODE_FINDING_CLOSURE.md": "8cb053f513f7e62bfc4f1488329ef857b08569dcfd0536bb00b42c0b5f1811ce",
+    "UI_FINDING_CLOSURE.md": "5b7fd5e34c0dfae81a4a0daf952da24bd0a165ee26b130d19c9a1e31ddb9105e"
+  },
+  "staticFindings": {
+    "QA-COM-001": "Navigation corrections retain native task links, desktop incumbent assertions, current ready/denied waits and original final strict diagnostic array. Requests targeted preflight passed; selector-free final full still pending. No close yet.",
+    "QA-COM-002": "All19 original files plus one4case review file retained. Child projects each have explicit serial/maxWorkers1, identical aliases and original600000/30000ms test/hook limits. Pure helper derives only3fixed namespaces from marked loopback c1 input; absence/OID/marker/drop/role/source/activation guards unchanged. Complete all6canonical suite success still pending. No close yet.",
+    "QA-COM-003": "Only local identifier module becomes destinationModule; moduleForPath/currentModules gate semantics unchanged. Full changed-source lint still pending. No close yet."
+  },
+  "restoredBoundary": {
+    "beforeOutage8435RuntimeLaunched": false,
+    "pendingReadOnlyCommand": "git rev-parse HEAD && git diff --stat 1ada..8435",
+    "rootRestoredThenIndependentVerified": true,
+    "initialRuntimeState": "No live Next/Postgres/Vitest processes or owned temp runtime directories observed; recorder initialProcesses and initialClusters empty."
+  },
+  "limits": [
+    "No app/test/config/index/branch changes by QA",
+    "No production,real notifications,hosted,paid services or real data",
+    "Physical-device,assistive-technology,CI,assembly and Phase3 outside these gates"
+  ]
+}

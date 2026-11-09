@@ -1,0 +1,27 @@
+{
+  "ownerId": "3d4e526a-8b31-40b6-9547-98201dd9b911",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/lookup-race-green-2/owned-next-aQU0b6",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 36110,
+  "port": 36427,
+  "url": "http://127.0.0.1:36427",
+  "identity": {
+    "name": "nevora_exchange_test_c1_64c407e42870",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:a0920307-d2d2-4d4a-8c06-01dcafafee6b"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T19:05:54.593Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 27405455360,
+    "availableBytesAfter": 28186693632
+  }
+}

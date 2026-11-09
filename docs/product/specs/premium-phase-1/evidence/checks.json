@@ -1,0 +1,148 @@
+{
+  "url": "http://localhost:3241/ui-preview/kit",
+  "ranAt": "2026-10-19T01:08:39.560Z",
+  "results": [
+    {
+      "name": "no sideways scroll (320)",
+      "passed": true
+    },
+    {
+      "name": "no text under 15px (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "every link and button is at least 44px (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "one h1 per sample screen (320)",
+      "passed": true,
+      "detail": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "axe WCAG 2.2 AA (320)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "no sideways scroll (390)",
+      "passed": true
+    },
+    {
+      "name": "no text under 15px (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "every link and button is at least 44px (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "one h1 per sample screen (390)",
+      "passed": true,
+      "detail": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "axe WCAG 2.2 AA (390)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "focus ring is white on the band (390)",
+      "passed": true,
+      "detail": [
+        {
+          "el": "Search",
+          "inBand": true,
+          "outline": "solid 2px rgb(255, 255, 255)"
+        },
+        {
+          "el": "Notifications, 2 unread",
+          "inBand": true,
+          "outline": "solid 2px rgb(255, 255, 255)"
+        },
+        {
+          "el": "Inbox",
+          "inBand": true,
+          "outline": "solid 2px rgb(255, 255, 255)"
+        }
+      ]
+    },
+    {
+      "name": "focus ring is action teal on cards (390)",
+      "passed": true,
+      "detail": [
+        {
+          "el": "Review time off",
+          "inBand": false,
+          "outline": "solid 2px rgb(7, 117, 114)"
+        },
+        {
+          "el": "Late1 person late1",
+          "inBand": false,
+          "outline": "solid 2px rgb(7, 117, 114)"
+        },
+        {
+          "el": "Alexandra Rivera, time o",
+          "inBand": false,
+          "outline": "solid 2px rgb(7, 117, 114)"
+        }
+      ]
+    },
+    {
+      "name": "blocked button is grey with its reason (390)",
+      "passed": true,
+      "detail": {
+        "bg": "rgb(238, 241, 240)",
+        "color": "rgb(95, 102, 106)",
+        "reason": "Approve after Oct 18"
+      }
+    },
+    {
+      "name": "reduced motion removes transitions (390-reduced)",
+      "passed": true,
+      "detail": {
+        "withMotion": 0
+      }
+    },
+    {
+      "name": "no sideways scroll (1440)",
+      "passed": true
+    },
+    {
+      "name": "no text under 15px (1440)",
+      "passed": true,
+      "detail": "desktop roles allowed 14px"
+    },
+    {
+      "name": "every link and button is at least 44px (1440)",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "one h1 per sample screen (1440)",
+      "passed": true,
+      "detail": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "axe WCAG 2.2 AA (1440)",
+      "passed": true,
+      "detail": []
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [31m❯[39m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 73381[2mms[22m[39m
+[31m   [31m×[31m independently characterizes actual native keyboard and coarse landscape on unchanged app source[39m[33m 73380[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts[2m > [22mindependently characterizes actual native keyboard and coarse landscape on unchanged app source
+[31m[1mTimeoutError[22m: page.waitForURL: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation to "**/app/profile" until "load"
+  navigated to "http://localhost:61097/app/profile#profile-device-alerts"
+============================================================[39m
+[36m [2m❯[22m pointerBack ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts:[2m46:371[22m[39m
+
+[90m [2m❯[22m ../../outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.integration.ts:[2m56:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 22:52:59
+[2m   Duration [22m 74.23s[2m (tests 99%, transform 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

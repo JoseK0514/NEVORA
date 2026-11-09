@@ -1,0 +1,19 @@
+[
+  "scripts/payroll-postgres.mjs",
+  "src/app/app/profile/[document]/page.tsx",
+  "src/app/app/profile/page.tsx",
+  "src/components/employee-account-panel-lifetime.test.tsx",
+  "src/components/employee-account-panel.tsx",
+  "src/components/employee-mobile/profile-preferences.test.tsx",
+  "src/components/employee-mobile/profile-view.tsx",
+  "src/components/employee-mobile/profile.test.tsx",
+  "src/components/employee-mobile/profile.tsx",
+  "src/components/legal/employee-context.test.tsx",
+  "src/components/legal/legal-document.tsx",
+  "src/lib/theme.test.ts",
+  "src/lib/theme.ts",
+  "src/test/integration/employee-mobile-profile-sql.integration.ts",
+  "src/test/integration/employee-mobile-profile.integration.ts",
+  "vitest.employee-mobile-communications.config.mts",
+  "vitest.employee-mobile-profile.config.mts"
+]

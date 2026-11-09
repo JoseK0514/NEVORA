@@ -1,0 +1,30 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:58852
+- Network:       http://127.0.0.1:58852
+✓ Ready in 625ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 1388ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 721ms (next.js: 257ms, application-code: 465ms)
+○ Compiling /app/profile ...
+ GET /app/profile 200 in 528ms (next.js: 58ms, application-code: 470ms)
+ GET /api/employee/calendar-subscriptions 200 in 184ms (next.js: 41ms, application-code: 144ms)
+ GET /api/employee/profile 200 in 152ms (next.js: 35ms, application-code: 117ms)
+ GET /api/notifications 200 in 612ms (next.js: 143ms, application-code: 469ms)
+ GET /api/auth/passkeys 200 in 151ms (next.js: 90ms, application-code: 61ms)
+ GET /api/auth/passkeys 401 in 17ms (next.js: 2ms, application-code: 15ms)
+ GET /api/auth/passkeys?employeeId=QA-PKM0-B 400 in 5ms (next.js: 1.0ms, application-code: 4ms)
+ POST /api/auth/passkey/register/options 200 in 77ms (next.js: 30ms, application-code: 47ms)
+ GET /api/auth/passkeys 200 in 15ms (next.js: 0.9ms, application-code: 15ms)
+ POST /api/auth/passkey/register/options 200 in 62ms (next.js: 0.9ms, application-code: 61ms)
+ GET /api/employee/calendar-subscriptions 200 in 50ms (next.js: 1.1ms, application-code: 49ms)
+ GET /api/auth/passkeys 200 in 46ms (next.js: 0.8ms, application-code: 45ms)
+ GET /api/employee/profile 200 in 54ms (next.js: 0.4ms, application-code: 53ms)
+ GET /api/notifications 200 in 105ms (next.js: 3ms, application-code: 102ms)
+ POST /api/auth/passkey/register/verify 200 in 130ms (next.js: 37ms, application-code: 94ms)
+ GET /api/auth/passkeys 200 in 20ms (next.js: 1.2ms, application-code: 19ms)
+[?25h

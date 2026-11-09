@@ -1,0 +1,81 @@
+{
+  "source_sha256": "cab9d28a3f142c3707faa67fba77a48f63955c65b0d5f9710210550378d9fe5c",
+  "baseline_sha256": "30055aa74aaf445b6f8ed793db86206eb3651d868c81fae84722314b2059673d",
+  "scope": "Employee mobile local prototype: own published weeks, revision-bound review, current authority and canonical sample recovery",
+  "resolved": [
+    "EM-A05",
+    "EM-A06"
+  ],
+  "carried_resolved": [
+    "EM-A01",
+    "EM-A02",
+    "EM-A03",
+    "EM-R01"
+  ],
+  "prior_closures": [
+    "calendar-focus-closure.json",
+    "timeoff-access-closure.json"
+  ],
+  "resolution_limits": "EM-A05 Time off portion was addressed previously; Schedule portion now closes the remaining local finding. EM-R01 is a modeled prototype contract, not live authorization verification.",
+  "remaining_full_audit_items": [
+    "EM-A04",
+    "EM-A07",
+    "EM-A08",
+    "EM-A09"
+  ],
+  "full_readiness": "Not certified; remaining audit findings, complete parity and live integration remain open.",
+  "changed_source": [
+    "src/App.tsx",
+    "src/ExchangeCreate.tsx",
+    "src/ExchangePanel.tsx",
+    "src/Home.tsx",
+    "src/Schedule.tsx",
+    "src/model.ts",
+    "src/notification-model.ts",
+    "src/session-model.ts"
+  ],
+  "added_source": [
+    "src/Schedule.css",
+    "src/ScheduleAccess.tsx",
+    "src/ScheduleContext.tsx",
+    "src/ScheduleReview.tsx",
+    "src/ScheduleShiftDetail.tsx",
+    "src/ScheduleWeekPicker.tsx",
+    "src/schedule-data.ts",
+    "src/schedule-model.ts",
+    "src/schedule-presentation.ts"
+  ],
+  "removed_source": [],
+  "ui": {
+    "report": "schedule-ui-review.md",
+    "sha256": "b9d2b505456dab3535603aa98e29516c34a86aa67c2b190bcc45ccc8df7472ec",
+    "disposition": "ship / APPROVE at local Schedule scope; two LOW nonblocking token-alias observations recorded"
+  },
+  "qa": {
+    "report": "schedule-qa.md",
+    "sha256": "54f12f88be50a561a5dc2dd2787b3f4c6f89d46b30869170e52d7e88f06e169f",
+    "disposition": "PASS at local Schedule scope",
+    "fresh_scenarios": 120,
+    "passed": 120
+  },
+  "design_record": {
+    "report": "schedule-design-record.md",
+    "sha256": "1c92eff517512cc3a0043dac2d98332c78bcd0f2533054a605de7b7d5cd12be8"
+  },
+  "executor_grouped_checks_per_engine": 508,
+  "new_schedule_groups_per_engine": 39,
+  "pure_schedule_groups": 42,
+  "engines": [
+    "chromium",
+    "webkit",
+    "firefox"
+  ],
+  "visual_system_preserved": true,
+  "production_changes": false,
+  "additional_resolved_regression": {
+    "id": "IQ40",
+    "before_sha256": "adbef5207fe23d34e6eacfca89e8df389ae4b5562677e0f9700638bb9e253cac",
+    "after_sha256": "cab9d28a3f142c3707faa67fba77a48f63955c65b0d5f9710210550378d9fe5c",
+    "scope": "Schedule-only receipt heading reveal at320px/200%; shared Receipt unchanged"
+  }
+}

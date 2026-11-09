@@ -1,425 +1,216 @@
+import {ScopedReadFrame} from '@/components/company-access/scoped-read-frame';
+import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
+import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
+import {requireSessionMutationProof} from '@/lib/auth/session';
 import Link from "next/link";
-import "./schedule-settings-premium.css";
-import { NavIcon } from "@/components/nav-icon";
+import { QuietHeader, QuietNav, QuietPage } from "@/components/quiet/quiet";
+import { keepWhole } from "@/lib/keep-whole";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
+import { ActionForm, InlineConfigForm, KeepFocusClear, RulesSaveForm } from "@/components/wave-b-forms";
+import { PositionQuotaFields } from "@/components/position-quota-fields";
+import { ShiftChangePolicyFields } from "@/components/shift-change-policy-fields";
+import { ManagerIssueFocus } from "@/components/manager-issue-focus";
+import { RulesHoursList } from "@/components/rules-hours-list";
+import { ScheduleFormKeys } from "@/components/schedule-form-keys";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { listLocations } from "@/lib/data/employees";
-import {
-  listCoverageWindows,
-  listEmployeeHourTargets,
-  listLocationStaffingSettings,
-} from "@/lib/data/schedule-health";
-import {
-  addCoverageWindowAction,
-  deleteCoverageWindowAction,
-  saveScheduleHealthSettingsAction,
-} from "@/app/app/schedule/settings/actions";
-import { formatTime } from "@/lib/date-utils";
+import { listPositions } from "@/lib/data/positions";
+import { readShiftChangePolicy } from "@/lib/data/shift-change-policy";
+import { neonNotificationExecutor } from "@/lib/data/notification-transactions";
+import { listCoverageWindows, listEmployeeHourTargets, listLocationStaffingSettings } from "@/lib/data/schedule-health";
+import { addCoverageWindowFormAction, replaceCoverageWindowPositionRequirementsAction, deleteCoverageWindowAction, saveScheduleHealthSettingsFormAction } from "./actions";
+import { formatTimeRange } from "@/lib/date-utils";
 
-export default async function ScheduleSettingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    error?: string;
-    saved?: string;
-    windowSaved?: string;
-    windowDeleted?: string;
-  }>;
+import { setAvailabilityDeadlineAction } from "../actions";
+import { getWeekSettings } from "@/lib/data/week-settings";
+import { getWorkspace } from "@/lib/data/workspaces";
+import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
+import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
+import "../../settings/settings-corp.css";
+
+const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+/** Quiet (v4): a rule's row; it opens the rule's settings under it. */
+function Summary({ title, value, detail }: { title: string; value: string; detail?: string }) {
+  return <summary className={detail ? "q-row" : "q-row q-row--one"}>
+    <span className="q-rt"><b>{title}</b>{detail ? <i>{detail}</i> : null}</span><span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" />
+  </summary>;
+}
+
+export default async function ScheduleSettingsPage({ searchParams }: {
+  searchParams: Promise<{ error?: string; saved?: string; windowSaved?: string; windowDeleted?: string; week?: string; deadlineSaved?: string; availabilityDeadline?: string; employeeId?: string; open?: string }>;
 }) {
-  await requireRoles(MANAGER_ROLES);
-  const params = await searchParams;
-
-  const [staffing, employees, locations, coverageWindows] = await Promise.all([
-    listLocationStaffingSettings(),
-    listEmployeeHourTargets(),
-    listLocations(),
-    listCoverageWindows(),
+  const session = await requireRoles(MANAGER_ROLES);
+  const params=await searchParams;
+  const source=await withOperationalCompany(await requireSessionMutationProof(),async()=>{
+  let policy = null;
+  let policyUnavailable = false;
+  try { policy = await readShiftChangePolicy(neonNotificationExecutor()); } catch { policyUnavailable = true; }
+  const workspace = await getWorkspace();
+  const weekStart = params.week && isValidWeekStart(params.week) ? params.week : weekStartFor(businessDate(new Date(), workspace.timeZone));
+  const weekSettings = await getWeekSettings(weekStart);
+  const [staffing, employees, locations, coverageWindows, positions] = await Promise.all([
+    listLocationStaffingSettings(), listEmployeeHourTargets(), listLocations(),
+    listCoverageWindows(), listPositions({ includeInactive: true }),
   ]);
+    return {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings};
+  });
+  if(source.state==='unavailable')return <OperationalUnavailable title="Scheduling rules unavailable" reason={source.reason}/>;
+  const {policy,policyUnavailable,staffing,employees,locations,coverageWindows,positions,workspace,weekStart,weekSettings}=source.data;
+  const weekOrder = [1, 2, 3, 4, 5, 6, 0];
+  const coverageGroups = [...new Set(coverageWindows.map(window => window.locationId))].map(locationId => {
+    const windows = coverageWindows.filter(window => window.locationId === locationId)
+      .sort((a, b) => weekOrder.indexOf(a.dayOfWeek) - weekOrder.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime));
+    // A period that still asks for an inactive position opens its group, as its quantities do.
+    const needsReview = windows.some(window => window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active)));
+    return { locationId, label: locationLabel(locationId, locationId), windows, days: new Set(windows.map(window => window.dayOfWeek)).size, needsReview };
+  });
+  function locationLabel(locationId: string, fallback: string) {
+    return locations.find(location => location.id === locationId)?.shortName ?? fallback;
+  }
 
-  const dayNames = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
+  // Quiet (v4, approved Oct 23): five rows, each with its current value; a row opens its settings in place.
+  // Links into a section (#coverage-staffing, #target-…) open it through ManagerIssueFocus.
+  const deadlineValue = weekSettings?.availabilityDeadline ? new Intl.DateTimeFormat("en-US", { timeZone: workspace.timeZone, weekday: "short", month: "short", day: "numeric" }).format(new Date(weekSettings.availabilityDeadline)) : "Not set";
+  const staffValues = [...new Set(staffing.map(location => location.minimumStaffPerShift))];
+  const staffingValue = !staffing.length ? "No locations" : staffing.some(location => location.minimumStaffPerShift === null || location.requiresDesignatedLead === null) ? "Needs setup"
+    : staffValues.length === 1 ? `${staffValues[0]} per shift` : "Varies";
+  const targets = employees.filter(employee => employee.targetWeeklyHours !== null && employee.targetWeeklyHours !== undefined).length;
+  const hoursValue = targets ? `${targets} ${targets === 1 ? "person" : "people"}` : "No targets";
+  const coverageValue = coverageWindows.length ? `${coverageWindows.length} ${coverageWindows.length === 1 ? "shift" : "shifts"}` : "Off";
+  const modes = policy ? [...new Set([policy.swap.mode, policy.coverage.mode])] : [];
+  const policyValue = policyUnavailable ? "Unavailable" : !policy || modes.includes(null) ? "Not set" : modes.length > 1 ? "Mixed"
+    : modes[0] === "MANAGER_REVIEW" ? "Manager approves" : "Automatic";
+  const open = {
+    deadline: Boolean(params.deadlineSaved || params.open === "deadline" || ["INVALID_DEADLINE", "DEADLINE_WORKSPACE_CHANGED", "INVALID_SHIFT"].includes(params.error ?? "")),
+    staffing: params.error === "invalid_staffing",
+    hours: params.error === "invalid_hours" || Boolean(params.employeeId),
+    coverage: Boolean(params.windowSaved || params.windowDeleted || ["duplicate_window", "invalid_window"].includes(params.error ?? "")),
+  };
 
-  const targetsSet = employees.filter(
-    (employee) => employee.targetWeeklyHours !== undefined,
-  ).length;
+  return (<ScopedReadFrame observation={source}><ScheduleFormKeys>
+    <QuietPage className="q-rules">
+      {/* Release 1 (board O-ScheduleRules): "‹ Schedule  Scheduling rules", one line about when the rules apply, then the
+        rules in one card, each with what it means and its current value. A row opens its settings in place. */}
+      <QuietNav back={{ href: `/app/schedule?week=${weekStart}`, label: "Schedule" }} title="Scheduling rules" />
+      <QuietHeader title="Scheduling rules" />
+      <p className="wc-intro">Used when you build a draft and before you publish.</p>
+      <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
+      {params.error ? <p className="q-error q-first form-error" role="alert">{
+        params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline."
+          : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Workspace settings changed. Review the deadline and try again."
+          : params.error === "INVALID_SHIFT" ? "Choose a valid Monday for the schedule week."
+          : params.error === "invalid_staffing" ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a lead choice."
+          : params.error === "invalid_hours" ? "Targets and maximums must be from 0 to 168 hours."
+          : params.error === "duplicate_window" ? "That coverage period already exists."
+          : "Enter a day, a start and end time, and staff numbers if you need them."}</p> : null}
+      {params.deadlineSaved ? <p className="q-help q-first form-success" role="status">Availability deadline saved.</p> : null}
+      {params.saved ? <p className="q-help q-first form-success" role="status">Scheduling rules saved.</p> : null}
+      {params.windowSaved ? <p className="q-help q-first form-success" role="status">Coverage period added.</p> : null}
+      {params.windowDeleted ? <p className="q-help q-first form-success" role="status">Coverage period removed.</p> : null}
 
-  return (
-    <div className="schedule-health-page">
-      <section className="schedule-health-hero">
-        <div className="schedule-health-hero-copy">
-          <p>Scheduling rules</p>
-          <h1>Schedule Health Rules</h1>
-          <span>
-            Define staffing, weekly hour targets, and expected coverage periods.
-          </span>
-        </div>
-        <Link
-          className="button secondary schedule-health-back"
-          href="/app/schedule"
-        >
-          <span aria-hidden="true">←</span>
-          Back to Schedule
-        </Link>
-      </section>
-
-      {params.error ? (
-        <p className="form-error">
-          {params.error === "invalid_staffing"
-            ? "Staffing requirements must be whole numbers between 1 and 100."
-            : params.error === "invalid_hours"
-              ? "Weekly hour targets must be between 0 and 168 hours."
-              : params.error === "duplicate_window"
-                ? "That coverage window already exists."
-                : "Enter a valid day, time range, and optional staffing override."}
-        </p>
-      ) : null}
-
-      {params.saved ? (
-        <p className="form-success">Schedule health settings updated.</p>
-      ) : null}
-      {params.windowSaved ? (
-        <p className="form-success">Coverage window added.</p>
-      ) : null}
-      {params.windowDeleted ? (
-        <p className="form-success">Coverage window removed.</p>
-      ) : null}
-
-      <section className="schedule-health-summary" aria-label="Schedule health setup">
-        <div>
-          <span className="schedule-health-summary-icon configured">
-            <NavIcon name="employees" size={21} />
-          </span>
-          <span>
-            <strong>{staffing.length}</strong>
-            <small>
-              <i className="schedule-health-dot success" aria-hidden="true" />
-              Locations configured
-            </small>
-          </span>
-        </div>
-        <div>
-          <span className="schedule-health-summary-icon targets">
-            <NavIcon name="clock" size={21} />
-          </span>
-          <span>
-            <strong>{targetsSet} / {employees.length}</strong>
-            <small>
-              <i
-                className={
-                  targetsSet === employees.length
-                    ? "schedule-health-dot success"
-                    : "schedule-health-dot warning"
-                }
-                aria-hidden="true"
-              />
-              Hour targets set
-            </small>
-          </span>
-        </div>
-        <div>
-          <span className="schedule-health-summary-icon windows">
-            <NavIcon name="calendar" size={21} />
-          </span>
-          <span>
-            <strong>{coverageWindows.length}</strong>
-            <small>
-              <i
-                className={
-                  coverageWindows.length
-                    ? "schedule-health-dot success"
-                    : "schedule-health-dot warning"
-                }
-                aria-hidden="true"
-              />
-              Coverage windows
-            </small>
-          </span>
-        </div>
-      </section>
-
-      <form
-        id="schedule-health-core-form"
-        action={saveScheduleHealthSettingsAction}
-        className="schedule-health-core-form"
-      >
-        <section className="schedule-health-panel">
-          <div className="schedule-health-panel-heading">
-            <span className="schedule-health-heading-icon">
-              <NavIcon name="employees" size={21} />
-            </span>
-            <div>
-              <h2>Staffing Requirements</h2>
-              <p>Set the number of employees needed per shift at each location.</p>
+      <div className="q-list q-rule-list">
+        <div className="wc-cardhead" aria-hidden="true"><span>Rules</span></div>
+        <RulesSaveForm action={saveScheduleHealthSettingsFormAction} bar={staffing.length > 0 || employees.length > 0}>
+          <details className="q-details q-rule" open={open.hours || undefined}>
+            <Summary title="Weekly hours targets" detail="Hours each person aims for" value={hoursValue} />
+            <div className="q-rule__body manager-issue-target" id="target-hours" tabIndex={-1}>
+              <p className="q-help">Targets keep schedules balanced. Maximums flag extra hours. Leave a target blank to skip it.</p>
+              {employees.length ? <RulesHoursList rows={employees.map(employee => ({
+                employeeId: employee.employeeId, employeeName: employee.employeeName,
+                detail: `${employee.role[0]}${employee.role.slice(1).toLowerCase()} · ${locationLabel(employee.primaryLocationId, "—")}`,
+                targetWeeklyHours: employee.targetWeeklyHours ?? null, maximumWeeklyHours: employee.maximumWeeklyHours ?? null,
+              }))} /> : <p className="q-empty">Add people first. <Link className="q-link" href="/app/employees">Team</Link></p>}
             </div>
-          </div>
-
-          <div className="staffing-settings-grid">
-            {staffing.map((location) => (
-              <div className="staffing-setting-card" key={location.locationId}>
-                <strong className="staffing-location-name">
-                  {location.locationName}
-                </strong>
-
-                <label className="staffing-count-row">
-                  <span>Employees per shift</span>
-                  <input
-                    type="number"
-                    name={`staffing-${location.locationId}`}
-                    defaultValue={location.minimumStaffPerShift}
-                    min={1}
-                    max={100}
-                    step={1}
-                    required
-                  />
-                </label>
-
-                <label className="staffing-lead-toggle">
-                  <input
-                    type="checkbox"
-                    name={`lead-${location.locationId}`}
-                    defaultChecked={location.requiresDesignatedLead}
-                  />
-                  <span>
-                    <strong>Designated Lead Required</strong>
-                    <small>A lead must be present during covered periods.</small>
-                  </span>
-                </label>
-              </div>
+          </details>
+          <details className="q-details q-rule" open={open.staffing || undefined}>
+            <Summary title="Staffing per location" detail="Fewest people on each shift" value={staffingValue} />
+            <div className="q-rule__body manager-issue-target" id="coverage-staffing" tabIndex={-1}>
+              <p className="q-help">The fewest people working at once, and whether a shift lead must be there.</p>
+              <ul className="wb-setting-list">
+                {staffing.map(location => {
+                  const name = locationLabel(location.locationId, location.locationName);
+                  const needsSetup = location.minimumStaffPerShift === null || location.requiresDesignatedLead === null;
+                  return (
+                    <li className="wb-setting manager-issue-target" id={"staffing-" + location.locationId} tabIndex={-1} key={location.locationId}>
+                      <div className="wb-setting__name"><span className="wb-record__title">{name}</span>{needsSetup ? <span className="wb-record__meta">Needs setup</span> : null}</div>
+                      <div className="wb-setting__fields">
+                        <label className="wb-field"><span>Minimum staff</span><span className="wb-suffix"><input type="number" name={"staffing-" + location.locationId} aria-label={name + " minimum staff per shift"} defaultValue={location.minimumStaffPerShift ?? undefined} min={1} max={100} step={1} required /><span aria-hidden="true">people</span></span></label>
+                        {location.requiresDesignatedLead === null ? (
+                          <label className="wb-field"><span>Shift lead</span><select name={"lead-choice-" + location.locationId} defaultValue="" required aria-label={name + " designated lead rule"}><option value="" disabled>Choose</option><option value="true">Required</option><option value="false">Not required</option></select></label>
+                        ) : (
+                          <label className="wb-check"><input type="hidden" name={"lead-configured-" + location.locationId} value="true" /><input type="checkbox" name={"lead-" + location.locationId} defaultChecked={location.requiresDesignatedLead} aria-label={name + " designated lead required"} /><span>Shift lead required</span></label>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              {!staffing.length ? <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p> : null}
+            </div>
+          </details>
+        </RulesSaveForm>
+        <details className="q-details q-rule" open={open.coverage || undefined}>
+          <Summary title="Recurring coverage" detail="Shifts that repeat every week" value={coverageValue} />
+          <div className="q-rule__body manager-issue-target" id="coverage-windows" tabIndex={-1}>
+            <p className="q-help">Periods you expect every week. The schedule flags open coverage even before shifts are added.</p>
+            {locations.length ? <details className="wb-disclosure wb-disclosure--ruled wb-add-period" open={!coverageWindows.length}>
+              <summary><span className="wb-inline-icon"><PlusIcon size={20} aria-hidden="true" />Add coverage period</span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+              <InlineConfigForm action={addCoverageWindowFormAction} className="wb-period-form" submit={{ label: "Add coverage period", pendingLabel: "Adding…", kind: "primary" }} successText="Coverage period added.">
+                <div className="wb-grid">
+                  <label className="wb-field wb-field--wide"><span>Location</span><select name="locationId" required defaultValue={locations[0]?.id}>{locations.map(location => <option key={location.id} value={location.id}>{locationLabel(location.id, location.shortName)}</option>)}</select></label>
+                  <label className="wb-field"><span>Day</span><select name="dayOfWeek" defaultValue="1" required>{[1, 2, 3, 4, 5, 6, 0].map(day => <option key={day} value={day}>{dayNames[day]}</option>)}</select></label>
+                  <label className="wb-field"><span>Start</span><input type="time" name="startTime" required /></label>
+                  <label className="wb-field"><span>End</span><input type="time" name="endTime" required aria-describedby="rules-end-hint" /><span className="wb-help" id="rules-end-hint">Use 12:00 AM for the end of the day.</span></label>
+                  <label className="wb-field"><span>Minimum staff <span className="wb-optional">Optional</span></span><input type="number" name="minimumStaff" min={1} max={100} step={1} placeholder="Location default" aria-describedby="rules-staff-hint" /><span className="wb-help" id="rules-staff-hint">Leave blank to use the location requirement.</span></label>
+                </div>
+                <PositionQuotaFields positions={positions.filter(position => position.active)} />
+              </InlineConfigForm>
+            </details> : <p className="q-empty">Add a location first. <Link className="q-link" href="/app/settings/locations">Locations</Link></p>}
+            {coverageGroups.map(group => (
+              <details className="wb-disclosure wb-disclosure--ruled wb-period-group" key={group.locationId} open={coverageGroups.length === 1 || group.needsReview}>
+                <summary><span className="wb-summary-text"><span className="wb-record__title">{group.label}</span><span>{group.windows.length} {group.windows.length === 1 ? "period" : "periods"} · {group.days} {group.days === 1 ? "day" : "days"} a week</span></span><CaretDownIcon size={20} aria-hidden="true" /></summary>
+                <ul className="wb-periods">
+                  {group.windows.map(window => (
+                    <li className="wb-period manager-issue-target" id={"coverage-" + window.id} tabIndex={-1} key={window.id}>
+                      <div className="wb-period__head">
+                        <span className="wb-day" aria-hidden="true">{dayNames[window.dayOfWeek].slice(0, 3)}</span>
+                        <div className="wb-period__copy"><h3 className="wb-record__title">{dayNames[window.dayOfWeek]}</h3><p className="wb-record__meta">{keepWhole(formatTimeRange(window.startTime, window.endTime))}</p><p className="wb-record__meta">{window.minimumStaff ? window.minimumStaff + " staff required" : "Uses location staffing requirement"}</p></div>
+                        <ActionForm action={deleteCoverageWindowAction} className="wb-period-remove" failure="Not removed. Check your connection and try again." confirm={{ prompt: `Remove ${dayNames[window.dayOfWeek]}, ${formatTimeRange(window.startTime, window.endTime)}?`, keepLabel: "Keep period" }} submit={{ label: "Remove", pendingLabel: "Removing…", ariaLabel: "Remove " + locationLabel(window.locationId, window.locationId) + " " + dayNames[window.dayOfWeek] + " " + formatTimeRange(window.startTime, window.endTime) + " coverage period", className: "wb-remove", kind: "danger" }}><input type="hidden" name="windowId" value={window.id} /></ActionForm>
+                      </div>
+                      <details className="wb-quantities" open={window.positionRequirements.some(requirement => positions.some(position => position.id === requirement.positionId && !position.active))}>
+                        <summary><span>Position quantities</span><span className="wb-record__meta">{window.positionRequirements.length ? window.positionRequirements.length + " set" : "Optional"}</span><CaretDownIcon size={18} aria-hidden="true" /></summary>
+                        <InlineConfigForm action={replaceCoverageWindowPositionRequirementsAction} submit={{ label: "Save quantities", pendingLabel: "Saving…", kind: "secondary" }} successText="Position quantities saved."><input type="hidden" name="windowId" value={window.id} /><PositionQuotaFields positions={positions} requirements={window.positionRequirements} /></InlineConfigForm>
+                      </details>
+                    </li>
+                  ))}
+                </ul>
+              </details>
             ))}
           </div>
-        </section>
-
-        <section className="schedule-health-panel">
-          <div className="schedule-health-panel-heading">
-            <span className="schedule-health-heading-icon">
-              <NavIcon name="clock" size={21} />
-            </span>
-            <div>
-              <h2>Employee Weekly Targets</h2>
-              <p>
-                Set expected weekly hours for each employee. Leave blank if an
-                employee should not be included.
-              </p>
-            </div>
+        </details>
+        <details className="q-details q-rule" open={open.deadline || undefined}>
+          <Summary title="Availability deadline" detail="Team updates availability by" value={deadlineValue} />
+          <div className="q-rule__body" id="rules-deadline">
+            <ActionForm action={setAvailabilityDeadlineAction} className="q-rule-form" failure="The availability deadline could not be saved. Try again." submit={{label: weekSettings?.availabilityDeadline ? "Update deadline" : "Set deadline", pendingLabel: "Saving…", className: "q-btn"}}>
+              <input type="hidden" name="returnTo" value="/app/schedule/settings" />
+              <input type="hidden" name="weekStart" value={weekStart} />
+              <div className="q-fl"><label htmlFor="rules-deadline-input">{`Deadline for ${formatWeekRange(weekStart)}`}</label>
+                <input id="rules-deadline-input" className="q-in" type="datetime-local" name="availabilityDeadline" aria-describedby="deadline-help" defaultValue={params.availabilityDeadline ?? formatBusinessDateTimeInput(weekSettings?.availabilityDeadline, workspace.timeZone)} /></div>
+              <p className="q-help" id="deadline-help">{`${workspace.timeZone.replaceAll("_", " ")} time. Leave it blank to clear it.`}</p>
+            </ActionForm>
           </div>
-
-          <div className="hour-target-table">
-            <div className="hour-target-head" aria-hidden="true">
-              <span>Employee</span>
-              <span>Location</span>
-              <span>Weekly target (hrs)</span>
-            </div>
-
-            {employees.map((employee) => {
-              const location = locations.find(
-                (item) => item.id === employee.primaryLocationId,
-              );
-              const initials = employee.employeeName
-                .split(" ")
-                .map((part) => part[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase();
-
-              return (
-                <label className="hour-target-row" key={employee.employeeId}>
-                  <span className="hour-target-employee">
-                    <span className="hour-target-avatar" aria-hidden="true">
-                      {initials}
-                    </span>
-                    <span>
-                      <strong>{employee.employeeName}</strong>
-                      <small>
-                        {employee.employeeId} · {employee.role[0]}
-                        {employee.role.slice(1).toLowerCase()}
-                      </small>
-                    </span>
-                  </span>
-
-                  <span className="hour-target-location">
-                    {location?.shortName ?? "—"}
-                  </span>
-
-                  <span className="hour-target-input">
-                    <input
-                      className={
-                        employee.targetWeeklyHours === undefined
-                          ? "target-not-set"
-                          : ""
-                      }
-                      type="number"
-                      name={`target-${employee.employeeId}`}
-                      defaultValue={employee.targetWeeklyHours ?? ""}
-                      min={0}
-                      max={168}
-                      step={0.25}
-                      placeholder="Not set"
-                    />
-                    <small>hrs / week</small>
-                  </span>
-                </label>
-              );
-            })}
+        </details>
+        <details className="q-details q-rule">
+          <Summary title="Trades and coverage" detail="How swaps and cover are approved" value={policyValue} />
+          <div className="q-rule__body" id="rules-policy" tabIndex={-1}>
+            <p className="q-help">How trades and cover are approved, and how far ahead they must be sent.</p>
+            {policyUnavailable ? <p className="q-error" role="alert">Couldn’t load this policy. Reload the page to try again.</p> : <ShiftChangePolicyFields policy={policy} canEdit={session.role === "OWNER"} />}
           </div>
-        </section>
-      </form>
-
-      <section className="schedule-health-panel" id="coverage-window-builder">
-        <div className="schedule-health-panel-heading">
-          <span className="schedule-health-heading-icon">
-            <NavIcon name="calendar" size={21} />
-          </span>
-          <div>
-            <h2>Coverage Windows</h2>
-            <p>Tell Schedule Health when management expects coverage.</p>
-          </div>
-        </div>
-
-        <form action={addCoverageWindowAction} className="coverage-window-form">
-          <label>
-            <span>Location</span>
-            <select
-              name="locationId"
-              required
-              defaultValue={locations[0]?.id}
-            >
-              {locations.map((location) => (
-                <option key={location.id} value={location.id}>
-                  {location.shortName}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            <span>Day</span>
-            <select name="dayOfWeek" defaultValue="1" required>
-              <option value="1">Monday</option>
-              <option value="2">Tuesday</option>
-              <option value="3">Wednesday</option>
-              <option value="4">Thursday</option>
-              <option value="5">Friday</option>
-              <option value="6">Saturday</option>
-              <option value="0">Sunday</option>
-            </select>
-          </label>
-
-          <label>
-            <span>Start</span>
-            <input type="time" name="startTime" required />
-          </label>
-
-          <label>
-            <span>End</span>
-            <input type="time" name="endTime" required />
-          </label>
-
-          <label>
-            <span>
-              Staff override
-              <small>Optional</small>
-            </span>
-            <input
-              type="number"
-              name="minimumStaff"
-              min={1}
-              max={100}
-              step={1}
-              placeholder="Use location default"
-            />
-          </label>
-
-          <button className="button primary coverage-add-button" type="submit">
-            <span aria-hidden="true">+</span>
-            Add Window
-          </button>
-        </form>
-
-        <div className="coverage-window-list">
-          {coverageWindows.length ? (
-            coverageWindows.map((window) => {
-              const location = locations.find(
-                (item) => item.id === window.locationId,
-              );
-
-              return (
-                <div className="coverage-window-row" key={window.id}>
-                  <span className="coverage-window-icon" aria-hidden="true">
-                    <NavIcon name="calendar" size={17} />
-                  </span>
-                  <div>
-                    <strong>
-                      {location?.shortName ?? window.locationId} ·{" "}
-                      {dayNames[window.dayOfWeek]}
-                    </strong>
-                    <span>
-                      {formatTime(window.startTime)} – {formatTime(window.endTime)}
-                      {window.minimumStaff
-                        ? ` · ${window.minimumStaff} staff`
-                        : " · location default"}
-                    </span>
-                  </div>
-                  <form action={deleteCoverageWindowAction}>
-                    <input type="hidden" name="windowId" value={window.id} />
-                    <button className="text-button danger" type="submit">
-                      Remove
-                    </button>
-                  </form>
-                </div>
-              );
-            })
-          ) : (
-            <div className="coverage-empty-state">
-              <span aria-hidden="true">
-                <NavIcon name="calendar" size={24} />
-              </span>
-              <strong>No coverage windows configured</strong>
-              <small>
-                Add recurring periods so Schedule Health can detect completely
-                missing shifts.
-              </small>
-              <a className="button secondary" href="#coverage-window-builder">
-                <span aria-hidden="true">+</span>
-                Add Coverage Window
-              </a>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="schedule-health-savebar">
-        <div className="schedule-health-save-status">
-          <span className="schedule-health-save-icon" aria-hidden="true">
-            <NavIcon name="coverage" size={20} />
-          </span>
-          <span>
-            <strong>Rules up to date</strong>
-            <small>Changes apply to the weekly management view immediately.</small>
-          </span>
-        </div>
-        <div className="schedule-health-save-actions">
-          <button
-            className="button secondary"
-            type="reset"
-            form="schedule-health-core-form"
-          >
-            Reset
-          </button>
-          <button
-            className="button primary"
-            type="submit"
-            form="schedule-health-core-form"
-          >
-            Save Settings
-          </button>
-        </div>
+        </details>
       </div>
-    </div>
-  );
+    </QuietPage></ScheduleFormKeys>
+  </ScopedReadFrame>);
 }

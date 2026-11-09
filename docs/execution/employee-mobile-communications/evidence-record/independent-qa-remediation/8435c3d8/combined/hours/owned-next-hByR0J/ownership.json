@@ -1,0 +1,27 @@
+{
+  "ownerId": "d2da12aa-9b3d-480a-a817-c77be68de562",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/independent-qa-remediation/8435c3d8/combined/hours/owned-next-hByR0J",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 15766,
+  "port": 33687,
+  "url": "http://127.0.0.1:33687",
+  "identity": {
+    "name": "nevora_exchange_test_c1_4e4c163a047c",
+    "oid": 282153,
+    "marker": "fuel-phase3-disposable:2b5a050b-d875-456d-87de-a061a8c498ca"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T19:55:06.987Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 26277863424,
+    "availableBytesAfter": 27228377088
+  }
+}

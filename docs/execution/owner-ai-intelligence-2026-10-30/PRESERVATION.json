@@ -1,0 +1,110 @@
+{
+  "checkedAt": "2026-10-30T22:29:23.344310+00:00",
+  "unchangedOriginalSubmissions": {
+    "nevora-owner-ai-whole-plan-2026-10-30.bundle": {
+      "sha256": "b020747e1f05a38db2d46c5d5349131e2cc9aaf3788fd2a6d4bc9e735adfa267",
+      "bytes": 234263
+    },
+    "nevora-owner-ai-whole-plan-2026-10-30.patch": {
+      "sha256": "19f5bd391821cfd3d805274b67228a1c3ca9d78ad13e51bf79a1e7329e516301",
+      "bytes": 770196
+    },
+    "nevora-owner-ai-whole-plan-2026-10-30.transfer.json": {
+      "sha256": "d429580b9bf1ff963c662d0039ff1e8e92c0325e4c5f20110c8a72aac4943367",
+      "bytes": 2627
+    },
+    "nevora-owner-ai-whole-plan-2026-10-30.README.md": {
+      "sha256": "184e7377350249db76e42c256ff65db2af7e1e7ac73b13920878c592f8bf3bac",
+      "bytes": 1865
+    },
+    "nevora-owner-ai-whole-plan-2026-10-30.import-proof.json": {
+      "sha256": "db4e2223f32e0cb2888046aa1180e6b9c389b5e9e8b529437e9960b5589cfb59",
+      "bytes": 855
+    },
+    "nevora-owner-ai-whole-plan-2026-10-30.compact.zip": {
+      "sha256": "909afa3f4a480f496fdb611257d31cd6092c45e907d0b3fd11e7d376641a1f51",
+      "bytes": 16799852
+    },
+    "nevora-owner-ai-validated-2026-10-30.bundle": {
+      "sha256": "9dbbdcf21e173b6aef4edc22a9b6734da67627086ea0fb8f71deaf9e1c70447b",
+      "bytes": 128706
+    },
+    "nevora-owner-ai-validated-2026-10-30.patch": {
+      "sha256": "f5ecab199641548b2b9b5cf29e38629e03bca5b4d1a187cfbf45fd3dcec17d17",
+      "bytes": 493137
+    },
+    "nevora-owner-ai-validated-2026-10-30.transfer.json": {
+      "sha256": "746630a1e3235b72b2fbe60a70cc0f2941e43f5ce4e1ac8526ad65530e8b8965",
+      "bytes": 3112
+    },
+    "nevora-owner-ai-validated-2026-10-30.README.md": {
+      "sha256": "df9fd59acdd1c5412c9e01ecafd432cb9206024a8f057b7219d230646c198d89",
+      "bytes": 2088
+    },
+    "nevora-owner-ai-validated-2026-10-30.zip": {
+      "sha256": "664d81cfbf0e1b7ea50c1bb14b29ccbe76b42bbfb5a9da0dc07dcca028afff7b",
+      "bytes": 43166599
+    },
+    "nevora-owner-ai-validated-2026-10-30.compact.zip": {
+      "sha256": "6e0622b56175a648b2cb1392ce14324838943fb745bcf81ed908533276a0a00b",
+      "bytes": 22268836
+    },
+    "nevora-owner-ai-implementation-2026-10-30.bundle": {
+      "sha256": "0c519777dadde2ca899dea2121a0298226375eb998fde84f029264be8a308ded",
+      "bytes": 59780
+    },
+    "nevora-owner-ai-implementation-2026-10-30.patch": {
+      "sha256": "f597275a531ad66ccd9ee1eb0e7970c660da94bfac24bc5c30ba9433c69bd90d",
+      "bytes": 250306
+    },
+    "nevora-owner-ai-implementation-2026-10-30.transfer.json": {
+      "sha256": "ebf6977ba9ed4320e07efe25393dffe1d622df22b926387936ec996b86e18042",
+      "bytes": 2159
+    },
+    "nevora-owner-ai-implementation-2026-10-30.README.md": {
+      "sha256": "3b93b35524cb9261fb331200e30b42ba8715bbb37e648c617f49917cb336a3fb",
+      "bytes": 1736
+    },
+    "nevora-owner-ai-implementation-2026-10-30.zip": {
+      "sha256": "7086175401c07b2171ee2f0e30eb0edbe12131df0c980862b1fde8db38bc1f6a",
+      "bytes": 165672
+    }
+  },
+  "originalManifests": [
+    {
+      "file": "nevora-owner-ai-whole-plan-2026-10-30.sha256.json",
+      "sha256": "fe1cf01b3b6ba800b2fce2695b6a916bef51517e4f410c8bad2a584238419478"
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.sha256.json",
+      "sha256": "bfe8fa2f2ff4d5bfbc058d11298cab768cda39bd35ee478cb5e9d046213ebd88"
+    },
+    {
+      "file": "nevora-owner-ai-validated-2026-10-30.compact.sha256.json",
+      "sha256": "a6881302bf9e20e8998ebabe2ceec27ca570792357c5fd83c2e6ddb068ecfe13"
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.sha256.json",
+      "sha256": "05ece22fa1031e4a3e25d7fa22d50675e494e0d16e4eac6e23c7008f43fec41c"
+    }
+  ],
+  "note": "Original files were read-only verified against their original manifests. Historical ledgers/reports within those submissions are unchanged; append-only active ledger continuation is separate.",
+  "worktrees": [
+    {
+      "path": "/workspace/NEVORA",
+      "head": "c21ac528fefac35de7534d47be196fec2866c066",
+      "clean": true
+    },
+    {
+      "path": "/workspace/work/nevora-test-scripts-20261030",
+      "head": "80b711f6322f36b1593ea86cc59a82114090e647",
+      "clean": true
+    },
+    {
+      "path": "/workspace/work/nevora-owner-ai-whole-plan-baseline-20261030",
+      "head": "da1dab3e8e2f9de8f2b86c1d7b897dd692de465a",
+      "clean": true
+    }
+  ],
+  "checkedAfterFinalTests": "2026-10-30T22:39:28.499812+00:00"
+}

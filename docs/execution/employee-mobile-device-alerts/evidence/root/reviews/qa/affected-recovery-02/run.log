@@ -1,0 +1,43 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/employee-mobile-communications-fixtures" without a file extension (vitest.employee-mobile-communications.config.mts:3:39). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/employee-mobile-communications-fixtures.ts:1:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m [30m[42m canonical-communications [49m[39m src/test/integration/phase-e-communications-schema.integration.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 3382[2mms[22m[39m
+   [33m[2m✓[22m[39m schema_cross_workspace_revision_grant_denied[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m published content grants receipts operations and lifecycle are immutable with no cascade[33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m draft privacy and new revisions preserve old acknowledgement without carrying it forward[33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m E21-QA-D001 current management withdraws after historical author deactivation while retaining evidence[33m 345[2mms[22m[39m
+   [33m[2m✓[22m[39m E21-QA-D001 current management advances a revision after historical author deactivation without carrying receipts forward[33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes[33m 409[2mms[22m[39m
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-review.integration.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 135780[2mms[22m[39m
+   [33m[2m✓[22m[39m CR-2 bounds held notification opens and fences stale results across private refresh and pause[33m 62851[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-001 associates actual invalid fields and restores deliberate review after corrections[33m 14114[2mms[22m[39m
+   [33m[2m✓[22m[39m CR-3/CR-1 preserve optional read facts and recover a refused original lookup[33m 20849[2mms[22m[39m
+   [33m[2m✓[22m[39m UI-COM-R1 immediately fences an actual committed late publication reply while Updates is off[33m 15455[2mms[22m[39m
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 116277[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates employee mobile messages with current audience, explicit receipts and original submission recovery[33m 116277[2mms[22m[39m
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-device-alerts.integration.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 114411[2mms[22m[39m
+   [33m[2m✓[22m[39m integrates own current-device enrollment, protected cleanup and mobile states in three engines[33m 66411[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps feature-off and role gates while install/unsupported guidance never grants permission[33m 47998[2mms[22m[39m
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/passkey-network.integration.ts [2m([22m[2m1 test[22m[2m)[22m[33m 15604[2mms[22m[39m
+   [33m[2m✓[22m[39m completes discoverable passkey sign-in through a real owned Next HTTP runtime[33m 15604[2mms[22m[39m
+ [32m✓[39m [30m[43m employee [49m[39m src/test/integration/employee-mobile-communications-sql.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 10671[2mms[22m[39m
+   [33m[2m✓[22m[39m pages the complete own notification candidates without leaking a peer or weakening the legacy bounded list[33m 1300[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses invalid page selectors and changed role or session before publishing own notices[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m retains the existing finite notification-read budget for a full page of distinct team updates[33m 3179[2mms[22m[39m
+   [33m[2m✓[22m[39m pages current updates with exact own read status and no coworker receipt roster[33m 3696[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks Updates module permission inside the actual employee command transaction[33m 515[2mms[22m[39m
+   [33m[2m✓[22m[39m hides disabled-module notifications while retaining unrelated own notices[33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m binds finite mobile views to current own identity and keeps a disabled Updates capability separate[33m 745[2mms[22m[39m
+   [33m[2m✓[22m[39m resolves exact notification destinations through current canonical access without recording read or acknowledgement[33m 461[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m27 passed[39m[22m[90m (27)[39m
+[2m   Start at [22m 23:02:51
+[2m   Duration [22m 397.13s[2m (tests 100%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

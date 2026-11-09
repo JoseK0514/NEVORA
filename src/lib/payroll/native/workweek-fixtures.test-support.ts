@@ -1,0 +1,6 @@
+import type { NativeWorkweekPolicy } from './workweek-policy';
+import type { RecurringWorkweekBoundary } from './workweek-boundaries';
+/** Explicit synthetic component-test facts. Never establish a real company notice or its absence. */
+export function fictionalWorkweekPolicy(employeeId = 'E1', boundary: RecurringWorkweekBoundary = { weekday: 1, startTime: '00:00', timeZone: 'America/Puerto_Rico' }, statutoryDefault = false): NativeWorkweekPolicy {
+    return { version: 'PR_WORKWEEK_POLICY_V1', id: 'Fictional-WP1', revision: 1, employeeId, effectiveFrom: '2026-01-01T00:00:00-04:00', effectiveTo: null, boundary, federalWorkweek: 'SAME_VERIFIED_BOUNDARY', federalEvidenceReference: 'Fictional separately documented matching FLSA boundary', origin: statutoryDefault ? { kind: 'STATUTORY_DEFAULT', noticeAbsenceConfirmed: true, evidenceReference: 'Fictional reviewed notice absence for this employee/context' } : { kind: 'EMPLOYER_NOTICE', noticeReference: 'Fictional actual employee-covered initial written notice for component verification only', deliveredAt: '2025-12-01T12:00:00-04:00', deliveryMethod: 'WRITTEN_EMPLOYEE', employeeCoverageConfirmed: true, noticeKind: 'INITIAL', previousPolicyReference: null } };
+}

@@ -1,0 +1,9 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+FAIL chromium payroll-qa-b 390 100% /app/my-pay small=strong. «payroll-2026-09-28-1f5b5396-4c» 13px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+FAIL chromium payroll-qa-b 1440 100% /app/my-pay small=small. «Powered by VELANI LLC» 10px; strong. «payroll-2026-09-28-1f5b5396-4c» 13px; p. «Payday Tue, Sep 29» 12px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+FAIL chromium payroll-qa-b 1440 200% /app/my-pay small=small. «Powered by VELANI LLC» 10px; strong. «payroll-2026-09-28-1f5b5396-4c» 13px; p. «Payday Tue, Sep 29» 12px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+FAIL webkit payroll-qa-b 390 100% /app/my-pay small=strong. «payroll-2026-09-28-1f5b5396-4c» 13px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+FAIL webkit payroll-qa-b 1440 100% /app/my-pay small=small. «Powered by VELANI LLC» 10px; strong. «payroll-2026-09-28-1f5b5396-4c» 13px; p. «Payday Tue, Sep 29» 12px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+FAIL webkit payroll-qa-b 1440 200% /app/my-pay small=small. «Powered by VELANI LLC» 10px; strong. «payroll-2026-09-28-1f5b5396-4c» 13px; p. «Payday Tue, Sep 29» 12px; strong. «payroll-2026-09-21-25dcf5f9-14» 13px
+2/8 passed · /workspace/oct20-preview/checks/2026-10-19T18-07-48-684Z.json

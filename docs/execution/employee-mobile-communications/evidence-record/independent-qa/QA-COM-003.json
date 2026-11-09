@@ -1,0 +1,17 @@
+{
+  "id": "QA-COM-003",
+  "classification": "BLOCKER",
+  "status": "OPEN",
+  "owner": "independent Senior QA /root/communications_qa_acceptance",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "observedAt": "2026-10-27T18:44:26.296165+00:00",
+  "gate": "Changed-source ESLint since 564c71371e16f528a94aa242e42bf906d5890314",
+  "fileCount": 37,
+  "result": "exit1;1error;0warnings",
+  "location": "src/lib/data/employee-notification-list.server.ts:167:5",
+  "rule": "@next/next/no-assign-module-variable",
+  "diagnostic": "Do not assign to the variable module.",
+  "stdout": "/workspace/nevora-evidence/independent-qa/eslint/stdout.log",
+  "stdoutSha256": "658b0506e04662259404c8f83770d224328e8d8ea8a29e887b9557165c450e51",
+  "closureRequirement": "Correct the local declaration without changing the source/module policy, then independently verify required changed-source lint on the final candidate. No rule disable or gate waiver."
+}

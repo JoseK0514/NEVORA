@@ -1,0 +1,24 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:35715
+- Network:       http://127.0.0.1:35715
+✓ Ready in 405ms
+✓ Running next.config.ts took 35ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 693ms (next.js: 312ms, application-code: 380ms)
+ GET /login 200 in 128ms (next.js: 1.5ms, application-code: 127ms)
+ GET /login 200 in 104ms (next.js: 1.3ms, application-code: 102ms)
+ GET /app 200 in 752ms (next.js: 86ms, application-code: 666ms)
+ POST /login 200 in 3.2s (next.js: 1.6ms, application-code: 3.2s)
+  └─ ƒ login({}) in 95ms login/actions.ts
+ GET /api/notifications 200 in 539ms (next.js: 136ms, application-code: 404ms)
+ GET /api/employee/home 200 in 474ms (next.js: 43ms, application-code: 431ms)
+ GET /api/employee/my-time 200 in 89ms (next.js: 56ms, application-code: 33ms)
+ GET /app/more 200 in 101ms (next.js: 23ms, application-code: 78ms)
+ GET /api/notifications 200 in 140ms (next.js: 1.5ms, application-code: 139ms)
+ GET /app/profile 200 in 125ms (next.js: 22ms, application-code: 103ms)
+ GET /api/employee/calendar-subscriptions 200 in 123ms (next.js: 67ms, application-code: 56ms)
+ GET /api/employee/profile 200 in 218ms (next.js: 58ms, application-code: 160ms)
+ GET /api/employee/profile?employeeId=QA-PROF0-B 400 in 22ms (next.js: 5ms, application-code: 17ms)
+[?25h

@@ -1,0 +1,33 @@
+{
+  "id": "QA-COM-001",
+  "classification": "BLOCKER",
+  "status": "OPEN",
+  "owner": "independent Senior QA /root/communications_qa_acceptance",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "observedAt": "2026-10-27T18:36:55.926141+00:00",
+  "gate": "node scripts/payroll-postgres.mjs vitest.employee-mobile-communications.config.mts",
+  "test": "src/test/integration/employee-mobile-responses.integration.ts",
+  "assertion": "src/test/integration/employee-mobile-responses.integration.ts:182",
+  "observedResult": "1 test failed after 111527ms despite all34 scenario checkpoints; two strict unexpected WebKit pageerrors at own-pickup. Cause not yet determined.",
+  "errors": [
+    {
+      "engine": "webkit",
+      "stage": "own-pickup",
+      "type": "pageerror",
+      "text": "Fetch API cannot load http://127.0.0.1:40989/api/notifications due to access control checks.\n    at unknown (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3664:49)\n    at useNotificationsSnapshot.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_023_ky3katnc-._.js:3663:89)",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "own-pickup",
+      "type": "pageerror",
+      "text": "Fetch API cannot load http://127.0.0.1:40989/api/employee/exchange due to access control checks.\n    at unknown (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1530:49)\n    at EmployeeMobileExchange.useEffect.controller (http://127.0.0.1:40989/_next/static/chunks/src_0y7qhom-cs_y-._.js:1529:87)",
+      "expected": false
+    }
+  ],
+  "results": "/workspace/nevora-evidence/independent-qa/combined/responses/results.json",
+  "resultsSha256": "637edc6b1c349b29a2412444908daaaa022579025384aa6b9d6a86e9269e988e",
+  "nextLog": "/workspace/nevora-evidence/independent-qa/combined/responses/owned-next-vfktQS/next.log",
+  "failurePixelLimit": "No failure PNG/HTML was generated because per-engine failure callback had been cleared after completed workflow before the final strict diagnostics assertion.",
+  "closureRequirement": "Retain this failed run; establish actual cause, preserve strict diagnostics/no allowlist weakening, then provide independently observed clean reproduction and required final frozen acceptance gates. Unrelated green tests do not waive this gate."
+}

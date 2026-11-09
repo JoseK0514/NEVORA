@@ -1,0 +1,1874 @@
+[
+  {
+    "path": "evidence/local-record/DRAFT_MANIFEST.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/DRAFT_MANIFEST.json",
+    "bytes": 3245,
+    "sha256": "fd89f4bbae869d66c8ebdeb2a2eeddc05e04c46aa84ed569fd9131b877b05771"
+  },
+  {
+    "path": "evidence/local-record/GALLERY_MANIFEST.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/GALLERY_MANIFEST.json",
+    "bytes": 2125,
+    "sha256": "0a3219a84217170d79cc001af6b477bc032f75864b433683ce752e1cb285abd5"
+  },
+  {
+    "path": "evidence/local-record/ROOT_EVIDENCE_MANIFEST.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ROOT_EVIDENCE_MANIFEST.json",
+    "bytes": 33889,
+    "sha256": "cbdf6478b90b93e01a792d875546631ad45c70152aa6f226baff0967efad0bf2"
+  },
+  {
+    "path": "evidence/local-record/THEME_REMEDIATION_MANIFEST.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/THEME_REMEDIATION_MANIFEST.json",
+    "bytes": 6148,
+    "sha256": "4d30d27341441a2e561a0de23d3aa87abe7bf5c6d2fc131cebe9012cf58996f3"
+  },
+  {
+    "path": "evidence/local-record/code/CLOSURE.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/CLOSURE.md",
+    "bytes": 5131,
+    "sha256": "d66244690e6e2976a36062c383a33dcab4dc0007e79ab94b835ee4d6b61d8c7a"
+  },
+  {
+    "path": "evidence/local-record/code/FINAL_DELTA.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/FINAL_DELTA.md",
+    "bytes": 2387,
+    "sha256": "0fd829e727aee1675c3717d7284bd02ea2a91d7f26d3a3661ad807b160a2241c"
+  },
+  {
+    "path": "evidence/local-record/code/INITIAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/INITIAL.md",
+    "bytes": 7415,
+    "sha256": "d5ccf8f5544ee58b43620af9deceb19b82afdffe868b1c0e0fbf38e3b49d6c71"
+  },
+  {
+    "path": "evidence/local-record/code/THEME_FIX_REVIEW.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/THEME_FIX_REVIEW.md",
+    "bytes": 3153,
+    "sha256": "54ce016140401e9b7f34e021a4ecbef1c2e37ab0ef39578297d078fb8d31707a"
+  },
+  {
+    "path": "evidence/local-record/code/THEME_INVESTIGATION.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/THEME_INVESTIGATION.md",
+    "bytes": 2846,
+    "sha256": "0e758d19c0e46e251dbbf162a4297198885f83f3be007fbd9ca081126a2a47c4"
+  },
+  {
+    "path": "evidence/local-record/code/THEME_PROBE_ASSESSMENT.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/code/THEME_PROBE_ASSESSMENT.md",
+    "bytes": 1828,
+    "sha256": "76f817e8f0c52c30d3eea0b6e469ce6f93f57ecf5083aad0f4ff542088695dea"
+  },
+  {
+    "path": "evidence/local-record/gallery/chromium-profile-light-390-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/chromium-profile-light-390-viewport.png",
+    "bytes": 53220,
+    "sha256": "263938f02976ee3f6ebc70aa7e2c9a798ff9c58507275d3ffcddc86d6c663c0c"
+  },
+  {
+    "path": "evidence/local-record/gallery/chromium-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/chromium-profile-system-light.png",
+    "bytes": 85398,
+    "sha256": "4f2d7a21f257d71686c728d4cfaa992aa549e44d3253a2cf73da5ccb2d7204d9"
+  },
+  {
+    "path": "evidence/local-record/gallery/chromium-support-light-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/chromium-support-light-text200-viewport.png",
+    "bytes": 45248,
+    "sha256": "f61bf25a6cfe24c43ed7e857464e5d5ab1803c6867db594cdfd88bdcef2426be"
+  },
+  {
+    "path": "evidence/local-record/gallery/firefox-privacy-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/firefox-privacy-text200-viewport.png",
+    "bytes": 54641,
+    "sha256": "ee138f89584cb68e0798107b63c4612c596119fb31cd84b50c5e12d5dbb12b5c"
+  },
+  {
+    "path": "evidence/local-record/gallery/firefox-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/firefox-profile-system-light.png",
+    "bytes": 99578,
+    "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b"
+  },
+  {
+    "path": "evidence/local-record/gallery/firefox-profile-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/firefox-profile-text200-viewport.png",
+    "bytes": 41941,
+    "sha256": "3dc9cdfef19b04498a9b010b47233b6e437cbe8f24c4f83d756cfec5fe2cd9a0"
+  },
+  {
+    "path": "evidence/local-record/gallery/webkit-profile-dark-320-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/webkit-profile-dark-320-viewport.png",
+    "bytes": 56148,
+    "sha256": "81eacde30e0ee29ce86013c2dc92d7ecba45d2601dff25c9a5806fd25dfaaffd"
+  },
+  {
+    "path": "evidence/local-record/gallery/webkit-profile-signout-held-native-submission.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/webkit-profile-signout-held-native-submission.png",
+    "bytes": 27347,
+    "sha256": "b2cb60c252efdf46499f2f7a5858615f7a0480fbb3af5fcaf7c189ce5b1fc69d"
+  },
+  {
+    "path": "evidence/local-record/gallery/webkit-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/gallery/webkit-profile-system-light.png",
+    "bytes": 106212,
+    "sha256": "3781e1e778906e518841aaec1760b0f24a5c0b73e3cf90a7e97068a090ea5166"
+  },
+  {
+    "path": "evidence/local-record/probes/native-keyboard.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/native-keyboard.json",
+    "bytes": 567,
+    "sha256": "c797d2825fdbd5f4e1b71b15def757c7568c87aee7d6c7ba79e845a0d0d15613"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-actual-writer-green.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-actual-writer-green.json",
+    "bytes": 29894,
+    "sha256": "966f15ea266ec4e23b61cf341113a674afe33f40dc162e1f67821b96dda7cff1"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-actual-writer-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-actual-writer-red.json",
+    "bytes": 1003,
+    "sha256": "1a1278e21f30d784fa57d96a57b5d80a8f406ef299a6c14d9ff0bd5917d5d2ed"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-actual-writer.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-actual-writer.mjs",
+    "bytes": 4474,
+    "sha256": "d94c8fef93c383856d38148bcde0561d731e746e066a3c7170845fe9e92bb4ab"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-race-native-select-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-race-native-select-red.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-race-native-select-red.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-race-native-select-red.mjs",
+    "bytes": 3880,
+    "sha256": "b0ba9f988551d7d6923ae1d791f46c9323974ea71876d39981ccd821994c4b4d"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-race.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-race.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "evidence/local-record/probes/theme-race.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/probes/theme-race.mjs",
+    "bytes": 3858,
+    "sha256": "4e435ecc7cc17dd85d12ca7c1dcd316b07c5641f3e828b5ff87fe61e867c56dd"
+  },
+  {
+    "path": "evidence/local-record/qa/HISTORICAL_4BF_NO_GO.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/qa/HISTORICAL_4BF_NO_GO.json",
+    "bytes": 37355,
+    "sha256": "a79908dfafbed8b85e856ab4674fa4a43511ddfadbc50eb384c52afbd5ccc1c4"
+  },
+  {
+    "path": "evidence/local-record/qa/HISTORICAL_4BF_NO_GO.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/qa/HISTORICAL_4BF_NO_GO.md",
+    "bytes": 22651,
+    "sha256": "add4131eb299c52289899ae07db5c300a88bd86b593ac4c6c650f3e2178595ef"
+  },
+  {
+    "path": "evidence/local-record/qa/QA_PROFILE_001_OPEN.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/qa/QA_PROFILE_001_OPEN.json",
+    "bytes": 3138,
+    "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327"
+  },
+  {
+    "path": "evidence/local-record/qa/QA_PROFILE_001_OPEN.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/qa/QA_PROFILE_001_OPEN.md",
+    "bytes": 1483,
+    "sha256": "999e1b62bacf126844672d5a3e0665dd53afd1518b913124b49972d20fe8a5dd"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "f67c096f1684698a55242de55ee6c108e4d4e47db89fe79a5a5adab143035e6d"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/owned-next-TPgWXq/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/owned-next-TPgWXq/next.log",
+    "bytes": 8178,
+    "sha256": "ee8f6e5a27f3ec2b9b29341ca5c95148ef3edc651c2aed97b7fcd702db2d077e"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/owned-next-TPgWXq/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/owned-next-TPgWXq/ownership.json",
+    "bytes": 957,
+    "sha256": "177a61e207ef6a3eaec768df1fa48e4fbe467ee4f4e8375e1cf7d2953842bc61"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/owned-next-TPgWXq/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/owned-next-TPgWXq/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "865d90922af4b1fdef1db29ecd16e9bf8d2e81d5fd85a4d76a7f127ba9920c38"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/results.json",
+    "bytes": 17326,
+    "sha256": "8b983fe0493c9d729131df2e6f5b60778dd8654b197419e900cebaf6bc2f0cf2"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/stdout.log",
+    "bytes": 2152,
+    "sha256": "6074eb15f9249b4ef2c06872b7b7547be5482f550fa8301a255a331fdf0ea82e"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/webkit-pending-requests.json",
+    "bytes": 150,
+    "sha256": "d3263b3c4c6d287488cc078292ec4651c89fa5fdcddc673256a71b173aa91eb5"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green/webkit-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green/webkit-theme-diagnostic.json",
+    "bytes": 105,
+    "sha256": "90c5ddc7731af7b88a3470d1db936aa76b591ea8e2c8be84215e2251526af9c9"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "afac12d3de4bccb8b6bfb0e1a59bd8b05091415f547225f74979075c99ce93eb"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/firefox-logout-completed-cookie-shape.json",
+    "bytes": 374,
+    "sha256": "1118990ff9bd54349e45757257c3abfcc500f2c1d7c42388e418c9cdca5cda7d"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/next.log",
+    "bytes": 12199,
+    "sha256": "58202dda7f6c355b1185c62b211635f042b1144f7bd10dd50412e317093685de"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/ownership.json",
+    "bytes": 959,
+    "sha256": "fce5479ae5b9625d1bb3e00deac0b6e6b29e332ed575c211b648b4ef9c600bba"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/owned-next-iZ2o3q/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/results.json",
+    "bytes": 24252,
+    "sha256": "773b9e82c26e4e556d32ab274beea30044a7458fe67bd868e06d65cec2021ddd"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/stdout.log",
+    "bytes": 1430,
+    "sha256": "f9a96f0f337d60a2cf4b0177e4e1e9f8107ad30e2460aad25b2f44214bda7f2b"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-green-2/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-green-2/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "7805f7e106fad8621a3af33a8893d5e8edbf9a1b08be7b0d7a0a9d6d6c1bec7f"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/chromium-pending-requests.json",
+    "bytes": 150,
+    "sha256": "1184a3b1a72d6bd5ab5e20a4ba3098af6cf08d0bc6058c7e677104167f7f455e"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/chromium-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/chromium-theme-diagnostic.json",
+    "bytes": 105,
+    "sha256": "90c5ddc7731af7b88a3470d1db936aa76b591ea8e2c8be84215e2251526af9c9"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/owned-next-W064cN/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/owned-next-W064cN/next.log",
+    "bytes": 4174,
+    "sha256": "50fddafd844c96aeb9afe011a9665c36bcccc0c103856ae0e83b926c047cdbd5"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/owned-next-W064cN/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/owned-next-W064cN/ownership.json",
+    "bytes": 955,
+    "sha256": "cb04c785dff00c4d7469e1afe8150056fdc34ab09e802ed6f8ff5f7bc38c91a7"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/owned-next-W064cN/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/owned-next-W064cN/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "1bcd954c65ed2824263550f6e99d3514c277a51ae480dfd39faff10d17939ed3"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/results.json",
+    "bytes": 7379,
+    "sha256": "479d374bd1c84a1a486a2dbe8d1ee50041078bea21b040fda282bbd3a9758c30"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-canvas-red/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-canvas-red/stdout.log",
+    "bytes": 2151,
+    "sha256": "89ca9ce008551e6554ce6de97015604d8469d93e3b1ac7cdb1a63153a1dfced6"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/chromium-pending-requests.json",
+    "bytes": 139,
+    "sha256": "22b6579c0cbc3fa5a8c3d71fbd172b75a25986f4b6b89b0ce1679a338767364f"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/owned-next-WuPa22/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/owned-next-WuPa22/next.log",
+    "bytes": 2794,
+    "sha256": "3813b48b8aed98b84bdd5e2b198632f9afaf777c488f1b448a62c240a1b635a8"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/owned-next-WuPa22/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/owned-next-WuPa22/ownership.json",
+    "bytes": 955,
+    "sha256": "599fd04c691acedcf0ede81f73b55d744b85f29b9d6aa4b15e9492184fbec9da"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/owned-next-WuPa22/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/owned-next-WuPa22/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "003ba62a84d2cb153fc4f79af2646b1589b3e7b3081ce6accb7284cb1704c843"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/results.json",
+    "bytes": 7731,
+    "sha256": "427e54a5d3df9b8c11dbd5eaab5df1b3837d14e3832549357ca04cf06cfe47cc"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-1/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-1/stdout.log",
+    "bytes": 2428,
+    "sha256": "11a4eebedc39d8a0877032afe7d451d2fc38ec42dea7ba7ebfca616a58830446"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/owned-next-Io5e5i/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/owned-next-Io5e5i/next.log",
+    "bytes": 5337,
+    "sha256": "333b052fac9bd65ecb68c208ded5ef514e535fa0582469b8b7a0297d51efae19"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/owned-next-Io5e5i/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/owned-next-Io5e5i/ownership.json",
+    "bytes": 955,
+    "sha256": "2b2b3adeb3e5fd52e9c824d87fe89d23e6015569e88d3769bbef0fca4fbe5e05"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/owned-next-Io5e5i/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/owned-next-Io5e5i/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "c7adaaef3bcb95283a3b9df8f84582ba8b5fbc51ddbaf315f32bc6358b62e280"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/results.json",
+    "bytes": 8103,
+    "sha256": "d382706f4c70e28539ca3cf12ccee825eab456ecbc185d97fb2dd4e395d4fccb"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/stdout.log",
+    "bytes": 2246,
+    "sha256": "ce081ca58ba45b4dee5242e33dd814b7437abd62cdbb5c687fe143d256bcb94b"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-2/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-2/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/owned-next-vWPwhU/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/owned-next-vWPwhU/next.log",
+    "bytes": 7467,
+    "sha256": "3d79ebc78aab60667a54ee7fdfd4bb9fa6ea9fb1bc294de1bf085c113cf2739f"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/owned-next-vWPwhU/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/owned-next-vWPwhU/ownership.json",
+    "bytes": 955,
+    "sha256": "f863d2509d0323ee11d7512dfac066f72f76c7e32c9bdd9145dccba6fae0c86a"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/owned-next-vWPwhU/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/owned-next-vWPwhU/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "b18d299b1896eacb139328dd6c3a37263cd6c180378c3faec81ef863f0131827"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/results.json",
+    "bytes": 14228,
+    "sha256": "3ce584190c3b245e1e4240709789f90c385c761920f046b244beb142f0d934b4"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/stdout.log",
+    "bytes": 2152,
+    "sha256": "39b59e058f05275025366b1e615337adeb7d803c34c11b7470b53b059a244dc4"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-3/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-3/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/chromium-logout-completed-cookie-shape.json",
+    "bytes": 379,
+    "sha256": "a414c9c5fadacb9245cb0559d03cd35b2463583dbf211ff7ceb018d38ceb1f86"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/chromium-logout-response-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/chromium-logout-response-shape.json",
+    "bytes": 601,
+    "sha256": "6a0412e5a94d9f0b842216eb26f878f6a8b7ad3dc481599954bb84223cdfc360"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/owned-next-kwrThW/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/owned-next-kwrThW/next.log",
+    "bytes": 7550,
+    "sha256": "328f649369e80f00c53ec261bf6e36aee7f1f64c771fd96f92027e09526051ee"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/owned-next-kwrThW/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/owned-next-kwrThW/ownership.json",
+    "bytes": 955,
+    "sha256": "de4ccb72982ba19ec1a04794e188bb8bc6d564c74057051a82f962f1703d0130"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/owned-next-kwrThW/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/owned-next-kwrThW/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "760fee29b1f73b67e73cd1fe7e790a503c623236a25453e2dd6a926fa162f262"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/results.json",
+    "bytes": 15910,
+    "sha256": "625215571c38ff795450090bc7f8c429a633253cf719ec27b25cf36ae79412f5"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/stdout.log",
+    "bytes": 2151,
+    "sha256": "173e1a71e3311cfa214ce188b61ec8d37d58b6ff19a42db3e2971dfdd1ee0b78"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/webkit-logout-completed-cookie-shape.json",
+    "bytes": 480,
+    "sha256": "e91840488be4184c337db602799e413fc0369622e3456d88d29cbe3b8d2c14bc"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/webkit-logout-response-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/webkit-logout-response-shape.json",
+    "bytes": 704,
+    "sha256": "f17f58a54cefc7943aeeb8ecbb1766ba31b3fcd3e03af5348c625ec8a495f8a0"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-4/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-4/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "9fac7e04edd5df2bc55fee80f0cdf462e005fe5a7d0e5ef94d0424cffb33bd23"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/firefox-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/firefox-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/owned-next-dFCI4b/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/owned-next-dFCI4b/next.log",
+    "bytes": 8782,
+    "sha256": "7e4ee04dd97438019163acb41cf14ba307aa3f2c9132c982edf6313fb6f7c133"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/owned-next-dFCI4b/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/owned-next-dFCI4b/ownership.json",
+    "bytes": 955,
+    "sha256": "18f4fc42aefbe5d1c09aab1f4d33a4d6bc764fe7ef34f987e22f2f5ed4ec3f40"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/owned-next-dFCI4b/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/owned-next-dFCI4b/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "582c4898619e8fcb576f6860be99c858f3d498102c768b1c2533f0a749388e63"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/results.json",
+    "bytes": 20957,
+    "sha256": "74ea597d333a1397514cde5cdc3dd6bb78b102696100830abc9c249acf581583"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/stdout.log",
+    "bytes": 2302,
+    "sha256": "029a37c4731a9911e22dbd2e83f14fa3bdf5ab4ec2b7b79047e71a9735c2fe68"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-5/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-5/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "6aec2f5a27a44889211c1eb91a4c9f63f307c1c35f499f81a27c6fafe3e882cd"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "b6fe0a88f2a54ed4095ab5dcb8e5ffc07d44e277f6dadb05689b57108bded6e7"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/firefox-logout-completed-cookie-shape.json",
+    "bytes": 374,
+    "sha256": "fbd3b8fb85e5bc193d6a6f4089ced8d2cc86823f077bfd7dfd1abc002a5887a5"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/owned-next-cjy11X/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/owned-next-cjy11X/next.log",
+    "bytes": 10815,
+    "sha256": "eefabf642fa1cf1affb28e93493c017a9a2c1d310fb7883d6087ffa4d94957df"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/owned-next-cjy11X/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/owned-next-cjy11X/ownership.json",
+    "bytes": 955,
+    "sha256": "b6ca98a16c53e72a0578719492074a09022821b636ebb81e20745d314a062af7"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/owned-next-cjy11X/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/owned-next-cjy11X/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "6d5213cbe44937d5906e99327d7895eefad2fcd79ba06bee9216026935bc9581"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/results.json",
+    "bytes": 20522,
+    "sha256": "2101b4b7e479ced881be97594b6d4111c18feb83e957c60f6e647038a28c9583"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/stdout.log",
+    "bytes": 1430,
+    "sha256": "d910f93e6947f612e862766f1c89c71dedcb3e4f129709d8ffeea168d3bf42e1"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-6/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-6/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "257851cf95ca48a8d144ba69b629c56109505a02a8fb29c900334e465cc25b1d"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/chromium-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/chromium-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/chromium-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/chromium-theme-diagnostic.json",
+    "bytes": 106,
+    "sha256": "89410a5b7f4c91bfa5967862bb3218f45d5614231aa79d6595495fb17c9e82ec"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/owned-next-ILfymu/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/owned-next-ILfymu/next.log",
+    "bytes": 1304,
+    "sha256": "98c1e53c778bff71d97e02185867e224c368017307dfae03cac301b9b4933659"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/owned-next-ILfymu/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/owned-next-ILfymu/ownership.json",
+    "bytes": 956,
+    "sha256": "9b0d67429e67a55588ce6bd35c3dd3a1c05333a741d09235e73139edb7750d26"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/owned-next-ILfymu/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/owned-next-ILfymu/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "be52a6f5be24b9e72d5f79decc077c6b0434eed1a71876ccf565eab8baa6f19b"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/results.json",
+    "bytes": 1798,
+    "sha256": "c1490ac76e8bca094c521aa2f2409d87374bd7e6fbc8065d4ddd477bb6eaec2b"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-7/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-7/stdout.log",
+    "bytes": 2148,
+    "sha256": "ce3ad08d1906f7e4cadc1d2b2d384be2fd12d26df9ad839fbb07d56fbcf4893c"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/chromium-logout-completed-cookie-shape.json",
+    "bytes": 380,
+    "sha256": "e3e7041a4f7db5a6cf9704ea7a7bbbd8650c3cadc122108fc3c0f53cee654dc0"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/owned-next-QSMQN3/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/owned-next-QSMQN3/next.log",
+    "bytes": 5471,
+    "sha256": "8787af6af0a79452eca113fd792fa96e05dc74e1596648414241c9fc00a19433"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/owned-next-QSMQN3/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/owned-next-QSMQN3/ownership.json",
+    "bytes": 956,
+    "sha256": "e5272377b4796837364cd7dcf343cae0007734ce65b9870b1a3c6ed4c158a695"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/owned-next-QSMQN3/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/owned-next-QSMQN3/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "21366b89240249e9fc6d6f0e7e40fd2fdb03ea57933ae9695bbbe77df713d8ae"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/results.json",
+    "bytes": 9594,
+    "sha256": "986e6535cbb27dd19f7c28c981bec0948931be3d12297772e7b60785477cbe54"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/stdout.log",
+    "bytes": 2150,
+    "sha256": "d9235b70ca3a83e0812130039e41a2b42ecb127986bae417bb443d76faacaa02"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/webkit-pending-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/webkit-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-8/webkit-theme-diagnostic.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-8/webkit-theme-diagnostic.json",
+    "bytes": 106,
+    "sha256": "89410a5b7f4c91bfa5967862bb3218f45d5614231aa79d6595495fb17c9e82ec"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/chromium-logout-completed-cookie-shape.json",
+    "bytes": 379,
+    "sha256": "4a1180b00df7ae4a82ba1836df98dd5f227bfd5a3461aa94fd73d93a085b02fb"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/firefox-logout-completed-cookie-shape.json",
+    "bytes": 373,
+    "sha256": "1d7895ce584973a7cc1edfbd030361c5c6a4b41c7e8f90ac2929fcae5e5bc9c8"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/owned-next-tpZkAB/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/owned-next-tpZkAB/next.log",
+    "bytes": 12094,
+    "sha256": "3f8fad73a5656cfb1c13055890f915a70daa53f10127e35ddb9b12276726eb3a"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/owned-next-tpZkAB/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/owned-next-tpZkAB/ownership.json",
+    "bytes": 956,
+    "sha256": "2e0f940679456b0d84e519d764559663aca07cd2c0692757765c739085c348ad"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/owned-next-tpZkAB/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/owned-next-tpZkAB/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "19ac8b013e214a5c99382f3fad1451fc34dcc3a4a1f021d78cfb243658c03c34"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/results.json",
+    "bytes": 24240,
+    "sha256": "0fa7fbe971f53a16186b68b25f6be8cbe77032a1351a95a9c1b8bc561b940684"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/stdout.log",
+    "bytes": 1430,
+    "sha256": "90ad9a5f0c633269b24463b84c95567b651304dbe8f7dc46483facb444297e89"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/local-preflight-9/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/local-preflight-9/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "e586164a3d25ab1ccd33044928180e29c9a5c285f028e9e8b5a8bb52c59bf70e"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/units-and-typescript/local-review-order-ssr-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/units-and-typescript/local-review-order-ssr-green.log",
+    "bytes": 1288,
+    "sha256": "c4746c19d78a10259fd4e350454a61da1a7bccf1f908b4ae4b6ba2b0525315dd"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/units-and-typescript/local-review-order-ssr-red.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/units-and-typescript/local-review-order-ssr-red.log",
+    "bytes": 8961,
+    "sha256": "8b521c933b94957d18bb3e4f266d013c3a62b0efeb5652570198fc0731290974"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/units-and-typescript/local-review-ts.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/units-and-typescript/local-review-ts.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/units-and-typescript/local-terminal-response-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/units-and-typescript/local-terminal-response-green.log",
+    "bytes": 1973,
+    "sha256": "9add931979a2353e1c88866501ce38d21132d542566af2959f08cc0a7386da23"
+  },
+  {
+    "path": "evidence/local-record/root-evidence/units-and-typescript/local-terminal-response-red.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/root-evidence/units-and-typescript/local-terminal-response-red.log",
+    "bytes": 3549,
+    "sha256": "801a28e943db155625d750299b95b4d812e8ef04aad067a8d7b69262844f1f07"
+  },
+  {
+    "path": "evidence/local-record/ui/FINAL_CLOSURE.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/FINAL_CLOSURE.md",
+    "bytes": 4857,
+    "sha256": "ed8531d57e269ab957cad7248939e3224b801fffcc96939872b3c46b1c6fc0db"
+  },
+  {
+    "path": "evidence/local-record/ui/INITIAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/INITIAL.md",
+    "bytes": 8695,
+    "sha256": "2e7f18b0ee1ee653003f08c2be8d75b1574a78c7296bbec3f48ade320e656216"
+  },
+  {
+    "path": "evidence/local-record/ui/PIXELS_FINAL.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/PIXELS_FINAL.json",
+    "bytes": 3200,
+    "sha256": "06dde112e84ae8682b55bab6252bb207ee37183bfdbdd47ac6cb358a5ff4c7ed"
+  },
+  {
+    "path": "evidence/local-record/ui/PIXELS_INITIAL.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/PIXELS_INITIAL.json",
+    "bytes": 4720,
+    "sha256": "f492289099490a0214cefc5faf182d42eade52908ff6dd1584c24779760acbcc"
+  },
+  {
+    "path": "evidence/local-record/ui/PIXELS_REMEDIATION.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/PIXELS_REMEDIATION.json",
+    "bytes": 5441,
+    "sha256": "e9007b1f2bf230a3caf8d2d77dfb878a9898ae735023c577f7b7670df28a6997"
+  },
+  {
+    "path": "evidence/local-record/ui/PIXELS_THEME.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/PIXELS_THEME.json",
+    "bytes": 1677,
+    "sha256": "a3e95b644d59cde2c8cef8a8958de67a277beafc457dbcec079eecf310efa642"
+  },
+  {
+    "path": "evidence/local-record/ui/REMEDIATION.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/REMEDIATION.md",
+    "bytes": 7388,
+    "sha256": "267adbf951097543e66f7ce4567c07d0c9d382fad793b0cf09b3f98bdca54152"
+  },
+  {
+    "path": "evidence/local-record/ui/THEME_DELTA.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/portable-record-draft/ui/THEME_DELTA.md",
+    "bytes": 3424,
+    "sha256": "bb81f700af9193051b48a907189a3cef5d7005ee6e12adb3acdcd62d8de52d4c"
+  },
+  {
+    "path": "reviews/CODE_FINAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/code/employee-mobile-profile-code-review-final-acceptance.md",
+    "bytes": 2737,
+    "sha256": "13921a982f4a7d795dc5429fad04e3528e470993b85a85bd8e55de9578076840"
+  },
+  {
+    "path": "reviews/UI_FINAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/ui/.omo/evidence/employee-profile-theme-delta-clone-fidelity.md",
+    "bytes": 3424,
+    "sha256": "bb81f700af9193051b48a907189a3cef5d7005ee6e12adb3acdcd62d8de52d4c"
+  },
+  {
+    "path": "reviews/QA_FINAL.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/employee-mobile-profile-manual-qa.md",
+    "bytes": 23625,
+    "sha256": "2e86bef2a58cc2650dfb5995836a1ecb39c1d7a08ae28bcef3edac4d597cd1af"
+  },
+  {
+    "path": "reviews/QA_FINAL.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/employee-mobile-profile-manual-qa.json",
+    "bytes": 42310,
+    "sha256": "a161dafdaf08f5f1fda08178dbbc5af24ad9fcf92a566d3aca70f53d93abb7ab"
+  },
+  {
+    "path": "reviews/QA_PROFILE_001_CLOSURE.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/QA-PROFILE-001-closure.json",
+    "bytes": 1378,
+    "sha256": "87e2c8015f5360f66e935ffcc3bc3eddec3a09f83d5d45d931e1ba0e2899413e"
+  },
+  {
+    "path": "evidence/qa-final/units-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/units/invocation.json",
+    "bytes": 5999,
+    "sha256": "9c256864f2b7365771964b24bd23e525d430fb7827137f5f640798079a832a64"
+  },
+  {
+    "path": "evidence/qa-final/units-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/units/result.json",
+    "bytes": 424,
+    "sha256": "b7ef9609f3d919b9289cb0f3415a74347f43e4d3ff0435bf053c1bec94f20161"
+  },
+  {
+    "path": "evidence/qa-final/units-log.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/units/stdout.log",
+    "bytes": 13338,
+    "sha256": "3a02432d0aa715a38d7731a2fab244a8bc1b31aac4de470bc23708fe76f18b2e"
+  },
+  {
+    "path": "evidence/qa-final/typescript-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/typescript/invocation.json",
+    "bytes": 1501,
+    "sha256": "80c741a7374df5a1cadd77c728a4c4920d997990c09fc386e4a9ff5d3426387b"
+  },
+  {
+    "path": "evidence/qa-final/typescript-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/typescript/result.json",
+    "bytes": 424,
+    "sha256": "06a70ab57991be31fceba9e37b832afdb4bb973fb8ae325f10ddd863a2fd1539"
+  },
+  {
+    "path": "evidence/qa-final/eslint-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/eslint/invocation.json",
+    "bytes": 2308,
+    "sha256": "a045b2f989dd3fb7f06c6d63b2d454a1919ea85262732d6f7e1e36d96b190367"
+  },
+  {
+    "path": "evidence/qa-final/eslint-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/eslint/result.json",
+    "bytes": 423,
+    "sha256": "072551786f99272e00385c5a517fb891c0ecf7791e5601c8815afebc9b9d11d6"
+  },
+  {
+    "path": "evidence/qa-final/combined-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/invocation.json",
+    "bytes": 3757,
+    "sha256": "742ef5e5689fe5449b067e6f9e44b8d6e8a758d84bbd3e8351ca6ab9de36e995"
+  },
+  {
+    "path": "evidence/qa-final/combined-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/result.json",
+    "bytes": 7120,
+    "sha256": "55d86641437f35a8c1bc3207e6c21dccbc1ff7d497ffb7701498335696068920"
+  },
+  {
+    "path": "evidence/qa-final/combined-log.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/stdout.log",
+    "bytes": 27699,
+    "sha256": "e421d4d9e7ace5044e019a8c56ab89effaa9689069f769b2ddc4ff1dc65728e8"
+  },
+  {
+    "path": "evidence/qa-final/suite.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/suite-results.json",
+    "bytes": 65159,
+    "sha256": "da112562144b1fe2c31b0bc73fe5330c9361b780814587d8dc4272124be6c9bc"
+  },
+  {
+    "path": "evidence/qa-final/probe-proof.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/independent-probe-verification.json",
+    "bytes": 3400,
+    "sha256": "1c99b14d8a3b8c8e0f30a8fcca9e7631d3dd7636ccbc79a00e99a74ab3e3014f"
+  },
+  {
+    "path": "evidence/qa-final/probe-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/theme-actual-writer-red.json",
+    "bytes": 1003,
+    "sha256": "7c774a00093b1a76682dc19d178ee93308f661363e9298645de46cbb21762820"
+  },
+  {
+    "path": "evidence/qa-final/probe-green.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/theme-actual-writer-green.json",
+    "bytes": 29237,
+    "sha256": "98cf5c4279017ae943ea86ebf360b4beb92b80228a37dbf8f00a5cf6cb219461"
+  },
+  {
+    "path": "evidence/qa-final/probe-script.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/theme-actual-writer-independent.mjs",
+    "bytes": 4543,
+    "sha256": "493ce386f88e29ecdde6475075232f835f31950f077d3ca6e6c179f67f973655"
+  },
+  {
+    "path": "evidence/qa-final/probe-prep.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/probe-preparation.json",
+    "bytes": 3230,
+    "sha256": "dae6aad3d9cecf9265f99897c7089d54e8ee9702f358a75f7cb2dfb7cb022d7a"
+  },
+  {
+    "path": "evidence/qa-final/pixels.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/personally-inspected-pixels.json",
+    "bytes": 3124,
+    "sha256": "afb0a028f9ef0d305a2140defe505bb462d6c5e511116eae1b1305ab01f1c257"
+  },
+  {
+    "path": "evidence/qa-final/firefox-system.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/firefox-profile-system-light.png",
+    "bytes": 99578,
+    "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b"
+  },
+  {
+    "path": "evidence/qa-final/custody.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/final-source-custody-verification.json",
+    "bytes": 4657,
+    "sha256": "03cd490f2bce762497de7cfd41b545624d9012eabb2c90f435e295670e161fab"
+  },
+  {
+    "path": "evidence/qa-final/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/observations.json",
+    "bytes": 61902,
+    "sha256": "e8a7cd3e93316bf469087bba4f0bb4204a68b72c5b9b99d47f992df543e175f4"
+  },
+  {
+    "path": "evidence/qa-final/recorder-provenance.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/recorder-v2-provenance.json",
+    "bytes": 634,
+    "sha256": "f45b3a71bcb75c204e1db7ae7d4dea38f2c30dfb2f712785ea1ca755f7854eb9"
+  },
+  {
+    "path": "evidence/qa-final/unit-scope.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/unit-argv-preparation.json",
+    "bytes": 9687,
+    "sha256": "73870ce146d6cfc8cb777c038c592587140856ba03761715f7428abcdab895e2"
+  },
+  {
+    "path": "evidence/qa-final/lint-scope.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/lint-files.json",
+    "bytes": 824,
+    "sha256": "900ffa2d5ade7d29ab1765b80f15cbb3988a990d10b2f3337da3e86f0db342ac"
+  },
+  {
+    "path": "evidence/qa-final/prior-no-go.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/employee-mobile-profile-manual-qa.md",
+    "bytes": 22651,
+    "sha256": "add4131eb299c52289899ae07db5c300a88bd86b593ac4c6c650f3e2178595ef"
+  },
+  {
+    "path": "evidence/qa-final/prior-finding.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+    "bytes": 3138,
+    "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327"
+  },
+  {
+    "path": "evidence/qa-final/prior-suite.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+    "bytes": 65687,
+    "sha256": "f671175853b13d70f6c8b21eadf2c0b807fa2305d916acee390c36ca2ba81c12"
+  },
+  {
+    "path": "evidence/qa-final/prior-preservation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/retained-prior-failure-artifacts.json",
+    "bytes": 1330,
+    "sha256": "3411183ba4de7f19ac9763ab66b724d8885d47d1be82fee434b81ac787efc684"
+  },
+  {
+    "path": "evidence/qa-final/requests-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/results.json",
+    "bytes": 9870,
+    "sha256": "5a1230808fa9a5aa86c4363eb1f6afc46829e28edda08649d33802f5a8d6a7c3"
+  },
+  {
+    "path": "evidence/qa-final/responses-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/results.json",
+    "bytes": 18148,
+    "sha256": "b69baeaeadd615f6af7f100eb740754fa64f784c2f3ac1d8ee418550a4930a15"
+  },
+  {
+    "path": "evidence/qa-final/creation-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/results.json",
+    "bytes": 31770,
+    "sha256": "b3ae0301f9c12c925944ae49d3f7f3959f5f16275873f51fe4c820bd2d9160a2"
+  },
+  {
+    "path": "evidence/qa-final/planning-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/results.json",
+    "bytes": 34458,
+    "sha256": "7ebbfa60a0d92cf00fb2bc2554e170f2125f71c857a9b2ea8ceca439fee367d1"
+  },
+  {
+    "path": "evidence/qa-final/hours-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/results.json",
+    "bytes": 30616,
+    "sha256": "1db86c5d22ac0fce22f2e24f7f3ccf8a7e523b19dcc110ed6c370f1dd5b333b1"
+  },
+  {
+    "path": "evidence/qa-final/messages-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/results.json",
+    "bytes": 45879,
+    "sha256": "f56a79261cbc1789773ebe6ee001a6a37423ec84b65fd265c91014f7b97a8c1f"
+  },
+  {
+    "path": "evidence/qa-final/messages-review-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/results.json",
+    "bytes": 10621,
+    "sha256": "9668fdead3dd5c2372b7cde3cbcfe2830ae26c7a151e984d565764e91c88c681"
+  },
+  {
+    "path": "evidence/qa-final/profile-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/results.json",
+    "bytes": 24375,
+    "sha256": "0dd29e58c42e59b654a5ce008e8b38d985e3ebd1ac1a97841362adedc2de8953"
+  },
+  {
+    "path": "evidence/qa-final/owner-messages.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/owned-next-4Oda31/ownership.json",
+    "bytes": 982,
+    "sha256": "b4a9f74df7e67e888c9a15adb0fc7dd26e195173b6887145c1a685da9eacab6d"
+  },
+  {
+    "path": "evidence/qa-final/owner-responses.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/owned-next-hkiZFq/ownership.json",
+    "bytes": 983,
+    "sha256": "a1d8bd48866c25d9744eb929b19154386c6066fd434644f776f0c3982c23b551"
+  },
+  {
+    "path": "evidence/qa-final/owner-planning.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/owned-next-fadKyF/ownership.json",
+    "bytes": 982,
+    "sha256": "3a1c4adba2011ab118de950c5993743ebc6ed0e527e41577b7b9c1febd63679f"
+  },
+  {
+    "path": "evidence/qa-final/owner-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/owned-next-jb04Re/ownership.json",
+    "bytes": 982,
+    "sha256": "16f60100389188d45b50fc67c1006d13cbe3e9c23529e38eb9fefcbae7d975e3"
+  },
+  {
+    "path": "evidence/qa-final/owner-messages-review.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/owned-next-lvNcFb/ownership.json",
+    "bytes": 989,
+    "sha256": "dfea713907458f50ab46cd8034d93ba8c5ba87021c7caf2476dd9251a6ec1e22"
+  },
+  {
+    "path": "evidence/qa-final/owner-creation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/owned-next-chGb2T/ownership.json",
+    "bytes": 982,
+    "sha256": "fc71701fa632438c677a727ae55b2665304300a618863f5bd28aca0b3fcc7252"
+  },
+  {
+    "path": "evidence/qa-final/owner-profile.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/owned-next-Mxoc05/ownership.json",
+    "bytes": 981,
+    "sha256": "9703ae1ee5d61fd2216b9f3cf870f75e105b42000852d4a599c714ebdf0f7276"
+  },
+  {
+    "path": "evidence/qa-final/owner-hours.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/owned-next-7gTHAE/ownership.json",
+    "bytes": 979,
+    "sha256": "c7c656f04a5e02eb91a7ec926ae5c2003dd9128e9c88b982fec8c8e8d30f8603"
+  },
+  {
+    "path": "evidence/qa-final/manifest-messages.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages/owned-next-4Oda31/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-responses.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/responses/owned-next-hkiZFq/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-planning.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/planning/owned-next-fadKyF/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/requests/owned-next-jb04Re/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-messages-review.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/messages-review/owned-next-lvNcFb/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-creation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/creation/owned-next-chGb2T/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-profile.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/profile/owned-next-Mxoc05/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/manifest-hours.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/hours/owned-next-7gTHAE/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/qa-final/history.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/combined/canonical-e/communication-history-preservation.json",
+    "bytes": 21368,
+    "sha256": "4312e237ddfbce8ce75c56600e3c8ea9bcbdfe022f42f6a021c9ae600a678e77"
+  },
+  {
+    "path": "evidence/qa-final/closure.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/QA-PROFILE-001-closure.json",
+    "bytes": 1378,
+    "sha256": "87e2c8015f5360f66e935ffcc3bc3eddec3a09f83d5d45d931e1ba0e2899413e"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/units-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/invocation.json",
+    "bytes": 5999,
+    "sha256": "f1ed547ceb325f10f9db45e272a4bfa1a1d8145916985b6a6e620f729a26194a"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/units-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/result.json",
+    "bytes": 424,
+    "sha256": "21c67aa0a8335a8c34c03ebd1137bc1cc2b11b853f777062d2419fe4d582dfc8"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/units-log.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/units/stdout.log",
+    "bytes": 13347,
+    "sha256": "df9d4bd35a9440ad7b3b7ea75e196ca39d039b7721df6ab73ad269282a144ffb"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/typescript-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/typescript/invocation.json",
+    "bytes": 1501,
+    "sha256": "dc81a7026fd4976353077aad016f4aabb6f1755506dce82b48ad0a841b6ecf4e"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/typescript-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/typescript/result.json",
+    "bytes": 424,
+    "sha256": "ea651f0bac2eca06fd4a16e245821e0c8e47802122200d891f8ce9d5c37729f4"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/eslint-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/eslint/invocation.json",
+    "bytes": 2255,
+    "sha256": "ce9f3efaa6f8be4aab69d4a5c7c7585c99c6c9f43d5d8558b27f5fb2217290a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/eslint-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/eslint/result.json",
+    "bytes": 422,
+    "sha256": "6e2e739a75ec87edf4d67344720808c78b8c5492aa691a888599b5211f40bb67"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/combined-invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/invocation.json",
+    "bytes": 3757,
+    "sha256": "a96b003a944c737b34b32eca7bf6316fa452e46097a38d76dcf20bd39e11d45b"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/combined-result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/result.json",
+    "bytes": 7120,
+    "sha256": "47fd4acc8b32b8dd262df31b37a8380061672443ac5ee8bbd25af99e85948a10"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/combined-log.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/stdout.log",
+    "bytes": 28891,
+    "sha256": "e2b384187c311a061a91c316f94f9e40dad8af080ae9c834382a64859bd86948"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/suite.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/suite-results.json",
+    "bytes": 65687,
+    "sha256": "f671175853b13d70f6c8b21eadf2c0b807fa2305d916acee390c36ca2ba81c12"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/finding.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/QA-PROFILE-001.json",
+    "bytes": 3138,
+    "sha256": "efeb66139b2d01e520d225fe4f2cfc08448c965dd22601993be50afcbbd8e327"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/theme.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-theme-diagnostic.json",
+    "bytes": 105,
+    "sha256": "3a825d8b99b8d18f2cd99caf02bc688836f6228a008414ff1ba936f3c746ee14"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/theme-pixels.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.png",
+    "bytes": 100294,
+    "sha256": "c49d001ef0556ec24f343980bd5343af5a16f8a9d60daa421f23627760038600"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/theme-dom.html",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-failure.html",
+    "bytes": 53405,
+    "sha256": "02b9435b25001dd33694c4c4d558b29627aba39ed2296e158b874b0fe2a18881"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/pending.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/firefox-pending-requests.json",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/pixels.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/personally-inspected-pixels.json",
+    "bytes": 2723,
+    "sha256": "9557063a9dd95f62ea851b9a42ddd91562d1a55382a9e41dd0d7990fb96f4b38"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/custody.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/final-source-custody-verification.json",
+    "bytes": 3791,
+    "sha256": "46cd4726d8c6b612d7cf67a6da36e19134eed0de55b6095085f79d4e79517228"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observations.json",
+    "bytes": 67447,
+    "sha256": "385c8d888f10123946796432320e78c0984fb6dbe16195d05976cd0c630923a4"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/marker-note.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/database-observer-note.json",
+    "bytes": 898,
+    "sha256": "6298e52adb322c6912439c2300e1950d9e25da13c7b51f442b4db136a9781b75"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/marker-1.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observed-database-shared-markers.json",
+    "bytes": 137,
+    "sha256": "ee442cdc67c8d2f5a840368b6c455f8271a0e839b8165ba808e9d6c3136298ad"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/marker-2.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/observed-database-shared-markers-second.json",
+    "bytes": 537,
+    "sha256": "c5e0d8e3cdf2ae34c894ff84079c67f37ae2b5d0b077a2506caf0cccd67d43b4"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/invalid-attempt.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/invalid-attempt-closure.json",
+    "bytes": 1009,
+    "sha256": "43833162dbcb3778f3700cdc8f4b2d55157ad9b7c11bacd674dc2364ca7afc8a"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/argv.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/unit-argv-preparation.json",
+    "bytes": 9687,
+    "sha256": "73870ce146d6cfc8cb777c038c592587140856ba03761715f7428abcdab895e2"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/lint-scope.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/lint-files.json",
+    "bytes": 775,
+    "sha256": "38eae6fbbd2c2d75627440b2a3ad4ed2c99635dd796d158279a99a0ec266216b"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/requests-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/results.json",
+    "bytes": 9870,
+    "sha256": "90c55e023345735bcb2c5f2f28420f3a72a61ec16117a75ba434d2131f97541d"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/responses-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/results.json",
+    "bytes": 19953,
+    "sha256": "4780bbcbec91ac2f29a1023b4ad5705c618a4f02dd3eab06ab07865d216fb63b"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/creation-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/results.json",
+    "bytes": 32317,
+    "sha256": "73312cdbbdf610be98ba60cf85dbf7f0a021d6d99af3c61a07e8ca819b4c94dd"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/planning-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/results.json",
+    "bytes": 34156,
+    "sha256": "22cc5235022db7e6cec9c9cc269aba50deb0d90b124b30aed0d133d88e3314f8"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/hours-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/results.json",
+    "bytes": 29800,
+    "sha256": "d0fcde689325a4742193caf34c6432293511c8d202716dc3d1172f356dc4d0b8"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/messages-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/results.json",
+    "bytes": 50216,
+    "sha256": "9953186817895d03f50e90e98fa7926361a8efe84eb9183a2dd3525651f9ecdf"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/messages-review-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/results.json",
+    "bytes": 10618,
+    "sha256": "21e0c951792d059fa4e4db6aabebf4931c7898f607f39f8652d6fe4d55d6ceb9"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/profile-browser.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/results.json",
+    "bytes": 22202,
+    "sha256": "0bbe931527c732be4dd878dd9913e7d8cb04f954fb6e176ed4f9f4a5e1844ced"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-messages.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/owned-next-9ClGEK/ownership.json",
+    "bytes": 982,
+    "sha256": "5c7b5950d901a602083abc6cc9bce03242a7a307e8f03ea6c3309558cbb473fe"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-responses.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/owned-next-ifA9Rx/ownership.json",
+    "bytes": 983,
+    "sha256": "a02475d4c990ced180ce3a1a0d81c982e18063c4bb9ac08e78c7e053fb22f0f1"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-planning.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/owned-next-qBaAJL/ownership.json",
+    "bytes": 982,
+    "sha256": "633d6d9357fa1bb091afc7c2b3b7e27b11807db60ccf3aa1f12b4231aeb112fb"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/owned-next-XCDdkG/ownership.json",
+    "bytes": 982,
+    "sha256": "656c15e8305b5cb8c3a0b10bc0827b2158fed9292c7648eb155cc7bb0c40708c"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-messages-review.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/owned-next-W7Gnel/ownership.json",
+    "bytes": 989,
+    "sha256": "1d3e7f14101749f8242dcba762d89457aea0ebd02a6b030c0469528ce2ad374b"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-creation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/owned-next-SRVvpL/ownership.json",
+    "bytes": 982,
+    "sha256": "ae4df3dfefafd26c467c83385e5cf941419a76309c9d79710a05e42ab7c9ca78"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-profile.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/owned-next-sQQuIC/ownership.json",
+    "bytes": 981,
+    "sha256": "f8e392238e56fab5cb27b533d62078587d4945a1adcd12a153b5a98f273d18aa"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/owner-hours.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/owned-next-fApaCM/ownership.json",
+    "bytes": 979,
+    "sha256": "5e332ac639d88142e99543613dce502cdd805adb321573c6a5dfcdb35cdf6189"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-messages.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages/owned-next-9ClGEK/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-responses.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/responses/owned-next-ifA9Rx/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-planning.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/planning/owned-next-qBaAJL/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-requests.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/requests/owned-next-XCDdkG/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-messages-review.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/messages-review/owned-next-W7Gnel/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-creation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/creation/owned-next-SRVvpL/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-profile.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/profile/owned-next-sQQuIC/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/manifest-hours.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/hours/owned-next-fApaCM/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ae7ade78aabe55524f06e1dce69e582a6422fe28099964285e7087b27e2d04a3"
+  },
+  {
+    "path": "evidence/qa-4bf-no-go/history.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/combined/canonical-e/communication-history-preservation.json",
+    "bytes": 21366,
+    "sha256": "9ad58d459bc67d82a45a11625ed4c51781f5d39279c01620d7f75d213ab2a2c2"
+  },
+  {
+    "path": "evidence/root-theme/webkit-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-logout-completed-cookie-shape.json",
+    "bytes": 366,
+    "sha256": "e13a0c39d85930dd7349175c5248461fe9dfe2b0c5fe91b583fa94725e00c6b2"
+  },
+  {
+    "path": "evidence/root-theme/results.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/results.json",
+    "bytes": 24270,
+    "sha256": "2d7dd53670b09901910f9ecbfb4cc64e68938ea7f0e4749559454d27e2020141"
+  },
+  {
+    "path": "evidence/root-theme/firefox-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-logout-completed-cookie-shape.json",
+    "bytes": 374,
+    "sha256": "3ca6c13278022ce38625fb4ac7f53b859d89418d5898ffc4bece926550420ea1"
+  },
+  {
+    "path": "evidence/root-theme/chromium-logout-completed-cookie-shape.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-logout-completed-cookie-shape.json",
+    "bytes": 379,
+    "sha256": "defa38ff5208199eea2042fda5bd5c6eee0dd60048155b041d2bb6772d5dcb22"
+  },
+  {
+    "path": "evidence/root-theme/owned-next-k25skj/ownership.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/owned-next-k25skj/ownership.json",
+    "bytes": 956,
+    "sha256": "01b0ff07bf01e4498d45507b8344d2cc0a8fe0a6eef69d8cee4082f12874da2f"
+  },
+  {
+    "path": "evidence/root-theme/owned-next-k25skj/source-manifest.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/owned-next-k25skj/source-manifest.json",
+    "bytes": 239328,
+    "sha256": "ff3d14630a345a0445f67e66bf7784d0e73c858cc16d56261fbf22a3b2d61383"
+  },
+  {
+    "path": "evidence/root-theme/owned-next-k25skj/next.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/owned-next-k25skj/next.log",
+    "bytes": 12089,
+    "sha256": "27f95341b5cd26130aaae031141fa4bc3ed55c593831917c31c16b4795c20f96"
+  },
+  {
+    "path": "evidence/root-theme/local-theme-race-red.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-theme-race-red.log",
+    "bytes": 2292,
+    "sha256": "06d6aded16cd5436910a51ab4c8dc7a7b94f90256e7daddc00bd7e7b0f8b74ce"
+  },
+  {
+    "path": "evidence/root-theme/local-theme-race-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-theme-race-green.log",
+    "bytes": 893,
+    "sha256": "4aaf8b2d7e358400da9463c478184cecc63fc18297cf21bd60b39a977919b9a7"
+  },
+  {
+    "path": "evidence/root-theme/local-theme-green.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/local-theme-green.log",
+    "bytes": 1430,
+    "sha256": "64b4041bd6a51c18250675732c8ca1124c794bc08cd378774e6a21acf4daf46f"
+  },
+  {
+    "path": "evidence/theme-proof/theme-race.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "evidence/theme-proof/theme-actual-writer.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer.mjs",
+    "bytes": 4474,
+    "sha256": "d94c8fef93c383856d38148bcde0561d731e746e066a3c7170845fe9e92bb4ab"
+  },
+  {
+    "path": "evidence/theme-proof/theme-race-native-select-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race-native-select-red.json",
+    "bytes": 894,
+    "sha256": "408430a195a6bcdbecff779d143fc28349f4668a2a738ddddfd764ed1bd07326"
+  },
+  {
+    "path": "evidence/theme-proof/theme-race-native-select-red.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race-native-select-red.mjs",
+    "bytes": 3880,
+    "sha256": "b0ba9f988551d7d6923ae1d791f46c9323974ea71876d39981ccd821994c4b4d"
+  },
+  {
+    "path": "evidence/theme-proof/theme-actual-writer-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-red.json",
+    "bytes": 1003,
+    "sha256": "1a1278e21f30d784fa57d96a57b5d80a8f406ef299a6c14d9ff0bd5917d5d2ed"
+  },
+  {
+    "path": "evidence/theme-proof/theme-actual-writer-green.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-actual-writer-green.json",
+    "bytes": 29894,
+    "sha256": "966f15ea266ec4e23b61cf341113a674afe33f40dc162e1f67821b96dda7cff1"
+  },
+  {
+    "path": "evidence/theme-proof/theme-race.mjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-probes/theme-race.mjs",
+    "bytes": 3858,
+    "sha256": "4e435ecc7cc17dd85d12ca7c1dcd316b07c5641f3e828b5ff87fe61e867c56dd"
+  },
+  {
+    "path": "gallery/chromium-profile-light-390-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-profile-light-390-viewport.png",
+    "bytes": 53220,
+    "sha256": "263938f02976ee3f6ebc70aa7e2c9a798ff9c58507275d3ffcddc86d6c663c0c"
+  },
+  {
+    "path": "gallery/webkit-profile-dark-320-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-dark-320-viewport.png",
+    "bytes": 56148,
+    "sha256": "81eacde30e0ee29ce86013c2dc92d7ecba45d2601dff25c9a5806fd25dfaaffd"
+  },
+  {
+    "path": "gallery/firefox-profile-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-profile-text200-viewport.png",
+    "bytes": 41941,
+    "sha256": "3dc9cdfef19b04498a9b010b47233b6e437cbe8f24c4f83d756cfec5fe2cd9a0"
+  },
+  {
+    "path": "gallery/webkit-profile-signout-held-native-submission.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-signout-held-native-submission.png",
+    "bytes": 27347,
+    "sha256": "b2cb60c252efdf46499f2f7a5858615f7a0480fbb3af5fcaf7c189ce5b1fc69d"
+  },
+  {
+    "path": "gallery/chromium-support-light-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-support-light-text200-viewport.png",
+    "bytes": 45248,
+    "sha256": "f61bf25a6cfe24c43ed7e857464e5d5ab1803c6867db594cdfd88bdcef2426be"
+  },
+  {
+    "path": "gallery/firefox-privacy-text200-viewport.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-privacy-text200-viewport.png",
+    "bytes": 54641,
+    "sha256": "ee138f89584cb68e0798107b63c4612c596119fb31cd84b50c5e12d5dbb12b5c"
+  },
+  {
+    "path": "gallery/chromium-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/chromium-profile-system-light.png",
+    "bytes": 85398,
+    "sha256": "4f2d7a21f257d71686c728d4cfaa992aa549e44d3253a2cf73da5ccb2d7204d9"
+  },
+  {
+    "path": "gallery/webkit-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/webkit-profile-system-light.png",
+    "bytes": 106212,
+    "sha256": "3781e1e778906e518841aaec1760b0f24a5c0b73e3cf90a7e97068a090ea5166"
+  },
+  {
+    "path": "gallery/firefox-profile-system-light.png",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-theme-green/firefox-profile-system-light.png",
+    "bytes": 99578,
+    "sha256": "5567a0ed33c02f66848216efb16306e2d285a677c98c9fa4a364efb48b64330b"
+  },
+  {
+    "path": "evidence/qa-tools/run-qa.py.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa.py",
+    "bytes": 7052,
+    "sha256": "2cc97af210c1c73abfd417a89723984559c556b5d8f470be69c06ddd22ea2910"
+  },
+  {
+    "path": "evidence/qa-tools/inspect-owned-cluster.cjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/inspect-owned-cluster.cjs",
+    "bytes": 945,
+    "sha256": "3872dc656d7025a8906775aab5646a96a3885d6c32ccafa2f91ab865e80a1a21"
+  },
+  {
+    "path": "evidence/qa-tools/run-qa-v2.py.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/run-qa-v2.py",
+    "bytes": 7058,
+    "sha256": "1ab1d15c0a1624b748aa0772efe165a8181d08cc831ca0a5cd7a85c3b4983889"
+  },
+  {
+    "path": "evidence/qa-tools/inspect-owned-cluster-v2.cjs.txt",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/inspect-owned-cluster-v2.cjs",
+    "bytes": 947,
+    "sha256": "4fdd04b9422791bb0029a02e445b222a2c807c7205e7ee8f3fa61e124a1cbe8d"
+  },
+  {
+    "path": "evidence/qa-setup-history/lint-files.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/lint-files.json",
+    "bytes": 775,
+    "sha256": "38eae6fbbd2c2d75627440b2a3ad4ed2c99635dd796d158279a99a0ec266216b"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/before.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/before.json",
+    "bytes": 222,
+    "sha256": "9d9cb8a2042c26e5e067caef6a9b7f5edbb1c140677d7cd3dd90ed954167cad1"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/result.json",
+    "bytes": 423,
+    "sha256": "8225e7b81b4a1ad03d9be1ba101774024b7dbd51b6a34e49cb12726bb2d116e7"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/stdout.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/observations.json",
+    "bytes": 513,
+    "sha256": "26ce6cfd19cffb177ed905ca988f5446715543de67bdf04a48757d774f6286ce"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/invocation.json",
+    "bytes": 1325,
+    "sha256": "164498d48b35045e2c6d57965b8f02fd518d571cf648ad825fbe144c4a36faf4"
+  },
+  {
+    "path": "evidence/qa-setup-history/typescript/source-inputs.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/typescript/source-inputs.json",
+    "bytes": 261817,
+    "sha256": "e93e2827c3622604819efb94470832a0bdbb41a1344c2609b3a0ddb5e862fd51"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/before.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/before.json",
+    "bytes": 222,
+    "sha256": "9d9cb8a2042c26e5e067caef6a9b7f5edbb1c140677d7cd3dd90ed954167cad1"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/result.json",
+    "bytes": 424,
+    "sha256": "1a6cd83bfff35284c3a3aa310f32a40543c1abd12a3f3a671ecc7266a51e98c8"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/stdout.log",
+    "bytes": 13347,
+    "sha256": "a8b4b9eb80824a25ec63f89ef798e5941c6772f9a0ccace99d1a3c045115925c"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/observations.json",
+    "bytes": 683,
+    "sha256": "d0e81ba2143edc42e7f4e75a45cccfe01787b0726b2250b4b77a8b0ad8c26e7e"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/invocation.json",
+    "bytes": 5823,
+    "sha256": "e2528679099aa451225130a824efabcdef856bba392d62227a3e1090a87257c2"
+  },
+  {
+    "path": "evidence/qa-setup-history/units/source-inputs.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/units/source-inputs.json",
+    "bytes": 261817,
+    "sha256": "e93e2827c3622604819efb94470832a0bdbb41a1344c2609b3a0ddb5e862fd51"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/before.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/before.json",
+    "bytes": 222,
+    "sha256": "9d9cb8a2042c26e5e067caef6a9b7f5edbb1c140677d7cd3dd90ed954167cad1"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/result.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/result.json",
+    "bytes": 423,
+    "sha256": "b255889fcffb00b51a6b1cac70a82736005b18eeecbdb00409ade78ee09bcedc"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/stdout.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/observations.json",
+    "bytes": 173,
+    "sha256": "42624d393e661eeddf8833481ba498a47f8d88adb7986ddf5464e01d23c87d62"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/invocation.json",
+    "bytes": 2079,
+    "sha256": "54875dfe1266a67a1156ccf5a5e853470c404c0a7719259e83bea8ddfdf6632b"
+  },
+  {
+    "path": "evidence/qa-setup-history/eslint/source-inputs.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/eslint/source-inputs.json",
+    "bytes": 261817,
+    "sha256": "e93e2827c3622604819efb94470832a0bdbb41a1344c2609b3a0ddb5e862fd51"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/before.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/before.json",
+    "bytes": 222,
+    "sha256": "9d9cb8a2042c26e5e067caef6a9b7f5edbb1c140677d7cd3dd90ed954167cad1"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/interrupted-postgres.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/interrupted-postgres.log",
+    "bytes": 100251,
+    "sha256": "ac4b08e72ca44d374b00235cee0350fb066ec98b46abbbf140d21bf5c18f2d11"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/stdout.log",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/stdout.log",
+    "bytes": 11474,
+    "sha256": "dee49e5a341ea904d4fe2f49b54b4bd112c5a84f4e3ded76d27a09095c889e7a"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/qa-setup-interruption.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/qa-setup-interruption.json",
+    "bytes": 420,
+    "sha256": "357031afdd515ae2fef2dc145f645852352495a3af6f8acfb20d9fdcfebb2abd"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/observations.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/observations.json",
+    "bytes": 1079,
+    "sha256": "337c7ca76688c31fdf22db89a5fc6bb45b011d626ab1214a6867d2f0cd554d32"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/invocation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/invocation.json",
+    "bytes": 3581,
+    "sha256": "4721ce476e923e913e35a166e1f1150eeab5d767606cedeb23cccf4538d2c003"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/source-inputs.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/source-inputs.json",
+    "bytes": 261817,
+    "sha256": "e93e2827c3622604819efb94470832a0bdbb41a1344c2609b3a0ddb5e862fd51"
+  },
+  {
+    "path": "evidence/qa-setup-history/combined/invalid-attempt-closure.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/f52f314e/combined/invalid-attempt-closure.json",
+    "bytes": 1009,
+    "sha256": "43833162dbcb3778f3700cdc8f4b2d55157ad9b7c11bacd674dc2364ca7afc8a"
+  },
+  {
+    "path": "evidence/qa-final-meta/probe-preparation.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/probe-preparation.json",
+    "bytes": 3230,
+    "sha256": "dae6aad3d9cecf9265f99897c7089d54e8ee9702f358a75f7cb2dfb7cb022d7a"
+  },
+  {
+    "path": "evidence/qa-final-meta/recorder-v2-provenance.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/recorder-v2-provenance.json",
+    "bytes": 634,
+    "sha256": "f45b3a71bcb75c204e1db7ae7d4dea38f2c30dfb2f712785ea1ca755f7854eb9"
+  },
+  {
+    "path": "evidence/qa-final-meta/lint-files.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/lint-files.json",
+    "bytes": 824,
+    "sha256": "900ffa2d5ade7d29ab1765b80f15cbb3988a990d10b2f3337da3e86f0db342ac"
+  },
+  {
+    "path": "evidence/qa-final-meta/employee-mobile-profile-manual-qa.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/employee-mobile-profile-manual-qa.json",
+    "bytes": 42310,
+    "sha256": "a161dafdaf08f5f1fda08178dbbc5af24ad9fcf92a566d3aca70f53d93abb7ab"
+  },
+  {
+    "path": "evidence/qa-final-meta/QA-PROFILE-001-closure.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/QA-PROFILE-001-closure.json",
+    "bytes": 1378,
+    "sha256": "87e2c8015f5360f66e935ffcc3bc3eddec3a09f83d5d45d931e1ba0e2899413e"
+  },
+  {
+    "path": "evidence/qa-final-meta/theme-actual-writer-red.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/theme-actual-writer-red.json",
+    "bytes": 1003,
+    "sha256": "7c774a00093b1a76682dc19d178ee93308f661363e9298645de46cbb21762820"
+  },
+  {
+    "path": "evidence/qa-final-meta/retained-prior-failure-artifacts.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/retained-prior-failure-artifacts.json",
+    "bytes": 1330,
+    "sha256": "3411183ba4de7f19ac9763ab66b724d8885d47d1be82fee434b81ac787efc684"
+  },
+  {
+    "path": "evidence/qa-final-meta/theme-actual-writer-green.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/theme-actual-writer-green.json",
+    "bytes": 29237,
+    "sha256": "98cf5c4279017ae943ea86ebf360b4beb92b80228a37dbf8f00a5cf6cb219461"
+  },
+  {
+    "path": "evidence/qa-final-meta/personally-inspected-pixels.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/personally-inspected-pixels.json",
+    "bytes": 3124,
+    "sha256": "afb0a028f9ef0d305a2140defe505bb462d6c5e511116eae1b1305ab01f1c257"
+  },
+  {
+    "path": "evidence/qa-final-meta/final-source-custody-verification.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/final-source-custody-verification.json",
+    "bytes": 4657,
+    "sha256": "03cd490f2bce762497de7cfd41b545624d9012eabb2c90f435e295670e161fab"
+  },
+  {
+    "path": "evidence/qa-final-meta/independent-probe-verification.json",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/2e4104ce/independent-probe-verification.json",
+    "bytes": 3400,
+    "sha256": "1c99b14d8a3b8c8e0f30a8fcca9e7631d3dd7636ccbc79a00e99a74ab3e3014f"
+  },
+  {
+    "path": "NEXT_CALENDAR_DISCOVERY.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/NEXT-CALENDAR-DISCOVERY.md",
+    "bytes": 4622,
+    "sha256": "4482dcb363acb26d0c2d0a7bba2c666f75571f45a9bffcd6d4945bca4aecf16d"
+  },
+  {
+    "path": "evidence/EXECUTION_LEDGER.md",
+    "source": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.superpowers/sdd/employee-mobile-profile-plan/progress.md",
+    "bytes": 18356,
+    "sha256": "5baf8e2fbaad7614c1ac874ddb218e3facd84c050aadb17fda834042506ba550"
+  }
+]

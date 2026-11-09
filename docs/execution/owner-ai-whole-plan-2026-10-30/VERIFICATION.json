@@ -1,0 +1,398 @@
+{
+  "status": "Bounded LOCAL acceptance: independent Code GO; QA GO; UI GO WITH CONDITIONS. UI-M1 remains OPEN. No hosted/production acceptance.",
+  "exactSourceRule": "Application/default-unit/OwnerSQL/browser/pilot evidence is f2a0aac4. Later29afff60 changes exactly two generation integration tests; all other tracked bytes identical, independently checked, and neither test is in default-unit inventory. Full generation177 and fresh whole TypeScript/ESLint run at29. Final delivery adds docs only.",
+  "finalGates": [
+    {
+      "gate": "Full required npm test -- --maxWorkers=2",
+      "candidate": "f2a0aac4",
+      "result": "PASS",
+      "passed": 10331,
+      "skipped": 801,
+      "pending": 55,
+      "failed": 0,
+      "filesPassed": 670,
+      "filesSkipped": 27,
+      "durationSeconds": 398.92,
+      "evidence": "f2a0aac4/all-unit-final-01"
+    },
+    {
+      "gate": "Original/new Owner SQL",
+      "candidate": "f2a0aac4",
+      "result": "PASS",
+      "passed": 51,
+      "failed": 0,
+      "durationSeconds": 48.78,
+      "evidence": "f2a0aac4/sql-final-01"
+    },
+    {
+      "gate": "Original/new actual browser suites",
+      "candidate": "f2a0aac4",
+      "result": "PASS",
+      "passedSuites": 3,
+      "engines": [
+        "Chromium",
+        "WebKit"
+      ],
+      "durationSeconds": 245.4,
+      "perTestDeadlineMs": 240000,
+      "evidence": "f2a0aac4/browser-final-01"
+    },
+    {
+      "gate": "Original activation/pilot guard",
+      "candidate": "f2a0aac4",
+      "result": "PASS",
+      "passed": 18,
+      "provider": "sentinels+owned loopback only",
+      "evidence": "f2a0aac4/pilot-final-01"
+    },
+    {
+      "gate": "Complete management generation SQL",
+      "candidate": "29afff60",
+      "result": "PASS",
+      "passed": 177,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 108.21,
+      "evidence": "harness-fixed/generation-sql-final-02"
+    },
+    {
+      "gate": "Whole TypeScript nonincremental",
+      "candidate": "29afff60",
+      "exitCode": 0,
+      "evidence": "29afff60/types-final-01"
+    },
+    {
+      "gate": "Whole ESLint",
+      "candidate": "29afff60",
+      "exitCode": 0,
+      "evidence": "29afff60/lint-final-01"
+    },
+    {
+      "gate": "Whitespace and source equivalence",
+      "candidate": "29afff60",
+      "exitCode": 0,
+      "evidence": "29afff60/source-custody"
+    },
+    {
+      "gate": "Fresh independent review/browser/boundary probes",
+      "candidate": "f2a0aac4",
+      "result": "Code LOCAL GO; UI LOCAL GO WITH CONDITIONS (UI-M1 OPEN); original report preserved, broad QA reconciled separately.",
+      "evidence": "independent-f2a0aac4"
+    },
+    {
+      "gate": "Independent corrected harness350ms writer delay",
+      "candidate": "29afff60",
+      "result": "PASS",
+      "passed": 1,
+      "filteredSkipped": 34,
+      "evidence": "independent-f2a0aac4/harness-29afff60-350ms"
+    },
+    {
+      "gate": "Independent final gate reconciliation",
+      "candidate": "29afff60",
+      "result": "QA LOCAL GO; supplemental management-SQL condition independently CLOSED; UI-M1 remains OPEN",
+      "report": "INDEPENDENT-QA-SUPPLEMENT-29afff60-20261030.md"
+    }
+  ],
+  "retainedVitestJSONExecutions": [
+    {
+      "file": "baseline-da1dab3e/generation-focused-01/result.json",
+      "sha256": "63dd8bfb7abbeae9d8a6fd348b8341f3b203bb8abd34201ea86e38091a5c8eae",
+      "success": true,
+      "assertionStatuses": {
+        "skipped": 174,
+        "passed": 2
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "browser-focus-red-02/result.json",
+      "sha256": "a0b60232dfb682b17b906354fc99d7ce6ddbafa64d5cb71ba73ae9426530a3c6",
+      "success": false,
+      "assertionStatuses": {
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "browser-green-03/result.json",
+      "sha256": "9e2a22d597e1b40da01ceb18a0e4baf658e808cc7ca0a8f9d313e4e2ca083aa2",
+      "success": false,
+      "assertionStatuses": {
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "browser-green-04/result.json",
+      "sha256": "5fb26463afbf66fd77bb121d598736445a05bbfe2658a0d1dbb4088e5258cdde",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 1
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "browser-red-01/result.json",
+      "sha256": "75f69dc04c84b5f9c707478a966b1a36bbe361a825c56df97ea7d485db5c9ad0",
+      "success": false,
+      "assertionStatuses": {
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/all-unit-final-01/result.json",
+      "sha256": "3922f2e2b549c4bd0cb4da3947c24948aff55ffb7067bd91432af70d366e17b4",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 10331,
+        "skipped": 801,
+        "pending": 55
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/browser-final-01/result.json",
+      "sha256": "fa8e8885a3a0120d94cb5d68c36ebc3553aeacd06dc087407e87faf0ab6dc6e8",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 3
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/controlled-writer-red/result.json",
+      "sha256": "49b46d0a1abf0fa6a6d2d51ccba6ca9155846c2d7c8f25fcb79ac55a352b3989",
+      "success": false,
+      "assertionStatuses": {
+        "skipped": 33,
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/generation-focused-01/result.json",
+      "sha256": "872af9da2d65dc2c68201c76596961a69ea17bc1e85f3c96c08a36791594801e",
+      "success": true,
+      "assertionStatuses": {
+        "skipped": 174,
+        "passed": 2
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/generation-sql-final-01/result.json",
+      "sha256": "cf142d1afec625d317acde1cba8a5d51cc93e1713c7f0d042858f54de6882e23",
+      "success": false,
+      "assertionStatuses": {
+        "skipped": 49,
+        "passed": 107,
+        "failed": 20
+      },
+      "reportedFailedSuites": 4,
+      "reportedFailedTests": 20,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "f2a0aac4/sql-final-01/result.json",
+      "sha256": "0ad65ee7d73c929a037734ccda3b7d14a565b48f1045d480dca3a2063db20b56",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 51
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "harness-fixed/generation-sql-final-02/result.json",
+      "sha256": "443c5e65dff675c4e0650f437d98d209ad02d55673575ea46395ef49dd9a79e5",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 177
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "harness-investigation/cleanup-only/result.json",
+      "sha256": "0f4c7107f645cc26c466fb61c770c9b50ae2f28286f16e6c0b71962839ef756c",
+      "success": false,
+      "assertionStatuses": {
+        "skipped": 33,
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "harness-investigation/permanent-green/result.json",
+      "sha256": "3a141387abe669aecc2b4d1a47d83991384d50105fffc12c1f3d2dad9eca6c51",
+      "success": true,
+      "assertionStatuses": {
+        "skipped": 176,
+        "passed": 1
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "harness-investigation/permanent-red/result.json",
+      "sha256": "a62bb2a19b20a95d5b2fbeda990077fbe0ee3082512d17b4c837416af753933e",
+      "success": false,
+      "assertionStatuses": {
+        "skipped": 176,
+        "failed": 1
+      },
+      "reportedFailedSuites": 1,
+      "reportedFailedTests": 1,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "independent-f2a0aac4/boundary-results.json",
+      "sha256": "508c7c64fdd72b68c6fda55b90fe86ebe2ece5b30a861b4ca219f48069473bdd",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 2
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "independent-f2a0aac4/browser-results-01.json",
+      "sha256": "c7b010971b104f064266277923e852dd9aae0b3df45966d3762d21fb3e2941e4",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 1
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "independent-f2a0aac4/harness-29afff60-350ms/result.json",
+      "sha256": "3e2e606e634f94da541143851170db3de6c8d84c593d4d2b65d821452acf5788",
+      "success": true,
+      "assertionStatuses": {
+        "skipped": 34,
+        "passed": 1
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "task1-generation.json",
+      "sha256": "2ec2e0be430638b9ecc66931401a9d8d46d41e4c78b0dd267690f4f03b666c6f",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 225
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "task2-advisor-unit.json",
+      "sha256": "ef2c1f58a488c65f5955fca1560e8504849724229f5efabe0bda8d703c7d1344",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 82
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "task2-green-02.json",
+      "sha256": "6043ce69124e46ad4e0ceb673bb8d93bc882005cd6a3d6b02ce421105de037df",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 8
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "task2-sql-green-02.json",
+      "sha256": "591151b316093479ace35c407a084001ac0f7d15d717f48cce1812133ab911b7",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 51
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    },
+    {
+      "file": "task3-source-boundary-green.json",
+      "sha256": "ba5ee8148250e42f7ea6a81816699fec307f108e0a6a541da20bf0379e46bf0f",
+      "success": true,
+      "assertionStatuses": {
+        "passed": 127
+      },
+      "reportedFailedSuites": 0,
+      "reportedFailedTests": 0,
+      "note": "Filtered skips in focused probes are deliberate; full unit has801skipped+55pending, not proof they passed."
+    }
+  ],
+  "retainedWorkingStageLogs": [
+    "implementation-types-01.log",
+    "implementation-types-02.log",
+    "task1-generation.log",
+    "task1-green-01.log",
+    "task1-red.log",
+    "task1-reservation-green.log",
+    "task1-reservation-red.log",
+    "task2-3-unit.log",
+    "task2-advisor-unit.log",
+    "task2-contract-red.log",
+    "task2-green-01.log",
+    "task2-green-02.log",
+    "task2-identity-green.log",
+    "task2-identity-red.log",
+    "task2-loop-red.log",
+    "task2-red.log",
+    "task2-sql-green-01.log",
+    "task2-sql-green-02.log",
+    "task2-sql-red.log",
+    "task2-task-focus-red.log",
+    "task3-render-parser-green-01.log",
+    "task3-render-parser-red.log",
+    "task3-setup-categories-red.log",
+    "task3-source-boundary-green.log"
+  ],
+  "scopeLimits": [
+    "No paid/live model or provider robustness/intelligence claim",
+    "No hosted/Neon HTTP/serverless/CI/real-device/production acceptance",
+    "UI-M1 observation-timezone ambiguity remains open",
+    "801legacy skips and55pending assertions remain unexecuted",
+    "Bounded selected-day legal alternatives do not establish optimality or whole-week/company completion",
+    "Joint execution, outcome monitoring and live evaluation remain later work"
+  ],
+  "failureCustody": "Every original RED/failed log/JSON/screenshot/probe remains unchanged. Directory labels green describe run intent only; actual result is authoritative. Early working-tree TDD stages do not claim exact-SHA runtime proof. Frozen browser/SQL/source records identify their actual immutable candidates."
+}

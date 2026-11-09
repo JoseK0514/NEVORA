@@ -1,0 +1,367 @@
+[
+ {
+  "id": "L10 after-reset owner 320: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 216,
+    "right": 260,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 260,
+    "right": 304,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 320,
+    "top": 0,
+    "bottom": 68,
+    "w": 320
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 after-reset owner 375: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 271,
+    "right": 315,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 315,
+    "right": 359,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "bottom": 68,
+    "w": 375
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 after-reset owner 390: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 286,
+    "right": 330,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 330,
+    "right": 374,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": null,
+   "header": {
+    "left": 0,
+    "right": 390,
+    "top": 0,
+    "bottom": 68,
+    "w": 390
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 after-reset manager 320: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 140,
+    "top": 12,
+    "bottom": 56,
+    "w": 124
+   },
+   "chip": null,
+   "search": {
+    "left": 216,
+    "right": 260,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 260,
+    "right": 304,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 320,
+    "top": 0,
+    "bottom": 68,
+    "w": 320
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 after-reset manager 375: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 152,
+    "top": 12,
+    "bottom": 56,
+    "w": 136
+   },
+   "chip": null,
+   "search": {
+    "left": 271,
+    "right": 315,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 315,
+    "right": 359,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "bottom": 68,
+    "w": 375
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L10 after-reset manager 390: no logo (chip hidden)",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "brand": {
+    "left": 16,
+    "right": 152,
+    "top": 12,
+    "bottom": 56,
+    "w": 136
+   },
+   "chip": null,
+   "search": {
+    "left": 286,
+    "right": 330,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "bell": {
+    "left": 330,
+    "right": 374,
+    "top": 12,
+    "bottom": 56,
+    "w": 44
+   },
+   "count": "1",
+   "header": {
+    "left": 0,
+    "right": 390,
+    "top": 0,
+    "bottom": 68,
+    "w": 390
+   },
+   "gapToWordmark": null,
+   "marginLeft": null,
+   "imgClipped": null,
+   "overflow": 0
+  }
+ },
+ {
+  "id": "L12 picker 320 loaded",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Sat17"
+  ]
+ },
+ {
+  "id": "L12 picker 320 full week chosen",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Full week"
+  ]
+ },
+ {
+  "id": "L12 picker 390 loaded",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Sat17"
+  ]
+ },
+ {
+  "id": "L12 picker 390 full week chosen",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Full week"
+  ]
+ },
+ {
+  "id": "L12 picker 390 today chosen",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Sat17"
+  ]
+ },
+ {
+  "id": "L12 picker 1440 track",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Full week"
+  ]
+ },
+ {
+  "id": "L12 picker 1440 full week chosen",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Full week"
+  ]
+ },
+ {
+  "id": "L12 picker 390 forced colours captured",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Sat17"
+  ]
+ },
+ {
+  "id": "L12 picker 1440 forced colours captured",
+  "engine": "chromium",
+  "pass": true,
+  "detail": [
+   "Full week"
+  ]
+ },
+ {
+  "id": "L13 owner home 800: setup card in its stacked layout",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "cols": "482px",
+   "steps": "482px"
+  }
+ },
+ {
+  "id": "L14 employee home 390: no shift under way shows \"Next shift\", not \"Your shifts\"",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "h2": [
+    "Next shift",
+    "Clock status",
+    "To do",
+    "Quick actions",
+    "Recent updates"
+   ],
+   "h3": [],
+   "now": "Sat Oct 17 2026 21:26:00 GMT-0400 (Atlantic Standard Time)",
+   "links": [
+    "View schedule, Sun, Oct 18"
+   ]
+  }
+ },
+ {
+  "id": "L14 employee home 1440: no shift under way shows \"Next shift\", not \"Your shifts\"",
+  "engine": "chromium",
+  "pass": true,
+  "detail": {
+   "h2": [
+    "Next shift",
+    "Clock status",
+    "To do",
+    "Quick actions",
+    "Recent updates"
+   ],
+   "h3": [],
+   "now": "Sat Oct 17 2026 21:26:02 GMT-0400 (Atlantic Standard Time)",
+   "links": [
+    "View schedule, Sun, Oct 18"
+   ]
+  }
+ }
+]

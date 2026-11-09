@@ -1,0 +1,69 @@
+{
+  "validatedApplicationCommit": "c11757f6f7112f5a8a7f2c2ed73021a205bd609a",
+  "validatedApplicationTree": "41428eb4c50db23cf344d8a9b6cd910b6b849f7e",
+  "deliveryHeadAndTree": "External transfer metadata pins documentation-only delivery HEAD/tree",
+  "worktree": "/workspace/work/nevora-owner-ai-implementation-20261030",
+  "branchState": "detached HEAD",
+  "base": "1121f24e50190172d1fa40d931fd064715f31554",
+  "localGitDirectory": "/workspace/NEVORA/.git/worktrees/nevora-owner-ai-implementation-20261030",
+  "commonGitDirectory": "/workspace/NEVORA/.git",
+  "remoteTrackingRefsObserved": {
+    "origin/claude-codex-collab-nevora": "1121f24e50190172d1fa40d931fd064715f31554",
+    "origin/development": "682ecea9fa61548f68274c896ffa4e2d92b62989"
+  },
+  "remoteReadiness": "Refs above are observed local tracking refs, not a fresh claim about the advancing remote",
+  "environment": {
+    "kind": "isolated cloud source + invocation-owned Next development/PostgreSQL fixtures",
+    "node": "24.19.0",
+    "npm": "11.9.0",
+    "next": "16.4.2",
+    "react": "19.3.0",
+    "postgres": "17.9",
+    "chromium": "151.0.7922.34",
+    "webkit": "26.5",
+    "cpuQuotaCores": 4,
+    "memoryLimitGiB": 16,
+    "browserDependencies": "Public user-space libraries and native-loading evidence in environment/browser-dependencies.json; no production config altered"
+  },
+  "originalImplementationArtifactsVerifiedUnchanged": [
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.bundle",
+      "sha256": "0c519777dadde2ca899dea2121a0298226375eb998fde84f029264be8a308ded"
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.patch",
+      "sha256": "f597275a531ad66ccd9ee1eb0e7970c660da94bfac24bc5c30ba9433c69bd90d"
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.transfer.json",
+      "sha256": "ebf6977ba9ed4320e07efe25393dffe1d622df22b926387936ec996b86e18042"
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.README.md",
+      "sha256": "3b93b35524cb9261fb331200e30b42ba8715bbb37e648c617f49917cb336a3fb"
+    },
+    {
+      "file": "nevora-owner-ai-implementation-2026-10-30.zip",
+      "sha256": "7086175401c07b2171ee2f0e30eb0edbe12131df0c980862b1fde8db38bc1f6a"
+    }
+  ],
+  "preservedWorktrees": [
+    {
+      "path": "/workspace/NEVORA",
+      "head": "c21ac528fefac35de7534d47be196fec2866c066",
+      "status": "clean"
+    },
+    {
+      "path": "/workspace/work/nevora-test-scripts-20261030",
+      "head": "80b711f6322f36b1593ea86cc59a82114090e647",
+      "status": "clean"
+    }
+  ],
+  "productionWrites": 0,
+  "realNotificationsSent": 0,
+  "paidModelCalls": 0,
+  "ciDispatches": 0,
+  "remotePushes": 0,
+  "merges": 0,
+  "releaseState": "NOT_AUTHORIZED_NOT_PERFORMED"
+}

@@ -1,0 +1,89 @@
+{
+  "base": "8d9487362d7f2295dc99f173ebe3977e049719b7",
+  "applicationCandidate": "e3497ad2967ee632f75dc9532e7cb0cd72a577db",
+  "status": "candidate gates pass; fresh review pending",
+  "checks": [
+    {
+      "name": "default-suite-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/default-suite-validated.json",
+      "sha256": "4a5f47ba2f4ec54caa6bf3ec3484792350ea2c220d7a5a8fc7d0f4f5ccee0405",
+      "passed": 10373,
+      "failed": 0,
+      "pending": 801,
+      "todo": 0
+    },
+    {
+      "name": "owner-sql-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/owner-sql-validated.json",
+      "sha256": "eac479e3521f04ebdc427024204839ef26ba60895da195ef96ac6fd738782157",
+      "passed": 68,
+      "failed": 0,
+      "pending": 0,
+      "todo": 0
+    },
+    {
+      "name": "generation-sql-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/generation-sql-validated.json",
+      "sha256": "b041b9b3178541cc65d43fd1137414e900f44fcb1f90dce0a43887b27f434aa0",
+      "passed": 177,
+      "failed": 0,
+      "pending": 0,
+      "todo": 0
+    },
+    {
+      "name": "browser-suite-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-suite-validated.json",
+      "sha256": "23851dc2bc91d1fa8bfc2191b5584b881f4fc70f41f7dcfec66a1d7652becd92",
+      "passed": 4,
+      "failed": 0,
+      "pending": 0,
+      "todo": 0
+    },
+    {
+      "name": "lint-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/lint-validated.log",
+      "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7",
+      "result": "exit0; sequential set-e command advanced to passing full default suite"
+    },
+    {
+      "name": "typecheck-validated",
+      "file": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/typecheck-validated.log",
+      "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+      "result": "exit0; sequential set-e command advanced to passing full default suite"
+    }
+  ],
+  "closedOwnedBrowserMirrors": [
+    {
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/owned-next-Iuc3dv/ownership.json",
+      "ownerId": "f0152907-d485-49c6-8525-bb1dc524df9f",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true
+    },
+    {
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/notebook/owned-next-hOQVyp/ownership.json",
+      "ownerId": "5000f292-096c-461e-b6cc-952576e0a503",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true
+    },
+    {
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/coverage-plans/owned-next-eItKEd/ownership.json",
+      "ownerId": "ea7f4ce5-ab45-4704-9f74-3609613b4f51",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true
+    },
+    {
+      "marker": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/browser-final-validated/coverage-actions/owned-next-fjLtHM/ownership.json",
+      "ownerId": "b23ae4c8-21bc-4cb4-b197-d7c28ed3679d",
+      "closed": true,
+      "sourceVerified": true,
+      "mirrorVerified": true
+    }
+  ],
+  "visual": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/owner-ai-reviewed-drafts-evidence-20261030/visual-review.json",
+  "providerConfigured": false,
+  "deployment": "none",
+  "integration": "none"
+}

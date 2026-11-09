@@ -1,0 +1,105 @@
+src/components/passkeys/passkey-section.tsx
+   1 "use client";
+   2 
+   3 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+   4 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
+   5 import { SigPendingLabel } from "@/components/signature/sig-button";
+   6 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
+   7 import "./passkeys.css";
+   8 
+   9 const t = PASSKEY_COPY.en;
+  10 const subscribe = () => () => {};
+  11 const dateLabel = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  12 
+  13 type Load = { state: "loading" } | { state: "ready"; passkeys: Passkey[] } | { state: "failed" };
+  14 
+  15 /** Profile, every role: "Face ID and passkeys". Set up (named after the device), the saved list with added and
+  16  * last-used dates, and Remove with a confirmation. Nothing renders while NEXT_PUBLIC_NEVORA_PASSKEYS is off. */
+  17 export function PasskeySection() {
+  18   const supported = useSyncExternalStore(subscribe, passkeysAvailable, () => false);
+  19   const phone = useSyncExternalStore(subscribe, isPhoneLike, () => false);
+  20   const [load, setLoad] = useState<Load>({ state: "loading" });
+  21   const [busy, setBusy] = useState<"add" | "remove" | null>(null);
+  22   const [notice, setNotice] = useState<{ tone: "done" | "error"; text: string } | null>(null);
+  23   const [confirm, setConfirm] = useState<Passkey | null>(null);
+  24   const dialog = useRef<HTMLDialogElement>(null);
+  25   const opener = useRef<HTMLElement | null>(null);
+  26   const addButton = useRef<HTMLButtonElement>(null);
+  27   const flagOn = passkeysFlagOn();
+  28 
+  29   const refresh = useCallback(async () => {
+  30     setLoad({ state: "loading" });
+  31     const result = await listPasskeys();
+  32     setLoad(result.ok ? { state: "ready", passkeys: result.value.passkeys ?? [] } : { state: "failed" });
+  33   }, []);
+  34   useEffect(() => {
+  35     if (!flagOn) return;
+  36     let live = true;
+  37     void listPasskeys().then(result => { if (live) setLoad(result.ok ? { state: "ready", passkeys: result.value.passkeys ?? [] } : { state: "failed" }); });
+  38     return () => { live = false; };
+  39   }, [flagOn]);
+  40   // Keep (the safe choice) takes focus when the confirmation opens.
+  41   useEffect(() => {
+  42     if (confirm) { dialog.current?.showModal(); dialog.current?.querySelector<HTMLElement>("[data-autofocus]")?.focus(); }
+  43     else if (dialog.current?.open) dialog.current.close();
+  44   }, [confirm]);
+  45 
+  46   if (!flagOn) return null;
+  47 
+  48   async function add() {
+  49     if (busy) return;
+  50     setBusy("add"); setNotice(null);
+  51     const result = await registerPasskey(deviceName());
+  52     setBusy(null);
+  53     if (result.ok) { setNotice({ tone: "done", text: t.savedDone }); await refresh(); }
+  54     else if (result.error !== "cancelled") setNotice({ tone: "error", text: t.setUpFailed });
+  55   }
+  56 
+  57   async function remove(passkey: Passkey) {
+  58     if (busy) return;
+  59     setBusy("remove");
+  60     const result = await removePasskey(passkey.id);
+  61     setBusy(null); setConfirm(null);
+  62     if (result.ok) { setNotice({ tone: "done", text: t.removedDone }); await refresh(); addButton.current?.focus(); }
+  63     else { setNotice({ tone: "error", text: t.removeFailed }); opener.current?.focus(); }
+  64   }
+  65 
+  66   const passkeys = load.state === "ready" ? load.passkeys : [];
+  67   return (
+  68     <section className="nv-card pk-section" aria-labelledby="passkeys-title">
+  69       <div className="nv-card__head"><h2 className="nv-card__title" id="passkeys-title">{t.sectionTitle}</h2></div>
+  70       <div className="nv-card__body pk-body">
+  71         {load.state === "loading" ? <p className="pk-muted" role="status">{t.loading}</p> : null}
+  72         {load.state === "failed" ? <p className="pk-notice" data-tone="error" role="alert">{t.loadFailed} <button type="button" className="nv-link" onClick={() => void refresh()}>{t.tryAgain}</button></p> : null}
+  73         {load.state === "ready" && passkeys.length === 0 ? <p className="pk-muted">{t.empty}</p> : null}
+  74         {passkeys.length ? <ul className="pk-list">
+  75           {passkeys.map(passkey => (
+  76             <li key={passkey.id} className="pk-item">
+  77               <span className="pk-item__text">
+  78                 <span className="pk-item__name">{passkey.name}</span>
+  79                 <span className="pk-item__meta">{t.added(dateLabel(passkey.createdAt))} · {passkey.lastUsedAt ? t.lastUsed(dateLabel(passkey.lastUsedAt)) : t.neverUsed}</span>
+  80               </span>
+  81               <button type="button" className="nv-link pk-remove" aria-label={t.removeLabel(passkey.name)} disabled={busy !== null}
+  82                 onClick={event => { opener.current = event.currentTarget; setConfirm(passkey); }}>{t.remove}</button>
+  83             </li>
+  84           ))}
+  85         </ul> : null}
+  86         {notice ? <p className="pk-notice" data-tone={notice.tone} role={notice.tone === "error" ? "alert" : "status"}>{notice.text}</p> : null}
+  87         {supported ? <button ref={addButton} type="button" className="nv-btn pk-add" data-kind="secondary" onClick={() => void add()} disabled={busy === "remove"} aria-disabled={busy === "add" || undefined} aria-busy={busy === "add"}>
+  88           <SigPendingLabel pending={busy === "add"} pendingText={t.settingUp}>{phone ? t.setUpPhone : t.setUpDesktop}</SigPendingLabel>
+  89         </button> : <p className="pk-muted">{t.notSupported}</p>}
+  90       </div>
+  91       <dialog ref={dialog} className="pk-dialog" aria-labelledby="passkey-remove-title" aria-describedby="passkey-remove-body"
+  92         onClose={() => { if (confirm) { setConfirm(null); opener.current?.focus(); } }}>
+  93         {confirm ? <form method="dialog" className="pk-dialog__form" onSubmit={event => event.preventDefault()}>
+  94           <h2 id="passkey-remove-title" className="pk-dialog__title">{t.confirmTitle(confirm.name)}</h2>
+  95           <p id="passkey-remove-body" className="pk-muted">{t.confirmBody}</p>
+  96           <div className="pk-dialog__actions">
+  97             <button type="button" className="nv-btn" data-kind="danger" onClick={() => void remove(confirm)} aria-disabled={busy === "remove" || undefined} aria-busy={busy === "remove"}><SigPendingLabel pending={busy === "remove"} pendingText={t.removing}>{t.remove}</SigPendingLabel></button>
+  98             <button type="button" className="nv-btn" data-kind="secondary" data-autofocus="" onClick={() => setConfirm(null)} disabled={busy === "remove"}>{t.keep}</button>
+  99           </div>
+ 100         </form> : null}
+ 101       </dialog>
+ 102     </section>
+ 103   );
+ 104 }

@@ -1,0 +1,23 @@
+{
+  "gate": "typescript",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "cwd": "/workspace/NEVORA",
+  "argv": [
+    "./node_modules/.bin/tsc",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "startedAt": "2026-10-27T18:44:21.167176+00:00",
+  "completedAt": "2026-10-27T18:45:01.438178+00:00",
+  "exitCode": 0,
+  "durationSeconds": 40.27,
+  "sourceUnchanged": true,
+  "observedSourceChanges": [],
+  "gitIndexUnchanged": true,
+  "branchUnchanged": true,
+  "clusterClosure": [],
+  "finalProcesses": [],
+  "summaryLines": [],
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

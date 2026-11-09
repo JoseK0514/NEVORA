@@ -1,0 +1,171 @@
+{
+  "schema_version": 2,
+  "program": "NEVORA Phase D",
+  "controlling_authority": "Jose: October 7 D3-D8 master authorization, configurable D6 Option 3, four P1 UX amendment",
+  "execution_model": "Sequential workstreams with embedded QA and internal D8; no independent gate between workstreams",
+  "execution_branch": "codex/phase-d-d3-d8-execution-20261007",
+  "starting_sha": "7485463dedb6b93e8b6ec4ebf3a86172fb9be5b5",
+  "starting_tree": "99c8a5fb923c88bf8a520592e425be66f7902bfd",
+  "historical_register": "phase-d-gates-october6-historical.json",
+  "current_ledger": "phase-d-d3-d8-ledger.md",
+  "D2": {
+    "status": "FROZEN_BASELINE_INDEPENDENT_FINDINGS_OPEN",
+    "source": "Original baseline custody preserved. Independent Phase D report on 184a393 reproduces D2-CODEX-005, D2-CODEX-006 and dependent D2-CODEX-008 as OPEN; the earlier blanket independent-closure claim was unsupported. Jose authorizes focused remediation, not independent closure."
+  },
+  "sections": [
+    {
+      "id": "D3",
+      "status": "COMPLETE",
+      "checkpoint_sha": "74518207f25a6856f2770ae78837c7c8a0eb8ade",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
+    },
+    {
+      "id": "D4",
+      "status": "COMPLETE",
+      "checkpoint_sha": "ad620009f1a8886aa5dc88e00dcf7f3bb4ce1b59",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
+    },
+    {
+      "id": "D5",
+      "status": "COMPLETE",
+      "checkpoint_sha": "cfa8df54fa06b583ae72a071548371588bf37050",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
+    },
+    {
+      "id": "D6",
+      "status": "COMPLETE",
+      "checkpoint_sha": "76bcfc0a7b4a37bc17fd107a4695a37ff3da2f96",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
+    },
+    {
+      "id": "D7",
+      "status": "COMPLETE",
+      "checkpoint_sha": "c3312a6ec368775fbd292a370791951ecb155736",
+      "verification": "EMBEDDED_AND_INTERNAL_D8_PASS"
+    }
+  ],
+  "mandatory_D8_UX": [
+    {
+      "id": "UX-01",
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
+    },
+    {
+      "id": "UX-03",
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
+    },
+    {
+      "id": "UX-04",
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
+    },
+    {
+      "id": "UX-05",
+      "status": "IMPLEMENTED_INTERNAL_D8_PASS",
+      "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff"
+    }
+  ],
+  "UX-02": {
+    "status": "OPEN_DEFERRED",
+    "implementation_authorized": false
+  },
+  "D8": {
+    "status": "VALIDATED_RUNTIME_CHECKPOINT_FINAL_DISPOSITION_BY_REFERENCE",
+    "review_mode": "INTERNAL_IMPLEMENTATION_AND_QA",
+    "exact_candidate_evidence_required": true,
+    "independent_release_review_initiated": false,
+    "validated_runtime_sha": "252223a5ccc6708190b96ad66cbdd16965c751ff",
+    "validated_runtime_tree": "22570aa60172e93a0f8b58f424ce8569f0915f5e",
+    "exact_head_ci": "https://github.com/JoseK0514/Fuel-Scheduler-/actions/runs/37686732707",
+    "local_browser_overlapping_checks": 591,
+    "ci_browser_overlapping_checks": 591,
+    "completion_record": "phase-d-completion.md",
+    "final_publication_identity_record": "/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md",
+    "latest_remediation": "D8-EXEC-007 receipt startup; local 195 integrated checks PASS; verify final publication-head CI before final disposition",
+    "final_disposition_sources": [
+      "https://github.com/JoseK0514/Fuel-Scheduler-/pull/10",
+      "/Users/josek0514/.codex/visualizations/nevora-phase-d-final-20261007/COMPLETION.md"
+    ]
+  },
+  "development_integration": {
+    "status": "NOT_PERFORMED",
+    "merge_authorized": false
+  },
+  "production": {
+    "status": "NO_GO",
+    "authorization": null,
+    "FR-AUTH-001": "OPEN"
+  },
+  "carried_open_items": [
+    {
+      "id": "QA-D13-001",
+      "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED",
+      "owner": "Independent QA at applicable future release gate",
+      "description": "Verify lifecycle coverage, exact-SHA CI and actual enforcement; workflow presence alone is not branch protection."
+    },
+    {
+      "id": "D13-TECH-LABELS",
+      "status": "REMEDIATION_REPORTED_NOT_INDEPENDENTLY_CLOSED",
+      "owner": "Future independent release review",
+      "description": "Reverify fresh labels, archived locations and refreshed/new-entity context."
+    },
+    {
+      "id": "D13-A11Y-REFRESH",
+      "status": "OPEN",
+      "owner": "Engineering; independent UI verifies",
+      "description": "Manual refresh needs assistive-technology progress/completion feedback; retain physical-device/screen-reader acceptance."
+    },
+    {
+      "id": "D13-EVIDENCE-CUSTODY",
+      "status": "OPEN",
+      "owner": "CTO/CIO and Governance",
+      "description": "Prior artifact upload hit quota. Retain a small safe evidence bundle and prove retrieval; no paid upgrade or blanket deletion authorized."
+    },
+    {
+      "id": "D1-CORRECTIONS-ADAPTER",
+      "status": "IMPLEMENTED_INTERNAL_EVIDENCE_PENDING_INDEPENDENT_REVIEW",
+      "owner": "Engineering",
+      "description": "Real pending correction count is connected through the protected D1 reader; independent review remains pending."
+    },
+    {
+      "id": "D1-POLICY-DEPENDENCIES",
+      "status": "OPEN",
+      "owner": "CPO and Governance",
+      "description": "Trace missing-clock-in association, policy lateness/early departure, unusually-long-entry and overtime basis; do not invent payroll rules."
+    },
+    {
+      "id": "BRANCH-ENFORCEMENT",
+      "status": "OPEN",
+      "owner": "Governance and CTO/CIO",
+      "description": "Remote listing reports development/main unprotected; procedural hold is not server-side enforcement."
+    },
+    {
+      "id": "FR-AUTH-001",
+      "status": "OPEN",
+      "owner": "Existing independent release authority",
+      "description": "Inherited production gate is not closed by this package."
+    }
+  ],
+  "independent_remediation": {
+    "original_sha": "184a393a4e89676b9d7f0a40e5f3fe6db87993de",
+    "audit_report": "/Users/josek0514/Documents/NEVORA-Audits/Phase-D-184a393-20261007/NEVORA_PHASE_D_INDEPENDENT_AUDIT.md",
+    "status": "IMPLEMENTED_PENDING_EXACT_CANDIDATE_VERIFICATION",
+    "independent_acceptance": "NO_GO",
+    "findings": [
+      "D2-CODEX-005",
+      "D2-CODEX-006",
+      "D2-CODEX-008",
+      "D-AUD-001",
+      "D-AUD-002",
+      "D-AUD-003"
+    ],
+    "independent_finding_status": "PENDING",
+    "nonblocking_followups": [
+      "D-AUD-004",
+      "D8-DEV-TOOLING"
+    ],
+    "plan": "phase-d-independent-remediation-plan.md",
+    "handoff": "phase-d-independent-remediation-handoff.md"
+  }
+}

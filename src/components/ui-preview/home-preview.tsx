@@ -1,0 +1,133 @@
+'use client';
+
+import {useState, type MouseEvent, type ReactNode} from 'react';
+import Link from 'next/link';
+import {AuthBrand} from '../auth-brand';
+import {NavIcon} from '../nav-icon';
+import {ActionMenu} from '../action-menu';
+import {PortalAccountMenu} from '../portal-account-menu';
+import {SheetGestures} from '../sheet-gestures';
+import {Toaster, toast} from '../toaster';
+import {ManagerDashboard} from '../manager-dashboard';
+import {TodayTilesSurface} from '../manager-today';
+import {ActionCenterSurface} from '../manager-action-center';
+import {OwnerSetupCorp} from '../owner-setup-card';
+import {setupSteps, withoutSetupItems} from '@/lib/action-center/setup';
+import type {PayrollCapabilities} from '@/lib/payroll/contracts';
+import {ClockMonitorCard} from '../manager-clock-monitor';
+import {EmployeeHomeReviewedView} from '../employee-home-reviewed';
+import {EmployeeTimeView} from '../employee-time-panel';
+import {navigationForRole, managementNavigationGroups, mobileMoreForRole, mobileTabsForRole, sidebarActiveHref, sidebarNavigation} from '@/lib/navigation';
+import {NUVORA_BRAND} from '@/lib/brand';
+import {MagnifyingGlassIcon, XIcon} from '@phosphor-icons/react/ssr';
+import {homePreviewRecords, previewActionCenter, previewEmployeeHome, previewManagerHome, previewMonitor, previewOwnTime, previewToday} from './home-fixtures';
+
+export type PreviewRole = 'OWNER' | 'MANAGER' | 'EMPLOYEE';
+
+/** Fictional payroll flags: they shape navigation only and mount no payroll reader. */
+export function previewPayroll(role: PreviewRole): PayrollCapabilities {
+  return {enabled: true, canConfigure: false, canReview: role === 'OWNER', canApprove: false, internalCalculatorAvailable: false, bankCompatibility: 'UNVERIFIED'};
+}
+/** The preview sidebar is the live D3 sidebar for the same role and capabilities. */
+export function previewSidebar(role: PreviewRole) {
+  const payroll = previewPayroll(role);
+  const items = sidebarNavigation(role, navigationForRole(role, payroll));
+  return {items, active: sidebarActiveHref(role, '/app', items, payroll)};
+}
+type Category = 'all' | 'scheduling' | 'requests' | 'timekeeping';
+
+/** Uses the app's brand, navigation and CSS; never mounts its authenticated
+ * shell, private readers, signout action or notification/device controllers. */
+function PreviewShell({role, notice, children}: {role: PreviewRole; notice: (message: string) => void; children: ReactNode}) {
+  const employee = role === 'EMPLOYEE';
+  const sidebar = previewSidebar(role);
+  const navigation = sidebar.items;
+  const profile = homePreviewRecords.people.find(person => person.id === (role === 'OWNER' ? 'QAOWNER' : role === 'MANAGER' ? 'AUDIT-M' : 'AUDIT-E'))!;
+  const primary = mobileTabsForRole(role);
+  const secondary = mobileMoreForRole(role);
+  const lit = (item: (typeof navigation)[number], mobile: boolean) => mobile ? item.href === '/app' : item.href === sidebar.active;
+  const navLink = (item: (typeof navigation)[number], mobile = false) => <a key={item.href} href={item.href}
+    className={`${mobile ? 'mobile-nav-link' : 'nav-link'}${lit(item, mobile) ? ' active' : ''}`}
+    aria-current={lit(item, mobile) ? 'page' : undefined}>
+    <span className={mobile ? undefined : 'nav-icon'}><NavIcon name={item.icon} employee={employee} size={mobile ? 22 : 20}/></span>
+    <span className={mobile ? undefined : 'nav-label'}>{item.label}</span>
+  </a>;
+  return <div className={`${employee ? 'app-shell employee-shell nevora-portal' : 'app-shell nevora-portal'} ui-preview-shell`}>
+    <aside className="sidebar">
+      <div className="sidebar-heading"><Link href="/app" className="brand sidebar-brand" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></Link></div>
+      <nav className="sidebar-nav" aria-label="Primary navigation">
+        {(employee ? [{label: '', items: navigation}] : managementNavigationGroups(navigation)).map(group => <div className="sidebar-nav-group" key={group.label}>
+          {group.label ? <h2 className="sidebar-group-label">{group.label}</h2> : null}{group.items.map(item => navLink(item))}
+        </div>)}
+      </nav>
+      <div className="sidebar-profile"><div className="avatar">{profile.first_name[0]}{profile.last_name[0]}</div><div className="sidebar-profile-copy"><strong>{profile.first_name} {profile.last_name}</strong></div></div>
+      <div className="sidebar-platform-footer"><span>{homePreviewRecords.workspace.name}</span><small>{NUVORA_BRAND.poweredBy}</small></div>
+    </aside>
+    <main className="app-main">
+      <header className="mobile-header">
+        <span className="portal-workspace-name">{homePreviewRecords.workspace.name}</span>
+        <Link href="/app" className="brand compact" aria-label={NUVORA_BRAND.homeAriaLabel}><AuthBrand/></Link>
+        <div className="mobile-header-actions">
+          {!employee ? <button type="button" className="command-finder-trigger" aria-label="Search" onClick={() => notice('Search is not connected in this sample.')}>
+            <MagnifyingGlassIcon size={18} aria-hidden="true"/><span>Search</span>
+          </button> : null}
+          <button type="button" className="portal-header-notifications" aria-label="Sample notifications" onClick={() => notice('This is a frozen sample. Notifications are not connected.')}><NavIcon name="notifications" size={22}/></button>
+          <PortalAccountMenu initials={`${profile.first_name[0]}${profile.last_name[0]}`} name={`${profile.first_name} ${profile.last_name}`}>
+            {employee ? <Link href="/app/profile" className="nevora-action-menu-item">Your profile</Link> : null}
+            <div className="nevora-action-menu-divider" />
+            <button type="button" className="nevora-action-menu-item portal-account-signout" onClick={event => { event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover(); notice('Sign out is not connected in this sample.'); }}>Sign out</button>
+          </PortalAccountMenu>
+        </div>
+      </header>
+      <div className="page-frame">{children}</div>
+      <nav className="mobile-nav" aria-label="Mobile navigation">{primary.map(item => navLink(item, true))}
+        {employee ? <><button type="button" popoverTarget="preview-employee-menu" className="mobile-nav-link employee-more-trigger" aria-label="More"><NavIcon name="more" employee size={22}/><span>More</span></button>
+          <div id="preview-employee-menu" className="employee-more-navigation" popover="auto"><p className="employee-more-label">More</p>{secondary.map(item => <a key={item.href} href={item.href} className="employee-more-link"><NavIcon name={item.icon} employee size={22}/><span>{item.label}</span></a>)}
+            <button type="button" className="mobile-workforce-sheet-close" aria-label="Close actions" onClick={event => event.currentTarget.closest<HTMLElement>('[popover]')?.hidePopover()}><XIcon size={20} aria-hidden="true"/><span>Close actions</span></button>
+          </div></> : <ActionMenu id="manager-more-navigation" label="More" ariaLabel="More navigation" triggerClassName="mobile-nav-link manager-more-trigger"
+            triggerContent={<><NavIcon name="more" size={22}/><span>More</span></>}>
+            {secondary.map(item => <a key={item.href} href={item.href} className="nevora-action-menu-item">{item.label}</a>)}
+          </ActionMenu>}
+      </nav>
+    </main>
+    <SheetGestures/>
+    <Toaster/>
+  </div>;
+}
+
+/** Owners see the setup items in the card, so their Tasks leave them out. */
+const ownerTasks = withoutSetupItems(previewActionCenter);
+
+export function HomePreview() {
+  const [role, setRole] = useState<PreviewRole>('OWNER');
+  const [message, setMessage] = useState('');
+  const [category, setCategory] = useState<Category>('all');
+  const [expanded, setExpanded] = useState(false);
+  const refresh = () => toast('Sample data is frozen at October 13, 2026. No live records were requested.', 'info');
+  function stayInPreview(event: MouseEvent<HTMLDivElement>) {
+    const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+    if (!link) return;
+    event.preventDefault(); event.stopPropagation();
+    setMessage(`${link.getAttribute('aria-label') ?? link.textContent?.trim() ?? 'Navigation'} is outside this Home-only preview.`);
+  }
+  return <div onClickCapture={stayInPreview}>
+    <div className="ui-preview-tools"><div><strong>Home preview</strong><p>Fictional data · No login or database needed</p></div>
+      <label className="ui-preview-role">View <select aria-label="Preview account" value={role} onChange={event => {setRole(event.target.value as PreviewRole); setMessage(''); setCategory('all'); setExpanded(false);}}>
+        <option value="OWNER">Owner</option><option value="MANAGER">Manager</option><option value="EMPLOYEE">Employee</option>
+      </select></label>
+    </div>
+    {message ? <p role="status" className="ui-preview-notice">{message}</p> : null}
+    <PreviewShell key={role} role={role} notice={setMessage}>
+      {role === 'EMPLOYEE' ? <div className="employee-dashboard employee-home"><EmployeeHomeReviewedView home={previewEmployeeHome}
+        status="ready" refreshing={false} onRetry={refresh} displayName="Alexandra"
+        ownTimeSlot={<EmployeeTimeView compact state={{time: previewOwnTime, paused: false, refreshing: false}} onRefresh={refresh}/>}/></div>
+        : <ManagerDashboard {...previewManagerHome} role={role} firstName={role === 'OWNER' ? 'Fictional' : 'Morgan'}
+          overviewSlots={{snapshots: {today: previewToday, actions: previewActionCenter, monitor: previewMonitor}, today: <TodayTilesSurface snapshot={previewToday} />,
+            setup: role === 'OWNER' ? <OwnerSetupCorp steps={setupSteps(previewActionCenter.state === 'ready' ? previewActionCenter.items : [])} locationCount={homePreviewRecords.locations.length}/> : null,
+            actions: <ActionCenterSurface snapshot={role === 'OWNER' ? ownerTasks.snapshot : previewActionCenter} setupListed={role === 'OWNER' ? ownerTasks.removed : 0}
+            connection="ready" timeZone={homePreviewRecords.workspace.time_zone}
+            category={category} onCategoryChange={setCategory} expanded={expanded} onExpand={() => setExpanded(true)} onRefresh={refresh}/>,
+          activity: <div className="manager-monitor-block"><ClockMonitorCard state={{monitor: previewMonitor, paused: false, refreshing: false}} onRefresh={refresh}/><Link className="manager-attendance-link" href="/app?view=attendance"><NavIcon name="clock" size={18}/>Review attendance</Link></div>}}/>}
+    </PreviewShell>
+  </div>;
+}

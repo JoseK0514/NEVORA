@@ -1,0 +1,48 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume[39m
+
+ [32m✓[39m src/test/phase-e-browser-evidence.test.ts [2m([22m[2m47 tests[22m[2m)[22m[33m 34174[2mms[22m[39m
+   [33m[2m✓[22m[39m accepts five relocated suite artifacts with 70 unique executed cells[33m 1046[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result failure[33m 895[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result cancelled[33m 877[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result skipped[33m 847[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result neutral[33m 901[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result missing[33m 1062[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result extra[33m 936[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-suite[33m 870[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated extra-suite[33m 891[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-suite[33m 875[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-cell[33m 910[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-cell[33m 851[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated extra-cell[33m 841[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated failed-cell[33m 848[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated skipped-cell[33m 848[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated empty-checks[33m 863[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated sha[33m 845[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated tree[33m 843[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated source-hash[33m 845[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated mirror-hash[33m 959[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated runtime-error[33m 919[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated pg-open[33m 897[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated next-open[33m 881[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated resource-open[33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-resource[33m 884[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated observation-failure[33m 877[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated command[33m 856[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-preload[33m 849[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated wrong-preload[33m 837[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated partial-command-checks[33m 839[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated leaf-proof[33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-receipt[33m 863[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated owner-mismatch[33m 865[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated traversal[33m 883[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated symlink[33m 840[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-layout[33m 844[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects aggregate without echoing untrusted artifact text[33m 869[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m47 passed[39m[22m[90m (47)[39m
+[2m   Start at [22m 20:35:22
+[2m   Duration [22m 34.32s[2m (tests 100%)[22m
+
+JSON report written to /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/.omo/evidence/passkeys-independent-qa/final-64063a2a-ten/08-phase-e-browser-evidence.test.ts/results.json

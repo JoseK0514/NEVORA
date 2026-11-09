@@ -1,0 +1,146 @@
+[
+  {
+    "engine": "chromium",
+    "action": "click",
+    "before": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "chromium",
+    "action": "Tab",
+    "before": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "chromium",
+    "action": "viewportShot",
+    "before": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "chromium",
+    "action": "fullPageShot",
+    "before": {
+      "maxTouchPoints": 1,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 0,
+      "coarse": false,
+      "fine": true,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "webkit",
+    "action": "click",
+    "before": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "webkit",
+    "action": "Tab",
+    "before": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "webkit",
+    "action": "viewportShot",
+    "before": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  },
+  {
+    "engine": "webkit",
+    "action": "fullPageShot",
+    "before": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    },
+    "after": {
+      "maxTouchPoints": 0,
+      "coarse": true,
+      "fine": false,
+      "width": 390,
+      "height": 844
+    }
+  }
+]

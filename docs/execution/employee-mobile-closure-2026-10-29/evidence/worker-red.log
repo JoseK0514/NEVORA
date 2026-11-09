@@ -1,0 +1,81 @@
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-closure-20261029
+
+ ❯ src/lib/notifications/service-worker.test.ts (80 tests | 2 failed) 57ms
+   ❯ durable suppression independent of IndexedDB (2)
+     × does not display or reopen a failed turn-off generation after worker restart before the app reopens 4ms
+     × keeps fallback tombstones through public-cache upgrades and retirement 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/notifications/service-worker.test.ts > durable suppression independent of IndexedDB > does not display or reopen a failed turn-off generation after worker restart before the app reopens
+AssertionError: expected [ { …(3) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "close": [Function Mock],
++     "data": {
++       "body": "Open NEVORA to review your schedule.",
++       "expiresAt": "2099-01-01T00:00:00.000Z",
++       "kind": "SCHEDULE_CHANGED",
++       "notificationId": "11111111-1111-4111-8111-111111111111",
++       "ownershipGeneration": "owner-generation-a",
++       "tag": "fuel-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "title": "Your NEVORA Schedule Changed",
++     },
++     "title": "Your NEVORA Schedule Changed",
++   },
++ ]
+
+ ❯ src/lib/notifications/service-worker.test.ts:247:52
+    245|   const first=harness();await first.message('SET_OWNER');first.db.fail…
+    246|   first.db.recover();const restarted=harness(first.db,false,first.stor…
+    247|   await restarted.push();expect(restarted.notices).toEqual([]);
+       |                                                    ^
+    248|   await restarted.message('SET_OWNER');await restarted.push();expect(r…
+    249|   await restarted.message('SET_OWNER','fresh-opt-in');await restarted.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/lib/notifications/service-worker.test.ts > durable suppression independent of IndexedDB > keeps fallback tombstones through public-cache upgrades and retirement
+AssertionError: expected [ { …(3) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "close": [Function Mock],
++     "data": {
++       "body": "Open NEVORA to review your schedule.",
++       "expiresAt": "2099-01-01T00:00:00.000Z",
++       "kind": "SCHEDULE_CHANGED",
++       "notificationId": "11111111-1111-4111-8111-111111111111",
++       "ownershipGeneration": "owner-generation-a",
++       "tag": "fuel-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++       "title": "Your NEVORA Schedule Changed",
++     },
++     "title": "Your NEVORA Schedule Changed",
++   },
++ ]
+
+ ❯ src/lib/notifications/service-worker.test.ts:255:90
+    253|   const first=harness();await first.message('SET_OWNER');first.db.fail…
+    254|   await first.dispatch('activate');const retired=harness(first.db,true…
+    255|   const next=harness(first.db,false,first.stores);await next.push();ex…
+       |                                                                                          ^
+    256|  });
+    257| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 78 passed (80)
+   Start at  11:48:53
+   Duration  134ms (tests 69%, transform 20%, import 9%, worker 2%)

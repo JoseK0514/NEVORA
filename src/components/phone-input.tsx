@@ -8,6 +8,8 @@ type PhoneInputProps = {
   required?: boolean;
   autoComplete?: string;
   defaultValue?: string;
+  id?: string;
+  "aria-describedby"?: string;
 };
 
 export function PhoneInput({
@@ -15,11 +17,17 @@ export function PhoneInput({
   required = false,
   autoComplete,
   defaultValue = "",
-}: PhoneInputProps) {
+  id,
+  "aria-describedby": describedBy,
+  className,
+}: PhoneInputProps & { className?: string }) {
   const [value, setValue] = useState(() => formatPhoneInput(defaultValue));
 
   return (
     <input
+      id={id}
+      className={className}
+      aria-describedby={describedBy}
       name={name}
       inputMode="tel"
       autoComplete={autoComplete}

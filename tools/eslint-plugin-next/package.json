@@ -1,0 +1,74 @@
+{
+  "bugs": {
+    "url": "https://github.com/vercel/next.js/issues"
+  },
+  "dist": {
+    "shasum": "9186a0fff633d867215e1ba2eeafa500c85d9f5f",
+    "tarball": "https://registry.npmjs.org/@next/eslint-plugin-next/-/eslint-plugin-next-16.3.8.tgz",
+    "fileCount": 56,
+    "integrity": "sha512-eCR9RcLTZrVS+K3+VOhi0xMdUUGNuriCHHhU1ZoABC/QQ/Gp0OWbLKQxV2/9DkmihYdYRcQWFmZXW8M1AMUXYw==",
+    "signatures": [
+      {
+        "sig": "MEYCIQDIMTP60UJhCBn6KbKYeKH0+GjVhcrOW2ts7K8aRny7vAIhAMiQtQP/zITzu/gimxLhNd0DN759SnM/TV1TZdjh0UfU",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      },
+      {
+        "sig": "MEQCIGQzRFo9Sxu5arC9wBDOhCCTBwg71vv4b9Q3tIfGVsmDAiBQt3/IsJg1tBAmClsOdIwm73LhcNP7gtXcDgrGm447HQ==",
+        "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+      }
+    ],
+    "attestations": {
+      "url": "https://registry.npmjs.org/-/npm/v1/attestations/@next%2feslint-plugin-next@16.3.8",
+      "provenance": {
+        "predicateType": "https://slsa.dev/provenance/v1"
+      }
+    },
+    "unpackedSize": 106327
+  },
+  "main": "dist/index.js",
+  "name": "@nevora/eslint-plugin-next",
+  "_from": "file:next-eslint-plugin-next-16.3.8.tgz",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "_npmUser": {
+    "name": "GitHub Actions",
+    "email": "npm-oidc-no-reply@github.com",
+    "trustedPublisher": {
+      "id": "github",
+      "oidcConfigId": "abcbfcbc-92e0-4c13-a4f4-2ce1a01c7dfc"
+    }
+  },
+  "homepage": "https://github.com/vercel/next.js#readme",
+  "_resolved": "/tmp/8f5089f34e8fa82af1fc28c0219b0776/next-eslint-plugin-next-16.3.8.tgz",
+  "_integrity": "sha512-eCR9RcLTZrVS+K3+VOhi0xMdUUGNuriCHHhU1ZoABC/QQ/Gp0OWbLKQxV2/9DkmihYdYRcQWFmZXW8M1AMUXYw==",
+  "repository": {
+    "url": "git+https://github.com/vercel/next.js.git",
+    "directory": "packages/eslint-plugin-next"
+  },
+  "_npmVersion": "11.19.0",
+  "description": "ESLint plugin for Next.js.",
+  "directories": {},
+  "maintainers": [
+    {
+      "name": "vercel-release-bot",
+      "email": "infra+release@vercel.com"
+    },
+    {
+      "name": "matt.straka",
+      "email": "matt.j.straka@gmail.com"
+    }
+  ],
+  "_nodeVersion": "24.21.0",
+  "dependencies": {
+    "@eslint-community/eslint-utils": "4.9.1",
+    "glob": "13.0.6"
+  },
+  "_hasShrinkwrap": false,
+  "_npmOperationalInternal": {
+    "tmp": "tmp/eslint-plugin-next_16.3.8_1790783808427_0.29894527107594304",
+    "host": "s3://npm-registry-packages-npm-production"
+  },
+  "_id": "@next/eslint-plugin-next@16.3.8",
+  "version": "16.3.8-nevora.1",
+  "private": true
+}

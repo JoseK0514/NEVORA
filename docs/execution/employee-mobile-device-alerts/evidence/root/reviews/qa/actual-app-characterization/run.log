@@ -1,0 +1,19 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+failed to load config from /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-device-alerts/reviews/qa/actual-app-characterization.config.mts
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Startup Error [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯⎯[39m
+Error: Refusing an unmarked or non-loopback combined fixture
+    at communicationFixtureUrl (file:///Users/josek0514/node_modules/.vite-temp/actual-app-characterization.config.mts.timestamp-1793155672897-586a7352165ae.mjs:12:28)
+    at file:///Users/josek0514/node_modules/.vite-temp/actual-app-characterization.config.mts.timestamp-1793155672897-586a7352165ae.mjs:27:71
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:643:26
+    at async loadConfigFromBundledFile (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vite/dist/node/chunks/node.js:38260:12)
+    at async bundleAndLoadConfigFile (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vite/dist/node/chunks/node.js:38106:21)
+    at async loadConfigFromFile (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vite/dist/node/chunks/node.js:38066:42)
+    at async resolveConfig (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vite/dist/node/chunks/node.js:37668:22)
+    at async resolveConfig (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/chunks/index.1TqnEahn.js:9269:25)
+    at async createVitest (file:///Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/chunks/cli-api.De07GUeT.js:13392:17)
+
+
+
+[Payroll PostgreSQL] Owned cluster stopped.

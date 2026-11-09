@@ -1,0 +1,29 @@
+{
+  "readAt": "2026-10-27T18:34:50.328555+00:00",
+  "candidate": "f7e331a7859ef55400eb1ce1e6420d4b5a9fdff9",
+  "reviewerRecords": [
+    {
+      "path": "/workspace/nevora-evidence/reviews/FINAL_CODE_REVIEW.md",
+      "sha256": "ee9c70a90b96c0106da82e13a73f506a774012fb817e618e006337c9bd83ea1f"
+    },
+    {
+      "path": "/workspace/nevora-evidence/reviews/INDEPENDENT_UI_REVIEW.md",
+      "sha256": "fd02a147838bf7746b62bd9591d63c8ecca857a4010aca2cb7a4f5d008bdb33c"
+    }
+  ],
+  "qaConclusion": "NO-GO on f7 candidate due four material authored findings; required acceptance tests continue to establish exact frozen baseline. QA does not self-close code/UI author findings.",
+  "materialOpen": [
+    "CR-1",
+    "CR-2",
+    "CR-3",
+    "UI-COM-001"
+  ],
+  "nonblockingConditions": [
+    "CR-4",
+    "UI-COM-002",
+    "UI-COM-003"
+  ],
+  "evidenceRisk": [
+    "UI-COM-R1"
+  ]
+}

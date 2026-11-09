@@ -1,0 +1,267 @@
+{
+ "owner /app": {
+  "texts": 63,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/inbox": {
+  "texts": 175,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/schedule": {
+  "texts": 112,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/schedule/new": {
+  "texts": 41,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/schedule/coverage": {
+  "texts": 113,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/schedule/templates": {
+  "texts": 25,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/schedule/settings": {
+  "texts": 307,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/availability": {
+  "texts": 64,
+  "notScaling": 6,
+  "notScalingNonExempt": []
+ },
+ "owner /app/exchange": {
+  "texts": 20,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/requests": {
+  "texts": 26,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "owner /app/updates": {
+  "texts": 23,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/updates/compose": {
+  "texts": 29,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/employees": {
+  "texts": 106,
+  "notScaling": 11,
+  "notScalingNonExempt": []
+ },
+ "owner /app/employees/new": {
+  "texts": 44,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/employees/AUDIT-E": {
+  "texts": 40,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "owner /app/timecards": {
+  "texts": 181,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/reports": {
+  "texts": 242,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/payroll-export": {
+  "texts": 170,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/notifications": {
+  "texts": 23,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/clocker-recovery": {
+  "texts": 32,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/account-recovery": {
+  "texts": 27,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings": {
+  "texts": 49,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/workspace": {
+  "texts": 33,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/locations": {
+  "texts": 42,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/positions": {
+  "texts": 48,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/breaks": {
+  "texts": 32,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/clocker": {
+  "texts": 43,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/company-policies": {
+  "texts": 28,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/settings/branding": {
+  "texts": 74,
+  "notScaling": 12,
+  "notScalingNonExempt": [
+   "span. \"Next shift · Tomorrow\" 13px",
+   "strong. \"8:00 AM – 4:00 PM\" 20px",
+   "em. \"Main Office\" 13px",
+   "span. \"Swap request approved\" 14px",
+   "b. \"View ›\" 14px",
+   "span. \"Home\" 11px",
+   "span. \"Schedule\" 11px",
+   "span. \"Requests\" 11px",
+   "span. \"More\" 11px"
+  ]
+ },
+ "owner /app/settings/features": {
+  "texts": 42,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "owner /app/profile": {
+  "texts": 63,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "manager /app": {
+  "texts": 56,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "manager /app/schedule": {
+  "texts": 113,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "manager /app/timecards": {
+  "texts": 180,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "manager /app/inbox": {
+  "texts": 176,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app": {
+  "texts": 54,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/schedule": {
+  "texts": 110,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/my-time": {
+  "texts": 38,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/requests/hub": {
+  "texts": 35,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/requests": {
+  "texts": 36,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/availability": {
+  "texts": 37,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/updates": {
+  "texts": 24,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/notifications": {
+  "texts": 35,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/profile": {
+  "texts": 58,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/exchange/swap": {
+  "texts": 18,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/exchange/callout": {
+  "texts": 27,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/my-pay": {
+  "texts": 17,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "employee /app/timecards": {
+  "texts": 27,
+  "notScaling": 2,
+  "notScalingNonExempt": []
+ },
+ "payrollOwner /app/payroll": {
+  "texts": 180,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "payrollOwner /app/settings/payroll": {
+  "texts": 69,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ },
+ "payrollOwner /app/my-pay": {
+  "texts": 14,
+  "notScaling": 1,
+  "notScalingNonExempt": []
+ }
+}

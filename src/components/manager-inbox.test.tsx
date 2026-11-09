@@ -1,0 +1,136 @@
+import {createElement} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {expect, it, vi} from 'vitest';
+import type {ActionCenter, ActionItem} from '../lib/action-center/project';
+
+vi.mock('next/link', () => ({default: ({children, ...props}: React.ComponentProps<'a'>) => createElement('a', props, children)}));
+const {InboxSurface} = await import('./manager-inbox');
+
+const item = (id: string, type: ActionItem['type'], category: ActionItem['category'], priority: ActionItem['priority'] = 'REVIEW'): ActionItem =>
+  ({id, type, category, priority, title: `Title ${id}`, detail: `Detail ${id}`, href: '/app/requests?tab=pending&requestId=r1'} as ActionItem);
+const ready = (items: ActionItem[], limitedAttendance = false): ActionCenter => ({
+  state: 'ready', observedAt: '2026-10-16T14:30:00Z', validForMs: 30000, weekStart: '2026-10-12', items, limitedAttendance,
+  counts: {total: items.length, scheduling: items.filter(i => i.category === 'scheduling').length, requests: items.filter(i => i.category === 'requests').length, timekeeping: items.filter(i => i.category === 'timekeeping').length},
+});
+const html = (snapshot: ActionCenter | null, connection: Parameters<typeof InboxSurface>[0]['connection'] = 'ready') =>
+  renderToStaticMarkup(createElement(InboxSurface, {snapshot, connection, onRefresh: () => {}, timeZone: 'America/Puerto_Rico'}));
+
+// Quiet (v4, approved Oct 23): Act now · N, Requests · N and Plan ahead. The Inbox opens on Act now; each row opens
+// its full review (decisions stay there).
+const surface = (snapshot: ActionCenter, initialFilter?: string) =>
+  renderToStaticMarkup(createElement(InboxSurface, {snapshot, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', ...(initialFilter ? {initialFilter} : {})} as Parameters<typeof InboxSurface>[0]));
+it('lists exceptions under Act now and sends every decision to its full review', () => {
+  const snapshot = ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT'), item('EXCHANGE:e1', 'EXCHANGE', 'requests')]);
+  const output = html(snapshot);
+  expect(output).toContain('aria-label="Act now, 1">Act now · 1</button>');
+  expect(output).toContain('aria-label="Requests, 2">Requests · 2</button>');
+  expect(output.indexOf('id="inbox-urgent"')).toBeGreaterThan(0);
+  // O1: no Approve/Decline or swipe without the request's dates, duration and note.
+  for (const view of [output, surface(snapshot, 'requests')]) {
+    expect(view).not.toContain('name="decision"');
+    expect(view).not.toContain('<form');
+    expect(view).not.toContain('swipe');
+  }
+  // The review link remembers the Inbox filter (IS-14) and its own row (IS-P4-11), and carries no dead fragment (IS-18).
+  expect(surface(snapshot, 'requests')).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;filter=requests&amp;item=TIME_OFF%3Ar1"');
+  expect(output).toContain('>Find cover</a>');
+});
+it('says All caught up only for a ready, empty observation', () => {
+  expect(html(ready([]))).toContain('Nothing needs you right now.');
+  for (const connection of ['loading', 'offline', 'unavailable', 'access_lost'] as const) expect(html(null, connection)).not.toContain('Nothing needs you right now.');
+  expect(html(null, 'loading')).toContain('Loading your Inbox…');
+  expect(html(null, 'access_lost')).toContain('href="/login"');
+  expect(html(ready([], true))).toContain('Some attendance comparisons are unavailable');
+});
+it('keeps counts separate from labels for assistive tech', () => {
+  const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests')]));
+  expect(output).toContain('aria-label="Requests, 1">Requests · 1</button>');
+});
+it('counts only what needs you today in the band (F1)', () => {
+  const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('target', 'TARGET_MISSING', 'scheduling', 'MISSING_INPUT'), item('deadline', 'DEADLINE_MISSING', 'scheduling', 'MISSING_INPUT')]));
+  // Clean Manager (v3): the band says the one count, as Home does.
+  expect(output.replace(/\u00a0/g, ' ')).toContain('1 thing needs you today.');
+  expect(output).toContain('aria-label="Plan ahead, 2"');
+  expect(output).not.toMatch(/miss(ed|ing) punch/i);
+});
+it('opens on the filter named in the URL (W2)', () => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', initialFilter: 'requests'}));
+  expect(output).toMatch(/aria-pressed="true"[^>]*>Requests · 1</);
+  expect(output).not.toContain('id="inbox-urgent"');
+});
+it('opens older Planning links (?filter=exceptions) on Planning', async () => {
+  const {inboxFilter} = await import('../lib/action-center/inbox');
+  expect(inboxFilter('exceptions')).toBe('planning');
+  expect(inboxFilter('now')).toBe('now');
+  expect(inboxFilter('anything')).toBe('all');
+});
+it('the detail beside the list shows the first item and opens its full review; decisions stay on the review', () => {
+  const output = html(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests'), item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]));
+  const pane = output.split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  // Act now leads, so the detail shows the urgent gap.
+  expect(pane).toContain('id="inbox-detail-title" tabindex="-1">Title gap</h2>');
+  expect(pane).toContain('class="nv-btn" data-kind="primary"');
+  expect(pane).not.toMatch(/Approve|Decline|<form/);
+  // D-4: Requests folds into Inbox; its three pages are one step away (All requests, under Requests).
+  for (const href of ['/app/requests', '/app/exchange', '/app/availability']) expect(surface(ready([item('TIME_OFF:r1', 'TIME_OFF', 'requests')]), 'requests')).toContain(`href="${href}"`);
+  // No detail when all is clear.
+  expect(html(ready([]))).not.toContain('inbox-detail__title');
+});
+
+it("Codex's optional request facts fill the detail; the decision stays on the full review", () => {
+  const request = {...item('TIME_OFF:r1', 'TIME_OFF', 'requests'), request: {startDate: '2026-10-28', endDate: '2026-10-29', lengthText: '2 days', locationName: 'Main Office', note: 'Fictional family appointment', reviewHref: '/app/requests?tab=pending&requestId=r1'}} as ActionItem;
+  const pane = surface(ready([request]), 'requests').split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  expect(pane).toContain('<dt>Dates</dt><dd><span class="nv-keep"><span class="nv-nowrap">Wed, Oct 28\u00a0–</span> <span class="nv-nowrap">Thu, Oct 29</span></span></dd>');
+  // r4 QA: whole days read as the full review words them ("2 full days"), not the read's shorter "2 days".
+  expect(pane).toContain('<dt>Length</dt><dd>2 full days</dd>');
+  expect(pane).toContain('<dt>Works at</dt><dd>Main Office</dd>');
+  expect(pane).toContain('data-fact="note"><dt>Note</dt><dd>Fictional family appointment</dd>');
+  expect(pane).not.toMatch(/Approve<|Decline<|<form/);
+});
+
+it('offers Call and Text on a shift with no clock-in when Team has the number, and opens that timecard (PD5)', async () => {
+  const {shiftEntry, InboxDetail} = await import('./manager-inbox');
+  const {ScopedReadFrame} = await import('./company-access/scoped-read-frame');
+  const observation = {authority:'fictional-company',observedAt:'2026-10-16T20:00:00Z',validForMs:15000};
+  const shift = {id: 's1', employeeId: 'AUDIT-M', employeeName: 'Morgan Rivera', locationId: 'main', locationName: 'Main Office', positionName: null,
+    startAt: '2026-10-16T11:00:00Z', endAt: '2026-10-16T19:00:00Z', status: 'no_punches' as const, firstClockInAt: null, late: false};
+  const detail = (phone?: string) => {
+    const entry=shiftEntry(shift, 'America/Puerto_Rico', '2026-10-16T20:00:00Z', true, phone, observation);
+    const element=InboxDetail({entry});
+    if(entry.contact){
+      expect(element.type).toBe(ScopedReadFrame);
+      expect(element.props.observation).toEqual(observation);
+      return renderToStaticMarkup(element.props.children);
+    }
+    return renderToStaticMarkup(element);
+  };
+  const output = detail('(787) 555-0142');
+  expect(output).toContain('href="/app/timecards#timecard-AUDIT-M"');
+  expect(output).toContain('href="tel:7875550142"');
+  expect(output).toContain('href="sms:7875550142"');
+  expect(output).toContain('aria-label="Call Morgan Rivera"');
+  expect(output).toContain('(787) 555-0142');
+  const running=InboxDetail({entry:shiftEntry({...shift,status:'not_clocked_in'},'America/Puerto_Rico','2026-10-16T12:00:00Z',true,'+1 787 555 0142',observation)});
+  expect(running.type).toBe(ScopedReadFrame);
+  expect(renderToStaticMarkup(running.props.children)).toContain('href="tel:+17875550142"');
+  expect(renderToStaticMarkup(createElement(InboxDetail,{entry:shiftEntry(shift,'America/Puerto_Rico',observation.observedAt,true,'+1 787 555 0142')}))).not.toMatch(/tel:|sms:|555/);
+  // No number (a location-scoped Manager, or none on file): no Call or Text.
+  expect(detail()).not.toMatch(/tel:|sms:/);
+});
+
+const missedShift = {id: 'missed', employeeId: 'AUDIT-M', employeeName: 'Morgan Rivera', locationId: 'main', locationName: 'Main Office', positionName: null, startAt: '2026-10-16T11:00:00Z', endAt: '2026-10-16T19:00:00Z', status: 'not_clocked_in' as const, firstClockInAt: null, late: false};
+const withMissed = {state: 'ready' as const, observedAt: '2026-10-16T14:30:00Z', validForMs: 30000, timeZone: 'America/Puerto_Rico', today: '2026-10-16', counts: {scheduled: 1, clockedIn: 0, late: 0, notClockedIn: 1}, shifts: [missedShift], missed: [missedShift]};
+it.each([true, false])('keeps coverage and the default detail in Owner order only when coverageFirst=%s', coverageFirst => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([item('gap', 'COVERAGE_GAP', 'scheduling', 'URGENT')]), today: withMissed, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', coverageFirst} as Parameters<typeof InboxSurface>[0]));
+  const before = output.indexOf('id="inbox-urgent"') < output.indexOf('id="missed-punches"');
+  expect(before).toBe(coverageFirst);
+  const pane = output.split('class="nv-card inbox-detail"')[1].split('</section>')[0];
+  expect(pane).toContain('tabindex="-1">' + (coverageFirst ? 'Title gap' : 'Morgan Rivera') + '</h2>');
+  expect(output).not.toMatch(/name="decision"|Approve<|Decline</);
+});
+it('does not render an empty coverage group or displace the only missed shift', () => {
+  const output = renderToStaticMarkup(createElement(InboxSurface, {snapshot: ready([]), today: withMissed, connection: 'ready', onRefresh: () => {}, timeZone: 'America/Puerto_Rico', coverageFirst: true} as Parameters<typeof InboxSurface>[0]));
+  expect(output).not.toContain('id="inbox-urgent"');
+  expect(output).toContain('id="missed-punches"');
+  expect(output).toContain('tabindex="-1">Morgan Rivera</h2>');
+});

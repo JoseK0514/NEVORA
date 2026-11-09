@@ -1,0 +1,11 @@
+# Employee Schedule completion
+
+Complete only Employee mobile’s own-week and publication-review journey in the existing approved teal React interface. Preserve the date-led list, shared sheets and control system. Keep the shared default shifts and unrelated Employee workflows intact.
+
+Replace the three-week restriction and global confirmation authority with valid past/future week navigation, a native date chooser, own published assignments and week-specific effective review. Show real planned durations, overnight end dates, captured positions/locations and approved-callout status. Quiet unassigned dates must say no shift is published, without promising a day off. Publication absence, partly published locations, failed reads and a published week with no own assignments remain distinct.
+
+Review meaningful own changes, including removed assignments and removal of all own work. Recheck current own session/workspace/role/proof, revision and original operation before confirming. Preserve an unchanged own schedule’s effective confirmation across equivalent revisions. A command response alone is insufficient; success needs a canonical sample reread. Retain unknown operations for explicit original-result checks and deliberate original replay. Conflicts require a current week/new review. Sign-out clears private data; no private browser persistence or live requests.
+
+Home and the existing Schedule notice use the current week’s derived status; confirming another week cannot confirm the current one. Reuse authorized contextual shift-request/calendar destinations. No management scheduling, publication, coworker filters or new notification types.
+
+First reproduce the disabled previous-week control and unverified partial-data confirmation. Then verify pure state transitions, current-context sheets, week/change/empty/publication fixtures, unknown/conflict/readback recovery, pause/sign-out,320/390/430/884px, Light/Dark,200% text and keyboard focus. Rerun prior469 browser groups per engine and existing models, obtain independent QA and a fresh bounded UI finish review, document the extension and bind evidence to the final HTML hash. Target closure: EM-A06 and remaining Schedule portion of EM-A05. No production integration or complete Employee parity claim.

@@ -1,0 +1,35 @@
+'use client';
+
+import { useSyncExternalStore } from 'react';
+import { readThemeChoice, writeThemeChoice, THEME_KEY, DEFAULT_THEME, type ThemeChoice } from '@/lib/theme';
+
+const listeners = new Set<() => void>();
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  const storage = (event: StorageEvent) => { if (event.key === THEME_KEY) listener(); };
+  window.addEventListener('storage', storage);
+  return () => { listeners.delete(listener); window.removeEventListener('storage', storage); };
+}
+
+/** The device's theme choice, live (v5 Profile's Appearance row). */
+export function useThemeChoice() {
+  return useSyncExternalStore(subscribe, readThemeChoice, () => DEFAULT_THEME);
+}
+export function setThemeChoice(choice: ThemeChoice) {
+  writeThemeChoice(choice);
+  listeners.forEach(listener => listener());
+}
+
+/** System / Light / Dark for this device, styled like the Language switch beside it. The pressed option is the choice. */
+export function ThemeSwitch({ label = 'Appearance' }: { label?: string }) {
+  const choice = useSyncExternalStore(subscribe, readThemeChoice, () => DEFAULT_THEME);
+  return (
+    <div className="ap-lang" role="group" aria-label={label}>
+      {([['system', 'System'], ['light', 'Light'], ['dark', 'Dark']] as const).map(([value, name]) => (
+        <button key={value} type="button" aria-pressed={choice === value} onClick={() => { writeThemeChoice(value); listeners.forEach(listener => listener()); }}>
+          <span>{name}</span>
+        </button>
+      ))}
+    </div>
+  );
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "path": "/api/employee/profile",
+    "method": "GET",
+    "stage": "current-session-denial",
+    "startedAt": 1793135841436
+  }
+]

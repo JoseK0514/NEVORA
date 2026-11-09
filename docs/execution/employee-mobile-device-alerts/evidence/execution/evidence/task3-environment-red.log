@@ -1,0 +1,30 @@
+
+> fuel-scheduler@0.1.0 test
+> vitest run src/test/integration/owned-device-environment.test.ts
+
+
+ RUN  v5.0.5 /Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume
+
+ ❯ src/test/integration/owned-device-environment.test.ts (1 test | 1 failed) 2ms
+   × owned device setup stays loopback-only with provider and test delivery disabled 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/test/integration/owned-device-environment.test.ts > owned device setup stays loopback-only with provider and test delivery disabled
+AssertionError: expected { …(9), …(1) } to have property "ownedDeviceEnvironment"
+ ❯ src/test/integration/owned-device-environment.test.ts:4:16
+      2| import * as owned from './owned-next-app';
+      3| it('owned device setup stays loopback-only with provider and test deli…
+      4|  expect(owned).toHaveProperty('ownedDeviceEnvironment');
+       |                ^
+      5|  const env=owned.ownedDeviceEnvironment('http://127.0.0.1:43210',true);
+      6|  expect(env.PUSH_FEATURE_ENABLED).toBe('true');expect(env.PUSH_DELIVER…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:39:08
+   Duration  98ms (import 50%, transform 40%, tests 6%, worker 4%)
+

@@ -1,0 +1,1695 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "chromium",
+      "name": "Initial held real read exposes loading without stale private rows"
+    },
+    {
+      "engine": "chromium",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "chromium",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "chromium",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "chromium",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Explicit own mark-read stays distinct from acknowledgement"
+    },
+    {
+      "engine": "chromium",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "chromium",
+      "name": "Changed audience refuses stale send and permits deliberate fresh review with unchanged draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual commit/lost response survives route changes and source withdrawal; exact original receipt remains recoverable"
+    },
+    {
+      "engine": "chromium",
+      "name": "Not-found lookup permits deliberate exact original payload/operation retry"
+    },
+    {
+      "engine": "chromium",
+      "name": "Native Tab moves from Title to Message"
+    },
+    {
+      "engine": "chromium",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current module loss fences pending completions and preserves the original operation for deliberate lookup after restoration"
+    },
+    {
+      "engine": "chromium",
+      "name": "Desktop remains on incumbent Updates"
+    },
+    {
+      "engine": "chromium",
+      "name": "A different actual account receives a genuine empty page and no retained private draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Employee without a current assignment cannot publish a team message"
+    },
+    {
+      "engine": "chromium",
+      "name": "Current Updates module disable removes fields/actions; re-enable restores only the mounted own draft"
+    },
+    {
+      "engine": "chromium",
+      "name": "Actual current session revocation removes private fields and actions"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "webkit",
+      "name": "Initial held real read exposes loading without stale private rows"
+    },
+    {
+      "engine": "webkit",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "webkit",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "webkit",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "webkit",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Explicit own mark-read stays distinct from acknowledgement"
+    },
+    {
+      "engine": "webkit",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "webkit",
+      "name": "Changed audience refuses stale send and permits deliberate fresh review with unchanged draft"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual commit/lost response survives route changes and source withdrawal; exact original receipt remains recoverable"
+    },
+    {
+      "engine": "webkit",
+      "name": "Not-found lookup permits deliberate exact original payload/operation retry"
+    },
+    {
+      "engine": "webkit",
+      "name": "Native Tab moves from Title to Message"
+    },
+    {
+      "engine": "webkit",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "webkit",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current module loss fences pending completions and preserves the original operation for deliberate lookup after restoration"
+    },
+    {
+      "engine": "webkit",
+      "name": "Desktop remains on incumbent Updates"
+    },
+    {
+      "engine": "webkit",
+      "name": "A different actual account receives a genuine empty page and no retained private draft"
+    },
+    {
+      "engine": "webkit",
+      "name": "Employee without a current assignment cannot publish a team message"
+    },
+    {
+      "engine": "webkit",
+      "name": "Current Updates module disable removes fields/actions; re-enable restores only the mounted own draft"
+    },
+    {
+      "engine": "webkit",
+      "name": "Actual current session revocation removes private fields and actions"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual sign-in and current Home status settled"
+    },
+    {
+      "engine": "firefox",
+      "name": "Initial held real read exposes loading without stale private rows"
+    },
+    {
+      "engine": "firefox",
+      "name": "notifications Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Notification open preserves search/filter/origin focus and never acknowledges automatically"
+    },
+    {
+      "engine": "firefox",
+      "name": "Bounded older/newest notification navigation"
+    },
+    {
+      "engine": "firefox",
+      "name": "detail Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit own acknowledgement recorded"
+    },
+    {
+      "engine": "firefox",
+      "name": "updates Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Explicit own mark-read stays distinct from acknowledgement"
+    },
+    {
+      "engine": "firefox",
+      "name": "compose Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "audience Light/Dark320390430 and200%text/contrast/targets/nav clearance"
+    },
+    {
+      "engine": "firefox",
+      "name": "Changed audience refuses stale send and permits deliberate fresh review with unchanged draft"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual commit/lost response survives route changes and source withdrawal; exact original receipt remains recoverable"
+    },
+    {
+      "engine": "firefox",
+      "name": "Not-found lookup permits deliberate exact original payload/operation retry"
+    },
+    {
+      "engine": "firefox",
+      "name": "Native Tab moves from Title to Message"
+    },
+    {
+      "engine": "firefox",
+      "name": "Pause removes private DOM and fresh read restores mounted draft"
+    },
+    {
+      "engine": "firefox",
+      "name": "Failed read stays unavailable and refresh recovers"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current module loss fences pending completions and preserves the original operation for deliberate lookup after restoration"
+    },
+    {
+      "engine": "firefox",
+      "name": "Desktop remains on incumbent Updates"
+    },
+    {
+      "engine": "firefox",
+      "name": "A different actual account receives a genuine empty page and no retained private draft"
+    },
+    {
+      "engine": "firefox",
+      "name": "Employee without a current assignment cannot publish a team message"
+    },
+    {
+      "engine": "firefox",
+      "name": "Current Updates module disable removes fields/actions; re-enable restores only the mounted own draft"
+    },
+    {
+      "engine": "firefox",
+      "name": "Actual current session revocation removes private fields and actions"
+    }
+  ],
+  "captures": [
+    "chromium-notifications-light-320-viewport.png",
+    "chromium-notifications-light-320.png",
+    "chromium-notifications-light-390-viewport.png",
+    "chromium-notifications-light-390.png",
+    "chromium-notifications-light-430-viewport.png",
+    "chromium-notifications-light-430.png",
+    "chromium-notifications-dark-320-viewport.png",
+    "chromium-notifications-dark-320.png",
+    "chromium-notifications-dark-390-viewport.png",
+    "chromium-notifications-dark-390.png",
+    "chromium-notifications-dark-430-viewport.png",
+    "chromium-notifications-dark-430.png",
+    "chromium-notifications-text-200-viewport.png",
+    "chromium-notifications-text-200.png",
+    "chromium-detail-light-320-viewport.png",
+    "chromium-detail-light-320.png",
+    "chromium-detail-light-390-viewport.png",
+    "chromium-detail-light-390.png",
+    "chromium-detail-light-430-viewport.png",
+    "chromium-detail-light-430.png",
+    "chromium-detail-dark-320-viewport.png",
+    "chromium-detail-dark-320.png",
+    "chromium-detail-dark-390-viewport.png",
+    "chromium-detail-dark-390.png",
+    "chromium-detail-dark-430-viewport.png",
+    "chromium-detail-dark-430.png",
+    "chromium-detail-text-200-viewport.png",
+    "chromium-detail-text-200.png",
+    "chromium-updates-light-320-viewport.png",
+    "chromium-updates-light-320.png",
+    "chromium-updates-light-390-viewport.png",
+    "chromium-updates-light-390.png",
+    "chromium-updates-light-430-viewport.png",
+    "chromium-updates-light-430.png",
+    "chromium-updates-dark-320-viewport.png",
+    "chromium-updates-dark-320.png",
+    "chromium-updates-dark-390-viewport.png",
+    "chromium-updates-dark-390.png",
+    "chromium-updates-dark-430-viewport.png",
+    "chromium-updates-dark-430.png",
+    "chromium-updates-text-200-viewport.png",
+    "chromium-updates-text-200.png",
+    "chromium-compose-light-320-viewport.png",
+    "chromium-compose-light-320.png",
+    "chromium-compose-light-390-viewport.png",
+    "chromium-compose-light-390.png",
+    "chromium-compose-light-430-viewport.png",
+    "chromium-compose-light-430.png",
+    "chromium-compose-dark-320-viewport.png",
+    "chromium-compose-dark-320.png",
+    "chromium-compose-dark-390-viewport.png",
+    "chromium-compose-dark-390.png",
+    "chromium-compose-dark-430-viewport.png",
+    "chromium-compose-dark-430.png",
+    "chromium-compose-text-200-viewport.png",
+    "chromium-compose-text-200.png",
+    "chromium-audience-light-320-viewport.png",
+    "chromium-audience-light-320.png",
+    "chromium-audience-light-390-viewport.png",
+    "chromium-audience-light-390.png",
+    "chromium-audience-light-430-viewport.png",
+    "chromium-audience-light-430.png",
+    "chromium-audience-dark-320-viewport.png",
+    "chromium-audience-dark-320.png",
+    "chromium-audience-dark-390-viewport.png",
+    "chromium-audience-dark-390.png",
+    "chromium-audience-dark-430-viewport.png",
+    "chromium-audience-dark-430.png",
+    "chromium-audience-text-200-viewport.png",
+    "chromium-audience-text-200.png",
+    "webkit-notifications-light-320-viewport.png",
+    "webkit-notifications-light-320.png",
+    "webkit-notifications-light-390-viewport.png",
+    "webkit-notifications-light-390.png",
+    "webkit-notifications-light-430-viewport.png",
+    "webkit-notifications-light-430.png",
+    "webkit-notifications-dark-320-viewport.png",
+    "webkit-notifications-dark-320.png",
+    "webkit-notifications-dark-390-viewport.png",
+    "webkit-notifications-dark-390.png",
+    "webkit-notifications-dark-430-viewport.png",
+    "webkit-notifications-dark-430.png",
+    "webkit-notifications-text-200-viewport.png",
+    "webkit-notifications-text-200.png",
+    "webkit-detail-light-320-viewport.png",
+    "webkit-detail-light-320.png",
+    "webkit-detail-light-390-viewport.png",
+    "webkit-detail-light-390.png",
+    "webkit-detail-light-430-viewport.png",
+    "webkit-detail-light-430.png",
+    "webkit-detail-dark-320-viewport.png",
+    "webkit-detail-dark-320.png",
+    "webkit-detail-dark-390-viewport.png",
+    "webkit-detail-dark-390.png",
+    "webkit-detail-dark-430-viewport.png",
+    "webkit-detail-dark-430.png",
+    "webkit-detail-text-200-viewport.png",
+    "webkit-detail-text-200.png",
+    "webkit-updates-light-320-viewport.png",
+    "webkit-updates-light-320.png",
+    "webkit-updates-light-390-viewport.png",
+    "webkit-updates-light-390.png",
+    "webkit-updates-light-430-viewport.png",
+    "webkit-updates-light-430.png",
+    "webkit-updates-dark-320-viewport.png",
+    "webkit-updates-dark-320.png",
+    "webkit-updates-dark-390-viewport.png",
+    "webkit-updates-dark-390.png",
+    "webkit-updates-dark-430-viewport.png",
+    "webkit-updates-dark-430.png",
+    "webkit-updates-text-200-viewport.png",
+    "webkit-updates-text-200.png",
+    "webkit-compose-light-320-viewport.png",
+    "webkit-compose-light-320.png",
+    "webkit-compose-light-390-viewport.png",
+    "webkit-compose-light-390.png",
+    "webkit-compose-light-430-viewport.png",
+    "webkit-compose-light-430.png",
+    "webkit-compose-dark-320-viewport.png",
+    "webkit-compose-dark-320.png",
+    "webkit-compose-dark-390-viewport.png",
+    "webkit-compose-dark-390.png",
+    "webkit-compose-dark-430-viewport.png",
+    "webkit-compose-dark-430.png",
+    "webkit-compose-text-200-viewport.png",
+    "webkit-compose-text-200.png",
+    "webkit-audience-light-320-viewport.png",
+    "webkit-audience-light-320.png",
+    "webkit-audience-light-390-viewport.png",
+    "webkit-audience-light-390.png",
+    "webkit-audience-light-430-viewport.png",
+    "webkit-audience-light-430.png",
+    "webkit-audience-dark-320-viewport.png",
+    "webkit-audience-dark-320.png",
+    "webkit-audience-dark-390-viewport.png",
+    "webkit-audience-dark-390.png",
+    "webkit-audience-dark-430-viewport.png",
+    "webkit-audience-dark-430.png",
+    "webkit-audience-text-200-viewport.png",
+    "webkit-audience-text-200.png",
+    "firefox-notifications-light-320-viewport.png",
+    "firefox-notifications-light-320.png",
+    "firefox-notifications-light-390-viewport.png",
+    "firefox-notifications-light-390.png",
+    "firefox-notifications-light-430-viewport.png",
+    "firefox-notifications-light-430.png",
+    "firefox-notifications-dark-320-viewport.png",
+    "firefox-notifications-dark-320.png",
+    "firefox-notifications-dark-390-viewport.png",
+    "firefox-notifications-dark-390.png",
+    "firefox-notifications-dark-430-viewport.png",
+    "firefox-notifications-dark-430.png",
+    "firefox-notifications-text-200-viewport.png",
+    "firefox-notifications-text-200.png",
+    "firefox-detail-light-320-viewport.png",
+    "firefox-detail-light-320.png",
+    "firefox-detail-light-390-viewport.png",
+    "firefox-detail-light-390.png",
+    "firefox-detail-light-430-viewport.png",
+    "firefox-detail-light-430.png",
+    "firefox-detail-dark-320-viewport.png",
+    "firefox-detail-dark-320.png",
+    "firefox-detail-dark-390-viewport.png",
+    "firefox-detail-dark-390.png",
+    "firefox-detail-dark-430-viewport.png",
+    "firefox-detail-dark-430.png",
+    "firefox-detail-text-200-viewport.png",
+    "firefox-detail-text-200.png",
+    "firefox-updates-light-320-viewport.png",
+    "firefox-updates-light-320.png",
+    "firefox-updates-light-390-viewport.png",
+    "firefox-updates-light-390.png",
+    "firefox-updates-light-430-viewport.png",
+    "firefox-updates-light-430.png",
+    "firefox-updates-dark-320-viewport.png",
+    "firefox-updates-dark-320.png",
+    "firefox-updates-dark-390-viewport.png",
+    "firefox-updates-dark-390.png",
+    "firefox-updates-dark-430-viewport.png",
+    "firefox-updates-dark-430.png",
+    "firefox-updates-text-200-viewport.png",
+    "firefox-updates-text-200.png",
+    "firefox-compose-light-320-viewport.png",
+    "firefox-compose-light-320.png",
+    "firefox-compose-light-390-viewport.png",
+    "firefox-compose-light-390.png",
+    "firefox-compose-light-430-viewport.png",
+    "firefox-compose-light-430.png",
+    "firefox-compose-dark-320-viewport.png",
+    "firefox-compose-dark-320.png",
+    "firefox-compose-dark-390-viewport.png",
+    "firefox-compose-dark-390.png",
+    "firefox-compose-dark-430-viewport.png",
+    "firefox-compose-dark-430.png",
+    "firefox-compose-text-200-viewport.png",
+    "firefox-compose-text-200.png",
+    "firefox-audience-light-320-viewport.png",
+    "firefox-audience-light-320.png",
+    "firefox-audience-light-390-viewport.png",
+    "firefox-audience-light-390.png",
+    "firefox-audience-light-430-viewport.png",
+    "firefox-audience-light-430.png",
+    "firefox-audience-dark-320-viewport.png",
+    "firefox-audience-dark-320.png",
+    "firefox-audience-dark-390-viewport.png",
+    "firefox-audience-dark-390.png",
+    "firefox-audience-dark-430-viewport.png",
+    "firefox-audience-dark-430.png",
+    "firefox-audience-text-200-viewport.png",
+    "firefox-audience-text-200.png"
+  ],
+  "contrasts": [
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "chromium",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "webkit",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "notifications",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "detail",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "detail",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "updates",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "updates",
+      "ratio": 10.771713285410929
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "compose",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "compose",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 320,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 390,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "light",
+      "width": 430,
+      "name": "audience",
+      "ratio": 6.089452668960573
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 320,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 390,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    },
+    {
+      "engine": "firefox",
+      "theme": "dark",
+      "width": 430,
+      "name": "audience",
+      "ratio": 12.581737771441162
+    }
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "audience-change",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "pending-module-fence",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "unassigned-author",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "session-denied",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "login",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "login",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "login",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_quiet_quiet_0thpcrus4i4cz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "login",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "login",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "updates",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it wasn't preloaded for nothing.",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "audience-change",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 409 (Conflict)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "not-found-retry",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "read-error",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "pending-module-fence",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "unassigned-author",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "session-denied",
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/notifications#message-599db5cd-1c63-48e2-a825-3530319ae0f5\" line: 0}]",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/notifications#message-599db5cd-1c63-48e2-a825-3530319ae0f5\" line: 0}]",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "notifications",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/notifications#message-599db5cd-1c63-48e2-a825-3530319ae0f5\" line: 0}]",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "updates",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_components_1-x67_9n8_h4a._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/updates#message-bcaf7c9e-edbb-442a-b28c-8057ada1cf10\" line: 0}]",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "updates",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/updates#message-bcaf7c9e-edbb-442a-b28c-8057ada1cf10\" line: 0}]",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "updates",
+      "type": "warning",
+      "text": "[JavaScript Warning: \"The resource at “http://127.0.0.1:39989/_next/static/chunks/src_components_signature_0sa-2q6_x_-q7._.css” preloaded with link preload was not used within a few seconds. Make sure all attributes of the preload tag are set correctly.\" {file: \"http://127.0.0.1:39989/app/updates#message-bcaf7c9e-edbb-442a-b28c-8057ada1cf10\" line: 0}]",
+      "expected": false
+    }
+  ],
+  "failedRequests": [
+    {
+      "engine": "chromium",
+      "stage": "login",
+      "url": "http://127.0.0.1:39989/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:39989/app/updates/75f55764-29c8-4ee1-a14c-803a6493815a?_rsc=h4-7ZZkZ7ItqDcNZ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:39989/app/notifications?_rsc=W_1uIanrN8FDYrPo",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:39989/app/updates/75f55764-29c8-4ee1-a14c-803a6493815a?_rsc=HBjyqCk89ZNMF19M",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "notifications",
+      "url": "http://127.0.0.1:39989/app/updates/75f55764-29c8-4ee1-a14c-803a6493815a?_rsc=d6Izw7Yicxo3qOng",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:39989/app/notifications?_rsc=-TCq_liVFy0gwfQc",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:39989/app/updates/43ffe8c6-24c7-401a-a2f9-8035569031a8?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:39989/app/updates/43ffe8c6-24c7-401a-a2f9-8035569031a8?_rsc=qV_Bnm5M43xOARms",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:39989/app/updates?_rsc=nvjNXD-bUjVPTkBS",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "updates",
+      "url": "http://127.0.0.1:39989/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/app/updates?_rsc=o5AxBJ1NOrScdMa5",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/app/updates/compose?_rsc=G_2ZVhXQTN25kW5I",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/app/updates/af3d89ac-487c-4af5-9496-8d6cd6315042?_rsc=lT5mirNOouD58d9g",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/app/updates?_rsc=yl-279IlCokSzawo",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/app/updates/af3d89ac-487c-4af5-9496-8d6cd6315042?_rsc=Mf0MmdA-AZK665UB",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/messages/detail/af3d89ac-487c-4af5-9496-8d6cd6315042",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "net::ERR_FAILED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "pause",
+      "url": "http://127.0.0.1:39989/app/updates/compose?_rsc=OEjwLtKvXE5JJuhi",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "read-error",
+      "url": "http://127.0.0.1:39989/api/employee/messages/compose/new",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "pending-module-fence",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "net::ERR_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "chromium",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:39989/api/employee/communications/context",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "empty-account",
+      "url": "http://127.0.0.1:39989/login",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "chromium",
+      "stage": "empty-account",
+      "url": "http://127.0.0.1:39989/app/updates/compose?_rsc=j9NLyFjvuZBsB3sQ",
+      "error": "net::ERR_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/messages/compose/new",
+      "error": "Load request cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/messages/detail/cf8fa63d-8967-4583-9813-3e03fd9745f1",
+      "error": "Load request cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "Blocked by Web Inspector",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "pending-module-fence",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "Load request cancelled",
+      "expected": true
+    },
+    {
+      "engine": "webkit",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:39989/api/employee/communications/context",
+      "error": "Load request cancelled",
+      "expected": false
+    },
+    {
+      "engine": "webkit",
+      "stage": "empty-account",
+      "url": "http://127.0.0.1:39989/api/notifications",
+      "error": "Load request cancelled",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/messages/compose/new",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "publication-recovery",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/messages/detail/46e46744-b2d3-4fe5-bee3-3a4770eb5562",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    },
+    {
+      "engine": "firefox",
+      "stage": "not-found-retry",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "NS_ERROR_FAILURE",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "pending-module-fence",
+      "url": "http://127.0.0.1:39989/api/employee/communications",
+      "error": "NS_BINDING_ABORTED",
+      "expected": true
+    },
+    {
+      "engine": "firefox",
+      "stage": "desktop",
+      "url": "http://127.0.0.1:39989/api/employee/communications/context",
+      "error": "NS_BINDING_ABORTED",
+      "expected": false
+    }
+  ]
+}

@@ -1,0 +1,1620 @@
+[
+ {
+  "w": 390,
+  "r": "/app",
+  "status": 200,
+  "ms": 9333,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Home"
+  ],
+  "pageH": 2130,
+  "mobileNav": true,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 33m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/schedule",
+  "status": 200,
+  "ms": 1784,
+  "url": "/app/schedule",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My schedule",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 80
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:My shifts",
+   "date:Wed21",
+   "page:Schedule"
+  ],
+  "pageH": 2486,
+  "mobileNav": true,
+  "text": "My schedule 7 shifts · 56h scheduled. My shifts Open shifts Oct 19 – Oct 25 2026 · Puerto Rico time Today Mon 19 Tue 20 Wed 21 Thu 22 Fri 23 Sat 24 Sun 25 Your Main Office shifts are published. West Office hasn’t published this week yet. Your manager asks you ",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/my-time",
+  "status": 200,
+  "ms": 7017,
+  "url": "/app/my-time",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": "true",
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My time",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 168
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:My time",
+   "page:Pay"
+  ],
+  "pageH": 1311,
+  "mobileNav": true,
+  "text": "My pay My time Timecards Payday Tue, Oct 27 · for Oct 19 – Oct 25 My time Your punches, breaks and correction requests. Current status Off clock No open time entry was recorded at the last check. Use your location’s Clocker to record punches. Updated Oct 21, 1",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/my-pay",
+  "status": 200,
+  "ms": 10681,
+  "url": "/app/my-pay",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, -apple-system, \"system-ui\", sans-serif",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My pay",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:My pay",
+   "page:Pay"
+  ],
+  "pageH": 844,
+  "mobileNav": true,
+  "text": "My pay My time Timecards My pay Your published pay statements, ready to view or download. Pay statements Statements appear here after payroll publishes them. Refresh No published statements yet Your pay statements will appear when your company publishes them. ",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 503 /api/notifications",
+   "error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/updates",
+  "status": 200,
+  "ms": 10872,
+  "url": "/app/updates",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Updates",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 80
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [],
+  "pageH": 844,
+  "mobileNav": true,
+  "text": "Updates Workplace news and notes, all in one place. Message today’s team Filter updates All 1 To review 1 Reviewed 0 Refresh October 20, 2026 Location announcement Review needed This week’s team schedule Please review your upcoming shifts and contact your mana",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target [data-update-heading] not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/updates/47a142df-be09-4569-a8bf-7cccbd12f56f",
+  "status": 200,
+  "ms": 12237,
+  "url": "/app/updates/47a142df-be09-4569-a8bf-7cccbd12f56f",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Couldn’t load this update",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 168
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [],
+  "pageH": 844,
+  "mobileNav": true,
+  "text": "Updates Update Couldn’t load this update Check your connection, then try again. Couldn’t load this update. Check your connection, then try again. Try again",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/notifications",
+  "status": 200,
+  "ms": 8088,
+  "url": "/app/notifications",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Notifi­ca­tions",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 80
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:3"
+  ],
+  "pageH": 1271,
+  "mobileNav": true,
+  "text": "Notifi­ca­tions Schedule changes, requests and team updates in one place. Your alerts Refresh All 3 Unread 3 Needs action 3 Search notifications 3 notifications in this view Tuesday, October 20, 2026 Team update 7:00 AM Unread Action required Read the current ",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/profile",
+  "status": 200,
+  "ms": 3483,
+  "url": "/app/profile",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Profile",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 80
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [],
+  "pageH": 1192,
+  "mobileNav": true,
+  "text": "Profile Your work information and app settings. Work details Name Alexandra Rivera Company Northside QA Workforce Work locations Main Office · West Office App access Employee Time zone Puerto Rico time Something wrong here? Ask your manager to update it. Refre",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target .profile-heading-copy not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target .profile-heading-copy not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/requests/hub",
+  "status": 500,
+  "ms": 28447,
+  "url": "/app/requests/hub",
+  "title": "NEVORA Workforce",
+  "bodyFF": "Times",
+  "bodyBg": "rgba(0, 0, 0, 0)",
+  "mainBg": null,
+  "h1s": [],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [],
+  "pageH": 844,
+  "mobileNav": false,
+  "text": "",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 500 /app/requests/hub",
+   "error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/requests",
+  "status": 200,
+  "ms": 4734,
+  "url": "/app/requests",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Time off",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "a.section-tab r=417",
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Time off",
+   "page:New request",
+   "page:Requests"
+  ],
+  "pageH": 1411,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Time off 1 request waiting for approval. New request My requests (5) Request time off Choose when you need to be away. How much time do you need? Full day Partial day Request one day or a range of days. Choose your",
+  "cons": [
+   "error: Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozill",
+   "error: %o\n\n%s error: canceling statement due to statement timeout\n    at run (about://React/Server/file:///private/tmp/claude-501/-Users-josek0514-Desktop-NEVORA-UI-READINESS--claude-worktrees-p35-wave-a-128",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/exchange",
+  "status": 200,
+  "ms": 2285,
+  "url": "/app/exchange",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Shift requests",
+   "page:Available shifts",
+   "page:Requests"
+  ],
+  "pageH": 844,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests The shift board is clear Check back later for available open shifts.",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target .exchange-page-heading h1, .exchange-section-heading not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target .exchange-page-heading h1, .exchange-section-heading not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/exchange/swap",
+  "status": 200,
+  "ms": 9372,
+  "url": "/app/exchange?error=INVALID_SHIFT",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Shift requests",
+   "page:Available shifts",
+   "page:Requests"
+  ],
+  "pageH": 844,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests That shift is no longer available for exchange. The shift board is clear Check back later for available open sh",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/exchange/callout",
+  "status": 200,
+  "ms": 7468,
+  "url": "/app/exchange?tab=my&error=INVALID_SHIFT",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Shift requests",
+   "page:Your requests",
+   "page:Requests"
+  ],
+  "pageH": 3397,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests That shift is no longer available for exchange. Your assigned shifts Wed, Oct 21 8:00 AM – 4:00 PM Main Office ",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/availability",
+  "status": 200,
+  "ms": 2645,
+  "url": "/app/availability",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Availability",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Availability",
+   "page:Usual week",
+   "page:Requests"
+  ],
+  "pageH": 2541,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Availability Your usual week. Let your team know when you can work. Usual week Specific week Your weekly hours Choose the days and times you can work. 7 of 7 days available Availability by day Monday Available From",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/timecards",
+  "status": 200,
+  "ms": 2547,
+  "url": "/app/timecards",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": "true",
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Timecards",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 168
+   }
+  ],
+  "cmU": [
+   "cm-hold"
+  ],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Timecards",
+   "page:Pay"
+  ],
+  "pageH": 1285,
+  "mobileNav": true,
+  "text": "My pay My time Timecards Oct 15 – Oct 21 Timecards Each day’s clock-ins and clock-outs. Choose a period Period start Period end View period Refresh timecards 1 timecard in this period. Request a correction Your timecard Oct 15, 2026 – Oct 21, 2026 Draft Record",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/inbox",
+  "status": 200,
+  "ms": 2924,
+  "url": "/app/requests/hub",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "a.section-tab r=418",
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Overview",
+   "page:Requests"
+  ],
+  "pageH": 924,
+  "mobileNav": true,
+  "text": "Overview Time off Shift requests Availability Requests Ask for time off or change a shift. Start a request Request time off A full day or a few hours Swap a shift Or offer it for coverage. Starts in My schedule Update availability When you can and can’t work T",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "pageerror: Failed to execute 'measure' on 'Performance': '​InboxPage' cannot have a negative time stamp.",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/employees",
+  "status": 200,
+  "ms": 5128,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Home"
+  ],
+  "pageH": 2130,
+  "mobileNav": true,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 30m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 390,
+  "r": "/app/payroll",
+  "status": 200,
+  "ms": 2080,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "30px",
+    "fw": "600",
+    "top": 124
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=486",
+   "path. r=462",
+   "path. r=400"
+  ],
+  "small": [],
+  "active": [
+   "page:Home"
+  ],
+  "pageH": 2130,
+  "mobileNav": true,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 30m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "pageerror: Failed to execute 'measure' on 'Performance': '​PayrollPage' cannot have a negative time stamp.",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app",
+  "status": 200,
+  "ms": 2026,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 133
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Home",
+   "page:Home"
+  ],
+  "pageH": 1355,
+  "mobileNav": false,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 30m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/schedule",
+  "status": 200,
+  "ms": 2538,
+  "url": "/app/schedule",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My schedule",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 113
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:My schedule",
+   "page:My schedule",
+   "page:My shifts",
+   "date:Wed21"
+  ],
+  "pageH": 1515,
+  "mobileNav": false,
+  "text": "My schedule 7 shifts · 56h scheduled. My shifts Open shifts Oct 19 – Oct 25 2026 · Puerto Rico time Today Mon 19 Tue 20 Wed 21 Thu 22 Fri 23 Sat 24 Sun 25 Your Main Office shifts are published. West Office hasn’t published this week yet. Your week at a glance ",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/my-time",
+  "status": 200,
+  "ms": 1613,
+  "url": "/app/my-time",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": "true",
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My time",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "page:My time",
+   "page:My time",
+   "page:My time"
+  ],
+  "pageH": 1293,
+  "mobileNav": false,
+  "text": "My pay My time Timecards Payday Tue, Oct 27 · for Oct 19 – Oct 25 My time Your punches, breaks and correction requests. Current status Off clock No open time entry was recorded at the last check. Use your location’s Clocker to record punches. Updated Oct 21, 1",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/my-pay",
+  "status": 200,
+  "ms": 7765,
+  "url": "/app/my-pay",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, -apple-system, \"system-ui\", sans-serif",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "My pay",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "page:My pay",
+   "page:My pay",
+   "page:My pay"
+  ],
+  "pageH": 900,
+  "mobileNav": false,
+  "text": "My pay My time Timecards My pay Your published pay statements, ready to view or download. Pay statements Statements appear here after payroll publishes them. Refresh No published statements yet Your pay statements will appear when your company publishes them. ",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/updates",
+  "status": 200,
+  "ms": 2558,
+  "url": "/app/updates",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Updates",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 113
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Updates",
+   "page:Updates"
+  ],
+  "pageH": 900,
+  "mobileNav": false,
+  "text": "Updates Workplace news and notes, all in one place. Message today’s team Filter updates All 1 To review 1 Reviewed 0 Refresh October 20, 2026 Location announcement Review needed This week’s team schedule Please review your upcoming shifts and contact your mana",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target [data-update-heading] not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/updates/47a142df-be09-4569-a8bf-7cccbd12f56f",
+  "status": 200,
+  "ms": 13311,
+  "url": "/app/updates/47a142df-be09-4569-a8bf-7cccbd12f56f",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Couldn’t load this update",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 193
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Updates"
+  ],
+  "pageH": 900,
+  "mobileNav": false,
+  "text": "Updates Update Couldn’t load this update Check your connection, then try again. Couldn’t load this update. Check your connection, then try again. Try again",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 503 /api/employee/communications/47a142df-be09-4569-a8bf-7cccbd12f56f",
+   "error: Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/notifications",
+  "status": 200,
+  "ms": 4052,
+  "url": "/app/notifications",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Notifi­ca­tions",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 113
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Notifications",
+   "page:Notifications",
+   "page:3"
+  ],
+  "pageH": 1068,
+  "mobileNav": false,
+  "text": "Notifi­ca­tions Schedule changes, requests and team updates in one place. Your alerts Review an update. Take the next step. Refresh All 3 Unread 3 Needs action 3 Search notifications 3 notifications in this view Tuesday, October 20, 2026 Team update 7:00 AM Un",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/profile",
+  "status": 200,
+  "ms": 2803,
+  "url": "/app/profile",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Profile",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 113
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Profile"
+  ],
+  "pageH": 962,
+  "mobileNav": false,
+  "text": "Profile Your work information and app settings. Work details Name Alexandra Rivera Company Northside QA Workforce Work locations Main Office · West Office App access Employee Time zone Puerto Rico time Something wrong here? Ask your manager to update it. Refre",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target .profile-heading-copy not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target .profile-heading-copy not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/requests/hub",
+  "status": 200,
+  "ms": 6527,
+  "url": "/app/requests/hub",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "page:Requests",
+   "page:Requests",
+   "page:Overview"
+  ],
+  "pageH": 949,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Requests Ask for time off or change a shift. Start a request Request time off A full day or a few hours Swap a shift Or offer it for coverage. Starts in My schedule Update availability When you can and can’t work T",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/requests",
+  "status": 200,
+  "ms": 3425,
+  "url": "/app/requests",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Time off",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Requests",
+   "page:Time off",
+   "page:Time off",
+   "page:New request"
+  ],
+  "pageH": 1377,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Time off 1 request waiting for approval. New request My requests (5) Request time off Choose when you need to be away. How much time do you need? Full day Partial day Request one day or a range of days. Choose your",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/exchange",
+  "status": 200,
+  "ms": 4175,
+  "url": "/app/exchange",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Requests",
+   "page:Shift requests",
+   "page:Shift requests",
+   "page:Available shifts"
+  ],
+  "pageH": 900,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests The shift board is clear Check back later for available open shifts.",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "warning: GSAP target .exchange-page-heading h1, .exchange-section-heading not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com",
+   "warning: GSAP target .exchange-page-heading h1, .exchange-section-heading not found. https://gsap.com",
+   "warning: GSAP target  not found. https://gsap.com"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/exchange/swap",
+  "status": 200,
+  "ms": 7551,
+  "url": "/app/exchange?error=INVALID_SHIFT",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Requests",
+   "page:Shift requests",
+   "page:Shift requests",
+   "page:Available shifts"
+  ],
+  "pageH": 900,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests That shift is no longer available for exchange. The shift board is clear Check back later for available open sh",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/exchange/callout",
+  "status": 200,
+  "ms": 4130,
+  "url": "/app/exchange?tab=my&error=INVALID_SHIFT",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Shift requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Requests",
+   "page:Shift requests",
+   "page:Shift requests",
+   "page:Your requests"
+  ],
+  "pageH": 3418,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Shift requests Pick up a shift, review a swap, or manage your requests. Available shifts Your requests That shift is no longer available for exchange. Your assigned shifts Wed, Oct 21 8:00 AM – 4:00 PM Main Office ",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/availability",
+  "status": 200,
+  "ms": 5661,
+  "url": "/app/availability",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Availability",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:Requests",
+   "page:Availability",
+   "page:Availability",
+   "page:Usual week"
+  ],
+  "pageH": 1300,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Availability Your usual week. Let your team know when you can work. Usual week Specific week Your weekly hours Choose the days and times you can work. 7 of 7 days available Availability by day Monday Available From",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/timecards",
+  "status": 200,
+  "ms": 3403,
+  "url": "/app/timecards",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": "true",
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Timecards",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [
+   "cm-hold"
+  ],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "true:My time",
+   "page:Timecards",
+   "page:Timecards"
+  ],
+  "pageH": 1136,
+  "mobileNav": false,
+  "text": "My pay My time Timecards Oct 15 – Oct 21 Timecards Each day’s clock-ins and clock-outs. Choose a period Pick the dates to review Period start Period end View period Refresh timecards 1 timecard in this period. Request a correction in My time → Your timecard Oc",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/inbox",
+  "status": 200,
+  "ms": 8076,
+  "url": "/app/requests/hub",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Requests",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 181
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [],
+  "small": [],
+  "active": [
+   "page:Requests",
+   "page:Requests",
+   "page:Overview"
+  ],
+  "pageH": 949,
+  "mobileNav": false,
+  "text": "Overview Time off Shift requests Availability Requests Ask for time off or change a shift. Start a request Request time off A full day or a few hours Swap a shift Or offer it for coverage. Starts in My schedule Update availability When you can and can’t work T",
+  "cons": [
+   "warning: The resource http://127.0.0.1:59682/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appr",
+   "warning: The resource http://127.0.0.1:59682/_next/static/chunks/src_components_1-x67_9._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure i",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "pageerror: Failed to execute 'measure' on 'Performance': '​InboxPage' cannot have a negative time stamp.",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/employees",
+  "status": 200,
+  "ms": 3343,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 133
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Home",
+   "page:Home"
+  ],
+  "pageH": 1355,
+  "mobileNav": false,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 29m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ {
+  "w": 1440,
+  "r": "/app/payroll",
+  "status": 200,
+  "ms": 2418,
+  "url": "/app",
+  "title": "NEVORA Workforce",
+  "nvClean": false,
+  "shellClass": "app-shell employee-shell nevora-portal",
+  "corp": null,
+  "bodyFF": "Inter, \"Inter Fallback\", -apple-system, \"system-ui",
+  "bodyBg": "rgb(250, 250, 250)",
+  "mainBg": "rgb(242, 244, 243)",
+  "h1s": [
+   {
+    "t": "Hi, Alexandra.",
+    "ff": "Inter, \"Inter Fallback\", -apple-system, ",
+    "fs": "32px",
+    "fw": "600",
+    "top": 133
+   }
+  ],
+  "cmU": [],
+  "hOverflow": 0,
+  "over": [
+   "svg.nv-masthead__mark r=1492",
+   "path. r=1468"
+  ],
+  "small": [],
+  "active": [
+   "page:Home",
+   "page:Home"
+  ],
+  "pageH": 1355,
+  "mobileNav": false,
+  "text": "Good morning · Wednesday, October 21 Hi, Alexandra. Next shift today at 8:00 AM. 3 items need your review Next shift Published Today · Wed, Oct 21 8:00 AM – 4:00 PM Starts in 6h 29m Main Office · Customer Support View schedule Times in Puerto Rico time West Of",
+  "cons": [
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+   "HTTP 404 /fonts/typeface/inter/variable.woff2",
+   "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ }
+]

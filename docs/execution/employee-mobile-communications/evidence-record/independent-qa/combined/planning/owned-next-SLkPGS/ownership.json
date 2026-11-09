@@ -1,0 +1,27 @@
+{
+  "ownerId": "930e5d51-6505-4dfb-9970-28cc03809d9d",
+  "source": "/workspace/NEVORA",
+  "root": "/workspace/nevora-evidence/independent-qa/combined/planning/owned-next-SLkPGS",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 20537,
+  "port": 35609,
+  "url": "http://127.0.0.1:35609",
+  "identity": {
+    "name": "nevora_exchange_test_c1_edad253c114c",
+    "oid": 122597,
+    "marker": "fuel-phase3-disposable:ec3ce6c2-5eea-4ffa-85e5-e2b43170c407"
+  },
+  "closed": true,
+  "closedAt": "2026-10-27T18:41:13.322Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 27592478720,
+    "availableBytesAfter": 28512149504
+  }
+}

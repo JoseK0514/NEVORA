@@ -1,0 +1,157 @@
+/* Gusto-inspired mobile Home. Desktop and every sibling route keep their world. */
+.mobile-home-heading, .mobile-home-schedule, .mobile-home-tools,
+.mobile-home-disclosure-summary, .mobile-home-disclosure-trigger, .manager-mobile-action-detail { display: none; }
+.mobile-home-disclosure, .mobile-home-disclosure-content { display: contents; }
+
+@media (max-width: 760px) {
+  html body .app-shell.nevora-portal:has(.manager-portal-home) {
+    --mh-masthead: #062959;
+    --mh-surface: var(--design-surface-elevated);
+    --mh-canvas: var(--design-background);
+    --mh-ink: var(--design-text-primary);
+    --mh-secondary: var(--design-text-secondary);
+    --mh-accent: var(--design-primary);
+    --mh-divider: #E7EBF0;
+    --mh-masthead-secondary: #DBE8F9;
+    --mh-masthead-hover: #FFFFFF18;
+    --mh-accent-hover: #003AAE;
+    --mh-active: #EDF4FF;
+    --mh-sheet-shadow: 0 12px 48px #06295930;
+    --mh-space: 16px;
+    --mh-radius: 20px;
+    --mh-control-radius: 999px;
+    --mh-selection-radius: 12px;
+    --mh-shadow: 0 4px 16px #172B4510;
+    --mh-body: 1.0625rem;
+    --mh-caption: 0.9375rem;
+    --mh-title: 1.25rem;
+    --mh-press: 120ms;
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-header {
+    min-height: 68px; padding: 12px var(--mh-space); border: 0;
+    background: var(--mh-masthead); color: var(--mh-surface);
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .login-brand-lockup { width: 124px; color: var(--mh-surface); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .login-brand-module { color: var(--mh-masthead-secondary); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) :is(.portal-notification-bell,.mobile-header .nevora-action-menu-trigger,.mobile-header .command-finder-trigger) {
+    color: var(--mh-surface); background: transparent; border: 0; border-radius: var(--mh-control-radius);
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) :is(.portal-notification-bell,.mobile-header .nevora-action-menu-trigger):hover { background: var(--mh-masthead-hover); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .portal-notification-count { background: var(--mh-surface); color: var(--mh-accent); border-color: var(--mh-masthead); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .management-menu-list-symbol { display: none; }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-home-menu-symbol { display: block; }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-header :is(a,button):focus-visible { outline-color: white; }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation {
+    --home-menu-sheet: 1;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border: 0;
+    border-radius: 24px; box-shadow: var(--mh-sheet-shadow);
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation .nevora-action-menu-item { min-height: 48px; font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) #manager-more-navigation :is(a,button):focus-visible { outline: 2px solid var(--mh-accent); outline-offset: 2px; }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-home-menu-close {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px;
+    position: sticky; bottom: 0; margin-top: 8px; border: 0; border-radius: var(--mh-control-radius); background: var(--mh-canvas);
+    color: var(--mh-ink); font: 500 var(--mh-body)/1.5 var(--design-font-body); cursor: pointer;
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .page-frame {
+    position: relative; padding: 8px var(--mh-space) calc(96px + env(safe-area-inset-bottom)); background: var(--mh-canvas);
+  }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .page-frame::before {
+    content: ''; position: absolute; inset: 0 0 auto; height: 112px; background: var(--mh-masthead); pointer-events: none;
+  }
+  html body .app-shell.nevora-portal .manager-portal-home { position: relative; gap: 24px; }
+  html body .app-shell.nevora-portal .manager-portal-home > :is(.dashboard-hero,.dashboard-tabs,.manager-planning-summary) { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-heading { display: block; padding: 0 4px; }
+  /* The band also follows the heading (fix loop 1, UX-M1): 8px above it and 46px below its last
+   * line, edge to edge, so a name that grows with the reader's text size stays on the masthead.
+   * At the default size it ends where the 112px band ends. */
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-heading { border-image: linear-gradient(var(--mh-masthead) 0 0) fill 0 // 8px 100vw 46px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-heading h1 {
+    margin: 0; font: 550 1.5rem/1.3 var(--design-font-body); letter-spacing: -.02em; color: var(--mh-surface);
+  }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-heading p { margin: 4px 0 0; color: var(--mh-masthead-secondary); font-size: var(--mh-caption); line-height: 1.5; text-wrap: pretty; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-schedule {
+    display: block; padding: 20px; background: var(--mh-surface); border-radius: var(--mh-radius); box-shadow: var(--mh-shadow);
+  }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-schedule h2 { margin: 0; font: 550 var(--mh-title)/1.4 var(--design-font-body); letter-spacing: -.02em; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 8px -8px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week a { display: grid; place-items: center; width: 44px; min-height: 44px; border-radius: 50%; color: var(--mh-secondary); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week strong { font-size: var(--mh-body); font-weight: 500; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts { margin: 0 0 16px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts dt { color: var(--mh-secondary); font-size: var(--mh-caption); line-height: 1.5; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts dt small { display: block; font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts dd { margin: 0; font-size: var(--mh-body); font-weight: 550; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-facts dd span { color: var(--mh-secondary); font-weight: 400; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-schedule-action {
+    display: flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 16px;
+    border-radius: var(--mh-control-radius); background: var(--mh-accent); color: var(--mh-surface);
+    font-size: var(--mh-body); font-weight: 550; text-decoration: none;
+  }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-grid { display: grid; grid-template-columns: minmax(0,1fr); gap: 24px; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-overview-rail { grid-template-columns: minmax(0,1fr); gap: 24px; }
+  html body .app-shell.nevora-portal .manager-portal-home > .manager-home-grid > section,
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-card {
+    border: 0; border-radius: var(--mh-radius); background: var(--mh-surface); box-shadow: var(--mh-shadow); padding: 20px;
+  }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-grid > section > header h2 { font-size: var(--mh-title); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure { display: block; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-summary { display: block; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-trigger {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 48px; padding: 8px 0;
+    border: 0; background: transparent; color: var(--mh-accent); font: 500 var(--mh-body)/1.5 var(--design-font-body); text-align: left; cursor: pointer;
+  }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-trigger svg { flex: none; transition: transform var(--mh-press) ease-out; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure[data-expanded="true"] > .mobile-home-disclosure-trigger svg { transform: rotate(180deg); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure[data-available="false"] > .mobile-home-disclosure-trigger { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-current-note { font-size: var(--mh-caption); line-height: 1.5; color: var(--mh-secondary); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure[data-revealed="true"] > .mobile-home-disclosure-content { display: block; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary { margin: 4px 0 8px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary > div { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 32px; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary dt { color: var(--mh-secondary); font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-action-summary dd { margin: 0; font-size: var(--mh-body); font-weight: 550; font-variant-numeric: tabular-nums; }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] { margin: 12px 0; }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] { gap: 8px; }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Filter tasks by category"] :is(button,span,strong) { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-desktop-action-detail { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-mobile-action-detail { display: block; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(p,small) { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(h3,summary strong) { font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content :is(a,button) { font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-disclosure-content summary { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home [aria-label="Total tasks"] { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-card-header { padding: 0; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-live-summary { margin: 16px 0 0; padding: 12px 0; border: 0; background: var(--mh-canvas); border-radius: 12px; justify-content: center; font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-empty { min-height: 0; padding: 20px 0; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-empty strong { font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-home-empty small { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-live-footer { padding: 12px 0 0; gap: 12px; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-live-footer small { font-size: var(--mh-caption); max-width: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-live-footer small > span { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-live-refresh { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-floor-row { padding: 16px 0; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-floor-avatar { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-floor-copy strong { font-size: var(--mh-body); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-floor-copy small { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-attendance-link { display: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-disclosure { order: 2; padding: 8px 20px; border-radius: var(--mh-radius); background: var(--mh-surface); box-shadow: var(--mh-shadow); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-week-disclosure .manager-week-overview { padding: 16px 0; border: 0; box-shadow: none; background: transparent; }
+  html body .app-shell.nevora-portal .manager-portal-home .manager-week-overview h2 { font-size: var(--mh-title); }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.manager-week-chart time,.manager-bar-value,.manager-location-state) { font-size: var(--mh-caption); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-tools { display: block; padding: 4px 20px; background: var(--mh-surface); border-radius: var(--mh-radius); box-shadow: var(--mh-shadow); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-tools a { display: grid; grid-template-columns: 24px minmax(0,1fr) 18px; align-items: center; gap: 16px; min-height: 60px; color: var(--mh-ink); font-size: var(--mh-body); text-decoration: none; }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-tools a > svg:last-child { color: var(--mh-accent); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-nav { left: 0; right: 0; bottom: 0; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); border: 0; border-top: 1px solid var(--mh-divider); border-radius: 0; background: var(--mh-surface); box-shadow: none; }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-nav-link { min-height: 48px; padding: 4px 0; gap: 4px; font-size: 12px; color: var(--mh-secondary); }
+  html body .app-shell.nevora-portal:has(.manager-portal-home) .mobile-nav-link.active { background: var(--mh-active); border-radius: var(--mh-selection-radius); color: var(--mh-accent); font-weight: 600; }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.mobile-home-schedule-action,.mobile-home-disclosure-trigger,.mobile-home-week a,.mobile-home-tools a) { transition: background var(--mh-press) ease-out, transform var(--mh-press) ease-out; }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.mobile-home-disclosure-trigger,.mobile-home-week a,.mobile-home-tools a):hover { background: var(--mh-canvas); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-schedule-action:hover { background: var(--mh-accent-hover); }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.mobile-home-schedule-action,.mobile-home-week a):active { transform: scale(.98); }
+  html body .app-shell.nevora-portal .manager-portal-home .mobile-home-tools a:active { background: var(--mh-active); }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal .manager-portal-home :is(a,button,svg) { transition: none; }
+  html body .app-shell.nevora-portal .manager-portal-home :is(.mobile-home-schedule-action,.mobile-home-week a):active { transform: none; }
+}

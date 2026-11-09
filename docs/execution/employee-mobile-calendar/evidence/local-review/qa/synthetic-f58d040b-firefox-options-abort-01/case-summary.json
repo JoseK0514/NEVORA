@@ -1,0 +1,47 @@
+[
+  {
+    "delay": null,
+    "cases": 2,
+    "requestEvents": 2,
+    "serverHits": 2,
+    "AbortError": 0,
+    "completedJSON": 2,
+    "pendingAssertionsPassed": 2
+  },
+  {
+    "delay": 0,
+    "cases": 3,
+    "requestEvents": 2,
+    "serverHits": 0,
+    "AbortError": 3,
+    "completedJSON": 0,
+    "pendingAssertionsPassed": 3
+  },
+  {
+    "delay": 1,
+    "cases": 3,
+    "requestEvents": 3,
+    "serverHits": 0,
+    "AbortError": 3,
+    "completedJSON": 0,
+    "pendingAssertionsPassed": 3
+  },
+  {
+    "delay": 2,
+    "cases": 3,
+    "requestEvents": 3,
+    "serverHits": 3,
+    "AbortError": 3,
+    "completedJSON": 0,
+    "pendingAssertionsPassed": 3
+  },
+  {
+    "delay": 5,
+    "cases": 3,
+    "requestEvents": 3,
+    "serverHits": 3,
+    "AbortError": 3,
+    "completedJSON": 0,
+    "pendingAssertionsPassed": 3
+  }
+]

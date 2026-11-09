@@ -1,0 +1,102 @@
+{
+  "checkpoint": "f9066eae82f5b76693ab7739a802c541b12b3319",
+  "runtime": "Next production build/start; owned loopback pg transport (not hosted Neon)",
+  "seed": {
+    "employees": 200,
+    "shifts": 350,
+    "closed_entries": 4015
+  },
+  "probes": [
+    {
+      "name": "Profile-manager",
+      "concurrency": 10,
+      "n": 40,
+      "warmup": {
+        "ms": 132.7996770000027,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 105,
+      "p95": 189,
+      "outcomes": {
+        "200:ready": 40
+      }
+    },
+    {
+      "name": "Profile-employee",
+      "concurrency": 10,
+      "n": 40,
+      "warmup": {
+        "ms": 24.575396999993245,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 93,
+      "p95": 122,
+      "outcomes": {
+        "200:ready": 40
+      }
+    },
+    {
+      "name": "Profile-lead",
+      "concurrency": 10,
+      "n": 40,
+      "warmup": {
+        "ms": 17.753851999994367,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 92,
+      "p95": 107,
+      "outcomes": {
+        "200:ready": 40
+      }
+    },
+    {
+      "name": "Profile-manager",
+      "concurrency": 20,
+      "n": 40,
+      "warmup": {
+        "ms": 32.65116100000159,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 128,
+      "p95": 196,
+      "outcomes": {
+        "200:ready": 40
+      }
+    },
+    {
+      "name": "Profile-employee",
+      "concurrency": 20,
+      "n": 40,
+      "warmup": {
+        "ms": 20.38869499998691,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 134,
+      "p95": 194,
+      "outcomes": {
+        "200:ready": 40
+      }
+    },
+    {
+      "name": "Profile-lead",
+      "concurrency": 20,
+      "n": 40,
+      "warmup": {
+        "ms": 25.405222999994294,
+        "status": 200,
+        "state": "ready"
+      },
+      "p50": 124,
+      "p95": 188,
+      "outcomes": {
+        "200:ready": 40
+      }
+    }
+  ],
+  "closed": true
+}

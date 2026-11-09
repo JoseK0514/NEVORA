@@ -1,0 +1,8 @@
+BEGIN READ ONLY;
+DO $$ BEGIN
+ IF NOT EXISTS(SELECT 1 FROM pg_database WHERE datname=current_database() AND oid=782236 AND shobj_description(oid,'pg_database')='fuel-phase3-disposable:d7a041e5-f0d4-4f26-8440-976195c0baca') THEN RAISE EXCEPTION 'Owned fixture identity changed'; END IF;
+END $$;
+SELECT current_database() AS owned_database, clock_timestamp() AS observed_at,clock_timestamp() AT TIME ZONE 'America/Puerto_Rico' AS local_time;
+SELECT environment,source_kind,type,count(*) AS rows,min(due_at) AS earliest_due,max(due_at) AS latest_due,count(*) FILTER(WHERE due_at>clock_timestamp()) AS future_due,count(*) FILTER(WHERE due_at<=clock_timestamp()) AS currently_due FROM notifications GROUP BY environment,source_kind,type ORDER BY environment,source_kind,type;
+SELECT source_kind,purpose,urgency,due_at,created_at,expires_at FROM notifications WHERE source_kind='COMMUNICATION' ORDER BY created_at LIMIT 4;
+COMMIT;

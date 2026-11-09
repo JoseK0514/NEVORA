@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit Employee</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F5F6F6; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+
+  <div aria-hidden="true">
+    <header style="background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding: 52px 16px 12px">
+      <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 44px">
+        <span style="display: inline-flex; align-items: center; gap: 2px; margin-left: -6px; color: #0B6E69; font-size: 15px; font-weight: 600"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>Team</span>
+        <span style="font-size: 17px; line-height: 22px; font-weight: 600">Alexandra Rivera</span>
+        <span style="justify-self: end; color: #0B6E69; font-size: 15px; font-weight: 600">Edit</span>
+      </div>
+    </header>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(26,28,30,0.40)"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="sheet-title" style="position: absolute; left: 0; right: 0; top: 140px; bottom: 0; border-radius: 16px 16px 0 0; background: #FFFFFF">
+    <div aria-hidden="true" style="width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: #D5D8DA"></div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 52px; padding: 0 6px; box-shadow: inset 0 -1px 0 #EDEEEF">
+      <button type="button" style="justify-self: start; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 400 15px Inter, sans-serif">Cancel</button>
+      <h2 id="sheet-title" style="margin: 0; font-size: 17px; line-height: 22px; font-weight: 600; white-space: nowrap">Edit employee</h2>
+      <button type="submit" form="edit-form" style="justify-self: end; height: 44px; padding: 0 10px; border: 0; background: none; color: #0B6E69; font: 600 15px Inter, sans-serif">Save</button>
+    </div>
+
+    <form id="edit-form" style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="first-name" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">First name</label>
+          <input id="first-name" type="text" autocomplete="given-name" value="Alexandra" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="last-name" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Last name</label>
+          <input id="last-name" type="text" autocomplete="family-name" value="Rivera" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="phone" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Mobile phone</label>
+        <input id="phone" type="tel" autocomplete="tel" value="(787) 555-0142" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="email" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Email (optional)</label>
+        <input id="email" type="email" autocomplete="email" value="alexandra.rivera@example.com" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="role" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Role</label>
+            <div style="position: relative">
+              <select id="role" aria-describedby="role-note" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 2px #0B6E69; padding: 0 36px 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E; -webkit-appearance: none; appearance: none">
+                <option>Employee</option>
+                <option selected>Lead</option>
+                <option>Manager</option>
+              </select>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4F54" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 16px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <label for="location" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Location</label>
+            <div style="position: relative">
+              <select id="location" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 36px 0 12px; font: 400 15px Inter, sans-serif; color: #1A1C1E; -webkit-appearance: none; appearance: none">
+                <option selected>Condado</option>
+                <option>Old San Juan</option>
+                <option>Isla Verde</option>
+                <option>Hato Rey</option>
+                <option>Dorado</option>
+              </select>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4F54" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 16px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+        <div id="role-note" role="note" style="padding: 10px 12px; border-radius: 8px; background: #FEF4E6; color: #8A4B00">
+          <div style="font-size: 13px; font-weight: 600">Employee to Lead when you save</div>
+          <div style="margin-top: 2px; font-size: 13px">Alexandra will see today’s team at Condado and can message them. We’ll text her about it.</div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span id="positions-label" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Positions</span>
+        <button type="button" id="positions" aria-labelledby="positions-label positions" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; font: 400 15px Inter, sans-serif; color: #1A1C1E; text-align: left">Barista<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A7ACB1" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="rate" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Hourly rate</label>
+        <div style="position: relative">
+          <span aria-hidden="true" style="position: absolute; left: 12px; top: 14px; font-size: 15px; line-height: 20px; color: #6B7075">$</span>
+          <input id="rate" type="text" inputmode="decimal" value="18.70" style="box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; padding: 0 76px 0 26px; font: 400 15px Inter, sans-serif; color: #1A1C1E">
+          <span aria-hidden="true" style="position: absolute; right: 12px; top: 14px; font-size: 15px; line-height: 20px; color: #6B7075">an hour</span>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

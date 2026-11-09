@@ -1,0 +1,71 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { DocumentLink } from './payroll-ui';
+import { MyPay } from './my-pay';
+import { PayrollRuns } from './payroll-runs';
+import { nativeRun, statement } from './native-ui-fixture.test-support';
+
+const boundary = vi.hoisted(() => ({ loading: false, error: '', statements: [] as unknown[], runs: [] as unknown[] }));
+vi.mock('./use-payroll', () => ({ PAYROLL_SIGNED_OUT: 'Your session ended. Sign in again to see payroll.',
+  usePayrollResource: (path: string) => ({ data: path === '/api/payroll/runs' ? { version: 'PAYROLL_API_V1', capabilities: { enabled: true, canConfigure: true, canReview: true, canApprove: true, internalCalculatorAvailable: true }, runs: boundary.runs, jobs: [] } : { statements: boundary.statements }, loading: boundary.loading, error: boundary.error, reload: async () => {} }),
+  usePayrollOperation: () => ({ busy: false, pending: null, resuming: false, message: '', error: '', revisionConflict: false, submit: async () => {}, receipt: null }),
+}));
+vi.mock('next/navigation', () => ({ usePathname: () => '/app/payroll/history', useRouter: () => ({ push: () => {}, replace: () => {} }) }));
+beforeEach(() => { boundary.loading = false; boundary.error = ''; boundary.statements = [statement]; boundary.runs = [nativeRun({ status: 'APPROVED', documents: [statement], correctionOf: 'fictional-original', nativeCorrection: { rootRunId: 'fictional-original', reason: 'Fictional payroll correction' } })]; });
+
+describe('private employee statement presentation', () => {
+  it('provides separate safe inline and attachment destinations for identical document identity', () => {
+    const html = renderToStaticMarkup(<DocumentLink document={{ ...statement, downloadUrl: 'https://foreign.invalid/download', viewUrl: 'https://foreign.invalid/view' }} />);
+    expect(html).toContain(`href="${statement.downloadUrl}"`);
+    expect(html).toContain(`href="${statement.viewUrl}"`);
+    expect(html).toContain('View');
+    expect(html).toContain('Download');
+    expect(html).not.toContain('foreign.invalid');
+  });
+  it('does not claim an unpublished private document is available in the employee account', () => {
+    const html = renderToStaticMarkup(<DocumentLink document={{ ...statement, published: false }} />);
+    expect(html).toContain('not published');
+    expect(html).not.toContain('Published to employee');
+  });
+  it('preserves the period/payday in own published history with a viewing action', () => {
+    const html = renderToStaticMarkup(<MyPay />);
+    // v5 Pay (mockup E11): one row per statement, its payday then the period in short form.
+    expect(html).toContain('Oct 5–11');
+    expect(html).toMatch(/Payday (?:[A-Z][a-z]{2}, )?[A-Z][a-z]{2} 16/);
+    expect(html).toContain(statement.viewUrl);
+  });
+  it('clears the own statement identity while current private access is loading', () => {
+    boundary.loading = true;
+    const html = renderToStaticMarkup(<MyPay />);
+    expect(html).toContain('Loading your statements');
+    expect(html).not.toContain(statement.id);
+  });
+  it('shows current scoped employee history and preserves the linked correction context', () => {
+    const html = renderToStaticMarkup(<PayrollRuns recoveryScope="fictional-owner" view="history" />);
+    // Round 2 (R9): "Pay statements", and a correction row says so on its second line (its reason is on Payroll details).
+    expect(html).toContain('Pay statements');
+    expect(html).toMatch(/Payday <span class="c-num">Fri, Oct 16<\/span>\u00a0· Correction/);
+    expect(html).toContain(statement.viewUrl);
+  });
+  it('distinguishes empty own history from a failed private read', () => {
+    boundary.statements = [];
+    expect(renderToStaticMarkup(<MyPay />)).toContain('No published statements yet');
+    boundary.error = 'Fictional private access unavailable';
+    expect(renderToStaticMarkup(<MyPay />)).toContain('Couldn’t load your statements');
+    expect(renderToStaticMarkup(<MyPay />)).not.toContain('No published statements yet');
+  });
+});
+
+describe('desktop My pay after a statement link failed (PAY-CR-2)', () => {
+  it.each([
+    ['unavailable', 'That statement isn’t available.'],
+    ['failed', 'It didn’t pass NEVORA’s file check.'],
+    ['temporary', 'We couldn’t open that statement just now.'],
+  ] as const)('explains %s instead of returning silently', (document, words) => {
+    const html = renderToStaticMarkup(<MyPay document={document} />);
+    expect(html).toContain('role="alert"');expect(html).toContain(words);
+  });
+  it('shows no notice on an ordinary visit', () => {
+    expect(renderToStaticMarkup(<MyPay />)).not.toContain('That statement isn’t available');
+  });
+});

@@ -1,0 +1,249 @@
+/* NEVORA Signature tokens: the single source for the Signature look (employee app, sign-in and activation,
+ * the Clocker). Declared on :root and loaded once from src/app/layout.tsx, ahead of every consumer.
+ *
+ * Values equal what renders today; adding this file changes nothing on screen until a rule reads it.
+ * Where a page renders a different value, the page keeps its literal value and the conflict is listed
+ * in SIGNATURE-SPEC (see the brief's conflict rule). Never change a rendered value to "fix" a conflict.
+ * Each line: value; dark value (colour tokens; unset for now) | role | source file:line as of 65d31dff.
+ * "new: not yet used" marks a token with no current source. */
+
+:root {
+
+  /* ---------- Colour ---------- */
+  /* Neutrals, brand and action. Values are what renders today on the employee Signature frame. */
+  --sig-page:          #F7F6F3;                   /* dark: —  | page and soft-white sheet | signature.module.css:5 (--sg-page) */
+  --sig-card:          #FFFFFF;                   /* dark: —  | card / list surface | signature.module.css:5 (--sg-card) */
+  --sig-ink-1:         #161C1B;                   /* dark: —  | primary text, 17.27 white / 15.98 page | signature.module.css:5 (--sg-ink) */
+  --sig-ink-2:         #5F625E;                   /* dark: —  | secondary text, 6.19 white / 5.72 page | signature.module.css:5 */
+  --sig-ink-3:         #6F6C66;                   /* dark: —  | tertiary text, caps labels, 5.23 white / 4.84 page | signature.module.css:5 */
+  --sig-glyph:         #8A8378;                   /* dark: —  | chevrons and disclosure carets that carry state; 3.75 white / 3.47 page (≥3:1 non-text) | new */
+  --sig-faint:         #B9B6AF;                   /* dark: —  | decorative only (chevrons, idle dot); 2.02 on white, fails as text | signature.module.css:5 */
+  --sig-rule:          #E8E5DF;                   /* dark: —  | hairlines inside cards and lists | signature.module.css:6 */
+  --sig-edge:          #E3DFD8;                   /* dark: —  | 1px edge of raised cards (Clocker, activation) | clocker-shell.module.css:20, activation.css:3 */
+  --sig-control-edge:  #8A8378;                   /* dark: —  | input field edge on desktop sign-in, 3.75 white / 3.47 page | auth-premium.css:7 (--edge) */
+  --sig-track:         #EEECE7;                   /* dark: —  | tracks, segmented-control frame, count chip | signature.module.css:6 (--sg-track), employee-style.css:8 (--e5-frame) */
+  --sig-deep:          #0D3634;                   /* dark: —  | the band, primary fill | signature.module.css:6 */
+  --sig-deep-hover:    #12423F;                   /* dark: —  | primary fill on hover (employee) | signature.module.css:64, signature.module.css:137 */
+  --sig-mark:          #164B48;                   /* dark: —  | the Λ mark on the band; Clocker deep hover | signature.module.css:6, clocker-shell.module.css:7 */
+  --sig-sky:           #35B6EC;                   /* dark: —  | mark accent, unread dot; 5.68 on deep | signature.module.css:6 */
+  --sig-mint:          #A9E2DA;                   /* dark: —  | accent on deep (live dot, emphasis); 9.14 on deep | signature.module.css:6 */
+  --sig-action:        #0B6E69;                   /* dark: —  | teal action ink (links, act, icons); 6.09 white / 5.63 page | signature.module.css:6 (--sg-teal) */
+  --sig-action-wash:   #E3F0EC;                   /* dark: —  | teal wash behind action ink; 5.23 with action ink | clocker-shell.module.css:9 (--clocker-soft), activation.css:3 (--act-wash) */
+  --sig-on-deep:       #FFFFFF;                   /* dark: —  | text and icons on the band; 13.17 on deep | signature.module.css:20 */
+  --sig-on-deep-2:     rgba(255, 255, 255, .74);  /* dark: —  | band sub-line; 7.93 on deep (blended) | signature.module.css:31 */
+  --sig-on-deep-3:     rgba(255, 255, 255, .62);  /* dark: —  | band eyebrow / caps; 6.05 on deep (blended) | signature.module.css:25 */
+  --sig-on-deep-rule:  rgba(255, 255, 255, .14);  /* dark: —  | hairline on the band | signature.module.css:33 */
+  --sig-scrim:         rgba(10, 22, 21, .38);     /* dark: —  | backdrop behind the More sheet | employee-style.css:199 */
+
+  /* ---------- Status ---------- */
+  /* Each role has ink, wash and line. Ratios: ink on wash / on #FFFFFF / on #F7F6F3 (WCAG 2.x).
+   * done is teal today (approved); a green alternative is recorded in the architect notes, not applied. */
+  --sig-done-ink:     #0A5753;                /* dark: —  | done / approved pill ink; 7.21 / 8.40 / 7.77 | signature.module.css:116 */
+  --sig-done-wash:    #E2F1ED;                /* dark: —  | done pill wash | signature.module.css:116, activation.css:3 (--act-halo) */
+  --sig-done-line:    #C8DCD6;                /* dark: —  | new: not yet used; done edge (hex from activation.css:11 spinner track) */
+  --sig-review-ink:   #8A5208;                /* dark: —  | review / pending / due; 5.62 / 6.38 / 5.90 | signature.module.css:7 (--sg-amber), clocker-shell.module.css:22 */
+  --sig-review-wash:  #FBEFDC;                /* dark: —  | review wash | clocker-shell.module.css:23 (--ck-amber-wash), signature.module.css:115 pill bg */
+  --sig-review-line:  #F2E4CD;                /* dark: —  | review edge (amber card, amber card foot) | signature.module.css:103, signature.module.css:108 */
+  --sig-urgent-ink:   #A3271A;                /* dark: —  | urgent / declined / sign out; 6.44 / 7.34 / 6.79 | signature.module.css:7 (--sg-red) */
+  --sig-urgent-wash:  #FBEDEC;                /* dark: —  | urgent wash; no employee use yet, renders on activation error | activation.css:33 */
+  --sig-urgent-line:  rgba(163, 39, 26, .3);  /* dark: —  | urgent edge (#E3BEBA over white) | employee-my-schedule.module.css:67 */
+  --sig-info-ink:     #55585A;                /* dark: —  | info / neutral pill ink (the untoned pill); 6.13 / 7.17 / 6.63 | signature.module.css:113 */
+  --sig-info-wash:    #EFEDE8;                /* dark: —  | info / neutral pill wash | signature.module.css:113 */
+  --sig-info-line:    #E3DFD8;                /* dark: —  | new: not yet used; info edge (same hex as --sig-edge) */
+
+  /* ---------- Type ---------- */
+  /* Shorthand: font: var(--sig-type-<role>); letter-spacing: var(--sig-tracking-<role>).
+   * System stacks as approved for the employee app and sign-in. The Clocker and PIN setup bundle Inter (see --sig-font-clocker). */
+  /* text stack | signature.module.css:8 (--sg-font) */
+  --sig-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  /* display stack (light figures, band headings) | signature.module.css:9 (--sg-display) */
+  --sig-font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  /* Clocker only (bundled Inter, @font-face at clocker-shell.module.css:1); recorded, not adopted | clocker-shell.module.css:48 */
+  --sig-font-clocker: 'Nevora Clocker', -apple-system, BlinkMacSystemFont, sans-serif;
+  --sig-type-hero-word:          300 2.875rem/3.125rem var(--sig-font-display);  /* band word, 46/50 ("Off clock") | signature.module.css:29 (.sg-word) */
+  --sig-tracking-hero-word:      -.04em;                                         /* signature.module.css:29 */
+  --sig-type-hero-figure:        200 3.75rem/3.875rem var(--sig-font-display);   /* band figure, 60/62 (date), tabular | signature.module.css:30 (.sg-date) */
+  --sig-tracking-hero-figure:    -.045em;                                        /* signature.module.css:30 */
+  --sig-type-hero-duration:      200 3.375rem/3.5rem var(--sig-font-display);    /* band duration, 54/56, tabular | signature.module.css:38 (.sgDurHero) */
+  --sig-tracking-hero-duration:  -.04em;                                         /* signature.module.css:38 */
+  --sig-type-headline:           300 2.5rem/2.75rem var(--sig-font-display);     /* band headline, 40/44 | signature.module.css:142 (.sg-head2) */
+  --sig-tracking-headline:       -.035em;                                        /* signature.module.css:142 */
+  --sig-type-figure-ticket:      200 3.5rem/3.375rem var(--sig-font-display);    /* date-ticket figure on a card, 56/54 | signature.module.css:131 (.sg-ticket b) */
+  --sig-tracking-figure-ticket:  -.045em;                                        /* signature.module.css:131 */
+  --sig-type-figure-day:         300 1.75rem/1.875rem var(--sig-font-display);   /* day number in rows, 28/30 | signature.module.css:124 (.sg-day strong) */
+  --sig-tracking-figure-day:     -.03em;                                         /* signature.module.css:124 */
+  --sig-type-row:                500 1.0625rem/1.375rem var(--sig-font);         /* row title, 17/22 | signature.module.css:56 (.sg-copy > b), :121 */
+  --sig-tracking-row:            -.012em;                                        /* signature.module.css:56 */
+  --sig-type-row-sub:            400 .9375rem/1.25rem var(--sig-font);           /* row second line, 15/20 | signature.module.css:57 */
+  --sig-tracking-row-sub:        0;                                              /* signature.module.css:57 (none set) */
+  --sig-type-body:               400 1rem/1.375rem var(--sig-font);              /* body, band sub-line, 16/22 | signature.module.css:31 (.sg-sub), employee-home-today.module.css:55 */
+  --sig-tracking-body:           0;                                              /* signature.module.css:31 (none set) */
+  --sig-type-callout:            400 .9375rem/1.3125rem var(--sig-font);         /* callout / notes / empty, 15/21 | signature.module.css:58 (.sg-empty), :59, :68 */
+  --sig-tracking-callout:        0;                                              /* signature.module.css:58 (none set) */
+  --sig-type-link:               500 .9375rem/1.25rem var(--sig-font);           /* text link / quiet action, 15/20 | signature.module.css:60 (.sg-link) */
+  --sig-tracking-link:           0;                                              /* signature.module.css:60 (none set) */
+  --sig-type-button:             500 1.0625rem/1 var(--sig-font);                /* full-width action, 17 | signature.module.css:136 (.sg-cta) */
+  --sig-tracking-button:         0;                                              /* signature.module.css:136 (none set) */
+  --sig-type-caps:               600 .75rem/1rem var(--sig-font);                /* tracked caps label, 12/16, uppercase | signature.module.css:48 (.sgHead h2), :25, :96 */
+  --sig-tracking-caps:           .13em;                                          /* signature.module.css:48 */
+  --sig-type-caps-sm:            600 .75rem/1rem var(--sig-font);               /* small caps (day, ticket, pair), raised 11 → 12/16 (the one caps exception: 12px minimum) */
+  --sig-tracking-caps-sm:        .12em;                                          /* signature.module.css:123 */
+  --sig-type-pill:               500 .8125rem/1 var(--sig-font);                 /* status pill, 13 | signature.module.css:113 (.sg-pill) */
+  --sig-tracking-pill:           .01em;                                          /* signature.module.css:113 */
+  --sig-type-tab:                500 .8125rem/1rem var(--sig-font);              /* tab-bar label, 13/16 (browser-verified 13px at 390, Chromium + WebKit) | employee-style.css:90 (--nv-t-tab) */
+  --sig-tracking-tab:            0;                                              /* employee-style.css:90 (none set) */
+
+  /* ---------- Spacing ---------- */
+  /* The 8-point rhythm of the Signature frame. Off-scale values in use today (14, 18, 22, 26, 30) stay local. */
+  --sig-space-4:   4px;      /* desktop heading inset | signature.module.css:85 */
+  --sig-space-8:   8px;      /* eyebrow gap | signature.module.css:25 */
+  --sig-space-12:  12px;     /* heading to list, card to card | signature.module.css:47, signature.module.css:101 */
+  --sig-space-16:  16px;     /* card / list side margin on phones | signature.module.css:51, signature.module.css:100 */
+  --sig-space-20:  20px;     /* card padding | signature.module.css:104, signature.module.css:105 */
+  --sig-space-24:  24px;     /* text gutter, band side padding | signature.module.css:20, signature.module.css:47 */
+  --sig-space-32:  32px;     /* gap before the full-width action | signature.module.css:136 */
+  --sig-space-40:  40px;     /* section gap | signature.module.css:94 */
+
+  /* ---------- Radii ---------- */
+  --sig-radius-control:  16px;     /* full-width action button (review proposes 14: decision) | signature.module.css:136, auth-signature.css:54, activation.css:38 */
+  --sig-radius-field:    10px;     /* input box on desktop sign-in | auth-premium.css:52 */
+  --sig-radius-tile:     13px;     /* 42px icon tile | signature.module.css:110 */
+  --sig-radius-list:     18px;     /* list group, alert, quiet card | signature.module.css:51, signature.module.css:70 */
+  --sig-radius-card:     22px;     /* card, field group, shift card | signature.module.css:100, auth-signature.css:45, employee-home-today.module.css:42 */
+  --sig-radius-band:     24px;     /* band as a rounded panel at 768+ | signature.module.css:83 */
+  --sig-radius-sheet:    28px;     /* sheet top corners, More sheet | signature.module.css:44, employee-style.css:197 */
+  --sig-radius-pill:     999px;    /* pills, chips, band link | signature.module.css:113, signature.module.css:144 */
+
+  /* ---------- Controls ---------- */
+  /* One button scale (components.css, SigButton). Primary and secondary share height and radius on every width. */
+  --sig-control-h:          56px;     /* primary / secondary button height | components.css (.sig-btn), signature.module.css (.sg-cta) */
+  --sig-control-h-compact:  44px;     /* button inside a row or beside a field | components.css, .sg-primary, .employee-action */
+  --sig-radius-compact:     12px;     /* compact button radius | components.css */
+  --sig-card-hover:         #FAFAF8;  /* dark: —  | secondary button hover (= --sig-hover-bg) | components.css */
+  --sig-disabled:           #ECEAE5;  /* dark: —  | true-disabled button fill; never used for pending | components.css */
+  --sig-ink-disabled:       #5F625E;  /* dark: —  | text on --sig-disabled, 5.1:1 | components.css */
+  /* Emphasis fill: solid actions and markers (primary buttons, today, progress, filled PIN dots). Deep teal in light,
+   * mint in dark, so the main action stays the brightest thing on screen. Bands keep --sig-deep in both. */
+  --sig-fill:               var(--sig-deep);        /* dark: #A9E2DA | primary fill */
+  --sig-fill-hover:         var(--sig-deep-hover);  /* dark: #BDEAE3 | primary fill on hover */
+  --sig-on-fill:            #FFFFFF;                /* dark: #0C1817 | text and icons on the fill, 13.17:1 light / 12.58:1 dark */
+
+  /* ---------- Elevation ---------- */
+  /* card lift without the edge (= --sg-card-shadow) | signature.module.css:93 */
+  --sig-shadow-card-lift: 0 1px 1px rgba(22, 28, 27, .03), 0 2px 6px rgba(22, 28, 27, .03), 0 16px 36px -22px rgba(13, 54, 52, .24);
+  /* employee card: 6% ink edge plus lift | signature.module.css:100 (.sg-card) */
+  --sig-shadow-card: inset 0 0 0 1px rgba(22, 28, 27, .06), var(--sig-shadow-card-lift);
+  /* raised card with a solid edge (Clocker) | clocker-shell.module.css:24 (--ck-lift) */
+  --sig-shadow-raised: 0 0 0 1px var(--sig-edge), 0 14px 30px -22px rgba(13, 54, 52, .32);
+  --sig-shadow-sheet:      0 -10px 40px rgba(10, 22, 21, .18);  /* bottom sheet | employee-style.css:197 (More sheet) */
+  --sig-shadow-dialog:     0 30px 80px rgba(9, 22, 21, .35);    /* floating dialog | employee-style.css:235 (alerts on this device) */
+
+  /* ---------- Motion ---------- */
+  /* Use with a prefers-reduced-motion: reduce variant (no transform; opacity only). */
+  --sig-dur-press:  120ms;                        /* press / tap feedback | auth-premium.css:73 (.ap-primary transition) */
+  --sig-dur-state:  180ms;                        /* state change (check, dot, cross-fade) | activation.css:28 (.act-rule__dot) */
+  --sig-dur-sheet:  280ms;                        /* new: not yet used; sheet rise / route change (review gap 13) */
+  --sig-dur-rise:   360ms;                        /* page entrance rise | auth-premium.css:26 (ap-rise) */
+  --sig-ease:       cubic-bezier(.2, .7, .2, 1);  /* standard ease-out | auth-premium.css:26 */
+
+  /* ---------- Press & focus ---------- */
+  --sig-press-bg:       #F3F2EF;  /* dark: —  | opaque pressed-row colour; kept for compatibility, the shared press uses --sig-press-wash */
+  --sig-hover-bg:       #FAFAF8;  /* dark: —  | row hover | signature.module.css:76 */
+  --sig-press-scale:    .98;      /* button pressed | clocker-shell.module.css:104 */
+  /* The shared press wash is painted as a layer over any fill, so it must stay translucent (--sig-press-bg is opaque). */
+  --sig-press-wash:         rgba(22, 28, 27, .05);    /* dark: —  | press on light surfaces | components.css */
+  --sig-press-wash-on-dark: rgba(255, 255, 255, .12); /* dark: —  | press on the deep band | components.css */
+  --sig-focus:          #161C1B;  /* dark: —  | focus ring on light surfaces; 17.27 white / 15.98 page | signature.module.css:17 (var(--sg-ink)) */
+  --sig-focus-on-dark:  #FFFFFF;  /* dark: —  | focus ring on the band; 13.17 on deep (mint #A9E2DA would be 9.14) | signature.module.css:147, employee-style.css:45 */
+  --sig-focus-width:    2px;      /* signature.module.css:17 */
+  --sig-focus-offset:   2px;      /* signature.module.css:17 */
+
+  /* ---------- Texture ---------- */
+  /* band grain, byte-identical to --sg-grain | signature.module.css:10 */
+  --sig-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  --sig-grain-opacity:  .07;      /* grain layer opacity (mix-blend-mode: overlay) | signature.module.css:21 */
+
+  /* ---------- Light tints and their dark twins (dev-preview inspection, Oct 23, 2026) ----------
+   * Each light value is exactly the colour these surfaces already used, so light mode is unchanged; the dark block
+   * below gives each one a dark value. Use these instead of typing a light hex into an employee or sign-in file. */
+  --sig-deep-ink:          #0D3634;  /* icons and initials on light tiles; mint in dark */
+  --sig-selected-bg:       #FBFAF8;  /* selected row */
+  --sig-card-quiet:        #FCFBF9;  /* inset form panel */
+  --sig-tint-urgent:       #FBF0EE;  /* error feedback wash */
+  --sig-tint-urgent-line:  #F1D6D1;
+  --sig-tint-done:         #EAF4F2;  /* success feedback wash, correction trigger */
+  --sig-tint-done-hover:   #E1EFEC;
+  --sig-tint-done-soft:    #F5FAF8;
+  --sig-tint-done-soft-2:  #F2F8F6;
+  --sig-tint-neutral:      #EFEDE8;  /* neutral state pill */
+  --sig-tint-neutral-ink:  #55585A;
+  --sig-tint-review:       #FBF4EA;  /* review / pending panel */
+  --sig-tint-review-2:     #FDF8F1;
+  --sig-tint-review-3:     #F8EAD5;
+  --sig-tint-review-line:  #F2E4CD;
+  --sig-tint-review-ink:   #74440A;
+  --sig-tint-teal:         #E8F2EF;  /* teal icon tile */
+  --sig-tint-teal-2:       #DDEFEB;
+  --sig-grid-line:         #F1EFEB;
+  --sig-track-soft:        #F6F4F0;
+  --sig-switch-off:        #E3E0D9;
+  --sig-fill-soft:         #F6F5F1;
+  --sig-radio-edge:        #CFCBC3;
+  --sig-ring-edge:         #C9C6BF;
+
+  /* ---------- Aliases (compatibility only; prefer the names above) ---------- */
+  --sig-ink:      var(--sig-ink-1);
+  --sig-teal:     var(--sig-action);
+  --sig-paper:    var(--sig-card);
+  --sig-frame:    var(--sig-track);
+  --sig-display:  var(--sig-font-display);
+  --sig-amber:    var(--sig-review-ink);
+  --sig-red:      var(--sig-urgent-ink);
+}
+
+
+/* ---------- Dark ("Midnight") ----------
+ * Approved October 20, 2026 (docs/product/specs/employee-style/signature/dark-mode/v2). The root layout's theme script
+ * sets data-theme on <html> from the person's choice in Profile (System, Light or Dark) and the phone's setting.
+ * Scoped to the Signature surfaces: the employee app, sign-in and activation (the Clocker is light only since Nov 8, 2026). Manager and Owner
+ * screens stay light until their own pass. Display weights go up one step in dark (thin light type looks thinner on
+ * dark), and every text colour keeps at least 7:1 on cards. */
+:root[data-theme="dark"] :is([data-nv-e5], .ap) {
+  color-scheme: dark;
+  --sig-page: #0C1817;            --sig-card: #172725;           --sig-card-hover: #1C2C2A;
+  --sig-ink-1: #F5F2EB;           --sig-ink-2: #D3D0C8;          --sig-ink-3: #B8B7B0;          --sig-ink: var(--sig-ink-1);
+  --sig-faint: #56625F;           --sig-rule: #2C3B39;           --sig-edge: #30403E;           --sig-control-edge: #5A6764;
+  --sig-track: #20302E;           --sig-frame: var(--sig-track); --sig-paper: var(--sig-card);
+  --sig-deep: #0D3634;            --sig-deep-hover: #12423F;     --sig-mark: #134340;
+  --sig-mint: #A9E2DA;            --sig-action: #A9E2DA;         --sig-action-wash: rgba(169, 226, 218, .12); --sig-teal: var(--sig-action);
+  --sig-fill: #A9E2DA;            --sig-fill-hover: #BDEAE3;     --sig-on-fill: #0C1817;
+  --sig-scrim: rgba(0, 0, 0, .55);
+  --sig-done-ink: #A9E2DA;        --sig-done-wash: rgba(169, 226, 218, .12);  --sig-done-line: rgba(169, 226, 218, .26);
+  --sig-review-ink: #EBBC74;      --sig-review-wash: rgba(235, 188, 116, .12); --sig-review-line: rgba(235, 188, 116, .28); --sig-amber: var(--sig-review-ink);
+  --sig-urgent-ink: #F3A79D;      --sig-urgent-wash: rgba(243, 167, 157, .12); --sig-urgent-line: rgba(243, 167, 157, .3);  --sig-red: var(--sig-urgent-ink);
+  --sig-info-ink: #D3D0C8;        --sig-info-wash: rgba(245, 242, 235, .06);   --sig-info-line: #30403E;
+  --sig-disabled: #20302E;        --sig-ink-disabled: #B8B7B0;
+  --sig-shadow-card-lift: 0 1px 0 rgba(0, 0, 0, .2), 0 12px 28px -18px rgba(0, 0, 0, .6);
+  --sig-shadow-card: inset 0 0 0 1px #30403E, var(--sig-shadow-card-lift);
+  --sig-shadow-raised: 0 0 0 1px #30403E, 0 14px 30px -18px rgba(0, 0, 0, .6);
+  --sig-shadow-sheet: 0 -10px 40px rgba(0, 0, 0, .5);
+  --sig-press-bg: #1B2B29;        --sig-hover-bg: #1A2A28;
+  --sig-press-wash: rgba(255, 255, 255, .06);
+  --sig-focus: #F5F2EB;           --sig-focus-on-dark: #FFFFFF;
+  --sig-deep-ink: #A9E2DA;        --sig-selected-bg: #1A2A28;    --sig-card-quiet: #142422;
+  --sig-tint-urgent: rgba(243, 167, 157, .12);  --sig-tint-urgent-line: rgba(243, 167, 157, .3);
+  --sig-tint-done: rgba(169, 226, 218, .12);    --sig-tint-done-hover: rgba(169, 226, 218, .18);
+  --sig-tint-done-soft: rgba(169, 226, 218, .06); --sig-tint-done-soft-2: rgba(169, 226, 218, .08);
+  --sig-tint-neutral: rgba(245, 242, 235, .08); --sig-tint-neutral-ink: #D3D0C8;
+  --sig-tint-review: rgba(235, 188, 116, .10);  --sig-tint-review-2: rgba(235, 188, 116, .06); --sig-tint-review-3: rgba(235, 188, 116, .16);
+  --sig-tint-review-line: rgba(235, 188, 116, .28); --sig-tint-review-ink: #EBBC74;
+  --sig-tint-teal: rgba(169, 226, 218, .12);    --sig-tint-teal-2: rgba(169, 226, 218, .16);
+  --sig-grid-line: #24332F;       --sig-track-soft: #1A2A28;     --sig-switch-off: #3A4846;     --sig-fill-soft: #1A2A28;
+  --sig-radio-edge: #5A6764;      --sig-ring-edge: #5A6764;
+  --sig-type-hero-word:     400 2.875rem/3.125rem var(--sig-font-display);
+  --sig-type-hero-figure:   300 3.75rem/3.875rem var(--sig-font-display);
+  --sig-type-hero-duration: 300 3.375rem/3.5rem var(--sig-font-display);
+  --sig-type-headline:      400 2.5rem/2.75rem var(--sig-font-display);
+  --sig-type-figure-ticket: 300 3.5rem/3.375rem var(--sig-font-display);
+  --sig-type-figure-day:    400 1.75rem/1.875rem var(--sig-font-display);
+}

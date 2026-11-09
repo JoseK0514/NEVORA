@@ -1,0 +1,44 @@
+✔ allowed real Request transport, free catalog, failure reservation, restart and twenty-call lifetime cap (473.692375ms)
+✔ wrong endpoint, credential, redirects, models, body styles and output limits never reach transport (11.260834ms)
+✔ redirect response is rejected and remains charged (30.95075ms)
+✔ investigator function, message and encrypted reasoning rounds are accepted (30.80525ms)
+✔ fail closed: malformed (10.034125ms)
+✔ fail closed: symlink (9.759917ms)
+✔ fail closed: lock (9.098167ms)
+✔ fail closed: missing (9.651583ms)
+✔ fail closed: expired (9.267875ms)
+✔ fail closed: tampered (10.018417ms)
+✔ fail closed: missing-receipt (39.29675ms)
+✔ fail closed: pending (16.219708ms)
+✔ multiple processes contend without exceeding twenty lifetime reservations (572.385875ms)
+✔ known Node preload installs before application code (91.237ms)
+✔ invalid UTF-8, unsafe permissions and expiry after guard creation reject before transport (12.009917ms)
+✔ changed receipt and ledger counter reject further reservations (66.676083ms)
+✔ unchanged pilot expires exactly 24 hours after initialization (10.120459ms)
+✖ real loopback redirects cannot reach a second server and nonredirect readiness still works (28.6955ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 17
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1524.846
+
+✖ failing tests:
+
+test at src/test/integration/owner-advisor-pilot.check.mts:180:1
+✖ real loopback redirects cannot reach a second server and nonredirect readiness still works (28.6955ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/owner-advisor-20261022/Fuel%20Scheduler/src/test/integration/owner-advisor-pilot.check.mts:209:17)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: undefined,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+exit=1

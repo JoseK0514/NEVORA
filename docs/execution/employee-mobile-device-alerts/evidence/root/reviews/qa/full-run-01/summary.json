@@ -1,0 +1,23 @@
+{
+  "exit": 1,
+  "files": {
+    "failed": 6,
+    "passed": 26,
+    "total": 32
+  },
+  "tests": {
+    "failed": 7,
+    "passed": 364,
+    "total": 371
+  },
+  "durationSeconds": 1558.78,
+  "failures": [
+    "FAIL  |employee| src/test/integration/employee-mobile-communications-review.integration.ts > CR-2 bounds held notification opens and fences stale results across private refresh and pause",
+    "FAIL  |employee| src/test/integration/employee-mobile-communications-sql.integration.ts > retains the existing finite notification-read budget for a full page of distinct team updates",
+    "FAIL  |employee| src/test/integration/employee-mobile-communications-sql.integration.ts > hides disabled-module notifications while retaining unrelated own notices",
+    "FAIL  |employee| src/test/integration/employee-mobile-communications.integration.ts > integrates employee mobile messages with current audience, explicit receipts and original submission recovery",
+    "FAIL  |employee| src/test/integration/employee-mobile-device-alerts.integration.ts > integrates own current-device enrollment, protected cleanup and mobile states in three engines",
+    "FAIL  |employee| src/test/integration/passkey-network.integration.ts > completes discoverable passkey sign-in through a real owned Next HTTP runtime",
+    "FAIL  |canonical-communications| src/test/integration/phase-e-communications-schema.integration.ts > 0022 to 0023 to 0024 and presentation rollback preserve actual canonical JSON and migration bytes"
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "scope": "Employee root/detail chrome and contextual guide",
+  "green": {
+    "sha": "de4c7b6898e3d10297bb727949ad12cf3dea6808",
+    "lane": "corrected",
+    "results": [
+      {
+        "suite": "access",
+        "sha": "de4c7b6898e3d10297bb727949ad12cf3dea6808",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/access",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/access.log"
+      },
+      {
+        "suite": "phase1",
+        "sha": "de4c7b6898e3d10297bb727949ad12cf3dea6808",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/phase1",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/phase1.log"
+      },
+      {
+        "suite": "requests",
+        "sha": "de4c7b6898e3d10297bb727949ad12cf3dea6808",
+        "exitCode": 0,
+        "signal": null,
+        "error": null,
+        "custodyError": null,
+        "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/requests",
+        "log": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/requests.log"
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/phase1/results.json",
+      "checks": 61,
+      "errors": 0,
+      "captures": 62,
+      "consoleMessages": 6
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/requests/results.json",
+      "checks": 28,
+      "captures": 57,
+      "contrast": 18,
+      "messages": 7
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/access/landscape/results.json",
+      "complete": true,
+      "scope": "Owned local public Access pages, native touch contexts, no submitted credentials/provider delivery",
+      "measurements": 120,
+      "rotations": 24,
+      "failures": 0
+    },
+    {
+      "evidence": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected/access/onboarding/results.json",
+      "scope": "Real guide markup and scoped source CSS in native engines; informational component proof, not authenticated Home/activation acceptance",
+      "measurements": 396,
+      "failures": 0
+    }
+  ],
+  "attempts": [
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-red",
+      "meaning": "Missing runtime setting followed by canonical summary-type and absent-More-header RED"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-green",
+      "meaning": "First replay: incorrect universal inset test and late Quiet header cause retained; initial Requests native-only is not full39"
+    },
+    {
+      "path": "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/release-1-20261029/chrome-guide-journeys-corrected",
+      "meaning": "Full Access3, Phase1 1 and Requests39 passed at de4c7b68"
+    }
+  ],
+  "focusedTests": 35,
+  "limit": "Local intermediate-source proof only; final same-source all11/shared-role/hosted approval still required."
+}

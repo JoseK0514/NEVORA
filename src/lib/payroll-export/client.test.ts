@@ -1,0 +1,12 @@
+import {createHash} from 'node:crypto';
+import {expect,it} from 'vitest';
+import {verifyExportReply} from './client';
+import {mappedPayrollCsv,neutralProfile,type CanonicalPayrollExport} from './model';
+import {stableExportJson} from './json';
+const command={operationId:'11111111-1111-4111-8111-111111111111',profileId:null,profileRevision:0,startDate:'2026-09-21',endDate:'2026-09-27',cards:[{employeeId:'E',revision:2,sourceHash:'a'.repeat(32),finalizationOperationId:'22222222-2222-4222-8222-222222222222'}]};
+const model:CanonicalPayrollExport={version:1,workspaceId:'W',timeZone:'America/Puerto_Rico',period:{startDate:command.startDate,endDate:command.endDate},timeBasis:'RECORDED_ELAPSED_INCLUDING_BREAKS',rows:[{...command.cards[0],employeeName:'José',recordedNanoseconds:'28800000000000',breakNanoseconds:'0',entries:[]}]};
+const profile=neutralProfile(),csv=mappedPayrollCsv(model,profile),sha=(s:string)=>createHash('sha256').update(s).digest('hex');
+const receipt={operationId:command.operationId,model,profile,profileId:null,profileRevision:0,csv,csvSha256:sha(csv),canonicalSha256:sha(stableExportJson(model))};
+it('verifies both file bytes and deterministic canonical model identity',async()=>{expect(await verifyExportReply({state:'generated',export:receipt},command)).toEqual(receipt);});
+it.each([{csv:'altered'},{canonicalSha256:'f'.repeat(64)},{operationId:'other'},{model:{...model,period:{startDate:'2026-01-01',endDate:'2026-01-07'}}}])('refuses altered or cross-command export %j',async patch=>{await expect(verifyExportReply({state:'generated',export:{...receipt,...patch}},command)).rejects.toThrow();});
+it('canonicalizes jsonb property ordering before fingerprint verification',()=>{expect(stableExportJson({b:2,a:1})).toBe(stableExportJson({a:1,b:2}));});

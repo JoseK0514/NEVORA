@@ -1,0 +1,62 @@
+{
+ "key": "Jose · guest-l45hzdfr · phone /app/my-time",
+ "url": "https://monkey-occurred-crystal-carolina.trycloudflare.com/app/my-time",
+ "path": "/app/my-time",
+ "device": "phone",
+ "viewport": {
+  "w": 440,
+  "h": 796
+ },
+ "page": {
+  "w": 440,
+  "h": 1853
+ },
+ "title": "NEVORA Workforce",
+ "heading": "My time",
+ "tester": "Jose",
+ "account": "ARAlexandra Rivera",
+ "strokes": [],
+ "pins": [
+  {
+   "n": 1,
+   "x": 228,
+   "y": 617,
+   "text": "",
+   "t": 1792354801568,
+   "target": {
+    "tag": "section",
+    "id": "",
+    "cls": "employee-view-surface.employee-time-today",
+    "text": "TodayOctober 18, 2026Recorded time0mBreak time0mToday’s totals. Hours include breaks and a"
+   }
+  },
+  {
+   "n": 2,
+   "x": 289,
+   "y": 1306,
+   "text": "",
+   "t": 1792354834712,
+   "target": {
+    "tag": "section",
+    "id": "",
+    "cls": "employee-view-surface.employee-correction-center",
+    "text": "CorrectionsYour manager reviews each request. Your original times are kept.CancelLocationM"
+   }
+  },
+  {
+   "n": 3,
+   "x": 410,
+   "y": 1311,
+   "text": "",
+   "t": 1792354842881,
+   "target": {
+    "tag": "section",
+    "id": "",
+    "cls": "employee-view-surface.employee-correction-center",
+    "text": "CorrectionsYour manager reviews each request. Your original times are kept.CancelLocationM"
+   }
+  }
+ ],
+ "note": "make boxes all equal so they don’t look weird ",
+ "updatedAt": "2026-10-18T20:20:43.485Z"
+}

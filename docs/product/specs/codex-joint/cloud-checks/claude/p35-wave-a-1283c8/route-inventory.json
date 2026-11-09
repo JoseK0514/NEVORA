@@ -1,0 +1,1373 @@
+{
+  "source": "/workspace/nevora-sources/p35-wave-a-1283c8",
+  "pageFiles": 44,
+  "patterns": [
+    "/app",
+    "/app/account-recovery",
+    "/app/availability",
+    "/app/clocker-recovery",
+    "/app/employees",
+    "/app/employees/[employeeId]",
+    "/app/employees/[employeeId]/clocker-pin",
+    "/app/employees/new",
+    "/app/exchange",
+    "/app/exchange/callout",
+    "/app/exchange/swap",
+    "/app/inbox",
+    "/app/my-pay",
+    "/app/my-time",
+    "/app/notifications",
+    "/app/payroll",
+    "/app/payroll-export",
+    "/app/profile",
+    "/app/reports",
+    "/app/requests",
+    "/app/requests/hub",
+    "/app/schedule",
+    "/app/schedule/copy-receipt",
+    "/app/schedule/coverage",
+    "/app/schedule/edit",
+    "/app/schedule/new",
+    "/app/schedule/settings",
+    "/app/schedule/templates",
+    "/app/settings",
+    "/app/settings/branding",
+    "/app/settings/breaks",
+    "/app/settings/clocker",
+    "/app/settings/company-policies",
+    "/app/settings/features",
+    "/app/settings/locations",
+    "/app/settings/locations/[locationId]",
+    "/app/settings/locations/new",
+    "/app/settings/payroll",
+    "/app/settings/positions",
+    "/app/settings/workspace",
+    "/app/timecards",
+    "/app/updates",
+    "/app/updates/[id]",
+    "/app/updates/compose",
+    "/login"
+  ],
+  "jobs": [
+    {
+      "account": "AUDIT-E",
+      "role": "EMPLOYEE",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=audit-next-0-1",
+        "/app/exchange/swap?sourceShiftId=audit-next-0-1",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "role": "LEAD",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=x-audit-next-AUDIT-LEAD-0",
+        "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-LEAD-0",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "AUDIT-LONG",
+      "role": "EMPLOYEE",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=audit-next-0-2",
+        "/app/exchange/swap?sourceShiftId=audit-next-0-2",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "AUDIT-ON",
+      "role": "EMPLOYEE",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=x-audit-next-AUDIT-ON-0",
+        "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-ON-0",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "role": "EMPLOYEE",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=x-audit-next-AUDIT-BREAK-0",
+        "/app/exchange/swap?sourceShiftId=x-audit-next-AUDIT-BREAK-0",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "payroll-qa-a",
+      "role": "EMPLOYEE",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=cloud-payroll-qa-a",
+        "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-a",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "payroll-qa-b",
+      "role": "LEAD",
+      "routes": [
+        "/app",
+        "/app/availability",
+        "/app/exchange",
+        "/app/exchange/callout?shiftId=cloud-payroll-qa-b",
+        "/app/exchange/swap?sourceShiftId=cloud-payroll-qa-b",
+        "/app/my-pay",
+        "/app/my-time",
+        "/app/notifications",
+        "/app/profile",
+        "/app/requests",
+        "/app/requests/hub",
+        "/app/schedule",
+        "/app/schedule/coverage",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "AUDIT-M",
+      "role": "MANAGER",
+      "routes": [
+        "/app",
+        "/app/account-recovery",
+        "/app/availability",
+        "/app/clocker-recovery",
+        "/app/employees",
+        "/app/employees/AUDIT-LONG",
+        "/app/employees/AUDIT-LONG/clocker-pin",
+        "/app/employees/new",
+        "/app/exchange",
+        "/app/inbox",
+        "/app/my-pay",
+        "/app/notifications",
+        "/app/payroll-export",
+        "/app/reports",
+        "/app/requests",
+        "/app/schedule",
+        "/app/schedule/copy-receipt?operation=e49187d3-44bf-4e84-96ce-b3261809636e",
+        "/app/schedule/coverage",
+        "/app/schedule/edit?shiftId=audit-next-0-1",
+        "/app/schedule/new",
+        "/app/schedule/settings",
+        "/app/schedule/templates",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "QAOWNER",
+      "role": "OWNER",
+      "routes": [
+        "/app",
+        "/app/account-recovery",
+        "/app/availability",
+        "/app/clocker-recovery",
+        "/app/employees",
+        "/app/employees/AUDIT-LONG",
+        "/app/employees/AUDIT-LONG/clocker-pin",
+        "/app/employees/new",
+        "/app/exchange",
+        "/app/inbox",
+        "/app/my-pay",
+        "/app/notifications",
+        "/app/payroll",
+        "/app/payroll-export",
+        "/app/reports",
+        "/app/requests",
+        "/app/schedule",
+        "/app/schedule/copy-receipt?operation=eafe97b2-1cd3-43df-bf66-81a1e24230c5",
+        "/app/schedule/coverage",
+        "/app/schedule/edit?shiftId=audit-next-0-1",
+        "/app/schedule/new",
+        "/app/schedule/settings",
+        "/app/schedule/templates",
+        "/app/settings",
+        "/app/settings/branding",
+        "/app/settings/breaks",
+        "/app/settings/clocker",
+        "/app/settings/company-policies",
+        "/app/settings/features",
+        "/app/settings/locations",
+        "/app/settings/locations/loc-1",
+        "/app/settings/locations/new",
+        "/app/settings/payroll",
+        "/app/settings/positions",
+        "/app/settings/workspace",
+        "/app/timecards",
+        "/app/updates",
+        "/app/updates/618fdeae-273f-4de1-9745-5204f2f16069",
+        "/app/updates/compose"
+      ]
+    },
+    {
+      "account": "ANONYMOUS",
+      "role": "SIGNED_OUT",
+      "routes": [
+        "/login"
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-E",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LEAD",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-LONG",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-ON",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-BREAK",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-a",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/account-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/clocker-recovery",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/employees",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/employees/[employeeId]",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/employees/[employeeId]/clocker-pin",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/employees/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/inbox",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/payroll-export",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/reports",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/schedule/copy-receipt",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/schedule/edit",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/schedule/new",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/schedule/settings",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/schedule/templates",
+      "reason": "Manager/Owner page"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "payroll-qa-b",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/exchange/callout",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/exchange/swap",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/my-time",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/payroll",
+      "reason": "This fixture grants payroll review only to other actors; AUDIT-M has no payroll grant"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/profile",
+      "reason": "This snapshot redirects management Profile to Home"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/requests/hub",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/branding",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/breaks",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/clocker",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/company-policies",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/features",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/locations",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/locations/[locationId]",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/locations/new",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/payroll",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/positions",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "AUDIT-M",
+      "pattern": "/app/settings/workspace",
+      "reason": "Owner-only Settings"
+    },
+    {
+      "account": "QAOWNER",
+      "pattern": "/app/exchange/callout",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "QAOWNER",
+      "pattern": "/app/exchange/swap",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "QAOWNER",
+      "pattern": "/app/my-time",
+      "reason": "Employee/Lead self service"
+    },
+    {
+      "account": "QAOWNER",
+      "pattern": "/app/profile",
+      "reason": "This snapshot redirects management Profile to Home"
+    },
+    {
+      "account": "QAOWNER",
+      "pattern": "/app/requests/hub",
+      "reason": "Employee/Lead self service"
+    }
+  ],
+  "fixtures": {
+    "updateId": "618fdeae-273f-4de1-9745-5204f2f16069",
+    "copyReceipts": {
+      "AUDIT-M": "e49187d3-44bf-4e84-96ce-b3261809636e",
+      "QAOWNER": "eafe97b2-1cd3-43df-bf66-81a1e24230c5"
+    },
+    "copyReceiptState": "TEMPLATE_UNAVAILABLE",
+    "payrollFutureShifts": [
+      "cloud-payroll-qa-a",
+      "cloud-payroll-qa-b"
+    ],
+    "extraSeed": "Supplied tools seed-extra.mts; only additional fictional fixture writes listed here"
+  }
+}

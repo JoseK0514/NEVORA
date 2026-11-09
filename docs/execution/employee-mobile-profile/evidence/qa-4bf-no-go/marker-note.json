@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-27T21:42:34.055334+00:00",
+  "observation": "The recorder legacy marker column used obj_description, which is not the shared-object database comment function. Null in that column is not absence of a disposal marker. A separate read-only query using shobj_description verified the live owned database marker; app/runtime/helper inputs for the active run were not modified.",
+  "query": "SELECT oid,datname,shobj_description(oid,'pg_database') AS marker FROM pg_database WHERE datname LIKE 'nevora_exchange_test_%' OR datname LIKE 'nevora_foundation_test_%' OR datname LIKE 'fuel_phase3_test_%' ORDER BY datname",
+  "invocation": [
+    "node",
+    "/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/outputs/employee-mobile-profile/local-review/qa/4bf72579/inspect-owned-cluster-shared.cjs",
+    "58719"
+  ],
+  "result": "observed-database-shared-markers.json"
+}

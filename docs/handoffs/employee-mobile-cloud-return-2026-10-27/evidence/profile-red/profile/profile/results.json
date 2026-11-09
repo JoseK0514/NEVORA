@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "engine": "chromium",
+      "name": "Actual settled own profile and strict no-selector HTTP boundary"
+    }
+  ],
+  "captures": [
+    "chromium-profile-ready.png",
+    "chromium-failure.png"
+  ],
+  "messages": [
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/_next/static/chunks/src_components_0ynnyr4u-5qbu._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/fonts/typeface/inter/variable.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/_next/static/chunks/src_app_not-found_1dl-v49hal91f.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/_next/static/chunks/src_components_quiet_quiet_0thpcrus4i4cz.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/_next/static/chunks/src_components_1-x67_9n8_h4a._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    },
+    {
+      "engine": "chromium",
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:35715/_next/static/chunks/src_1pkrc6p6q4l1j._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "expected": false,
+      "stage": "login",
+      "url": "http://127.0.0.1:35715/login"
+    }
+  ]
+}

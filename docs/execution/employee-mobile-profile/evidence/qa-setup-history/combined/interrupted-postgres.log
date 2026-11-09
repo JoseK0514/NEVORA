@@ -1,0 +1,580 @@
+2026-10-27 17:33:41.394 AST [13187] LOG:  starting PostgreSQL 17.10 on x86_64-apple-darwin24.6.0, compiled by Apple clang version 17.0.0 (clang-1700.6.3.2), 64-bit
+2026-10-27 17:33:41.394 AST [13187] LOG:  listening on IPv4 address "127.0.0.1", port 53559
+2026-10-27 17:33:41.394 AST [13187] LOG:  listening on Unix socket "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-payroll-owned-dD6crm/.s.PGSQL.53559"
+2026-10-27 17:33:41.397 AST [13190] LOG:  database system was shut down at 2026-10-27 17:33:41 AST
+2026-10-27 17:33:41.399 AST [13187] LOG:  database system is ready to accept connections
+2026-10-27 17:33:42.113 AST [13207] ERROR:  communication_actor_workspace
+2026-10-27 17:33:42.113 AST [13207] CONTEXT:  PL/pgSQL function communication_identity_guard() line 9 at RAISE
+2026-10-27 17:33:42.113 AST [13207] STATEMENT:  INSERT INTO communications(id,workspace_id,author_employee_id) VALUES($1,$2,$3)
+2026-10-27 17:33:42.119 AST [13208] ERROR:  communication_parent_identity
+2026-10-27 17:33:42.119 AST [13208] CONTEXT:  PL/pgSQL function communication_identity_guard() line 24 at RAISE
+2026-10-27 17:33:42.119 AST [13208] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.126 AST [13209] ERROR:  communication_grant_context
+2026-10-27 17:33:42.126 AST [13209] CONTEXT:  PL/pgSQL function communication_identity_guard() line 38 at RAISE
+2026-10-27 17:33:42.126 AST [13209] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.133 AST [13210] ERROR:  communication_grant_context
+2026-10-27 17:33:42.133 AST [13210] CONTEXT:  PL/pgSQL function communication_identity_guard() line 38 at RAISE
+2026-10-27 17:33:42.133 AST [13210] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.138 AST [13211] ERROR:  insert or update on table "communication_recipients" violates foreign key constraint "communication_recipients_workspace_id_communication_id_rev_fkey"
+2026-10-27 17:33:42.138 AST [13211] DETAIL:  Key (workspace_id, communication_id, revision_id, content_hash)=(workspace-fuel, 10000000-0000-4000-8000-000000000001, 20000000-0000-4000-8000-000000000001, bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb) is not present in table "communication_revisions".
+2026-10-27 17:33:42.138 AST [13211] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.151 AST [13214] ERROR:  insert or update on table "communication_receipts" violates foreign key constraint "communication_receipts_workspace_id_communication_id_revis_fkey"
+2026-10-27 17:33:42.151 AST [13214] DETAIL:  Key (workspace_id, communication_id, revision_id, employee_id, content_hash)=(workspace-fuel, 10000000-0000-4000-8000-000000000001, 20000000-0000-4000-8000-000000000001, other, 7e7cf3ae66e8d9de0d6d1b6a630062e8c858cb0f75afa1acc29c0d6d3c8dd2bf) is not present in table "communication_recipients".
+2026-10-27 17:33:42.151 AST [13214] STATEMENT:  INSERT INTO communication_receipts(id,workspace_id,communication_id,revision_id,employee_id,content_hash) VALUES($1,$2,$3,$4,$5,$6)
+2026-10-27 17:33:42.156 AST [13215] ERROR:  communication_published_head_required
+2026-10-27 17:33:42.156 AST [13215] CONTEXT:  PL/pgSQL function communication_identity_guard() line 14 at RAISE
+2026-10-27 17:33:42.156 AST [13215] STATEMENT:  UPDATE communications SET state='PUBLISHED',head_revision_id=$1 WHERE id=$2
+2026-10-27 17:33:42.168 AST [13218] ERROR:  duplicate key value violates unique constraint "workspaces_singleton_key"
+2026-10-27 17:33:42.168 AST [13218] DETAIL:  Key (singleton)=(t) already exists.
+2026-10-27 17:33:42.168 AST [13218] STATEMENT:  INSERT INTO workspaces(id,name,time_zone) VALUES('foreign','Fictional','UTC')
+2026-10-27 17:33:42.171 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:42.177 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 1 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.006 s; sync files=7, longest=0.001 s, average=0.001 s; distance=8211 kB, estimate=8211 kB; lsn=0/1D0C580, redo lsn=0/1D0C528
+2026-10-27 17:33:42.471 AST [13236] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.471 AST [13236] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.471 AST [13236] STATEMENT:  DELETE FROM communication_revisions
+2026-10-27 17:33:42.475 AST [13237] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.475 AST [13237] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.475 AST [13237] STATEMENT:  UPDATE communication_revisions SET workspace_id=workspace_id
+2026-10-27 17:33:42.478 AST [13238] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.478 AST [13238] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.478 AST [13238] STATEMENT:  DELETE FROM communication_recipients
+2026-10-27 17:33:42.481 AST [13239] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.481 AST [13239] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.481 AST [13239] STATEMENT:  UPDATE communication_recipients SET workspace_id=workspace_id
+2026-10-27 17:33:42.487 AST [13240] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.487 AST [13240] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.487 AST [13240] STATEMENT:  DELETE FROM communication_receipts
+2026-10-27 17:33:42.490 AST [13241] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.490 AST [13241] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.490 AST [13241] STATEMENT:  UPDATE communication_receipts SET workspace_id=workspace_id
+2026-10-27 17:33:42.494 AST [13243] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.494 AST [13243] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.494 AST [13243] STATEMENT:  DELETE FROM communication_operations
+2026-10-27 17:33:42.497 AST [13244] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.497 AST [13244] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.497 AST [13244] STATEMENT:  UPDATE communication_operations SET workspace_id=workspace_id
+2026-10-27 17:33:42.501 AST [13245] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.501 AST [13245] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.501 AST [13245] STATEMENT:  DELETE FROM communication_lifecycle
+2026-10-27 17:33:42.504 AST [13246] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.504 AST [13246] CONTEXT:  PL/pgSQL function communication_append_only() line 2 at RAISE
+2026-10-27 17:33:42.504 AST [13246] STATEMENT:  UPDATE communication_lifecycle SET workspace_id=workspace_id
+2026-10-27 17:33:42.508 AST [13247] ERROR:  communication_history_immutable
+2026-10-27 17:33:42.508 AST [13247] CONTEXT:  PL/pgSQL function communication_identity_guard() line 5 at RAISE
+2026-10-27 17:33:42.508 AST [13247] STATEMENT:  DELETE FROM communications
+2026-10-27 17:33:42.524 AST [13248] ERROR:  update or delete on table "employees" violates foreign key constraint "communication_recipients_employee_id_fkey" on table "communication_recipients"
+2026-10-27 17:33:42.524 AST [13248] DETAIL:  Key (id)=(employee) is still referenced from table "communication_recipients".
+2026-10-27 17:33:42.524 AST [13248] STATEMENT:  DELETE FROM employees WHERE id='employee'
+2026-10-27 17:33:42.532 AST [13249] ERROR:  communication_audience_frozen
+2026-10-27 17:33:42.532 AST [13249] CONTEXT:  PL/pgSQL function communication_identity_guard() line 40 at RAISE
+2026-10-27 17:33:42.532 AST [13249] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.543 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:42.544 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8213 kB, estimate=8213 kB; lsn=0/2511988, redo lsn=0/2511930
+2026-10-27 17:33:42.767 AST [13261] ERROR:  communication_grant_context
+2026-10-27 17:33:42.767 AST [13261] CONTEXT:  PL/pgSQL function communication_identity_guard() line 38 at RAISE
+2026-10-27 17:33:42.767 AST [13261] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:42.771 AST [13262] ERROR:  communication_published_head_required
+2026-10-27 17:33:42.771 AST [13262] CONTEXT:  PL/pgSQL function communication_identity_guard() line 14 at RAISE
+2026-10-27 17:33:42.771 AST [13262] STATEMENT:  UPDATE communications SET state='PUBLISHED',head_revision_id=$1 WHERE id=$2
+2026-10-27 17:33:42.809 AST [13272] ERROR:  communication_receipt_head
+2026-10-27 17:33:42.809 AST [13272] CONTEXT:  PL/pgSQL function communication_identity_guard() line 43 at RAISE
+2026-10-27 17:33:42.809 AST [13272] STATEMENT:  INSERT INTO communication_receipts(id,workspace_id,communication_id,revision_id,employee_id,content_hash) VALUES($1,$2,$3,$4,$5,$6)
+2026-10-27 17:33:42.817 AST [13274] ERROR:  communication_withdrawn
+2026-10-27 17:33:42.817 AST [13274] CONTEXT:  PL/pgSQL function communication_identity_guard() line 27 at RAISE
+2026-10-27 17:33:42.817 AST [13274] STATEMENT:  INSERT INTO communication_revisions(id,workspace_id,communication_id,version,created_by,type,scope_kind,location_id,business_date,source_shift_id,assignment_episode_id,terms_fingerprint,title,body,acknowledgement,expires_at,content_hash,audience_fingerprint,audience_observed_at,published_at)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10,$11,$12,$13,$14,$15,$16::timestamptz,$17,$18,$19::timestamptz,$20::timestamptz)
+2026-10-27 17:33:42.818 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:42.819 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8212 kB, estimate=8213 kB; lsn=0/2D16D70, redo lsn=0/2D16D18
+2026-10-27 17:33:43.038 AST [13285] ERROR:  insert or update on table "communication_operations" violates foreign key constraint "communication_operations_workspace_id_communication_id_re_fkey1"
+2026-10-27 17:33:43.038 AST [13285] DETAIL:  Key (workspace_id, communication_id, revision_id, actor_employee_id, receipt_id)=(workspace-fuel, 10000000-0000-4000-8000-000000000001, 20000000-0000-4000-8000-000000000001, other, 30000000-0000-4000-8000-000000000001) is not present in table "communication_receipts".
+2026-10-27 17:33:43.038 AST [13285] STATEMENT:  INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id,receipt_id) VALUES($1,$2,$3,$4,$5,'ACKNOWLEDGE',$6,$7,$8)
+2026-10-27 17:33:43.042 AST [13286] ERROR:  duplicate key value violates unique constraint "communication_operations_pkey"
+2026-10-27 17:33:43.042 AST [13286] DETAIL:  Key (workspace_id, actor_employee_id, operation_id)=(workspace-fuel, employee, 40000000-0000-4000-8000-000000000001) already exists.
+2026-10-27 17:33:43.042 AST [13286] STATEMENT:  INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id,receipt_id) VALUES($1,$2,$3,$4,$5,'ACKNOWLEDGE',$6,$7,$8)
+2026-10-27 17:33:43.051 AST [13287] ERROR:  duplicate key value violates unique constraint "communication_operations_pkey"
+2026-10-27 17:33:43.051 AST [13287] DETAIL:  Key (workspace_id, actor_employee_id, operation_id)=(workspace-fuel, employee, 40000000-0000-4000-8000-000000000001) already exists.
+2026-10-27 17:33:43.051 AST [13287] STATEMENT:  INSERT INTO communication_operations(workspace_id,actor_employee_id,operation_id,session_hash,payload_hash,kind,communication_id,revision_id,receipt_id) VALUES($1,$2,$3,$4,$5,'ACKNOWLEDGE',$6,$7,$8)
+2026-10-27 17:33:43.056 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:43.057 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8211 kB, estimate=8212 kB; lsn=0/351BC60, redo lsn=0/351BC08
+2026-10-27 17:33:43.301 AST [13300] ERROR:  communication_content_hash
+2026-10-27 17:33:43.301 AST [13300] CONTEXT:  PL/pgSQL function communication_identity_guard() line 29 at RAISE
+2026-10-27 17:33:43.301 AST [13300] STATEMENT:  INSERT INTO communication_revisions(id,workspace_id,communication_id,version,created_by,type,scope_kind,location_id,business_date,source_shift_id,assignment_episode_id,terms_fingerprint,title,body,acknowledgement,expires_at,content_hash,audience_fingerprint,audience_observed_at,published_at)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10,$11,$12,$13,$14,$15,$16::timestamptz,$17,$18,$19::timestamptz,$20::timestamptz)
+2026-10-27 17:33:43.305 AST [13301] ERROR:  communication_author_role
+2026-10-27 17:33:43.305 AST [13301] CONTEXT:  PL/pgSQL function communication_identity_guard() line 28 at RAISE
+2026-10-27 17:33:43.305 AST [13301] STATEMENT:  INSERT INTO communication_revisions(id,workspace_id,communication_id,version,created_by,type,scope_kind,location_id,business_date,source_shift_id,assignment_episode_id,terms_fingerprint,title,body,acknowledgement,expires_at,content_hash,audience_fingerprint,audience_observed_at,published_at)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10,$11,$12,$13,$14,$15,$16::timestamptz,$17,$18,$19::timestamptz,$20::timestamptz)
+2026-10-27 17:33:43.314 AST [13303] ERROR:  communication_recipient_role
+2026-10-27 17:33:43.314 AST [13303] CONTEXT:  PL/pgSQL function communication_identity_guard() line 33 at RAISE
+2026-10-27 17:33:43.314 AST [13303] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:43.316 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:43.317 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8209 kB, estimate=8212 kB; lsn=0/3D200F8, redo lsn=0/3D200A0
+2026-10-27 17:33:43.510 AST [13308] ERROR:  new row for relation "notifications" violates check constraint "notifications_source_kind_check"
+2026-10-27 17:33:43.510 AST [13308] DETAIL:  Failing row contains (unknown, employee, SCHEDULE_PUBLISHED, Title, Body, null, 2026-10-27 17:33:43.50955-04, null, null, null, UNKNOWN, null, null, null, null, null, null, null, null, legacy, {}, f).
+2026-10-27 17:33:43.510 AST [13308] STATEMENT:  INSERT INTO notifications(id,employee_id,type,title,body,source_kind) VALUES('unknown','employee','SCHEDULE_PUBLISHED','Title','Body','UNKNOWN')
+2026-10-27 17:33:43.512 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:43.513 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8205 kB, estimate=8211 kB; lsn=0/45237F8, redo lsn=0/45237A0
+2026-10-27 17:33:43.713 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:43.714 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8206 kB, estimate=8211 kB; lsn=0/4D27098, redo lsn=0/4D27040
+2026-10-27 17:33:43.983 AST [13344] ERROR:  update or delete on table "employees" violates foreign key constraint "communications_author_employee_id_fkey" on table "communications"
+2026-10-27 17:33:43.983 AST [13344] DETAIL:  Key (id)=(owner) is still referenced from table "communications".
+2026-10-27 17:33:43.983 AST [13344] STATEMENT:  DELETE FROM employees WHERE id='owner'
+2026-10-27 17:33:43.987 AST [13345] ERROR:  communication_identity_immutable
+2026-10-27 17:33:43.987 AST [13345] CONTEXT:  PL/pgSQL function communication_identity_guard() line 12 at RAISE
+2026-10-27 17:33:43.987 AST [13345] STATEMENT:  UPDATE communications SET state='PUBLISHED' WHERE id=$1
+2026-10-27 17:33:43.989 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:43.990 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8214 kB, estimate=8214 kB; lsn=0/552C8F0, redo lsn=0/552C898
+2026-10-27 17:33:44.256 AST [13373] ERROR:  communication_receipt_head
+2026-10-27 17:33:44.256 AST [13373] CONTEXT:  PL/pgSQL function communication_identity_guard() line 43 at RAISE
+2026-10-27 17:33:44.256 AST [13373] STATEMENT:  INSERT INTO communication_receipts(id,workspace_id,communication_id,revision_id,employee_id,content_hash) VALUES($1,$2,$3,$4,$5,$6)
+2026-10-27 17:33:44.260 AST [13374] ERROR:  communication_head_must_advance
+2026-10-27 17:33:44.260 AST [13374] CONTEXT:  PL/pgSQL function communication_identity_guard() line 18 at RAISE
+2026-10-27 17:33:44.260 AST [13374] STATEMENT:  UPDATE communications SET head_revision_id=$1 WHERE id=$2
+2026-10-27 17:33:44.264 AST [13375] ERROR:  communication_audience_frozen
+2026-10-27 17:33:44.264 AST [13375] CONTEXT:  PL/pgSQL function communication_identity_guard() line 40 at RAISE
+2026-10-27 17:33:44.264 AST [13375] STATEMENT:  INSERT INTO communication_recipients(workspace_id,communication_id,revision_id,employee_id,content_hash,location_id,grant_kind,source_shift_id,assignment_episode_id,terms_fingerprint,observed_at,provenance)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::timestamptz,$12::jsonb)
+2026-10-27 17:33:44.266 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:44.267 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8214 kB, estimate=8214 kB; lsn=0/5D32398, redo lsn=0/5D32340
+2026-10-27 17:33:44.508 AST [13385] ERROR:  communication_actor_workspace
+2026-10-27 17:33:44.508 AST [13385] CONTEXT:  PL/pgSQL function communication_identity_guard() line 9 at RAISE
+2026-10-27 17:33:44.508 AST [13385] STATEMENT:  INSERT INTO communications(id,workspace_id,author_employee_id) VALUES($1,$2,$3)
+2026-10-27 17:33:44.512 AST [13386] ERROR:  communication_actor_workspace
+2026-10-27 17:33:44.512 AST [13386] CONTEXT:  PL/pgSQL function communication_identity_guard() line 9 at RAISE
+2026-10-27 17:33:44.512 AST [13386] STATEMENT:  INSERT INTO communications(id,workspace_id,author_employee_id) VALUES($1,$2,$3)
+2026-10-27 17:33:44.517 AST [13387] ERROR:  communication_actor_workspace
+2026-10-27 17:33:44.517 AST [13387] CONTEXT:  PL/pgSQL function communication_identity_guard() line 9 at RAISE
+2026-10-27 17:33:44.517 AST [13387] STATEMENT:  INSERT INTO communications(id,workspace_id,author_employee_id) VALUES($1,$2,$3)
+2026-10-27 17:33:44.521 AST [13388] ERROR:  communication_identity_immutable
+2026-10-27 17:33:44.521 AST [13388] CONTEXT:  PL/pgSQL function communication_identity_guard() line 12 at RAISE
+2026-10-27 17:33:44.521 AST [13388] STATEMENT:  UPDATE communications SET author_employee_id='employee' WHERE id=$1
+2026-10-27 17:33:44.524 AST [13389] ERROR:  communication_identity_immutable
+2026-10-27 17:33:44.524 AST [13389] CONTEXT:  PL/pgSQL function communication_identity_guard() line 12 at RAISE
+2026-10-27 17:33:44.524 AST [13389] STATEMENT:  UPDATE communications SET workspace_id='unrelated-workspace' WHERE id=$1
+2026-10-27 17:33:44.528 AST [13390] ERROR:  communication_author_role
+2026-10-27 17:33:44.528 AST [13390] CONTEXT:  PL/pgSQL function communication_identity_guard() line 28 at RAISE
+2026-10-27 17:33:44.528 AST [13390] STATEMENT:  INSERT INTO communication_revisions(id,workspace_id,communication_id,version,created_by,type,scope_kind,location_id,business_date,source_shift_id,assignment_episode_id,terms_fingerprint,title,body,acknowledgement,expires_at,content_hash,audience_fingerprint,audience_observed_at,published_at)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10,$11,$12,$13,$14,$15,$16::timestamptz,$17,$18,$19::timestamptz,$20::timestamptz)
+2026-10-27 17:33:44.531 AST [13391] ERROR:  communication_author_role
+2026-10-27 17:33:44.531 AST [13391] CONTEXT:  PL/pgSQL function communication_identity_guard() line 28 at RAISE
+2026-10-27 17:33:44.531 AST [13391] STATEMENT:  INSERT INTO communication_revisions(id,workspace_id,communication_id,version,created_by,type,scope_kind,location_id,business_date,source_shift_id,assignment_episode_id,terms_fingerprint,title,body,acknowledgement,expires_at,content_hash,audience_fingerprint,audience_observed_at,published_at)
+	 VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10,$11,$12,$13,$14,$15,$16::timestamptz,$17,$18,$19::timestamptz,$20::timestamptz)
+2026-10-27 17:33:44.534 AST [13392] ERROR:  communication_actor_workspace
+2026-10-27 17:33:44.534 AST [13392] CONTEXT:  PL/pgSQL function communication_identity_guard() line 46 at RAISE
+2026-10-27 17:33:44.534 AST [13392] STATEMENT:  INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'other','WITHDRAWN')
+2026-10-27 17:33:44.546 AST [13399] ERROR:  communication_actor_workspace
+2026-10-27 17:33:44.546 AST [13399] CONTEXT:  PL/pgSQL function communication_identity_guard() line 46 at RAISE
+2026-10-27 17:33:44.546 AST [13399] STATEMENT:  INSERT INTO communication_lifecycle(id,workspace_id,communication_id,revision_id,actor_employee_id,kind) VALUES($1,$2,$3,$4,'other','WITHDRAWN')
+2026-10-27 17:33:44.555 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:44.556 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8212 kB, estimate=8214 kB; lsn=0/6537640, redo lsn=0/65375E8
+2026-10-27 17:33:44.916 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:44.917 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=7005 kB, estimate=8093 kB; lsn=0/6C0EDD0, redo lsn=0/6C0ED78
+2026-10-27 17:33:45.581 AST [13555] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:45.581 AST [13555] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:45.611 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:45.612 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8810 kB, estimate=8810 kB; lsn=0/74A96E0, redo lsn=0/74A9688
+2026-10-27 17:33:46.008 AST [13607] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:46.008 AST [13607] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:46.034 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:46.035 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8810 kB, estimate=8810 kB; lsn=0/7D44130, redo lsn=0/7D440D8
+2026-10-27 17:33:46.392 AST [13661] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:46.392 AST [13661] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:46.416 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:46.417 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8810 kB, estimate=8810 kB; lsn=0/85DECF8, redo lsn=0/85DECA0
+2026-10-27 17:33:46.771 AST [13713] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:46.771 AST [13713] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:46.795 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:46.796 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8811 kB, estimate=8811 kB; lsn=0/8E799C8, redo lsn=0/8E79970
+2026-10-27 17:33:47.154 AST [13768] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:47.154 AST [13768] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:47.180 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:47.181 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8811 kB, estimate=8811 kB; lsn=0/9714810, redo lsn=0/97147B8
+2026-10-27 17:33:47.553 AST [13820] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:47.553 AST [13820] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:47.579 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:47.580 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8811 kB, estimate=8811 kB; lsn=0/9FAF790, redo lsn=0/9FAF738
+2026-10-27 17:33:47.934 AST [13879] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:47.934 AST [13879] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:47.968 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:47.969 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8812 kB, estimate=8812 kB; lsn=0/A84A878, redo lsn=0/A84A820
+2026-10-27 17:33:48.382 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:48.383 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8816 kB, estimate=8816 kB; lsn=0/B0E6BC8, redo lsn=0/B0E6B70
+2026-10-27 17:33:48.776 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:48.777 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8816 kB, estimate=8816 kB; lsn=0/B982D28, redo lsn=0/B982CD0
+2026-10-27 17:33:49.164 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:49.165 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8817 kB, estimate=8817 kB; lsn=0/C21F290, redo lsn=0/C21F238
+2026-10-27 17:33:49.646 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:49.647 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8823 kB; lsn=0/CABD038, redo lsn=0/CABCFE0
+2026-10-27 17:33:50.191 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:50.192 AST [13188] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8825 kB, estimate=8825 kB; lsn=0/D35B790, redo lsn=0/D35B738
+2026-10-27 17:33:50.546 AST [14235] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:50.546 AST [14235] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:50.547 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:50.548 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8819 kB, estimate=8825 kB; lsn=0/DBF8588, redo lsn=0/DBF8530
+2026-10-27 17:33:50.917 AST [14272] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:50.917 AST [14272] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:50.919 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:50.920 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8820 kB, estimate=8824 kB; lsn=0/E4958C0, redo lsn=0/E495868
+2026-10-27 17:33:51.299 AST [14314] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:51.299 AST [14314] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:51.305 AST [14315] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:51.305 AST [14315] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:51.306 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:51.307 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8824 kB; lsn=0/ED33248, redo lsn=0/ED331F0
+2026-10-27 17:33:51.654 AST [14351] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:51.654 AST [14351] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:51.655 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:51.656 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8820 kB, estimate=8824 kB; lsn=0/F5D0408, redo lsn=0/F5D03B0
+2026-10-27 17:33:52.013 AST [14386] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:52.013 AST [14386] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:52.015 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:52.016 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8820 kB, estimate=8823 kB; lsn=0/FE6D6F8, redo lsn=0/FE6D6A0
+2026-10-27 17:33:52.380 AST [14431] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:52.380 AST [14431] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:52.408 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:52.409 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8821 kB, estimate=8823 kB; lsn=0/1070AE40, redo lsn=0/1070ADE8
+2026-10-27 17:33:52.810 AST [14488] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:52.810 AST [14488] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:52.836 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:52.837 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8823 kB; lsn=0/10FA8920, redo lsn=0/10FA88C8
+2026-10-27 17:33:53.231 AST [14551] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:53.231 AST [14551] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:53.256 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:53.257 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8823 kB; lsn=0/11846530, redo lsn=0/118464D8
+2026-10-27 17:33:54.810 AST [14592] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:33:54.810 AST [14592] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:33:54.838 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:54.839 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8825 kB, estimate=8825 kB; lsn=0/120E4940, redo lsn=0/120E48E8
+2026-10-27 17:33:55.211 AST [14659] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:55.211 AST [14659] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:55.217 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:55.218 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8826 kB, estimate=8826 kB; lsn=0/129834F8, redo lsn=0/129834A0
+2026-10-27 17:33:55.589 AST [14705] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:55.589 AST [14705] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:55.626 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:55.627 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8826 kB; lsn=0/13220D48, redo lsn=0/13220CF0
+2026-10-27 17:33:55.990 AST [14759] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:55.990 AST [14759] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:56.015 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:56.016 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8826 kB; lsn=0/13ABE6F0, redo lsn=0/13ABE698
+2026-10-27 17:33:56.397 AST [14817] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:56.397 AST [14817] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:56.422 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:56.423 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8825 kB; lsn=0/1435C228, redo lsn=0/1435C1D0
+2026-10-27 17:33:56.780 AST [14871] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:56.780 AST [14871] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:56.804 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:56.805 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8825 kB; lsn=0/14BF9E68, redo lsn=0/14BF9E10
+2026-10-27 17:33:57.174 AST [14927] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:57.174 AST [14927] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:57.200 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:57.202 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8825 kB; lsn=0/15497C08, redo lsn=0/15497BB0
+2026-10-27 17:33:57.558 AST [14981] ERROR:  invalid input syntax for type integer: "operational_authorization"
+2026-10-27 17:33:57.558 AST [14981] STATEMENT:  SELECT(CASE WHEN EXISTS(SELECT 1 FROM employees e JOIN locations home ON home.id=e.primary_location_id JOIN workspaces w ON w.id=home.workspace_id
+	 JOIN operational_subject_versions v ON v.workspace_id=w.id AND v.employee_id=e.id
+	 LEFT JOIN operational_scopes_current g ON g.workspace_id=w.id AND g.employee_id=e.id
+	 JOIN employee_sessions s ON s.employee_id=e.id WHERE w.id=$1 AND w.singleton AND w.active AND e.id=$2 AND e.active AND s.token_hash=$3 AND s.expires_at>clock_timestamp() AND EXISTS(SELECT 1 FROM company_access_adoption a WHERE a.workspace_id=w.id AND a.protocol_version=1 AND a.state='ENFORCED' AND a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364') AND ((e.role='OWNER' OR(e.role='MANAGER' AND g.role_generation=v.generation AND g.action='ASSIGN' AND g.mode='COMPANY' AND ((g.action='REVOKE' AND g.mode IS NULL AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='COMPANY' AND cardinality(g.location_ids)=0)
+	 OR(g.action='ASSIGN' AND g.mode='LOCATIONS' AND cardinality(g.location_ids) BETWEEN 1 AND 100
+	  AND g.location_ids=ARRAY(SELECT l.id FROM locations l WHERE l.workspace_id=w.id AND l.active AND l.id=ANY(g.location_ids) ORDER BY l.id)))))) AND $4::text[] IS NOT NULL AND ($5::text IS NULL OR encode(sha256(convert_to(concat_ws(chr(31),'NEVORA operational authority v1',w.id,w.updated_at::text,e.id,e.role,v.generation::text,COALESCE(g.revision,0)::text,s.token_hash),'UTF8')),'hex')=$5)) THEN '1' ELSE 'operational_authorization' END)::integer
+2026-10-27 17:33:57.581 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:57.582 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8825 kB; lsn=0/15D35AC0, redo lsn=0/15D35A68
+2026-10-27 17:33:57.918 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:57.919 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8824 kB; lsn=0/165D3518, redo lsn=0/165D34C0
+2026-10-27 17:33:58.276 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:58.277 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8824 kB; lsn=0/16E71480, redo lsn=0/16E71428
+2026-10-27 17:33:58.659 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:58.660 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8825 kB, estimate=8825 kB; lsn=0/1770FB80, redo lsn=0/1770FB28
+2026-10-27 17:33:58.997 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:58.998 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8825 kB; lsn=0/17FAD9B0, redo lsn=0/17FAD958
+2026-10-27 17:33:59.328 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:59.329 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8823 kB, estimate=8825 kB; lsn=0/1884B928, redo lsn=0/1884B8D0
+2026-10-27 17:33:59.681 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:33:59.682 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8825 kB; lsn=0/190E99D8, redo lsn=0/190E9980
+2026-10-27 17:34:00.193 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:00.194 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8842 kB, estimate=8842 kB; lsn=0/1998C590, redo lsn=0/1998C538
+2026-10-27 17:34:00.667 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:00.668 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8839 kB, estimate=8842 kB; lsn=0/1A22E418, redo lsn=0/1A22E3C0
+2026-10-27 17:34:01.380 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:01.381 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8840 kB; lsn=0/1AACBEB0, redo lsn=0/1AACBE58
+2026-10-27 17:34:02.164 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:02.165 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8839 kB; lsn=0/1B36A188, redo lsn=0/1B36A130
+2026-10-27 17:34:02.868 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:02.869 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8815 kB, estimate=8836 kB; lsn=0/1BC06140, redo lsn=0/1BC060E8
+2026-10-27 17:34:03.232 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:03.233 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8816 kB, estimate=8834 kB; lsn=0/1C4A23A8, redo lsn=0/1C4A2350
+2026-10-27 17:34:03.807 AST [15503] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:34:03.807 AST [15503] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:34:03.819 AST [15506] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:34:03.819 AST [15506] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:34:03.826 AST [15508] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:34:03.826 AST [15508] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:34:03.827 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:03.828 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8817 kB, estimate=8832 kB; lsn=0/1CD3E928, redo lsn=0/1CD3E8D0
+2026-10-27 17:34:04.138 AST [15539] ERROR:  invalid input syntax for type integer: "communication_operation_replay"
+2026-10-27 17:34:04.138 AST [15539] STATEMENT:  SELECT (CASE WHEN NOT EXISTS(SELECT 1 FROM communication_operations WHERE workspace_id=$1 AND actor_employee_id=$2 AND operation_id=$3::uuid) THEN '1' ELSE 'communication_operation_replay' END)::integer
+2026-10-27 17:34:04.248 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:04.250 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=8, longest=0.001 s, average=0.001 s; distance=8819 kB, estimate=8831 kB; lsn=0/1D5DB570, redo lsn=0/1D5DB518
+2026-10-27 17:34:04.559 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:04.560 AST [13188] LOG:  checkpoint complete: wrote 7 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8808 kB, estimate=8829 kB; lsn=0/1DE757F0, redo lsn=0/1DE75798
+2026-10-27 17:34:05.023 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:05.024 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8828 kB; lsn=0/1E713A50, redo lsn=0/1E7139F8
+2026-10-27 17:34:05.329 AST [15665] ERROR:  fixture_outbox_fault
+2026-10-27 17:34:05.329 AST [15665] CONTEXT:  PL/pgSQL function fixture_outbox_fault() line 1 at RAISE
+2026-10-27 17:34:05.329 AST [15665] STATEMENT:  INSERT INTO notifications (id, employee_id, type, title, body, action_href, event_key,
+	      environment, source_kind, source_id, source_version, effective_version, purpose,
+	      urgency, due_at, expires_at, item_keys, push_state)
+	      SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,'pending'
+	      FROM employees notification_recipient WHERE notification_recipient.id=$2 AND notification_recipient.active
+	      AND((notification_recipient.role IN('EMPLOYEE','LEAD') AND $9::text<>'MANAGER_SUMMARY' AND $13::text<>'SUMMARY') OR EXISTS(SELECT 1 FROM locations op_home JOIN workspaces op_w ON op_w.id=op_home.workspace_id
+	 JOIN operational_subject_versions op_v ON op_v.workspace_id=op_w.id AND op_v.employee_id=notification_recipient.id
+	 LEFT JOIN operational_scopes_current op_g ON op_g.workspace_id=op_w.id AND op_g.employee_id=notification_recipient.id
+	 WHERE op_home.id=notification_recipient.primary_location_id AND op_w.singleton AND op_w.active AND notification_recipient.active
+	 AND EXISTS(SELECT 1 FROM company_access_adoption op_a WHERE op_a.workspace_id=op_w.id AND op_a.protocol_version=1 AND op_a.state='ENFORCED' AND op_a.owner_policy_receipt_id='01a13cda-e556-7652-8469-a18a77094364')
+	 AND(notification_recipient.role='OWNER' OR(notification_recipient.role='MANAGER' AND op_g.role_generation=op_v.generation AND op_g.action='ASSIGN' AND op_g.mode='COMPANY' AND cardinality(op_g.location_ids)=0))))
+	      ON CONFLICT (environment, event_key) WHERE environment IS NOT NULL AND event_key IS NOT NULL
+	      DO UPDATE SET event_key = notifications.event_key RETURNING id
+2026-10-27 17:34:05.380 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:05.381 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8814 kB, estimate=8827 kB; lsn=0/1EFAF620, redo lsn=0/1EFAF5C8
+2026-10-27 17:34:05.653 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:05.654 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8808 kB, estimate=8825 kB; lsn=0/1F849738, redo lsn=0/1F8496E0
+2026-10-27 17:34:06.253 AST [15733] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:34:06.253 AST [15733] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:34:06.257 AST [15726] WARNING:  there is no transaction in progress
+2026-10-27 17:34:06.258 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:06.259 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8818 kB, estimate=8824 kB; lsn=0/200E5FD0, redo lsn=0/200E5F78
+2026-10-27 17:34:06.560 AST [15759] ERROR:  invalid input syntax for type integer: "communication_source_conflict"
+2026-10-27 17:34:06.560 AST [15759] STATEMENT:  SELECT (CASE WHEN fingerprint=$7 THEN '1' ELSE 'communication_source_conflict' END)::integer FROM (/* communication_snapshot */ WITH facts AS (SELECT jsonb_build_object(
+	 'actor',(SELECT jsonb_build_object('id',e.id,'role',e.role,'active',e.active,'workspaceId',l.workspace_id) FROM employees e JOIN locations l ON l.id=e.primary_location_id WHERE e.id=$2),
+	 'location',(SELECT jsonb_build_object('id',id,'workspaceId',workspace_id,'active',active) FROM locations WHERE id=$3),
+	 'members',COALESCE((SELECT jsonb_agg(row_to_json(m) ORDER BY id) FROM (SELECT e.id FROM employees e JOIN locations primary_l ON primary_l.id=e.primary_location_id WHERE e.active AND e.role IN('EMPLOYEE','LEAD') AND primary_l.workspace_id=$1
+	  AND (e.primary_location_id=$3 OR EXISTS(SELECT 1 FROM employee_location_eligibility el WHERE el.employee_id=e.id AND el.location_id=$3)) ORDER BY e.id LIMIT 1001)m),'[]'::jsonb),
+	 'assignments',COALESCE((SELECT jsonb_agg(row_to_json(a) ORDER BY "sourceShiftId") FROM (SELECT sh.employee_id AS "employeeId",sh.id AS "sourceShiftId",sh.assignment_episode_id::text AS "assignmentEpisodeId",'v1:'||encode(sha256(convert_to(concat('{','"shiftId":',COALESCE(to_jsonb(sh.id)::text,'null'),',','"scheduleId":',COALESCE(to_jsonb(s.id)::text,'null'),',','"workspaceId":',COALESCE(to_jsonb((SELECT workspace_id FROM locations WHERE id=s.location_id))::text,'null'),',','"timeZone":',COALESCE(to_jsonb((SELECT time_zone FROM workspaces WHERE singleton))::text,'null'),',','"weekStart":',COALESCE(to_jsonb(s.week_start::text)::text,'null'),',','"date":',COALESCE(to_jsonb(sh.date::text)::text,'null'),',','"startTime":',COALESCE(to_jsonb(left(sh.start_time::text,5))::text,'null'),',','"endTime":',COALESCE(to_jsonb(left(sh.end_time::text,5))::text,'null'),',','"locationId":',COALESCE(to_jsonb(s.location_id)::text,'null'),',','"employeeId":',COALESCE(to_jsonb(sh.employee_id)::text,'null'),',','"assignmentEpisodeId":',COALESCE(to_jsonb(sh.assignment_episode_id::text)::text,'null'),',','"termsRevision":',COALESCE(to_jsonb(sh.terms_revision)::text,'null'),',','"positionId":',COALESCE(to_jsonb(sh.position_id)::text,'null'),',','"isDesignatedLead":',COALESCE(to_jsonb(sh.is_designated_lead)::text,'null'),',','"scheduledBreaks":','{"status":"UNKNOWN"}','}'),'UTF8')),'hex') AS "termsFingerprint",
+	  sh.date::text AS date,left(sh.start_time::text,5) AS "startTime",left(sh.end_time::text,5) AS "endTime",
+	  (s.status='PUBLISHED' AND EXISTS(SELECT 1 FROM schedule_publication_revisions r WHERE r.week_start=s.week_start)) AS published,
+	  EXISTS(SELECT 1 FROM shift_callouts c WHERE c.status='APPROVED' AND c.shift_id=sh.id AND c.employee_id=sh.employee_id AND c.assignment_episode_id=sh.assignment_episode_id AND c.reviewed_terms_fingerprint='v1:'||encode(sha256(convert_to(concat('{','"shiftId":',COALESCE(to_jsonb(sh.id)::text,'null'),',','"scheduleId":',COALESCE(to_jsonb(s.id)::text,'null'),',','"workspaceId":',COALESCE(to_jsonb((SELECT workspace_id FROM locations WHERE id=s.location_id))::text,'null'),',','"timeZone":',COALESCE(to_jsonb((SELECT time_zone FROM workspaces WHERE singleton))::text,'null'),',','"weekStart":',COALESCE(to_jsonb(s.week_start::text)::text,'null'),',','"date":',COALESCE(to_jsonb(sh.date::text)::text,'null'),',','"startTime":',COALESCE(to_jsonb(left(sh.start_time::text,5))::text,'null'),',','"endTime":',COALESCE(to_jsonb(left(sh.end_time::text,5))::text,'null'),',','"locationId":',COALESCE(to_jsonb(s.location_id)::text,'null'),',','"employeeId":',COALESCE(to_jsonb(sh.employee_id)::text,'null'),',','"assignmentEpisodeId":',COALESCE(to_jsonb(sh.assignment_episode_id::text)::text,'null'),',','"termsRevision":',COALESCE(to_jsonb(sh.terms_revision)::text,'null'),',','"positionId":',COALESCE(to_jsonb(sh.position_id)::text,'null'),',','"isDesignatedLead":',COALESCE(to_jsonb(sh.is_designated_lead)::text,'null'),',','"scheduledBreaks":','{"status":"UNKNOWN"}','}'),'UTF8')),'hex') AND c.source_terms=jsonb_build_object('shiftId',sh.id,'scheduleId',s.id,'workspaceId',(SELECT workspace_id FROM locations WHERE id=s.location_id),'timeZone',(SELECT time_zone FROM workspaces WHERE singleton),'weekStart',s.week_start::text,'date',sh.date::text,'startTime',left(sh.start_time::text,5),'endTime',left(sh.end_time::text,5),'locationId',s.location_id,'employeeId',sh.employee_id,'assignmentEpisodeId',sh.assignment_episode_id::text,'termsRevision',sh.terms_revision,'positionId',sh.position_id,'isDesignatedLead',sh.is_designated_lead,'scheduledBreaks','{"status":"UNKNOWN"}'::jsonb)) AS released
+	  FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE s.location_id=$3
+	   AND (($4='TODAYS_TEAM' AND sh.date BETWEEN $5::date-1 AND $5::date) OR ($4='SHIFT' AND sh.id=$6)) ORDER BY sh.id LIMIT 1001)a),'[]'::jsonb)) AS value)
+	 SELECT value AS facts,encode(sha256(convert_to(value::text,'UTF8')),'hex') AS fingerprint,to_jsonb(clock_timestamp()) AS "observedAt" FROM facts) source
+2026-10-27 17:34:06.565 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:06.566 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8810 kB, estimate=8823 kB; lsn=0/209809E0, redo lsn=0/20980988
+2026-10-27 17:34:06.905 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:06.906 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8823 kB; lsn=0/2121E278, redo lsn=0/2121E220
+2026-10-27 17:34:07.468 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:07.469 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8831 kB, estimate=8831 kB; lsn=0/21ABDF38, redo lsn=0/21ABDEE0
+2026-10-27 17:34:07.741 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:07.742 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8809 kB, estimate=8829 kB; lsn=0/22358508, redo lsn=0/223584B0
+2026-10-27 17:34:08.822 AST [15899] ERROR:  invalid input syntax for type integer: "communication_source_conflict"
+2026-10-27 17:34:08.822 AST [15899] STATEMENT:  SELECT (CASE WHEN ($1::timestamptz IS NULL OR $1::timestamptz>clock_timestamp())
+	 AND ($2::date IS NULL OR $2::date=(clock_timestamp() AT TIME ZONE $3)::date) THEN '1' ELSE 'communication_source_conflict' END)::integer
+2026-10-27 17:34:08.827 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:08.828 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8811 kB, estimate=8827 kB; lsn=0/22BF3340, redo lsn=0/22BF32E8
+2026-10-27 17:34:09.227 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:09.228 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8820 kB, estimate=8826 kB; lsn=0/23490648, redo lsn=0/234905F0
+2026-10-27 17:34:09.649 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:09.650 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8826 kB; lsn=0/23D2EA28, redo lsn=0/23D2E9D0
+2026-10-27 17:34:09.973 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:09.974 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8821 kB, estimate=8825 kB; lsn=0/245CC110, redo lsn=0/245CC0B8
+2026-10-27 17:34:10.298 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:10.299 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8819 kB, estimate=8825 kB; lsn=0/24E68F18, redo lsn=0/24E68EC0
+2026-10-27 17:34:10.705 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:10.707 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8822 kB, estimate=8825 kB; lsn=0/25706900, redo lsn=0/257068A8
+2026-10-27 17:34:11.374 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:11.375 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8817 kB, estimate=8824 kB; lsn=0/25FA30F8, redo lsn=0/25FA30A0
+2026-10-27 17:34:11.893 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:11.895 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=8, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8824 kB; lsn=0/268414A8, redo lsn=0/26841450
+2026-10-27 17:34:12.557 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:12.558 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8838 kB, estimate=8838 kB; lsn=0/270E2FB8, redo lsn=0/270E2F60
+2026-10-27 17:34:13.044 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:13.045 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8826 kB, estimate=8837 kB; lsn=0/279819F0, redo lsn=0/27981998
+2026-10-27 17:34:13.439 AST [16351] ERROR:  invalid input syntax for type integer: "management_authorization"
+2026-10-27 17:34:13.439 AST [16351] STATEMENT:  SELECT (CASE WHEN EXISTS (
+	      SELECT 1 FROM employee_sessions s JOIN employees e ON e.id=s.employee_id
+	      WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role=ANY($3::text[])
+	        AND s.expires_at>clock_timestamp()
+	    ) THEN '1' ELSE 'management_authorization' END)::integer
+2026-10-27 17:34:13.441 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:13.442 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8816 kB, estimate=8835 kB; lsn=0/2821DCA0, redo lsn=0/2821DC48
+2026-10-27 17:34:14.164 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:14.165 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=8, longest=0.001 s, average=0.001 s; distance=8835 kB, estimate=8835 kB; lsn=0/28ABE9D8, redo lsn=0/28ABE980
+2026-10-27 17:34:14.572 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:14.573 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8812 kB, estimate=8833 kB; lsn=0/29359B78, redo lsn=0/29359B20
+2026-10-27 17:34:15.231 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:15.232 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8824 kB, estimate=8832 kB; lsn=0/29BF7DD8, redo lsn=0/29BF7D80
+2026-10-27 17:34:15.760 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:15.761 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=8, longest=0.001 s, average=0.001 s; distance=8828 kB, estimate=8831 kB; lsn=0/2A496DF0, redo lsn=0/2A496D98
+2026-10-27 17:34:16.303 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:16.304 AST [13188] LOG:  checkpoint complete: wrote 8 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=8, longest=0.001 s, average=0.001 s; distance=8825 kB, estimate=8831 kB; lsn=0/2AD354B0, redo lsn=0/2AD35458
+2026-10-27 17:34:16.886 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:16.887 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 1 recycled; write=0.001 s, sync=0.001 s, total=0.002 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8829 kB, estimate=8831 kB; lsn=0/2B5D49F0, redo lsn=0/2B5D4998
+2026-10-27 17:34:17.301 AST [13188] LOG:  checkpoint starting: immediate force wait
+2026-10-27 17:34:17.302 AST [13188] LOG:  checkpoint complete: wrote 6 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=6, longest=0.001 s, average=0.001 s; distance=8819 kB, estimate=8829 kB; lsn=0/2BE71868, redo lsn=0/2BE71810
+2026-10-27 17:34:17.324 AST [13187] LOG:  received fast shutdown request
+2026-10-27 17:34:17.324 AST [13187] LOG:  aborting any active transactions
+2026-10-27 17:34:17.326 AST [13187] LOG:  background worker "logical replication launcher" (PID 13193) exited with exit code 1
+2026-10-27 17:34:17.328 AST [16755] FATAL:  terminating connection due to administrator command
+2026-10-27 17:34:17.328 AST [16755] STATEMENT:  DROP DATABASE "nevora_foundation_test_c1_1391ad640271" WITH (FORCE)
+2026-10-27 17:34:17.329 AST [13188] LOG:  shutting down
+2026-10-27 17:34:17.329 AST [13188] LOG:  checkpoint starting: shutdown immediate
+2026-10-27 17:34:17.330 AST [13188] LOG:  checkpoint complete: wrote 1 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.001 s, sync=0.001 s, total=0.001 s; sync files=1, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=7946 kB; lsn=0/2BE71908, redo lsn=0/2BE71908
+2026-10-27 17:34:17.331 AST [16795] FATAL:  the database system is shutting down
+2026-10-27 17:34:17.332 AST [13187] LOG:  database system is shut down

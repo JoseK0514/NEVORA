@@ -1,0 +1,51 @@
+/* Unknown address, Signature style (phase 4, approved Oct 20, 2026): the app's deep band and soft white sheet. */
+.nf-page { min-height: 100svh; margin: 0; background: #F7F6F3; color: #161C1B; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+html:has(body .nf-page), body:has(.nf-page) { background: #F7F6F3; }
+.nf-band { position: relative; overflow: hidden; padding: max(28px, env(safe-area-inset-top)) 24px 72px; background: #0D3634; color: #FFFFFF; }
+.nf-mark { position: absolute; right: -90px; bottom: -40px; width: 300px; height: auto; pointer-events: none; }
+.nf-eyebrow { position: relative; margin: 0; font-size: .75rem; font-weight: 600; line-height: 1rem; letter-spacing: .13em; text-transform: uppercase; color: rgba(255, 255, 255, .62); }
+.nf-404 { position: relative; display: block; margin: 14px 0 6px; font: 200 6rem/5.5rem -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; letter-spacing: -.06em; color: rgba(169, 226, 218, .9); }
+.nf-band h1 { position: relative; margin: 0; font: 300 2.5rem/2.75rem -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif; letter-spacing: -.035em; }
+.nf-sheet { position: relative; z-index: 1; max-width: 520px; margin: -30px auto 0; padding: 28px 16px max(32px, env(safe-area-inset-bottom)); border-radius: 28px 28px 0 0; background: #F7F6F3; }
+.nf-card { padding: 20px; border-radius: 22px; background: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(22, 28, 27, .06), 0 16px 36px -22px rgba(13, 54, 52, .24); }
+.not-found-text { margin: 0; font-size: 1rem; line-height: 1.5rem; color: #5F625E; }
+.not-found-hint { margin: 14px 0 0; padding: 14px; border-radius: 14px; background: #FBF4EA; font-size: .9375rem; line-height: 1.375rem; color: #5B4A33; }
+.not-found-hint strong { display: block; color: #161C1B; font-weight: 500; }
+.nf-cta { display: flex; align-items: center; justify-content: center; min-height: 54px; margin-top: 24px; border-radius: 16px; background: #0D3634; color: #FFFFFF; font-size: 1.0625rem; font-weight: 500; text-decoration: none; }
+.nf-cta:hover { background: #12423F; }
+.nf-cta:focus-visible { outline: 2px solid #161C1B; outline-offset: 3px; }
+.nf-foot { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 36px; text-align: center; font-size: .75rem; line-height: 1rem; color: #6F6C66; }
+.nf-foot .login-brand-lockup { transform: scale(.85); opacity: .85; }
+@media (min-width: 768px) { .nf-band { padding: 56px 48px 96px; } .nf-sheet { margin-top: -48px; padding: 32px 24px; border-radius: 28px; } }
+.nf-foot .login-brand-lockup { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; transform: none; }
+.nf-foot .login-brand-lockup :is(img, svg) { display: block; width: 104px; max-width: 104px; height: auto; }
+.nf-foot .login-brand-module { font-size: .6875rem; color: #6F6C66; }
+.nf-foot .brand-legal-links { display: flex; justify-content: center; flex-wrap: wrap; }
+.nf-foot .brand-legal-links a + a::before { content: "·"; padding: 0 8px; }
+
+/* Direction B (Jose, Nov 8, 2026): the teal band with "Page not found · Error 404" (the decorative 404 is gone), then an
+ * 860px reading card holding the message, the Clocker hint and the way back. */
+.nf-page { background: #F2F5F4; color: #111517; font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; }
+html:has(body .nf-page), body:has(.nf-page) { background: #F2F5F4; }
+.nf-band { padding: max(44px, env(safe-area-inset-top)) 20px 84px; background: linear-gradient(180deg, #0E7A74 0%, #0B6E69 60%, #08504C 100%); }
+.nf-mark { display: none; }
+.nf-band h1 { font: 700 30px/36px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.03em; }
+.nf-eyebrow { margin: 6px 0 0; font-size: 15px; line-height: 21px; font-weight: 500; letter-spacing: 0; text-transform: none; color: rgba(255, 255, 255, .78); }
+.nf-sheet { max-width: 860px; margin: -48px auto 0; padding: 0 16px max(32px, env(safe-area-inset-bottom)); border-radius: 0; background: none; box-sizing: border-box; }
+.nf-card { padding: 22px; border-radius: 22px; box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
+.not-found-text { font-size: 15.5px; line-height: 23px; color: #3F464B; }
+.not-found-hint { background: #FDF3E4; color: #6E3C00; }
+.nf-cta { width: fit-content; min-height: 48px; margin: 20px 0 0; padding: 0 24px; border-radius: 24px; background: #0C726C; font-size: 15.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
+.nf-cta:hover { background: #0B6E69; }
+.nf-cta:focus-visible { outline: 2px solid #0B6E69; }
+@media (min-width: 768px) {
+  .nf-band { padding: 72px max(24px, calc((100% - 812px) / 2)) 96px; }
+  .nf-band h1 { font-size: 32px; line-height: 38px; }
+  .nf-sheet { margin-top: -52px; padding: 0 24px 40px; border-radius: 0; }
+}
+
+/* The white wordmark on the band; the way back is the card's own button (full width on a phone). */
+.nf-wordmark { display: block; width: 112px; margin: 0 0 28px; filter: brightness(0) invert(1); }
+.nf-wordmark :is(img, svg, span) { display: block; max-width: 100%; height: auto; }
+.nf-card > .nf-cta { width: 100%; margin-top: 18px; }
+@media (min-width: 768px) { .nf-card > .nf-cta { width: fit-content; } }

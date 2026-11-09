@@ -1,0 +1,756 @@
+{
+  "candidate": "f58d040b70909fa21dcb97b4f40edcfd5279226c",
+  "verified": 125,
+  "artifacts": [
+    {
+      "id": "invocation",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/invocation.json",
+      "sha256": "bbafa2a61daec0244648a90c63b2f979b852a3d05554e2fae71265c5d2b09bf5",
+      "bytes": 4584
+    },
+    {
+      "id": "gate",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/suite-results.json",
+      "sha256": "4cdff85964d04c5f05369f55bf14b8f1de4ba0a5377a5a8f10127e3f738b113d",
+      "bytes": 89231
+    },
+    {
+      "id": "terminal",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/stdout.log",
+      "sha256": "56a0503d4090635d51e608213def39cec71a976869f40d11901069e802766d9c",
+      "bytes": 37719
+    },
+    {
+      "id": "custody",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/audit-result.json",
+      "sha256": "7e335c7c5339b81ffc214050590a63f1ad2a42b74564e0f1f90a1666b63cdcad",
+      "bytes": 49965
+    },
+    {
+      "id": "events",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/event-audit.json",
+      "sha256": "46f419834b29ad8cc20e51d083ea25cc06c53202b3a6bb726c87b630d35f9d42",
+      "bytes": 64138
+    },
+    {
+      "id": "trace",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/full-context-events.jsonl",
+      "sha256": "6e54b7c02acb5efc0bd53f581ffbcaa9f39c0c63ed1c015ef47a5e99c8e8ace7",
+      "bytes": 7466223
+    },
+    {
+      "id": "markers",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/marker-sampling-audit.json",
+      "sha256": "1583c2aac3c7e4b7c502ef047eed800cd915795772aadbd0332e1917f0ba1684",
+      "bytes": 1097
+    },
+    {
+      "id": "calendar",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/result.json",
+      "sha256": "bd9eadfcdc2ec30eff339b741cb161c3903e34265041e277ffbdd9fdc98b9a50",
+      "bytes": 25693
+    },
+    {
+      "id": "profile",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/profile/results.json",
+      "sha256": "2d95a6329d1150623011c0da82aca14d620c06f814c1c330eff3482279b71fa2",
+      "bytes": 24375
+    },
+    {
+      "id": "historical",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/combined/suite-results.json",
+      "sha256": "b75f9448df3e814ac43a86bf2891f7d74b0724576007ac84560c8cc2c730ff7a",
+      "bytes": 90070
+    },
+    {
+      "id": "history-matrix",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/employee-mobile-calendar-manual-qa.md",
+      "sha256": "f3dbc68e9bdf5bb91e35738e17800076a669ac0288a073a97d31e88188f5cc10",
+      "bytes": 28925
+    },
+    {
+      "id": "units-result",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/units/result.json",
+      "sha256": "660f404f37d7b06f8eb9c05bfe07e77ba5d563eac9da8113d61e594730166aba",
+      "bytes": 423
+    },
+    {
+      "id": "units-invocation",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/units/invocation.json",
+      "sha256": "6b790c2ea2ef1f14aae504a71d0b681d613f85ff98f694b10ce46fbb249d1d01",
+      "bytes": 6452
+    },
+    {
+      "id": "typescript-result",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/typescript/result.json",
+      "sha256": "b3cbd1f5f183211751291517f126d78748216826e4192d577d1441ac954ed41f",
+      "bytes": 424
+    },
+    {
+      "id": "typescript-invocation",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/typescript/invocation.json",
+      "sha256": "4f37d618a066e59a5d79f12711bba216cb617f4725337d7cfa38ea8551c03944",
+      "bytes": 1501
+    },
+    {
+      "id": "eslint-result",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/eslint/result.json",
+      "sha256": "f7303bb097b38b955b0ea10f24034de2f2119d0f15a1fc3c7981823e4ecea330",
+      "bytes": 423
+    },
+    {
+      "id": "eslint-invocation",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/final-f58d040b/eslint/invocation.json",
+      "sha256": "1424a4345414eda5e4e85420a1f76762f0c77a9e7867c908843395fad6c466eb",
+      "bytes": 2248
+    },
+    {
+      "id": "capture-0",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-empty.png",
+      "sha256": "86dc9d86b0117fe076bf02123a46a63cffb3ae3a1795b90acba593a2ddb57bec",
+      "bytes": 57098
+    },
+    {
+      "id": "capture-1",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-link-once-redacted.png",
+      "sha256": "09cc7a9499e13fe1f5ceb694d6b14cdb065208a2f3666f9868aa44fa35469524",
+      "bytes": 46624
+    },
+    {
+      "id": "capture-2",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-320.png",
+      "sha256": "2c62432e72c7167a2ba77c0188c7261623bf4822c0101a37e1e967db4cb9cb59",
+      "bytes": 55852
+    },
+    {
+      "id": "capture-3",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-320-text200.png",
+      "sha256": "4dd4c397db9f10828d527e4069473ed1990cfe0b9f8113e240c59630cd13ba8a",
+      "bytes": 41397
+    },
+    {
+      "id": "capture-4",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-320-text200-secret.png",
+      "sha256": "5e458c616a0a0629cdf352cb8a8d5a77804487d4ccfc8830a32d90925468cf97",
+      "bytes": 44136
+    },
+    {
+      "id": "capture-5",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-320-text200-copy.png",
+      "sha256": "0a475106851871940ebb6021164fc79732981583908a0ffbea0759dd057ca99b",
+      "bytes": 36542
+    },
+    {
+      "id": "capture-6",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-390.png",
+      "sha256": "168ae85382cb582a40d0ebb9a22dab46c97fcd26df5302c2bd7e6d1919b5b249",
+      "bytes": 58912
+    },
+    {
+      "id": "capture-7",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-390-text200.png",
+      "sha256": "a01a1f2ed91b9064908cfab85adbecd0e107e0610e20b95f1e816dfa9e0b5ee1",
+      "bytes": 37574
+    },
+    {
+      "id": "capture-8",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-430.png",
+      "sha256": "3d221767712b66dd441bc3a7c462a5ed4b798fa3ccffa0d668473b25f245c1c7",
+      "bytes": 60261
+    },
+    {
+      "id": "capture-9",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-light-430-text200.png",
+      "sha256": "c5017847cf8208cece135fc4c6c5df5e76f78b5e05da9a65c7f60c8f45b7951d",
+      "bytes": 41355
+    },
+    {
+      "id": "capture-10",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-320.png",
+      "sha256": "29361edd82c5bc1d160fffda812287d9bebb8c6b6b15dcfcdf1cd867f3d4008a",
+      "bytes": 48324
+    },
+    {
+      "id": "capture-11",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-320-text200.png",
+      "sha256": "83c4586eae0119d3e7d363dde2f99a2ae7e1545166c9b59812886295ed7a9319",
+      "bytes": 40128
+    },
+    {
+      "id": "capture-12",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-320-text200-secret.png",
+      "sha256": "368bd4943cdbd97aa46c6ff78666f17a4e089ec32329e39e5193caf54c22226f",
+      "bytes": 45279
+    },
+    {
+      "id": "capture-13",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-320-text200-copy.png",
+      "sha256": "e07282f892caeffdde75eba414455c9cfbb2a6f01a193c0b9a37cd40c249303c",
+      "bytes": 38043
+    },
+    {
+      "id": "capture-14",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-390.png",
+      "sha256": "c50b5c1efb5f60072f8e86891d9034ee75c68b826736844e82ce7c4d89310141",
+      "bytes": 60429
+    },
+    {
+      "id": "capture-15",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-390-text200.png",
+      "sha256": "b4c2500e34cb0d2c44f920a09bd93aceaa56e0c5dfb2968c6d85b255da57e9a4",
+      "bytes": 39032
+    },
+    {
+      "id": "capture-16",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-430.png",
+      "sha256": "1df5305cd37d27ca21da5fb8a57e4633f578f9f0e2367404e9eab65e065bffad",
+      "bytes": 61739
+    },
+    {
+      "id": "capture-17",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-dark-430-text200.png",
+      "sha256": "66f9cd178139014b79051504a67e9daff42dbf6cec56a5a2299eb86a6f6d61b5",
+      "bytes": 43051
+    },
+    {
+      "id": "capture-18",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-coarse-landscape.png",
+      "sha256": "e2fca927aef6c3a733d19867bc15a78aeb796ef4105c631a65eaf8ccd2578dbe",
+      "bytes": 41134
+    },
+    {
+      "id": "capture-19",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-paused.png",
+      "sha256": "d1b9f3c912957259840e69a22458177829a50303bbda6ceee12f5df4cafc3b76",
+      "bytes": 46741
+    },
+    {
+      "id": "capture-20",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-replace-light-text200-terms.png",
+      "sha256": "e7e62b921476393a09cf33d5e5bee6c059846abc477d84e5e411d5b98f189909",
+      "bytes": 48627
+    },
+    {
+      "id": "capture-21",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-replace-light-text200-control.png",
+      "sha256": "333bc9921cccd6184e375f7bec177519b3d5efd4e518978634b57badebc2ed26",
+      "bytes": 47875
+    },
+    {
+      "id": "capture-22",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-replace-dark-text200-terms.png",
+      "sha256": "d2c2c705491a19e4e0d8dc8e747b03f6d96bf945a2f5b032c1551a7f87ec75fa",
+      "bytes": 49286
+    },
+    {
+      "id": "capture-23",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-replace-dark-text200-control.png",
+      "sha256": "bdfbe879f0e1aeefbc9a01ccd993c63b78b2f1fa39780645206a1efea505f1cd",
+      "bytes": 48459
+    },
+    {
+      "id": "capture-24",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-replace-confirmation.png",
+      "sha256": "9da86ec5bd413334d622d4a4bc7a321942953f3583e4bba76917ec52f24af25e",
+      "bytes": 43268
+    },
+    {
+      "id": "capture-25",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-desktop-preserved.png",
+      "sha256": "c5b92a627c8a2f594f34dcda0b35cf3084904b839f9b662aee19ddb4b5ef1d29",
+      "bytes": 116660
+    },
+    {
+      "id": "capture-26",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-unknown-original.png",
+      "sha256": "deb2c8fe47813c5da47b5181e24e70f89e912c06697354beac01bbf3e1eaa8f4",
+      "bytes": 55612
+    },
+    {
+      "id": "capture-27",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoke-light-text200-terms.png",
+      "sha256": "95ffa7937da04d783f70b9937c8c44f64f93f9965a3046926221888019e4c680",
+      "bytes": 50780
+    },
+    {
+      "id": "capture-28",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoke-light-text200-control.png",
+      "sha256": "a2ef535abe32788e86fdceab3f4e0b05efb5d31c12ccc4348c7a3a07fb52d461",
+      "bytes": 48239
+    },
+    {
+      "id": "capture-29",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoke-dark-text200-terms.png",
+      "sha256": "71e5195756ebabbf2802187ccf6a2cef1860955eafd249949915f5cb80177cc3",
+      "bytes": 51552
+    },
+    {
+      "id": "capture-30",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoke-dark-text200-control.png",
+      "sha256": "10508cd6f4890659ca3e3ab20452c40e4fa4a4ef0bf7fadc4ab6348bd5c18587",
+      "bytes": 49098
+    },
+    {
+      "id": "capture-31",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoke-confirmation.png",
+      "sha256": "7959b3ce92414fe3642f359e6b76a64f184dc986ce8cfe147d57100482b1d9a8",
+      "bytes": 43718
+    },
+    {
+      "id": "capture-32",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-revoked.png",
+      "sha256": "7a4d4a0fc47665ff939a8febb4c7d4601c762cb8a13d9f62b2a03a4ced9bfcb1",
+      "bytes": 57118
+    },
+    {
+      "id": "capture-33",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-unavailable.png",
+      "sha256": "510783618471b6aa3e7381a705a2c79940869466ed889b6cfc6cac697e47654b",
+      "bytes": 35716
+    },
+    {
+      "id": "capture-34",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-lease-expired.png",
+      "sha256": "052f1f431c696fae81083b6b80f31eacd16292cfeb93fb9be0f5842043ae10db",
+      "bytes": 47265
+    },
+    {
+      "id": "capture-35",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/chromium-calendar-denied.png",
+      "sha256": "8a9c0bdd34e155ae3d0ec8c668235f5c68dedbb76ccc4d3b2c946f58da948591",
+      "bytes": 45939
+    },
+    {
+      "id": "capture-36",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-empty.png",
+      "sha256": "10b7a49e15755880f71f612053efb065b8d92abe47143dd06a44e6b853abb282",
+      "bytes": 69461
+    },
+    {
+      "id": "capture-37",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-link-once-redacted.png",
+      "sha256": "98ea3bd2b6372cc18e7a371186c4715fcb30c8556ab6ec5b7c78cab95b279dbd",
+      "bytes": 68048
+    },
+    {
+      "id": "capture-38",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-320.png",
+      "sha256": "992de5dd3599217bc0f23305afaafc71c981dd4dc6604afe62e9e4de60ef8fe1",
+      "bytes": 73335
+    },
+    {
+      "id": "capture-39",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-320-text200.png",
+      "sha256": "b2ca5a3a49554631dfc8c2e53ab9c3b7d7deb0f8d67249aa561d7db29809fe25",
+      "bytes": 56855
+    },
+    {
+      "id": "capture-40",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-320-text200-secret.png",
+      "sha256": "4d10d546d90ca212a5440e41db7f16b980d8e03e0c5c669ef668226ff92b578f",
+      "bytes": 49607
+    },
+    {
+      "id": "capture-41",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-320-text200-copy.png",
+      "sha256": "c571d84864dc58b6b633ecc7b75b6c7c85bd6f8ab3875f4e35687b9588713e0a",
+      "bytes": 44730
+    },
+    {
+      "id": "capture-42",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-390.png",
+      "sha256": "35769f458b6e7c5c8a1107f2af7d4ee981c1b6151e98121e663f48b1168fffb2",
+      "bytes": 73190
+    },
+    {
+      "id": "capture-43",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-390-text200.png",
+      "sha256": "7fc5eff4b66076d3c825b124806cd8427d49113a428c728c0072964be72951f9",
+      "bytes": 54928
+    },
+    {
+      "id": "capture-44",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-430.png",
+      "sha256": "4c609ba8e168b35516a3cdc1047474ab59bb218354e6ce7b856a1e78dd76398f",
+      "bytes": 83259
+    },
+    {
+      "id": "capture-45",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-light-430-text200.png",
+      "sha256": "5f9cd1d8d46df04597d9cc0522a5e8e3505c5862cafae14a8f5500bddbd1a368",
+      "bytes": 63542
+    },
+    {
+      "id": "capture-46",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-320.png",
+      "sha256": "33277bea59950f46cd8c20a6aa780ec96ef8b9cfb96159cf17ce4a7ad8f550c2",
+      "bytes": 60559
+    },
+    {
+      "id": "capture-47",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-320-text200.png",
+      "sha256": "8e5d27b4fcdb18fb690c6d83491d5d1608413373b46a5e858c6186bc2e3e7b6c",
+      "bytes": 44838
+    },
+    {
+      "id": "capture-48",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-320-text200-secret.png",
+      "sha256": "6de0bcdd996383dbf044044ca86ffa551fab7f08c013642b19f158f2a086e0ab",
+      "bytes": 49796
+    },
+    {
+      "id": "capture-49",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-320-text200-copy.png",
+      "sha256": "8e5d27b4fcdb18fb690c6d83491d5d1608413373b46a5e858c6186bc2e3e7b6c",
+      "bytes": 44838
+    },
+    {
+      "id": "capture-50",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-390.png",
+      "sha256": "faf34bf9c026dc10c9f7d189d50a5abfb37b48f4a09af8b4b2a34de3c06eba65",
+      "bytes": 72761
+    },
+    {
+      "id": "capture-51",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-390-text200.png",
+      "sha256": "314e667bafa7bf42020f1de31f7ad585e0cb6b9f6990f34f8277ca1b16a1fe04",
+      "bytes": 55090
+    },
+    {
+      "id": "capture-52",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-430.png",
+      "sha256": "aeeab42d4cc1d851ae1798386602590a590c4b7e8bc20af236ba429f57a70ddc",
+      "bytes": 83110
+    },
+    {
+      "id": "capture-53",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-dark-430-text200.png",
+      "sha256": "8e66557663d735bf03c2cec446cdcd12ea0c4835cf677b73f5872f4f2123b81f",
+      "bytes": 64102
+    },
+    {
+      "id": "capture-54",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-coarse-landscape.png",
+      "sha256": "1ddfef8d1fa2a13f63cd585314c5b0692b74796f2a7ac1f09ade6a93b0644064",
+      "bytes": 34851
+    },
+    {
+      "id": "capture-55",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-paused.png",
+      "sha256": "a004a122cd31b427e5974283cdc614db7043a8ac8726d59014af089ffb0b34ba",
+      "bytes": 56724
+    },
+    {
+      "id": "capture-56",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-replace-light-text200-terms.png",
+      "sha256": "74d44b3d2960cb207bf4a4826048fe4578986f0500d8ebf427db011819fb83f9",
+      "bytes": 56805
+    },
+    {
+      "id": "capture-57",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-replace-light-text200-control.png",
+      "sha256": "33b45df2781c83b54b32967018977cfea8285af30ec146728811c7efe4fcda73",
+      "bytes": 55724
+    },
+    {
+      "id": "capture-58",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-replace-dark-text200-terms.png",
+      "sha256": "844aa5f0e12721b119384d13d1d2a1b9616cf1b1b0548ca56f135140643ad601",
+      "bytes": 57375
+    },
+    {
+      "id": "capture-59",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-replace-dark-text200-control.png",
+      "sha256": "1c2bdc040586fafa13be21c1119c747592b002f5d4ddb29c95cf2a5c68f03499",
+      "bytes": 56201
+    },
+    {
+      "id": "capture-60",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-replace-confirmation.png",
+      "sha256": "eddaa58ba7f615eb69b9e115f786bac41aba413996107bcc3630bb25c3ac47eb",
+      "bytes": 54528
+    },
+    {
+      "id": "capture-61",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-desktop-preserved.png",
+      "sha256": "7033b1309354a09d81cd691b2eccdaca22b10807284896fbefbd9be7ab233627",
+      "bytes": 144311
+    },
+    {
+      "id": "capture-62",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-unknown-original.png",
+      "sha256": "3ce222fb2bbb4e149352303970ac9112607050434964743499ea1a7574fb29f2",
+      "bytes": 67095
+    },
+    {
+      "id": "capture-63",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoke-light-text200-terms.png",
+      "sha256": "96954ea5f2a6b9c0b8af82b73b940fb69360a57f6fdf5b402dae62a341f3d16e",
+      "bytes": 58193
+    },
+    {
+      "id": "capture-64",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoke-light-text200-control.png",
+      "sha256": "014c4f60ae950574f5572545218ab8f1076a1bd0d7b5383ec0b625c40f9e1c3a",
+      "bytes": 55658
+    },
+    {
+      "id": "capture-65",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoke-dark-text200-terms.png",
+      "sha256": "c5dc8cb6dc9f68a11eedc29cd5d9bbd1fa33f4978c156d01ec0658fa737aa663",
+      "bytes": 58643
+    },
+    {
+      "id": "capture-66",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoke-dark-text200-control.png",
+      "sha256": "d24171b4ab1d7ef574b46a5c9efdf2a6d983e802051de5342ed9a8869a76494b",
+      "bytes": 56041
+    },
+    {
+      "id": "capture-67",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoke-confirmation.png",
+      "sha256": "bd7039cb0cac9364cc1764dc5a7a8178404d1356122f98cdaa958b71746755b2",
+      "bytes": 56606
+    },
+    {
+      "id": "capture-68",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-revoked.png",
+      "sha256": "aa3ac3ccae71791381787e991c21cc770a3bdab347a6136b07271f0ab25e93e5",
+      "bytes": 68562
+    },
+    {
+      "id": "capture-69",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-unavailable.png",
+      "sha256": "655e28c5bfd949f7241e1febd743bfc376a0324ede330726fdaa49349fc76066",
+      "bytes": 57142
+    },
+    {
+      "id": "capture-70",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-lease-expired.png",
+      "sha256": "9a191d28a46b96034935e407dbe1024f905e077fe3eb9e7bba7f8eaed5e26e21",
+      "bytes": 56063
+    },
+    {
+      "id": "capture-71",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/webkit-calendar-denied.png",
+      "sha256": "e4a46c70ba2c39b733b046344b7448ffd580efb0cec5e318cd4a50c3b65aa69a",
+      "bytes": 56211
+    },
+    {
+      "id": "capture-72",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-empty.png",
+      "sha256": "93473541f73160bd47ef998f070c57d40355bb41f27d22699eb3e65b7deb9cf6",
+      "bytes": 69919
+    },
+    {
+      "id": "capture-73",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-link-once-redacted.png",
+      "sha256": "e47fb2135da8d8c59384f8a00ca25148c2560895014aff07937721e3bc7c7a49",
+      "bytes": 54333
+    },
+    {
+      "id": "capture-74",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-320.png",
+      "sha256": "c857354cebfa52936a582ce4f794c9cdaaa7e55d649f74ee7cbae03730547983",
+      "bytes": 63012
+    },
+    {
+      "id": "capture-75",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-320-text200.png",
+      "sha256": "cb71c76b0f284c31cf69de611738651fdc15a21d60e5aa0421516b866d481eca",
+      "bytes": 46899
+    },
+    {
+      "id": "capture-76",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-320-text200-secret.png",
+      "sha256": "292a98f4b326b13ac257f8c5682951d16e162639687235d099be857818b0c222",
+      "bytes": 50406
+    },
+    {
+      "id": "capture-77",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-320-text200-copy.png",
+      "sha256": "be8f1e41072540b499b1c9709f30db59b94a52015a89aeaccd401ffdd469f85f",
+      "bytes": 42640
+    },
+    {
+      "id": "capture-78",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-390.png",
+      "sha256": "f0c50947acc60522336be684cf5ddf511fda3dd83fd8dd0637f00e5a0fb4608b",
+      "bytes": 71881
+    },
+    {
+      "id": "capture-79",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-390-text200.png",
+      "sha256": "a8c1102fb15d38d0990c726274f55339dd5833ef7089bba275c7c31febda72ad",
+      "bytes": 52746
+    },
+    {
+      "id": "capture-80",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-430.png",
+      "sha256": "efde67439c6c809388db9d7f2d359cdbaf106bcbf57213d5b71feb4132cefdf8",
+      "bytes": 73639
+    },
+    {
+      "id": "capture-81",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-light-430-text200.png",
+      "sha256": "3d766d03fffa613bd866e169cbdf2e1c49ff61dc226b36b9536fbbc2030aebd8",
+      "bytes": 54863
+    },
+    {
+      "id": "capture-82",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-320.png",
+      "sha256": "50e1e679a122d57301747fcfcbcbf55536af988178a744c3a2c131343b04484e",
+      "bytes": 55264
+    },
+    {
+      "id": "capture-83",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-320-text200.png",
+      "sha256": "ec1846ef31fe7e9f4e73d7f325c42a3b4520057d66345683f3124a01afa072f5",
+      "bytes": 46571
+    },
+    {
+      "id": "capture-84",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-320-text200-secret.png",
+      "sha256": "8e7f6cb3b9e7290869f939a2e5beb803fefe4a748c6d09d8c6d082b965106c6c",
+      "bytes": 52010
+    },
+    {
+      "id": "capture-85",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-320-text200-copy.png",
+      "sha256": "ea0da5f534f2ba7c44e7f7807307ad20f2dd98c88bf6c69bbe7af836c036bfab",
+      "bytes": 44619
+    },
+    {
+      "id": "capture-86",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-390.png",
+      "sha256": "da6388524183d97dce34773f999e073aa41964e9dc4c5be16ced33c050a63bb1",
+      "bytes": 73462
+    },
+    {
+      "id": "capture-87",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-390-text200.png",
+      "sha256": "52ea6d3ff8db3233545fb90447e719db4d1162d91d1aca43a606a8f7cf31420a",
+      "bytes": 54326
+    },
+    {
+      "id": "capture-88",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-430.png",
+      "sha256": "c11cdfc1f5a60979ed5d1ed855d395f37ca3abc1a169912fcb45440ed1dbfbf7",
+      "bytes": 75151
+    },
+    {
+      "id": "capture-89",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-dark-430-text200.png",
+      "sha256": "519820afd4e2ca7bfd07390085526a714b7a782424ca0764494aa056d0f4e677",
+      "bytes": 67754
+    },
+    {
+      "id": "capture-90",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-coarse-landscape.png",
+      "sha256": "28c46dcb0259736134eb5f9728b4efaf987514487fb9b76240d35c9ba88a770d",
+      "bytes": 27958
+    },
+    {
+      "id": "capture-91",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-paused.png",
+      "sha256": "6b567a9d3006de315717807becb5a2709266c16444bf28f9ea8ee627063e52c2",
+      "bytes": 54335
+    },
+    {
+      "id": "capture-92",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-replace-light-text200-terms.png",
+      "sha256": "3b35080b270bff869e938a5bd53463b53149856671483062c6146c3be68b1cff",
+      "bytes": 55903
+    },
+    {
+      "id": "capture-93",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-replace-light-text200-control.png",
+      "sha256": "ca5c3480f53732a402de227cc7e6ac0fa0fca212014093c2cd7db4f5d459344a",
+      "bytes": 56244
+    },
+    {
+      "id": "capture-94",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-replace-dark-text200-terms.png",
+      "sha256": "9055e784ee92110102130ef47c3dc2f7a15469ba5aa88a1e4a7dc71f4ea5827f",
+      "bytes": 61636
+    },
+    {
+      "id": "capture-95",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-replace-dark-text200-control.png",
+      "sha256": "68ce3080f1f034ae313779d0bb2e3203081fcc46edaec183e1c66a0c515ee80d",
+      "bytes": 56946
+    },
+    {
+      "id": "capture-96",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-replace-confirmation.png",
+      "sha256": "a9b25db4fba08e4424a141dc28982d1ef14a6ef32bc3c70cf21216d1f52ef8ca",
+      "bytes": 50976
+    },
+    {
+      "id": "capture-97",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-desktop-preserved.png",
+      "sha256": "8bb9d714c7a4bccbf64b7a25fe8156759ea0756b029f6290e49c428f96822318",
+      "bytes": 132801
+    },
+    {
+      "id": "capture-98",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-unknown-original.png",
+      "sha256": "b141119f4bf87fcde9854eb49cbab71272c974d9097ff1571d13b5512d46e3dd",
+      "bytes": 67126
+    },
+    {
+      "id": "capture-99",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoke-light-text200-terms.png",
+      "sha256": "4e49936dd1bcb28db62097b95d16968933625e328ea62a4de0b1e7539b89e2ba",
+      "bytes": 65738
+    },
+    {
+      "id": "capture-100",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoke-light-text200-control.png",
+      "sha256": "94a6924d9337cb3139a5686b0de0530fda41483c5fb2235ab5e7fde9a8ee0988",
+      "bytes": 55818
+    },
+    {
+      "id": "capture-101",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoke-dark-text200-terms.png",
+      "sha256": "8dc5b692aeb880da75b570fd018c11afd0d9980916c87981b5d24e0591a7af25",
+      "bytes": 59073
+    },
+    {
+      "id": "capture-102",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoke-dark-text200-control.png",
+      "sha256": "2b252762f8dafa0084c0030c1eab8ed11dd27a4cbf3ff3c02650f2a16a616188",
+      "bytes": 56507
+    },
+    {
+      "id": "capture-103",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoke-confirmation.png",
+      "sha256": "c2e7d418b68a73cd556d53dfb7021b4af07c0e9e6665a82884a5b89c0c2c3029",
+      "bytes": 52751
+    },
+    {
+      "id": "capture-104",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-revoked.png",
+      "sha256": "3dbe45688f6b0c9e918f34d2a9db04d49814f1ccee6d2d152f4ad2ee67780935",
+      "bytes": 69073
+    },
+    {
+      "id": "capture-105",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-unavailable.png",
+      "sha256": "471e609fb1c075922132bcf742d59ae14efdd1fb3304b5d61a02d0c0c660923c",
+      "bytes": 54918
+    },
+    {
+      "id": "capture-106",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-lease-expired.png",
+      "sha256": "983e9255e5f8a4c67aeb31fa6b2c3282e82770396994507415c0c7fb6e4097b0",
+      "bytes": 54827
+    },
+    {
+      "id": "capture-107",
+      "path": "docs/execution/employee-mobile-calendar/evidence/local-review/qa/full-context-f58d040b-01/combined/calendar/firefox-calendar-denied.png",
+      "sha256": "bdfd7ee318f59c2594b34b085018eaf117d9cd8e6280f6b998bc38ca6f268a7c",
+      "bytes": 54090
+    }
+  ]
+}

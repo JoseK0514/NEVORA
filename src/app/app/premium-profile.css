@@ -1,0 +1,174 @@
+/* Phase 3.5 Profile session: the Owner and Manager Profile page.
+ * Only that session edits this file. Shared rules (kit, shell, portal-premium.css) are changed by the coordinating
+ * session; ask it by message. Scope every rule to your own pages, using the same high-specificity prefix as portal-premium.css. */
+
+/* Layout: one column on phones; from 1024px, details on the left and settings on the right. 16px between cards. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-grid { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-col { display: flex; flex-direction: column; gap: var(--nv-s-4); min-width: 0; }
+@media (min-width: 1024px) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+}
+
+/* Your details: label and value side by side; the value drops under its label when the line is too narrow (large text). */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details { margin: 0; padding: 0 0 var(--nv-s-2) var(--nv-s-5); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { display: flex; flex-wrap: nowrap; align-items: baseline; gap: var(--nv-s-1) var(--nv-s-4); min-height: 52px; padding: 15px var(--nv-s-5) 15px 0; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div + div { border-top: 1px solid var(--nv-hairline); }
+/* Labels and values take the kit row classes (nv-row__meta, nv-row__title), so their type follows whichever layer styles
+ * rows on the page, kit or clean: the same sizes as the rows in the cards beside them. Only layout is set here. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: 0 0 5rem; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd { flex: 1 1 0; min-width: 0; margin: 0; overflow-wrap: break-word; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .nv-row__title { display: block; overflow: visible; -webkit-line-clamp: unset; text-wrap: wrap; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .nv-row__meta { display: block; margin-top: 0; }
+/* Kit fallback where no row layer reaches dt/dd (older stylesheets set dd to 15px). The clean layer's row rules are more
+ * specific than these, so on the clean app the labels and values take its row type. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd.nv-row__title { font: var(--nv-t-row); color: var(--nv-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt.nv-row__meta { font: var(--nv-t-callout); color: var(--nv-muted); }
+/* Every row behaves the same: value beside its label when the card has room, otherwise every row stacks (in rem, so
+ * large text stacks too). */
+@container (max-width: calc(16rem + 40px)) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div { flex-direction: column; align-items: stretch; gap: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dt { flex: none; }
+}
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details .pmp-muted { color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations-scope { display: block; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations { margin: 0; padding: 0; list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li { margin: 0; padding: 0; font: inherit; color: inherit; list-style: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations > li + li { margin-top: var(--nv-s-1); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li { display: inline-block; max-width: 100%; vertical-align: top; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li + li { margin-top: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li:not(:last-child)::after { content: "\00a0·"; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-locations--inline > li:not(:last-child) { margin-right: .3em; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details dd > .pmp-text-button { display: flex; margin-top: 0; }
+
+
+/* Text actions: teal, 44px tall, no box. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button { display: inline-flex; align-items: center; min-height: 44px; margin: 0; padding: 0; border: 0; border-radius: var(--nv-r-inner); background: transparent; box-shadow: none; color: var(--nv-accent); font: var(--nv-t-label); text-decoration: none; cursor: pointer; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button:hover { color: var(--nv-accent-hover); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-text-button:disabled { color: var(--nv-muted); cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-foot-copy { margin: 0; padding-block: 12px; font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .nv-card__foot { padding-top: var(--nv-s-1); padding-bottom: var(--nv-s-1); }
+
+/* Button rows (device alerts, alert switches, Sign out) look exactly like kit rows. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row) { width: 100%; margin: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; color: var(--nv-ink); font: inherit; text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* Rows run edge to edge inside a clipped card, so their focus ring is drawn inside the row. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row, a.nv-row):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+@media (hover: hover) { html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F9F8; } }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):active:not(:disabled):not([aria-disabled="true"]) { background: var(--nv-inset); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row):disabled { cursor: default; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-button-row:disabled .nv-row__title { color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-note { margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout > form { display: block; margin: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout .nv-rows { padding: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-signout .pmp-button-row { min-height: 64px; }
+
+/* Alert choices: one switch per topic. The thumb's position and aria-checked carry the state; "Saving…" replaces the detail while busy. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-subhead { margin: var(--nv-s-2) 0 0; padding: var(--nv-s-4) var(--nv-s-5) var(--nv-s-1); border-top: 1px solid var(--nv-hairline); font: var(--nv-t-label); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics { padding-bottom: var(--nv-s-2); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row { min-height: 64px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row .nv-row__title { display: block; -webkit-line-clamp: unset; overflow: visible; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack { display: grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > span { grid-area: 1 / 1; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > span[data-shown="false"] { visibility: hidden; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch { position: relative; flex: none; width: 44px; height: 26px; border-radius: 13px; background: var(--nv-icon); transition: background-color var(--nv-m-quick) var(--nv-ease-out); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16, 40, 38, .2); transition: transform var(--nv-m-quick) var(--nv-ease-out); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch[data-on="true"] { background: var(--nv-accent); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch[data-on="true"]::after { transform: translateX(18px); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-switch-row[aria-disabled="true"] { cursor: progress; }
+/* A loading switch is a plain grey pill, never mistaken for a real "off" switch. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .pmp-switch { background: var(--nv-inset); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topic-placeholder .pmp-switch::after { display: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .nv-card__meta { display: inline-flex; align-items: center; gap: var(--nv-s-3); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: 1.25rem; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action { margin-block: -12px; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error { display: grid; grid-template-columns: 1.0667em 1fr; column-gap: 6px; align-items: start; color: var(--nv-urgent-ink); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-meta-stack > .pmp-save-error > svg { width: 1.0667em; height: 1.0667em; margin-top: calc((1lh - 1.0667em) / 2); color: var(--nv-urgent-mark); }
+/* A failed read keeps the alert rows' space (24px padding plus a title and a detail line each) as an error panel. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--nv-s-3); padding: var(--nv-s-4) var(--nv-s-5); text-align: center; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > p { max-width: 22em; margin: 0; font: var(--nv-t-callout); color: var(--nv-muted); }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-note > .nv-btn { min-width: 10rem; text-decoration: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-empty { margin: 0; padding: var(--nv-s-2) var(--nv-s-5) var(--nv-s-5); font: var(--nv-t-callout); color: var(--nv-muted); }
+@media (prefers-reduced-motion: reduce) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-switch, .pmp-switch::after) { transition: none; }
+}
+
+/* Loading: the placeholder band for Owner and Manager matches the real flat band: its padding is fixed (44px) and its two
+ * text lines follow the reader's text size (3.75rem): 104px at 100%, 119 at 125%, 134 at 150% (measured Oct 19, 390). The phone band
+ * only shows up to 760px wide (shared rule in portal-premium.css); desktop placeholders are the shell's. */
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { --route-band: calc(44px + 3.75rem); }
+/* ST-08: where the band's summary ("Details, pay and alerts." or "Your details and alerts.", 24 characters, 10.7–11.25rem of text in Chromium and WebKit) wraps to a second line, so
+ * does the placeholder. The summary gets the width minus 72px up to 400px wide, minus 128px from 401px (portal-premium.css). */
+html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] { container-type: inline-size; }
+@container (max-width: calc(11.2rem + 72px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
+@container (min-width: 401px) and (max-width: calc(11.2rem + 128px)) { html body .app-shell.nevora-portal:not(.employee-shell) .route-skeleton[data-route="profile"] .route-skeleton-band { --route-band: calc(44px + 5.25rem); } }
+
+/* Held sizes (ST-02): while paused, offline or failed, the last values keep their space, hidden, under the note. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold { display: grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold > * { grid-area: 1 / 1; min-width: 0; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold-value { visibility: hidden; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-hold-note { align-self: start; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-topics-hold > .pmp-hold-note { align-self: stretch; }
+/* Busy labels (ST-05): both words share one cell, so a button keeps the wider width. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack { display: inline-grid; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span { grid-area: 1 / 1; text-align: center; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-label-stack > span[data-shown="false"] { visibility: hidden; }
+/* In the card head the action ends at the card's text edge, like the other head metas. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-head-action .pmp-label-stack > span { text-align: right; }
+
+/* Contact parts (TC-02, TC-03): each part moves whole to the next line and wraps inside only if wider than the line. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-part { display: inline-block; max-width: 100%; overflow-wrap: break-word; }
+/* TC-09, WR-5: the contact values (Email and Phone, as one block) take the full row under their labels when the value column is under 17rem (phones up to 430),
+ * in every state, so an address keeps its parts whole and its row is the same height loading and ready. */
+/* Round 4: a short label (Email, Phone) leaves the value up to three quarters of the row, so an ordinary address stays on
+ * one line; a longer one still breaks between its parts. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .q-row--one > .q-rv.q-rv--l { max-width: 75%; }
+/* Loading alert rows (AL-2): the expected words as text-shaped grey bars, so the row is a ready row's size. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-ghost { border-radius: 6px; background: var(--nv-inset); color: transparent; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* Busy words stay readable (TC-01): the old portal stylesheet fades every disabled button to 55%. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(.pmp-button-row, .pmp-switch-row, .pmp-text-button, .nv-btn):disabled { opacity: 1; }
+/* Kit hairlines at device resolution (AL-4). */
+@media (min-resolution: 2dppx) { html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile .pmp-details > div + div { border-top-width: .5px; } }
+/* AL-1: when the title and its state word can't share a line (narrow card, large text), the head is two lines in
+ * every state, with the state line reserved even when empty, so the rows never move as the state changes. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details { container-type: inline-size; }
+@container (max-width: 16rem) {
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__head { flex-direction: column; align-items: flex-start; row-gap: var(--nv-s-1); }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .nv-card__meta { height: auto; }
+  html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile #profile-details .pmp-head-action .pmp-label-stack > span { text-align: left; }
+}
+/* The details list takes focus after a successful retry; it shows the ring only for keyboard users, inside the card. */
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus { outline: none; }
+html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame .premium-manager-profile :is(#profile-details-list, #profile-alerts-list):focus-visible { outline: 2px solid var(--nv-accent); outline-offset: -2px; }
+
+/* ---------------------------------------------------------------------------------------------------------------------
+ * Owner premium (Oct 31): the Owner and Manager Profile in the corporate shell.
+ * ------------------------------------------------------------------------------------------------------------------- */
+/* Face ID and passkeys is a row like its neighbours, not a card inside the card (visual-craft Q): the title and its 13px
+ * line on the left, the teal "Add a passkey" / "Set up Face ID" on the right; a saved passkey list and notices run below. */
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys:empty { display: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center;
+  margin: 0; padding: 12px 16px; border: 0; border-radius: 0; background: none; box-shadow: inset 0 1px 0 #EDEEEF; }
+/* The row after Face ID and passkeys (Privacy and terms) keeps the line between rows; the passkeys row has its own line above. */
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-passkeys:not(:empty) + li > .q-details > summary.q-row { box-shadow: inset 0 1px 0 #EDEEEF; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .nv-card__head { grid-column: 1; min-height: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .nv-card__title { margin: 0; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; text-transform: none; color: #1A1C1E; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section > .pk-body { display: contents; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-muted { grid-column: 1; margin: 2px 0 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section .pk-add { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: inline-flex; align-items: center;
+  height: 44px; min-height: 44px; margin: 0 -4px 0 0; padding: 0 4px; border: 0; border-radius: 8px; background: none !important; box-shadow: none !important; color: #0B6E69; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; white-space: nowrap; }
+:is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pk-section :is(.pk-list, .pk-notice) { grid-column: 1 / -1; margin-top: 8px; }
+
+/* Tablets and desktop: the page title where every page title sits (22/600 at the column's left edge, no phone avatar), Edit
+ * as the title row's outline button instead of the phone's white "‹ More · Edit" strip, and the content at 720px. */
+@media (min-width: 768px) {
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav { position: absolute; top: 46px; left: 24px; right: auto; z-index: 2; display: flex; justify-content: flex-end; width: 720px; max-width: calc(100% - 48px); height: 44px; padding: 0; background: none; box-shadow: none; pointer-events: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > * { pointer-events: auto; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > :not(.q-nav__r) { display: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-height: 40px; margin: 2px 0; padding: 0 16px;
+    border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E !important; font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile > .q-nav > .q-nav__r:hover { background: #F7F8F8; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .pmp-content { max-width: 736px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who { margin: 0 16px; min-height: 40px; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who > .q-av { display: none; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who h1 { margin: 3px 0 0; font: 600 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.56px; color: #1A1C1E; }
+  :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.premium-manager-profile .q-who p { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+}

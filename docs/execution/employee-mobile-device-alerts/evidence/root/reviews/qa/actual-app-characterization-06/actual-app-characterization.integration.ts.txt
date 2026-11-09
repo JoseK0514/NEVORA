@@ -1,0 +1,91 @@
+import {it,expect} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/node_modules/vitest/dist/index.js';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {createECDH,createHash,randomBytes} from 'node:crypto';
+import {createOwnedNextApp} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-next-app';
+import {seedOwnedApp,seedOwnedScenario} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/src/test/integration/owned-app-fixture';
+import {measureRenderedContrast} from '/Users/josek0514/Documents/Codex/2026-10-26/hi-right-now-i-am-trying/work/employee-mobile-local-resume/scripts/browser-contrast.mjs';
+
+type Route={request():{method():string};continue():Promise<void>;fetch():Promise<unknown>;fulfill(options:object):Promise<void>};
+it('independently characterizes actual native keyboard and coarse landscape on unchanged app source',async()=>{
+ const evidence=process.env.NEVORA_QA_DEVICE_DIAGNOSTICS;if(!evidence)throw Error('Select explicit external device evidence');await mkdir(evidence,{recursive:true});
+ const runtime=createRequire(process.env.NEVORA_PLAYWRIGHT_RUNTIME_PACKAGE??resolve('tools/ci-browser-runtime/package.json'))('playwright');
+ const app=await createOwnedNextApp(evidence,{deviceAlertsEnabled:true}),origin=app.url.replace('127.0.0.1','localhost');
+ const q=<T=Record<string,unknown>>(text:string,values:unknown[]=[])=>app.database.executor.query<T>({text,values});
+ const key=createECDH('prime256v1');key.setPrivateKey(Buffer.alloc(32,21));
+ const subscription={endpoint:'https://fcm.googleapis.com/fcm/send/fictional-owned-device',expirationTime:null,keys:{p256dh:key.getPublicKey().toString('base64url'),auth:Buffer.alloc(16,7).toString('base64url')}};
+ const diagnostics:unknown[]=[];const checks:{engine:string;name:string}[]=[],captures:string[]=[],errors:{engine:string;stage:string;message:string;expected:boolean}[]=[],contrasts:{engine:string;theme:string;width:number;ratio:number}[]=[],transport:{engine:string;path:string;method:string}[]=[];
+ let browser:{close():Promise<void>}|undefined,failed:(()=>Promise<void>)|undefined;
+ try{
+  await seedOwnedApp(app.database.executor);
+  for(const [index,engine] of ['webkit'].entries()){
+   const fixture=await seedOwnedScenario(app.database.executor,'DEVICE'+index,index),actor=fixture.actors[0];await q('UPDATE employees SET role=$2 WHERE id=$1',[actor,index===1?'LEAD':'EMPLOYEE']);
+   const token=randomBytes(32).toString('base64url'),hash=createHash('sha256').update(token).digest('hex');await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[hash,actor]);
+   browser=await runtime[engine].launch({headless:true});const context=await (browser as typeof runtime.chromium).newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce',serviceWorkers:'block'});await context.addCookies([{name:'fuel_session',value:token,url:origin,httpOnly:true,sameSite:'Lax'}]);
+   await context.addInitScript(({subscription}:{subscription:object})=>{
+    let permission:NotificationPermission='default',enrolled=false,prompts=0,subscribes=0,owns=0;
+    Object.assign(window,{__devicePermission:(value:NotificationPermission)=>{permission=value;},__deviceCounts:()=>({prompts,subscribes,owns})});
+    const worker={postMessage:(message:{type:string;generation:string},ports:MessagePort[])=>{if(message.type==='SET_OWNER')owns++;ports[0]?.postMessage({version:1,type:'OWNER_STATE',generation:message.generation,status:message.type==='SUPPRESS_OWNER'?'suppressed':'active'});}};
+    const current={toJSON:()=>subscription,unsubscribe:async()=>{enrolled=false;return true;}};
+    const registration={active:worker,waiting:null,getNotifications:async()=>[],pushManager:{getSubscription:async()=>enrolled?current:null,subscribe:async()=>{subscribes++;enrolled=true;return current;}}};
+    Object.defineProperty(navigator,'serviceWorker',{configurable:true,value:{register:async()=>registration,ready:Promise.resolve(registration),getRegistration:async()=>registration,addEventListener:()=>{},removeEventListener:()=>{}}});
+    if(!navigator.locks?.request)Object.defineProperty(navigator,'locks',{configurable:true,value:{request:async(_name:string,_options:object,action:()=>Promise<unknown>)=>action()}});
+    Object.defineProperty(window,'PushManager',{configurable:true,value:function(){}});
+    Object.defineProperty(window,'Notification',{configurable:true,value:{get permission(){return permission;},requestPermission:()=>{prompts++;permission='granted';return Promise.resolve(permission);}}});
+    if(new URL(location.href).searchParams.has('unsupported'))Object.defineProperty(window,'PushManager',{configurable:true,value:undefined});
+   },{subscription:{...subscription,endpoint:subscription.endpoint+'-'+engine}});
+   const page=await context.newPage();page.setDefaultTimeout(15000);page.setDefaultNavigationTimeout(30000);let stage='entry',expected=false,binding='';
+   const record=(name:string)=>checks.push({engine,name});
+   page.on('request',(request:{url():string;method():string;headers():Record<string,string>})=>{const url=new URL(request.url());if(url.pathname.startsWith('/app/api/push/')){transport.push({engine,path:url.pathname,method:request.method()});binding=request.headers()['x-nevora-device-authority']??binding;}});
+   page.on('console',(message:{type():string;text():string})=>{if(message.type()==='error')errors.push({engine,stage,message:message.text(),expected});});page.on('pageerror',(error:Error)=>errors.push({engine,stage,message:error.message,expected:false}));
+   await context.route('**/*',async(route:{request():{url():string};continue():Promise<void>;abort():Promise<void>})=>{const url=new URL(route.request().url());if(['http:','https:'].includes(url.protocol)&&url.origin!==new URL(origin).origin){errors.push({engine,stage,message:'External request blocked: '+url.origin,expected:false});await route.abort();}else await route.continue();});
+   const panel=page.locator('.em-device'),state=(value:string)=>page.locator('.em-device[data-device-state="'+value+'"]').waitFor();
+   const shot=async(name:string)=>{const file=engine+'-'+name+'.png';await page.screenshot({path:evidence+'/'+file,fullPage:false,style:'nextjs-portal {visibility:hidden;}'});captures.push(file);};
+   const counts=()=>page.evaluate('window.__deviceCounts()') as Promise<{prompts:number;subscribes:number;owns:number}>;
+   const pointerBack=async()=>{const back=page.locator('.em-request-back');await back.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));expect(await back.evaluate((el:HTMLElement)=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})).toBe(true);await back.click();await page.waitForURL('**/app/profile');await page.getByRole('heading',{name:'Profile',exact:true}).waitFor();};
+   failed=async()=>{await shot('FAILURE-'+stage);await writeFile(evidence+'/'+engine+'-failure.html',await page.content());};
+   await page.goto(origin+'/app/profile');const indicator=await page.evaluate(async()=>await fetch('/__nextjs_devtools_config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({disableDevIndicator:true})}).then(response=>response.status));expect(indicator).toBe(204);record('Owned Next dev-indicator preference disabled through its middleware; application error observers unchanged');await page.getByRole('link',{name:'Alerts on this device',exact:true}).click();await state('ready');
+   expect((await counts()).prompts).toBe(0);expect((await counts()).subscribes).toBe(0);expect(binding).toMatch(/^[a-f0-9]{64}$/);expect(await page.locator('#portal-device-settings').count()).toBe(0);await shot('ready');record('Protected own Employee/Lead page, no native prompt or subscription on entry');await panel.getByRole('button',{name:'Not now',exact:true}).click();await state('dismissed');expect((await counts()).prompts).toBe(0);await panel.getByRole('button',{name:'Review setup',exact:true}).click();await state('ready');record('Postponement and deliberate re-entry never request permission');
+   stage='authority';expected=true;const foreign=await page.evaluate(async()=>{const response=await fetch('/app/api/push/status',{headers:{'X-Nevora-Device-Authority':'foreign'}});return response.status;});expect(foreign).toBe(401);
+   const refused=await page.evaluate(async()=>{const response=await fetch('/app/api/push/subscribe',{method:'POST',headers:{'Content-Type':'application/json','X-Nevora-Device-Authority':'foreign'},body:JSON.stringify({subscription:{}})});return response.status;});expect(refused).toBe(401);expected=false;expect((await q<{n:number}>('SELECT count(*)::integer n FROM push_subscriptions WHERE employee_id=$1',[actor]))[0].n).toBe(0);record('Old/foreign session binding refused before any enrollment');
+   stage='enroll';await panel.getByRole('button',{name:'Turn on alerts',exact:true}).click();await state('enabled');expect(await counts()).toMatchObject({prompts:1,subscribes:1});
+   await page.evaluate(()=>window.dispatchEvent(new Event('blur')));await state('paused');expect(await panel.getByRole('button',{name:'Turn off alerts',exact:true}).count()).toBe(0);await page.evaluate(()=>window.dispatchEvent(new Event('focus')));await state('enabled');record('Pause removes current status/actions; focus checks canonical current ownership without enrollment');const [first]=await q<{generation:string;installation_hash:string;status:string}>('SELECT generation,installation_hash,status FROM push_subscriptions WHERE employee_id=$1 AND status=\'active\'',[actor]);expect(first.status).toBe('active');expect(await panel.getByRole('button',{name:'Test notification',exact:true}).count()).toBe(0);await shot('enabled');record('Deliberate permission, one native subscribe, actual encrypted SQL enrollment and matching local worker ownership');
+   stage='keyboard-diagnostic';
+   for(const theme of ['light','dark']){
+    await pointerBack();await page.getByLabel('Appearance',{exact:true}).selectOption(theme);const link=page.getByRole('link',{name:'Alerts on this device',exact:true});diagnostics.push({engine,theme,event:'before-alerts-link',url:page.url(),href:await link.getAttribute('href')});await link.click();diagnostics.push({engine,theme,event:'after-alerts-link',url:page.url()});await page.waitForURL('**/app/profile/device-alerts');await state('enabled');await page.setViewportSize({width:320,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='200%');
+    const trigger=panel.getByRole('button',{name:'Turn off alerts',exact:true});await trigger.click();const group=page.getByRole('group',{name:'Turn off alerts here?',exact:true});await expect.poll(()=>group.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+    const focus=()=>page.evaluate(()=>{const el=document.activeElement as HTMLElement,s=getComputedStyle(el);return {tag:el.tagName,text:el.textContent,outline:s.outlineStyle,width:s.outlineWidth,rect:el.getBoundingClientRect().toJSON()}});
+    if(engine==='webkit'){
+     await page.keyboard.press('Tab');diagnostics.push({engine,theme,chord:'Tab',observation:await focus()});await page.screenshot({path:evidence+'/'+engine+'-'+theme+'-ordinary-tab.png'});
+     await group.getByRole('button',{name:'Keep current setup',exact:true}).click();await trigger.click();await expect.poll(()=>group.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);
+    }
+    const chord=engine==='webkit'?'Alt+Tab':'Tab';
+    for(const name of ['Keep current setup','Turn off alerts']){
+     await page.keyboard.press(chord);const control=group.getByRole('button',{name,exact:true});await expect.poll(()=>control.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);const observed=await focus();expect(observed.outline).not.toBe('none');expect(parseFloat(observed.width)).toBeGreaterThanOrEqual(3);await control.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));
+     const box=await control.boundingBox(),nav=await page.locator('.mobile-nav:visible').boundingBox();expect(box!.y).toBeGreaterThanOrEqual(0);expect(box!.y+box!.height).toBeLessThanOrEqual(nav!.y+1);expect(box!.x+box!.width).toBeLessThanOrEqual(320);expect(box!.height).toBeGreaterThanOrEqual(44);
+     const file=engine+'-'+theme+'-'+chord.replace('+','-')+'-'+name.replaceAll(' ','-')+'.png';await page.screenshot({path:evidence+'/'+file});captures.push(file);diagnostics.push({engine,theme,chord,expected:name,observed,box,nav});
+    }
+    await group.getByRole('button',{name:'Keep current setup',exact:true}).click();await expect.poll(()=>trigger.evaluate((el:HTMLElement)=>el===document.activeElement)).toBe(true);await page.evaluate(()=>document.documentElement.style.fontSize='100%');
+   }
+   stage='landscape-diagnostic';
+   for(const theme of ['light','dark']){
+    await pointerBack();await page.getByLabel('Appearance',{exact:true}).selectOption(theme);const link=page.getByRole('link',{name:'Alerts on this device',exact:true});diagnostics.push({engine,theme,event:'before-alerts-link',url:page.url(),href:await link.getAttribute('href')});await link.click();diagnostics.push({engine,theme,event:'after-alerts-link',url:page.url()});await page.waitForURL('**/app/profile/device-alerts');await state('enabled');await page.setViewportSize({width:844,height:390});
+    await expect.poll(()=>page.locator('#employee-mobile').getAttribute('data-employee-mobile')).toBe('true');
+    await page.evaluate(()=>{const w=window as unknown as {__qaViewportEvents:unknown[]};w.__qaViewportEvents=[];const sample=()=>w.__qaViewportEvents.push({type:'viewport/media',width:innerWidth,height:innerHeight,matches:matchMedia('(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)').matches});window.addEventListener('resize',sample);matchMedia('(max-height:430px)').addEventListener('change',sample)});
+    const sample=()=>page.evaluate(()=>{const root=document.querySelector('#employee-mobile') as HTMLElement,p=document.querySelector('.em-device-status>p') as HTMLElement,card=document.querySelector('.em-device-status') as HTMLElement,nav=document.querySelector('.mobile-nav') as HTMLElement;const style=getComputedStyle(p);return {queries:Object.fromEntries(['(max-width:900px)','(max-height:430px)','(orientation:landscape)','(pointer:coarse)','(pointer:fine)','(any-pointer:coarse)'].map(q=>[q,matchMedia(q).matches])),maxTouchPoints:navigator.maxTouchPoints,screen:{width:screen.width,height:screen.height},visualViewport:{width:visualViewport?.width,height:visualViewport?.height,scale:visualViewport?.scale},width:innerWidth,height:innerHeight,scrollWidth:document.documentElement.scrollWidth,media:matchMedia('(max-width:900px) and (max-height:430px) and (orientation:landscape) and (pointer:coarse)').matches,marker:root.dataset.employeeMobile,color:style.color,font:style.font,cardBackground:getComputedStyle(card).backgroundColor,bodyBackground:getComputedStyle(document.body).backgroundColor,rootBackground:getComputedStyle(root).backgroundColor,teal:getComputedStyle(root).getPropertyValue('--em-teal'),nav:nav.getBoundingClientRect().toJSON(),events:(window as unknown as {__qaViewportEvents:unknown[]}).__qaViewportEvents}});
+    const before=await sample();diagnostics.push({engine,theme,stage:'landscape-before',before});await page.screenshot({path:evidence+'/'+engine+'-'+theme+'-landscape-before-viewport.png'});expect(before.media).toBe(true);expect(before.scrollWidth).toBeLessThanOrEqual(844);
+    const contrast=await panel.locator('.em-device-status>p').evaluate(measureRenderedContrast);expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);
+    const boxes=[];
+    for(const control of [panel.getByRole('button',{name:'Turn off alerts',exact:true}),page.getByRole('button',{name:'Sign out',exact:true})]){
+     await control.evaluate((el:HTMLElement)=>el.scrollIntoView({block:'center'}));const box=await control.boundingBox(),nav=await page.locator('.mobile-nav:visible').boundingBox();expect(nav!.y).toBeGreaterThanOrEqual(0);expect(nav!.y+nav!.height).toBeLessThanOrEqual(390+1);expect(box!.y).toBeGreaterThanOrEqual(0);expect(box!.y+box!.height).toBeLessThanOrEqual(nav!.y+1);expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);boxes.push({text:await control.innerText(),box,nav});const file=engine+'-'+theme+'-landscape-viewport-'+boxes.length+'.png';await page.screenshot({path:evidence+'/'+file});captures.push(file);
+    }
+    if(theme==='dark'){const file=engine+'-'+theme+'-landscape-fullpage.png';await page.screenshot({path:evidence+'/'+file,fullPage:true});captures.push(file);}const after=await sample();await page.screenshot({path:evidence+'/'+engine+'-'+theme+'-landscape-after-viewport.png'});diagnostics.push({engine,theme,before,after,contrast,boxes});if(theme==='light'||engine==='webkit')expect(after.media).toBe(true);else expect(after.queries['(pointer:coarse)']).toBe(false);expect(after.height).toBe(390);await page.setViewportSize({width:390,height:844});
+   }
+   record('Independent keyboard and viewport/fullPage diagnostic completed; no product DOM/tabindex changes');
+   await context.close();await browser!.close();browser=undefined;failed=undefined;
+  }
+  expect(errors.filter(error=>!error.expected)).toEqual([]);await writeFile(evidence+'/result.json',JSON.stringify({status:'passed',checks,captures,contrasts,errors,transport,diagnostics,limits:['Fictional native permission/worker/subscription boundary, actual canonical local server and SQL.','No provider delivery, physical OS/Home Screen installation, assistive technology or hosted/release certification.']},null,2));
+ }catch(error){await failed?.().catch(()=>{});await writeFile(evidence+'/failure.json',JSON.stringify({error:String(error).split('Call log:')[0],checks,captures,errors,contrasts,transport,diagnostics},null,2));throw error;}
+ finally{await browser?.close();await app.close();}
+});

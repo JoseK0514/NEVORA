@@ -1,0 +1,60 @@
+{
+  "source_sha256": "06c548a89f01e46c687c1d7e0a961da01c74952d6b7bfff34a1f7459e2396469",
+  "baseline_sha256": "6b471b37047c6ba561b97ffacbad2cb71d638d87db62f44df9aa27ad91aa7c56",
+  "scope": "Two recorded polish fixes and final combined Employee mobile prototype review",
+  "resolved": [
+    "EM-A09",
+    "Notifications enlarged-heading arbitrary word break"
+  ],
+  "carried_resolved": [
+    "EM-A01",
+    "EM-A02",
+    "EM-A03",
+    "EM-A04",
+    "EM-A05",
+    "EM-A06",
+    "EM-A07",
+    "EM-A08",
+    "EM-R01"
+  ],
+  "remaining_original_audit_ids": [],
+  "remaining_ui_observations": [
+    "Inherited LOW Calendar subscription title split at320px/200%; readable, reachable and nonblocking in independent review"
+  ],
+  "changed": [
+    "src/Communications.css",
+    "src/Notifications.tsx",
+    "src/DeletionResult.tsx",
+    "src/ui.tsx"
+  ],
+  "metadata_preserved": {
+    "AGENTS.md": true,
+    "PRODUCT.md": true,
+    "DESIGN.md": true,
+    ".21st/design.json": true,
+    ".impeccable/design.json": true,
+    "sprite.html": true
+  },
+  "ui_disposition": "SHIP / APPROVE for this local artifact; no blockers",
+  "independent_qa_current_scenarios": 60,
+  "independent_qa_baseline_reproductions": 6,
+  "workflow_coverage": {
+    "mapped": 34,
+    "fresh_representative_browser": 20,
+    "source_only": 14,
+    "complete_live_end_to_end": false
+  },
+  "source_sha256_verified": true,
+  "live_integration": false,
+  "physical_device_certification": false,
+  "screen_reader_certification": false,
+  "application_commit": "46e202786863279302026ee03a0e225c359fa55c",
+  "git_branch": null,
+  "commit": null,
+  "deployed": false,
+  "reports": {
+    "final-mobile-review-ui.md": "ec77c375cf57e06a1315b1ad9955a5d410a0c81745b020a8348cf6b947d3f1a5",
+    "final-mobile-review-qa.md": "01977ab84959cdb3cb8f40442c8c1f3cf4841947a2f38fdd05240ea580be8bf6",
+    "final-mobile-review-design-record.md": "369f247a88fed44eb52b73adeb46b91d37325e6aa16f4f7146ab6b47794408d0"
+  }
+}

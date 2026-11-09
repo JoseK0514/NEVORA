@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Timecards</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F2F4F3}
+a{color:#077572;text-decoration:none}a:hover{color:#055C5A}
+.eb{margin:0;font-size:15px;font-weight:500;color:#A9C9C5}
+.ut{display:inline-flex;align-items:center;height:40px;font-size:15px;font-weight:500;color:#A9C9C5;border-bottom:2px solid transparent;box-sizing:border-box;white-space:nowrap;text-decoration:none}
+.card{background:#FFFFFF;border-radius:20px;box-shadow:0 1px 2px rgba(16,40,38,.05),0 8px 24px rgba(16,40,38,.06)}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:20px 20px 8px}
+.ch h2{margin:0;font-size:15px;line-height:20px;font-weight:600;color:#16191C}
+.ch span{font-size:15px;color:#5F666A}
+.li{display:flex;align-items:center;gap:12px;min-height:64px;padding:12px 20px;color:#16191C;text-decoration:none;position:relative}
+.li+.li::before{content:"";position:absolute;top:0;left:18px;right:0;height:1px;background:#E8ECEB}
+.li:hover{color:#16191C}
+.tx{flex:1;min-width:0}
+.t{margin:0;font-size:17px;line-height:22px;font-weight:500;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.s{margin:2px 0 0;font-size:15px;line-height:20px;color:#5F666A}
+.pl{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;font-size:15px;font-weight:500;white-space:nowrap}
+.cell{padding:14px 18px 16px;display:flex;flex-direction:column;gap:6px}
+.cl{font-size:15px;font-weight:500;color:#5F666A}
+.cn{font-size:24px;line-height:28px;font-weight:600;letter-spacing:-.02em}
+.tabs{position:absolute;left:0;right:0;bottom:0;height:84px;background:rgba(255,255,255,.97);border-top:1px solid #E8ECEB;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:0 6px 30px;box-sizing:border-box}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:13px;font-weight:500;color:#5F666A;text-decoration:none;position:relative;letter-spacing:.01em}
+.tab:hover{color:#16191C}
+.tab.on{color:#077572;font-weight:600}
+.tab.on svg{background:#DCEDE9;border-radius:15px;padding:3px 16px;box-sizing:content-box}
+.badge{position:absolute;top:1px;left:calc(50% + 8px);min-width:17px;height:17px;border-radius:9px;background:#077572;color:#FFFFFF;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 5px;box-sizing:border-box;box-shadow:0 0 0 2px #FFFFFF}
+</style>
+</helmet>
+<div style="width: 390px; height: 1060px; position: relative; overflow: hidden; background: #F2F4F3; font-family: Inter, system-ui, sans-serif; color: #16191C; font-feature-settings: 'tnum' 1, 'cv11' 1; -webkit-font-smoothing: antialiased">
+
+  <header style="background: #1C4A47; color: #FFFFFF; padding: 6px 20px 54px 10px; position: relative; overflow: hidden">
+    <svg aria-hidden="true" width="260" height="260" viewBox="0 0 260 260" fill="none" style="position: absolute; right: -96px; top: 40px; opacity: .06"><path d="M130 20 240 230H20z" stroke="#FFFFFF" stroke-width="2"></path><path d="M130 70 205 210H55z" stroke="#FFFFFF" stroke-width="2"></path></svg>
+    <div style="display: flex; align-items: center; height: 52px; position: relative">
+      <a href="Inbox.dc.html" style="display: inline-flex; align-items: center; gap: 2px; height: 44px; padding: 0 8px 0 2px; font-size: 17px; font-weight: 500; color: #FFFFFF">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>Inbox</a>
+    </div>
+    <div style="padding: 14px 0 0 10px; position: relative">
+      <p class="eb">Oct 12 – 18 · Open period</p>
+      <h1 style="margin: 6px 0 0; font-size: 30px; line-height: 36px; font-weight: 600; letter-spacing: -0.025em">Timecards</h1>
+      <p style="margin: 6px 0 0; font-size: 16px; line-height: 22px; color: #D3E6E3">Approvals open after Oct 18. 2 need a fix.</p>
+    </div>
+    <nav aria-label="Time and pay" style="display: flex; gap: 24px; margin: 16px 0 0 10px; position: relative">
+      <a class="ut" href="Timecards.dc.html" aria-current="page" style="color: #FFFFFF; font-weight: 600; border-bottom-color: #FFFFFF">Timecards</a>
+      <a class="ut" href="#">Time exports</a>
+      <a class="ut" href="#">Attendance</a>
+    </nav>
+  </header>
+
+  <main style="margin-top: -30px; padding: 0 16px 120px; display: flex; flex-direction: column; gap: 14px; position: relative">
+    <section aria-labelledby="focus-h" class="card" style="overflow: hidden">
+      <div style="padding: 16px 18px 0; display: flex; align-items: center; gap: 8px">
+        <span class="pl" style="background: #FBEAE6; color: #A3361F; height: 24px">From Inbox</span>
+        <span style="font-size: 15px; color: #5F666A">Needs a fix</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; padding: 12px 18px 4px">
+        <span style="width: 44px; height: 44px; border-radius: 22px; background: #F1F3F4; color: #4A4F55; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex: none">AR</span>
+        <div style="flex: 1; min-width: 0">
+          <h2 id="focus-h" style="margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.012em">Alexandra Rivera</h2>
+          <p class="s">Sunday 8 AM – 4 PM has no punches</p>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; border-top: 1px solid #E8ECEB">
+        <div class="cell"><span class="cl">Recorded</span><span class="cn">0h 0m</span></div>
+        <div class="cell" style="border-left: 1px solid #E8ECEB"><span class="cl">Breaks</span><span class="cn">0h 0m</span></div>
+      </div>
+      <div style="padding: 0 18px 18px; border-top: 1px solid #E8ECEB">
+        <a href="#" style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; height: 50px; border-radius: 12px; background: #077572; color: #FFFFFF; font-size: 16px; font-weight: 600">Open entries and history</a>
+        <p style="margin: 10px 0 0; font-size: 15px; color: #5F666A; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Approve opens after the period ends</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="all-h" class="card">
+      <div class="ch"><h2 id="all-h">Everyone</h2><span>10 · 0 finalized</span></div>
+      <a class="li" href="#"><span class="tx"><p class="t">María José Rivera Santiago With A Long Name</p><p class="s">Sunday shift has no punches</p></span><span class="pl" style="background: #FBEAE6; color: #A3361F">Fix</span></a>
+      <a class="li" href="#"><span class="tx"><p class="t">b Fictional QA</p><p class="s">0h 0m recorded</p></span><span class="pl" style="background: #F1F3F4; color: #4A4F55">Waiting</span></a>
+      <a class="li" href="#"><span class="tx"><p class="t">Morgan Rivera</p><p class="s">Another manager approves</p></span><span class="pl" style="background: #F1F3F4; color: #4A4F55">Yours</span></a>
+      <a class="li" href="#"><span class="tx"><p class="t">Taylor Rivera</p><p class="s">0h 0m recorded</p></span><span class="pl" style="background: #F1F3F4; color: #4A4F55">Waiting</span></a>
+      <a href="#" style="display: flex; align-items: center; justify-content: center; height: 50px; border-top: 1px solid #E8ECEB; font-size: 15px; font-weight: 600">Show all 10</a>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Main">
+    <a class="tab" href="Home-Manager.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20H4z"></path><path d="M10 20v-5h4v5"></path></svg>Home</a>
+    <a class="tab" href="Schedule.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"></rect><path d="M4 9.5h16M8.5 3v4M15.5 3v4"></path></svg>Schedule</a>
+    <a class="tab" href="Inbox.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13.5 6.5 5h11L20 13.5V19H4z"></path><path d="M4 13.5h4.5l1 2h5l1-2H20"></path></svg>Inbox<span class="badge" aria-label="4 need you">4</span></a>
+    <a class="tab" href="Team.dc.html"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="3.5"></circle><path d="M3 19c.8-3 3.2-4.5 6-4.5s5.2 1.5 6 4.5"></path><path d="M15.5 5.6a3.5 3.5 0 0 1 0 6.8M17.5 14.8c1.7.6 2.9 2 3.5 4.2"></path></svg>Team</a>
+    <a class="tab on" href="More-Manager.dc.html" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5.5" cy="12" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="18.5" cy="12" r="1.8"></circle></svg>More</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1060}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

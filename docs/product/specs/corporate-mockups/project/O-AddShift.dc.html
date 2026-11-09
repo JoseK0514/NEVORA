@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add shift corporate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0B6E69}a:hover{color:#084F4B}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; overflow: hidden; background: #F5F6F6; color: #1A1C1E; font-family: Inter, -apple-system, sans-serif; font-optical-sizing: auto; -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; box-sizing: border-box">
+
+  <div aria-hidden="true">
+    <div style="background: #FFFFFF; box-shadow: 0 1px 0 #E3E5E6; padding: 52px 16px 12px">
+      <div role="img" aria-label="NEVORA Workforce" style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; height: 44px"><img src="assets/nevora-wordmark.png" alt="" style="display: block; height: 14px; width: auto; mix-blend-mode: multiply"><span aria-hidden="true" style="display: block; font-size: 9px; line-height: 12px; font-weight: 600; letter-spacing: 2.4px; margin-right: -2.4px; color: #6B7075; text-transform: uppercase">Workforce</span></div>
+    </div>
+    <div style="padding: 16px 16px 0; display: flex; flex-direction: column; gap: 12px">
+      <div style="height: 52px; font-size: 22px; line-height: 36px; font-weight: 600; letter-spacing: -0.3px">Schedule</div>
+      <div style="height: 117px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6"></div>
+      <div style="height: 36px; border-radius: 8px; background: #EDEEEF"></div>
+      <div style="height: 420px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6"></div>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(26,28,30,0.40)"></div>
+
+  <section role="dialog" aria-modal="true" aria-labelledby="as-title" style="position: absolute; left: 0; right: 0; bottom: 0; top: 112px; border-radius: 16px 16px 0 0; background: #FFFFFF; display: flex; flex-direction: column">
+    <div aria-hidden="true" style="width: 36px; height: 5px; border-radius: 3px; background: #D5D8DA; margin: 8px auto 0"></div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; height: 52px; padding: 0 16px; box-shadow: inset 0 -1px 0 #EDEEEF">
+      <button type="button" style="justify-self: start; height: 44px; padding: 0; border: 0; background: none; color: #0B6E69; font: 500 15px Inter, sans-serif">Cancel</button>
+      <h2 id="as-title" style="margin: 0; font-size: 17px; line-height: 22px; font-weight: 600">Add shift</h2>
+      <button type="button" style="justify-self: end; height: 44px; padding: 0; border: 0; background: none; color: #0B6E69; font: 600 15px Inter, sans-serif">Save</button>
+    </div>
+
+    <form style="margin: 0; padding: 16px 16px 34px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="as-person" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Person</label>
+        <button type="button" id="as-person" aria-haspopup="listbox" style="display: flex; align-items: center; gap: 10px; width: 100%; height: 48px; padding: 0 12px 0 8px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; text-align: left; box-sizing: border-box">
+          <span aria-hidden="true" style="flex: none; width: 32px; height: 32px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; display: grid; place-items: center; font-size: 13px; font-weight: 600">DK</span>
+          <span style="flex: 1">Dana Kim</span>
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+
+      <div role="note" style="display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; background: #FEF4E6; color: #8A4B00">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" style="flex: none"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>
+        <span style="font-size: 13px; line-height: 18px">Dana has not set availability.<br>You can still add the shift.</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="as-location" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Location</label>
+          <div style="position: relative">
+            <select id="as-location" style="width: 100%; height: 48px; padding: 0 34px 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; appearance: none; -webkit-appearance: none; box-sizing: border-box"><option selected>Condado</option><option>Old San Juan</option><option>Isla Verde</option><option>Hato Rey</option><option>Dorado</option></select>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="as-position" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Position</label>
+          <div style="position: relative">
+            <select id="as-position" style="width: 100%; height: 48px; padding: 0 34px 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; appearance: none; -webkit-appearance: none; box-sizing: border-box"><option selected>Barista</option><option>Cashier</option><option>Kitchen</option></select>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 12px; top: 15px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="as-date" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Date</label>
+        <div style="position: relative">
+          <input id="as-date" type="text" value="Sat, Oct 31" style="width: 100%; height: 48px; padding: 0 44px 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 2px #0B6E69; color: #1A1C1E; font: 400 15px Inter, sans-serif; outline: none; box-sizing: border-box">
+          <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="1.7" stroke-linecap="round" style="position: absolute; right: 12px; top: 14px; pointer-events: none"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="as-start" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Start</label>
+          <input id="as-start" type="text" value="7:00 AM" style="width: 100%; height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; outline: none; box-sizing: border-box">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="as-end" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">End</label>
+          <input id="as-end" type="text" value="3:00 PM" style="width: 100%; height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; outline: none; box-sizing: border-box">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="as-meal" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Meal break</label>
+          <div style="position: relative">
+            <select id="as-meal" style="width: 100%; height: 48px; padding: 0 30px 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; appearance: none; -webkit-appearance: none; box-sizing: border-box"><option>None</option><option selected>30 min</option><option>45 min</option><option>1 h</option></select>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B7075" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; right: 10px; top: 15px; pointer-events: none"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 12px; min-height: 52px">
+        <span style="flex: 1; display: flex; flex-direction: column"><span id="as-lead-label" style="font-size: 15px; font-weight: 600">Shift lead</span><span style="font-size: 13px; color: #6B7075">Opens the café and handles the drawer</span></span>
+        <button type="button" role="switch" aria-checked="false" aria-labelledby="as-lead-label" style="flex: none; width: 51px; height: 44px; border: 0; background: none; padding: 0; display: grid; place-items: center"><span aria-hidden="true" style="position: relative; width: 51px; height: 31px; border-radius: 16px; background: #D5D8DA"><span style="position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF"></span></span></button>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="as-note" style="font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54">Note</label>
+        <input id="as-note" type="text" placeholder="Add a note for Dana (optional)" style="width: 100%; height: 48px; padding: 0 12px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; color: #1A1C1E; font: 400 15px Inter, sans-serif; outline: none; box-sizing: border-box">
+      </div>
+
+      <button type="submit" style="height: 44px; border: 0; border-radius: 8px; background: #0B6E69; color: #FFFFFF; font: 600 15px Inter, sans-serif">Save shift</button>
+    </form>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

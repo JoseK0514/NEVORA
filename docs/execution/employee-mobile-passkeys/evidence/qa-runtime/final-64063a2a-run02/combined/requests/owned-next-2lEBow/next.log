@@ -1,0 +1,95 @@
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://127.0.0.1:62893
+- Network:       http://127.0.0.1:62893
+✓ Ready in 271ms
+⚠ Warning: Next.js ignored package-lock.json in /Users/josek0514 because it would include your home directory (/Users/josek0514).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 711ms
+- Experiments (use with caution):
+  ⨯ turbopackFileSystemCacheForBuild
+
+ GET /login 200 in 332ms (next.js: 132ms, application-code: 201ms)
+ GET /login 200 in 36ms (next.js: 0.7ms, application-code: 35ms)
+ GET /app 200 in 214ms (next.js: 32ms, application-code: 182ms)
+ POST /login 200 in 988ms (next.js: 0.4ms, application-code: 988ms)
+  └─ ƒ login({}) in 37ms login/actions.ts
+ GET /api/notifications 200 in 134ms (next.js: 47ms, application-code: 86ms)
+ GET /api/employee/home 200 in 237ms (next.js: 25ms, application-code: 212ms)
+ GET /api/employee/my-time 200 in 38ms (next.js: 22ms, application-code: 16ms)
+ GET /app/requests/hub 200 in 190ms (next.js: 12ms, application-code: 178ms)
+ GET /api/notifications 200 in 49ms (next.js: 4ms, application-code: 45ms)
+ GET /api/employee/requests 200 in 101ms (next.js: 19ms, application-code: 82ms)
+ GET /api/employee/requests?employeeId=QA-REQ0-B 400 in 5ms (next.js: 0.6ms, application-code: 4ms)
+ GET /api/employee/requests 200 in 50ms (next.js: 0.4ms, application-code: 49ms)
+ GET /api/employee/requests 200 in 90ms (next.js: 0.4ms, application-code: 90ms)
+ GET /app/exchange?tab=available 200 in 110ms (next.js: 18ms, application-code: 92ms)
+ GET /api/employee/requests 200 in 80ms (next.js: 1.6ms, application-code: 79ms)
+ GET /api/employee/requests 200 in 54ms (next.js: 0.7ms, application-code: 54ms)
+ GET /api/employee/requests 200 in 72ms (next.js: 0.6ms, application-code: 71ms)
+ GET /api/employee/requests 200 in 48ms (next.js: 0.4ms, application-code: 48ms)
+ GET /api/notifications 200 in 88ms (next.js: 0.8ms, application-code: 87ms)
+ GET /api/employee/requests 200 in 107ms (next.js: 0.6ms, application-code: 106ms)
+ POST /app/exchange?tab=available 200 in 124ms (next.js: 0.5ms, application-code: 124ms)
+  └─ ƒ shiftChangeAction({}) in 41ms app/exchange/actions.ts
+ GET /api/notifications 200 in 50ms (next.js: 0.4ms, application-code: 50ms)
+ GET /api/employee/requests 200 in 75ms (next.js: 0.6ms, application-code: 75ms)
+ POST /app/exchange?tab=available 200 in 101ms (next.js: 0.4ms, application-code: 101ms)
+  └─ ƒ reconcileShiftChangeAction("39c6ee1a-4b93-40e5-8ea2-af49fdb271d9") in 5ms app/exchange/actions.ts
+ GET /api/employee/requests 200 in 102ms (next.js: 0.4ms, application-code: 101ms)
+ GET /app/requests/hub 200 in 36ms (next.js: 0.9ms, application-code: 35ms)
+ GET /api/employee/requests 200 in 91ms (next.js: 0.8ms, application-code: 90ms)
+ GET /api/employee/requests 401 in 7ms (next.js: 0.7ms, application-code: 6ms)
+ GET /login 200 in 63ms (next.js: 4ms, application-code: 59ms)
+ GET /app 200 in 215ms (next.js: 1.0ms, application-code: 214ms)
+ POST /login 200 in 335ms (next.js: 0.9ms, application-code: 334ms)
+  └─ ƒ login({}) in 43ms login/actions.ts
+ GET /api/notifications 200 in 83ms (next.js: 1.2ms, application-code: 82ms)
+ GET /fuel-portal.webmanifest 200 in 26ms (next.js: 20ms, application-code: 6ms)
+ GET /api/employee/home 200 in 217ms (next.js: 1.4ms, application-code: 216ms)
+ GET /app/requests/hub 200 in 146ms (next.js: 2ms, application-code: 143ms)
+ GET /fuel-portal.webmanifest 200 in 7ms (next.js: 1.0ms, application-code: 6ms)
+ GET /api/notifications 200 in 43ms (next.js: 0.6ms, application-code: 43ms)
+ GET /api/employee/requests 200 in 72ms (next.js: 0.5ms, application-code: 71ms)
+ GET /api/employee/requests?employeeId=QA-REQ1-B 400 in 1.7ms (next.js: 0.4ms, application-code: 1.3ms)
+ GET /app/exchange?tab=available 200 in 58ms (next.js: 1.2ms, application-code: 57ms)
+ GET /api/employee/requests 200 in 65ms (next.js: 0.9ms, application-code: 64ms)
+ GET /api/notifications 200 in 72ms (next.js: 0.5ms, application-code: 71ms)
+ GET /api/employee/requests 200 in 135ms (next.js: 0.6ms, application-code: 135ms)
+ POST /app/exchange?tab=available 200 in 98ms (next.js: 0.6ms, application-code: 98ms)
+  └─ ƒ shiftChangeAction({}) in 45ms app/exchange/actions.ts
+ GET /api/notifications 200 in 27ms (next.js: 0.3ms, application-code: 26ms)
+ GET /api/employee/requests 200 in 60ms (next.js: 0.4ms, application-code: 59ms)
+ POST /app/exchange?tab=available 200 in 93ms (next.js: 0.4ms, application-code: 93ms)
+  └─ ƒ reconcileShiftChangeAction("2a33f9d4-cc9d-4d8d-abcf-354c8e1b66ee") in 3ms app/exchange/actions.ts
+ GET /api/employee/requests 200 in 131ms (next.js: 1.8ms, application-code: 129ms)
+ GET /app/requests/hub 200 in 50ms (next.js: 1.5ms, application-code: 49ms)
+ GET /api/employee/requests 200 in 161ms (next.js: 0.7ms, application-code: 160ms)
+ GET /api/employee/requests 401 in 5ms (next.js: 0.4ms, application-code: 4ms)
+ GET /login 200 in 162ms (next.js: 13ms, application-code: 149ms)
+ GET /app 200 in 128ms (next.js: 0.6ms, application-code: 127ms)
+ POST /login 200 in 216ms (next.js: 0.6ms, application-code: 215ms)
+  └─ ƒ login({}) in 44ms login/actions.ts
+ GET /api/notifications 200 in 64ms (next.js: 0.6ms, application-code: 63ms)
+ GET /api/employee/home 200 in 151ms (next.js: 0.8ms, application-code: 150ms)
+ GET /api/employee/my-time 200 in 28ms (next.js: 0.9ms, application-code: 27ms)
+ GET /app/requests/hub 200 in 135ms (next.js: 1.4ms, application-code: 133ms)
+ GET /api/notifications 200 in 51ms (next.js: 0.9ms, application-code: 50ms)
+ GET /api/employee/requests 200 in 80ms (next.js: 0.4ms, application-code: 80ms)
+ GET /api/employee/requests?employeeId=QA-REQ2-B 400 in 1.6ms (next.js: 0.4ms, application-code: 1.2ms)
+ GET /app/exchange?tab=available 200 in 95ms (next.js: 0.9ms, application-code: 94ms)
+ GET /api/employee/requests 200 in 102ms (next.js: 0.6ms, application-code: 101ms)
+ GET /api/notifications 200 in 39ms (next.js: 0.8ms, application-code: 38ms)
+ GET /api/employee/requests 200 in 67ms (next.js: 0.2ms, application-code: 67ms)
+ GET /api/employee/requests 200 in 52ms (next.js: 2ms, application-code: 50ms)
+ POST /app/exchange?tab=available 200 in 121ms (next.js: 1.1ms, application-code: 120ms)
+  └─ ƒ shiftChangeAction({}) in 39ms app/exchange/actions.ts
+ GET /api/notifications 200 in 56ms (next.js: 0.4ms, application-code: 56ms)
+ GET /api/employee/requests 200 in 68ms (next.js: 0.3ms, application-code: 67ms)
+ POST /app/exchange?tab=available 200 in 70ms (next.js: 0.6ms, application-code: 70ms)
+  └─ ƒ reconcileShiftChangeAction("1072ea54-caf3-43ca-b192-3015752ce0e0") in 4ms app/exchange/actions.ts
+ GET /api/employee/requests 200 in 105ms (next.js: 0.5ms, application-code: 104ms)
+ GET /app/requests/hub 200 in 30ms (next.js: 0.9ms, application-code: 30ms)
+ GET /api/employee/requests 200 in 117ms (next.js: 0.5ms, application-code: 117ms)
+ GET /api/employee/requests 401 in 6ms (next.js: 1.1ms, application-code: 5ms)
+[?25h

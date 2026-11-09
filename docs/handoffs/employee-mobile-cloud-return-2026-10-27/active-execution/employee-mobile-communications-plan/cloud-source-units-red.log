@@ -1,0 +1,123 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/workspace/NEVORA[39m
+
+ [31m❯[39m src/lib/communications/recovery.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[32m 29[2mms[22m[39m
+   [32m✓[39m pauses without losing original recovery identity and requires current authority before lookup or replay[32m 7[2mms[22m[39m
+   [32m✓[39m not-found allows only exact original replay and refuses a second publication ID[32m 1[2mms[22m[39m
+   [32m✓[39m fences delayed committed responses after pause and recovers only through an authorized lookup[32m 2[2mms[22m[39m
+   [32m✓[39m clear after proven authority loss removes private command and prevents later replay[32m 1[2mms[22m[39m
+   [32m✓[39m distinguishes a signed-out action from changed permission and clears its command[32m 1[2mms[22m[39m
+   [32m✓[39m keeps the original intent unknown when a receipt belongs to a different operation or update[32m 1[2mms[22m[39m
+   [32m✓[39m bounds a hung transport and keeps the exact original command recoverable instead of remaining pending forever[32m 4[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"state":"unauthorized","httpStatus":403}[39m[32m 8[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"state":"unauthorized","httpStatus":401}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"status":"blocked"}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m CR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"status":"conflict"}[39m[32m 1[2mms[22m[39m
+ [31m❯[39m src/components/employee-mobile/messages-view.test.tsx [2m([22m[2m8 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 34[2mms[22m[39m
+   [32m✓[39m explains current page search, required action and a partial source without suggesting generic mark read[32m 23[2mms[22m[39m
+   [32m✓[39m does not turn a filtered page or an unavailable source into an all-history empty claim[32m 1[2mms[22m[39m
+   [32m✓[39m renders only own reading facts and permitted explicit actions with no recipient roster[32m 1[2mms[22m[39m
+   [32m✓[39m keeps original-operation lookup available when its content is gone and never offers a new send[32m 0[2mms[22m[39m
+   [32m✓[39m shows only the own original audience count without claiming delivery or coworker receipts[32m 1[2mms[22m[39m
+   [32m✓[39m CR-3 preserves separate allowed reading actions for NONE[32m 1[2mms[22m[39m
+[31m   [31m×[31m CR-3 preserves separate allowed reading actions for OPTIONAL[39m[32m 6[2mms[22m[39m
+   [32m✓[39m CR-3 preserves separate allowed reading actions for REQUIRED[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/communications/recovery.test.ts[2m > [22mCR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"state":"unauthorized","httpStatus":403}
+[41m[1m FAIL [22m[49m src/lib/communications/recovery.test.ts[2m > [22mCR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"status":"blocked"}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "blocked",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/lib/communications/recovery.test.ts:[2m61:30[22m[39m
+    [90m 59|[39m  try{
+    [90m 60|[39m   control.authorize(true);await control.send(reviewOriginal);response=…
+    [90m 61|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 62|[39m   await control.send({...reviewOriginal,operationId:'22222222-2222-422…
+    [90m 63|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/communications/recovery.test.ts[2m > [22mCR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"state":"unauthorized","httpStatus":401}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "signed-out",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/lib/communications/recovery.test.ts:[2m61:30[22m[39m
+    [90m 59|[39m  try{
+    [90m 60|[39m   control.authorize(true);await control.send(reviewOriginal);response=…
+    [90m 61|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 62|[39m   await control.send({...reviewOriginal,operationId:'22222222-2222-422…
+    [90m 63|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/communications/recovery.test.ts[2m > [22mCR-1 retains unknown reviewOriginal after inconclusive lookup refusal {"status":"conflict"}
+[31m[1mAssertionError[22m: expected { pending: false, …(3) } to match object { pending: false, …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "canRetry": false,[22m
+[32m-   "hasUnknown": true,[39m
+[32m-   "notice": "unknown",[39m
+[31m+   "hasUnknown": false,[39m
+[31m+   "notice": "conflict",[39m
+[2m    "pending": false,[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/lib/communications/recovery.test.ts:[2m61:30[22m[39m
+    [90m 59|[39m  try{
+    [90m 60|[39m   control.authorize(true);await control.send(reviewOriginal);response=…
+    [90m 61|[39m   expect(control.snapshot()).toMatchObject({pending:false,hasUnknown:t…
+    [90m   |[39m                              [31m^[39m
+    [90m 62|[39m   await control.send({...reviewOriginal,operationId:'22222222-2222-422…
+    [90m 63|[39m   control.authorize(false);await control.lookup();await control.retry(…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/components/employee-mobile/messages-view.test.tsx[2m > [22mCR-3 preserves separate allowed reading actions for OPTIONAL
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m src/components/employee-mobile/messages-view.test.tsx:[2m15:40[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 18:49:25
+[2m   Duration [22m 336ms[2m (transform 46%, import 27%, tests 23%, worker 4%)[22m
+
