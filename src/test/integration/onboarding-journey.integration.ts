@@ -60,3 +60,21 @@ it('processes real leased payroll and notification work with WORKER while denyin
   });
  }finally{vi.unstubAllEnvs();await f.close();}
 });
+
+it('uses the actual isolated APP principal for Owner memory while another company and WORKER remain isolated',async()=>{
+ const {vi}=await import('vitest'),{withWorkspaceBinding}=await import('@/lib/workspace-routing/context.server'),{getWorkspaceDb}=await import('@/lib/workspace-routing/transport.server'),{advisorService}=await import('@/lib/owner-advisor/service.server');
+ const f=await onboardingJourneyFixture();try{
+  const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));
+  vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
+  const env={NEVORA_OWNER_ADVISOR_ENABLED:'true'},intentId=randomUUID(),day=new Date().toISOString().slice(0,10);
+  const command={op:'memory',requestId:randomUUID(),expectedRevision:0,change:{kind:'save_intent',intentId,kindOfIntent:'preference',text:'Fictional company A preference',focus:{kind:'general'},effectiveDate:day,expiryDate:day}};
+  const call=(company:typeof a,value?:unknown)=>withWorkspaceBinding(company.binding,()=>advisorService(company.actor,getWorkspaceDb(company.binding),env,new AbortController().signal,value));
+  expect(await call(a,command)).toMatchObject({state:'memory_saved',revision:1});
+  expect(await call(a)).toMatchObject({memory:{state:'ready',memory:{revision:1,intents:[{id:intentId,text:'Fictional company A preference'}]}}});
+  expect(await call(b)).toMatchObject({memory:{state:'ready',memory:{revision:0,intents:[]}}});
+  const worker=await resolveWorkspaceBinding({origin:a.c.origin},f.store,f.routing,'WORKER');
+  await expect(getWorkspaceDb(worker).query({text:'SELECT * FROM owner_advisor_memories',values:[]})).rejects.toMatchObject({code:'42501'});
+  await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[a.c.row.workspace_id]);
+  await expect(call(a)).rejects.toThrow();
+ }finally{vi.unstubAllEnvs();await f.close();}
+});

@@ -8,7 +8,7 @@ import { admitOwner, checkOwner } from "./authority.server";
 import { AdvisorStore, commandHash } from "./store.server";
 import { AdvisorTools } from "./tools.server";
 import { readConfig } from "./config.server";
-import { AdvisorError, parseCommand, type AdvisorSnapshot } from "./contracts";
+import { AdvisorError, parseCommand, type AdvisorSnapshot, type AdvisorAnswer } from "./contracts";
 import { investigate, type Transport } from "./loop.server";
 import { readOwnerAttention } from "./briefing.server";
 import { AdvisorMemory } from "./memory.server";
@@ -27,7 +27,7 @@ export async function advisorService(
   signal: AbortSignal,
   value?: unknown,
   testTransport?: Transport,
-  snapshotOptions: { view?: "lease" } = {},
+  snapshotOptions: { view?: "lease" | "detail"; responseVersion?: 2 } = {},
 ) {
   const rawExecutor = ex;
   signal = AbortSignal.any([signal, AbortSignal.timeout(60000)]);
@@ -76,7 +76,7 @@ export async function advisorService(
     const state = await store.read(),
       briefing = await tools.briefing(attention.today);
     const endDate = attention.today.state === "ready" ? attention.today.today : memoryDay(new Date().toISOString(), admission.workspace.timeZone);
-    const operationalInsights = snapshotOptions.view === "lease" ? undefined : await readOperationalInsights(store, { startDate: addDays(endDate, -27), endDate }, signal);
+    const operationalInsights = snapshotOptions.view === "detail" ? await readOperationalInsights(store, { startDate: addDays(endDate, -27), endDate }, signal) : undefined;
     return {
       state: "ready",
       ...(operationalInsights ? { operationalInsights } : {}),
@@ -128,6 +128,12 @@ export async function advisorService(
     return { state: "notebook_saved" as const, revision: result.revision, ...(await observation()) };
   }
   if (command.op !== "ask" && command.op !== "ask_task" && command.op !== "ask_decision") throw new AdvisorError("invalid");
+  // Stored receipts retain all revision fences. Existing clients accept only the
+  // original context shape; schema2 and explicit decision commands opt in.
+  const publicAnswer = (answer: AdvisorAnswer): AdvisorAnswer =>
+    snapshotOptions.responseVersion === 2 || command.op === "ask_decision" || !answer.context
+      ? answer
+      : { ...answer, context: { notebookRevision: answer.context.notebookRevision, taskId: answer.context.taskId } };
   if (!config) throw new AdvisorError("unavailable");
   await check();
   // Purge expired context before replay admission, so an expired value cannot
@@ -141,7 +147,7 @@ export async function advisorService(
   if (receipt.replay)
     return {
       state: "answered" as const,
-      answer: receipt.replay,
+      answer: publicAnswer(receipt.replay),
       ...(await observation()),
     };
   try {
@@ -169,7 +175,7 @@ export async function advisorService(
     await check();
     await memory.read(); // Expiry during inference also invalidates settlement.
     await store.complete(command.requestId, command.message, answer, savedContext?.revision, memoryContext?.revision, state.profile.revision);
-    return { state: "answered" as const, answer, ...(await observation()) };
+    return { state: "answered" as const, answer: publicAnswer(answer), ...(await observation()) };
   } catch (error) {
     const cleanupSignal = AbortSignal.timeout(1000);
     const cleanup: SqlExecutor = {

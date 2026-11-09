@@ -1,3 +1,5 @@
+> November9 backend integration: the legal research server is included; the new panel/parser remains held for Claude. See [current backend/transport contract](../handoffs/2026-11-09-owner-partner-backend-contract.md). Panel descriptions below refer to that separately retained implementation and do not certify the shipped UI.
+
 # Owner advisor primary-source research
 
 The read-only `legal_research` tool and **Primary legal sources** panel accept only explicit `PR_US` or `US_FEDERAL` jurisdiction and `working_time`, `overtime_classification` or `source_status`. Timezone never selects jurisdiction. PR working-time research includes a relevant federal source; inspect federal classification separately. Collections do not determine coverage of a worker or employer.

@@ -5,6 +5,7 @@ import type { SqlExecutor } from "@/lib/notifications/types";
 const state = vi.hoisted(() => ({
   proof: null as SessionMutationProof | null,
   ex: null as SqlExecutor | null,
+  historicalRead: vi.fn(),
 }));
 vi.mock("@/lib/auth/session", () => ({
   getSession: async () => state.proof?.employee ?? null,
@@ -13,9 +14,13 @@ vi.mock("@/lib/auth/session", () => ({
 vi.mock("@/lib/data/sql-executor", () => ({
   neonNotificationExecutor: () => state.ex,
 }));
+vi.mock('./operational-insights.server',async importOriginal=>{const actual=await importOriginal<typeof import('./operational-insights.server')>();return {...actual,readOperationalInsights:async(...args:Parameters<typeof actual.readOperationalInsights>)=>{state.historicalRead();return actual.readOperationalInsights(...args);}};});
+import {parseAnswer} from '@/components/owner-advisor/public-response';
+import {ownerDecision,decisionReply} from '@/test/fixtures/owner-decision';
 import { GET, POST } from "@/app/api/owner/advisor/route";
 let f: Awaited<ReturnType<typeof companyAccessFixture>>;
 beforeEach(async () => {
+  state.historicalRead.mockClear();
   f = await companyAccessFixture();
   state.ex = f.db.executor;
   state.proof = f.owner;
@@ -23,6 +28,7 @@ beforeEach(async () => {
   vi.stubEnv("NEVORA_OWNER_ADVISOR_PROVIDER", "");
 });
 afterEach(async () => {
+  vi.restoreAllMocks();
   vi.unstubAllEnvs();
   await f?.db.dispose();
 });
@@ -91,20 +97,27 @@ it("returns honest disabled/unavailable states with no outbound fetch", async ()
     outbound.mockRestore();
   }
 });
-it("omits only the history scan on lease renewal while full reads remain fresh and authority is enforced", async () => {
-  const original = f.db.executor; let historyReads = 0;
-  state.ex = { ...original, transaction: async (...args: Parameters<typeof original.transaction>) => {
-    if (args[0].some(s => s.text.includes('AS fingerprint'))) historyReads++;
-    return original.transaction(...args);
-  } };
-  const full = await GET(request()); expect(full.status).toBe(200);
-  expect(await full.json()).toHaveProperty("operationalInsights"); expect(historyReads).toBe(1);
-  const leaseRequest = () => new Request("http://localhost/api/owner/advisor?view=lease", { headers: { "x-nevora-owner-advisor": "1" } });
-  const lease = await GET(leaseRequest()); expect(lease.status).toBe(200);
-  const body = await lease.json(); expect(body).not.toHaveProperty("operationalInsights");
-  expect(body).toMatchObject({ state: "ready", validForMs: expect.any(Number), profile: expect.any(Object), memory: expect.any(Object), notebook: expect.any(Object), attention: expect.any(Object) });
-  expect(historyReads).toBe(1);
-  await GET(request()); expect(historyReads).toBe(2);
-  await f.q("DELETE FROM employee_sessions WHERE token_hash=$1", [f.owner.sessionTokenHash]);
-  expect((await GET(leaseRequest())).status).toBe(403); expect(historyReads).toBe(2);
+it("keeps legacy/default and lease snapshots lightweight and scans history only on explicit detail with current Owner authority",async()=>{
+ const selected=(view:string)=>new Request('http://localhost/api/owner/advisor?view='+view,{headers:{'x-nevora-owner-advisor':'1'}});
+ for(const req of [request(),selected('lease'),request()]){const r=await GET(req);expect(r.status).toBe(200);const body=await r.json();expect(body).not.toHaveProperty('operationalInsights');expect(body).toMatchObject({state:'ready',memory:expect.any(Object),notebook:expect.any(Object),validForMs:expect.any(Number)});}
+ expect(state.historicalRead).not.toHaveBeenCalled();
+ const detail=await GET(selected('detail'));expect(detail.status).toBe(200);expect(await detail.json()).toHaveProperty('operationalInsights');expect(state.historicalRead).toHaveBeenCalledTimes(1);
+ await GET(selected('detail'));expect(state.historicalRead).toHaveBeenCalledTimes(2);
+ await f.q('DELETE FROM employee_sessions WHERE token_hash=$1',[f.owner.sessionTokenHash]);
+ for(const req of [request(),selected('lease'),selected('detail')])expect((await GET(req)).status).toBe(403);
+ expect(state.historicalRead).toHaveBeenCalledTimes(2);
+});
+it.each(['ask','ask_task'])('returns actual unchanged-client-compatible fresh and replayed %s HTTP answers, while preserving internal guards and explicit schema2',async op=>{
+ vi.stubEnv('NEVORA_OWNER_ADVISOR_PROVIDER','openai');vi.stubEnv('NEVORA_OWNER_ADVISOR_DATA_APPROVED','true');vi.stubEnv('NEVORA_OWNER_ADVISOR_MODEL','fictional');vi.stubEnv('NEVORA_OWNER_ADVISOR_DAILY_LIMIT','10');vi.stubEnv('OPENAI_API_KEY','fictional-not-a-key');
+ const taskId=crypto.randomUUID();if(op==='ask_task'){expect((await POST(request({op:'notebook',requestId:crypto.randomUUID(),expectedRevision:0,change:{kind:'save_task',taskId,objective:'Review current evidence',notes:'',state:'open',focus:{kind:'general'}}}))).status).toBe(200);}
+ const d={...ownerDecision(),summary:'Review the current evidence before any action.',observations:[{statement:'A current briefing is available.',evidenceIds:['E1']}],acknowledgedPartialEvidence:['E1']};
+ const provider=vi.spyOn(globalThis,'fetch').mockImplementation(async()=>Response.json(decisionReply(d)));
+ const command={op,requestId:crypto.randomUUID(),message:'Review current evidence',...(op==='ask_task'?{taskId,expectedNotebookRevision:1}:{})};
+ const first=await POST(request(command));expect(first.status).toBe(200);const a=parseAnswer(await first.json()).answer;
+ expect(a.context).toEqual({notebookRevision:op==='ask_task'?1:0,taskId:op==='ask_task'?taskId:null});
+ const replay=await POST(request(command));expect(replay.status).toBe(200);expect(parseAnswer(await replay.json()).answer).toEqual(a);
+ const extended=await POST(request(command,{'x-nevora-owner-advisor-schema':'2'}));expect(extended.status).toBe(200);expect((await extended.json()).answer.context).toMatchObject({profileRevision:0,memoryRevision:0});
+ expect(provider).toHaveBeenCalledTimes(1);
+ const stored=await f.q<{result:{context:unknown}}>('SELECT result FROM owner_advisor_requests WHERE request_id=$1',[command.requestId]);expect(stored[0].result.context).toMatchObject({profileRevision:0,memoryRevision:0});
+ expect((await GET(request(undefined,{'x-nevora-owner-advisor-schema':'unsupported'}))).status).toBe(400);
 });

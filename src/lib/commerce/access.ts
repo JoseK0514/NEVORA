@@ -40,7 +40,11 @@ export async function readCommerceAuthority(
   const c = await currentCommerceConnection(),
     key = `${c.origin}:${c.installationId}:${c.secret}`;
   const entry=cached;
-  if (entry?.key === key && entry.authority.validUntil > Date.now()){await c.assertCurrent?.();return entry.authority;}
+  if (entry?.key === key && entry.authority.validUntil > Date.now()) {
+    await c.assertCurrent?.();
+    if (entry.authority.validUntil <= Date.now()) throw Error("invalid_commerce_authority");
+    return entry.authority;
+  }
   const response = await fetcher(`${c.origin}/internal/access`, {
     headers: {
       authorization: `Bearer ${c.secret}`,
@@ -62,6 +66,7 @@ export async function readCommerceAuthority(
   )
     throw Error("invalid_commerce_authority");
   await c.assertCurrent?.();
+  if (value.validUntil <= Date.now()) throw Error("invalid_commerce_authority");
   cached = { key, authority: Object.freeze(value) };
   return value;
 }
