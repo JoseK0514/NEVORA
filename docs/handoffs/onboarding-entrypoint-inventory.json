@@ -352,6 +352,15 @@
       "isolatedBehavior": "NOT_DEPLOYED"
     },
     {
+      "path": "scripts/workforce-operations.mts",
+      "tags": [
+        "worker-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private fixed-command supervisor and SELECT-only health enforce exact source/scope/environment, private state, bounded cleanup and isolated WORKER-only routing before canonical worker IO; no arbitrary executable or native dispatch.",
+      "isolatedBehavior": "BOUND_WORKER_SCOPE"
+    },
+    {
       "path": "services/commerce/catalog.ts",
       "tags": [
         "commerce-integration"
@@ -475,6 +484,16 @@
       "status": "CONVERTED",
       "reason": "Separate commerce catalog/API/private enrollment worker; integrated mode refuses legacy signup/slot provisioning and retains exact company enrollment, Stripe identity/signature and retry guards.",
       "isolatedBehavior": "SEPARATE_CATALOG"
+    },
+    {
+      "path": "services/hosted/neon/stripewebhook.entry.ts",
+      "tags": [
+        "direct-transport",
+        "hosted-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Native Neon staging receiver verifies compiled source, exact test branch/environment, closed feature gate, least-privilege named catalog DSN and Stripe signature before queue IO; injected default database capability is inert. No Owner/provisioner/Stripe API capability.",
+      "isolatedBehavior": "GUARDED_STAGING_CATALOG"
     },
     {
       "path": "src/app/access-help/[[...topic]]/page.tsx",
@@ -3634,6 +3653,16 @@
       "isolatedBehavior": "BOUND_ORIGIN"
     },
     {
+      "path": "src/lib/operations/routing-reader.ts",
+      "tags": [
+        "setup-only",
+        "direct-transport"
+      ],
+      "status": "PROVEN_NON_RUNTIME",
+      "reason": "Explicit operator setup helper accepts an acquired admin client and fresh restricted role only; imported only by owned tests, not a request/worker runtime. Creates scoped security-barrier views after effective table/column privilege checks; creates no password. Hosted grants/custody remain unactivated.",
+      "isolatedBehavior": "SETUP_ONLY"
+    },
+    {
       "path": "src/lib/payroll-export/service.ts",
       "tags": [
         "shared-executor"
@@ -4195,5 +4224,10 @@
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",
   "authenticationEvidence": "Task3: owned A/B session/actual HTTP/worker/file negatives; native core tests. Hosted provider/browser and native UI integration remain separate obligations.",
-  "enforcement": "scripts/onboarding-inventory.mjs covers all routes, server-action modules, worker boundaries, functions and direct PostgreSQL/Neon imports; bounded test directory/suffix exemptions. Unseen paths fail acceptance."
+  "enforcement": "scripts/onboarding-inventory.mjs covers all routes, server-action modules, worker boundaries, functions and direct PostgreSQL/Neon imports; bounded test directory/suffix exemptions. Unseen paths fail acceptance.",
+  "lastBackendReconciliation": {
+    "base": "e558c1f432ae5e19b6c49b9118f3c7004f9b6b70",
+    "qualifiedApplicationSource": "10b4ee0cd872f002b6af13c24fe8adcd1068c68e",
+    "scope": "Explicit closed hosted receiver, setup-only reader and fixed workforce command; no UI/native adoption"
+  }
 }

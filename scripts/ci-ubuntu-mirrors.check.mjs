@@ -10,6 +10,12 @@ test('prefers the existing official HTTPS archive while retaining both runner fa
  assert.equal(result,'https://archive.ubuntu.com/ubuntu/\tpriority:1\nhttps://security.ubuntu.com/ubuntu/\tpriority:2\nhttp://azure.archive.ubuntu.com/ubuntu/\tpriority:3\n');
  assert.equal(prioritizeUbuntuArchive(result),result);
 });
+test('retains the exact observed AWS Ubuntu fallback while preferring the same signed official archives',()=>{
+ const source=runnerMirrors.replace('http://azure.archive.ubuntu.com','http://us-east-2.ec2.archive.ubuntu.com');
+ const result=prioritizeUbuntuArchive(source);assert.equal(result,source.split('\n').slice(1,3).map((line,i)=>line.replace(/priority:[1-3]/,'priority:'+(i+1))).join('\n')+'\nhttp://us-east-2.ec2.archive.ubuntu.com/ubuntu/\tpriority:3\n');
+ assert.equal(prioritizeUbuntuArchive(result),result);
+ for(const value of ['http://us-east-2.ec2.archive.ubuntu.com.evil.invalid','http://us-east-1.ec2.archive.ubuntu.com'])assert.throws(()=>prioritizeUbuntuArchive(source.replace('http://us-east-2.ec2.archive.ubuntu.com',value)),/Unexpected Ubuntu mirror inventory/);
+});
 test('refuses an unexpected mirror inventory instead of changing package trust',()=>{
  for(const source of ['',runnerMirrors.replace('https://archive.ubuntu.com','https://unexpected.invalid'),runnerMirrors+runnerMirrors.split('\n')[0]+'\n'])assert.throws(()=>prioritizeUbuntuArchive(source),/Unexpected Ubuntu mirror inventory/);
 });
