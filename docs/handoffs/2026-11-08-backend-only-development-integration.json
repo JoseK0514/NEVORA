@@ -1191,8 +1191,13 @@
     "ownedSQL": 46,
     "typecheck": "passed",
     "lint": "passed",
-    "fullUnit": "pending",
-    "build": "pending",
+    "fullUnit": {
+      "passed": 10993,
+      "failed": 0,
+      "skipped": 801,
+      "seconds": 545.589
+    },
+    "build": "passed",
     "freshReview": "pending"
   },
   "UIChanged": false,
@@ -1200,5 +1205,6 @@
   "mainChanged": false,
   "fullCollaborationIncluded": false,
   "runtimeEvidence": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf",
-  "rollback": "Revert only these development commits through a normal reviewed revert; do not reset or force-push shared branches."
+  "rollback": "Revert only these development commits through a normal reviewed revert; do not reset or force-push shared branches.",
+  "localQualificationSource": "e4a3c1606f9f7332c13d4e33d0749beb14addcad"
 }

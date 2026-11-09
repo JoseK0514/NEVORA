@@ -70,11 +70,13 @@ clock arguments are additive; existing callers need no changes.
 **Files:** development source inventory, this plan/spec and a dated backend
 handoff/evidence receipt. No runtime configuration changes.
 
-- [ ] Record selected/inherited/held paths and current immutable source heads;
+- [x] Record selected/inherited/held paths and current immutable source heads;
   retain collaboration as held with partial backend extraction documented.
-- [ ] Run full `npm test -- --maxWorkers=1`, typecheck, lint, build without
+- [x] Run full `npm test -- --maxWorkers=1`, typecheck, lint, build without
   inherited database/provider settings, and relevant SQL suites on owned data.
   Existing UI component tests must pass without UI-source edits.
+- [x] Final local custody check: `npm run check:development-sources` on the qualified candidate.
+
 ## Final integration gate
 
 - [ ] Obtain one fresh-context code review of the whole candidate per the inline

@@ -49,8 +49,11 @@ canonical per-card source/period identities remain unchanged.
 - Deterministic reader-I/O tests cover the shorter previous-period lifetime.
   Those tests do not claim real SQL authorization; the separate unmocked owned
   SQL cases exercise that boundary.
-- TypeScript and whole ESLint passed. Full unit/build/review are pending at this
-  initial checkpoint.
+- TypeScript, whole ESLint and the production-mode build passed without inherited
+  database/provider settings. Full default unit suite: **10,993 passed, 801
+  existing skips, 0 failures**, 545.589 seconds at e4a3c160. Skips did not pass.
+  The source gate passed: 73 classified sources, three active branches and exact
+  archive/included-source custody. The fresh final code review is pending.
 
 Failed fixture attempts are retained. The first new Requests SQL case tried a
 second simultaneous database at the same selected name; the ownership guard
@@ -75,7 +78,12 @@ states. Governance: no policy exception or production authorization; release
 impact remains CONDITION on exact-candidate gates. This is not independent QA/UI
 certification.
 
-Next: finish full checks, obtain one fresh-context code review, reconcile any new
+Next: obtain one fresh-context code review, reconcile any new
 remote drift and push only a normal fast-forward to development. Then observe
 the exact pushed candidate's required CI. Main, staging deployments, signing and
 the paused physical-iPhone connection check are outside this integration.
+
+For later UI integration, preserve development's backend versions, especially the
+source-lifetime, overnight and midnight corrections. Reconcile the matching UI
+clock calls and held `readInboxCount` activation together; do not overwrite these
+server fixes by copying all backend files from the older collaboration snapshot.
