@@ -1,6 +1,11 @@
 {
   "packId": "rondo-company-leadership-20261109",
-  "status": "prepared_not_model_executed",
+  "status": "fixtures_verified_model_not_executed",
+  "readinessSuite": "vitest.rondo-leadership.config.mts",
+  "fixtureImplementation": "src/test/integration/rondo-leadership-fixture.ts",
+  "conversationRunner": "src/test/integration/rondo-leadership-runner.ts",
+  "modelConversationCases": 13,
+  "serverInvariantCases": 3,
   "sourceHead": "3446982085c32b238b4d329c98639f3978c6e8b2",
   "dataPolicy": "Fictional companies and records only; no production load, employee decisions, payment or messaging.",
   "executionRule": "Each case requires a verified fixture, actual authorized service/model execution where applicable, and independent semantic review. Scenario text and scripted-provider results are not model passes. Manager denial cases must stop before inference under the current Owner-only implementation.",

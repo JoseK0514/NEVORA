@@ -3,6 +3,7 @@ import type { ProviderConfig } from "./config.server";
 import { randomUUID } from "node:crypto";
 import type { NotebookContext } from "./notebook";
 import { providerBody, providerItems } from "./provider.server";
+import { AdvisorProviderFailure, rejectedProviderResponse } from "./provider-failure.server";
 import { decisionTool, reviewDecision, decisionEvidenceSummary, type DecisionEvidence } from "./decision";
 import "server-only";
 import {
@@ -16,6 +17,13 @@ import {
   type ToolResult,
 } from "./contracts";
 export type Transport = (url: string, init: RequestInit) => Promise<Response>;
+async function fetchProvider(transport: Transport, url: string, init: RequestInit) {
+  try { return await transport(url, init); }
+  catch (error) {
+    if (init.signal?.aborted || error instanceof AdvisorError) throw error;
+    throw new AdvisorProviderFailure(undefined, "network");
+  }
+}
 const tools = [
   {
     name: "company_briefing",
@@ -92,7 +100,8 @@ async function responseJson(
   response: Response,
   signal: AbortSignal,
 ): Promise<unknown> {
-  if (!response.ok || !response.body) throw new AdvisorError("provider_failed");
+  if (!response.ok) throw await rejectedProviderResponse(response, signal);
+  if (!response.body) throw new AdvisorProviderFailure(undefined, "invalid_response");
   const reader = response.body.getReader();
   let size = 0,
     body = "";
@@ -107,6 +116,9 @@ async function responseJson(
     }
     body += decoder.decode();
     return JSON.parse(body);
+  } catch (error) {
+    if (error instanceof AdvisorError || signal.aborted) throw error;
+    throw new AdvisorProviderFailure(undefined, "invalid_response");
   } finally {
     void reader.cancel().catch(() => {});
     reader.releaseLock();
@@ -193,7 +205,7 @@ export async function investigate(
     const output = await bounded(
       async () =>
         responseJson(
-          await (deps.fetch ?? fetch)(config.endpoint, {
+          await fetchProvider(deps.fetch ?? fetch, config.endpoint, {
             method: "POST",
             redirect: "error",
             headers: {

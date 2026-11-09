@@ -44,7 +44,7 @@ Passing an impossible case means correctly identifying the conflicting requireme
 
 The executable model run must be distinguished from a prepared scenario, scripted-provider test, database preflight and human semantic review. No case passes merely because JSON parsed, the provider refused, an error was hidden, or a mock returned the desired sentence.
 
-The [new leadership challenge pack](../qa/rondo-company-leadership-challenges.json) adds 16 scenarios for this direction. Its status is **prepared, not model-executed**. Existing validation evidence remains dated and does not certify these cases.
+The [new leadership challenge pack](../qa/rondo-company-leadership-challenges.json) adds 16 scenarios for this direction. All 16 now have verified owned PostgreSQL fixtures and service paths; 13 have injectable conversation drivers, while three exercise server authorization/recovery invariants. Its model judgment status remains **not executed**. See [provider and challenge readiness](../qa/2026-11-09-rondo-provider-readiness.md). Existing model validation evidence remains dated and does not certify these cases.
 
 ## Acceptance requirements
 
