@@ -53,7 +53,17 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
    if(!object(settings)||settings.suspend_timeout_seconds!==0||settings.autoscaling_limit_min_cu!==0.25||settings.autoscaling_limit_max_cu!==0.25||e.suspend_timeout_seconds!==0||e.autoscaling_limit_min_cu!==0.25||e.autoscaling_limit_max_cu!==0.25||p.history_retention_seconds!==this.policy.historySeconds||!object(q)||!quotaFields.every(k=>q[k]===this.policy.quota[k as keyof ProvisionerPolicy['quota']]))throw new NeonProviderUnavailable();
   }
   const databases=rows(await this.call(base+'/branches/'+branchId+'/databases'),'databases').filter(d=>d.name===identity.databaseName&&d.owner_name===identity.provisionerRole&&d.branch_id===branchId);if(databases.length!==1)throw new NeonProviderUnavailable();
-  const operations=await this.call(base+'/operations?limit=1000');if(cursor(operations)||rows(operations,'operations').some(o=>o.status!=='finished'))throw new NeonProviderUnavailable();
+  // Neon can return the final row's cursor and echo it on an empty next page.
+  // Follow bounded pages to prove completion; a cursor alone is not pending work.
+  let operationCursor:string|null=null,operationsComplete=false;
+  for(let page=0;page<3;page++){
+   const query=new URLSearchParams({limit:'1000',...(operationCursor?{cursor:operationCursor}:{})}),body=await this.call(base+'/operations?'+query),operations=rows(body,'operations');
+   if(operations.some(o=>o.status!=='finished'))throw new NeonProviderUnavailable();
+   if(!operations.length){operationsComplete=true;break;}
+   const after=cursor(body);if(!after){if(operations.length===1000)throw new NeonProviderUnavailable();operationsComplete=true;break;}
+   if(after===operationCursor)throw new NeonProviderUnavailable();operationCursor=after;
+  }
+  if(!operationsComplete)throw new NeonProviderUnavailable();
   return {projectId,branchId,endpointId:endpoints[0].id,endpointHost:endpoints[0].host,accountRef:this.policy.accountRef,region:this.policy.region,name:identity.name,databaseName:identity.databaseName,provisionerRole:identity.provisionerRole,createdAt:p.created_at};
  }
  async find(request:ResourceRequest,identity:ResourceIdentity):Promise<ProvisionedResource[]>{
@@ -62,6 +72,7 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
    const q=new URLSearchParams({org_id:this.policy.accountRef,search:identity.name,limit:'400',...(next?{cursor:next}:{})}),body=await this.call('/projects?'+q),projects=rows(body,'projects');
    if(body.unavailable_project_ids!==undefined&&(!Array.isArray(body.unavailable_project_ids)||body.unavailable_project_ids.length))throw new NeonProviderUnavailable();
    for(const p of projects){if(p.name!==identity.name)continue;if(!id(p.id)||seen.has(p.id))throw new NeonProviderUnavailable();seen.add(p.id);found.push(await this.inspect(p.id,identity));}
+   if(!projects.length)return found;
    const after=cursor(body);if(!after){if(projects.length===400)throw new NeonProviderUnavailable();return found;}if(after===next)throw new NeonProviderUnavailable();next=after;
   }
   throw new NeonProviderUnavailable();

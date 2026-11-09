@@ -24,6 +24,28 @@ it('constructs an explicit empty project request with bounded approved resource 
 it('resolves exact organization/region/root-branch/endpoint/database custody and returns a strict bootstrap URI',async()=>{
  const f=fixture(),found=await f.provider.find(request,identity);expect(found).toHaveLength(1);const url=new URL(await f.provider.bootstrapCredential(found[0]));expect(url.username).toBe(identity.provisionerRole);expect(url.searchParams.get('sslmode')).toBe('verify-full');
 });
+it('reconciles a created project when Neon echoes a terminal cursor on the following empty operation and project pages',async()=>{
+ const f=fixture(),seen:string[]=[];
+ const fetcher:typeof fetch=async(input,init={})=>{const u=new URL(String(input));seen.push(u.pathname+u.search);
+  if(u.pathname.endsWith('/operations'))return Response.json({operations:u.searchParams.has('cursor')?[]:[{status:'finished'}],pagination:{cursor:'2026-11-08T23:59:58.173563Z'}});
+  if(u.pathname==='/api/v2/projects'&&u.searchParams.has('cursor'))return Response.json({projects:[],pagination:{cursor:'fictional-project'}});
+  const response=await f.fetcher(input,init),data=await response.json();if(u.pathname==='/api/v2/projects')data.pagination={cursor:'fictional-project'};return Response.json(data);
+ };
+ const p=new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher});expect(await p.find(request,identity)).toHaveLength(1);
+ expect(seen.filter(p=>p.includes('/operations?'))).toHaveLength(2);expect(seen.filter(p=>p.startsWith('/api/v2/projects?'))).toHaveLength(2);expect(f.calls.some(c=>c.init.method==='POST')).toBe(false);
+});
+it.each(['running','failed'])('withholds a resource whose later operation page contains a %s operation',async status=>{
+ const f=fixture();const fetcher:typeof fetch=async(input,init)=>{const u=new URL(String(input));if(u.pathname.endsWith('/operations'))return Response.json(u.searchParams.has('cursor')?{operations:[{status}]}:{operations:[{status:'finished'}],pagination:{cursor:'page-two'}});return f.fetcher(input,init);};
+ await expect(new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher}).find(request,identity)).rejects.toThrow('Provisioning provider unavailable');
+});
+it('withholds a resource when a full operation page omits its continuation cursor',async()=>{
+ const f=fixture(),fetcher:typeof fetch=async(input,init)=>new URL(String(input)).pathname.endsWith('/operations')?Response.json({operations:Array.from({length:1000},()=>({status:'finished'}))}):f.fetcher(input,init);
+ await expect(new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher}).find(request,identity)).rejects.toThrow('Provisioning provider unavailable');
+});
+it('bounds repeated nonempty operation cursors without accepting incomplete history',async()=>{
+ const f=fixture();let reads=0;const fetcher:typeof fetch=async(input,init)=>{if(new URL(String(input)).pathname.endsWith('/operations')){reads++;return Response.json({operations:[{status:'finished'}],pagination:{cursor:'repeated'}});}return f.fetcher(input,init);};
+ await expect(new NeonProvisioningProvider({apiKey:'fictional-api-key-never-live',policy,fetch:fetcher}).find(request,identity)).rejects.toThrow('Provisioning provider unavailable');expect(reads).toBeLessThanOrEqual(3);
+});
 it('rejects cross-account requests and an unlimited/absent resource policy without any API call',async()=>{
  const f=fixture();await expect(f.provider.create({...request,accountRef:'foreign-org'},identity)).rejects.toThrow();expect(f.fetcher).not.toHaveBeenCalled();expect(readProvisionerPolicy({})).toBeNull();expect(readProvisionerPolicy({NEVORA_PROVISIONER_RESOURCE_POLICY:JSON.stringify({...policy,quota:{...policy.quota,compute_time_seconds:0}})})).toBeNull();
 });
