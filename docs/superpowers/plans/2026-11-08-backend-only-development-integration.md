@@ -79,7 +79,7 @@ handoff/evidence receipt. No runtime configuration changes.
 
 ## Final integration gate
 
-- [ ] Obtain one fresh-context code review of the whole candidate per the inline
+- [x] Obtain one fresh-context code review of the whole candidate per the inline
   execution skill. Fix any Important/Critical findings with RED→GREEN proof.
 - [ ] Re-fetch; inspect any drift, rerun the source gate, verify main/collaboration
   unchanged by us, and push only `HEAD:development` without force.
@@ -87,6 +87,18 @@ handoff/evidence receipt. No runtime configuration changes.
   pushed/local-tested/CI-tested from deployment; existing staging stays unchanged.
 
 ## Execution rulings
+
+The final reviewer found three Important defects in the initial candidate:
+source lifetime after the final company guard, two independently observed swap
+sections, and pending offers consuming the history limit. One author repair pass
+adds `company-result.server` boundary regressions and a canonical
+`listEmployeeRequestExchanges` reader in `data/exchanges.ts`. It observes both
+sections in one guarded SQL statement with one effective-status clock, fetches
+all potentially incoming candidates plus 20 other participant rows, then limits
+eligible history. Existing marketplace readers and their limits stay intact.
+Owned SQL covers cancellation in both interleavings, crowded/expired history and
+partial source failure. The original review is retained; repairs are established
+by RED-to-GREEN evidence and a green full suite, not a second reviewer approval.
 
 Jose's request authorizes this bounded integration into development. Execute
 inline without another plan-approval round. The original linked worktree carries

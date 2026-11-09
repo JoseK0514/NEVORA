@@ -2,7 +2,7 @@
   "schema": 1,
   "base": "e2872f30ea8548b1310ea4a9b25813352decf82a",
   "collaborationSource": "d349b66196c847fdb46852a3db0c0630463295c5",
-  "localImplementation": "8cafdc68",
+  "localImplementation": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
   "sourcePathCount": 289,
   "selectedSourcePaths": [
     "src/lib/data/employee-requests.server.ts",
@@ -1181,12 +1181,44 @@
     "src/lib/action-center/service.ts",
     "src/lib/assistance/manager-actions.test.ts",
     "src/lib/assistance/manager-actions.ts",
+    "src/lib/company-access/company-result.server.test.ts",
+    "src/lib/company-access/company-result.server.ts",
     "src/lib/data/employee-requests.server.test.ts",
     "src/lib/data/employee-requests.server.ts",
+    "src/lib/data/exchanges.ts",
     "src/test/integration/clocker-action-center.integration.ts",
     "src/test/integration/shift-change-hardening.integration.ts"
   ],
   "tests": {
+    "focusedUnit": 47,
+    "ownedSQL": 50,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "fullUnit": {
+      "passed": 10997,
+      "failed": 0,
+      "skipped": 801,
+      "seconds": 383.338,
+      "source": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408"
+    },
+    "freshReview": {
+      "reviewedCommit": "d7bfc4c231ce1d977e1e4ce737ea297dfb502a6e",
+      "verdict": "With fixes / BLOCK / REQUEST_CHANGES",
+      "report": "docs/handoffs/evidence/2026-11-08-backend-integration-code-review.md",
+      "reportSha256": "e19a1364efdc60d8997c0209d3549da26b4f758c2870c79e721cc73925ce4d55",
+      "authorRepairCommit": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
+      "authorDisposition": "All three Important findings reproduced RED and repaired GREEN; full suite passed. Minor helper duplication corrected. Original reviewer verdict retained; no second reviewer approval claimed."
+    }
+  },
+  "UIChanged": false,
+  "deploymentPerformed": false,
+  "mainChanged": false,
+  "fullCollaborationIncluded": false,
+  "runtimeEvidence": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf",
+  "rollback": "Revert only these development commits through a normal reviewed revert; do not reset or force-push shared branches.",
+  "localQualificationSource": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
+  "preReviewQualification": {
     "focusedUnit": 43,
     "ownedSQL": 46,
     "typecheck": "passed",
@@ -1200,11 +1232,5 @@
     "build": "passed",
     "freshReview": "pending"
   },
-  "UIChanged": false,
-  "deploymentPerformed": false,
-  "mainChanged": false,
-  "fullCollaborationIncluded": false,
-  "runtimeEvidence": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf",
-  "rollback": "Revert only these development commits through a normal reviewed revert; do not reset or force-push shared branches.",
-  "localQualificationSource": "e4a3c1606f9f7332c13d4e33d0749beb14addcad"
+  "sharedIntegrationReceipt": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf/shared-integration.json"
 }

@@ -53,7 +53,8 @@ canonical per-card source/period identities remain unchanged.
   database/provider settings. Full default unit suite: **10,993 passed, 801
   existing skips, 0 failures**, 545.589 seconds at e4a3c160. Skips did not pass.
   The source gate passed: 73 classified sources, three active branches and exact
-  archive/included-source custody. The fresh final code review is pending.
+  archive/included-source custody. These are the pre-review qualification results;
+  the author repair results below supersede them for the final candidate.
 
 Failed fixture attempts are retained. The first new Requests SQL case tried a
 second simultaneous database at the same selected name; the ownership guard
@@ -78,10 +79,43 @@ states. Governance: no policy exception or production authorization; release
 impact remains CONDITION on exact-candidate gates. This is not independent QA/UI
 certification.
 
-Next: obtain one fresh-context code review, reconcile any new
-remote drift and push only a normal fast-forward to development. Then observe
-the exact pushed candidate's required CI. Main, staging deployments, signing and
-the paused physical-iPhone connection check are outside this integration.
+## Final review and author repair
+
+The [original fresh-context review](evidence/2026-11-08-backend-integration-code-review.md)
+returned **With fixes / BLOCK / REQUEST_CHANGES** at d7bfc4c2. Its original verdict
+is preserved. One author repair pass at
+`6b5f78f30f7df7d32dbab8ce80b840bc6bf80408` addresses the findings:
+
+- Final authorization delay now consumes the source's remaining lifetime as well
+  as the original company authority budget. The actual public company-result
+  wrapper failed three deterministic regressions before the repair, and all four
+  boundary checks pass afterward, including exact expiry and a 1,500ms tail on a
+  1,000ms source.
+- Incoming and recent swap sections now use one guarded SQL snapshot and one
+  statement timestamp. Controlled canonical cancellation reproduced both duplicate
+  and omitted records on the original implementation; both interleavings pass.
+- All potentially incoming rows are canonically projected with the latest 20
+  other participant rows before eligible history is limited. A real SQL fixture
+  with 20 pending offers retains sent, decided and effectively expired history.
+  A failed exchange source remains explicit while independent coverage survives.
+- The minor calendar-helper duplication uses existing `addDays`; existing
+  midnight and overnight boundary regressions pass without a redundant new test.
+
+Final repair checks: **10,997 unit passed, 801 existing skips, zero failures**
+(383.338 seconds), plus **43 Requests/shift-change SQL and seven action-center
+SQL passed**. The focused 47 unit checks, TypeScript, whole ESLint, build and
+source custody passed. Application code is qualified at 6b5f78f3; subsequent
+handoff edits are documentation only. No second reviewer approval or independent
+certification is claimed.
+
+Next: complete the full suite, reconcile any remote drift, push only a normal
+fast-forward to development and observe that exact candidate's CI. Main, staging
+deployments, signing and the paused physical-iPhone connection check are outside
+this integration. The exact pushed commit and observed workflow results are
+recorded in the runtime's `shared-integration.json`; it distinguishes local,
+pushed and CI states and retains failed attempts. Inspect that receipt or the
+exact commit's GitHub Actions runs rather than treating this pre-push document
+as proof of shared CI completion.
 
 For later UI integration, preserve development's backend versions, especially the
 source-lifetime, overnight and midnight corrections. Reconcile the matching UI
