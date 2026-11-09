@@ -1,3 +1,5 @@
+import {workspaceMode} from '../workspace-routing/config.server';
+import {workspaceRequestOrigin} from '../workspace-routing/runtime-config.server';
 export const correctionResponseHeaders = {
   'Cache-Control':'no-store, private',
   'Vary':'Cookie',
@@ -9,6 +11,7 @@ export const correctionJson = (body: object, status = 200) =>
   Response.json(body,{status,headers:correctionResponseHeaders});
 
 function allowedOrigin(request: Request): string | null {
+  try{if(workspaceMode()==='isolated')return workspaceRequestOrigin(request);}catch{return null;}
   const configured=process.env.FUEL_PORTAL_ORIGIN?.trim();
   if(configured){
     try{

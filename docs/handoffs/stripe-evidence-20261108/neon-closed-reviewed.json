@@ -1,0 +1,264 @@
+{
+  "source": {
+    "commit": "0dcf319ce514f48a490247a5fb219490bd39c95c",
+    "tree": "1213a89b8ba1df01eeba79a583799ef4df745fbb",
+    "dirty": false
+  },
+  "artifacts": [
+    {
+      "slug": "stripewebhook",
+      "bytes": 135018,
+      "zipSha256": "e43bbeb692610dccbfec630b2d69374062ec36005f4450fba1576ffc660e77c8"
+    },
+    {
+      "slug": "commercequeue",
+      "bytes": 244606,
+      "zipSha256": "3c75c8fdd31721ba7cc242daede777a45d05156ab7326d15e686779cd9490fb3"
+    },
+    {
+      "slug": "commercereconcile",
+      "bytes": 244608,
+      "zipSha256": "c70012cab20544b759d592f816f2575c474c8400ffa81fa84c2df53b998058e5"
+    },
+    {
+      "slug": "provisioner",
+      "bytes": 351402,
+      "zipSha256": "a7b8e9d3e4271a40a856fbdcb11fa4ebe2fa5e7a3eeb7006080b59113c72a537"
+    }
+  ],
+  "functions": [
+    {
+      "id": "commercequeue",
+      "slug": "commercequeue",
+      "name": "commercequeue",
+      "invocation_url": "https://br-hidden-mud-bbnc2fxk-commercequeue.compute.c-15.us-east-1.aws.neon.tech/",
+      "current_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:51.271122Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "active_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:51.271122Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "created_at": "2026-11-08T20:55:53.634848Z"
+    },
+    {
+      "id": "commercereconcile",
+      "slug": "commercereconcile",
+      "name": "commercereconcile",
+      "invocation_url": "https://br-hidden-mud-bbnc2fxk-commercereconcile.compute.c-15.us-east-1.aws.neon.tech/",
+      "current_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:56.832188Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "active_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:56.832188Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "created_at": "2026-11-08T20:55:59.422136Z"
+    },
+    {
+      "id": "provisioner",
+      "slug": "provisioner",
+      "name": "provisioner",
+      "invocation_url": "https://br-hidden-mud-bbnc2fxk-provisioner.compute.c-15.us-east-1.aws.neon.tech/",
+      "current_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:25:00.500864Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "active_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:25:00.500864Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "created_at": "2026-11-08T20:56:06.719742Z"
+    },
+    {
+      "id": "stripewebhook",
+      "slug": "stripewebhook",
+      "name": "stripewebhook",
+      "invocation_url": "https://br-hidden-mud-bbnc2fxk-stripewebhook.compute.c-15.us-east-1.aws.neon.tech/",
+      "current_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:44.705357Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "active_deployment": {
+        "id": 3,
+        "status": "completed",
+        "memory_mib": 2048,
+        "runtime": "nodejs24",
+        "created_at": "2026-11-08T21:24:44.705357Z",
+        "environment": [
+          "DATABASE_URL",
+          "DATABASE_URL_UNPOOLED",
+          "NEVORA_COMMERCE_ENVIRONMENT",
+          "NEVORA_NEON_BRANCH_ID",
+          "NEVORA_NEON_HOST_ENABLED",
+          "NEVORA_NEON_SOURCE_SHA",
+          "NEVORA_ONBOARDING_ENVIRONMENT",
+          "NEVORA_WORKSPACE_MODE"
+        ]
+      },
+      "created_at": "2026-11-08T20:54:47.702598Z"
+    }
+  ],
+  "retainedEnvironmentPreflight": {
+    "source": "0dcf319ce",
+    "checkedNames": [
+      "DATABASE_URL",
+      "DATABASE_URL_UNPOOLED",
+      "NEVORA_COMMERCE_ENVIRONMENT",
+      "NEVORA_NEON_BRANCH_ID",
+      "NEVORA_NEON_HOST_ENABLED",
+      "NEVORA_NEON_SOURCE_SHA",
+      "NEVORA_ONBOARDING_ENVIRONMENT",
+      "NEVORA_WORKSPACE_MODE"
+    ],
+    "functions": [
+      "commercequeue",
+      "commercereconcile",
+      "provisioner",
+      "stripewebhook"
+    ],
+    "noSecretValuesRead": true
+  },
+  "processingEnabled": false,
+  "secretsConfigured": false,
+  "paidResourcesCreated": false,
+  "triggers": [
+    {
+      "type": "schedule",
+      "trigger_id": "trigger-2c15d920-7c4b-4fd1-904d-715bf72dd153",
+      "function_slug": "commercereconcile",
+      "name": "nevora-staging-commercereconcile",
+      "function_path": "/run",
+      "schedule": {
+        "cron": "*/15 * * * *"
+      },
+      "enabled": false,
+      "version": 309730,
+      "next_run_at": null,
+      "inherited": false
+    },
+    {
+      "type": "schedule",
+      "trigger_id": "trigger-4314e93a-086a-434c-9753-b81a231fdeb1",
+      "function_slug": "provisioner",
+      "name": "nevora-staging-provisioner",
+      "function_path": "/run",
+      "schedule": {
+        "cron": "* * * * *"
+      },
+      "enabled": false,
+      "version": 309732,
+      "next_run_at": null,
+      "inherited": false
+    },
+    {
+      "type": "schedule",
+      "trigger_id": "trigger-934ef02f-8c9c-4956-b64b-379cee82e34d",
+      "function_slug": "commercequeue",
+      "name": "nevora-staging-commercequeue",
+      "function_path": "/run",
+      "schedule": {
+        "cron": "* * * * *"
+      },
+      "enabled": false,
+      "version": 309729,
+      "next_run_at": null,
+      "inherited": false
+    }
+  ],
+  "priorNativeScheduleProof": "neon-closed-c333.json",
+  "review": "neon-review.md"
+}

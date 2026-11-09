@@ -1,4 +1,5 @@
 import 'server-only';
+import {mutationTransaction} from '../data/transaction-composition';
 import {createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
@@ -35,7 +36,7 @@ function parseUpdate(value:unknown):EmployeeCoreAccessCommand|null {
  if(!object(t,['expectedScopeRevision','expectedRoleGeneration','scope'])||!revision(t.expectedScopeRevision)||!generation(t.expectedRoleGeneration))return null;
  const scope=parseScopeSelection(t.scope);return scope?{...base,managerTransitionScope:{expectedScopeRevision:t.expectedScopeRevision,expectedRoleGeneration:t.expectedRoleGeneration,scope}}:null;
 }
-function parseCreate(value:unknown):CreateEmployeeWithAccessCommand|null {
+export function parseCreateEmployeeWithAccessCommand(value:unknown):CreateEmployeeWithAccessCommand|null {
  if(!object(value,['operationId','employee'],['initialManagerScope'])||!uuid(value.operationId))return null;
  const e=value.employee;
  if(!object(e,['id','firstName','lastName','phone','email','role','primaryLocationId','eligibleLocationIds','positionIds'])||!text(e.id,128))return null;
@@ -141,7 +142,7 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
    ...batch.writes,
    ...(c.managerTransitionScope?[scopeAppend(batch.workspace.id,c.employeeId,proof,c.operationId,c.managerTransitionScope.expectedScopeRevision,c.managerTransitionScope.scope)]:[]),
    receiptStatement(batch.workspace.id,proof,c.operationId,c.employeeId,hash),batch.finalAuthority];
-  attempted=true;const result=await ex.transaction(statements),receipt=cleanReceipt((result[statements.length-2]?.[0] as {receipt:unknown}|undefined)?.receipt);
+  attempted=true;const result=await mutationTransaction(ex,statements),receipt=cleanReceipt((result[statements.length-2]?.[0] as {receipt:unknown}|undefined)?.receipt);
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
 }
@@ -149,7 +150,7 @@ export async function saveEmployeeCoreAccessProfile(proof:SessionMutationProof,v
  * receipt atomically. Account credentials/invitation delivery are separate flows;
  * retry this command with the same operation ID to resolve an uncertain outcome. */
 export async function createEmployeeWithAccess(proof:SessionMutationProof,value:CreateEmployeeWithAccessCommand,ex:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeCoreAccessResult> {
- const c=parseCreate(value);if(!c)return invalid('employee','Complete all required employee details.');
+ const c=parseCreateEmployeeWithAccessCommand(value);if(!c)return invalid('employee','Complete all required employee details.');
  const hash=createHash('sha256').update(JSON.stringify({kind:'CREATE',command:c})).digest('hex');let attempted=false;
  try {
   const prior=await lookup(proof,c.operationId,ex);if(prior)return replay(prior,hash);
@@ -161,7 +162,7 @@ export async function createEmployeeWithAccess(proof:SessionMutationProof,value:
    ...operationalScopeStatements(proof,batch.workspace,{kind:'COMPANY'},actor.authority),operationAbsent(batch.workspace.id,proof,c.operationId),...batch.writes,
    ...(c.initialManagerScope?[scopeAppend(batch.workspace.id,c.employee.id,proof,c.operationId,0,c.initialManagerScope)]:[]),receiptStatement(batch.workspace.id,proof,c.operationId,c.employee.id,hash),...batch.finalAuthority];
   const index=statements.length-batch.finalAuthority.length-1;
-  attempted=true;const result=await ex.transaction(statements),receipt=cleanReceipt((result[index]?.[0] as {receipt:unknown}|undefined)?.receipt);
+  attempted=true;const result=await mutationTransaction(ex,statements),receipt=cleanReceipt((result[index]?.[0] as {receipt:unknown}|undefined)?.receipt);
   return receipt?{state:'saved',receipt}:{state:'outcome_unknown',operationId:c.operationId};
  }catch(error){return failure(error,proof,c.operationId,hash,attempted,ex);}
 }

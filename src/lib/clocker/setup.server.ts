@@ -1,5 +1,7 @@
+import {privateWorkspaceToken} from '../workspace-routing/token-envelope.server';
 import 'server-only';
 import { randomBytes } from 'node:crypto';
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import type { SqlExecutor } from '../notifications/types';
 import { authenticateClockerDevice, clockerCredentialWasIssued, ClockerDeviceError, redeemClockerEnrollment } from './devices.server';
 
@@ -14,8 +16,8 @@ type Failure = { status: number; error: string };
 const SETUP_LIFETIME = 600;
 const DEVICE_LIFETIME = 365 * 86400;
 const MAX_BODY_BYTES = 2048;
-export function clockerSecurity(): ClockerSecurity {
-  return { production: process.env.NODE_ENV === 'production', origin: process.env.NEVORA_CLOCKER_ORIGIN };
+export async function clockerSecurity(): Promise<ClockerSecurity> {
+  return { production: process.env.NODE_ENV === 'production', origin: (await workspaceRuntimeEnvironment()).NEVORA_CLOCKER_ORIGIN };
 }
 export function clockerCookieNames(production: boolean) {
   const prefix = production ? '__Host-' : '';
@@ -72,8 +74,9 @@ async function readInput(request: Request): Promise<SetupInput> {
   const record = data as Record<string, unknown>;
   if (record.step === 'redeem') {
     if (Object.keys(record).some(key => key !== 'step' && key !== 'enrollmentToken') ||
-        typeof record.enrollmentToken !== 'string' || !/^nev_enr_[a-f0-9]{64}$/.test(record.enrollmentToken)) throw Error('input');
-    return { step: 'redeem', enrollmentToken: record.enrollmentToken };
+        typeof record.enrollmentToken !== 'string' || record.enrollmentToken.length>4096) throw Error('input');
+    const inner=await privateWorkspaceToken('CLOCKER_ENROLLMENT',record.enrollmentToken);if(!inner||!/^nev_enr_[a-f0-9]{64}$/.test(inner))throw Error('input');
+    return { step: 'redeem', enrollmentToken: inner };
   }
   if ((record.step !== 'prepare' && record.step !== 'status') || Object.keys(record).length !== 1) throw Error('input');
   return { step: record.step };

@@ -1,7 +1,8 @@
 import { databaseDate as dateValue } from './database-date';
 import {assertOperationalAccess} from '../company-access/operational-scope.server';
 import { randomUUID } from "node:crypto";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import { neonNotificationExecutor } from "./notification-transactions";
 import { commitRequestTransition, requestSnapshot, requestRecipientSql, timeOffTransitionLocks, isRequestTransitionConflict } from "./request-notifications";
 import type { RecipientAccess, SqlExecutor, SqlStatement } from "../notifications/types";
@@ -61,7 +62,7 @@ export async function getTimeOffRequest(id: string, executor: SqlExecutor = neon
 }
 
 export async function listEmployeeTimeOffRequests(employeeId: string, executor?: SqlExecutor, requestId?: string) {
-  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : getDb();
+  const sql = executor ? {query:(text:string,values:unknown[]=[])=>executor.query({text,values})} : applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -93,7 +94,7 @@ export async function listEmployeeTimeOffRequests(employeeId: string, executor?:
 }
 
 export async function listPendingTimeOffRequests() {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
     `SELECT
@@ -118,7 +119,7 @@ export async function listPendingTimeOffRequests() {
 }
 
 export async function listTeamTimeOffRequests(status: "PENDING" | "APPROVED" | "DENIED") {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(await sql.query(
     `SELECT r.id, r.employee_id,
        e.first_name || ' ' || e.last_name AS employee_name,

@@ -1,0 +1,11 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-subscriptions-backend/NEVORA-UI-READINESS
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  00:18:04
+   Duration  999ms (tests 96%, import 2%, transform 2%)
+
+[Payroll PostgreSQL] Owned cluster stopped.

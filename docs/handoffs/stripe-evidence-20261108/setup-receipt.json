@@ -1,0 +1,104 @@
+{
+  "scope": [
+    "Velani client design/development projects",
+    "NEVORA subscriptions"
+  ],
+  "business": "thevelani.com",
+  "products": [
+    "Payments",
+    "Invoicing",
+    "Tax"
+  ],
+  "steps": {
+    "1_cli": {
+      "status": "installed_and_executable",
+      "version": "1.55.8"
+    },
+    "2_agent_setup": {
+      "status": "installed",
+      "client": "Codex CLI",
+      "id": "stripe@openai-curated",
+      "version": "82fd64bc",
+      "scope": "user",
+      "claudeModified": false
+    },
+    "3_planner": {
+      "status": "accepted",
+      "guideId": "iguide_61ViylNn83ZdXlB0f41HT1nhEuOJ2",
+      "account": "acct_1UZZK1HT1nhEuOJ2",
+      "livemode": false,
+      "sandboxAuthorizationVerified": true,
+      "tool": "stripe_implementation_planner"
+    },
+    "4_build": {
+      "status": "implemented_and_fixture_tested_hosted_pending",
+      "applicationChanges": true,
+      "applicationCommit": "9bcc496331853f961e189b0ecaf326d42a82f29a",
+      "ownedCommerceChecksPassed": 65,
+      "onboardingCommerceChecksPassed": 17,
+      "typecheck": "pass",
+      "lint": "pass",
+      "runtimeKeyConfigured": false,
+      "hostedSignedWebhookVerified": false,
+      "taxEnabled": false,
+      "taxRegistrationAnswer": "Not sure yet",
+      "rootPassed": 11165,
+      "rootSkipped": 847,
+      "rootFailures": 0,
+      "build": "source_pinned_pass",
+      "review": "two_important_findings_fixed_with_regressions_one_pass"
+    },
+    "5_sandbox": {
+      "status": "provider_parameters_accepted",
+      "realPaymentsCompleted": false,
+      "invoiceEmailSent": false,
+      "runtimeKeyConfigured": false,
+      "previewNonsecretSettingsVerified": 4
+    }
+  },
+  "jira": "SCRUM-174",
+  "sourceBeforeDocumentation": "8538baaaee44aa6103c963d1129728f514ce5ff0",
+  "reviewedVelaniSource": "e4f9d74065511b2c36824aeae013581426813565",
+  "privateKeysPrinted": false,
+  "providerWrites": true,
+  "liveCharges": false,
+  "newApplicationTestsRun": true,
+  "evidence": {
+    "cli-install.log": {
+      "sha256": "ed5fbd09cadddffb97af50124f06eb0584e9c42b99af4f597eb94089b3fcb768",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/cli-install.log"
+    },
+    "cli-version.txt": {
+      "sha256": "9471e0858be8505cd32c5afcc1e670755c33d5ab4cbfc0926b1c55a57d0cf9a5",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/cli-version.txt"
+    },
+    "agent-setup-status.json": {
+      "sha256": "2b6cabf45ab413ccb2d9a1d3b7489747ad8a07fbb0a0ef8f03df89859f04c56c",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/agent-setup-status.json"
+    },
+    "planner-input.json": {
+      "sha256": "883f67378f121526bd07bcce5994c60d5aa597a1faf88e47545ca26c249a9da0",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-input.json"
+    },
+    "planner-initial.json": {
+      "sha256": "92dc53a3ef630e1b9d1682a8d605be9370d94a397d684d854cb809ac87301c3c",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-initial.json"
+    },
+    "planner-accepted.json": {
+      "sha256": "1a7290dac408855e3d26edd713e8c3e23c13a94d1ba48cb4a760dbd2ff554da7",
+      "localPath": ".omo/evidence/stripe-velani/2026-11-08/planner-accepted.json"
+    }
+  },
+  "historicalPlannerDiagnostic": {
+    "status": "not_called_pending_verified_sandbox_context",
+    "tool": "stripe_implementation_planner",
+    "advertised": true,
+    "chatPluginInstalled": true,
+    "chatPluginStatus": "ENABLED",
+    "userReportsAuthorizationComplete": true,
+    "sandboxAuthorizationVerified": false,
+    "reason": "list_available_accounts_or_orgs and manage_stripe_accounts fail MCP -32001 Unknown tool; documentation search works",
+    "accountContextInvented": false
+  },
+  "providerEnvironment": "sandbox_only"
+}

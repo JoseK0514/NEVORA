@@ -1,0 +1,59 @@
+{
+  "observedAt": "2026-11-08T20:15:08.218092+00:00",
+  "source": {
+    "commit": "c3a64722d8cb3825bb2a198d90c0fff3a374724d",
+    "tree": "0f4965c9d9ee14dc5fe31f10a94485ba50532785",
+    "applicationCandidate": "9bcc496331853f961e189b0ecaf326d42a82f29a"
+  },
+  "deployment": {
+    "id": "dpl_RGw5xYQMmLpVv9sC5gXAV7AX763Y",
+    "url": "nevora-onboarding-staging-2364hku8o-josekarlo-5933s-projects.vercel.app",
+    "readyState": "READY",
+    "meta": {
+      "sourceSha": "c3a64722d8cb3825bb2a198d90c0fff3a374724d",
+      "sourceTree": "0f4965c9d9ee14dc5fe31f10a94485ba50532785",
+      "actor": "codex",
+      "lambdaRuntimeStats": "{\"nodejs\":4}",
+      "bundler": "turbopack"
+    }
+  },
+  "deploymentContainsNewRuntimeKey": false,
+  "runtimeKey": {
+    "project": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+    "keyValuesRead": false,
+    "credentials": [
+      {
+        "id": "2vGuhBO2CkolS4tT",
+        "key": "STRIPE_SECRET_KEY",
+        "type": "sensitive",
+        "target": [
+          "preview"
+        ],
+        "gitBranch": null
+      }
+    ]
+  },
+  "protectedCatalogProbe": {
+    "url": "https://signup-staging.nevora.team/api/billing/ready",
+    "method": "GET",
+    "transport": "existing signed-in browser, no protection bypass",
+    "observedBody": {
+      "state": "ready"
+    },
+    "deployment": "dpl_J2tBvYecVC4YVYHaZj8ZFZ8d6Cdu",
+    "scope": "catalog readiness only; not Stripe key authentication or latest-source acceptance"
+  },
+  "aliasesMoved": false,
+  "webhookSecretConfigured": false,
+  "webhookDeliveryVerified": false,
+  "paidCheckoutVerified": false,
+  "paidHostingCreated": false,
+  "taxEnabled": false,
+  "livePaymentsEnabled": false,
+  "supersededFailedPreview": {
+    "id": "dpl_HGhriXWRUUB9k6ZmEeyKKJRg5qtT",
+    "state": "ERROR",
+    "disposition": "rejected incorrect source metadata/export race; no alias moved"
+  },
+  "nextGate": "Decide signed-webhook ingress/private scheduler hosting; configure complete sandbox runtime; deploy and execute actual hosted acceptance."
+}

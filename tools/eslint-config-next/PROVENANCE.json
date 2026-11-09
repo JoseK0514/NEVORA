@@ -47,5 +47,16 @@
     "Config plugin import identity only"
   ],
   "advisory": "GHSA-vfj7-8cjw-p6xm",
-  "noOfficialPatchedReleaseClaim": true
+  "noOfficialPatchedReleaseClaim": true,
+  "securityDependencyUpdate": {
+    "date": "2026-11-08",
+    "nodemailer": "Production mailer pinned10.4.0 in root.",
+    "glob": "Pinned14.0.4 in the existing local dependency seam.",
+    "typescriptEslint": "Pinned8.72.1; root estree anchor allows npm to enforce minimatch11.0.5 through linked local packages.",
+    "retainedRuleBodies": "Unchanged; all original rule/severity and adversarial root-directory tests remain required.",
+    "advisories": [
+      "GHSA-3g3m-2fjr-6pw4",
+      "GHSA-g3hv-75wg-m249"
+    ]
+  }
 }

@@ -38,15 +38,16 @@ describe('fresh company setup for the assembled application',()=>{
   expect((await client.query('SELECT id FROM workspaces')).rows).toEqual([{id:result.workspaceId}]);
  }));
  it('rolls back schema and Owner when the access migration fails, then supports a clean retry',()=>fresh(async client=>{
-  await client.query(`CREATE SCHEMA qa_setup_failure;
-   CREATE FUNCTION qa_setup_failure.stop_access() RETURNS event_trigger LANGUAGE plpgsql AS $$
+  // This owned disposable database needs a test-only DDL fault without occupying
+  // an application schema, which the fresh-install safety guard now rejects.
+  await client.query(`CREATE FUNCTION pg_catalog.qa_setup_stop_access() RETURNS event_trigger LANGUAGE plpgsql AS $$
    BEGIN IF position('CREATE TABLE operational_subject_versions' IN current_query())>0
     THEN RAISE EXCEPTION 'owned_setup_access_failure'; END IF; END $$;
    CREATE EVENT TRIGGER qa_setup_access_failure ON ddl_command_start WHEN TAG IN ('CREATE TABLE')
-    EXECUTE FUNCTION qa_setup_failure.stop_access();`);
+    EXECUTE FUNCTION pg_catalog.qa_setup_stop_access();`);
   await expect(setupCompany(client,readCompanyInput(config))).rejects.toThrow('owned_setup_access_failure');
   expect((await client.query("SELECT count(*)::int AS count FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public'")).rows[0].count).toBe(0);
-  await client.query('DROP EVENT TRIGGER qa_setup_access_failure; DROP SCHEMA qa_setup_failure CASCADE');
+  await client.query('DROP EVENT TRIGGER qa_setup_access_failure; DROP FUNCTION pg_catalog.qa_setup_stop_access()');
   const result=await setupCompany(client,readCompanyInput(config));
   expect((await client.query('SELECT workspace_id,state FROM company_access_adoption')).rows)
    .toEqual([{workspace_id:result.workspaceId,state:'ENFORCED'}]);

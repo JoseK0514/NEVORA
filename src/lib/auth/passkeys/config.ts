@@ -11,7 +11,12 @@ export function passkeyConfig(requestURL: string, env: Partial<NodeJS.ProcessEnv
 }): PasskeyConfig | null {
   if (env.NEXT_PUBLIC_NEVORA_PASSKEYS !== "on") return null;
   try {
-    if (env.NODE_ENV !== "production") {
+    if(env.NEVORA_WORKSPACE_MODE==='isolated'&&env.NODE_ENV!=='production'&&env.NEVORA_PASSKEY_RP_ID?.endsWith('.localhost')){
+      const origin=new URL(env.NEVORA_PASSKEY_ORIGIN??''),rpID=env.NEVORA_PASSKEY_RP_ID;
+      if(!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/.test(rpID)||!['http:','https:'].includes(origin.protocol)||origin.hostname!==rpID||origin.username||origin.password||origin.pathname!=='/'||origin.search||origin.hash)return null;
+      return {rpID,origin:origin.origin};
+    }
+    if (env.NODE_ENV !== "production"&&env.NEVORA_WORKSPACE_MODE!=='isolated') {
       const url = new URL(requestURL);
       if (url.hostname !== "localhost" || !["http:", "https:"].includes(url.protocol)) return null;
       return { rpID: "localhost", origin: url.origin };

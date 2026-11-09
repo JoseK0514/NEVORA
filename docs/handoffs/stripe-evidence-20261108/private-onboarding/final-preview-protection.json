@@ -1,0 +1,9 @@
+{
+  "observedAt": "2026-11-09T01:39:30.309Z",
+  "id": "prj_4In3h5qWpIKwdFWD2S8Ur2YdZZ9P",
+  "name": "nevora-onboarding-staging",
+  "nodeVersion": "24.x",
+  "ssoProtection": {
+    "deploymentType": "all"
+  }
+}

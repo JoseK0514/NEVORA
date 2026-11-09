@@ -1,4 +1,7 @@
 import {after} from 'next/server';
+import {workspaceMode} from '@/lib/workspace-routing/config.server';
+import {currentWorkspaceBinding,withWorkspaceBinding} from '@/lib/workspace-routing/context.server';
+import {workspaceRuntimeEnvironment} from '@/lib/workspace-routing/runtime-config.server';
 import {correctionBoundary,correctionJson,readCorrectionJson} from '@/lib/time-corrections/http.server';
 import {requestPasswordRecovery} from '@/lib/auth/recovery.server';
 import {recoveryDelivery} from '@/lib/auth/recovery-delivery.server';
@@ -12,6 +15,8 @@ export async function POST(request:Request){
  const {employeeId,email}=body;
  // Work happens after the identical response: SMTP/account lookup latency is
  // never an account-existence timing signal in this request.
- after(()=>requestPasswordRecovery(employeeId,email,recoveryDelivery(undefined,request.headers)));
+ const binding=workspaceMode()==='isolated'?await currentWorkspaceBinding():null;
+ const work=async()=>requestPasswordRecovery(employeeId,email,recoveryDelivery(await workspaceRuntimeEnvironment(),request.headers));
+ after(()=>binding?withWorkspaceBinding(binding,work):work());
  return correctionJson({state:'accepted',message:recoveryMessage},202);
 }

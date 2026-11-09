@@ -1,0 +1,341 @@
+{
+  "status": "Historical closed preparation; current sandbox credential/hosting state is in neon-credential-acceptance.json",
+  "plan": "docs/superpowers/plans/2026-11-08-neon-staging-hosting.md",
+  "base": "c3a64722d8cb3825bb2a198d90c0fff3a374724d",
+  "provider": {
+    "project": "damp-haze-17022523",
+    "branch": "br-hidden-mud-bbnc2fxk",
+    "region": "aws-us-east-1",
+    "plan": "free_v3",
+    "functionsListSucceeded": true,
+    "triggersListSucceeded": true,
+    "newPaidResources": false
+  },
+  "checks": {
+    "handlersAndStripeRuntimePassed": 75,
+    "ownedCommercePassed": 72,
+    "ownedOnboardingCommercePassed": 17,
+    "root": {
+      "success": true,
+      "assertionStatuses": {
+        "passed": 11233,
+        "skipped": 853,
+        "pending": 55
+      },
+      "reportSha256": "11bbcfd4799db6349f82b419c31df627a4441ac9be8aa038fe9a416c4f72e11c",
+      "sourceCommit": "0dcf319ce514f48a490247a5fb219490bd39c95c"
+    },
+    "rootInitialFailure": {
+      "file": "src/test/phase-e-root-group-process.test.ts",
+      "test": "root-group actual exec: root-exit",
+      "reason": "Owned resource observation failed, expected child-left-resources reason",
+      "isolatedPasses": 10,
+      "assertionsOrTimeoutsChanged": false
+    },
+    "types": "passed",
+    "lint": "passed, no warnings",
+    "localArtifacts": {
+      "functions": 4,
+      "filesVerified": 70,
+      "canonicalSqlFiles": 62,
+      "tamperingRejected": true,
+      "localTriggerSimulationIsNotAuthProof": true,
+      "actualZipExtractionVerified": true
+    },
+    "builderPathGuards": {
+      "passed": 3,
+      "redFailureObserved": true
+    },
+    "archiveAndPathGuardsPassed": 5,
+    "review": {
+      "freshReviewer": "neon_hosting_final_review",
+      "importantFindings": 8,
+      "criticalFindings": 0,
+      "parentSymlinkRegradedImportant": true,
+      "oneExecutorFixPass": "completed and locally verified",
+      "reviewerReReview": false,
+      "dispositions": "neon-review.md"
+    },
+    "hosted": {
+      "receipt": "neon-closed-reviewed.json",
+      "allFourActiveDeploymentIds": 3,
+      "boundaryProbesPassed": 11,
+      "probeReceipt": "neon-hosted-reviewed-probes.json",
+      "priorNativeNoopDeliveriesPassed": 3,
+      "priorNativeProofSource": "c3335c804739bf27d3e589f29fbc81f7df43e832",
+      "schedulesEnabled": false,
+      "nextRunAt": null,
+      "secretsConfigured": false,
+      "processingEnabled": false,
+      "environmentNamePreflightPassed": true
+    }
+  },
+  "openGates": [
+    "specific credential creation/storage approval and role-specific configuration",
+    "real Stripe signature delivery/account/worker effects",
+    "provider/SMTP/app ingress and A/B Owner journey",
+    "Claude UI and independent release acceptance"
+  ],
+  "source": {
+    "commit": "0dcf319ce514f48a490247a5fb219490bd39c95c",
+    "tree": "1213a89b8ba1df01eeba79a583799ef4df745fbb",
+    "dirty": false
+  },
+  "rawEvidence": {
+    "directory": ".omo/evidence/neon-hosting-20261108",
+    "files": {
+      "worker-capabilities-red.log": {
+        "bytes": 1831,
+        "sha256": "850a8a0b4a385b99a53ab5c2d4aa3ae0635d5f6d6ab8a4d0795c72045d1aca92"
+      },
+      "handlers-red.log": {
+        "bytes": 7005,
+        "sha256": "83f3ca386025d32f94eed76212f9a6b6111e507a64eda625d3db4ea8034e901a"
+      },
+      "root-review-final.json": {
+        "bytes": 4466827,
+        "sha256": "5ff3bb8555fd5024e87ad1d6230e349ad3578e6bf75448171b68c10a8166989f"
+      },
+      "task-green.log": {
+        "bytes": 332,
+        "sha256": "7d992e27de2aacddf36b76f5d20b2ad4202fb19466c310daec1f17d861dd5ede"
+      },
+      "builder-guard-green.log": {
+        "bytes": 299,
+        "sha256": "22428e77bd6fed04e048a4e0ba87cffeadd7e43132d1f6d03ab46859886b19fc"
+      },
+      "lint-review-final.log": {
+        "bytes": 41,
+        "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7"
+      },
+      "types-review-final.log": {
+        "bytes": 50,
+        "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec"
+      },
+      "bundle-green.log": {
+        "bytes": 1287,
+        "sha256": "948ec74272538a6683480b292aac2c81cf4e4f90bc99317b93cf1020d821db6a"
+      },
+      "root-rerun.log": {
+        "bytes": 329,
+        "sha256": "4be168beb37187677eb259c0163257af3f01384c125743d7a60f2adb8b55ae8e"
+      },
+      "root-pinned-0dcf.log": {
+        "bytes": 341,
+        "sha256": "9c9e8c7114058798f5a807de41413cf4dad13e40946b6c35efe8c44e6f2971e9"
+      },
+      "task-red-clean.log": {
+        "bytes": 2457,
+        "sha256": "c1b5a1b50bb4d6320b55d0f7072995a53b737f285236c35fffa9a2551e1150e4"
+      },
+      "root-final.json": {
+        "bytes": 4453593,
+        "sha256": "89ae6cec6a5569ea8da59d28523476ffcf0633e8a562556d3a897d2150e12f28"
+      },
+      "handlers-review-final.log": {
+        "bytes": 250,
+        "sha256": "1aecfb9460cb7b0e7e03a8b41fa78963cf653dbf4fc91c95ac2e3da6248fab27"
+      },
+      "archive-review-green.log": {
+        "bytes": 512,
+        "sha256": "38ab47269a215d888acdb488bb1db3c55278312dcd98b0d389de8101993a8112"
+      },
+      "task-1-brief.md": {
+        "bytes": 1124,
+        "sha256": "90495ef5cdffa9314777ac28f2fcaa95d1aea7a512e30a5ab2562d084ac6f80e"
+      },
+      "builder-guard-red.log": {
+        "bytes": 3445,
+        "sha256": "d7439d5783456e74793cca3f736d3d53240a103f04a9707e104bc3d47bb11c81"
+      },
+      "root-review-final.log": {
+        "bytes": 343,
+        "sha256": "59f01dce977476ec8d133c2de85a82e0af8d755d8b3c84837f4969b41e2282be"
+      },
+      "commerce-review-final.log": {
+        "bytes": 320,
+        "sha256": "6b09df6700590eb3011fdc87c50ffdcc690f0733154ef552e1be40e5dd2c1861"
+      },
+      "lint.log": {
+        "bytes": 1080,
+        "sha256": "35dd50737c40c3577bef373c44480c42ea7b0fbefd656b21ef781678c5244fa1"
+      },
+      "types-final.log": {
+        "bytes": 50,
+        "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec"
+      },
+      "types-review.log": {
+        "bytes": 225,
+        "sha256": "4a13abea9a634089a036bbc0e68b24e3d25b728ac57d5b953900886d6f685c39"
+      },
+      "extra-guards-red.log": {
+        "bytes": 1593,
+        "sha256": "d34f1c282307b0334495dcf5a2524ee795121037ffab43b253191a849033e6c0"
+      },
+      "lint-current.log": {
+        "bytes": 41,
+        "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7"
+      },
+      "task-1-tests.log": {
+        "bytes": 250,
+        "sha256": "15e9bae56a2959e7f35b38d190c1ec71a6950fbb9988a67960c3f388e11ee109"
+      },
+      "progress.md": {
+        "bytes": 8503,
+        "sha256": "44e4d8a45c5a725bf29630071ef32139534df62d818e74954f5c07b6f45cd197"
+      },
+      "reviewed-build.log": {
+        "bytes": 1284,
+        "sha256": "3a939347c099c9d9316fc771115f677a65bb9a1a548e686f7688314a17c0cae3"
+      },
+      "lint-review.log": {
+        "bytes": 41,
+        "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7"
+      },
+      "artifact-verify.log": {
+        "bytes": 315,
+        "sha256": "66ecedb9030c014642f9f458f7031ebb7c7bab10896b1145f13f64d84c3e8d78"
+      },
+      "review-fix-red.log": {
+        "bytes": 7110,
+        "sha256": "c2c3bf62d5ad9f7a2321a464c49db2d6e54e7baab49525b6bc31f9cd271a305b"
+      },
+      "root.log": {
+        "bytes": 314,
+        "sha256": "4e044fb66e04b8b343b82c5cfe719e8945f687879c4fb902ca7a545a4d1d6e9a"
+      },
+      "review-c3a64722d..c3335c804.diff": {
+        "bytes": 80252,
+        "sha256": "1c8711a09301573d84e971cdd4ddd71ab4928d5b21df360fe9a5956084e6dba4"
+      },
+      "bom-review-red.log": {
+        "bytes": 892,
+        "sha256": "8a4084c4ad5f439347fd4514ec4fa36784573644e7d74e819651007c55a0ea5d"
+      },
+      "extra-guards-green.log": {
+        "bytes": 250,
+        "sha256": "cf02cedb624de41c26f33de25574a5c28595686fb0b981a29e6bb4ba027bfe19"
+      },
+      "onboarding-commerce.log": {
+        "bytes": 2714,
+        "sha256": "770dea57e519f29d3603ea9405a532a1f526e5c3fd39a6e3b03938e39a1dd9b4"
+      },
+      "hosted-reviewed-probes.json": {
+        "bytes": 2424,
+        "sha256": "245b98248b54c67be3cc14ba68ffe5b43824114d87f2c5a7601280472993b899"
+      },
+      "review-c3a64722d..91ea25202.diff": {
+        "bytes": 79538,
+        "sha256": "237034d46097136f3fb95d80bf6132606224d24f8e3933a353cf2f2bd7ac3ee6"
+      },
+      "reviewed-verify.log": {
+        "bytes": 1666,
+        "sha256": "0bdbcde67c239ff38fa17c969ab01644b61936687169ed8b8ec00d6670165cf1"
+      },
+      "task-red.log": {
+        "bytes": 3071,
+        "sha256": "29a4882a6c26f8442530935e60d78a0c5b5286ce7879bf60ca9226143d9aebe3"
+      },
+      "task-2-brief.md": {
+        "bytes": 1924,
+        "sha256": "5a93345583ba7750cba4f5c6dd719f4dc522201804178cbc03af6c9d9a7bdb4a"
+      },
+      "archive-review-red.log": {
+        "bytes": 3370,
+        "sha256": "758273be67633fbecb904dc9211e3517098c9eee35c03bf538977072ef5ee015"
+      },
+      "task-2-tests.log": {
+        "bytes": 1666,
+        "sha256": "fffb703dc869685c1714c56111d43ad8b00a4e3be35de557fcf7732421d44858"
+      },
+      "review-fix-green.log": {
+        "bytes": 250,
+        "sha256": "edd4bab930f75ec3a115b3a3a52096ea86ffb3d3dd50ae7602eeba3764eca054"
+      },
+      "archive-review-final.log": {
+        "bytes": 608,
+        "sha256": "b31ba05a79f028384f59000205859f91a4234b76d5fe738cfd3aa0519ade1574"
+      },
+      "lint-final-pinned.log": {
+        "bytes": 41,
+        "sha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7"
+      },
+      "commerce-review-fix.log": {
+        "bytes": 320,
+        "sha256": "418a435ee77c760eae324416edab08dd4d79980bb44edfba9f5900bc7f1e0367"
+      },
+      "root-pinned-0dcf.json": {
+        "bytes": 4467781,
+        "sha256": "11bbcfd4799db6349f82b419c31df627a4441ac9be8aa038fe9a416c4f72e11c"
+      },
+      "types-final-pinned.log": {
+        "bytes": 50,
+        "sha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec"
+      },
+      "root-tests.json": {
+        "bytes": 4452526,
+        "sha256": "d7d5f4d97da6dce94353dba80a83c7c45b85f408b532c8ff696382ee01a3b76e"
+      },
+      "root-affected.log": {
+        "bytes": 214,
+        "sha256": "c623fe015c81b38d0dca552fb474948acce389b6c6a6dfc7732e033a1a4c7965"
+      },
+      "hosted-observed-probes.json": {
+        "bytes": 3410,
+        "sha256": "af3ebfa33073c0bc1d672a0e19851412fcd42db055e2bce24e22d09d7bbf261d"
+      },
+      "onboarding-review-final.log": {
+        "bytes": 2886,
+        "sha256": "be94eb838a42d475b2d077895ca43414c2b482ad539342e399e80556ce746944"
+      },
+      "bundle-red.log": {
+        "bytes": 723,
+        "sha256": "e75b2f5223c1426a51f59cb64165a8e06353c7a821b59d193e15cd678b9663b8"
+      },
+      "commerce-final-pinned.log": {
+        "bytes": 331,
+        "sha256": "4af28fcc64bd47b2830339f2cdaa82863d16414103820a3963d77d41cb50a874"
+      },
+      "handlers-green.log": {
+        "bytes": 250,
+        "sha256": "802182bedc802761d1bb4121dd00a0123b59f040393390fd6c0d4a257d269420"
+      },
+      "hosted-closed-probes.json": {
+        "bytes": 3411,
+        "sha256": "7e4ed292a73a8fd1a45c1f1b919614f8eabe489f6a8d93f1247ff4f9a3aa7dd1"
+      },
+      "root-rerun.json": {
+        "bytes": 4452841,
+        "sha256": "f7e16246925fe3d30e6062f4422e022f4f35eb06865a707549e52e0e2da1ddb4"
+      },
+      "plan-path": {
+        "bytes": 58,
+        "sha256": "23e0d746395f654dd8d79a741906c170062f20bfeb5f886de6ec87d21e3ad2cf"
+      }
+    }
+  },
+  "credentialApproval": {
+    "status": "requested, no response yet",
+    "stripeKeyName": "NEVORA Neon staging billing worker",
+    "stripeKeyCreated": false,
+    "newNeonSecretStored": false,
+    "temporaryLocalTransferProposed": "~/.codex/tmp/nevora-neon-transfer; owner-only and erased after transfer",
+    "reviewScreenshot": "/Users/josek0514/.codex/visualizations/2026/11/01/01a1996a-6fe1-7600-8e90-09a319655a96/stripe-neon-worker-key-review.png",
+    "destinations": {
+      "workerKey": [
+        "Neon commercequeue",
+        "Neon commercereconcile"
+      ],
+      "catalogApiDsnAndEncryptionKey": [
+        "Neon commercequeue",
+        "Neon commercereconcile",
+        "Neon stripewebhook"
+      ],
+      "newTestEndpointSigningSecret": [
+        "Neon stripewebhook",
+        "nevora-onboarding-staging Vercel Preview"
+      ]
+    }
+  },
+  "latestReceipt": "neon-credential-acceptance.json"
+}

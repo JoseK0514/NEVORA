@@ -11,7 +11,7 @@ export type BreakTypeResult={ok:true;breakType:BreakType}|{ok:false;error:string
  * unavailable or stale writes require a read before the user tries again.
  */
 export async function saveBreakTypeAction(data:FormData):Promise<BreakTypeResult>{
- const forbidden=clockerOriginFailure(await headers(),clockerSecurity());
+ const forbidden=clockerOriginFailure(await headers(),await clockerSecurity());
  if(forbidden)return {ok:false,error:forbidden.error,refresh:false};
  const proof=await requireSessionMutationProof();
  if(proof.employee.role!=='OWNER')return {ok:false,error:'Only an Owner may manage break types.',refresh:true};

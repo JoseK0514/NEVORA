@@ -4,6 +4,7 @@ import {readPhotoPlatformBinding} from '../src/lib/clocker/photo-server/platform
 
 const worker={
  async fetch(request:Request):Promise<Response>{
+  if(process.env.NEVORA_WORKSPACE_MODE!==undefined&&process.env.NEVORA_WORKSPACE_MODE!=='single_company')return new Response(null,{status:503});
   const binding=readPhotoPlatformBinding(process.env),url=process.env.DATABASE_URL;
   if(!binding||!url)return new Response(null,{status:503});
   return handlePhotoCleanupTrigger(request,async invocation=>{

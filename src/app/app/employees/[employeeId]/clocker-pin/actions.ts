@@ -12,7 +12,7 @@ export type PinActionResult={ok:true;version:number}|{ok:false;error:string;refr
  * employee/location authority. Return a version, never PIN or cryptographic data.
  */
 export async function saveClockerPinAction(data:FormData):Promise<PinActionResult>{
- const forbidden=clockerOriginFailure(await headers(),clockerSecurity());
+ const forbidden=clockerOriginFailure(await headers(),await clockerSecurity());
  if(forbidden)return {ok:false,error:forbidden.error};
  const proof=await requireSessionMutationProof();
  if(proof.employee.role!=='OWNER')return {ok:false,error:'Only an Owner may set a Clocker PIN.'};
@@ -34,7 +34,7 @@ export async function saveClockerPinAction(data:FormData):Promise<PinActionResul
 
 export type PinSaveStatus=PinOperationResult|{state:'unavailable';error:string};
 export async function checkClockerPinSaveAction(data:FormData):Promise<PinSaveStatus>{
- const origin=clockerOriginFailure(await headers(),clockerSecurity());if(origin)return {state:'unavailable',error:origin.error};
+ const origin=clockerOriginFailure(await headers(),await clockerSecurity());if(origin)return {state:'unavailable',error:origin.error};
  const proof=await requireSessionMutationProof();if(proof.employee.role!=='OWNER')return {state:'unavailable',error:'Only an Owner may review a Clocker PIN save.'};
  const fields=['employeeId','operationId'];if([...data.keys()].some(k=>!fields.includes(k))||fields.some(k=>data.getAll(k).length!==1||typeof data.get(k)!=='string'))return {state:'unavailable',error:'Use the original employee and save reference.'};
  try{return await readClockerPinOperation({employeeId:proof.employee.id,sessionTokenHash:proof.sessionTokenHash},data.get('employeeId') as string,data.get('operationId') as string);}

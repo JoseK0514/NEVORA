@@ -28,3 +28,7 @@ describe("passkey environment selection", () => {
       NEVORA_PASSKEY_ORIGIN: origin, NEVORA_PASSKEY_RP_ID: rpID })).toBeNull();
   });
 });
+it('uses only the explicit registry-derived isolated RP in local development',()=>{
+ expect(passkeyConfig('http://proxy.invalid',{NEVORA_WORKSPACE_MODE:'isolated',NODE_ENV:'development',NEXT_PUBLIC_NEVORA_PASSKEYS:'on',NEVORA_PASSKEY_RP_ID:'alpha.portal.localhost',NEVORA_PASSKEY_ORIGIN:'http://alpha.portal.localhost:3000'})).toEqual({rpID:'alpha.portal.localhost',origin:'http://alpha.portal.localhost:3000'});
+ expect(passkeyConfig('http://alpha.portal.localhost:3000',{NEVORA_WORKSPACE_MODE:'isolated',NODE_ENV:'development',NEXT_PUBLIC_NEVORA_PASSKEYS:'on'})).toBeNull();
+});

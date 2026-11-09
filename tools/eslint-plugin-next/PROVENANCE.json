@@ -241,5 +241,16 @@
       "normalizedSha256": "b968ee63b6a3ca76f6f7b7171e155ba733e9ff1956a38a060266b4792b4526d0",
       "operation": "Remove one trailing space in a comment; no executable code change"
     }
+  },
+  "securityDependencyUpdate": {
+    "date": "2026-11-08",
+    "nodemailer": "Production mailer pinned10.4.0 in root.",
+    "glob": "Pinned14.0.4 in the existing local dependency seam.",
+    "typescriptEslint": "Pinned8.72.1; root estree anchor allows npm to enforce minimatch11.0.5 through linked local packages.",
+    "retainedRuleBodies": "Unchanged; all original rule/severity and adversarial root-directory tests remain required.",
+    "advisories": [
+      "GHSA-3g3m-2fjr-6pw4",
+      "GHSA-g3hv-75wg-m249"
+    ]
   }
 }

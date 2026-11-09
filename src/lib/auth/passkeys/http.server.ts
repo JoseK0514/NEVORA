@@ -1,6 +1,7 @@
+import {workspaceRuntimeEnvironment} from '../../workspace-routing/runtime-config.server';
 import "server-only";
 import { randomBytes } from "node:crypto";
-import { cookies } from "next/headers";
+import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
 import { getSession, requireSessionMutationProof, writeSessionCookie } from "../session";
 import { prepareInstallationForLogin } from "../../notifications/logout";
 import { correctionJson, readCorrectionJson, correctionResponseHeaders } from "../../time-corrections/http.server";
@@ -24,7 +25,7 @@ function fields(value: unknown, expected: string[]): value is Record<string, unk
  * and management additionally require the actual session mutation proof. Login
  * writes the normal session cookie only after the service commits its session. */
 export async function passkeyHttp(request: Request, action: Action, id?: string): Promise<Response> {
-  const config = passkeyConfig(request.url);
+  const config = passkeyConfig(request.url,await workspaceRuntimeEnvironment());
   if (!config) return errorJson("not_supported", 404);
   const method = action === "list" ? "GET" : action === "remove" ? "DELETE" : "POST";
   if (request.method !== method) return errorJson("not_supported", 405);
@@ -70,6 +71,7 @@ export async function passkeyHttp(request: Request, action: Action, id?: string)
         sameSite: "strict", path: "/", maxAge: 900 });
       return correctionJson(result);
     }
+    validateFlowToken(token);
     if (!record(body)) return errorJson("not_found", 400);
     if (action === "register_verify" && proof)
       return correctionJson({ passkey: await service.register(proof, token, body.response, body.name) });

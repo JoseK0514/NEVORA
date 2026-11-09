@@ -1,0 +1,9 @@
+import {isOperationId,isRevision,readableText} from '../onboarding/contracts';
+export type WorkspacePurpose='APP'|'WORKER'|'BOOTSTRAP';
+export type WorkspaceRecord={id:string;canonicalOrigin:string;environment:'test'|'development'|'production';incarnation:string;revision:string;lifecycle:'PROVISIONING'|'OWNER_ACTIVATION_REQUIRED'|'ACTIVE'|'SUSPENDED'|'QUARANTINED';providerProjectId:string;appSecretRef:string;appRoleName:string;workerSecretRef:string|null;workerRoleName:string|null;registrationId:string|null};
+export function parseWorkspaceRecord(value:unknown):WorkspaceRecord|null{
+ if(!value||typeof value!=='object'||Array.isArray(value))return null;const r=value as Record<string,unknown>;
+ const role=(x:unknown):x is string=>typeof x==='string'&&/^[a-z][a-z0-9_]{0,62}$/.test(x);
+ if(!isOperationId(r.id)||typeof r.canonical_origin!=='string'||!['test','development','production'].includes(String(r.environment))||!isRevision(r.incarnation)||r.incarnation==='0'||!isRevision(r.revision)||r.revision==='0'||!['PROVISIONING','OWNER_ACTIVATION_REQUIRED','ACTIVE','SUSPENDED','QUARANTINED'].includes(String(r.lifecycle))||!readableText(r.provider_project_id,128)||!isOperationId(r.app_secret_ref)||!role(r.app_role_name)||!(r.worker_secret_ref===null||isOperationId(r.worker_secret_ref))||!(r.worker_role_name===null||role(r.worker_role_name))||!(r.registration_id===undefined||r.registration_id===null||isOperationId(r.registration_id)))return null;
+ return {id:r.id,canonicalOrigin:r.canonical_origin,environment:r.environment as WorkspaceRecord['environment'],incarnation:r.incarnation,revision:r.revision,lifecycle:r.lifecycle as WorkspaceRecord['lifecycle'],providerProjectId:r.provider_project_id,appSecretRef:r.app_secret_ref,appRoleName:r.app_role_name,workerSecretRef:r.worker_secret_ref,workerRoleName:r.worker_role_name,registrationId:r.registration_id as string|null??null};
+}

@@ -1,7 +1,9 @@
 // F10 foundation request boundary. Genuine native Portal facts/current-proof
 // helpers remain required before ALLOW; this code issues no cookie or grant.
 import 'server-only';
-import { cookies, headers } from 'next/headers';
+import {workspaceMode} from '../workspace-routing/config.server';
+import {headers} from "next/headers";
+import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
 import { createHash } from 'node:crypto';
 import { types as nodeTypes } from 'node:util';
 import { normalizeWorkspaceLocator } from '../tenancy/identity';
@@ -65,6 +67,9 @@ function sessionBearer(value: unknown): string | null {
  * session DTO. The only bearer input is this request's Next cookie store.
  * Returned proof stays private server state; serializing it grants nothing. */
 export async function resolveSelectedPortalRequest(selectedLocator: unknown): Promise<SelectedPortalRequest> {
+  // Held shared-database Phase F protocol cannot select an isolated company.
+  // Isolated clients use registered-host discovery and normal bound auth.
+  try{if(workspaceMode()==='isolated')return UNAVAILABLE;}catch{return UNAVAILABLE;}
   const locator = normalizeWorkspaceLocator(selectedLocator);
   if (locator === null) return DENY;
   try {

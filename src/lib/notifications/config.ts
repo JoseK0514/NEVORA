@@ -1,3 +1,4 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createECDH, timingSafeEqual } from 'node:crypto';
 import { notificationPolicyFor } from './policy';
 import { getWorkspace } from '../data/workspaces';
@@ -79,5 +80,5 @@ export function bindWorkspaceNotificationConfig(runtime: PushRuntimeConfig, work
         testDeliveryEnabled:runtime.testDeliveryEnabled && workspace.active};
 }
 export async function loadWorkspaceNotificationConfig(env: Record<string,string|undefined>, executor?: SqlExecutor): Promise<NotificationConfig> {
-    return bindWorkspaceNotificationConfig(readNotificationConfig(env),await getWorkspace(executor));
+    return bindWorkspaceNotificationConfig(readNotificationConfig(await workspaceRuntimeEnvironment(env)),await getWorkspace(executor));
 }

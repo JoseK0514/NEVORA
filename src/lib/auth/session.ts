@@ -1,10 +1,12 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createHash } from "node:crypto";
 import { prepareSession, type PreparedSession, type ReviewedLoginCredential } from "./session-issuance";
 export type { ReviewedLoginCredential } from "./session-issuance";
 import { cache } from "react";
-import { cookies } from "next/headers";
+import {workspaceCookies as cookies} from "@/lib/workspace-routing/cookies.server";
 import { redirect } from "next/navigation";
-import { getDb, queryRows } from "@/lib/db";
+import {queryRows} from "@/lib/db";
+import {applicationSql} from "@/lib/data/app-sql";
 import type { UserRole } from "@/lib/domain";
 import { createLogoutDeps, terminatePortalSession } from "@/lib/notifications/logout";
 import { readNotificationConfig, decodePushKey } from "@/lib/notifications/config";
@@ -54,7 +56,7 @@ export async function writeSessionCookie({ token, expiresAt }: Pick<PreparedSess
 export async function destroySession() {
   const store = await cookies();
   try {
-    const config = readNotificationConfig(process.env);
+    const config = readNotificationConfig(await workspaceRuntimeEnvironment());
     const key = decodePushKey(config.subscriptionEncryptionKey, 32);
     const installation = key ? readInstallationProof(store, key, config.environment) ?? undefined : undefined;
     await terminatePortalSession({ sessionToken: store.get(SESSION_COOKIE)?.value, installation, cookies: store, deps: createLogoutDeps(config) });
@@ -77,7 +79,7 @@ export async function getSession(): Promise<SessionEmployee | null> {
  * share it instead of repeating the query (inspection Oct 24). Keyed on the cookie's token, so a new or removed
  * cookie is never answered from an earlier read. Server Actions run outside the render cache and always read fresh. */
 const readSessionForToken = cache(async (token: string): Promise<SessionEmployee | null> => {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows<{
     id: string;
     first_name: string;
@@ -143,7 +145,7 @@ export async function readSessionMutationProof(): Promise<import('../shift-chang
 /** Same per-render, per-token sharing as readSessionForToken; a missing row still redirects in the caller. */
 const readMutationProofForToken = cache(async (token: string): Promise<import('../shift-changes/types').SessionMutationProof | null> => {
   const sessionTokenHash=hashToken(token);
-  const rows=queryRows<{id:string;first_name:string;last_name:string;role:UserRole;primary_location_id:string}>(await getDb().query(`SELECT e.id,e.first_name,e.last_name,e.role,e.primary_location_id FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active LIMIT 1`,[sessionTokenHash]));
+  const rows=queryRows<{id:string;first_name:string;last_name:string;role:UserRole;primary_location_id:string}>(await applicationSql().query(`SELECT e.id,e.first_name,e.last_name,e.role,e.primary_location_id FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND s.expires_at>clock_timestamp() AND e.active LIMIT 1`,[sessionTokenHash]));
   const row=rows[0];
   if(!row) return null;
   return {sessionTokenHash,employee:{id:row.id,firstName:row.first_name,lastName:row.last_name,role:row.role,primaryLocationId:row.primary_location_id}};

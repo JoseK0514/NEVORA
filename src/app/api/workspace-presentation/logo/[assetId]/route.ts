@@ -1,4 +1,5 @@
 import { readLogoAsset } from "@/lib/workspace-presentation/service";
+import {workspaceMode} from '@/lib/workspace-routing/config.server';
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ ass
       headers: {
         "Content-Type": asset.mediaType,
         "Content-Length": String(asset.bytes.byteLength),
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control": workspaceMode()==='isolated'?'no-store, private':"public, max-age=31536000, immutable",
         ETag: `"${asset.sha256}"`,
         "X-Content-Type-Options": "nosniff",
         "Content-Security-Policy": "default-src 'none'; sandbox",

@@ -1,0 +1,5 @@
+import {readOnboardingConfig,type EnabledConfig} from '@/lib/onboarding/config.server';
+export function onboardingTestConfig(overrides:Record<string,string|undefined>={}):EnabledConfig{
+ const c=readOnboardingConfig({NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENABLED:'true',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_SIGNUP_ORIGIN:'https://signup.example.invalid',NEVORA_PORTAL_BASE_DOMAIN:'portal.example.invalid',NEVORA_CONTROL_DATABASE_URL:'postgresql://fixture@127.0.0.1:59999/fictional_control',NEVORA_SIGNUP_SESSION_SECRET:Buffer.alloc(32,7).toString('base64url'),NEVORA_WORKSPACE_TOKEN_SECRET:Buffer.alloc(32,8).toString('base64url'),NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,9).toString('base64url'),NEVORA_ONBOARDING_RETENTION_DAYS:'7',NEVORA_ONBOARDING_OPERATOR_REF:'fictional-operator',NEVORA_ONBOARDING_VERIFICATION_PLATFORM_LIMIT_15M:'100',NEVORA_ONBOARDING_REGION:'aws-us-east-1',NEVORA_ONBOARDING_TERMS_VERSION:'terms-1',NEVORA_ONBOARDING_PRIVACY_VERSION:'privacy-1',...overrides});
+ if(!c.enabled)throw Error('Invalid fictional onboarding test configuration');return c;
+}

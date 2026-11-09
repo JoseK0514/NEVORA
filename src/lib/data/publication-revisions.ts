@@ -1,5 +1,6 @@
 import { databaseDate as dateValue } from './database-date';
-import { getDb, queryRows } from "../db";
+import {queryRows} from "../db";
+import {applicationSql} from "@/lib/data/app-sql";
 import {
   type PublishedShiftSnapshot,
 } from "../assistance/publication-diff";
@@ -53,7 +54,7 @@ function mapRevision(row: Record<string, unknown>): PublicationRevision {
 export async function getLatestPublicationRevision(
   weekStart: string,
 ): Promise<PublicationRevision | null> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -79,7 +80,7 @@ export async function getLatestPublicationRevision(
 export async function listRevisionShifts(
   revisionId: string,
 ): Promise<PublishedShiftSnapshot[]> {
-  const sql = getDb();
+  const sql = applicationSql();
   const rows = queryRows(
     await sql.query(
       `SELECT
@@ -195,7 +196,7 @@ export async function listCapturedShiftPositions(
   };
   const rows = executor
     ? await executor.query<Record<string, unknown>>(statement)
-    : queryRows(await getDb().query(statement.text, statement.values));
+    : queryRows(await applicationSql().query(statement.text, statement.values));
   return rows.map(row => ({
     sourceShiftId: String(row.source_shift_id),
     positionId: row.position_id ? String(row.position_id) : undefined,

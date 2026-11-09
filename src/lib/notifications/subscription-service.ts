@@ -1,3 +1,4 @@
+import {workspaceRuntimeEnvironment} from '../workspace-routing/runtime-config.server';
 import { createECDH, createHash, createHmac, randomUUID } from 'node:crypto';
 import { buildSelfTestNotification } from '../assistance/notification-events';
 import { decodePushKey, readNotificationConfig } from './config';
@@ -304,12 +305,12 @@ export function createPushHandlers(deps: PushHandlerDeps) {
     };
 }
 async function runtimeHandlers() {
-    const [{ cookies }, { getSession }, { sqlSubscriptionRepository }] = await Promise.all([import('next/headers'), import('../auth/session'), import('../data/push-subscriptions')]);
-    return createPushHandlers({ config: readNotificationConfig(process.env), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date(),
+    const [{ workspaceCookies: cookies }, { getSession }, { sqlSubscriptionRepository }] = await Promise.all([import('../workspace-routing/cookies.server'), import('../auth/session'), import('../data/push-subscriptions')]);
+    return createPushHandlers({ config: readNotificationConfig(await workspaceRuntimeEnvironment()), cookies: async () => await cookies() as PushCookieStore, session: getSession, subscriptions: () => sqlSubscriptionRepository(), clock: () => new Date(),
         sessionBudget:async(employeeId,sessionTokenHash)=>{
-            const [{getDb,queryRows},{getWorkspace}]=await Promise.all([import('../db'),import('../data/workspaces')]);
+            const [{queryRows},{getWorkspace},{applicationSql}]=await Promise.all([import('../db'),import('../data/workspaces'),import('../data/app-sql')]);
             if(!(await getWorkspace()).active)return 0;
-            const rows=queryRows<{budget:number}>(await getDb().query(`SELECT least(45000,floor(extract(epoch FROM (s.expires_at-clock_timestamp()))*1000))::integer AS budget FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('EMPLOYEE','LEAD') AND s.expires_at>clock_timestamp()`,[sessionTokenHash,employeeId]));
+            const rows=queryRows<{budget:number}>(await applicationSql().query(`SELECT least(45000,floor(extract(epoch FROM (s.expires_at-clock_timestamp()))*1000))::integer AS budget FROM employee_sessions s JOIN employees e ON e.id=s.employee_id WHERE s.token_hash=$1 AND e.id=$2 AND e.active AND e.role IN ('EMPLOYEE','LEAD') AND s.expires_at>clock_timestamp()`,[sessionTokenHash,employeeId]));
             return rows[0]?.budget??0;
         }});
 }
