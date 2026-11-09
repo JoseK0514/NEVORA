@@ -75,6 +75,8 @@ handoff/evidence receipt. No runtime configuration changes.
 - [ ] Run full `npm test -- --maxWorkers=1`, typecheck, lint, build without
   inherited database/provider settings, and relevant SQL suites on owned data.
   Existing UI component tests must pass without UI-source edits.
+## Final integration gate
+
 - [ ] Obtain one fresh-context code review of the whole candidate per the inline
   execution skill. Fix any Important/Critical findings with RED→GREEN proof.
 - [ ] Re-fetch; inspect any drift, rerun the source gate, verify main/collaboration
