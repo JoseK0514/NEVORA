@@ -1,6 +1,7 @@
 import {expect,it,vi} from 'vitest';
 vi.mock('server-only',()=>({}));
-import {ownShiftActivity,readEmployeeRequests} from './employee-requests.server';
+import {readEmployeeRequests} from './employee-requests.server';
+import {ownShiftActivity} from './exchanges';
 import type {SqlExecutor} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 const proof={employee:{id:'self',firstName:'Alex',lastName:'QA',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)} as SessionMutationProof;
