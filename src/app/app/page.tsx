@@ -110,7 +110,7 @@ export default async function DashboardPage({
       </div>
     </div></CardBody></Card></KitStack>
   </div></ManagerCorrectionRecoveryBoundary>;
-  const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision}=dashboardData;
+  const {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,daySummaries,hourRows,latestRevision,coverageMinutes}=dashboardData;
 
   const {modules}=await currentPresentation();
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
@@ -141,6 +141,7 @@ export default async function DashboardPage({
       managerActions={managerActions.filter(item=>requestTypeAllowed(item.type,modules))}
       locations={dashboard.locationReadiness}
       days={daySummaries}
+      coverage={coverageMinutes?.all}
       hours={hourRows}
       nextPay={nextPay}
       latestRevision={

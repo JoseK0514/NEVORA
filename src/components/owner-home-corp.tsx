@@ -1,5 +1,6 @@
 "use client";
 import "./owner-home-corp.css";
+import { isStaffingRepair } from "@/lib/time-off-staffing/present";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { CORP_NO_VALUE, CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpLink, CorpLoadFailed, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
@@ -206,13 +207,16 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup }: Owner
   const known = ["TIME_OFF", "EXCHANGE", "CALLOUT"];
   const urgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
   const corrections = urgent.filter(item => item.type === "TIME_CORRECTION").length;
+  // Nov 9, 2026: approved leave over a published shift is a shift to fill (Things to do's #todo-repair), not "other".
+  const repairs = urgent.filter(isStaffingRepair).length;
   const rows = [
+    { title: "Shifts to fill", n: repairs, href: "/app/inbox#todo-repair" },
     { title: "Time off requests", n: of("TIME_OFF"), href: "/app/requests" },
     { title: "Time corrections", n: corrections, href: "/app/inbox#todo-corrections" },
     { title: "Shift swaps", n: of("EXCHANGE"), href: "/app/exchange" },
     { title: "Can’t-work reports", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
     { title: "Other requests", n: requests.filter(item => !known.includes(item.type)).length, href: "/app/inbox#todo-requests" },
-    { title: "Other items to review", n: urgent.length - corrections, href: "/app/inbox#todo-review" },
+    { title: "Other items to review", n: urgent.length - corrections - repairs, href: "/app/inbox#todo-review" },
   ].filter(row => row.n > 0);
   const shiftsOnly = value.count > 0;
   return <CorpCard id="home-needs-you" label="Things to do" aside={<CorpLink href="/app/inbox" label="See all things to do">See all</CorpLink>}>

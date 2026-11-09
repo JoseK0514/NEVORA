@@ -1,3 +1,4 @@
+import {announceFailure,nevoraFailure,privateReadBody} from '../http/nevora-failure';
 import {
   parseEmployeeTimeCorrections,
   parseManagerTimeCorrections,
@@ -41,9 +42,10 @@ async function get(path:string,signal:AbortSignal,actorId?:string,authority?:str
   const response=await fetch(path,{method:'GET',credentials:'same-origin',cache:'no-store',redirect:'error',signal,headers:{
     Accept:'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
   }});
-  if(response.status===401||response.status===403)return {state:'unavailable',reason:'access_denied'} as const;
-  if(!response.ok)throw new Error('Correction data is unavailable');
-  return response.json();
+  // X-Nevora-Failure (Nov 9, 2026): the shared mapping (data-clearing failures read as access ended, the rest unavailable).
+  const read=await privateReadBody(response);
+  if(!read.ok){if(read.reason==='access_denied')return {state:'unavailable',reason:'access_denied'} as const;throw new Error('Correction data is unavailable');}
+  return read.body;
 }
 
 async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCommand,actorId?:string,authority?:string):Promise<CorrectionActionResponse>{
@@ -53,6 +55,9 @@ async function post(path:string,body:CorrectionRequestCommand|CorrectionReviewCo
     const response=await fetch(path,{method:'POST',credentials:'same-origin',cache:'no-store',redirect:'error',headers:{
       Accept:'application/json','Content-Type':'application/json','X-Nevora-Time-Correction':'1',...(actorId?{'X-Nevora-Actor':actorId}:{}),...(authority?{'X-Nevora-Correction-Authority':authority}:{}),
     },body:serialized});
+    // The page-level notice hears about an ended session, changed access, an unconfirmed connection or a malformed
+    // request; the business body below still decides the outcome, and the operation ID is never remade.
+    if(!response.ok)announceFailure(nevoraFailure(response));
     if(response.status===401||response.status===403)return {state:'unavailable',httpStatus:response.status};
     const result=action(await response.json());
     if('operationId' in result&&result.operationId!==body.operationId)return unknown;

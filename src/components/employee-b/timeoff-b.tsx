@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import {OwnLeaveNote} from '../leave-staffing/own-leave-note';
 import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
@@ -98,7 +99,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
       </BList>
       {requests.length && filter !== 'decided' ? <BCardNote>Open a request to see its details or withdraw it.</BCardNote> : null}
     </BCard>
-      : request ? <RequestCardB request={request} zone={zone}/>
+      : request ? <><RequestCardB request={request} zone={zone}/><OwnLeaveNote request={request}/></>
       : <BCard><BText status>This request isn’t available to your current account. Return to Time off to review your requests.</BText></BCard>}
   </>);
   return <BScreen back>

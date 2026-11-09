@@ -13,6 +13,7 @@ import { ManagerIssueFocus } from './manager-issue-focus';
 import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
+import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
 import { getWorkspace } from "@/lib/data/workspaces";
 
 const tabs = [
@@ -108,6 +109,8 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
     {offNames ? <CorpCard as="div" ariaLabel={offLabel}>
       <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" />
     </CorpCard> : null}
+    {/* Nov 9, 2026: the published shifts this time off overlaps, and what approving does to them, before Approve. */}
+    <LeaveConflictCheck request={{ id: request.id, startDate: request.startDate, endDate: request.endDate }} employeeName={request.employeeName} />
     <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
       <input type="hidden" name="requestId" value={request.id} />
       <input type="hidden" name="returnTo" value={origin.from} />

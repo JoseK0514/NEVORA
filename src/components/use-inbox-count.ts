@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { announceFailure, nevoraFailure } from "@/lib/http/nevora-failure";
 
 /** The Owner's or Manager's "needs you" count for the phone Inbox tab (F1), from GET /api/manager/inbox-count.
  * It reads only while the page is visible, clears the number when the page is hidden (private data never stays
@@ -25,6 +26,8 @@ export function useInboxCount(enabled: boolean, pathname: string | null): number
       try {
         const response = await fetch("/api/manager/inbox-count", { credentials: "same-origin", cache: "no-store", redirect: "error", headers: { Accept: "application/json" }, signal: controller.signal });
         if (response.status === 404) { absent.add("inbox-count"); if (active) setCount(null); return; }
+        // X-Nevora-Failure: an ended session or access says so once on the page; the badge just goes away.
+        if (!response.ok) announceFailure(nevoraFailure(response));
         const body: unknown = response.ok ? await response.json() : null;
         const ready = body && typeof body === "object" && (body as { state?: unknown }).state === "ready" && Number.isInteger((body as { count?: unknown }).count) && (body as { count: number }).count >= 0;
         const value = ready ? (body as { count: number }).count : null;

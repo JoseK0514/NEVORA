@@ -185,5 +185,8 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
   expect(html).toContain('aria-label="Decline time off for Ana Colon" value="DENIED" name="decision">Decline</button>');
-  expect(html).toContain('aria-label="Approve time off for Ana Colon" value="APPROVED" name="decision">Approve</button>');
+  // Nov 9, 2026 (leave staffing): the row offers Approve only after its published-shift check comes back clear; with no
+  // check here (no browser read), its teal button is Review, the request's page that shows the overlapping shifts first.
+  expect(html).not.toContain('aria-label="Approve time off for Ana Colon"');
+  expect(html).toContain('href="/app/requests?tab=pending&amp;requestId=r1&amp;from=inbox" aria-label="Review time off for Ana Colon">Review</a>');
 });

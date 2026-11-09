@@ -284,7 +284,9 @@ async function loadManagerDashboardDataCore(weekStart:string,proof:SessionMutati
  capture?.({ workspaceId: workspace.id, actorEmployeeId: proof.employee.id, weekStart, actionInput, healthShifts,
    positions, employeeTargets, staffingSettings, coverageWindows, pendingTimeOff, pendingExchanges, pendingCallouts,
    availabilityDeadline: weekSettings?.availabilityDeadline ?? null });
- return {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,scheduleRoster,daySummaries,hourRows,pendingTimeOff,pendingExchanges,pendingCallouts,latestRevision};
+ // Nov 9, 2026: canonical coverage minutes (staffing, positions and lead apart), for the whole week and per location.
+ const coverageMinutes={all:health.coverageMinutes,byLocation:Object.fromEntries(health.locationCoverage.map(location=>[location.locationId,location.coverageMinutes]))};
+ return {dashboard,locations,availabilitySubmissionSummary,coverageRulesConfigured,managerActions,scheduleRoster,daySummaries,hourRows,pendingTimeOff,pendingExchanges,pendingCallouts,latestRevision,coverageMinutes};
 }
 
 // Internal only: not a protected F10 reader and not a public DTO extension.

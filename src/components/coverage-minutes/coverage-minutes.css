@@ -1,0 +1,21 @@
+/* Coverage figures (Nov 9, 2026), Direction B values: Inter, ink #111517, grey #6A7176, figures in tabular numbers,
+   amber for a shortfall, no new colours. "b": inside a white card. "glass": on the teal band's glass week card. */
+:is(#c-root, html) .app-shell[data-nv-b] .cov { display: grid; gap: 8px; font-family: Inter, "Inter Fallback", -apple-system, sans-serif; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__k { font-size: 13px; line-height: 18px; font-weight: 600; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__none { font-size: 15px; line-height: 21px; font-weight: 600; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list > div { display: grid; gap: 2px; min-width: 0; padding: 10px 12px; border-radius: 14px; background: #F2F5F4; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list dt { font-size: 12.5px; line-height: 16px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list dd { display: grid; gap: 1px; margin: 0; min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list dd b { font-size: 19px; line-height: 24px; font-weight: 700; color: #111517; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list dd span { font-size: 12px; line-height: 16px; color: #6A7176; overflow-wrap: anywhere; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov__list > div[data-short] dd b { color: #8A4B00; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__k, :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__list dt, :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__list dd span { color: rgb(255 255 255 / .78); }
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__list > div { background: rgb(255 255 255 / .1); }
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__list dd b, :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__none { color: #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__list > div[data-short] dd b { color: #FFE2B0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-card > .cov { padding: 0 18px 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-week > .cov { margin-top: 12px; padding-top: 12px; box-shadow: inset 0 1px 0 rgb(255 255 255 / .14); }
+/* Desktop and tablet schedule: the week's coverage under the grid's bar, label beside the three figures. */
+:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage { padding: 4px 22px 16px; text-align: left; }
+:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage .cov { grid-template-columns: auto minmax(0, 560px); align-items: center; column-gap: 18px; }

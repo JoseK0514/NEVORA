@@ -2,9 +2,13 @@
 import type { ReactNode } from "react";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { CORP_NO_VALUE } from "@/components/corp/corp";
+import { CoverageFigures } from "@/components/coverage-minutes/coverage-minutes";
+import type { CoverageMinutes } from "@/lib/scheduling/coverage-minutes";
 import { periodLabel, type NextPay } from "@/components/payroll/my-pay";
 import { gapRow } from "@/components/manager-inbox-corp";
-import { itemPerson } from "@/lib/action-center/present";
+import { itemPerson, presentItem } from "@/lib/action-center/present";
+import { isStaffingRepair, repairWhen } from "@/lib/time-off-staffing/present";
+import { actionCenterNavigation } from "@/components/action-center-navigation";
 import type { NeedsYou } from "@/lib/action-center/needs-you";
 import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
@@ -26,6 +30,8 @@ export type HomeBWeek = {
   people: number;
   /** Where Payday's button goes: Payroll for an Owner with payroll, otherwise Timecards. */
   payrollHref?: string;
+  /** Nov 9, 2026: canonical coverage minutes for the week (schedule health), staffing, positions and lead apart. */
+  coverage?: CoverageMinutes;
 };
 
 export type HomeBProps = {
@@ -92,6 +98,16 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
       sub={`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}${compactRange(next.title)}`} href={openHref} label={`Open shifts, ${gapRows.length}`}
       trail={<BButtonLink href={next.href} label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
+  // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
+  // leave", opening the schedule with the person and the repair (or Things to do's Shifts to fill for several).
+  const repairs = value.now.filter(isStaffingRepair);
+  if (repairs.length) {
+    const first = repairs[0], shown = presentItem(first, "Fill shift");
+    rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
+      title={repairs.length === 1 ? shown.title : `Fill ${plural(repairs.length, "shift", "shifts")} for approved leave`}
+      sub={repairs.length === 1 ? repairWhen(first) : `Next: ${shown.title.replace(/^Fill /, "")}`} href={repairs.length === 1 ? actionCenterNavigation(first).href : "/app/inbox#todo-repair"}
+      label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved leave, ${repairs.length}`} />);
+  }
   if (value.noClockIn.length) {
     const names = value.noClockIn.map(shift => shift.employeeName);
     rows.push(<BRow key="missed" lead={<BFaces names={names} />} title={plural(value.noClockIn.length, "missed clock-in", "missed clock-ins")} sub={firstNames(names)}
@@ -105,7 +121,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
       title={requestKind[item.type] ?? item.title} sub={[person, facts ? shortRange(facts.startDate, facts.endDate) : null].filter(Boolean).join(" · ")}
       href={facts?.reviewHref ?? "/app/inbox#todo-requests"} label={`${requestKind[item.type] ?? item.title}${person ? `, ${person}` : ""}`} />);
   }
-  const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
+  const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
   if (rows.length < 3 && others.length) rows.push(<BRow key="others" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
   return <BCard title="Needs you" count={value.count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
@@ -147,6 +163,7 @@ function ThisWeek({ week, today }: { week: HomeBWeek; today?: string }) {
       <div><b className="c-num">{shifts}</b><span>{shifts === 1 ? "Shift" : "Shifts"}</span></div>
       <div><b className="c-num">{week.people}</b><span>{week.people === 1 ? "Person" : "People"}</span></div>
     </div>
+    {week.coverage ? <CoverageFigures coverage={week.coverage} label="Covered this week" /> : null}
     {week.days.length === 7 ? <>
       <div className="b-days" role="img" aria-label={`Shifts per day: ${week.days.map(day => `${day.weekday} ${day.shiftCount}`).join(", ")}`}>
         {week.days.map(day => <i key={day.date} className={day.date === today ? "today" : undefined} style={{ height: `${Math.max(6, Math.round(day.shiftCount / max * 100))}%` }} />)}

@@ -13,6 +13,7 @@ import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import { InboxB } from "./owner-b/inbox-b";
+import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffing/present";
 
 /* Things to do (Release 1; approved board O-Inbox, Oct 26). Presentation only: the same action center and Today reads as
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
@@ -129,11 +130,15 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   const timeKinds: ActionItem["type"][] = ["TIME_CORRECTION", "TIMECARD"];
   const places = new Set(value.noClockIn.map(shift => shift.locationName)).size > 1;
   // On a narrow phone the line may wrap; the count stays with its noun ("1 open", "Needs 1 person").
+  // Approved leave over a published shift (Nov 9, 2026): the schedule's job, next to open shifts. "Fill Maria Rivera’s
+  // shift" over its day, time and place; an older approval with no reviewer says an Owner needs to take it. No decision.
+  const repair: Group = { id: "repair", title: "Shifts to fill", rows: urgent.filter(isStaffingRepair).map(item => ({ ...itemRow(item, timeZone),
+    title: repairTitle(item), detail: plain(midnight(repairWhen(item))), ...(item.ownerEmployeeId === null ? { value: "Needs an Owner", valueTone: "red" as const } : {}) })) };
   const open: Group = { id: "open", title: "Open shifts", rows: of(["COVERAGE_GAP"], urgent).map(item => gapRow(item, timeZone, day))
     .map(row => ({ ...row, detail: row.detail?.replace(/ (\d+) open$/, " $1\u00a0open") })) };
   const time: Group[] = [
     { id: "missed", title: "Missed clock-ins", rows: value.noClockIn.map(shift => shiftRow(shift, timeZone, snapshot.observedAt, places)) },
-    { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type)).map(item => itemRow(item, timeZone)) },
+    { id: "now", title: "Needs attention now", rows: urgent.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !timeKinds.includes(item.type) && !isStaffingRepair(item)).map(item => itemRow(item, timeZone)) },
     { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], urgent).map(item => itemRow(item, timeZone)) },
     { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], urgent)), count: of(["TIMECARD"], urgent).length },
   ];
@@ -145,7 +150,7 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   ];
   const shown = (groups: Group[]) => groups.filter(group => group.rows.length);
   const cards: Family[] = [
-    { id: "card-open", title: "Open shifts", groups: shown([open]) },
+    { id: "card-open", title: "Open shifts", groups: shown([repair, open]) },
     { id: "review", title: "Time", groups: shown(time) },
     { id: "card-requests", title: "Requests", groups: shown(asked) },
   ];

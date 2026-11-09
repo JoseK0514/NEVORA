@@ -1590,6 +1590,45 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   actions; above the tab bar on phones, centred over a light scrim from 768px (`portal-device-setup.css`). In the app
   the Owner has no visible opener for it (the Profile row is gated by the browser web push flag).
 
+## Leave, staffing repairs, coverage and failure recovery (Nov 9, 2026; Jose approved Codex's backend repairs)
+Contract: `docs/handoffs/business-backend-repairs-20261109/CLAUDE-CONTRACT.md`. Direction B values only; no new colours, type
+or components beyond the small pieces below (`src/components/leave-staffing/`, `src/components/coverage-minutes/`).
+- **Before Approve.** A waiting time-off request's page (Owner, Manager) reads `/api/manager/time-off-staffing` for the
+  request's weeks and shows a "Published shifts" card above Decline / Approve: no overlap (green ring), or the person's
+  overlapping published shifts (day · time · place) with what approving does ("The whole shift (8 h) would need someone
+  else", from `overlapMinutes`) and that approving keeps the shift published and makes it a shift to fill. Checking,
+  "Couldn't check for shift conflicts" (with Try again; never "no conflicts"), expired ("Check again before you decide"),
+  paused and too long (over six weeks) are their own states. Approve is the same form and handler. In Things to do a
+  waiting row keeps Decline and shows Approve only once that check came back clear; otherwise its teal button is Review
+  (the request's page) and the row says "On the schedule: Tue, Nov 10 · 7:00 AM – 3:00 PM · …" or why it couldn't check.
+- **Shifts to fill.** An approved-leave repair (`purpose: STAFFING_REPAIR`) is scheduling work, never a decision: "Fill
+  Maria Rivera's shift" over its day, time and place, an amber "Approved leave" chip (red "Needs an Owner" when the approval
+  had no reviewer) and Fill, which opens the schedule with week, location, person and repair kept (`#leave-repair`). It is
+  its own group first in the Open shifts card of Things to do (`#todo-repair`), a row in Home's Needs you ("Fill 2 shifts
+  for approved leave"), "Shifts to fill" on the older Home card, and its own group in Tasks. No Approve, Decline or dismiss
+  anywhere; it goes away only when a published schedule no longer overlaps the leave.
+- **Schedule from a repair.** A note card (amber edge, calendar ring) leads the page: "Fill Maria Rivera's shift", the
+  approved leave over this published shift with its length, "Assign someone else or change the shift, then publish. Draft
+  changes don't clear this", who owns it (you, the approving manager, or an Owner when unassigned) and Open the shift (the
+  existing edit). It takes focus on arrival; the phone opens on that day and marks the person's shift "Approved leave";
+  the desktop grid marks the person's row with an amber edge. Once published away it says "This shift no longer needs a
+  replacement". The note reads its data through the authorized read; the link's parameters only choose it.
+- **Employee and Lead.** A request's page adds "Your shifts during this time off" when it overlaps their published
+  shifts: approved leave reads "Your time off is approved" (green), the shifts are listed apart, and a calm line says the
+  manager will take care of them (no cover or swap needed); waiting requests say the manager will see them. Nothing shows
+  until the check is back; a failed or expired check says so with Check again. Only their own records are read.
+- **Coverage.** Coverage is schedule health's `coverageMinutes`: Staffing, Positions and Lead as three separate figures
+  ("58%" over "193 h 30 min of 336 h"), never summed; no requirement reads "—" ("No lead required"); coverage rules not set
+  up read "Not set up", never 0% or 100%; a shortfall's figure is amber and never rounds to 100%. Shown on Home's This week
+  and the Schedule (phone: the hero's week card; tablet and desktop: under the grid's bar), for the chosen location. The
+  phone Schedule's day bar (assigned rows over assigned plus open rows) is gone; open shifts keep their own counts.
+- **X-Nevora-Failure.** One mapping (`src/lib/http/nevora-failure.ts`) and one notice (a white 22px card above the tab bar
+  on phones, bottom right on desktop): session ended (Sign in), access changed, page out of date (refreshed with current
+  authority), connection can't be confirmed (no sign-in suggestion, no address shown) and a malformed request (no retry as
+  another command). Reads clear their data for the first four and say "couldn't load" (unknown, never zero) for an
+  unavailable source; a conflict rereads. Command bodies (unknown outcomes) still decide outcomes and operation IDs are
+  never remade. Used by the Action Center, Things to do's count, timecards, Insights, time corrections and the leave reads.
+
 ## Clocker Direction B (Jose approved the round-2 mock, Nov 8, 2026)
 Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now the **only** Clocker presentation.
 - **Retired:** the `NEVORA_CLOCKER_UI_V2` switch (no longer read; harmless if still set) and the Signature deep-teal

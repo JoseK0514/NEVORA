@@ -1,6 +1,7 @@
 'use client';
 
 import {keepWhole} from '@/lib/keep-whole';
+import {announceFailure,failureRecovery,nevoraFailure,FAILURE_MESSAGES} from '@/lib/http/nevora-failure';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
 import { timeZoneLabel } from '@/lib/time-zone-label';
@@ -149,6 +150,10 @@ function TimecardsState({title,message,failed,signIn,onRetry,className}:{title:s
   </div>;
 }
 
+/** An origin admission failure: clear the cards, never suggest signing in again (CLAUDE-CONTRACT.md). */
+const originFailure=(response:Response)=>{const code=nevoraFailure(response);return !!code&&failureRecovery(code)==='origin';};
+const ORIGIN_LINE=`${FAILURE_MESSAGES.origin.title}. ${FAILURE_MESSAGES.origin.body}`;
+
 export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false,today,signature=false}:{initialPeriod:Period;manager:boolean;actorId:string;employeeCorporate?:boolean;
   /** Employee Signature (phase 1, approved Oct 20, 2026; target docs/product/specs/employee-style/signature/phase-1/p1c-timecards.png). */
   signature?:boolean;
@@ -190,6 +195,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       const response=await fetch('/api/timecards',{method:'POST',cache:'no-store',credentials:'same-origin',signal:abort.signal,
         headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(selected)});
       if(!isCurrent())return;
+      // X-Nevora-Failure (Nov 9, 2026): said once for the page; an unconfirmed connection clears the cards without asking to sign in again.
+      if(!response.ok)announceFailure(nevoraFailure(response));
+      if(!response.ok&&originFailure(response)){commandRef.current=null;setPending(null);expireProtected();setFailed(false);setMessage(ORIGIN_LINE);return;}
       if(response.status===401||response.status===403){commandRef.current=null;setPending(null);expireProtected();setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again to view your timecards.':'Your access changed. Sign in again to check your timecards.');return;}
       if(!response.ok)throw new Error('Unavailable');
       const next=parseCurrentTimecards(await response.json(),selected);
@@ -232,6 +240,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     try{
       const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(command)});
       if(own!==generation.current)return;
+      // The receipt body (an unknown outcome keeps its operation ID) wins; the shared notice only says why access ended.
+      if(!response.ok)announceFailure(nevoraFailure(response));
       if(response.status===401||response.status===403){commandRef.current=null;setPending(null);invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setSignInRequired(true);setMessage(response.status===401?'Your session ended. Sign in again before reviewing timecards.':'Your access changed. Sign in again before reviewing timecards.');return;}
       const result=parseTimecardReceipt(await response.json(),command,response.status);
       if(own!==generation.current)return;
@@ -262,6 +272,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const result=await runReviewedBatch(review,isCurrent,async command=>{
       commandRef.current=command;setPending(command);
       const response=await fetch('/api/manager/timecards',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-timecards':'1','x-nevora-actor':actorId},body:JSON.stringify(command)});
+      if(!response.ok)announceFailure(nevoraFailure(response));
       return {httpStatus:response.status,body:response.status===401||response.status===403?null:await response.json()};
     },outcome=>{
       if(outcome.status!=='not-submitted'&&outcome.status!=='outcome-unknown'&&commandRef.current?.operationId===outcome.command.operationId){commandRef.current=null;setPending(null);}

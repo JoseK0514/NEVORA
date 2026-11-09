@@ -1,5 +1,6 @@
 "use client";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
+import { isStaffingRepair, repairOwnerLine } from "@/lib/time-off-staffing/present";
 
 import Link from "next/link";
 import { ScopedReadFrame, type ScopedObservation } from "./company-access/scoped-read-frame";
@@ -135,7 +136,11 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
   ];
 }
 
+/** Approved leave over a published shift (Nov 9, 2026): who fixes it, and that the leave itself is settled. */
+const repairNote = (item: ActionItem) => `The leave is approved and the published shift is kept. Assign a replacement or change the shift, then publish. ${repairOwnerLine(item)}`;
+
 export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
+  const repair = isStaffingRepair(item);
   const urgent = item.priority === "URGENT" && !calm;
   const request = item.category === "requests";
   const action = actionCenterNavigation(item);
@@ -144,9 +149,9 @@ export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, 
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
     leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initials(shown.person)}</span> : undefined,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
-    status: request ? <Status tone="review">Waiting</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
+    status: request ? <Status tone="review">Waiting</Status> : repair ? <Status tone="urgent">Needs a replacement</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
     trailing: undefined,
-    note: calm ? "This time has passed. Review it for the record; it doesn’t need action now."
+    note: repair ? repairNote(item) : calm ? "This time has passed. Review it for the record; it doesn’t need action now."
       : facts ? "Approve or decline it on the full request." : item.category === "requests" ? requestNote : typeNote[item.type] ?? categoryNote[item.category],
     facts: facts ? requestFacts(facts) : undefined };
 }

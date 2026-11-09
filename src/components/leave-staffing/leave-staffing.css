@@ -1,0 +1,69 @@
+/* Leave and staffing (Nov 9, 2026), Direction B values only: white cards (22px, the soft layered shadow), ink #111517,
+   grey #3F464B / #6A7176, Inter, Phosphor bold icons in tinted circles (teal information, amber check, red stop, green
+   done), pills, 48px targets. No new colours or type. */
+
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring { flex: none; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #F0F2F3; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring svg { width: 20px; height: 20px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=red] { background: #FDECEA; color: #B42318; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=green] { background: #E7F5EC; color: #1F7A45; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=teal] { background: #E8F3F1; color: #0B6E69; }
+
+/* The request's page: published shifts before Approve (a corporate card, which the Owner/Manager Direction B layer draws). */
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__body { display: grid; gap: 12px; padding: 14px 16px 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__state { margin: 0; font-size: 15px; line-height: 21px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-line { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-line__tx { display: grid; gap: 2px; flex: 1; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-line__tx b { font-size: 15.5px; line-height: 21px; font-weight: 700; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__retry { flex: none; min-height: 48px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__list { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-radius: 14px; background: #F2F5F4; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__list li { display: grid; gap: 2px; padding: 12px 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__list li + li { box-shadow: inset 0 1px 0 rgb(17 21 23 / .08); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__shift { font-size: 15px; line-height: 21px; font-weight: 600; color: #111517; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__gap { font-size: 14px; line-height: 19px; color: #8A4B00; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-check__after { margin: 0; font-size: 14px; line-height: 20px; color: #3F464B; }
+
+/* Things to do (phone): the schedule line under a waiting time off row. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-leave-note { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-leave-note[data-tone=amber] { color: #8A4B00; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-leave-note svg { flex: none; width: 15px; height: 15px; }
+
+/* The schedule opened from a staffing repair: one card, the ring, what happened, who fixes it, Open the shift. */
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair, :is(#c-root, html) .app-shell[data-nv-b] .b-notes > .ls-repair { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 12px 14px; padding: 16px 18px; border-radius: 22px; background: #FFFFFF; color: #111517;
+  box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 10px 24px -14px rgb(16 40 38 / .22); font-family: Inter, "Inter Fallback", -apple-system, sans-serif; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair:focus { outline: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair[data-tone=amber] { box-shadow: inset 4px 0 0 #D98A1B, 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 10px 24px -14px rgb(16 40 38 / .22); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__tx { display: grid; gap: 4px; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__tx b { font-size: 17px; line-height: 23px; font-weight: 700; letter-spacing: -.01em; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__fact { color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__owner { font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__act { grid-column: 2; display: flex; flex-wrap: wrap; gap: 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair__act > :is(a, button) { min-height: 48px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair--corp { margin: 0 0 16px; }
+@media (max-width: 420px) { .ls-repair__act { grid-column: 1 / -1; } .ls-repair__act > :is(a, button) { flex: 1; } }
+
+/* An Employee's or Lead's own request. */
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own { display: flex; align-items: center; gap: 12px; padding: 4px 18px 10px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own > span:last-child { display: grid; gap: 2px; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own b { font-size: 15.5px; line-height: 21px; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own--quiet { justify-content: space-between; flex-wrap: wrap; padding: 12px 18px 16px; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own--quiet .b-btn { min-height: 48px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-own__note { margin: 0; padding: 4px 18px 16px; font-size: 14px; line-height: 20px; color: #6A7176; }
+
+/* Desktop schedule grid: the repair's person, marked (not recoloured). */
+:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__row--repair > :first-child { box-shadow: inset 3px 0 0 #D98A1B; }
+
+/* X-Nevora-Failure: one notice for the page, above the tab bar on phones, at the bottom right on desktop. */
+:is(#c-root, html) .ls-failure { position: fixed; z-index: 60; left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  padding: 14px 16px; border-radius: 22px; background: #FFFFFF; color: #111517; font-family: Inter, "Inter Fallback", -apple-system, sans-serif;
+  box-shadow: 0 0 0 1px rgb(16 40 38 / .06), 0 2px 4px rgb(16 40 38 / .08), 0 24px 48px -16px rgb(16 40 38 / .32); }
+:is(#c-root, html) .ls-failure:focus { outline: none; }
+:is(#c-root, html) .ls-failure:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; }
+:is(#c-root, html) .ls-failure__tx { display: grid; gap: 2px; flex: 1 1 220px; font-size: 14.5px; line-height: 20px; color: #3F464B; }
+:is(#c-root, html) .ls-failure__tx b { font-size: 15.5px; line-height: 21px; color: #111517; }
+:is(#c-root, html) .ls-failure__acts { display: flex; gap: 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-failure__acts > * { min-height: 48px; padding: 0 18px; border: 0; }
+@media (min-width: 768px) { .ls-failure { left: auto; right: 24px; bottom: 24px; width: min(420px, calc(100vw - 48px)); } }
+@media (prefers-reduced-motion: no-preference) { .ls-failure { animation: ls-rise 180ms ease-out; } }
+@keyframes ls-rise { from { opacity: 0; transform: translateY(8px); } }

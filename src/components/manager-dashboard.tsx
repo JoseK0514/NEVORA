@@ -1,4 +1,5 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
+import type { CoverageMinutes } from '@/lib/scheduling/coverage-minutes';
 import { WhosWorkingCorp } from "./whos-working-corp";
 import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
@@ -95,6 +96,8 @@ type Props = {
   managerActions: ManagerActionItem[];
   locations: DashboardLocationItem[];
   days: DashboardDayItem[];
+  /** Nov 9, 2026: canonical coverage minutes for the week (staffing, positions and lead apart). */
+  coverage?: CoverageMinutes;
   hours: DashboardHourItem[];
   latestRevision: DashboardRevisionItem;
 };
@@ -229,7 +232,7 @@ function PremiumOverview(props: Props) {
   // Direction B (phones): This week's hours, shifts per day and people come from this page's own reads; nothing is estimated.
   const homeB = { firstName: props.firstName, days: props.days.map(day => ({ date: day.date, weekday: day.weekday, shiftCount: day.shiftCount })),
     scheduledHours: props.hours.reduce((total, row) => total + row.scheduledHours, 0), people: props.hours.filter(row => row.scheduledHours > 0).length,
-    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined };
+    payrollHref: props.role === 'OWNER' && props.nextPay ? '/app/payroll' : undefined, coverage: props.coverage };
   const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName, homeB };
   const slots = props.overviewSlots;
   if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}

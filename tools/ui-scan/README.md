@@ -38,6 +38,13 @@ W=390,1440 tools/ui-scan/desk.sh /tmp/scan-emp /app,/app/schedule \
 # Phone app Alerts page states with a simulated bridge: NEVORA_SCAN_NATIVE_FLOW=1 (NEVORA_SCAN_NATIVE_W=390,900,1440)
 # Browser device alerts on (fictional web push config): NEVORA_SCAN_DEVICE_ALERTS=1
 # Owner Device settings popover: NEVORA_SCAN_POPOVER=1 (NEVORA_SCAN_POPOVER_W=390,1440)
+# Leave and staffing: NEVORA_SCAN_LEAVE=1 seeds fictional leave over this week's published shifts (Maria pending, James
+#   pending part day, Ana approved with no reviewer); routes may use {leaveMaria}, {leaveJames}, {leaveAna}.
+#   NEVORA_SCAN_LEAVE_FLOW=1 (Owner): the check before Approve (+ forced unavailable/expired), Approve, the repair in
+#   Things to do and Home, the schedule from the task, draft vs published (NEVORA_SCAN_LEAVE_W=390,900,1440).
+#   NEVORA_SCAN_LEAVE_NEG=1: wrong actor, stale view, no intent, foreign origin, other role, colleague (employees);
+#   NEVORA_SCAN_LEAVE_REVOKE=1 then ends every session and captures the page's notice.
+# Coverage rules not set up: NEVORA_SCAN_NO_COVERAGE=1.  Correction approval with punches compared: NEVORA_SCAN_CORRECTION_FLOW=1
 ```
 
 Screenshots are named `owner-<route-slug>-<width>.png` (the prefix is historical; the role is
@@ -46,6 +53,8 @@ the one you chose). The log goes to `/tmp/ui-scan-last.log` (override with `UI_S
 The owned app builds from the committed tree, so the script commits your working changes as
 a temporary `wip ui-scan` commit and soft-resets it when the scan ends; your changes come back
 staged. New untracked application files must be added first (`git add -N <file>`).
+The scan runs as `pgtest`, which creates and removes `node_modules/.vitest-cache`: remove a cache left by your own Vitest
+run (`rm -rf node_modules/.vitest-cache`) and don't run Vitest while a scan is running.
 
 To change a test, unpack the archive, edit, and re-pack:
 

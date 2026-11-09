@@ -219,7 +219,7 @@ function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZ
         label={`${late.length} shifts with no ${CLOCK_IN}, open in Inbox`} /> : null}
       {gaps.length ? <QuietRow href="/app/inbox?filter=now" title={plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")}
         detail={locationCounts(gaps.map(item => ({ locationName: gapLocation(item) }))) || "Today"} label={`${plural(gaps.length, "open shift", "open shifts").replace("\u00a0", " ")} today, open in Inbox`} /> : null}
-      {otherUrgent.length ? <QuietRow href="/app/inbox?filter=now" title={plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")} detail={otherUrgent[0].title}
+      {otherUrgent.length ? <QuietRow href="/app/inbox?filter=now" title={plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")} detail={presentItem(otherUrgent[0], "", timeZone).title}
         label={`${plural(otherUrgent.length, "urgent item", "urgent items").replace("\u00a0", " ")}, open in Inbox`} /> : null}
       {requests.length ? <QuietRow href="/app/inbox?filter=requests" title={plural(requests.length, "request", "requests").replace("\u00a0", " ")} detail={requestDetail}
         label={`${plural(requests.length, "request", "requests").replace("\u00a0", " ")} waiting, open in Inbox`} /> : null}

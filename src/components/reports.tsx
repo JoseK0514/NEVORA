@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
+import {announceFailure,clearsProtectedData,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
 import type {CSSProperties} from 'react';
@@ -373,6 +374,8 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    try{
     const response=await fetch('/api/reports',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:controller.signal});
     if(!active||current!==generation)return;
+    // X-Nevora-Failure (Nov 9, 2026): the page-level notice says why; data-clearing failures read as access ended here.
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
     if(response.status===401||response.status===403){clear('access_lost');return;}
     const body=await response.json();if(!active||current!==generation)return;if(!response.ok||body?.state!=='ready'||!Number.isSafeInteger(body.validForMs)||body.validForMs<1||body.validForMs>15000)throw new Error('Unavailable');
     const result=projectReports(body.source);if(result.period.startDate!==period.startDate||result.period.endDate!==period.endDate)throw new Error('Incorrect period');
@@ -394,6 +397,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    try{
     const response=await fetch('/api/reports/export',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'content-type':'application/json','x-nevora-reports':'1'},body:JSON.stringify(period),signal:exportController.signal});
     if(!active||generation!==current)return;
+    if(!response.ok){const code=nevoraFailure(response);announceFailure(code);if(code&&clearsProtectedData(failureRecovery(code))){clear(failureRecovery(code)==='origin'?'unavailable':'access_lost');return;}}
     if(response.status===401||response.status===403){clear('access_lost');return;}
     if(!response.ok||!response.headers.get('content-type')?.startsWith('text/csv'))throw new Error('Unavailable export');
     const blob=await response.blob();if(!active||generation!==current||!focused||performance.now()>=validUntil)return;

@@ -21,6 +21,7 @@ import { Fragment, type ReactNode } from "react";
 import { CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
 import { FocusOnArrival } from "@/components/kit/focus-on-arrival";
 import { ManagerWeeklyRoster, type RosterOpenShift } from "@/components/manager-weekly-roster";
+import { LeaveRepairNote, LeaveRepairProvider } from "@/components/leave-staffing/repair-note";
 import { scheduleWeekFacts } from "@/components/clean/week-summary";
 import { DayAwareLink } from "@/components/clean/day-aware-link";
 import { readWeeklyApprovedAbsences } from "@/lib/data/weekly-approved-absences.server";
@@ -106,6 +107,8 @@ export default async function SchedulePage({
     intent?: string;
     shift?: string;
     changesPublished?: string;
+    employeeId?: string;
+    leaveRepair?: string;
   }>;
 }) {
   const session = await requireSession();
@@ -116,6 +119,13 @@ export default async function SchedulePage({
   const today = businessDate(observedAt, workspace.timeZone);
   const currentWeek = weekStartFor(today);
   const weekStart = validWeek(params.week) ? params.week! : currentWeek;
+  // Nov 9, 2026: opened from a staffing repair (approved leave over a published shift). The link names the person and the
+  // repair; the note reads them through the authorized staffing read, so these parameters only choose what to show.
+  const leaveRepair = manager && params.leaveRepair?.startsWith("LEAVE_STAFFING:") && params.employeeId && params.leaveRepair.length <= 600 && params.employeeId.length <= 200
+    ? { id: params.leaveRepair, employeeId: params.employeeId } : null;
+  const repairNote = (variant: "b" | "corp") => leaveRepair ? <LeaveRepairNote variant={variant} /> : null;
+  // One read for the page (the phone screen and the desktop layout each draw a note from it).
+  const withRepair = (node: ReactNode) => leaveRepair ? <LeaveRepairProvider key={`${weekStart}:${leaveRepair.id}`} weekStart={weekStart} employeeId={leaveRepair.employeeId} repairId={leaveRepair.id}>{node}</LeaveRepairProvider> : node;
   if(manager){
     const proof=await requireSessionMutationProof(),access=await readOperationalAuthority(proof);
     if(access.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={access.reason}/>;
@@ -123,7 +133,7 @@ export default async function SchedulePage({
       const source=await readOperationalSchedule(proof,{weekStart,...(params.location===undefined||params.location==='all'?{}:{locationId:params.location})});
       if(source.state==='unavailable')return <OperationalUnavailable title="Schedule unavailable" reason={source.reason} scoped/>;
       if(source.authority!==access.authority)return <OperationalUnavailable title="Schedule unavailable" reason="source_changed" scoped/>;
-      return <ScopedOperationalSchedule data={source.data} observation={source} feedback={<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'}/>}/>;
+      return withRepair(<ScopedOperationalSchedule data={source.data} observation={source} feedback={<>{repairNote("corp")}<ScheduleRouteFeedback error={params.error} warning={params.warning} scoped reviewChange={params.updated==='1'||params.deleted==='1'}/></>}/>);
     }
   }
   async function renderSchedule(){
@@ -389,6 +399,8 @@ export default async function SchedulePage({
     : { text: "Not started", tone: "glass" as const };
   const bSchedule = publicationReview || params.publishCheck || params.plan === "1" || reviewDay ? undefined : {
     sub: todayLong,
+    // Nov 9, 2026: the week's coverage from canonical schedule health, for the chosen location (or all of them).
+    coverage: weekRead?.coverageMinutes ? (selectedLocation === "all" ? weekRead.coverageMinutes.all : weekRead.coverageMinutes.byLocation[selectedLocation] ?? null) : null,
     actions: <>
       <ActionMenu id="b-schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="b-ib b-glass" triggerContent={<DotsThreeIcon size={20} weight="bold" aria-hidden="true" />}>
         {moreItems}
@@ -406,6 +418,7 @@ export default async function SchedulePage({
         detail: drafted ? "The team can’t see this week yet" : "Nothing scheduled this week", action: drafted ? "Review" : "Plan", label: drafted ? `Review and publish ${location.shortName}` : `Plan ${location.shortName}` };
     }),
     notes: <>
+      {repairNote("b")}
       <ScheduleRouteFeedback error={params.error} warning={params.warning}/>
       {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
         <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
@@ -417,7 +430,7 @@ export default async function SchedulePage({
       {params.copied !== undefined ? <CorpNote>{`Copied ${params.copied} shift${params.copied === "1" ? "" : "s"} from the previous week.${Number(params.skipped ?? 0) > 0 ? ` ${params.skipped} skipped because of scheduling conflicts.` : ""}`}</CorpNote> : null}
     </>,
   };
-  return (
+  return withRepair(
     <CorpPage className="c-sched c-page--wide" labelledBy="schedule-title">
       <CorpTitle id="schedule-title" title="Schedule"
         actions={<>
@@ -469,12 +482,13 @@ export default async function SchedulePage({
       <p className="mws-print-title" aria-hidden="true">{workspace.name} · {formatWeekRange(weekStart)} · {locationName} · Times in {workspace.timeZone.replaceAll("_", " ")}</p>
       <ManagerIssueFocus prefix="schedule-" />
       {params.plan === "1" || params.publishCheck ? <FocusOnArrival targetId="schedule-planning" /> : null}
-      <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
+      <ManagerWeeklyRoster key={`${weekStart}:${selectedLocation}:${reviewDay ?? "all"}`} repairEmployeeId={leaveRepair?.employeeId} employees={roster} dates={dates} today={today} reviewDay={reviewDay} timeZone={workspace.timeZone}
         absences={absences} locationId={selectedLocation === "all" ? undefined : selectedLocation} openShifts={openShifts}
         corp={{ weekLabel: compactWeekRange(weekStart), previousHref: `/app/schedule?week=${previousWeek}${locationQuery}`, nextHref: `/app/schedule?week=${nextWeek}${locationQuery}`, status: weekState, addShiftHref, changedShiftIds,
           todayHref: weekStart === currentWeek ? undefined : `/app/schedule?week=${currentWeek}${locationQuery}`, observedAt: observedAt.toISOString() }}
         b={bSchedule}
         notices={<>
+          {repairNote("corp")}
           {toPlan.length ? <CorpCard label="Not published yet" ariaLabel="Locations the team can’t see yet">
             <CorpRows label="Locations the team can’t see yet">{toPlan.map(location => {
               const drafted = statusFor(location.id) === "DRAFT";

@@ -1,4 +1,5 @@
 import type {ActionItem} from '../lib/action-center/project';
+import {isStaffingRepair} from '../lib/time-off-staffing/present';
 
 const labels:Record<ActionItem['type'],string>={
  COVERAGE_GAP:'View coverage gap',TIME_OFF:'Review time off',EXCHANGE:'Review shift request',CALLOUT:'Review callout',
@@ -11,6 +12,9 @@ const labels:Record<ActionItem['type'],string>={
 export function actionCenterNavigation(item:ActionItem){
  const url=new URL(item.href,'https://nevora.invalid');
  let label=labels[item.type]??'View issue';
+ // Approved leave over a published shift: the schedule with the person and the repair kept (week, location, person,
+ // repair id are already in the read's link); the schedule's repair note takes focus there. Never Review time off.
+ if(isStaffingRepair(item))return {label:'Fill shift',href:url.pathname+url.search+'#leave-repair'};
  const employee=url.searchParams.get('employeeId'),request=url.searchParams.get('requestId');
  if(!url.hash){
   if(['TIME_OFF','EXCHANGE','CALLOUT'].includes(item.type)&&request)url.hash='request-'+encodeURIComponent(request);

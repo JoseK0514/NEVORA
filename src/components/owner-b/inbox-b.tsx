@@ -1,5 +1,5 @@
 "use client";
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowsLeftRight";
@@ -9,6 +9,11 @@ import { SunIcon } from "@phosphor-icons/react/dist/ssr/Sun";
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr/Warning";
+import { useLeaveStaffing, type StaffingState } from "@/components/leave-staffing/use-leave-staffing";
+import { conflictsFor } from "@/components/leave-staffing/conflict-check";
+import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
+import { conflictShift } from "@/lib/time-off-staffing/present";
 import { compactRange, BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
@@ -34,8 +39,14 @@ export function InboxB({ ready, families, total, connection, statusLine, todayFa
   const [filter, setFilter] = useState<Filter>("all");
   const items = new Map((ready?.items ?? []).map(item => [item.id, item]));
   const shown = families.filter(family => filter === "all" || family.id === filter);
+  // Nov 9, 2026: before a time off row's Approve, the published shifts it overlaps. One read covers the weeks of every
+  // waiting request here; a row offers Approve only once that check is back with no overlap, otherwise Review (its page).
+  const leaves = useMemo(() => (ready?.items ?? []).flatMap(item => { const id = requestIdOf(item); return id && item.request ? [{ id, weeks: weeksFor(item.request.startDate, item.request.endDate) }] : []; }), [ready]);
+  const weeks = useMemo(() => [...new Set(leaves.flatMap(leave => leave.weeks ?? []))].sort().slice(0, MAX_STAFFING_WEEKS), [leaves]);
+  const { state: staffing } = useLeaveStaffing(weeks.length ? { weeks } : null);
+  const checked = useMemo(() => new Set(leaves.filter(leave => leave.weeks?.every(week => weeks.includes(week))).map(leave => leave.id)), [leaves, weeks]);
   const cards: ReactNode[] = [];
-  for (const family of shown) for (const group of family.groups) cards.push(<GroupCard key={group.id} group={group} items={items} />);
+  for (const family of shown) for (const group of family.groups) cards.push(<GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />);
   return <BScreen back={back}>
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
       sub={<>{total === null ? statusLine : total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
@@ -61,7 +72,7 @@ export function InboxB({ ready, families, total, connection, statusLine, todayFa
   </BScreen>;
 }
 
-function GroupCard({ group, items }: { group: Group; items: Map<string, ActionItem> }) {
+function GroupCard({ group, items, staffing, checked }: { group: Group; items: Map<string, ActionItem>; staffing: StaffingState; checked: Set<string> }) {
   return <BCard title={group.title} count={count(group)} id={`b-todo-${group.id}`}>
     <BList label={group.title}>{group.rows.map((row, index) => {
       if (group.id === "open") {
@@ -72,15 +83,26 @@ function GroupCard({ group, items }: { group: Group; items: Map<string, ActionIt
         return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={title} sub={parts.join(" · ").replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1")} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind={index === 0 ? "teal" : "ghost"} label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;
       }
+      // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.
+      if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
+        chip={row.value ? <BChip tone="red">{row.value}</BChip> : <BChip tone="amber">Approved leave</BChip>} sub={row.detail} href={row.href} label={row.label}
+        trail={<BButtonLink href={row.href} kind={index === 0 ? "teal" : "ghost"} label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
       if (group.id === "missed") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title} chip={row.value ? <BChip tone="amber">{`${row.value} late`}</BChip> : undefined}
         sub={row.detail} href={row.href} label={row.label} />;
       const item = items.get(row.key);
       const requestId = group.id === "time-off" ? requestIdOf(item) : null;
-      if (requestId) return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={`${row.title} · Time off`} sub={row.detail} href={item?.request?.reviewHref ?? row.href} label={row.label}
-        actions={<form action={reviewTimeOffAction} aria-label={`Review time off for ${row.title}`}>
-          <input type="hidden" name="requestId" value={requestId} /><input type="hidden" name="returnTo" value="inbox" /><input type="hidden" name="returnFilter" value="all" />
-          <Decide name={row.title} />
-        </form>} />;
+      if (requestId) {
+        const conflicts = checked.has(requestId) ? conflictsFor(staffing, requestId) : null;
+        const clear = conflicts !== null && conflicts.length === 0;
+        const reviewHref = item?.request?.reviewHref ?? row.href;
+        const note = conflicts?.length ? <span className="b-leave-note" data-tone="amber"><WarningIcon weight="bold" aria-hidden="true" />{`On the schedule: ${conflictShift(conflicts[0])}${conflicts.length > 1 ? ` +${conflicts.length - 1}` : ""}`}</span>
+          : conflicts ? null : <span className="b-leave-note">{!checked.has(requestId) ? "Check the schedule on its page" : staffing.status === "loading" ? "Checking the schedule…" : staffing.status === "expired" ? "Schedule check expired" : staffing.status === "paused" ? "Schedule check paused" : "Couldn’t check the schedule"}</span>;
+        return <BRow key={row.key} lead={<BAvatar name={row.title} />} title={`${row.title} · Time off`} sub={<>{row.detail}{note}</>} href={reviewHref} label={row.label}
+          actions={<form action={reviewTimeOffAction} aria-label={`Review time off for ${row.title}`}>
+            <input type="hidden" name="requestId" value={requestId} /><input type="hidden" name="returnTo" value="inbox" /><input type="hidden" name="returnFilter" value="all" />
+            <Decide name={row.title} approve={clear} reviewHref={reviewHref} />
+          </form>} />;
+      }
       const icon = group.id === "swaps" ? <ArrowsLeftRightIcon weight="bold" /> : group.id === "time-off" ? <SunIcon weight="bold" /> : group.id === "timecards" ? <CheckIcon weight="bold" /> : <ClockIcon weight="bold" />;
       return <BRow key={row.key} lead={<BIcon tone={["time-off", "swaps", "cant-work", "requests"].includes(group.id) ? "teal" : "grey"}>{icon}</BIcon>} title={row.title}
         chip={row.value ? <BChip>{row.value}</BChip> : undefined} sub={row.detail} href={row.href} label={row.label} />;
@@ -89,12 +111,14 @@ function GroupCard({ group, items }: { group: Group; items: Map<string, ActionIt
 }
 
 /** Decline and Approve, side by side under the request. While the decision is out both are disabled and the pressed one says so. */
-function Decide({ name }: { name: string }) {
+function Decide({ name, approve, reviewHref }: { name: string; approve: boolean; reviewHref: string }) {
   const { pending, data } = useFormStatus();
   const decision = data?.get("decision");
   return <span className="b-decide" aria-busy={pending}>
     <BButton kind="quiet" type="submit" name="decision" value="DENIED" disabled={pending} label={pending ? undefined : `Decline time off for ${name}`}>{pending && decision === "DENIED" ? "Declining…" : "Decline"}</BButton>
-    <BButton kind="teal" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
+    {/* Approve only once the schedule check came back with no overlap; otherwise its page shows the shifts first. */}
+    {approve ? <BButton kind="teal" type="submit" name="decision" value="APPROVED" disabled={pending} label={pending ? undefined : `Approve time off for ${name}`}>{pending && decision === "APPROVED" ? "Approving…" : "Approve"}</BButton>
+      : <BButtonLink href={reviewHref} kind="teal" label={`Review time off for ${name}`}>Review</BButtonLink>}
     <span className="b-sr" role="status">{pending ? "Saving your decision…" : ""}</span>
   </span>;
 }

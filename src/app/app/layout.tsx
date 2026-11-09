@@ -50,6 +50,8 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { preload } from "react-dom";
 import { AppShell } from "@/components/app-shell";
+import { LeaveStaffingProvider } from "@/components/leave-staffing/use-leave-staffing";
+import { NevoraFailureNotice } from "@/components/leave-staffing/failure-notice";
 import { readNotificationConfig } from "@/lib/notifications/config";
 import { getWorkspace } from "@/lib/data/workspaces";
 import { requireSession, requireSessionMutationProof } from "@/lib/auth/session";
@@ -120,7 +122,12 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
         role: session.role,
       }}
     >
-      {children}
+      {/* Nov 9, 2026: the leave-staffing reads' actor and requests view binding (public freshness metadata, never a proof),
+        and the one page-level notice for X-Nevora-Failure. */}
+      <LeaveStaffingProvider authority={{ scope: ["OWNER", "MANAGER"].includes(session.role) ? "management" : "employee", actorId: session.id, view: employeeViewAuthority(proof, "requests") }}>
+        <NevoraFailureNotice />
+        {children}
+      </LeaveStaffingProvider>
       {/* v5: shift changes opened from a shift rise as sheets over the page (intercepted routes in @sheet). */}
       {sheet}
       {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}

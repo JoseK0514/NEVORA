@@ -1,4 +1,5 @@
 import type {ActionItem} from './project';
+import {isStaffingRepair,repairPerson,repairTitle,repairWhen} from '../time-off-staffing/present';
 
 /* Phase 7: how an action center item reads on Home and in the Inbox.
  * Display only. The server's item (and the notifications built from it) is unchanged;
@@ -42,6 +43,7 @@ const sentDate = (iso: string | undefined, timeZone: string) => {
 
 /** The person an item is about, when its text names one. */
 export function itemPerson(item: ActionItem) {
+  if (isStaffingRepair(item)) return repairPerson(item);
   if (item.category === 'requests') return item.detail.replace(WAITING, '').trim() || null;
   const named = /^(.+?) (?:is not included|has not acknowledged|has not submitted|has no weekly)/.exec(item.detail);
   return named ? named[1] : null;
@@ -52,6 +54,8 @@ export type PresentedItem = {title: string; detail: string; person: string | nul
 export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'UTC'): PresentedItem {
   const person = itemPerson(item);
   let title = item.title, detail = item.detail;
+  // Approved leave over a published shift (Nov 9, 2026): scheduling work named for the person, never a request to decide.
+  if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved leave', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
   switch (item.type) {
     case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT':
       title = person ?? title;
