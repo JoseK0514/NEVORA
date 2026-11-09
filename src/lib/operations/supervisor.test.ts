@@ -101,7 +101,7 @@ it('bounds an unconfirmed termination and retains the lock while the real child 
 },10000);
 it('keeps the actual CLI disabled and rejects native/unknown commands before any state or database work',async()=>{
  const {spawnSync}=await import('node:child_process');
- const env={PATH:process.env.PATH,HOME:process.env.HOME,NODE_ENV:'test',NEVORA_OPERATIONS_ENABLED:'false',NEVORA_OPERATIONS_ENVIRONMENT:'test',NEVORA_OPERATIONS_SOURCE_SHA:config.sourceSha,NEVORA_OPERATIONS_SCOPE_ID:config.scopeId,NEVORA_OPERATIONS_STATE_DIR:directory,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120'};
+ const env:NodeJS.ProcessEnv={PATH:process.env.PATH,HOME:process.env.HOME,NODE_ENV:'test',NEVORA_OPERATIONS_ENABLED:'false',NEVORA_OPERATIONS_ENVIRONMENT:'test',NEVORA_OPERATIONS_SOURCE_SHA:config.sourceSha,NEVORA_OPERATIONS_SCOPE_ID:config.scopeId,NEVORA_OPERATIONS_STATE_DIR:directory,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120'};
  const cli=(args:string[])=>spawnSync(process.execPath,['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',...args],{env,encoding:'utf8',timeout:5000});
  const disabled=cli(['run','payroll']);expect(disabled.status).toBe(1);expect(disabled.stderr.trim()).toBe('operations_disabled');expect(disabled.stdout).toBe('');
  for(const args of [['run','native-dispatch'],['run','payroll','extra'],['health','unknown']]){const result=cli(args);expect(result.status).toBe(1);expect(result.stderr.trim()).toBe('operations_command_invalid');}
