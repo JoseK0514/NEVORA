@@ -3,10 +3,13 @@ import {mkdtempSync,realpathSync,rmSync,readFileSync,writeFileSync,existsSync,ch
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
+import * as files from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+vi.mock('node:fs/promises',async original=>({...await original<typeof import('node:fs/promises')>()}));
 import {parseOperationsConfig,workerInvocation,superviseProcess,readInvocationHealth,type OperationsConfig} from './supervisor';
 let directory:string,config:OperationsConfig;
 beforeEach(()=>{directory=realpathSync(mkdtempSync(join(tmpdir(),'nv-workforce-')));config={enabled:true,environment:'test',sourceSha:'a'.repeat(40),scopeId:randomUUID(),stateDirectory:directory,deadlineMs:2000,graceMs:100};});
-afterEach(()=>{for(const file of ['pid','descendant'])if(existsSync(join(directory,file))){const pid=Number(readFileSync(join(directory,file),'utf8'));if(Number.isSafeInteger(pid)&&pid>1)try{process.kill(-pid,'SIGKILL');}catch{try{process.kill(pid,'SIGKILL');}catch{}}}rmSync(directory,{recursive:true,force:true});});
+afterEach(()=>{vi.restoreAllMocks();for(const file of ['pid','descendant'])if(existsSync(join(directory,file))){const pid=Number(readFileSync(join(directory,file),'utf8'));if(Number.isSafeInteger(pid)&&pid>1)try{process.kill(-pid,'SIGKILL');}catch{try{process.kill(pid,'SIGKILL');}catch{}}}rmSync(directory,{recursive:true,force:true});});
 const node=(code:string)=>({file:process.execPath,args:['-e',code]});
 const receipt=()=>JSON.parse(readFileSync(join(directory,'payroll.json'),'utf8'));
 async function waitFor(file:string){const until=Date.now()+5000;while(!existsSync(file)){if(Date.now()>until)throw Error('Owned child did not become ready');await new Promise(ok=>setTimeout(ok,10));}}
@@ -27,6 +30,24 @@ it('records successful exit only, strips child output and uses private atomic fi
  expect(result).toMatchObject({status:'succeeded',exitCode:0,scopeId:config.scopeId,sourceSha:config.sourceSha});expect(result.lastSuccessAt).toBe(result.finishedAt);
  expect(JSON.stringify(receipt())).not.toMatch(/sk_test|fictional-password/);expect(lstatSync(join(directory,'payroll.json')).mode&0o777).toBe(0o600);
  expect(existsSync(join(directory,'payroll.lock'))).toBe(false);expect(await readInvocationHealth(config,'payroll',Date.now(),60)).toMatchObject({healthy:true,reason:'ok'});
+});
+it('durably publishes lock/running state before a real child effect and terminal state before unlock',async()=>{
+ const effect=join(directory,'effect'),events:{lock:boolean;status:string|null;effect:boolean}[]=[],original=files.open;
+ vi.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{
+  const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);vi.spyOn(handle,'sync').mockImplementation(async()=>{events.push({lock:existsSync(join(directory,'payroll.lock')),status:existsSync(join(directory,'payroll.json'))?receipt().status:null,effect:existsSync(effect)});await sync();});}return handle;
+ });
+ await superviseProcess(config,'payroll',node(`require('fs').writeFileSync(${JSON.stringify(effect)},'owned')`));
+ expect(events).toEqual([{lock:true,status:null,effect:false},{lock:true,status:'running',effect:false},{lock:true,status:'succeeded',effect:true},{lock:false,status:'succeeded',effect:true}]);
+});
+it.each([1,2])('fails closed before child effects if acquisition durability step %i fails',async(failAt)=>{
+ const effect=join(directory,'effect'),original=files.open;let calls=0;
+ vi.spyOn(files,'open').mockImplementation(async(...args:Parameters<typeof files.open>)=>{const handle=await original(...args);if(String(args[0])===directory){const sync=handle.sync.bind(handle);vi.spyOn(handle,'sync').mockImplementation(async()=>{if(++calls===failAt)throw Error('owned durability fault');await sync();});}return handle;});
+ await expect(superviseProcess(config,'payroll',node(`require('fs').writeFileSync(${JSON.stringify(effect)},'unexpected')`))).rejects.toThrow('operations_state_unavailable');expect(existsSync(effect)).toBe(false);expect(existsSync(join(directory,'payroll.lock'))).toBe(true);
+});
+it('rejects an actual private FIFO before blocking outside the child watchdog',()=>{
+ const fifo=join(directory,'payroll.json');expect(spawnSync('mkfifo',[fifo]).status).toBe(0);chmodSync(fifo,0o600);
+ const code=`import{superviseProcess}from ${JSON.stringify(new URL('./supervisor.ts',import.meta.url).href)};try{await superviseProcess(${JSON.stringify(config)},'payroll',${JSON.stringify(node('process.exit(0)'))});process.exitCode=2;}catch(e){console.log(e.message);}`;
+ const result=spawnSync(process.execPath,['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','--input-type=module','-e',code],{encoding:'utf8',timeout:2000});expect(result.error).toBeUndefined();expect(result.status).toBe(0);expect(result.stdout.trim()).toBe('operations_state_unavailable');
 });
 it('retains last success separately and reports a later exit23 as failed',async()=>{
  const first=await superviseProcess(config,'payroll',node('process.exit(0)'));
@@ -108,3 +129,11 @@ it('keeps the actual CLI disabled and rejects native/unknown commands before any
  const missingThreshold=cli(['health','payroll']);expect(missingThreshold.status).toBe(1);expect(missingThreshold.stderr.trim()).toBe('operations_configuration_invalid');
  expect(existsSync(join(directory,'payroll.json'))).toBe(false);
 },10000);
+it('rejects missing or mismatched notification environments in both actual CLI modes before IO',()=>{
+ const base:NodeJS.ProcessEnv={PATH:process.env.PATH,HOME:process.env.HOME,NODE_ENV:'test',NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_ENVIRONMENT:'test',NEVORA_OPERATIONS_SOURCE_SHA:config.sourceSha,NEVORA_OPERATIONS_SCOPE_ID:config.scopeId,NEVORA_OPERATIONS_STATE_DIR:directory,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120',NEVORA_OPERATIONS_MAX_HEARTBEAT_GAP_SECONDS:'60',NEVORA_OPERATIONS_MAX_QUEUE_AGE_SECONDS:'60',NEVORA_WORKSPACE_MODE:'isolated'};
+ for(const command of ['notifications-dispatch','notifications-reminders'])for(const mode of ['run','health'])for(const environment of [undefined,'production']){
+  const env={...base,...(environment?{PUSH_ENVIRONMENT:environment}:{})};
+  const result=spawnSync(process.execPath,['--conditions=react-server','--import','./scripts/node-server-context.mjs','--import','tsx','scripts/workforce-operations.mts',mode,command],{env,encoding:'utf8',timeout:5000});
+  expect(result.status).toBe(1);expect(result.stderr.trim()).toBe('operations_configuration_invalid');expect(result.stdout).toBe('');expect(existsSync(join(directory,command+'.lock'))).toBe(false);
+ }
+},20000);

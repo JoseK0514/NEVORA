@@ -16,7 +16,9 @@ export async function configureWorkerControlReader(admin:PoolClient,role:string)
    EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=p.oid) AS memberships,
    (EXISTS(SELECT 1 FROM pg_class c WHERE c.relowner=p.oid) OR EXISTS(SELECT 1 FROM pg_namespace n WHERE n.nspowner=p.oid) OR EXISTS(SELECT 1 FROM pg_proc f WHERE f.proowner=p.oid) OR EXISTS(SELECT 1 FROM pg_database d WHERE d.datdba=p.oid)) AS owns_objects,
    EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_%' AND c.relkind IN('r','p','v','m','f') AND
-    CASE WHEN n.nspname='nevora_onboarding' AND c.relname IN('worker_workspace_registry','worker_workspace_secrets') THEN has_table_privilege(p.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') ELSE has_table_privilege(p.oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') END) AS extra_access
+    CASE WHEN n.nspname='nevora_onboarding' AND c.relname IN('worker_workspace_registry','worker_workspace_secrets')
+     THEN has_table_privilege(p.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(p.oid,c.oid,'INSERT,UPDATE,REFERENCES')
+     ELSE has_table_privilege(p.oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(p.oid,c.oid,'SELECT,INSERT,UPDATE,REFERENCES') END) AS extra_access
    FROM pg_roles p WHERE p.rolname=$1`,[role]);
   const p=rows[0];if(rows.length!==1||p.rolcanlogin!==true||['rolsuper','rolcreatedb','rolcreaterole','rolinherit','rolreplication','rolbypassrls','memberships','owns_objects','extra_access'].some(k=>p[k]!==false))throw Error('operations_reader_scope_invalid');
   const scope=`w.environment=CASE WHEN session_user::text ~ '^nv_control_worker_t_[a-f0-9]{32}$' THEN 'test' WHEN session_user::text ~ '^nv_control_worker_p_[a-f0-9]{32}$' THEN 'production' ELSE NULL END AND replace(w.id::text,'-','')=right(session_user::text,32)`;

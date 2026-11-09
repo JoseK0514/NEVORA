@@ -9,6 +9,7 @@ const duePayroll="j.workspace_id=w.id AND j.available_at<=t.now AND (j.status='P
 // endpoint, credential, source text or individual job identifier is projected.
 const observationSql=`WITH observe AS MATERIALIZED(SELECT clock_timestamp() AS now)
 SELECT w.id AS workspace_id,t.now::text AS observed_at,
+ (SELECT count(*) FROM payroll_jobs j WHERE j.workspace_id=w.id AND j.status='RUNNING' AND (j.lease_until IS NULL OR j.lease_token IS NULL)) AS payroll_invalid_leases,
  (SELECT count(*) FROM payroll_jobs j WHERE ${duePayroll}) AS payroll_due,
  (SELECT count(*) FROM payroll_jobs j WHERE j.workspace_id=w.id AND j.status='FAILED') AS payroll_failed,
  (SELECT count(*) FROM payroll_jobs j WHERE j.workspace_id=w.id AND j.status='RUNNING' AND j.lease_until<=t.now) AS payroll_expired_leases,
@@ -36,7 +37,7 @@ export async function readQueueHealth(ex:SqlExecutor,environment:'test'|'product
   const aborted=new Promise<never>((_ok,bad)=>{onAbort=()=>bad(Error('operations_health_unavailable'));signal.addEventListener('abort',onAbort,{once:true});});
   const rows=await Promise.race([Promise.resolve().then(()=>{signal.throwIfAborted();return ex.query<Record<string,unknown>>({text:observationSql,values:[environment]},signal);}),aborted]);
   const r=rows[0];
-  if(rows.length!==1||!r||Object.keys(r).sort().join(',')!=='notification_due_deliveries,notification_due_intents,notification_expired_leases,notification_failed,notification_oldest_due_seconds,observed_at,payroll_due,payroll_expired_leases,payroll_failed,payroll_oldest_due_seconds,workspace_id'||typeof r.workspace_id!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(r.workspace_id)||typeof r.observed_at!=='string'||!Number.isFinite(Date.parse(r.observed_at)))throw Error('operations_health_unavailable');
+  if(rows.length!==1||!r||Object.keys(r).sort().join(',')!=='notification_due_deliveries,notification_due_intents,notification_expired_leases,notification_failed,notification_oldest_due_seconds,observed_at,payroll_due,payroll_expired_leases,payroll_failed,payroll_invalid_leases,payroll_oldest_due_seconds,workspace_id'||typeof r.workspace_id!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(r.workspace_id)||typeof r.observed_at!=='string'||!Number.isFinite(Date.parse(r.observed_at))||count(r.payroll_invalid_leases)!==0)throw Error('operations_health_unavailable');
   const payroll={due:count(r.payroll_due),failed:count(r.payroll_failed),expiredLeases:count(r.payroll_expired_leases),oldestDueSeconds:count(r.payroll_oldest_due_seconds)};
   const notifications={dueIntents:count(r.notification_due_intents),dueDeliveries:count(r.notification_due_deliveries),failed:count(r.notification_failed),expiredLeases:count(r.notification_expired_leases),oldestDueSeconds:count(r.notification_oldest_due_seconds)};
   if(payroll.due===0&&payroll.oldestDueSeconds!==0||notifications.dueIntents+notifications.dueDeliveries===0&&notifications.oldestDueSeconds!==0)throw Error('operations_health_unavailable');

@@ -1,4 +1,5 @@
 import {expect,it} from 'vitest';
+import {Client} from 'pg';
 import {readWorkerRoutingConfig} from '../workspace-routing/config.server';
 import {workerControlRole} from './routing-reader';
 const scope='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -9,3 +10,11 @@ it('uses a company/environment-bound machine reader without browser signing or A
  const c=readWorkerRoutingConfig(env);expect(c.secretScope).toBe('WORKER_ONLY');expect(c).not.toHaveProperty('tokenKey');
 });
 it.each([{NEVORA_WORKSPACE_TOKEN_SECRET:''},{NEVORA_WORKSPACE_TOKEN_SECRET:Buffer.alloc(32,4).toString('base64url')},{NEVORA_COMMERCE_BINDING_KEY:'owner-only'},{NEVORA_ONBOARDING_ENVIRONMENT:'production'},{NEVORA_CONTROL_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL.replace('worker_t_','app_')},{NEVORA_CONTROL_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL.replace('verify-full','require')}])('rejects excessive or mismatched machine capability: %j',patch=>{expect(()=>readWorkerRoutingConfig({...env,...patch})).toThrow();});
+it('admits only a canonical driver destination, login and verified TLS; rejects connection-option substitution',()=>{
+ const production={...env,NEVORA_ONBOARDING_ENVIRONMENT:'production',NEVORA_CONTROL_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL.replace('worker_t_','worker_p_')};
+ const parsed=readWorkerRoutingConfig(production),client=new Client({connectionString:parsed.controlDatabaseUrl});
+ expect(client.host).toBe('ep-fixture.neon.tech');expect(client.user).toBe('nv_control_worker_p_'+scope.replaceAll('-',''));expect(client.ssl).toEqual({}); // Node TLS verification defaults apply; never rejectUnauthorized:false.
+ for(const suffix of ['&host=localhost&user=wrong_role&sslmode=disable','&sslmode=disable','&sslmode=verify-full','&ssl=false','&sslcert=/private/key','&options=-csearch_path=public','&application_name=unapproved','&%68ost=localhost'])expect(()=>readWorkerRoutingConfig({...production,NEVORA_CONTROL_DATABASE_URL:production.NEVORA_CONTROL_DATABASE_URL+suffix})).toThrow();
+ const local={...env,NEVORA_CONTROL_DATABASE_URL:env.NEVORA_CONTROL_DATABASE_URL.replace('ep-fixture.neon.tech','127.0.0.1').replace('?sslmode=verify-full','')};expect(new Client({connectionString:readWorkerRoutingConfig(local).controlDatabaseUrl}).host).toBe('127.0.0.1');
+ expect(()=>readWorkerRoutingConfig({...local,NEVORA_CONTROL_DATABASE_URL:local.NEVORA_CONTROL_DATABASE_URL+'?host=foreign.invalid'})).toThrow();
+});

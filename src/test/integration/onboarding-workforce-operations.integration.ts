@@ -32,6 +32,9 @@ it('observes real due/future/failed/leased queues under restricted WORKER withou
   expect(health.payroll.oldestDueSeconds).toBeGreaterThanOrEqual(300);expect(health.payroll.oldestDueSeconds).toBeLessThan(600);expect(health.notifications.oldestDueSeconds).toBeGreaterThanOrEqual(300);expect(assessQueueHealth(health,120).healthy).toBe(false);
   const other=await readQueueHealth(getWorkspaceDb(await resolveWorkspaceBinding({origin:b.c.origin},f.store,f.routing,'WORKER')),'test');expect(other).toMatchObject({workspaceId:b.c.row.workspace_id,payroll:{due:0,failed:0,expiredLeases:0,oldestDueSeconds:0},notifications:{dueIntents:0,dueDeliveries:0,failed:0,expiredLeases:0,oldestDueSeconds:0}});expect(assessQueueHealth(other,120)).toEqual({healthy:true,reasons:[]});
   expect((await db.query(queues)).rows).toEqual(before);expect(JSON.stringify(health)).not.toMatch(/fictional-private-material|OWNER-1|owned-lease|password|session/);
+  // The schema permits this stranded state, but health must never call it empty.
+  const malformed=randomUUID();await db.query("INSERT INTO payroll_jobs(id,workspace_id,kind,business_key,status,payload,available_at,lease_token,lease_until) VALUES($1::uuid,$2,'REMINDER',$1::text,'RUNNING','{}',clock_timestamp()-interval '1 hour',NULL,NULL)",[malformed,workspaceId]);
+  const malformedBefore=(await db.query(queues)).rows;await expect(readQueueHealth(ex,'test')).rejects.toThrow('operations_health_unavailable');expect((await db.query(queues)).rows).toEqual(malformedBefore);await db.query('DELETE FROM payroll_jobs WHERE id=$1',[malformed]);
   await expect(ex.query({text:'SELECT password_hash FROM employee_credentials',values:[]})).rejects.toMatchObject({code:'42501'});
   await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[workspaceId]);await expect(readQueueHealth(ex,'test')).rejects.toThrow('operations_health_unavailable');expect((await db.query(queues)).rows).toEqual(before);
  }finally{await f.close();}
@@ -56,6 +59,20 @@ it('uses actual company-scoped WORKER-only control custody without any browser k
   const expected={workspaceId:a.c.row.workspace_id,environment:'test' as const};expect(await withWorkerWorkspace(a.c.origin,work,expected)).toMatchObject({workspaceId:a.c.row.workspace_id});
   await expect(withWorkerWorkspace(a.c.origin,work,{...expected,workspaceId:b.c.row.workspace_id})).rejects.toThrow();await expect(withWorkerWorkspace(a.c.origin,work,{...expected,environment:'production'})).rejects.toThrow();expect(work).toHaveBeenCalledTimes(1);
   const prod=await reader('production');expect((await prod.pool.query('SELECT * FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([]);expect((await r.pool.query('SELECT count(*)::int n FROM nevora_onboarding.worker_workspace_secrets')).rows[0].n).toBe(1);
+  // Effective column privileges are distinct from whole-table privileges.
+  const setup=await f.db.pool.connect();try{
+   await f.db.pool.query('GRANT SELECT(ciphertext) ON nevora_onboarding.workspace_secrets TO '+r.role);
+   const foreign=(await f.db.pool.query("SELECT ciphertext FROM nevora_onboarding.workspace_secrets WHERE workspace_id=$1 AND role_kind='APP'",[b.c.row.workspace_id])).rows[0];
+   expect((await r.pool.query('SELECT ciphertext FROM nevora_onboarding.workspace_secrets')).rows).toContainEqual(foreign);
+   await expect(configureWorkerControlReader(setup,r.role)).rejects.toThrow('operations_reader_scope_invalid');
+   await f.db.pool.query('REVOKE SELECT(ciphertext) ON nevora_onboarding.workspace_secrets FROM '+r.role);
+   for(const [privilege,column] of [['UPDATE','ciphertext'],['INSERT','ciphertext'],['REFERENCES','id']] as const){
+    await f.db.pool.query(`GRANT ${privilege}(${column}) ON nevora_onboarding.worker_workspace_secrets TO ${r.role}`);
+    await expect(configureWorkerControlReader(setup,r.role)).rejects.toThrow('operations_reader_scope_invalid');
+    await f.db.pool.query(`REVOKE ${privilege}(${column}) ON nevora_onboarding.worker_workspace_secrets FROM ${r.role}`);
+   }
+   await configureWorkerControlReader(setup,r.role);
+  }finally{setup.release();}
   await f.db.pool.query('ALTER ROLE '+r.role+' INHERIT');const elevated=await f.db.pool.connect();try{await expect(configureWorkerControlReader(elevated,r.role)).rejects.toThrow('operations_reader_scope_invalid');}finally{elevated.release();await f.db.pool.query('ALTER ROLE '+r.role+' NOINHERIT');}
   await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[a.c.row.workspace_id]);expect((await r.pool.query('SELECT * FROM nevora_onboarding.worker_workspace_secrets')).rows).toEqual([]);await expect(withWorkerWorkspace(a.c.origin,work,expected)).rejects.toThrow();
  }finally{for(const pool of readers)await pool.end();for(const role of roles){await f.db.pool.query('DROP OWNED BY '+role);await f.db.pool.query('DROP ROLE '+role);}await f.close();}

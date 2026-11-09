@@ -24,6 +24,10 @@ export function parseOperationsConfig(env:Record<string,string|undefined>):Opera
  if(!['true','false',undefined].includes(env.NEVORA_OPERATIONS_ENABLED)||!['test','production'].includes(environment??'')||!sha(sourceSha)||!uuid(scopeId)||!stateDirectory||!isAbsolute(stateDirectory)||resolve(stateDirectory)!==stateDirectory||!seconds||!/^[1-9][0-9]{0,2}$/.test(seconds)||Number(seconds)<30||Number(seconds)>300)throw Error('operations_configuration_invalid');
  return {enabled:env.NEVORA_OPERATIONS_ENABLED==='true',environment:environment as OperationsConfig['environment'],sourceSha,scopeId,stateDirectory,deadlineMs:Number(seconds)*1000,graceMs:5000};
 }
+export function assertWorkerCommandEnvironment(config:OperationsConfig,command:WorkerCommand,env:Readonly<Record<string,string|undefined>>=process.env){
+ workerInvocation(command);
+ if(command!=='payroll'&&env.PUSH_ENVIRONMENT!==config.environment)throw Error('operations_configuration_invalid');
+}
 async function privateDirectory(config:OperationsConfig){
  try{
   const s=await lstat(config.stateDirectory);
@@ -33,11 +37,17 @@ async function privateDirectory(config:OperationsConfig){
 async function readPrivate(file:string):Promise<string|null>{
  let handle;
  try{
-  handle=await open(file,constants.O_RDONLY|constants.O_NOFOLLOW);
+  handle=await open(file,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_NONBLOCK);
   const s=await handle.stat();if(!s.isFile()||(s.mode&0o077)!==0||!process.getuid||s.uid!==process.getuid()||s.size>16384)throw unavailable();
   return await handle.readFile('utf8');
  }catch(error){if(error&&typeof error==='object'&&'code' in error&&error.code==='ENOENT')return null;throw unavailable();}
  finally{await handle?.close();}
+}
+async function syncStateDirectory(config:OperationsConfig){
+ let directory;
+ try{directory=await open(config.stateDirectory,constants.O_RDONLY|constants.O_NOFOLLOW|constants.O_DIRECTORY);await directory.sync();}
+ catch{throw unavailable();}
+ finally{await directory?.close();}
 }
 function decodeReceipt(text:string,config:OperationsConfig,command:WorkerCommand,allowPreviousSource=false):InvocationReceipt{
  try{
@@ -48,7 +58,7 @@ function decodeReceipt(text:string,config:OperationsConfig,command:WorkerCommand
 }
 async function writeReceipt(config:OperationsConfig,command:WorkerCommand,receipt:InvocationReceipt){
  const temporary=join(config.stateDirectory,command+'.'+randomUUID()+'.tmp');let handle;
- try{handle=await open(temporary,'wx',0o600);await handle.writeFile(JSON.stringify(receipt)+'\n');await handle.sync();await handle.close();handle=undefined;await rename(temporary,join(config.stateDirectory,command+'.json'));}
+ try{handle=await open(temporary,'wx',0o600);await handle.writeFile(JSON.stringify(receipt)+'\n');await handle.sync();await handle.close();handle=undefined;await rename(temporary,join(config.stateDirectory,command+'.json'));await syncStateDirectory(config);}
  catch{throw unavailable();}
  finally{await handle?.close();await unlink(temporary).catch(()=>{});}
 }
@@ -58,23 +68,22 @@ const pause=(ms:number)=>new Promise<void>(ok=>setTimeout(ok,ms));
 export async function superviseProcess(config:OperationsConfig,command:WorkerCommand,invocation:Invocation,signal?:AbortSignal):Promise<InvocationReceipt>{
  workerInvocation(command);if(!config.enabled)throw Error('operations_disabled');await privateDirectory(config);
  const lockPath=join(config.stateDirectory,command+'.lock'),marker=randomUUID();let lock;
- try{lock=await open(lockPath,'wx',0o600);await lock.writeFile(JSON.stringify({marker,pid:process.pid})+'\n');await lock.sync();}
+ try{lock=await open(lockPath,'wx',0o600);await lock.writeFile(JSON.stringify({marker,pid:process.pid})+'\n');await lock.sync();await syncStateDirectory(config);}
  catch(error){await lock?.close();if(error&&typeof error==='object'&&'code' in error&&error.code==='EEXIST')throw Error('operations_overlap');throw unavailable();}
- let release=true;
+ let release=false;
  try{
   const previous=await readPrivate(join(config.stateDirectory,command+'.json'));
   const prior=previous===null?null:decodeReceipt(previous,config,command,true);
   const receipt:InvocationReceipt={schemaVersion:1,command,environment:config.environment,sourceSha:config.sourceSha,scopeId:config.scopeId,startedAt:new Date().toISOString(),finishedAt:null,lastSuccessAt:prior?.sourceSha===config.sourceSha?prior.lastSuccessAt:null,status:'running',exitCode:null,cleanupConfirmed:false};
   await writeReceipt(config,command,receipt);
   const result=await runOwnedChild(invocation,config.deadlineMs,config.graceMs,signal);
-  release=result.cleanupConfirmed;
   const finishedAt=new Date().toISOString(),status=result.cleanupConfirmed?result.status:'failed';
   const finished:InvocationReceipt={...receipt,...result,status,finishedAt,lastSuccessAt:status==='succeeded'?finishedAt:receipt.lastSuccessAt};
-  await writeReceipt(config,command,finished);return finished;
+  await writeReceipt(config,command,finished);release=result.cleanupConfirmed;return finished;
  }finally{
   await lock.close();
   // Unknown cleanup keeps the exclusive marker for explicit paused-host recovery.
-  if(release){const value=await readPrivate(lockPath);if(value!==null&&JSON.parse(value).marker===marker)await unlink(lockPath);}
+  if(release){const value=await readPrivate(lockPath);if(value!==null&&JSON.parse(value).marker===marker){await unlink(lockPath);await syncStateDirectory(config);}}
  }
 }
 async function runOwnedChild(invocation:Invocation,deadlineMs:number,graceMs:number,signal?:AbortSignal):Promise<Pick<InvocationReceipt,'status'|'exitCode'|'cleanupConfirmed'>>{
@@ -104,6 +113,7 @@ async function runOwnedChild(invocation:Invocation,deadlineMs:number,graceMs:num
  return {status:reason??(code===0?'succeeded':'failed'),exitCode:code,cleanupConfirmed:!alive()};
 }
 export function runSupervisedWorker(config:OperationsConfig,command:WorkerCommand,signal?:AbortSignal){
+ assertWorkerCommandEnvironment(config,command);
  const invocation={...workerInvocation(command),env:{...process.env,NEVORA_WORKER_EXPECTED_WORKSPACE_ID:config.scopeId,NEVORA_WORKER_EXPECTED_ENVIRONMENT:config.environment}};
  return superviseProcess(config,command,invocation,signal);
 }

@@ -19,6 +19,10 @@ export function readWorkerRoutingConfig(env:Readonly<Record<string,string|undefi
  const prefix=config.environment==='test'?'t':'p';
  if(!new RegExp('^nv_control_worker_'+prefix+'_[a-f0-9]{32}$').test(role)||!url.password)throw new WorkspaceRoutingError();
  const ownedLocal=config.environment==='test'&&['127.0.0.1','localhost','[::1]'].includes(url.hostname);
+ const options=[...url.searchParams];
+ // pg connection-string options override authority/TLS fields. Never pass an
+ // unreviewed option (including duplicate sslmode) through to the driver.
+ if(options.length>1||options.some(([key,value])=>key!=='sslmode'||!['verify-full',...(ownedLocal?['disable']:[])].includes(value)))throw new WorkspaceRoutingError();
  if(!ownedLocal&&(url.searchParams.get('sslmode')!=='verify-full'||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(url.hostname)))throw new WorkspaceRoutingError();
  return {...config,secretScope:'WORKER_ONLY'};
 }

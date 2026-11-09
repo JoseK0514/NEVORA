@@ -1,6 +1,6 @@
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
-import {parseOperationsConfig,runSupervisedWorker,workerInvocation,readInvocationHealth,type WorkerCommand,type OperationsConfig} from '../src/lib/operations/supervisor';
+import {parseOperationsConfig,runSupervisedWorker,workerInvocation,readInvocationHealth,assertWorkerCommandEnvironment,type WorkerCommand,type OperationsConfig} from '../src/lib/operations/supervisor';
 import {readQueueHealth,assessQueueHealth} from '../src/lib/operations/queue-health';
 import {withWorkerWorkspace,assertWorkerWorkspace} from '../src/lib/workspace-routing/worker.server';
 import {workspaceMode} from '../src/lib/workspace-routing/config.server';
@@ -37,6 +37,7 @@ async function main(args:readonly string[]){
  if(args.length!==2||!['run','health'].includes(args[0]))throw Error('operations_command_invalid');
  workerInvocation(args[1]);
  const config=parseOperationsConfig(process.env),controller=new AbortController(),stop=()=>controller.abort();
+ assertWorkerCommandEnvironment(config,args[1] as WorkerCommand);
  if(args[0]==='health'){const report=await health(config,args[1] as WorkerCommand);console.log(JSON.stringify(report));if(!report.healthy)process.exitCode=1;return;}
  process.once('SIGTERM',stop);process.once('SIGINT',stop);
  try{const receipt=await runSupervisedWorker(config,args[1] as WorkerCommand,controller.signal);console.log(JSON.stringify(receipt));if(receipt.status!=='succeeded')process.exitCode=1;}

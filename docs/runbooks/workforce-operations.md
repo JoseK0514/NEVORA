@@ -43,3 +43,11 @@ The combined backend owned rehearsal actually used pg_dump/pg_restore, then reti
 Frozen Release1f5fa463b111e263c9b863b16b6c2bca502571a7b remains separate from this new engineering candidate. No production source/schema/data/retention/cutover change or independent finding closure is authorized by this packet. Reader-facing manuals/PDFs remain owned by documentation coordination.
 
 References checked November9: upstream [service timeout semantics](https://github.com/systemd/systemd/blob/main/man/systemd.service.xml), [group cleanup](https://github.com/systemd/systemd/blob/main/man/systemd.kill.xml), [private state/env settings](https://github.com/systemd/systemd/blob/main/man/systemd.exec.xml), [timer behavior](https://github.com/systemd/systemd/blob/main/man/systemd.timer.xml). Validate against the chosen host version before activation.
+
+## Review-qualified failure boundaries
+
+Both notification run and health commands require PUSH_ENVIRONMENT to equal the operations/workspace environment; an absent or mismatched setting fails before state or database IO. Payroll has no push-environment dependency. The machine control URL accepts only one sslmode option (verify-full for Neon; the owned test-loopback exception may omit it or explicitly disable it). Routing/login/TLS query overrides and duplicate options are rejected before constructing the driver.
+
+Reader setup checks effective table AND column privileges. Even column-only reads on a base relation or writes/references on an allowed view reject setup. Repair the reviewed grants with the approved operator, then rerun setup; do not broaden the runtime reader. No hosted reader has been created here.
+
+The supervisor fsyncs the private state directory after lock acquisition, running/terminal receipt publication and lock removal. A durability failure before spawn or terminal publication keeps the lock for explicit paused-host recovery. Owned fault tests prove IO ordering and fail-closed behavior, not a physical power-cut experiment on the eventual host. FIFO/nonregular receipt inputs reject nonblocking before the child watchdog starts. Malformed RUNNING payroll leases make SELECT-only health unavailable; never report an empty healthy queue or automatically repair customer rows.
