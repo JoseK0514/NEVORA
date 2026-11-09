@@ -1,3 +1,4 @@
+export {compiledHostedSourceSha} from './source';
 import {Pool} from 'pg';
 import {readCommerceConfig} from '../../commerce/config';
 import {CommerceStore} from '../../commerce/store';

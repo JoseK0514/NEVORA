@@ -60,6 +60,7 @@ export async function activateInitialOwner(binding:WorkspaceBinding,value:unknow
  let release:(()=>void)|null=null,attempted=false;
  try{
   const f=await assertWorkspaceBindingCurrent(binding),r=f.record;
+  if(!f.config.tokenKey)return {state:'invalid'};
   if(!['APP','BOOTSTRAP'].includes(f.purpose))return {state:'invalid'};
   const raw=openWorkspaceToken(binding,'OWNER_BOOTSTRAP',value.proof);if(!validOnboardingToken(raw))return {state:'invalid'};
   const digest=digestOnboardingProof(grantPurpose(r.environment,r.id,r.incarnation),raw,f.config.tokenKey);

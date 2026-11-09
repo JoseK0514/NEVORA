@@ -16,7 +16,7 @@ const provision=['NEVORA_PROVISIONER_WORKER_ENABLED','NEVORA_PROVISIONER_CONTROL
 const roleFields:Record<FunctionRole,readonly string[]>={
  stripewebhook:[...catalog,'NEVORA_COMMERCE_ORIGIN','NEVORA_COMMERCE_UI_ORIGIN','STRIPE_WEBHOOK_SECRET'],
  commercequeue:[...catalog,...billing,...mail],commercereconcile:[...catalog,...billing],provisioner:provision,
- commerceauthority:['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_WORKSPACE_TOKEN_SECRET','NEVORA_PORTAL_BASE_DOMAIN','NEVORA_COMMERCE_ENABLED','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_BINDING_KEY','NEVORA_COMMERCE_COMPANY_GATEWAY_KEY'],
+ commerceauthority:['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_PORTAL_BASE_DOMAIN','NEVORA_COMMERCE_ENABLED','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_BINDING_KEY','NEVORA_COMMERCE_COMPANY_GATEWAY_KEY'],
  commerceapi:[...catalog,...billing,'NEVORA_COMMERCE_API_ENABLED','NEVORA_COMMERCE_ALLOWED_ORIGINS'],
 };
 export function approvedCapabilityNames(role:FunctionRole):ReadonlySet<string>{return new Set([...common,...(roleFields[role]??[])]);}

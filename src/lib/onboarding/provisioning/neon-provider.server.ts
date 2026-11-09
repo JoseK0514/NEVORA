@@ -59,8 +59,9 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
   for(let page=0;page<3;page++){
    const query=new URLSearchParams({limit:'1000',...(operationCursor?{cursor:operationCursor}:{})}),body=await this.call(base+'/operations?'+query),operations=rows(body,'operations');
    if(operations.some(o=>o.status!=='finished'))throw new NeonProviderUnavailable();
-   if(!operations.length){operationsComplete=true;break;}
-   const after=cursor(body);if(!after){if(operations.length===1000)throw new NeonProviderUnavailable();operationsComplete=true;break;}
+   const after=cursor(body);
+   if(!operations.length&&(!after||after===operationCursor)){operationsComplete=true;break;}
+   if(!after){if(operations.length===1000)throw new NeonProviderUnavailable();operationsComplete=true;break;}
    if(after===operationCursor)throw new NeonProviderUnavailable();operationCursor=after;
   }
   if(!operationsComplete)throw new NeonProviderUnavailable();
@@ -72,8 +73,8 @@ export class NeonProvisioningProvider implements ProvisioningProvider{
    const q=new URLSearchParams({org_id:this.policy.accountRef,search:identity.name,limit:'400',...(next?{cursor:next}:{})}),body=await this.call('/projects?'+q),projects=rows(body,'projects');
    if(body.unavailable_project_ids!==undefined&&(!Array.isArray(body.unavailable_project_ids)||body.unavailable_project_ids.length))throw new NeonProviderUnavailable();
    for(const p of projects){if(p.name!==identity.name)continue;if(!id(p.id)||seen.has(p.id))throw new NeonProviderUnavailable();seen.add(p.id);found.push(await this.inspect(p.id,identity));}
-   if(!projects.length)return found;
-   const after=cursor(body);if(!after){if(projects.length===400)throw new NeonProviderUnavailable();return found;}if(after===next)throw new NeonProviderUnavailable();next=after;
+   const after=cursor(body);if(!projects.length&&(!after||after===next))return found;
+   if(!after){if(projects.length===400)throw new NeonProviderUnavailable();return found;}if(after===next)throw new NeonProviderUnavailable();next=after;
   }
   throw new NeonProviderUnavailable();
  }

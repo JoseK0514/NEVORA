@@ -52,3 +52,21 @@ Sources: https://neon.com/docs/compute/functions/overview ; https://neon.com/doc
 Native execution additionally injects NEON_DATA_PORT, NEON_LOAD_PORT, NEON_MOUNT_POINT, NEON_SIGINT_DRAIN and NEON_TELEMETRY_ENDPOINT/TOKEN. These are provider-owned execution/logging controls; leave them injected, never copy them into user environment snapshots or expose their values. The existing native function logging transport is part of the hosting trust boundary. Its internal token scope is not independently attested here; provider assurance remains a production gate. Optional NEVORA_NEON_DIAGNOSTICS=true emits only bounded rejected-variable names and binding booleans at receiver startup. No request fields, environment values, credentials or IDs are emitted. Turn this operator diagnostic off after acceptance.
 
 The reconciliation cursor is one reconcile-cursor:<business UUID> admission row in commerce.rate_limits, refreshed to seven-day expiry. The locked read ignores an expired position even when its row remains present or malformed; the next sweep starts at the first eligible business and overwrites that same row. No separate cleanup consumer is required. A cursor is committed before provider calls, so a failure cannot starve later businesses. The scheduler reads/writes no audit rows beyond appending the existing fixed attempt/retry events; no audit SELECT grant is added. Billing/webhook receipts retain their original meaning.
+
+The `commerceauthority` process uses machine-only routing. Before activation, an
+operator runs `configureCommerceControlReader()` from `control-reader.ts` with the
+existing setup principal and a validated `nv_control_commerce_` role. It creates
+an owner-controlled `security_barrier` view containing only current, active test
+APP records, revokes that reader's base-table access and grants view/registry
+SELECT. Ordinary web/provisioner grants remain unchanged. Never grant the reader
+`workspace_secrets` SELECT, membership, ownership, schema CREATE or TEMPORARY.
+Verify actual42501 on base/column reads and zero WORKER records through the view.
+Do not put `NEVORA_WORKSPACE_TOKEN_SECRET` in the authority environment: its three
+original machine handlers need no browser envelope capability.
+
+Every clean ZIP now embeds its build commit. Native processing compares it to
+`NEVORA_NEON_SOURCE_SHA`; missing/different labels fail closed. Dirty local bundles
+embed no usable source identity and cannot process even a correctly shaped native
+schedule. Rebuild and deploy all affected ZIPs when the source changes; changing
+an environment label cannot relabel older code. The archive verifier checks the
+compiled identity and missing/wrong/matching labels on extracted worker artifacts.

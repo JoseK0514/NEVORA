@@ -25,3 +25,19 @@ Prepare code/tests and closed artifacts before adding sensitive access. A new re
 Acceptance must include original per-company denials, body/auth tampering and expiry, no data work before service auth, suspended/restored/foreign origins, current Owner revocation, entitlement projection, duplicate/reordered Stripe processing and two actual fictional company databases. Native API proof is separate from the protected web/Claude browser journey. Restore schedules/flags after bounded tests and retain durable uncertain outcomes. Existing SSO/aliases and native staging remain untouched until an exact source/configuration is accepted.
 
 This decision does not grant production approval or independent certification. Codex owns implementation/evidence; Jose owns any material scope/risk and credential confirmation; Claude owns UI.
+
+## Final review boundary corrections
+
+The authority reader receives SELECT on registry plus the fixed
+`commerce_app_workspace_secrets` security-barrier view only. That view is restricted
+to current, active test APP records. Base/column reads and WORKER ciphertext are
+denied by PostgreSQL; original web/provisioner grants stay unchanged. Its dedicated
+routing constructor has no browser token key, and machine bindings cannot open or
+seal any browser token envelope. The real web token key is forbidden in that role.
+
+The native API always pins the protected signup UI and rejects extra allowed
+browser origins, including a machine-host UI substitution. Every clean native ZIP
+embeds its source commit and rejects a missing/mismatched environment SHA. Empty
+provider pages validate/follow a new cursor within the original bound, accepting
+only absent or echoed-request terminal cursors; malformed continuation fails
+closed. Hosted HMAC/body/size/host probes remain separate from Stripe signatures.

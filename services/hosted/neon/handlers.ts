@@ -3,6 +3,7 @@ import {parseTriggerDelivery} from '@neon/functions/triggers';
 import {parseStripeWebhook,projectsStripeEvent} from '../../commerce/stripe-webhook';
 import {CommerceError} from '../../commerce/model';
 import {roleCapabilitiesAllowed,type FunctionRole} from './capabilities';
+import {hostedSourceMatches} from './source';
 export const UNUSABLE_DATABASE_URL = 'postgresql://disabled.invalid/disabled';
 export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner';
 type Env=Readonly<Record<string,string|undefined>>;
@@ -13,6 +14,7 @@ export function observedFetch(role:FunctionRole,handler:(request:Request)=>Promi
  return async(request:Request)=>{const response=await handler(request);console.info(JSON.stringify({event:'nevora_staging_http',role,status:response.status}));return response;};
 }
 export function hostedEnvironmentBound(env:Env,role:FunctionRole){
+ if(!hostedSourceMatches(env.NEVORA_NEON_SOURCE_SHA))return false;
  if(!/^br-[a-z0-9-]+$/.test(env.NEVORA_NEON_BRANCH_ID??'')||env.NEVORA_NEON_BRANCH_ID!==env.NEON_BRANCH_ID||env.NEVORA_COMMERCE_ENVIRONMENT!=='staging'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||env.NEVORA_WORKSPACE_MODE!=='isolated')return false;
  // Neon automatically injects a default database capability. It must be overridden
  // in every deployment, even when disabled; only named role-specific DSNs are used.

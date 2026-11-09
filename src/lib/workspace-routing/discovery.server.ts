@@ -7,9 +7,11 @@ import {onboardingJson,readOnboardingJson} from '../onboarding/http.server';
 import {readWorkspaceRoutingConfig,parseWorkspaceOrigin,type WorkspaceRoutingConfig} from './config.server';
 /** Public company locator only; reveals no names, membership or credential data. */
 export function createWorkspaceDiscoveryHandler(store:ControlStore,config:WorkspaceRoutingConfig,platformOrigin:string){
+ const tokenKey=config.tokenKey;
  return async(request:Request):Promise<Response>=>{
   const denied=(status=404)=>onboardingJson({schemaVersion:1,status:'unavailable'},status);
   try{
+   if(!tokenKey)return denied(503);
    const url=new URL(request.url),origin=request.headers.get('origin');
    if(request.method!=='POST'||url.origin!==platformOrigin||url.search||request.headers.has('cookie')||(origin!==null&&origin!==platformOrigin)||request.headers.get('sec-fetch-site')==='cross-site'||request.headers.get('x-nevora-workspace')!=='1'||request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return denied(403);
    const body=await readOnboardingJson(request,1024);
@@ -17,7 +19,7 @@ export function createWorkspaceDiscoveryHandler(store:ControlStore,config:Worksp
    const allowed=await store.transaction(async client=>{
     const r=await client.query(`INSERT INTO nevora_onboarding.admission_counters(environment,kind,subject_digest,bucket_start,attempts)
      VALUES($1,'PLATFORM',$2,date_trunc('minute',clock_timestamp()),1)
-     ON CONFLICT(environment,kind,subject_digest,bucket_start) DO UPDATE SET attempts=LEAST(121,nevora_onboarding.admission_counters.attempts+1) RETURNING attempts`,[config.environment,digestOnboardingProof('workspace-discovery','global',config.tokenKey)]);
+     ON CONFLICT(environment,kind,subject_digest,bucket_start) DO UPDATE SET attempts=LEAST(121,nevora_onboarding.admission_counters.attempts+1) RETURNING attempts`,[config.environment,digestOnboardingProof('workspace-discovery','global',tokenKey)]);
     return r.rows.length===1&&Number.isInteger(r.rows[0].attempts)&&r.rows[0].attempts<=120;
    });
    if(!allowed)return denied(429);

@@ -58,11 +58,11 @@ export function readCommerceConfig(env: Readonly<Record<string,string|undefined>
     env.NEVORA_COMMERCE_ORIGIN ?? "",
     environment === "development",
   );
-  if(environment==='staging'&&(!env.NEVORA_COMMERCE_UI_ORIGIN||env.NEVORA_COMMERCE_UI_ORIGIN!==origin)){
+  if(environment==='staging'&&(/^https:\/\/br-[a-z0-9-]+-commerceapi\.compute\.c-15\.us-east-1\.aws\.neon\.tech$/.test(origin)||!env.NEVORA_COMMERCE_UI_ORIGIN||env.NEVORA_COMMERCE_UI_ORIGIN!==origin)){
     const branch=env.NEVORA_NEON_BRANCH_ID;
     // This exact staging profile separates machine ingress from the protected
     // staging UI without permitting real Velani/customer redirects.
-    if(env.NEVORA_WORKSPACE_MODE!=='isolated'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||!/^br-[a-z0-9-]+$/.test(branch??'')||origin!==`https://${branch}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`||env.NEVORA_COMMERCE_UI_ORIGIN!=='https://signup-staging.nevora.team')throw Error('staging_ui_origin_required');
+    if(env.NEVORA_WORKSPACE_MODE!=='isolated'||env.NEVORA_ONBOARDING_ENVIRONMENT!=='test'||!/^br-[a-z0-9-]+$/.test(branch??'')||origin!==`https://${branch}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`||env.NEVORA_COMMERCE_UI_ORIGIN!=='https://signup-staging.nevora.team'||(env.NEVORA_COMMERCE_ALLOWED_ORIGINS!==undefined&&env.NEVORA_COMMERCE_ALLOWED_ORIGINS!=='https://signup-staging.nevora.team'))throw Error('staging_ui_origin_required');
   }
   const uiOrigin = safeOrigin(
     env.NEVORA_COMMERCE_UI_ORIGIN ?? "https://www.thevelani.com",

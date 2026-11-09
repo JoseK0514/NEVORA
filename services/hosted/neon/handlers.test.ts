@@ -1,9 +1,10 @@
+import {sourceFixture} from './test-source';
 import {describe,it,expect,vi} from 'vitest';
 import Stripe from 'stripe';
 import {createWebhookHandler,createScheduledHandler,UNUSABLE_DATABASE_URL,observedFetch,type HostedRole} from './handlers';
 const secret='whsec_hosted_fixture';
 const inert={PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'};
-const env={...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
+const env={...sourceFixture,...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:UNUSABLE_DATABASE_URL,DATABASE_URL_UNPOOLED:UNUSABLE_DATABASE_URL,STRIPE_WEBHOOK_SECRET:secret};
 function event(live=false){return JSON.stringify({id:'evt_hosted_fixture',object:'event',type:'checkout.session.completed',livemode:live,data:{object:{id:'cs_test_hosted',object:'checkout.session'}}});}
 function webhook(raw=event(),signature=Stripe.webhooks.generateTestHeaderString({payload:raw,secret})){return new Request('https://fictional.invalid/webhooks/stripe',{method:'POST',headers:{'stripe-signature':signature},body:raw});}
 function tick(role:HostedRole='commercequeue',override:Record<string,unknown>={},headers:Record<string,string>={'x-neon-trigger-invocation-id':'fixture-run'}){

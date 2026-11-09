@@ -9,7 +9,9 @@ import {assertWorkspaceBindingCurrent,workspaceBindingFacts,type WorkspaceBindin
 const transports=new Map<string,NeonQueryFunction<false,false>>();
 async function driver(binding:WorkspaceBinding):Promise<NeonQueryFunction<false,false>>{
  const f=await assertWorkspaceBindingCurrent(binding),r=f.record;
- const secret=await f.store.query(`SELECT ciphertext,login_role::text FROM nevora_onboarding.workspace_secrets WHERE id=$1 AND workspace_id=$2 AND environment=$3 AND incarnation=$4::bigint AND role_kind=$5 AND active`,[f.secretRef,r.id,r.environment,r.incarnation,f.role]);
+ if(f.config.secretScope==='COMMERCE_APP_ONLY'&&f.role!=='APP')throw new WorkspaceRoutingError();
+ const relation=f.config.secretScope==='COMMERCE_APP_ONLY'?'nevora_onboarding.commerce_app_workspace_secrets':'nevora_onboarding.workspace_secrets';
+ const secret=await f.store.query(`SELECT ciphertext,login_role::text FROM ${relation} WHERE id=$1 AND workspace_id=$2 AND environment=$3 AND incarnation=$4::bigint AND role_kind=$5 AND active`,[f.secretRef,r.id,r.environment,r.incarnation,f.role]);
  if(secret.rows.length!==1||secret.rows[0].login_role!==f.loginRole)throw new WorkspaceRoutingError();
  const raw=openOnboardingValue(secret.rows[0].ciphertext,'workspace-secret:'+r.environment+':'+r.id+':'+r.incarnation+':'+f.role+':'+f.secretRef,f.config.encryptionKey);if(!raw)throw new WorkspaceRoutingError();
  try{const url=new URL(raw);if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname.endsWith('.neon.tech')||url.hash||decodeURIComponent(url.username)!==f.loginRole||!url.pathname.slice(1)||(r.environment==='production'&&url.searchParams.get('sslmode')!=='verify-full'))throw new WorkspaceRoutingError();}catch{throw new WorkspaceRoutingError();}

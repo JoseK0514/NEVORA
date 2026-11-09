@@ -12,6 +12,7 @@ const columns='id::text,canonical_origin,environment,incarnation::text,revision:
 function permits(record:WorkspaceRecord,purpose:WorkspacePurpose):boolean{return purpose==='BOOTSTRAP'?record.lifecycle==='OWNER_ACTIVATION_REQUIRED':record.lifecycle==='ACTIVE';}
 export async function resolveWorkspaceBinding(identity:{origin:string;forwardedHost?:string},store:ControlStore,config:WorkspaceRoutingConfig,purpose:WorkspacePurpose='APP'):Promise<WorkspaceBinding>{
  try{
+  if(config.secretScope==='COMMERCE_APP_ONLY'&&purpose!=='APP')throw new WorkspaceRoutingError();
   if(!isClosedRecord(identity,['origin'],['forwardedHost'])||!['APP','WORKER','BOOTSTRAP'].includes(purpose))throw new WorkspaceRoutingError();
   const origin=parseWorkspaceOrigin(identity.origin,config);if(!origin)throw new WorkspaceRoutingError();
   if(identity.forwardedHost!==undefined){if(typeof identity.forwardedHost!=='string'||!/^[a-z0-9.-]+(?::[0-9]{1,5})?$/i.test(identity.forwardedHost)||new URL(new URL(origin).protocol+'//'+identity.forwardedHost).host!==new URL(origin).host)throw new WorkspaceRoutingError();}

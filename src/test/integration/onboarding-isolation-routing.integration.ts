@@ -1,3 +1,7 @@
+import{Pool}from'pg';
+import{randomBytes}from'node:crypto';
+import{configureCommerceControlReader}from'../../../services/hosted/neon/control-reader';
+import{createControlStore}from'@/lib/onboarding/control-store.server';
 import {beforeAll,afterAll,describe,it,expect,vi} from 'vitest';
 import {ownedWorkspaceFixture,type OwnedCompany} from './onboarding-workspace-fixture';
 import {resolveWorkspaceBinding} from '@/lib/workspace-routing/resolver.server';
@@ -11,6 +15,18 @@ describe('actual A/B PostgreSQL routing behind the installed Neon HTTP protocol'
  let fixture:Awaited<ReturnType<typeof ownedWorkspaceFixture>>,companies:OwnedCompany[],control:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['control'],store:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['store'],config:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['config'],map:Awaited<ReturnType<typeof ownedWorkspaceFixture>>['map'];
  beforeAll(async()=>{fixture=await ownedWorkspaceFixture();({companies,control,store,config,map}=fixture);});
  afterAll(async()=>{await fixture?.close();vi.unstubAllEnvs();});
+ it('limits the real commerce authority reader to current test APP custody and keeps A/B routing intact',async()=>{
+  const role='nv_control_commerce_'+randomBytes(12).toString('hex'),password=randomBytes(24).toString('hex');
+  await control.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);
+  await control.pool.query(`GRANT CONNECT ON DATABASE ${control.name} TO ${role}`);await configureCommerceControlReader(control.pool,role);
+  const target=new URL(control.connectionUrl);target.username=role;target.password=password;const reader=new Pool({connectionString:target.href,max:1});
+  try{await expect(reader.query('SELECT ciphertext FROM nevora_onboarding.workspace_secrets')).rejects.toMatchObject({code:'42501'});
+   expect((await reader.query("SELECT count(*)::int AS count FROM nevora_onboarding.commerce_app_workspace_secrets WHERE role_kind='WORKER' OR environment<>'test' OR NOT active")).rows[0].count).toBe(0);
+   expect((await reader.query('SELECT count(*)::int AS count FROM nevora_onboarding.commerce_app_workspace_secrets')).rows[0].count).toBe(2);
+   const machine={...config,tokenKey:undefined,secretScope:'COMMERCE_APP_ONLY' as const};
+   for(const c of companies){const binding=await resolveWorkspaceBinding({origin:c.origin},createControlStore(reader),machine);expect((await getWorkspaceDb(binding).query<{label:string}>({text:'SELECT label FROM employees WHERE id=$1',values:['EMP-1']}))[0].label).toBe(c===companies[0]?'Company A':'Company B');}
+  }finally{await reader.end();await control.pool.query('DROP OWNED BY '+role);await control.pool.query('DROP ROLE '+role);}
+ });
  it('returns different actual rows for identical employee IDs under simultaneous A/B traffic',async()=>{const read=async(c:typeof companies[number])=>(await getWorkspaceDb(c.binding).query<{label:string}>({text:'SELECT label FROM employees WHERE id=$1',values:['EMP-1']}))[0].label;const r=await Promise.all(Array.from({length:20},(_,i)=>read(companies[i%2])));expect(r.filter((x,i)=>x!==(i%2?'Company B':'Company A'))).toEqual([]);});
  it('keeps genuine SDK transaction writes in their selected business',async()=>{const [a,b]=companies;await getWorkspaceDb(a.binding).transaction([{text:'INSERT INTO employees VALUES($1,$2)',values:['EMP-2','Only A']}]);expect((await b.db.pool.query('SELECT count(*)::int n FROM employees WHERE id=$1',['EMP-2'])).rows[0].n).toBe(0);});
  it('routes existing application adapters through separate concurrent callback contexts without DATABASE_URL',async()=>{

@@ -1,9 +1,10 @@
+import {sourceFixture} from './test-source';
 import {afterEach,expect,it,vi} from 'vitest';
 import {createHash,createHmac} from 'node:crypto';
 import {createCompanyAuthorityHandler} from './commerceauthority';
 const inert={PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'};
 const root=Buffer.alloc(32,9).toString('base64url'),secret=Buffer.alloc(32,8).toString('base64url'),company='https://alpha.portal-staging.example.invalid',gateway='https://br-fictional-staging-commerceauthority.compute.c-15.us-east-1.aws.neon.tech',now=Date.parse('2026-11-08T12:00:00Z');
-const env={...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:'postgresql://disabled.invalid/disabled',DATABASE_URL_UNPOOLED:'postgresql://disabled.invalid/disabled',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:root,NEVORA_PORTAL_BASE_DOMAIN:'portal-staging.example.invalid',NEVORA_CONTROL_DATABASE_URL:'postgresql://nv_control_commerce_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-fixture.us-east-1.aws.neon.tech/control?sslmode=verify-full',NEVORA_WORKSPACE_TOKEN_SECRET:Buffer.alloc(32,1).toString('base64url'),NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,2).toString('base64url'),NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,3).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing-staging.example.invalid'};
+const env={...sourceFixture,...inert,NEVORA_NEON_HOST_ENABLED:'true',NEVORA_NEON_BRANCH_ID:'br-fictional-staging',NEON_BRANCH_ID:'br-fictional-staging',NEVORA_COMMERCE_ENVIRONMENT:'staging',NEVORA_ONBOARDING_ENVIRONMENT:'test',NEVORA_WORKSPACE_MODE:'isolated',DATABASE_URL:'postgresql://disabled.invalid/disabled',DATABASE_URL_UNPOOLED:'postgresql://disabled.invalid/disabled',NEVORA_COMMERCE_ENABLED:'true',NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:root,NEVORA_PORTAL_BASE_DOMAIN:'portal-staging.example.invalid',NEVORA_CONTROL_DATABASE_URL:'postgresql://nv_control_commerce_aaaaaaaaaaaaaaaaaaaaaaaa:fictional@ep-fixture.us-east-1.aws.neon.tech/control?sslmode=verify-full',NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,2).toString('base64url'),NEVORA_COMMERCE_BINDING_KEY:Buffer.alloc(32,3).toString('base64url'),NEVORA_COMMERCE_API_ORIGIN:'https://billing-staging.example.invalid'};
 afterEach(()=>vi.useRealTimers());
 function signed(path='/api/commerce/facts',options:{origin?:string;body?:string;timestamp?:number;authorization?:string;key?:string}={}){
  const method=path.endsWith('/facts')?'GET':'POST',origin=options.origin??company,body=options.body??(method==='GET'?'':'{}'),authorization=options.authorization??'Bearer '+secret,timestamp=String(options.timestamp??Math.floor(now/1000));
@@ -28,7 +29,7 @@ it('bounds a caller that never completes a body before company work',async()=>{v
 it('has no general route or scheduler capability',async()=>{let calls=0;const handler=createCompanyAuthorityHandler(env,async()=>{calls++;return Response.json({});},()=>now);for(const path of ['/run','/api/onboarding/workspaces','/api/commerce/facts?redirect=foreign'])expect((await handler(new Request(gateway+path,{method:'POST',body:'{}'}))).status).toBe(404);expect(calls).toBe(0);});
 
 it.each(['NEVORA_COMMERCE_BINDING_KEY','NEVORA_WORKSPACE_TOKEN_SECRET','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY'] as const)('refuses a service key shared with %s',async name=>{
- let calls=0;const reused=env[name],response=await createCompanyAuthorityHandler({...env,NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:reused},async()=>{calls++;return Response.json({});},()=>now)(signed('/api/commerce/facts',{key:reused}));expect(response.status).toBe(503);expect(calls).toBe(0);
+ let calls=0;const reused=name==='NEVORA_WORKSPACE_TOKEN_SECRET'?Buffer.alloc(32,1).toString('base64url'):env[name],response=await createCompanyAuthorityHandler({...env,...(name==='NEVORA_WORKSPACE_TOKEN_SECRET'?{NEVORA_WORKSPACE_TOKEN_SECRET:reused}:{}),NEVORA_COMMERCE_COMPANY_GATEWAY_KEY:reused},async()=>{calls++;return Response.json({});},()=>now)(signed('/api/commerce/facts',{key:reused}));expect(response.status).toBe(503);expect(calls).toBe(0);
 });
 it('rejects invalid service authentication without waiting for an unfinished body',async()=>{
  vi.useFakeTimers();let calls=0;try{
@@ -38,3 +39,5 @@ it('rejects invalid service authentication without waiting for an unfinished bod
   await vi.advanceTimersByTimeAsync(0);expect(settled).toBe(true);expect((await pending).status).toBe(401);expect(calls).toBe(0);
  }finally{vi.useRealTimers();}
 });
+
+it('rejects custody of the real browser token-envelope key before original work',async()=>{let calls=0;const r=await createCompanyAuthorityHandler({...env,NEVORA_WORKSPACE_TOKEN_SECRET:Buffer.alloc(32,1).toString('base64url')},async()=>{calls++;return Response.json({});},()=>now)(signed());expect(r.status).toBe(503);expect(calls).toBe(0);});

@@ -14,6 +14,8 @@ export function createCommerceApiHandler(env:HostedEnvironment,serve:(request:Re
   if(url.search||(!legacy.has(path)&&!methods[path])||(!legacy.has(path)&&method!==methods[path]&&method!=='OPTIONS'))return reject('not_found',404);
   if(!hostedEnvironmentBound(env,'commerceapi')||env.NEVORA_NEON_HOST_ENABLED!=='true'||env.NEVORA_COMMERCE_API_ENABLED!=='true'||env.NEVORA_COMMERCE_PROVISIONING_MODE!=='onboarding')return reject('not_ready',503);
   const expected=`https://${env.NEVORA_NEON_BRANCH_ID}-commerceapi.compute.c-15.us-east-1.aws.neon.tech`;
+  const ui='https://signup-staging.nevora.team';
+  if(env.NEVORA_COMMERCE_UI_ORIGIN!==ui||(env.NEVORA_COMMERCE_ALLOWED_ORIGINS!==undefined&&env.NEVORA_COMMERCE_ALLOWED_ORIGINS!==ui))return reject('not_ready',503);
   if(url.origin!==expected||env.NEVORA_COMMERCE_ORIGIN!==expected)return reject('origin_denied',403);
   try{
    const config=readCommerceConfig(env);

@@ -22,7 +22,7 @@ await mkdir(output,{recursive:false});
 const artifacts=[];
 for(const slug of ['stripewebhook','commercequeue','commercereconcile','provisioner','commerceauthority','commerceapi']){
  const dir=join(output,slug);await mkdir(dir,{recursive:false});
- const bundled=await build({entryPoints:[join(root,'services/hosted/neon/'+slug+'.entry.ts')],outfile:join(dir,'src/lib/company-bootstrap/bundle.mjs'),bundle:true,format:'esm',platform:'node',target:'node24',metafile:true,alias:{'server-only':join(root,'node_modules/next/dist/compiled/server-only/empty.js')},banner:{js:"import{createRequire as __cr}from'node:module';import{fileURLToPath as __fu}from'node:url';import{dirname as __dn}from'node:path';const require=__cr(import.meta.url);const __filename=__fu(import.meta.url);const __dirname=__dn(__filename);"},logLevel:'silent'});
+ const bundled=await build({entryPoints:[join(root,'services/hosted/neon/'+slug+'.entry.ts')],outfile:join(dir,'src/lib/company-bootstrap/bundle.mjs'),bundle:true,define:{__NEVORA_NEON_BUILD_SOURCE_SHA__:JSON.stringify(before.status?'':before.commit)},format:'esm',platform:'node',target:'node24',metafile:true,alias:{'server-only':join(root,'node_modules/next/dist/compiled/server-only/empty.js')},banner:{js:"import{createRequire as __cr}from'node:module';import{fileURLToPath as __fu}from'node:url';import{dirname as __dn}from'node:path';const require=__cr(import.meta.url);const __filename=__fu(import.meta.url);const __dirname=__dn(__filename);"},logLevel:'silent'});
  await writeFile(join(dir,'index.mjs'),"export {default} from './src/lib/company-bootstrap/bundle.mjs';\nexport * from './src/lib/company-bootstrap/bundle.mjs';\n");
  if(slug==='provisioner'){
   for(const file of [...BASE_MIGRATIONS,...FINAL_MIGRATIONS]){

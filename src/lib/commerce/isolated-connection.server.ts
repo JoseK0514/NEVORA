@@ -4,7 +4,7 @@ import {workspaceInstanceSecret} from '../../../services/commerce/workspace-enro
 import {currentWorkspaceBinding,withWorkspaceBinding} from '../workspace-routing/context.server';
 import {assertWorkspaceBindingCurrent,resolveWorkspaceBinding} from '../workspace-routing/resolver.server';
 import {getWorkspaceDb} from '../workspace-routing/transport.server';
-import {readWorkspaceRoutingConfig} from '../workspace-routing/config.server';
+import {readWorkspaceRoutingConfig,type WorkspaceRoutingConfig} from '../workspace-routing/config.server';
 import {runtimeControlStore} from '../onboarding/control-store.server';
 export async function isolatedCommerceConnection(){
  const binding=await currentWorkspaceBinding(),facts=await assertWorkspaceBindingCurrent(binding),r=facts.record;
@@ -16,8 +16,8 @@ export async function isolatedCommerceConnection(){
  if(rows.length!==1||rows[0].business_id!==r.id||rows[0].installation_id!==r.id)throw Error('commerce_not_enrolled');
  return {origin,installationId:r.id,businessId:r.id,role:facts.role,companyOrigin:r.canonicalOrigin,incarnation:r.incarnation,secret,assertCurrent:async()=>{await assertWorkspaceBindingCurrent(binding);}};
 }
-export async function withCommerceRequest<T>(request:Request,work:()=>Promise<T>){
- const config=readWorkspaceRoutingConfig(),h=request.headers,forwardedHost=h.get('x-forwarded-host');
+export async function withCommerceRequest<T>(request:Request,work:()=>Promise<T>,routing?:WorkspaceRoutingConfig){
+ const config=routing??readWorkspaceRoutingConfig(),h=request.headers,forwardedHost=h.get('x-forwarded-host');
  const binding=await resolveWorkspaceBinding({origin:new URL(request.url).origin,...(forwardedHost?{forwardedHost}:{})},runtimeControlStore(config),config);
  return withWorkspaceBinding(binding,work);
 }

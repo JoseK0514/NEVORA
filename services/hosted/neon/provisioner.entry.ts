@@ -1,3 +1,4 @@
+export {compiledHostedSourceSha} from './source';
 import {createScheduledHandler,observedFetch} from './handlers';
 import {runProvisionerOnce} from '../../../src/lib/onboarding/provisioning/runtime.server';
 import {canonicalCompanyManifest} from '../../../src/lib/company-bootstrap/server';

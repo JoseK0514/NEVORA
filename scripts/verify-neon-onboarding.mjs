@@ -31,6 +31,8 @@ for(const artifact of receipt.artifacts){
   assert.equal(createHash('sha256').update(await readFile(join(dir,file.path))).digest('hex'),file.sha256);verifiedFiles++;
  }
  const artifactModule=await import(pathToFileURL(join(dir,'index.mjs')).href);
+ assert.equal(artifactModule.compiledHostedSourceSha(),receipt.deployable?receipt.source.commit:'','build SHA must be compiled into every ZIP');
+ process.env.NEVORA_NEON_SOURCE_SHA=receipt.source.commit;
  const h=artifactModule.default.fetch;
  assert.equal((await h(new Request('https://owned.invalid/other?private=fictional-private-value',{headers:{authorization:'Bearer fictional-private-value'}}))).status,404);
  if(artifact.slug==='stripewebhook')assert.equal((await h(new Request('https://owned.invalid/webhooks/stripe',{method:'POST'}))).status,503);
@@ -41,8 +43,10 @@ for(const artifact of receipt.artifacts){
  }else{
   assert.equal((await h(new Request('https://owned.invalid/run',{method:'POST'}))).status,401);
   const envelope={version:1,invocation_id:'owned-fixture',trigger:{type:'schedule',id:'trigger-owned',name:'nevora-staging-'+artifact.slug},data:{scheduled_at:'2026-11-08T12:00:00Z'}};
+  for(const label of [undefined,'e'.repeat(40)]){if(label===undefined)delete process.env.NEVORA_NEON_SOURCE_SHA;else process.env.NEVORA_NEON_SOURCE_SHA=label;const rejected=await h(new Request('https://owned.invalid/run',{method:'POST',headers:{'x-neon-trigger-invocation-id':'owned-fixture'},body:JSON.stringify(envelope)}));assert.equal(rejected.status,503,'extracted ZIP must reject missing/wrong source label');}
+  process.env.NEVORA_NEON_SOURCE_SHA=receipt.source.commit;
   const accepted=await h(new Request('https://owned.invalid/run',{method:'POST',headers:{'x-neon-trigger-invocation-id':'owned-fixture'},body:JSON.stringify(envelope)}));
-  assert.equal(accepted.status,200);assert.deepEqual(await accepted.json(),{state:'disabled'});
+  assert.equal(accepted.status,receipt.deployable?200:503);if(receipt.deployable)assert.deepEqual(await accepted.json(),{state:'disabled'});
  }
  if(artifact.slug==='provisioner'){
   const manifest=await artifactModule.verifyProvisionerBundle();assert(manifest.files>0);

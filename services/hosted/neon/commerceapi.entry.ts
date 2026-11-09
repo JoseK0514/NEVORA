@@ -1,3 +1,4 @@
+export {compiledHostedSourceSha} from './source';
 import {createRuntime} from '../../commerce/runtime';
 import {createCommerce} from '../../commerce/service';
 import {createCommerceApiHandler} from './commerceapi';
