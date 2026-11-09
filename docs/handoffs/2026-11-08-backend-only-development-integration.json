@@ -1,0 +1,1236 @@
+{
+  "schema": 1,
+  "base": "e2872f30ea8548b1310ea4a9b25813352decf82a",
+  "collaborationSource": "d349b66196c847fdb46852a3db0c0630463295c5",
+  "localImplementation": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
+  "sourcePathCount": 289,
+  "selectedSourcePaths": [
+    "src/lib/data/employee-requests.server.ts",
+    "src/lib/data/employee-requests.server.test.ts",
+    "src/lib/action-center/inbox.ts",
+    "src/lib/action-center/inbox.test.ts",
+    "src/lib/action-center/needs-you.ts",
+    "src/lib/action-center/service.ts",
+    "src/lib/assistance/manager-actions.ts"
+  ],
+  "sourcePaths": [
+    {
+      "path": ".21st/DESIGN.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "DESIGN.MD",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/clocker-ipad/implementation-evidence.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/clocker-ipad/release-readiness.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/MOCK-BRIEF.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/README.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/1-mobile-owner-employee.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-account-delete.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-account-recovery.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-availability.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-clocker-recovery.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-employees-new.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-employees-person.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-employees.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-exchange.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-help.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-home.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-inbox-view-more.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-inbox.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-more.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-notifications.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-payroll-export.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-payroll-history.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-payroll-people.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-payroll-prepare.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-payroll.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-profile-calendar.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-profile-device-alerts.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-profile-passkeys.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-profile.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-reports.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-requests.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-coverage.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-new.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-publish.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-settings.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-templates.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule-view-open.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-schedule.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-branding.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-breaks.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-clocker-photos.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-clocker-pins.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-clocker.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-company-policies.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-features.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-locations-loc-1.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-locations-new.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-locations.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-payroll.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-positions.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings-workspace.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-settings.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-timecards-corrections.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-timecards.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-updates-compose.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-updates.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-view-activity.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-view-attendance.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/img/today-view-team.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/2-owner-desktop/owner-desktop-direction-b.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/employee-mobile-direction-b.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-alerts.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-availability.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-calendar.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-corrections.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-delete.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-fix.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-help.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-home.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-more.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-myshifts.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-notifications.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-open.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-pay.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-payhistory.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-privacy.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-profile.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-req.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-sched.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-swaps.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-terms.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-time.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-timecards.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-timeoff-new.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-timeoff.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/3-employee-mobile/img/today-e-updates.jpg",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/4-lead.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/5-employee-desktop.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/6-tablets.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/7-sign-in-and-public.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/direction-b/mocks/8-clocker.html",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "docs/product/specs/codex-joint/DEPLOY-RUNBOOK.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "scripts/clocker-ipad-ui-qa.mjs",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/availability/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/employee-b-desktop.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/employees/[employeeId]/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/help/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/inbox/page.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/inbox/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/layout.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/more/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/my-pay/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/my-time/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/operational-page-composition.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/owner-b-desktop.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/owner-b-pages.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/owner-b-shell.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/premium-profile.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/profile/[document]/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/profile/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/profile/passkeys/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/requests/hub/page.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/requests/page.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/requests/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/schedule/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/schedule/schedule-corp.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/timecards/page.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/app/timecards/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/clocker/[location]/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/error.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/global-error.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/login/page.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/mobile-workforce.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/not-found.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/account-deletion-form.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/app-error-screen.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/app-shell.prefetch.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/app-shell.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/app-shell.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/auth-premium/auth-b.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/auth-premium/auth-shell.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/availability-corp.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/availability-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-copy.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-copy.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-icon.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-language.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-language.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-motion.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-photo/photo-notice.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-photo/photo.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-photo/punch-photo-flow.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-pin-gate.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-pin-inventory.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-pin.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-punch-panel.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-punch.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-recovery.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-setup.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-setup.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-shell.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-shell.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker-v2.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/clocker.module.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/command-finder.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/company-access/scoped-read-frame.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/corp/corp.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/corp/corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-account-panel.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/account-b-client.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/account-b.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/account-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/account-host.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/account.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/availability-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/employee-b.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/exchange-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/focus.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/home-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/messages-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/parts.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/pay-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/pay.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/requests-b.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/requests-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/requests.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/schedule-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/schedule.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/time-b.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/time-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/time.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/timeoff-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-b/viewport.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-dashboard.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-directory.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-home-actions.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-home-corp-view.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-home-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-home-quiet.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/availability-summary.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/availability.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/calendar.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/calendar.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/creation-view.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/creation-view.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/creation.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/deletion.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/deletion.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/device-alerts.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/device-alerts.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/employee-state-copy.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/exchange-view.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/exchange-view.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/exchange.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/hours-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/hours-model.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/hours.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/messages-view.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/messages.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/pay-corp.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/pay-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/planning-frame.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/planning.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/profile-preferences.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/profile.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/requests.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/requests.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/timeoff-corp.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/timeoff-parts.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/timeoff.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-mobile/use-mobile.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-my-schedule.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-requests-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-schedule-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-shift-sheet.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/employee-shift-sheet.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/legal/legal-document.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-dashboard.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-dashboard.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-inbox-corp.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-inbox-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-inbox.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-time-off.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/manager-weekly-roster.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/notification-bell.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/notification-inbox.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/b-kit.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/home-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/inbox-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/owner-b.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/team-b.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-b/test-support.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-home-corp.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-home-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-only-notice.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/owner-only-notice.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/payroll-export.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/payroll/payroll-premium.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/payroll/payroll-runs.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/premium-home.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/public-error-screen.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/public-error-screen.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/quiet/quiet.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/reports.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/schedule-copy-form.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/signature/dark.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/signature/tokens.css",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/team-live.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/team/team-overview.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/time-correction-context.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/timecards.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/ui-preview/home-preview.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/whos-working-corp.test.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/components/whos-working-corp.tsx",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/action-center/inbox.test.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/action-center/inbox.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/action-center/needs-you.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/action-center/service.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/assistance/manager-actions.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/data/employee-requests.server.test.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/data/employee-requests.server.ts",
+      "disposition": "selected backend/test input"
+    },
+    {
+      "path": "src/lib/data/inbox-count.server.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/employee-mobile-chrome.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/employee-mobile-chrome.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/face-tint.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/finder.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/navigation-ownership.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/navigation.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/navigation.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/workspace-presentation/model.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/lib/workspace-presentation/modules.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/test/integration/owned-next-app.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "src/test/phase-c-governance-cleanup.test.ts",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "tools/ui-scan/README.md",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "tools/ui-scan/desk.sh",
+      "disposition": "held; not imported"
+    },
+    {
+      "path": "tools/ui-scan/zz-scan.tar.gz",
+      "disposition": "held; not imported"
+    }
+  ],
+  "localRuntimePaths": [
+    "src/lib/action-center/inbox.test.ts",
+    "src/lib/action-center/inbox.ts",
+    "src/lib/action-center/needs-you.test.ts",
+    "src/lib/action-center/needs-you.ts",
+    "src/lib/action-center/project.ts",
+    "src/lib/action-center/service.test.ts",
+    "src/lib/action-center/service.ts",
+    "src/lib/assistance/manager-actions.test.ts",
+    "src/lib/assistance/manager-actions.ts",
+    "src/lib/company-access/company-result.server.test.ts",
+    "src/lib/company-access/company-result.server.ts",
+    "src/lib/data/employee-requests.server.test.ts",
+    "src/lib/data/employee-requests.server.ts",
+    "src/lib/data/exchanges.ts",
+    "src/test/integration/clocker-action-center.integration.ts",
+    "src/test/integration/shift-change-hardening.integration.ts"
+  ],
+  "tests": {
+    "focusedUnit": 47,
+    "ownedSQL": 50,
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed",
+    "fullUnit": {
+      "passed": 10997,
+      "failed": 0,
+      "skipped": 801,
+      "seconds": 383.338,
+      "source": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408"
+    },
+    "freshReview": {
+      "reviewedCommit": "d7bfc4c231ce1d977e1e4ce737ea297dfb502a6e",
+      "verdict": "With fixes / BLOCK / REQUEST_CHANGES",
+      "report": "docs/handoffs/evidence/2026-11-08-backend-integration-code-review.md",
+      "reportSha256": "e19a1364efdc60d8997c0209d3549da26b4f758c2870c79e721cc73925ce4d55",
+      "authorRepairCommit": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
+      "authorDisposition": "All three Important findings reproduced RED and repaired GREEN; full suite passed. Minor helper duplication corrected. Original reviewer verdict retained; no second reviewer approval claimed."
+    }
+  },
+  "UIChanged": false,
+  "deploymentPerformed": false,
+  "mainChanged": false,
+  "fullCollaborationIncluded": false,
+  "runtimeEvidence": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf",
+  "rollback": "Revert only these development commits through a normal reviewed revert; do not reset or force-push shared branches.",
+  "localQualificationSource": "6b5f78f30f7df7d32dbab8ce80b840bc6bf80408",
+  "preReviewQualification": {
+    "focusedUnit": 43,
+    "ownedSQL": 46,
+    "typecheck": "passed",
+    "lint": "passed",
+    "fullUnit": {
+      "passed": 10993,
+      "failed": 0,
+      "skipped": 801,
+      "seconds": 545.589
+    },
+    "build": "passed",
+    "freshReview": "pending"
+  },
+  "sharedIntegrationReceipt": "/Users/josek0514/.codex/native-runtime/nevora-backend-integration-20261108-0w4zx1gf/shared-integration.json"
+}

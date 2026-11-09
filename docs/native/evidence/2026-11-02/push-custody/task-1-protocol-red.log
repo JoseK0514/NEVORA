@@ -1,0 +1,245 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/protocol.test.ts [2m([22m[2m50 tests[22m[2m | [22m[31m50 failed[39m[2m)[22m[32m 31[2mms[22m[39m
+[31m   [31m×[31m verifies a native signature over the independently specified wire bytes[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed operation[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed challengeId[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed nonce[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed origin[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed environment[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed platform[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed appId[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed provider[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed keyFingerprint[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed expectedGeneration[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed issuedAt[39m[32m 3[2mms[22m[39m
+[31m   [31m×[31m rejects substitution of signed expiresAt[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m binds the actual token bytes and key, rejecting other signatures and protocols[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects a proof outside its exact lifetime: 2026-11-02T11:59:59.999Z[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a proof outside its exact lifetime: 2026-11-02T12:02:00.000Z[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a proof outside its exact lifetime: 2026-11-02T12:03:00.000Z[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects a proof outside its exact lifetime: invalid[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 0[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 1[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 2[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 3[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 4[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 5[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 6[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 7[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 8[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 9[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 10[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 11[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 12[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 13[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects malformed or expanded registration metadata 14[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://nevora.example/[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://user@nevora.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://nevora.example?x=1[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://nevora.example/#x[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://NEVORA.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin https://nevora.example:443[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin http://attacker.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin http://127.attacker.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects noncanonical or unsafe signed origin javascript:alert(1)[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m can serialize explicitly selected development origin http://127.0.0.1:12345 without granting it authority[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m can serialize explicitly selected development origin http://localhost:12345 without granting it authority[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m can serialize explicitly selected development origin http://10.0.2.2:12345 without granting it authority[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m can serialize explicitly selected development origin http://[::1]:12345 without granting it authority[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects accessors without invoking them and inherited/hidden schema fields[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects non-P256 keys, alternate encodings, trailing DER and malformed public material[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m keeps token formats bounded and exact, with no token in errors[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m signs detach without material and requires a current generation for maintenance[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 50 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mverifies a native signature over the independently specified wire bytes
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m29:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed operation
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed challengeId
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed nonce
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed origin
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed environment
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed platform
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed appId
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed provider
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed keyFingerprint
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed expectedGeneration
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed issuedAt
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects substitution of signed expiresAt
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m44:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mbinds the actual token bytes and key, rejecting other signatures and protocols
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m49:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects a proof outside its exact lifetime: 2026-11-02T11:59:59.999Z
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects a proof outside its exact lifetime: 2026-11-02T12:02:00.000Z
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects a proof outside its exact lifetime: 2026-11-02T12:03:00.000Z
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects a proof outside its exact lifetime: invalid
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m60:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 0
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 1
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 2
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 3
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 4
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 5
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 6
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 7
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 8
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 9
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 10
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 11
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 12
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 13
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects malformed or expanded registration metadata 14
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m72:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://nevora.example/
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://user@nevora.example
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://nevora.example?x=1
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://nevora.example/#x
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://NEVORA.example
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin https://nevora.example:443
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin http://attacker.example
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin http://127.attacker.example
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects noncanonical or unsafe signed origin javascript:alert(1)
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m79:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mcan serialize explicitly selected development origin http://127.0.0.1:12345 without granting it authority
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mcan serialize explicitly selected development origin http://localhost:12345 without granting it authority
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mcan serialize explicitly selected development origin http://10.0.2.2:12345 without granting it authority
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mcan serialize explicitly selected development origin http://[::1]:12345 without granting it authority
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m84:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects accessors without invoking them and inherited/hidden schema fields
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m89:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mrejects non-P256 keys, alternate encodings, trailing DER and malformed public material
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m99:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22mkeeps token formats bounded and exact, with no token in errors
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m110:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/50]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/protocol.test.ts[2m > [22msigns detach without material and requires a current generation for maintenance
+[31m[1mAssertionError[22m: expected {} to have property "parseNativeChallenge"[39m
+[36m [2m❯[22m api src/lib/native-push/protocol.test.ts:[2m8:18[22m[39m
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const result = await import('./protocol').catch(() => ({}));
+    [90m  8|[39m   expect(result).toHaveProperty('parseNativeChallenge');
+    [90m   |[39m                  [31m^[39m
+    [90m  9|[39m   return result as typeof import('./protocol');
+    [90m 10|[39m }
+[90m [2m❯[22m src/lib/native-push/protocol.test.ts:[2m120:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/50]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m50 failed[39m[22m[90m (50)[39m
+[2m   Start at [22m 04:23:48
+[2m   Duration [22m 147ms[2m (tests 49%, transform 24%, import 22%, worker 5%)[22m
+

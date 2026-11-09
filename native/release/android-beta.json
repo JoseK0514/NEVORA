@@ -1,0 +1,16 @@
+{
+  "environment": "staging",
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "package": "com.velani.nevora.development",
+  "versionName": "0.1.0",
+  "versionCode": 1,
+  "minimumAndroidApi": 29,
+  "minimumWebView": "156.0.8078.50",
+  "nativePushEnabled": false,
+  "uploadCertificateSha256": "FCE29B057557198C9FD73B458C28A59DBA713F8C26619DBB9B5B262CF08C749E",
+  "hostedQualification": "../../docs/native/evidence/2026-11-06/android-beta-completion/hosted-staging-qualification.md",
+  "renderDeploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "backendMirrorCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "uploaded": false,
+  "distributionAuthorized": false
+}

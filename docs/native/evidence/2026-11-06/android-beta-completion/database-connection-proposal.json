@@ -1,0 +1,49 @@
+{
+  "state": "approved-bound-deployed-hosted-qualified",
+  "purpose": "Connect only the qualified fictional staging runtime to the approved Free service",
+  "render": {
+    "serviceId": "srv-dbmsjuui0phs73co1oq0",
+    "projectId": "prj-dbmsjugm7kps73c7u980",
+    "environmentId": "evm-dbmsjugm7kps73c7u98g",
+    "environmentName": "Native Staging",
+    "origin": "https://nevora-native-staging-20261106.onrender.com",
+    "secretVariable": "DATABASE_URL",
+    "plan": "Free",
+    "automaticDeployments": "Off"
+  },
+  "neon": {
+    "projectId": "noisy-fog-17044568",
+    "branchId": "br-still-haze-bb6qa2a2",
+    "database": "nevora_native_staging",
+    "runtimeRole": "nevora_native_app",
+    "installerRoleExcludedFromWeb": true,
+    "fictionalWorkspaceId": "602501a9-fb90-4bff-a682-95f6c7ef2053",
+    "fictionalOwnerCreated": true,
+    "fictionalEmployeeCreated": true
+  },
+  "runtimeEvidence": {
+    "actualChecksPassed": 17,
+    "tlsCertificateHostnameAndRequiredChannelBindingVerified": true,
+    "applicationNeonHttpAuthenticationVerified": true,
+    "ordinaryWriteVerifiedAndRolledBack": true,
+    "schemaTemporaryAndRoleAdministrationDenied": true,
+    "protectedPhotoTablesDenied": 9,
+    "workerCleanupDenied": true,
+    "ownedRelations": 0,
+    "grantOptions": 0,
+    "futureDefaultGrants": 0
+  },
+  "controlledNextAction": "Resolve shared native integration/CI, then bind and build the accepted staging origin for native qualification",
+  "analyticsAndProviderDeliveryEnabled": false,
+  "productionOrClockerResourcesChanged": false,
+  "paidHostingApproved": false,
+  "ownerBindingApprovalRecorded": true,
+  "credentialValueIncluded": false,
+  "ownerAuthorization": "Connect the database and run the checks",
+  "runtimeCredentialSavedToExactService": true,
+  "savedKeyReadBackWithoutValue": true,
+  "installerCredentialTransmitted": false,
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "boundedHostedFlowsPassed": true,
+  "renderIdleWakeQualified": true
+}

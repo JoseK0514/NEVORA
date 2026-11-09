@@ -1,0 +1,9 @@
+{
+  "serial": "emulator-5560",
+  "version": "149.0.7827.5",
+  "installedApkSha256": "ef0a58095b677879ff9164ff4a2bd03cbbd28e1734276d0ed7dd6fe171390d06",
+  "beforeVerified": true,
+  "afterVerified": true,
+  "note": "Prior wrapper checked current provider before asynchronous relro preparation completed; failed before UI test. No assertion relaxed.",
+  "runnerExitCode": 0
+}

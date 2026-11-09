@@ -1,0 +1,57 @@
+.........(node:44532) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44534) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44535) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44537) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44538) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44541) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44542) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44546) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44548) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:44550) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.E
+======================================================================
+ERROR: test_owned_artifacts (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_owned_artifacts
+Traceback (most recent call last):
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+  File "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/test_owned_artifacts.py", line 6, in <module>
+    from owned_artifacts import owned_artifacts
+ModuleNotFoundError: No module named 'owned_artifacts'
+
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.736s
+
+FAILED (errors=1)

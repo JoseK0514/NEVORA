@@ -1,0 +1,33 @@
+{
+  "name": "NevoraAXPlay_f8211cae",
+  "serial": "emulator-5572",
+  "pid": 95569,
+  "started": 1793928413.6455019,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraAXPlay_f8211cae",
+    "-port",
+    "5572",
+    "-sysdir",
+    "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/play-image/arm64-v8a",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-audio"
+  ],
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/avds",
+  "userHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/android-user",
+  "actualImage": "Official GooglePlay API37.1 r9 from verified play-image-custody.json",
+  "configuration": "avdmanager hardware template, explicit sysdir points solely at unmodified official API37.1 image",
+  "configSha256": "b21ccde4403e561193a1af0cb7031cc2b776c53ecc1fc2f09f6da33d5442ec5c",
+  "dataPartition": "4G",
+  "freeGiB": 7.909515380859375,
+  "processIdentity": "Thu Nov  5 21:26:53 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64 -avd NevoraAXPlay_f8211cae -port 5572 -sysdir /Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/play-image/arm64-v8a -no-snapshot -no-boot-anim -no-audio",
+  "actualSdk": "37",
+  "actualRelease": "17",
+  "stopped": true,
+  "serialAbsent": true,
+  "stoppedAt": 1793931209.8477461,
+  "disposableAvdRemoved": true,
+  "googleAccountUserdataDiscarded": true
+}

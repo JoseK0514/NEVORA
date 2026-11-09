@@ -1,0 +1,37 @@
+{
+  "preparedOnly": true,
+  "newAssociationTests": {
+    "passed": 17,
+    "failed": 0,
+    "skipped": 0
+  },
+  "nativeToolSuite": {
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0,
+    "realOwnedPostgresConcurrency": true
+  },
+  "red": {
+    "assertionFailures": 11,
+    "tests": 13,
+    "reason": "missing preparation behavior before implementation"
+  },
+  "nodeSyntaxCheck": true,
+  "diffCheck": true,
+  "applicationRuntimeChanged": false,
+  "actualAccountOrSigningIdentityUsed": false,
+  "deployed": false,
+  "signed": false,
+  "deviceVerified": false,
+  "review": {
+    "initialRecommendation": "REQUEST_CHANGES",
+    "executorCorrectionPasses": 1,
+    "importantFindingsCorrected": 3,
+    "newRegressionCasesRedToGreen": 4,
+    "reReviewPerformed": false,
+    "deferredMinors": [
+      "Document the existing2-to10identifier-component ceilings",
+      "Dense predicate/output formatting"
+    ]
+  }
+}

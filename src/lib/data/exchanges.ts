@@ -490,6 +490,34 @@ export async function listEmployeeExchangeActivity(
   return rows.map(mapExchange);
 }
 
+/** Pending offers belong only in incoming; sent and decided requests belong in history. */
+export const ownShiftActivity=(row:{requestedByEmployeeId?:string|null;targetEmployeeId?:string|null;status:string},own:string)=>
+ row.requestedByEmployeeId===own||row.targetEmployeeId===own&&row.status!=='EMPLOYEE_PENDING';
+
+/** Requests needs both projections from one SQL snapshot and one effective-status
+ * clock. Include all potentially incoming rows (some may have effectively expired)
+ * plus the latest 20 other participant rows, then apply the history limit after
+ * canonical projection. Existing marketplace readers and their limits stay separate. */
+export async function listEmployeeRequestExchanges(employeeId:string,executor:SqlExecutor):Promise<{incoming:number;recent:ExchangeRecord[]}> {
+ const rows=await executor.query({text:`WITH request_candidates AS (
+   (SELECT x.id FROM shift_exchanges x
+    WHERE x.requested_by_employee_id = $1
+       OR (x.target_employee_id = $1 AND x.status <> 'EMPLOYEE_PENDING')
+    ORDER BY x.created_at DESC,x.id DESC LIMIT 20)
+   UNION
+   SELECT x.id FROM shift_exchanges x
+    WHERE x.target_employee_id = $1 AND x.status = 'EMPLOYEE_PENDING'
+  )
+  ${exchangeSelect('statement_timestamp()')}
+  WHERE x.id IN (SELECT id FROM request_candidates)
+  ORDER BY x.created_at DESC,x.id DESC`,values:[employeeId]});
+ const activity=rows.map(mapExchange);
+ return {
+  incoming:activity.filter(row=>row.kind==='SWAP'&&row.targetEmployeeId===employeeId&&row.status==='EMPLOYEE_PENDING').length,
+  recent:activity.filter(row=>ownShiftActivity(row,employeeId)).slice(0,20),
+ };
+}
+
 export async function listManagerPendingExchanges(): Promise<ExchangeRecord[]> {
   const sql = getDb();
   const rows = queryRows(

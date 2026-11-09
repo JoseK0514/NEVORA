@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-10-28",
+  "observedAt": "2026-11-08",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "682ecea9fa61548f68274c896ffa4e2d92b62989",
+      "sha": "e2872f30ea8548b1310ea4a9b25813352decf82a",
       "disposition": "target",
-      "reason": "Current development three-branch retirement policy is incorporated into collaboration. Archived source dispositions and existing collaboration application work are preserved; no main or production promotion."
+      "reason": "Freshly fetched combined application source for the November 5 native synchronization. No remote branch or deployment is changed."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -386,7 +386,7 @@
       "branch": "main",
       "sha": "7ffd013e39a9763a0655aa092b159dea4cbbfb50",
       "disposition": "protected",
-      "reason": "Production branch; this task must not update it."
+      "reason": "Observed protected production head only; no integration, deployment or production qualification is authorized by the native update."
     },
     {
       "branch": "v0/replicating-gusto-ui-62ce164a",
@@ -478,6 +478,40 @@
       "disposition": "held",
       "reason": "Jose authorized retirement on October 28 under the three-branch policy. Exact remote head is retained by the verified archive tag. This source remains held outside the collaboration branch and development. Branch deletion does not approve, merge or complete its application work.",
       "archiveRef": "refs/tags/archive/branches/2026-10-28/codex/owner-mobile-cloud-handoff-20261027"
+    },
+    {
+      "branch": "AI-owner",
+      "sha": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
+      "disposition": "included",
+      "reason": "Included through development; no unique application code imported. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/AI-owner"
+    },
+    {
+      "branch": "claude-codex-collab-nevora",
+      "sha": "d349b66196c847fdb46852a3db0c0630463295c5",
+      "disposition": "held",
+      "reason": "November 8 backend-only extraction authorized by Jose from exact d349b661: Employee Requests deduplication, prior/current-week action-center cards, and optional coverage-end/clock helpers selected with source-lifetime and boundary regressions. All UI/navigation/copy/harness changes and the inbox-count clock activation remain held. This is partial file/logic extraction, not inclusion of this branch head or UI acceptance. See docs/handoffs/2026-11-08-backend-only-development-integration.md and its JSON path inventory."
+    },
+    {
+      "branch": "claude/employee-mobile-phase2-20261027",
+      "sha": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+      "disposition": "included",
+      "reason": "Included through development; no unique application code imported. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/claude/employee-mobile-phase2-20261027"
+    },
+    {
+      "branch": "codex/release1-db-rehearsal-20261101",
+      "sha": "fb7da7628455434e221e131d81ae417b407162c6",
+      "disposition": "reference",
+      "reason": "Database-rehearsal evidence remains reference only; not imported or executed. Jose authorized retirement November 5: exact local/remote archive tags verified before deletion, approved remote head retired, all local branches and worktrees preserved.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-05/codex/release1-db-rehearsal-20261101"
+    },
+    {
+      "branch": "claude/youthful-mendel-9mg8hu",
+      "sha": "28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+      "disposition": "held",
+      "reason": "Jose authorized archiving/retiring this older extra remote copy on November 6 after clarification. Exact remote archive was created atomically with guarded deletion and verified at 28c98b79; main/development/collaboration and all 135 local worktree heads/paths plus local branches were unchanged. Underlying Owner Direction B UI and the unique schedule week-state key fix remain held outside native integration, fully recoverable through this exact archive. No UI acceptance or import is implied.",
+      "archiveRef": "refs/tags/archive/branches/2026-11-06/claude/youthful-mendel-9mg8hu"
     }
   ],
   "maximumActiveBranches": 3

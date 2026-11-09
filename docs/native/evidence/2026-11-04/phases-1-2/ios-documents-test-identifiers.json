@@ -1,0 +1,107 @@
+{
+  "devices": [
+    {
+      "architecture": "arm64",
+      "deviceId": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+      "deviceName": "NEVORA Phases12 owned 20261104",
+      "modelName": "iPhone 17 Pro",
+      "osBuildNumber": "24A434",
+      "osVersion": "27.0",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "duration": "18s",
+                  "durationInSeconds": 18.482537984848022,
+                  "name": "testNativePresentationMarker()",
+                  "nodeIdentifier": "NevoraUITests/testNativePresentationMarker()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testNativePresentationMarker",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "40s",
+                  "durationInSeconds": 40.74636399745941,
+                  "name": "testOnlineJourneyPersistsOnlyValidSession()",
+                  "nodeIdentifier": "NevoraUITests/testOnlineJourneyPersistsOnlyValidSession()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testOnlineJourneyPersistsOnlyValidSession",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "29s",
+                  "durationInSeconds": 29.073791980743408,
+                  "name": "testOwnerSessionIsSeparateAndPersistsAcrossRelaunch()",
+                  "nodeIdentifier": "NevoraUITests/testOwnerSessionIsSeparateAndPersistsAcrossRelaunch()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testOwnerSessionIsSeparateAndPersistsAcrossRelaunch",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "20s",
+                  "durationInSeconds": 20.92633295059204,
+                  "name": "testRedirectedSubresourcesRequireRendererContainment()",
+                  "nodeIdentifier": "NevoraUITests/testRedirectedSubresourcesRequireRendererContainment()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testRedirectedSubresourcesRequireRendererContainment",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "25s",
+                  "durationInSeconds": 25.057335019111633,
+                  "name": "testRevocationWhileBackgroundedNeverRevealsOldHome()",
+                  "nodeIdentifier": "NevoraUITests/testRevocationWhileBackgroundedNeverRevealsOldHome()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testRevocationWhileBackgroundedNeverRevealsOldHome",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "6s",
+                  "durationInSeconds": 6.1257429122924805,
+                  "name": "testUnavailableBackendShowsRetryWithoutPrivateContent()",
+                  "nodeIdentifier": "NevoraUITests/testUnavailableBackendShowsRetryWithoutPrivateContent()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testUnavailableBackendShowsRetryWithoutPrivateContent",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "9s",
+                  "durationInSeconds": 9.086835980415344,
+                  "name": "testUnconfiguredAppFailsClosed()",
+                  "nodeIdentifier": "NevoraUITests/testUnconfiguredAppFailsClosed()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests/testUnconfiguredAppFailsClosed",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                }
+              ],
+              "name": "NevoraUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraUITests",
+              "nodeType": "Test Suite",
+              "result": "Passed"
+            }
+          ],
+          "name": "NevoraUITests",
+          "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests",
+          "nodeType": "UI test bundle",
+          "result": "Passed"
+        }
+      ],
+      "name": "NEVORA",
+      "nodeType": "Test Plan",
+      "result": "Passed"
+    }
+  ],
+  "testPlanConfigurations": [
+    {
+      "configurationId": "1",
+      "configurationName": "Test Scheme Action"
+    }
+  ]
+}

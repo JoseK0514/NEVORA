@@ -1,0 +1,216 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/worker.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m6 failed[39m[2m)[22m[32m 58[2mms[22m[39m
+[31m   [31m×[31m dispatches generic opaque metadata and records provider acceptance separately from delivery[39m[32m 28[2mms[22m[39m
+   [32m✓[39m refuses disabled before claiming work[32m 4[2mms[22m[39m
+   [32m✓[39m refuses allowlist before claiming work[32m 1[2mms[22m[39m
+   [32m✓[39m refuses wrong-environment before claiming work[32m 1[2mms[22m[39m
+   [32m✓[39m prevents revoked registrations or sources from reaching transport[32m 1[2mms[22m[39m
+   [32m✓[39m prevents role registrations or sources from reaching transport[32m 3[2mms[22m[39m
+   [32m✓[39m prevents resolved registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents generation registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents material registrations or sources from reaching transport[32m 1[2mms[22m[39m
+   [32m✓[39m rechecks revoked after waiting for provider credentials[32m 2[2mms[22m[39m
+   [32m✓[39m rechecks resolved after waiting for provider credentials[32m 2[2mms[22m[39m
+   [32m✓[39m rechecks generation after waiting for provider credentials[32m 1[2mms[22m[39m
+   [32m✓[39m rechecks quiet after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks expiry after waiting for provider credentials[32m 1[2mms[22m[39m
+   [32m✓[39m defers normal work during quiet hours without spending another attempt[32m 3[2mms[22m[39m
+[31m   [31m×[31m allows current urgent work during quiet hours but never after source expiry[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m retains replacement generation after a delayed provider rejection[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m persists bounded retries and the fifth attempt fails terminally[39m[32m 1[2mms[22m[39m
+   [32m✓[39m defers transient authority failures and releases unattempted storage failures[32m 1[2mms[22m[39m
+[31m   [31m×[31m does not release an ambiguously committed provider acceptance[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m bounds a hung transport and aborts every attempted request[39m[32m 3[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 6 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdispatches generic opaque metadata and records provider acceptance separately from delivery
+[31m[1mAssertionError[22m: expected { claimed: 1, accepted: +0, …(6) } to match object { accepted: 1, claimed: 1 }
+(6 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "accepted": 1,[39m
+[31m+   "accepted": 0,[39m
+[2m    "claimed": 1,[22m
+[2m  }[22m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m59:62[22m[39m
+    [90m 57|[39m it('dispatches generic opaque metadata and records provider acceptance…
+    [90m 58|[39m   const {runNativeWorker} = await api(), f = fixture();
+    [90m 59|[39m   expect(await runNativeWorker({deps: f.deps, mode: 'all'})).toMatchOb…
+    [90m   |[39m                                                              [31m^[39m
+    [90m 60|[39m   expect(f.sent).toHaveLength(1); expect(f.sent[0].payload).toEqual({n…
+    [90m 61|[39m   expect(JSON.stringify(f.sent[0].payload)).not.toContain('Private');
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mallows current urgent work during quiet hours but never after source expiry
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m102:75[22m[39m
+    [90m100|[39m   const {runNativeWorker} = await api(), f = fixture(); f.setNow(Date.…
+    [90m101|[39m   f.claims[0].leaseExpiresAt = '2030-01-02T02:02:00Z';
+    [90m102|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'retry'})).accept…
+    [90m   |[39m                                                                           [31m^[39m
+    [90m103|[39m });
+    [90m104|[39m it('retains replacement generation after a delayed provider rejection'…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mretains replacement generation after a delayed provider rejection
+[31m[1mAssertionError[22m: expected [ { claim: { …(8) }, …(1) } ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "claim": {[39m
+[31m+       "attemptCount": 1,[39m
+[31m+       "deliveryId": "84670821-e6b6-4058-a932-aa419ca06dea",[39m
+[31m+       "generation": "e3453fcb-7350-413a-98f8-fd9056cdc606",[39m
+[31m+       "installationId": "8a58142b-34e4-44d3-9f21-747dff136854",[39m
+[31m+       "intent": {[39m
+[31m+         "body": "Private request",[39m
+[31m+         "dueAt": "2030-01-01T15:59:59.000Z",[39m
+[31m+         "effectiveVersion": "APPROVED",[39m
+[31m+         "employeeId": "fictional",[39m
+[31m+         "environment": "test",[39m
+[31m+         "eventKey": "event",[39m
+[31m+         "expiresAt": "2030-01-02T16:00:00.000Z",[39m
+[31m+         "id": "bfdf4ae3-660f-477d-abe1-216521a3aa6b",[39m
+[31m+         "purpose": "EVENT",[39m
+[31m+         "source": {[39m
+[31m+           "id": "request",[39m
+[31m+           "kind": "TIME_OFF",[39m
+[31m+           "version": "APPROVED",[39m
+[31m+         },[39m
+[31m+         "title": "Private name",[39m
+[31m+         "type": "TIME_OFF_APPROVED",[39m
+[31m+         "urgency": "normal",[39m
+[31m+       },[39m
+[31m+       "intentId": "bfdf4ae3-660f-477d-abe1-216521a3aa6b",[39m
+[31m+       "leaseExpiresAt": "2030-01-01T16:02:00.000Z",[39m
+[31m+       "leaseToken": "6041799f-ffff-43f8-bc1d-a54d0f5943ee",[39m
+[31m+     },[39m
+[31m+     "result": {[39m
+[31m+       "errorClass": "registration_material",[39m
+[31m+       "state": "failed",[39m
+[31m+     },[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m109:23[22m[39m
+    [90m107|[39m   f.deps.deliveries.invalidate = async c => {expect(c.generation).not.…
+    [90m108|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'all'})).cancelle…
+    [90m109|[39m   expect(f.completed).toEqual([]);
+    [90m   |[39m                       [31m^[39m
+    [90m110|[39m });
+    [90m111|[39m it('persists bounded retries and the fifth attempt fails terminally', …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mpersists bounded retries and the fifth attempt fails terminally
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m113:74[22m[39m
+    [90m111|[39m it('persists bounded retries and the fifth attempt fails terminally', …
+    [90m112|[39m   const {runNativeWorker} = await api(), f = fixture(); f.provider({ki…
+    [90m113|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'retry'})).retrie…
+    [90m   |[39m                                                                          [31m^[39m
+    [90m114|[39m   const at = Date.parse(f.completed[0].result.nextAttemptAt!); expect(…
+    [90m115|[39m   f.claims[0].attemptCount = 5; expect((await runNativeWorker({deps: f…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdoes not release an ambiguously committed provider acceptance
+[31m[1mAssertionError[22m: expected [ { …(8) } ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "attemptCount": 1,[39m
+[31m+     "deliveryId": "65bb4a8d-1829-47d6-9da4-df55bbd782db",[39m
+[31m+     "generation": "5aa97e55-6dea-45a8-8feb-c91cc10ed203",[39m
+[31m+     "installationId": "a4323ce0-2840-457d-bfc5-826cf5ea1b83",[39m
+[31m+     "intent": {[39m
+[31m+       "body": "Private request",[39m
+[31m+       "dueAt": "2030-01-01T15:59:59.000Z",[39m
+[31m+       "effectiveVersion": "APPROVED",[39m
+[31m+       "employeeId": "fictional",[39m
+[31m+       "environment": "test",[39m
+[31m+       "eventKey": "event",[39m
+[31m+       "expiresAt": "2030-01-02T16:00:00.000Z",[39m
+[31m+       "id": "06e77f8a-0510-4495-8042-c8cedc2f9526",[39m
+[31m+       "purpose": "EVENT",[39m
+[31m+       "source": {[39m
+[31m+         "id": "request",[39m
+[31m+         "kind": "TIME_OFF",[39m
+[31m+         "version": "APPROVED",[39m
+[31m+       },[39m
+[31m+       "title": "Private name",[39m
+[31m+       "type": "TIME_OFF_APPROVED",[39m
+[31m+       "urgency": "normal",[39m
+[31m+     },[39m
+[31m+     "intentId": "06e77f8a-0510-4495-8042-c8cedc2f9526",[39m
+[31m+     "leaseExpiresAt": "2030-01-01T16:02:00.000Z",[39m
+[31m+     "leaseToken": "76d08082-0529-4252-b10b-b4f4d2f35d82",[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m125:101[22m[39m
+    [90m123|[39m it('does not release an ambiguously committed provider acceptance', as…
+    [90m124|[39m   const {runNativeWorker} = await api(), f = fixture(); f.deps.deliver…
+    [90m125|[39m   expect((await runNativeWorker({deps: f.deps, mode: 'all'})).accepted…
+    [90m   |[39m                                                                                                     [31m^[39m
+    [90m126|[39m });
+    [90m127|[39m it('bounds a hung transport and aborts every attempted request', async…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mbounds a hung transport and aborts every attempted request
+[31m[1mAssertionError[22m: expected +0 to be 3 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 3[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m131:32[22m[39m
+    [90m129|[39m   f.deps.sender.send = async input => {signals.push(input.signal); awa…
+    [90m130|[39m   const work = runNativeWorker({deps: f.deps, mode: 'retry'}); await v…
+    [90m131|[39m   expect((await work).retried).toBe(3); expect(signals).toHaveLength(3…
+    [90m   |[39m                                [31m^[39m
+    [90m132|[39m });
+    [90m133|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m6 failed[39m[22m[2m | [22m[1m[32m15 passed[39m[22m[90m (21)[39m
+[2m   Start at [22m 14:03:42
+[2m   Duration [22m 280ms[2m (tests 44%, transform 29%, import 25%, worker 2%)[22m
+

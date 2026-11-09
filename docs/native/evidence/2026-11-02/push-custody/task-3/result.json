@@ -1,0 +1,56 @@
+{
+  "task": 3,
+  "base": "ae9631f9c4f33533232e9cd26555ef71e3eea741",
+  "state": "Task3 complete; provider modules only",
+  "checks": {
+    "focused": {
+      "files": 32,
+      "tests": 668,
+      "passed": true
+    },
+    "typecheck": true,
+    "changedSourceLint": true
+  },
+  "newProviderTests": 71,
+  "realOutboundProviderRequests": 0,
+  "proof": "Every provider/OAuth/transport/config fixture blocks default Node HTTPS/HTTP2 entry points; only injected IO and ephemeral fake keys used.",
+  "productionMigrated": false,
+  "runtimeSettingsChanged": false,
+  "wholeNativeReleaseReady": false,
+  "openObligation": "Task4 must implement an attempt-bound authority/expiry/quiet-time handoff gate after credential preparation and fence provider completion by native generation.",
+  "sourceSha256": {
+    "docs/native/native-provider-contract.md": "0d13918b01bfa08090241227cfd657a58418ebaf26a0c5d3e515e9b075ee40db",
+    "src/lib/native-push/providers/fcm.test.ts": "e864c495d9e344b0101f38c453ea6dc36c779c956b1fbe6774b9e9c119521d9f",
+    "src/lib/native-push/providers/oauth.ts": "3c7c3a1ba7ef541a7337d270b8401c5b623c6bdc349c9cc63bb2a3df19671bc4",
+    "src/lib/native-push/providers/fcm.ts": "db55c934f6b3c7c2b4ec4a7c6d443938217944cd2ea36b48b8bed07470cc3e7b",
+    "src/lib/native-push/providers/apns.ts": "e9a3d10937cac2d7a49df92aee647403b960d3a50221e16cb49984475c355d99",
+    "src/lib/native-push/providers/common.ts": "447cb4836964306e8406036762e0e87e2bae24dff79d12086cf549d018cf7bd2",
+    "src/lib/native-push/providers/types.ts": "2279c6b5d1d82da80e8b05ae7e1219652749763383054fd75900a0594dcf618a",
+    "src/lib/native-push/providers/oauth.test.ts": "984e4ae6f283ffe37f5af9ab2c0216e2a70e72a133e8e30ebe1362c712eb2d73",
+    "src/lib/native-push/providers/apns.test.ts": "b20af7c37cf1d63d46cc980206ca0ed198fa557c624b0a7ba78d8dcd986928de",
+    "src/lib/native-push/providers/transport.test.ts": "d941a48090d1fc932ad40da7bafd8bbaccb9bca1e2b88e1990864771add0ad33",
+    "src/lib/native-push/providers/transport.ts": "f701d7d1e3c4d35c104d12fd5a6649390afd056d6b978bbed439abb623153935",
+    "src/lib/native-push/providers/config.ts": "a8e677a3266e02581c10b47d567f7bffb42ab17d2820ae9bf3d349e678ade029",
+    "src/lib/native-push/providers/config.test.ts": "1d2ecf07f79ad5d0b61b3caa3eeda3e818371a6c31fcb955a0208396c82aca0b"
+  },
+  "artifactSha256": {
+    "task-3-transport-red.log": "7a401a4dd1795f6dff44fef435c6843e9506413cbc8667f1a4db789027ec2282",
+    "task-3-transport-first.log": "6884dc38736c8b72bf66aeb8b52a0fda651bae21391014ec17bf9e01ec2683e0",
+    "task-3-apns-red.log": "107c6dd41b2d859dd8a4350ad6a5078fdc227be0aa7ce863b79dea1a1c2a8aa3",
+    "task-3-fcm-red.log": "7cb6a5ff85adfc4cd7684d69d0e389e3bcca02bd12e8272eef4db0649e9dc185",
+    "task-3-oauth-config-red.log": "5201c7f00b02c752cf084a372141b3ef4ea75dac940e66abb10541c68c77cfcc",
+    "task-3-oauth-redaction-red.log": "995f4162dde1976e25b674bf17b6d08bf57abc3fc17fac14d74a12afd730f923",
+    "task-3-final-focused.log": "8078769b9b323d9706a02e3528bf8f1ab7732d86dd4802f432390b8ea7e6bc01",
+    "task-3-final-typecheck.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "task-3-final-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "task-3-node-docs.json": "8bea521d251eb18c632b01edd93fcfcc7e0fb966b88a05ede29a5155a01912e1",
+    "task-3-formal-completion.log": "6b6df092ee44f65e91967797ea5aa0584f13f7e6988c976cb71a5ceca39219ac"
+  },
+  "implementationCommit": "eb9bf4deaa67149ec76db8729b394678f28f9c13",
+  "formalGate": {
+    "passed": true,
+    "files": 32,
+    "tests": 668,
+    "seconds": 5.61
+  }
+}

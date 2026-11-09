@@ -1,0 +1,113 @@
+[
+  {
+    "name": "native-node",
+    "command": [
+      "node",
+      "--test",
+      "scripts/native-owned.check.mjs",
+      "scripts/native-owned-concurrency.check.mjs",
+      "scripts/native-build.check.mjs",
+      "native/association/prepare.check.mjs",
+      "scripts/development-source-inventory.check.mjs"
+    ],
+    "exitCode": 0,
+    "seconds": 1.9,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/native-node.log"
+  },
+  {
+    "name": "native-python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "native",
+      "-p",
+      "test_*.py"
+    ],
+    "exitCode": 0,
+    "seconds": 0.2,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/native-python.log"
+  },
+  {
+    "name": "android-python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "native/android",
+      "-p",
+      "test_*.py"
+    ],
+    "exitCode": 0,
+    "seconds": 0.1,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-python.log"
+  },
+  {
+    "name": "ios-python",
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "native/ios",
+      "-p",
+      "test_*.py"
+    ],
+    "exitCode": 0,
+    "seconds": 0.9,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/ios-python.log"
+  },
+  {
+    "name": "swift",
+    "command": [
+      "swift",
+      "test",
+      "--package-path",
+      "native/ios",
+      "--scratch-path",
+      "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/swift-tests"
+    ],
+    "exitCode": 0,
+    "seconds": 11.4,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/swift.log"
+  },
+  {
+    "name": "root-unit",
+    "command": [
+      "npm",
+      "test",
+      "--",
+      "--no-color"
+    ],
+    "exitCode": 1,
+    "seconds": 246.3,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/root-unit.log"
+  },
+  {
+    "name": "typecheck",
+    "command": [
+      "npm",
+      "run",
+      "typecheck"
+    ],
+    "exitCode": 0,
+    "seconds": 3.6,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/typecheck.log"
+  },
+  {
+    "name": "lint",
+    "command": [
+      "npm",
+      "run",
+      "lint"
+    ],
+    "exitCode": 0,
+    "seconds": 29.6,
+    "log": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/lint.log"
+  }
+]

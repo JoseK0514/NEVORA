@@ -1,0 +1,53 @@
+{
+  "devices": [
+    {
+      "architecture": "arm64",
+      "deviceId": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+      "deviceName": "NEVORA Phases12 owned 20261104",
+      "modelName": "iPhone 17 Pro",
+      "osBuildNumber": "24A434",
+      "osVersion": "27.0",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "duration": "14s",
+                  "durationInSeconds": 14.912827014923096,
+                  "name": "testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff()",
+                  "nodeIdentifier": "NevoraDocumentUITests/testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraDocumentUITests/testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                }
+              ],
+              "name": "NevoraDocumentUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraDocumentUITests",
+              "nodeType": "Test Suite",
+              "result": "Passed"
+            }
+          ],
+          "name": "NevoraUITests",
+          "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests",
+          "nodeType": "UI test bundle",
+          "result": "Passed"
+        }
+      ],
+      "name": "NEVORA",
+      "nodeType": "Test Plan",
+      "result": "Passed"
+    }
+  ],
+  "testPlanConfigurations": [
+    {
+      "configurationId": "1",
+      "configurationName": "Test Scheme Action"
+    }
+  ]
+}

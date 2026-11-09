@@ -1,0 +1,12 @@
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testStreamedOversizeAndCancellationTerminateWithoutLateSuccess]' started.
+Test Case '-[NevoraShellCoreTests.NativeTransportTests testStreamedOversizeAndCancellationTerminateWithoutLateSuccess]' passed (0.001 seconds).
+Test Suite 'NativeTransportTests' passed at 2026-11-05 20:09:43.981.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.059 (0.059) seconds
+Test Suite 'NevoraShellCoreTests.xctest' passed at 2026-11-05 20:09:43.981.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 0.070 (0.071) seconds
+Test Suite 'All tests' passed at 2026-11-05 20:09:43.981.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 0.070 (0.072) seconds
+◇ Test run started.
+↳ Testing Library Version: 2084
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

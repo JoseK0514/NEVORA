@@ -1,0 +1,36 @@
+{
+  "diagnosticOnly": true,
+  "runs": [
+    {
+      "index": 0,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-0"
+    },
+    {
+      "index": 1,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-1"
+    },
+    {
+      "index": 2,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-2"
+    },
+    {
+      "index": 3,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-3"
+    },
+    {
+      "index": 4,
+      "passed": true,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-4"
+    },
+    {
+      "index": 5,
+      "passed": false,
+      "evidence": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/raw-repeat36-5"
+    }
+  ],
+  "cleanupClosed": true
+}

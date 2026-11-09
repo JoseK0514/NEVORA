@@ -1,0 +1,13 @@
+{
+  "evidence": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/nevora-native-ui-z9ttv3gk",
+  "passed": true,
+  "fixtureOnly": false,
+  "fixture": null,
+  "qualification": "full-backend",
+  "checkpoint": "69887718683b3fa2e12133b97c880b0e98c6ca9e",
+  "simulator": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+  "ownerId": "070fe2c2861cbabc991fc17f328cd686",
+  "sourceHash": "a9067fc3b06df6026aec6d144cb11eaacb7df96b37cb2e9d3d50e08070465a6e",
+  "origin": "http://127.0.0.1:64203",
+  "instrumentationTests": 3
+}

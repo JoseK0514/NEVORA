@@ -1,0 +1,40 @@
+{
+  "checkpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+  "originalTenPendingFilesPreserved": true,
+  "platforms": {
+    "ios": {
+      "status": "passed",
+      "checks": 18,
+      "nativeUiCases": 3,
+      "coldRestart": null,
+      "sourceVerified": true,
+      "ownershipClosed": true,
+      "evidenceRoot": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-9SPzxM"
+    },
+    "android": {
+      "status": "passed",
+      "checks": 18,
+      "nativeUiCases": 3,
+      "coldRestart": true,
+      "sourceVerified": true,
+      "ownershipClosed": true,
+      "evidenceRoot": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-eXKIHJ"
+    }
+  },
+  "productionCompilation": {
+    "checkpoint": "59bcdf9ff3a1fb06f0b431beb475c1d5cb8cb2f0",
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "lockSha256": "7150e031a80db39b781a70f1444d0e7291ed3c1e1dd6f0f7c0a08dfe8efaed33",
+    "artifactFiles": 4070,
+    "receiptSha256": "f8deed939d6790f31746f0395c3cceb1c39b8ee6d306830579200405cf3d8892"
+  },
+  "cleanup": {
+    "ownedAndroidSerialStopped": "emulator-5562",
+    "ownedSimulatorStopped": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+    "reproductionDataRetained": true,
+    "originalDependencySymlinkRetainedOutsideSource": true
+  }
+}

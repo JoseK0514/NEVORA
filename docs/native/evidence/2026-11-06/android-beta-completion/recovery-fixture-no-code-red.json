@@ -1,0 +1,12 @@
+{
+  "assertion": "No classes.dex in the signing fixture",
+  "passed": false,
+  "cause": "AGP generated an otherwise empty resource R class despite hasCode=false and no Java sources",
+  "observedDexClasses": [
+    "com.velani.nevora.keyrecovery.fixture.R"
+  ],
+  "signatureAndExpectedCertificateAlreadyVerified": true,
+  "fixtureInstalledOrUploaded": false,
+  "correction": "Standard R8 release optimization removes the unused generated resource class in the disposable fixture only",
+  "attemptedResourceFeatureToggle": "Rejected by pinned application-module API; no assertion changed"
+}

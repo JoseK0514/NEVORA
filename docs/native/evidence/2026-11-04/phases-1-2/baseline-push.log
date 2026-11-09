@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/lib/native-push/http.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/apns.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/oauth.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/fcm.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/config.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/protocol.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/material.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/transport.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/config.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[32m198 passed[39m[22m[90m (198)[39m
+[2m   Start at [22m 14:00:02
+[2m   Duration [22m 1.19s[2m (tests 43%, import 34%, transform 19%, worker 3%)[22m
+
+[2m    Isolate [22m [33m9 workers spawned[39m[2m · ~70ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~558ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+

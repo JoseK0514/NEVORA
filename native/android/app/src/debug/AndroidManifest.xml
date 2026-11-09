@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <!-- Instrumentation runs with the debug app UID. UiDevice needs only HOME visibility. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+    </queries>
+    <application android:networkSecurityConfig="@xml/debug_network_security" tools:targetApi="n" />
+</manifest>

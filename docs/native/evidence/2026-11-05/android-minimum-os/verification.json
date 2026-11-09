@@ -1,0 +1,20 @@
+{
+  "sourceCheckpoint": "c8211cd2a71655bedba067eed2437b5ee7c2c3a4",
+  "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001",
+  "nativeSourceUnchanged": true,
+  "actualApi": 29,
+  "provider": "Google91.0.4472.114",
+  "fallbackInstrumentationTests": 2,
+  "fontSettingRestored": true,
+  "retainedPlayVariantInstallRejectedAsExpected": true,
+  "fullSupportedRuntimeQualified": false,
+  "api30Qualified": false,
+  "api31Qualified": false,
+  "physicalDeviceQualified": false,
+  "fixtureListenersClosed": true,
+  "ownedEmulatorClosed": true,
+  "disposableAvdRemoved": true,
+  "verifiedImageRetainedPrivately": true,
+  "rawArtifactsVerified": 20,
+  "releaseReady": false
+}

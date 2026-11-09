@@ -1,0 +1,26 @@
+{
+  "root": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd",
+  "name": "NevoraAXStable36_6900bc20",
+  "image": "system-images;android-36;google_apis;arm64-v8a",
+  "serial": "emulator-5572",
+  "pid": 93773,
+  "started": 1793927621.1637619,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraAXStable36_6900bc20",
+    "-port",
+    "5572",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-window",
+    "-no-audio"
+  ],
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/avds",
+  "userHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/android-user",
+  "processIdentity": "Thu Nov  5 21:13:41 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd NevoraAXStable36_6900bc20 -port 5572 -no-snapshot -no-boot-anim -no-window -no-audio",
+  "stopped": true,
+  "serialAbsent": true,
+  "stoppedAt": 1793928342.6958342,
+  "disposableAvdRemoved": true
+}

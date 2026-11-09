@@ -1,0 +1,117 @@
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 3.292
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 3.167
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:
+Error in c_employeeHistoryRecreationAndPostLogout(com.velani.nevora.development.ShellInstrumentedTest):
+java.lang.AssertionError: Exact visible pointer target: Sign out
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.tapText(ShellInstrumentedTest.java:194)
+	at com.velani.nevora.development.ShellInstrumentedTest.signOut(ShellInstrumentedTest.java:204)
+	at com.velani.nevora.development.ShellInstrumentedTest.c_employeeHistoryRecreationAndPostLogout(ShellInstrumentedTest.java:273)
+
+
+Time: 26.919
+There was 1 failure:
+1) c_employeeHistoryRecreationAndPostLogout(com.velani.nevora.development.ShellInstrumentedTest)
+java.lang.AssertionError: Exact visible pointer target: Sign out
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.tapText(ShellInstrumentedTest.java:194)
+	at com.velani.nevora.development.ShellInstrumentedTest.signOut(ShellInstrumentedTest.java:204)
+	at com.velani.nevora.development.ShellInstrumentedTest.c_employeeHistoryRecreationAndPostLogout(ShellInstrumentedTest.java:273)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 25.959
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 6.515
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 6.432
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 5.91
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 4.426
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 4.332
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord

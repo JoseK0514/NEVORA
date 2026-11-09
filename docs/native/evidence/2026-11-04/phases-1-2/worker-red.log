@@ -1,0 +1,187 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/worker.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m21 failed[39m[2m)[22m[32m 17[2mms[22m[39m
+[31m   [31m×[31m dispatches generic opaque metadata and records provider acceptance separately from delivery[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m refuses disabled before claiming work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m refuses allowlist before claiming work[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m refuses wrong-environment before claiming work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m prevents revoked registrations or sources from reaching transport[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m prevents role registrations or sources from reaching transport[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m prevents resolved registrations or sources from reaching transport[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m prevents generation registrations or sources from reaching transport[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m prevents material registrations or sources from reaching transport[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rechecks revoked after waiting for provider credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rechecks resolved after waiting for provider credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rechecks generation after waiting for provider credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rechecks quiet after waiting for provider credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rechecks expiry after waiting for provider credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m defers normal work during quiet hours without spending another attempt[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m allows current urgent work during quiet hours but never after source expiry[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m retains replacement generation after a delayed provider rejection[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m persists bounded retries and the fifth attempt fails terminally[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m defers transient authority failures and releases unattempted storage failures[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m does not release an ambiguously committed provider acceptance[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m bounds a hung transport and aborts every attempted request[39m[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 21 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdispatches generic opaque metadata and records provider acceptance separately from delivery
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m58:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrefuses disabled before claiming work
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrefuses allowlist before claiming work
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrefuses wrong-environment before claiming work
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m65:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mprevents revoked registrations or sources from reaching transport
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mprevents role registrations or sources from reaching transport
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mprevents resolved registrations or sources from reaching transport
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mprevents generation registrations or sources from reaching transport
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mprevents material registrations or sources from reaching transport
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m74:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrechecks revoked after waiting for provider credentials
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrechecks resolved after waiting for provider credentials
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrechecks generation after waiting for provider credentials
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrechecks quiet after waiting for provider credentials
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mrechecks expiry after waiting for provider credentials
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m83:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdefers normal work during quiet hours without spending another attempt
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m94:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mallows current urgent work during quiet hours but never after source expiry
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m100:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mretains replacement generation after a delayed provider rejection
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m105:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mpersists bounded retries and the fifth attempt fails terminally
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m112:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdefers transient authority failures and releases unattempted storage failures
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m118:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mdoes not release an ambiguously committed provider acceptance
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m124:29[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/21]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mbounds a hung transport and aborts every attempted request
+[31m[1mAssertionError[22m: expected {} to have property "runNativeWorker"[39m
+[36m [2m❯[22m api src/lib/native-push/worker.test.ts:[2m13:13[22m[39m
+    [90m 11|[39m async function api() {
+    [90m 12|[39m   const m = await import('./worker').catch(() => ({}));
+    [90m 13|[39m   expect(m).toHaveProperty('runNativeWorker');
+    [90m   |[39m             [31m^[39m
+    [90m 14|[39m   return m as typeof import('./worker');
+    [90m 15|[39m }
+[90m [2m❯[22m src/lib/native-push/worker.test.ts:[2m128:49[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/21]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m21 failed[39m[22m[90m (21)[39m
+[2m   Start at [22m 14:02:15
+[2m   Duration [22m 214ms[2m (transform 42%, import 34%, tests 18%, worker 5%)[22m
+

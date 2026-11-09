@@ -1,0 +1,11 @@
+{
+  "requestedSha256": "a5f3434d39154877486a71e944b6047f6c7d79cacdca1263ebf01f563bf56dda",
+  "runtimeSha256": "75414e642c4198942f70c1ef87ea072141b490558dbef8c517715670906563b9",
+  "semanticDifferences": {
+    "disk.dataPartition.size": {
+      "requested": "2G",
+      "runtime": "6442450944"
+    }
+  },
+  "note": "Emulator reformatted config and expanded its userdata partition. All other parsed fields match the invocation snapshot."
+}

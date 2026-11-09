@@ -1,0 +1,21 @@
+✔ cancellation must not settle before child closure, and unproved SDK descendants cannot be called closed (13.083375ms)
+✔ a timed out build waits for closure and reports descendant ownership unproved (27.817958ms)
+✔ unconfirmed termination is bounded and cannot report closed ownership (21.548042ms)
+✔ requires explicit local mode/source/platform and rejects ambiguous or device-unspecified work (0.700167ms)
+✔ refuses inherited database selection, including remote/prod and unowned loopback (0.149375ms)
+✔ children receive allowlisted tools and disabled providers, never ambient secrets or preloads (0.108ms)
+✔ cleanup requires the private canonical resource, matching marker and an external path (1.049292ms)
+✔ a port/PID alone cannot authorize stopping a process (0.599875ms)
+✔ a stalled disposable shutdown is bounded and reproves ownership before immediate shutdown (0.095958ms)
+✔ a changed process can never receive the immediate-shutdown fallback (0.112917ms)
+✔ a large count or fixture run cannot stand in for named full-backend checks (3.935958ms)
+✔ ownership-only concurrency verification cannot be labeled as a device run (0.06425ms)
+✔ mixed current-source bytes or a different SHA cannot produce acceptance (134.424583ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 199.117875

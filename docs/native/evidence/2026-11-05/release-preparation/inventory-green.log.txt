@@ -1,0 +1,22 @@
+✔ accepts included sources, incorporated development advance and own PR branch (0.709458ms)
+✔ rejects changed, missing and unclassified source heads (0.091916ms)
+✔ rejects omitted merged sources and unincorporated development changes (0.055125ms)
+✔ does not hide new work pushed to the assembly branch after integration (0.072459ms)
+✔ recognizes the approved Claude/Codex collaboration branch without bypassing ancestry (0.104417ms)
+✔ rejects invalid hashes, duplicate sources and relaxed main disposition (0.069875ms)
+✔ parses only exact branch heads and rejects duplicate or malformed output (0.119792ms)
+✔ retired heads require the exact recoverable archive tag, even before deletion (0.151792ms)
+✔ retirement never hides new commits pushed to the source branch (0.064583ms)
+✔ cannot retire main or development, or substitute unrelated archive refs (0.115667ms)
+✔ enforces the approved remote branch ceiling without hiding extra heads (0.148875ms)
+✔ parses exact lightweight archive tags without accepting malformed or duplicate refs (0.211083ms)
+✔ published policy validates the three allowed heads and detects recreated or damaged archives (1.410084ms)
+✔ classifying a fourth held head never makes the published three-branch gate green (0.23625ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 44.142875

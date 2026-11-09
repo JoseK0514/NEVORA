@@ -1,0 +1,46 @@
+{
+  "repository": "JoseK0514/NEVORA",
+  "branch": "claude/youthful-mendel-9mg8hu",
+  "expectedHead": "28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+  "archiveRef": "refs/tags/archive/branches/2026-11-06/claude/youthful-mendel-9mg8hu",
+  "localArchiveVerified": true,
+  "remoteArchiveVerified": true,
+  "retirementAuthorized": true,
+  "retired": true,
+  "preserveLocalBranchesAndWorktrees": true,
+  "preserveHeldOwnerUI": true,
+  "preserveMainDevelopmentAndCollaboration": true,
+  "openPrOnBranch": false,
+  "uniqueCommit": "Schedule week-state stable React keys; 6 additions/5 deletions, src/app/app/schedule/page.tsx",
+  "baseHeldUI": "875ceda86ab97f2f46fa3370eb5d0af744daf5a8",
+  "policyCeiling": 3,
+  "currentActiveHeads": 3,
+  "abortOnHeadDrift": true,
+  "pushAfterAuthorization": [
+    "git",
+    "push",
+    "--atomic",
+    "--force-with-lease=refs/heads/claude/youthful-mendel-9mg8hu:28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+    "origin",
+    "28c98b79aca42f5796bb68a4984cab6dbc38bc30:refs/tags/archive/branches/2026-11-06/claude/youthful-mendel-9mg8hu",
+    ":refs/heads/claude/youthful-mendel-9mg8hu"
+  ],
+  "remoteHeadsBefore": [
+    "cb53bb42ed6de75c1e5f52a905b208ee921aaa3a\trefs/heads/claude-codex-collab-nevora",
+    "28c98b79aca42f5796bb68a4984cab6dbc38bc30\trefs/heads/claude/youthful-mendel-9mg8hu",
+    "e9c3a66da330959738100884f87cb76fd2af8296\trefs/heads/development",
+    "7ffd013e39a9763a0655aa092b159dea4cbbfb50\trefs/heads/main"
+  ],
+  "rollback": "Recreate only the retired remote branch from the verified exact archive if authorized rollback is needed; never overwrite an existing differing head.",
+  "authorization": "Jose: Yes\u2014archive the older extra copy",
+  "protectedHeadsUnchanged": true,
+  "localBranchesUnchanged": true,
+  "worktreeHeadsPathsUnchanged": true,
+  "localBranchCount": 4,
+  "worktreeCount": 135,
+  "remoteHeadsAfter": {
+    "refs/heads/claude-codex-collab-nevora": "cb53bb42ed6de75c1e5f52a905b208ee921aaa3a",
+    "refs/heads/development": "e9c3a66da330959738100884f87cb76fd2af8296",
+    "refs/heads/main": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  }
+}

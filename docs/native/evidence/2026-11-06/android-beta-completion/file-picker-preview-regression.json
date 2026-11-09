@@ -1,0 +1,10 @@
+{
+  "fixtureOnly": true,
+  "nativeFilePickerMode": "List",
+  "fileSelected": true,
+  "fictionalPasswordInAccessibilityOutput": false,
+  "jsonContentsInAccessibilityOutput": false,
+  "credentialFileImported": false,
+  "ownedFixtureClosed": true,
+  "futureSensitiveSnapshots": "emit:false; metadata allowlist only"
+}

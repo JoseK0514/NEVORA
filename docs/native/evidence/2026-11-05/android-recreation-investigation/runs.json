@@ -1,0 +1,158 @@
+[
+  {
+    "label": "baseline-focus",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-3j9utkgv",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "a86f32b38420ffd139549c95603c6439b2d32ea8d96e837e9dac309cd246b06e",
+    "origin": "http://127.0.0.1:52112",
+    "fixtureOrigin": "http://127.0.0.1:52112",
+    "isolatedTestProcesses": false,
+    "instrumentationTests": 1
+  },
+  {
+    "label": "baseline-full",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-q295pomm",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "a86f32b38420ffd139549c95603c6439b2d32ea8d96e837e9dac309cd246b06e",
+    "origin": "http://127.0.0.1:52299",
+    "fixtureOrigin": "http://127.0.0.1:52299",
+    "isolatedTestProcesses": true,
+    "instrumentationTests": 10,
+    "coldInstrumentationTests": 1,
+    "coldProcessRestart": true
+  },
+  {
+    "label": "cache-focus",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-e64bk6lc",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "1e49e09de7264c0d33505c9c6bda155c5c08f0b5aba627a8585bcdfeb7d021de",
+    "origin": "http://127.0.0.1:52591",
+    "fixtureOrigin": "http://127.0.0.1:52591",
+    "isolatedTestProcesses": false,
+    "instrumentationTests": 1
+  },
+  {
+    "label": "stock-reference",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-b1ig5zn7",
+    "serial": "emulator-5572",
+    "passed": false,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "136b51402682d1c91f47315d399cc2926b9271718c50538f848d44cd2bb49f74",
+    "origin": "http://127.0.0.1:52953",
+    "fixtureOrigin": "http://127.0.0.1:52953",
+    "isolatedTestProcesses": false,
+    "error": "RuntimeError"
+  },
+  {
+    "label": "android36-focus",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-ae_bs5pw",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "1e49e09de7264c0d33505c9c6bda155c5c08f0b5aba627a8585bcdfeb7d021de",
+    "origin": "http://127.0.0.1:53611",
+    "fixtureOrigin": "http://127.0.0.1:53611",
+    "isolatedTestProcesses": false,
+    "instrumentationTests": 1
+  },
+  {
+    "label": "raw-edges-focus",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-tav1kp9w",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "transport",
+    "rendererObserver": false,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "fe16e5fd44661b6afa62d5c0587473c0b3d198402b4b5723496694f8fb20e04d",
+    "origin": "http://127.0.0.1:54003",
+    "fixtureOrigin": "http://127.0.0.1:54003",
+    "isolatedTestProcesses": false,
+    "instrumentationTests": 1
+  },
+  {
+    "label": "provider-focus",
+    "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-ngftu8j6",
+    "serial": "emulator-5572",
+    "passed": true,
+    "fixtureOnly": true,
+    "checkpoint": null,
+    "ownerId": null,
+    "qualification": "diagnostic-provider-observer",
+    "rendererObserver": true,
+    "webView": {
+      "package": "com.google.android.webview",
+      "version": "149.0.7827.5",
+      "accessibilityMode": "platform-default",
+      "runtimeFlagsSha256": null
+    },
+    "sourceHash": "e8269d6b9594333047467f4eab2815db5d8e5e8e99e6e995ca3576027baab463",
+    "origin": "http://127.0.0.1:54343",
+    "fixtureOrigin": "http://127.0.0.1:54343",
+    "isolatedTestProcesses": false,
+    "instrumentationTests": 1
+  }
+]

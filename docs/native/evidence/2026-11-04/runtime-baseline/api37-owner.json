@@ -1,0 +1,31 @@
+{
+  "avd": "NevoraPhase12_API37_2",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/android-avds",
+  "serial": "emulator-5564",
+  "pid": null,
+  "stopped": true,
+  "package": "system-images;android-37.2;google_apis_ps16k;arm64-v8a",
+  "revision": 7,
+  "metadataSha256": "ee1db3e7168ce5b1809d019416fa0592a93d0efc49a18059bbefdc12d2fe9541",
+  "installedAt": 1793839049.451403,
+  "newIsolatedAVD": true,
+  "createdByCommand": [
+    "/Users/josek0514/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager",
+    "create",
+    "avd",
+    "-n",
+    "NevoraPhase12_API37_2",
+    "-k",
+    "system-images;android-37.2;google_apis_ps16k;arm64-v8a",
+    "-p",
+    "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/android-avds/NevoraPhase12_API37_2.avd",
+    "--device",
+    "pixel_7"
+  ],
+  "freeGiB": 24.4,
+  "log": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/api37-emulator.log",
+  "started": 1793844376.9553201,
+  "lastPid": 64545,
+  "serialAbsent": true,
+  "stoppedAt": 1793844516.897677
+}

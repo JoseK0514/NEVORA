@@ -1,0 +1,33 @@
+{
+  "fixtureOnly": true,
+  "actualCredentialRead": false,
+  "checks": [
+    {
+      "name": "encrypted-fixture-roundtrip-wrong-device-refusal-idempotent-close",
+      "passed": true
+    },
+    {
+      "name": "actual-forced-mount-loss-fails-closed-no-host-plaintext",
+      "passed": true
+    },
+    {
+      "name": "truncated-progress-lease-recovers-from-durable-ownership",
+      "passed": true
+    },
+    {
+      "name": "interruption-after-payload-automatically-closes-owned-image",
+      "passed": true
+    },
+    {
+      "name": "interruption-after-detach-cleanup-retry-closes-image",
+      "passed": true
+    },
+    {
+      "name": "malformed-cleanup-no-credential-or-image-action",
+      "passed": true
+    }
+  ],
+  "allOwnedFixtureImagesClosed": true,
+  "noHostPlaintext": true,
+  "helperSha256": "837d6ae02f09c2771f46b4364652b8d2bc8260784f3129dfb471e170a04bf52c"
+}

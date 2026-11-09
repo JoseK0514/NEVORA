@@ -1,0 +1,24 @@
+{
+  "accountEmail": "support@furbrandpr.com",
+  "workspaceId": "tea-dbmr3t6c6qcc73cbf0jg",
+  "workspaceName": "Jose's workspace",
+  "observedPlan": "Hobby",
+  "paymentMethod": "No card on file",
+  "services": 0,
+  "pendingCharges": false,
+  "includedUsage": {
+    "freeInstanceHours": 750,
+    "usedFreeInstanceHours": 0,
+    "bandwidthGiB": 5,
+    "usedBandwidthMiB": 0,
+    "pipelineMinutes": 500,
+    "usedPipelineMinutes": 0
+  },
+  "termsExplicitlyAcceptedByJose": true,
+  "accountCreated": true,
+  "serviceCreated": false,
+  "repositoryPermissionGranted": false,
+  "deployed": false,
+  "paidPlanStarted": false,
+  "source": "Native Chrome Google signup and Render Billing UI"
+}

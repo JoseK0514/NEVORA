@@ -1,0 +1,206 @@
+{
+  "officialArchive": "https://dl.google.com/android/repository/sys-img/google_apis_playstore/arm64-v8a-playstore-ps16k-37.1_r09.zip",
+  "archiveBytes": 2127264536,
+  "archiveSha1": "26be7d5274e6f5455b0028cdaa98b950d19c3077",
+  "officialMetadata": "google-play-image-metadata.xml",
+  "licenseAuthorization": "play-image-license-authorization.json",
+  "extraction": "ZIP CRC verified; sparse zero ranges preserve identical bytes",
+  "files": [
+    {
+      "path": "arm64-v8a/NOTICE.txt",
+      "bytes": 6403421,
+      "sha256": "038114d4b28b0d06407357cfeff061bf3a4bd4f5e36fae2d00be84cf98340f2e",
+      "zipCrc32": 2289714737
+    },
+    {
+      "path": "arm64-v8a/VerifiedBootParams.textproto",
+      "bytes": 356,
+      "sha256": "cc0bbcc98dbadfea5305fc40f35ff42b0b2bfb551c72561c77df61afc7af0a72",
+      "zipCrc32": 1706502710
+    },
+    {
+      "path": "arm64-v8a/advancedFeatures.ini",
+      "bytes": 844,
+      "sha256": "d2c14d391ce65ebefdefcef054d00cca4206c759d1cefaeaab95ab078080ed8b",
+      "zipCrc32": 4012844304
+    },
+    {
+      "path": "arm64-v8a/build.prop",
+      "bytes": 5629,
+      "sha256": "92ac1785b34bd66c39f48ccc8cd4f81836ba03904e7366e005d7bb21c34fc54c",
+      "zipCrc32": 178863372
+    },
+    {
+      "path": "arm64-v8a/data/empty_data_disk",
+      "bytes": 107,
+      "sha256": "e4dc7c33a83013f3d9eb9b5a5693c912e83a9c7f978933b5c7600039dbfde903",
+      "zipCrc32": 10401606
+    },
+    {
+      "path": "arm64-v8a/data/local.prop",
+      "bytes": 46,
+      "sha256": "49b05d093a46d35d85df01fb99133f077fcc725cc49efe1a1bedae884d24e20b",
+      "zipCrc32": 1254945383
+    },
+    {
+      "path": "arm64-v8a/data/misc/GoldfishSkinConfig",
+      "bytes": 783,
+      "sha256": "763b66cad27dc57354f456bb763e27acf8859059890e6515daba90e77c906b75",
+      "zipCrc32": 988184651
+    },
+    {
+      "path": "arm64-v8a/data/misc/emulator/config/radioconfig.xml",
+      "bytes": 1433,
+      "sha256": "534a81b662ad62fc70ec0ea22715670524a05a066afc9fdac8e7c0f5a7789cd7",
+      "zipCrc32": 3948199815
+    },
+    {
+      "path": "arm64-v8a/data/misc/emulator/version.txt",
+      "bytes": 101,
+      "sha256": "5473738546fe1e52dd625dffa4ac1d8f9fb4964e4be9e159bbae8212d0a2c03d",
+      "zipCrc32": 1806144026
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/etc/modem_simulator/files/numeric_operator.xml",
+      "bytes": 297,
+      "sha256": "c2557e604beea20b67642cdbb14ae7b792f804e4476b3f6cf47035690234f436",
+      "zipCrc32": 1806977340
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/iccprofile_for_carrierapitests.xml",
+      "bytes": 16537,
+      "sha256": "dc4b5f5344f084fc44f89250bbcf2b12e452eb98c104e4ef3ec115366eb6ce32",
+      "zipCrc32": 3215429983
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/iccprofile_for_sim0.xml",
+      "bytes": 14647,
+      "sha256": "a2744726a306b18d7547251026201aa5c6a9e120aa1555992eeb8b0a3b4aa6d9",
+      "zipCrc32": 310006284
+    },
+    {
+      "path": "arm64-v8a/data/misc/modem_simulator/iccprofile_for_sim_tel_alaska.xml",
+      "bytes": 14474,
+      "sha256": "462cc26ddaa9d6c470a2d9415771c80e323b526b1863f099accb298955b14db3",
+      "zipCrc32": 384906436
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_10_pro_fold/devicestate/device_state_configuration.xml",
+      "bytes": 3290,
+      "sha256": "86e021141048b6b957b021c3478c3e74a76ac0ec4e7312bceae74a81dcf3c8b9",
+      "zipCrc32": 4150847401
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_10_pro_fold/display_settings.xml",
+      "bytes": 303,
+      "sha256": "2adca8f98a2c8ee0f780e10ca16587ac92641df5e93ab4437c3c47ad41b0041d",
+      "zipCrc32": 176587502
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_10_pro_fold/displayconfig/display_layout_configuration.xml",
+      "bytes": 1311,
+      "sha256": "a64e2eca65bc2f9196215fb72a88c9035a584319f8b3da3606fff161be642be8",
+      "zipCrc32": 2847961914
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_10_pro_fold/extra_feature.xml",
+      "bytes": 829,
+      "sha256": "ba27b7a61457027e2a77917f8b07d716d3e918097901a14833749252b15aa38f",
+      "zipCrc32": 544185837
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_9_pro_fold/devicestate/device_state_configuration.xml",
+      "bytes": 3290,
+      "sha256": "86e021141048b6b957b021c3478c3e74a76ac0ec4e7312bceae74a81dcf3c8b9",
+      "zipCrc32": 4150847401
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_9_pro_fold/display_settings.xml",
+      "bytes": 303,
+      "sha256": "2adca8f98a2c8ee0f780e10ca16587ac92641df5e93ab4437c3c47ad41b0041d",
+      "zipCrc32": 176587502
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_9_pro_fold/displayconfig/display_layout_configuration.xml",
+      "bytes": 1311,
+      "sha256": "a64e2eca65bc2f9196215fb72a88c9035a584319f8b3da3606fff161be642be8",
+      "zipCrc32": 2847961914
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_9_pro_fold/extra_feature.xml",
+      "bytes": 829,
+      "sha256": "ba27b7a61457027e2a77917f8b07d716d3e918097901a14833749252b15aa38f",
+      "zipCrc32": 544185837
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_fold/devicestate/device_state_configuration.xml",
+      "bytes": 3290,
+      "sha256": "86e021141048b6b957b021c3478c3e74a76ac0ec4e7312bceae74a81dcf3c8b9",
+      "zipCrc32": 4150847401
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_fold/display_settings.xml",
+      "bytes": 303,
+      "sha256": "2adca8f98a2c8ee0f780e10ca16587ac92641df5e93ab4437c3c47ad41b0041d",
+      "zipCrc32": 176587502
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_fold/displayconfig/display_layout_configuration.xml",
+      "bytes": 1311,
+      "sha256": "a64e2eca65bc2f9196215fb72a88c9035a584319f8b3da3606fff161be642be8",
+      "zipCrc32": 2847961914
+    },
+    {
+      "path": "arm64-v8a/data/misc/pixel_fold/extra_feature.xml",
+      "bytes": 829,
+      "sha256": "ba27b7a61457027e2a77917f8b07d716d3e918097901a14833749252b15aa38f",
+      "zipCrc32": 544185837
+    },
+    {
+      "path": "arm64-v8a/encryptionkey.img",
+      "bytes": 18874368,
+      "sha256": "522bd0b6a2c92e37de465059bb9487bb9597a9aae032b469a8ebe0b38146d8c3",
+      "zipCrc32": 1482984437
+    },
+    {
+      "path": "arm64-v8a/kernel-ranchu",
+      "bytes": 16420640,
+      "sha256": "149b681c1737aaf2e676fc24f4eac13fb717f6722b0f9cda0cec728e1740e3d5",
+      "zipCrc32": 2238247169
+    },
+    {
+      "path": "arm64-v8a/kernel_cmdline.txt",
+      "bytes": 16,
+      "sha256": "5bd6571f46a3e593053a7c6c37f4eed840c0da2278506fa53d1ff021e9d4d8e4",
+      "zipCrc32": 2115014120
+    },
+    {
+      "path": "arm64-v8a/ramdisk.img",
+      "bytes": 1573871,
+      "sha256": "f83cbda05aa13a61120099b21261e707774a20071727c28d7a76990408a66e2e",
+      "zipCrc32": 2024896685
+    },
+    {
+      "path": "arm64-v8a/source.properties",
+      "bytes": 428,
+      "sha256": "c1b0dd132b55dd05ea68d3aa74a6b5d33c48dd85fe2124ce459d9b4f67ad2bc5",
+      "zipCrc32": 3740715974
+    },
+    {
+      "path": "arm64-v8a/system.img",
+      "bytes": 8601468928,
+      "sha256": "97c911aa8181eb31b5eca4220e8ab0e2735f32bc635ceb07465bb88a53a51128",
+      "zipCrc32": 350562900
+    },
+    {
+      "path": "arm64-v8a/vendor.img",
+      "bytes": 117440512,
+      "sha256": "9ecaffab52c2874cf3fd5d26d8825b2699a58b04ba7b7f5fbf856b8b76b31ac6",
+      "zipCrc32": 3661302048
+    }
+  ],
+  "createdAt": 1793928345.8172212,
+  "verifiedDownloadArchiveRemovedForStorage": true,
+  "disposableImageRemovedAfterAvdClosure": true,
+  "removedAt": 1793931223.798529
+}

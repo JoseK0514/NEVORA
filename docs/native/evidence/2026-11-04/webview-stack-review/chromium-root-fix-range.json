@@ -1,0 +1,346 @@
+{
+  "log": [
+    {
+      "commit": "c3d30c1d9c807b0751d29d3e1e402d52f8cf3d54",
+      "tree": "2a01c54b1cbd55900f6b12e5adb64ee16ba4cd4c",
+      "parents": [
+        "7becd1f07c476dc4b5232b61ac5d537d1deb419f"
+      ],
+      "author": {
+        "name": "chromium-autoroll",
+        "email": "chromium-autoroll@skia-public.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:50:54 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:50:54 2025"
+      },
+      "message": "Roll Chrome Android ARM64 PGO Profile\n\nRoll Chrome Android ARM64 PGO profile from chrome-android64-main-1740573071-6456b1f1b16b2d090efa4434d13d4acb94d33b74-a68e619895976be9a4cbb5502b890111d31c1ef3.profdata to chrome-android64-main-1740576583-1a7de5b7fc30188251b58a09122ffd654b1ba183-6a21ff8037871f79d28f5c94ec6eef7e6d66059d.profdata\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://autoroll.skia.org/r/pgo-android-arm64-chromium\nPlease CC chrome-brapp-engprod@google.com,pgo-profile-sheriffs@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo file a bug in Chromium main branch: https://bugs.chromium.org/p/chromium/issues/entry\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nTbr: pgo-profile-sheriffs@google.com\nMerge-Approval-Bypass: Chrome autoroller\nChange-Id: Ia09858279c3940f7eae4dab925234321219376bb\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305295\nCommit-Queue: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nBot-Commit: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425150}\n"
+    },
+    {
+      "commit": "7becd1f07c476dc4b5232b61ac5d537d1deb419f",
+      "tree": "15a1408d456fdb2f6b5c4c9d6a17bcadb5162663",
+      "parents": [
+        "963bcada500f48ad89ae80da4126f2ebcc65ad27"
+      ],
+      "author": {
+        "name": "Felix Plymouth",
+        "email": "fplymouth@google.com",
+        "time": "Wed Feb 26 15:50:30 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:50:30 2025"
+      },
+      "message": "[CfM-only] Set the default state of the SharedArrayBuffers flag to enabled\n\nThis makes SharedArrayBuffers available to all client regardless of the Cross origin isolation of the site  (unless the feature is manually disabled). This will allow interop clients on Google Meet Hardware that currently rely on the SharedArrayBuffers origin trial to continue using SharedArrayBuffers after that trial expires.\n\nThis change acts as an override specifically for Google Meet Hardware (PLATFORM_CFM is specific to Google Meet Hardware). This works around the problem that the SharedArrayBuffers origin trial has expired in the past and may expire in the future.\n\ngo/x-on-meet-coop covers this in more detail.\n\n(cherry picked from commit 1d216a4169609c6845cf43c4df294361f8fd708f)\n\nBug: 303207594\nChange-Id: I2524f11939c60b77e00485e3961dacc0ea95970d\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/5390890\nReviewed-by: Kyle Williams <kdgwill@chromium.org>\nReviewed-by: Charlie Reis <creis@chromium.org>\nOwners-Override: Richard Yeh <rcy@google.com>\nReviewed-by: Camille Lamy <clamy@chromium.org>\nCommit-Queue: Felix Plymouth <fplymouth@google.com>\nCr-Original-Commit-Position: refs/branch-heads/6099_225@{#23}\nCr-Original-Branched-From: 6d3cc0dac5057925e096b1329680124b19f35842-refs/branch-heads/6099@{#1762}\nCr-Original-Branched-From: e6ee4500f7d6549a9ac1354f8d056da49ef406be-refs/heads/main@{#1217362}\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6287530\nAuto-Submit: Richard Yeh <rcy@google.com>\nReviewed-by: Avi Drissman <avi@chromium.org>\nCommit-Queue: Richard Yeh <rcy@google.com>\nCr-Commit-Position: refs/heads/main@{#1425149}\n"
+    },
+    {
+      "commit": "963bcada500f48ad89ae80da4126f2ebcc65ad27",
+      "tree": "4bf0c73df38676cfb374ad2c92c6546c4c026c98",
+      "parents": [
+        "e8162c9a0cb863f3abb93c647c5449d9979d895f"
+      ],
+      "author": {
+        "name": "chromium-internal-autoroll",
+        "email": "chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:47:15 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:47:15 2025"
+      },
+      "message": "Roll Help App from HzKZsMmajd3aBtmri... to -SbhVlmuGlNF_bQqV...\n\nRelease_Notes: http://go/help_app-x20/relnotes/Main/help_app_nightly_202502260600_RC00.html\n\nhttps://chrome-infra-packages.appspot.com/p/chromeos_internal/apps/help_app/app/+/-SbhVlmuGlNF_bQqVun6vTlCbgV9orhCj0ha48ryXqgC\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://skia-autoroll.corp.goog/r/help-app-chromium-autoroll\nPlease CC cros-essential-apps-dev@chromium.org,help-app@grotations.appspotmail.com,jomag@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nCq-Include-Trybots: luci.chrome.try:linux-chromeos-chrome\nBug: None\nTbr: help-app@grotations.appspotmail.com\nChange-Id: I9a3ca20a4cbc017eff517672e97e27ef69ed5cfa\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305147\nCommit-Queue: chromium-internal-autoroll <chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com>\nBot-Commit: chromium-internal-autoroll <chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425148}\n"
+    },
+    {
+      "commit": "e8162c9a0cb863f3abb93c647c5449d9979d895f",
+      "tree": "573dfed58911da4ce1bd66b435dc77cd69c99478",
+      "parents": [
+        "e8c18ab1c8c801012872518d4077e20ccd94a2d2"
+      ],
+      "author": {
+        "name": "Christopher Grant",
+        "email": "cjgrant@chromium.org",
+        "time": "Wed Feb 26 15:47:02 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:47:02 2025"
+      },
+      "message": "Page Actions: Add MemorySaver text and tooltip defaults\n\nThis ensures we don't crash when MemorySaver shows only the page\naction icon (ie. even if text isn't needed, we still need a tooltip).\nNote that the new page action framework isn't enabled yet.\n\nChange-Id: I750af4a214e4787a2723abeab80dd5a9276812de\nBug: 376283619\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6298666\nReviewed-by: David Pennington <dpenning@chromium.org>\nCommit-Queue: Christopher Grant <cjgrant@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425147}\n"
+    },
+    {
+      "commit": "e8c18ab1c8c801012872518d4077e20ccd94a2d2",
+      "tree": "061cd82e2ead2c4944874f017547de5710206fdc",
+      "parents": [
+        "29b1dd1ae5f4f3d02c08235281b83646fa7c6ebf"
+      ],
+      "author": {
+        "name": "Mark Schillaci",
+        "email": "mschillaci@google.com",
+        "time": "Wed Feb 26 15:46:05 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:46:05 2025"
+      },
+      "message": "Update root node id during node creation in Android accessibility\n\nThis CL removes a check that prevents the mCurrentRootId from updating\nduring the creation of AccessibilityNodeInfo objects.\n\nWith the current behavior, in some cases Android-side code is not\nreceiving a signal that the page was navigated, and so the root ID is\nnot being updated. When the root ID is stale, then we provide a stale\nAccessibilityNodeInfo tree to downstream clients/AT. With this change\nwe always fetch a fresh root ID during node creation to eliminate the\npossibility of a stale tree, at the cost of one extra JNI trip (which\nis minimal/trivial). This will keep the mCurrentRootId up-to-date with\nthe native browser-side AXTree. This can be considered a stopgap\nsolution to a P1 bug, and caching can be revisited in the future, but\na cache of this value may not be needed in general.\n\nAX-Relnotes: N/A\nBug: 396447488\nChange-Id: I134d2313c68c04973aefdaee82bd181ba1a47293\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6302633\nReviewed-by: Aaron Leventhal <aleventhal@chromium.org>\nCommit-Queue: Mark Schillaci <mschillaci@google.com>\nCr-Commit-Position: refs/heads/main@{#1425146}\n"
+    },
+    {
+      "commit": "29b1dd1ae5f4f3d02c08235281b83646fa7c6ebf",
+      "tree": "f15d857a4d4ce66efe8f25b659632a904548854d",
+      "parents": [
+        "1866a932a100789642e316437010a5826716b143"
+      ],
+      "author": {
+        "name": "Maks Orlovich",
+        "email": "morlovich@chromium.org",
+        "time": "Wed Feb 26 15:41:45 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:41:45 2025"
+      },
+      "message": "PrivateAggregationApiProtectedAudienceAdditionalExtensions on by default\n\n...to prep for launch.\n\nI2S: https://groups.google.com/a/chromium.org/g/blink-dev/c/F0GAisJlomc/m/aoD_b_CXAAAJ\n\nBug: 361262468\nChange-Id: Ida4377407ad2858a6ef46bbb71e633d3337c0c26\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6278765\nReviewed-by: Orr Bernstein <orrb@google.com>\nReviewed-by: Kevin Ellis <kevers@chromium.org>\nCommit-Queue: Maks Orlovich <morlovich@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425145}\n"
+    },
+    {
+      "commit": "1866a932a100789642e316437010a5826716b143",
+      "tree": "82e71e5edb430003945c9c1f08742171044b0ad0",
+      "parents": [
+        "768b9e48eb2973e2d5904bd9a4ad749f4d83042e"
+      ],
+      "author": {
+        "name": "Andrew Paseltiner",
+        "email": "apaseltiner@chromium.org",
+        "time": "Wed Feb 26 15:34:55 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:34:55 2025"
+      },
+      "message": "Remove unnecessary string copy during JSON error formatting\n\nThe to_string call on the error already returns a new string, which can\nbe assigned directly to the message field.\n\nChange-Id: Ia4db11046ab5513b8727a2f8c9f4286a0be07293\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305719\nReviewed-by: \u0141ukasz Anforowicz <lukasza@chromium.org>\nCommit-Queue: Andrew Paseltiner <apaseltiner@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425144}\n"
+    },
+    {
+      "commit": "768b9e48eb2973e2d5904bd9a4ad749f4d83042e",
+      "tree": "937837c5ce92c985f5e03e7d2736d7adbd4e8021",
+      "parents": [
+        "baf99005805330ea76efe40556cce802310d26ff"
+      ],
+      "author": {
+        "name": "Sebastien Lalancette",
+        "email": "seblalancette@chromium.org",
+        "time": "Wed Feb 26 15:32:48 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:32:48 2025"
+      },
+      "message": "Create EnterpriseIdentityService\n\nThis new service will be used by enterprise features to simplify\ninteractions with the identity stack by isolating all \"is managed user\"\nverifications in one place. Other functionality will be added in the\nfuture, such as listening for secondary managed user sign-in events.\n\nBug: 399164647\nChange-Id: Ie77aa47bde4b7faa7f191e7f4eb49337d76a42ef\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6299704\nCommit-Queue: S\u00e9bastien Lalancette <seblalancette@chromium.org>\nReviewed-by: Yann Dago <ydago@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425143}\n"
+    },
+    {
+      "commit": "baf99005805330ea76efe40556cce802310d26ff",
+      "tree": "48c54aef76003f7a520caf6dcf4e82bc0bb9e445",
+      "parents": [
+        "35907524e2a0de565fb1bbde848351b2131bf24d"
+      ],
+      "author": {
+        "name": "Bartosz Chominski",
+        "email": "chominskib@google.com",
+        "time": "Wed Feb 26 15:32:17 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:32:17 2025"
+      },
+      "message": "Push no-op implementation to subclasses\n\nIn future I want to implement |setContentsBounds| in\nActivityTabWebContentsDelegateAndroid class and for that I need to push\nthe current no-op implementation of this method down to subclasses.\n\nBug: 389589977\nChange-Id: Ib7de7de656e66ba06d6eb6a920b2f07ed0c5ade4\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6297893\nReviewed-by: Jinsuk Kim <jinsukkim@chromium.org>\nReviewed-by: Peter Conn <peconn@chromium.org>\nCommit-Queue: Bartosz Chomi\u0144ski <chominskib@google.com>\nCr-Commit-Position: refs/heads/main@{#1425142}\n"
+    },
+    {
+      "commit": "35907524e2a0de565fb1bbde848351b2131bf24d",
+      "tree": "fa746877347bff105f544ff8420fa4196cee4afe",
+      "parents": [
+        "bce9025f502c8f2ba2e9dc7077123d841a15756b"
+      ],
+      "author": {
+        "name": "Fredrik S\u00f6derquist",
+        "email": "fs@opera.com",
+        "time": "Wed Feb 26 15:30:34 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:30:34 2025"
+      },
+      "message": "Move GradientSpreadMethod out of graphics_types.h\n\nMove it to the Gradient class. This matches other gradient parameter\nenums. Make it an enum class.\n\nBug: 399058536\nChange-Id: Ifb2bc5cdf849067a6d6e4268ce71b2b91bd3dc06\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6304502\nReviewed-by: Stephen Chenney <schenney@chromium.org>\nCommit-Queue: Fredrik S\u00f6derquist <fs@opera.com>\nCr-Commit-Position: refs/heads/main@{#1425141}\n"
+    },
+    {
+      "commit": "bce9025f502c8f2ba2e9dc7077123d841a15756b",
+      "tree": "61608b4ab764b95cc24518da1a1c1fd533ff7300",
+      "parents": [
+        "1b73235781c50a02fb8e0e7cd27ca22b1dc4f2d6"
+      ],
+      "author": {
+        "name": "chromium-autoroll",
+        "email": "chromium-autoroll@skia-public.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:29:59 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:29:59 2025"
+      },
+      "message": "Roll Chrome Mac PGO Profile\n\nRoll Chrome Mac PGO profile from chrome-mac-main-1740549188-8f5a469dca4d42ebad35af80809b5163d0591fc4-3a8b2fca9a31237978f4711035b1c5b5e6a0a1f0.profdata to chrome-mac-main-1740570823-a1cde1d83374e25460d8195affa97047e40163e3-4caddf8805cbf396129828605489e0d1644126a2.profdata\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://autoroll.skia.org/r/pgo-mac-chromium\nPlease CC chrome-brapp-engprod@google.com,pgo-profile-sheriffs@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo file a bug in Chromium main branch: https://bugs.chromium.org/p/chromium/issues/entry\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nCq-Include-Trybots: luci.chrome.try:mac-chrome\nTbr: pgo-profile-sheriffs@google.com\nMerge-Approval-Bypass: Chrome autoroller\nChange-Id: I38d9120371760e41db6febd7a0548d6b3537cd86\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305142\nCommit-Queue: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nBot-Commit: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425140}\n"
+    },
+    {
+      "commit": "1b73235781c50a02fb8e0e7cd27ca22b1dc4f2d6",
+      "tree": "ede8647dd4acfc41eca3d643ab07b1e295525dbe",
+      "parents": [
+        "7218fa8832fde28690e139ebf4bd5a64508c9684"
+      ],
+      "author": {
+        "name": "Calder Kitagawa",
+        "email": "ckitagawa@chromium.org",
+        "time": "Wed Feb 26 15:28:54 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:28:54 2025"
+      },
+      "message": "[Tab Groups] Remove getRootId from ChromeTabUtils\n\nUnused outside this class and I'm starting on deprecating RootId.\n\nBug: 399354986\nChange-Id: I9da8fd88bb85ddadb107402ea5e9ee624d973a89\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305640\nReviewed-by: Dan Polanco <polardz@google.com>\nCommit-Queue: Calder Kitagawa <ckitagawa@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425139}\n"
+    },
+    {
+      "commit": "7218fa8832fde28690e139ebf4bd5a64508c9684",
+      "tree": "62a9a7b5347ba994b1d6181e6b354a0fb80206ce",
+      "parents": [
+        "fc4cc15e881f04be76c854db07c033d50c0086c7"
+      ],
+      "author": {
+        "name": "chromium-internal-autoroll",
+        "email": "chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:28:40 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:28:40 2025"
+      },
+      "message": "Roll ios_internal from 5762672be0e4 to ba393791b162\n\nhttps://chrome-internal.googlesource.com/chrome/ios_internal.git/+log/5762672be0e4..ba393791b162\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://skia-autoroll.corp.goog/r/ios-internal-chromium-autoroll\nPlease CC chrome-brapp-engprod@google.com,sdefresne@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nBug: None\nChange-Id: Iba26fe23b030fb734a091fe06fc03f54d755ea44\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305468\nBot-Commit: chromium-internal-autoroll <chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com>\nCommit-Queue: chromium-internal-autoroll <chromium-internal-autoroll@skia-corp.google.com.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425138}\n"
+    },
+    {
+      "commit": "fc4cc15e881f04be76c854db07c033d50c0086c7",
+      "tree": "f74bd76f22ce90d0d06616de7b89157c44cf6a9b",
+      "parents": [
+        "27f99ffda753486836ad810bcd70a87f48e77eab"
+      ],
+      "author": {
+        "name": "chromium-autoroll",
+        "email": "chromium-autoroll@skia-public.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:26:52 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:26:52 2025"
+      },
+      "message": "Roll Skia from 5336e20498d9 to 47b84f354604 (2 revisions)\n\nhttps://skia.googlesource.com/skia.git/+log/5336e20498d9..47b84f354604\n\n2025-02-26 robertphillips@google.com [graphite] Disable UserDefinedStableKeyTest on Android Protected jobs\n2025-02-26 robertphillips@google.com [graphite] Shorten shader names w/o relying on auto-trimming\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://autoroll.skia.org/r/skia-autoroll\nPlease CC brettos@google.com,skiabot@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo file a bug in Skia: https://bugs.chromium.org/p/skia/issues/entry\nTo file a bug in Chromium: https://bugs.chromium.org/p/chromium/issues/entry\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nCq-Include-Trybots: luci.chromium.try:android_optional_gpu_tests_rel;luci.chromium.try:gpu-fyi-cq-android-arm64;luci.chromium.try:linux-blink-rel;luci.chromium.try:linux-chromeos-compile-dbg;luci.chromium.try:linux_optional_gpu_tests_rel;luci.chromium.try:mac_optional_gpu_tests_rel;luci.chromium.try:win_optional_gpu_tests_rel\nCq-Do-Not-Cancel-Tryjobs: true\nBug: None\nTbr: brettos@google.com\nChange-Id: Id2d3e02b746064dbe72506cf60f7187db8dc835c\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305286\nCommit-Queue: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nBot-Commit: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425137}\n"
+    },
+    {
+      "commit": "27f99ffda753486836ad810bcd70a87f48e77eab",
+      "tree": "0457c311f02d7ed1e8208fe147f51d574a301b79",
+      "parents": [
+        "1f0bc2910664fb5b1dfac0cf06ba9723156d03ad"
+      ],
+      "author": {
+        "name": "Paul Semel",
+        "email": "paulsemel@chromium.org",
+        "time": "Wed Feb 26 15:24:58 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:24:58 2025"
+      },
+      "message": "libfuzzer: add high end build to be on par with Centipede\n\nBug: 394563978\nChange-Id: I2077cd6862a419a06a8e3a400e4bc29d74944fcc\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6291540\nReviewed-by: Michael Achenbach <machenbach@chromium.org>\nReviewed-by: Ben Pastene <bpastene@chromium.org>\nCommit-Queue: Paul Semel <paulsemel@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425136}\n"
+    },
+    {
+      "commit": "1f0bc2910664fb5b1dfac0cf06ba9723156d03ad",
+      "tree": "dddb4f038cb7796d04077e9928486b567253d2eb",
+      "parents": [
+        "d6df600b796c01cf9635acff538f8a1c862faa27"
+      ],
+      "author": {
+        "name": "Benedikt Meurer",
+        "email": "bmeurer@chromium.org",
+        "time": "Wed Feb 26 15:23:00 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:23:00 2025"
+      },
+      "message": "[DevTools] Refactor and test the `DevToolsFileHelper`.\n\nThis separates the storage access from the `DevToolsFileHelper` and\nmakes it independent of the WebContents (by also moving the logic for\nthe file selection dialog out of the module), which in turn makes it\npossible to finally have some unit test coverage for this piece of\ncode.\n\nFixed: 398973989\nBug: 395562934\nChange-Id: Idcab334a6f81559a08fe38da049a5c24127e565e\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305239\nCommit-Queue: Benedikt Meurer <bmeurer@chromium.org>\nReviewed-by: Alex Rudenko <alexrudenko@chromium.org>\nAuto-Submit: Benedikt Meurer <bmeurer@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425135}\n"
+    },
+    {
+      "commit": "d6df600b796c01cf9635acff538f8a1c862faa27",
+      "tree": "a598959059d1abfb50177d8d17e38fa14ca69ba6",
+      "parents": [
+        "a1b9c5fb55540ea8012faa1e672f5c4ffd114f72"
+      ],
+      "author": {
+        "name": "Hao Liu",
+        "email": "haoliuk@google.com",
+        "time": "Wed Feb 26 15:22:35 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:22:35 2025"
+      },
+      "message": "Disable test case EventuallyAfterPopupExit on Mac\n\nThis bug has been failing/flaky recently.\n\nBug: 399354373\nChange-Id: I7e4622be0a44617b4b8a691def9aa106d04ce8bd\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305381\nReviewed-by: Fahad Mansoor <fahadmansoor@google.com>\nCommit-Queue: Fahad Mansoor <fahadmansoor@google.com>\nAuto-Submit: Hao Liu <haoliuk@chromium.org>\nOwners-Override: Hao Liu <haoliuk@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425134}\n"
+    },
+    {
+      "commit": "a1b9c5fb55540ea8012faa1e672f5c4ffd114f72",
+      "tree": "7567a86850034b878fabe98b24a2872bb4a0231f",
+      "parents": [
+        "d8efb74074f9c62f12a47dc6d9fcee7bd0c06f27"
+      ],
+      "author": {
+        "name": "chromium-autoroll",
+        "email": "chromium-autoroll@skia-public.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:16:35 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:16:35 2025"
+      },
+      "message": "Roll androidx from VXX1uuEndS2AW2fjX... to uijI0ClJYtnPf-WC_...\n\nIf this roll has caused a breakage, revert this CL and stop the roller\nusing the controls here:\nhttps://autoroll.skia.org/r/androidx-chromium\nPlease CC clank-build@google.com,clank-library-failures@google.com,wnwen@google.com on the revert to ensure that a human\nis aware of the problem.\n\nTo file a bug in Chromium: https://bugs.chromium.org/p/chromium/issues/entry\n\nTo report a problem with the AutoRoller itself, please file a bug:\nhttps://issues.skia.org/issues/new?component=1389291&template=1850622\n\nDocumentation for the AutoRoller is here:\nhttps://skia.googlesource.com/buildbot/+doc/main/autoroll/README.md\n\nCq-Include-Trybots: luci.chrome.try:android-internal-binary-size;luci.chrome.try:android-internal-rel\nTbr: clank-library-failures@google.com\nChange-Id: I2f56b3d1e4396cdea7666aa3ceddad01c0bb1d42\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6305467\nBot-Commit: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nCommit-Queue: chromium-autoroll <chromium-autoroll@skia-public.iam.gserviceaccount.com>\nCr-Commit-Position: refs/heads/main@{#1425133}\n"
+    },
+    {
+      "commit": "d8efb74074f9c62f12a47dc6d9fcee7bd0c06f27",
+      "tree": "12305fd8a627543fd24fd41234f7f624cf4dc598",
+      "parents": [
+        "211ffa38c1fd7ab4d2d9329f719a383c52a386d8"
+      ],
+      "author": {
+        "name": "Etienne Pierre-doray",
+        "email": "etiennep@chromium.org",
+        "time": "Wed Feb 26 15:13:30 2025"
+      },
+      "committer": {
+        "name": "Chromium LUCI CQ",
+        "email": "chromium-scoped@luci-project-accounts.iam.gserviceaccount.com",
+        "time": "Wed Feb 26 15:13:30 2025"
+      },
+      "message": "Reland \"[tracing] Prevent upload if a trace is still starting\"\n\nThis is a reland of commit 2e3ae3efbb1f3f47e6b7e118de299cf3e30e5369\n\nReason for revert: Tests are failing: tracing_scenario.cc\ncrbug.com/398917303\nFix: disable nested scenarios in DisableNestedScenarios\n\nOriginal change's description:\n> [tracing] Prevent upload if a trace is still starting\n>\n> This should prevent creating empty traces.\n> Drive-by: drop optional `name` field in unittests\n>\n> Bug: 40257548\n> Change-Id: I135cad44263788381e2bdff732ee77835f3ef1d0\n> Reviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6285689\n> Reviewed-by: Etienne Bergeron <etienneb@chromium.org>\n> Commit-Queue: Etienne Pierre-Doray <etiennep@chromium.org>\n> Cr-Commit-Position: refs/heads/main@{#1423975}\n\nBug: 40257548\nChange-Id: I8236ebd70e2c9ed96cd744bd3d5ae4c8064213e7\nReviewed-on: https://chromium-review.googlesource.com/c/chromium/src/+/6299922\nCommit-Queue: Etienne Pierre-Doray <etiennep@chromium.org>\nReviewed-by: Etienne Bergeron <etienneb@chromium.org>\nCr-Commit-Position: refs/heads/main@{#1425132}\n"
+    }
+  ]
+}

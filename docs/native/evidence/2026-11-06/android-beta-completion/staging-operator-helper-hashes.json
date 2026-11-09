@@ -1,0 +1,48 @@
+{
+  "scope": "Private local operator helpers; no credential values in these source files",
+  "helpers": [
+    {
+      "file": "bootstrap-free-staging.py",
+      "sha256": "5313289b9fb24fcda7ad0c049ea4c3e3baa9e4c3e5a50f8a0166711a3f468e5e"
+    },
+    {
+      "file": "bootstrap-free-staging.mts",
+      "sha256": "effffa3a08b73a813c927e3ca82a43ee0e2dba37ac59161b6dc6eb906c5cf4f6"
+    },
+    {
+      "file": "store-staging-runtime.py",
+      "sha256": "701aa85f29bcf162ec764ba73c640f47c1209dbe4dad4cf7c5c521e17f668b80"
+    },
+    {
+      "file": "verify-staging-runtime.py",
+      "sha256": "91bda093bb4de3de67b53e11d8afaed3e18822790a2621c9906208ebba626379"
+    },
+    {
+      "file": "verify-staging-runtime.mts",
+      "sha256": "3a81a2c355c4ade8059ae2a67b8ae7aead713235ec0ce79b5d8d6b050a8a6a57"
+    },
+    {
+      "file": "prepare-staging-browser-transfer.py",
+      "sha256": "06d7ef87b7b5954ebcb1890464ae8b9b6ca0c92381e51426d57c50986e82f139",
+      "previousOwnerOnlySha256": "8431b60898db41d3c20d27943c16433dd97fdb43c74455761f40b4ae2e54df32"
+    },
+    {
+      "file": "seed-staging-employee.py",
+      "sha256": "f9ed697d5334d48d7281ba52233ea75682410324e5d5567def83dff3c3e3cef7"
+    },
+    {
+      "file": "seed-staging-employee.mts",
+      "sha256": "b5cb5fa701343245ce7e89eed09c76325e971a5f78be1561494b3b0d007dcae1"
+    },
+    {
+      "file": "qualify-render-idle-wake.py",
+      "sha256": "be768c0a0358640429e82dd89104607a066e080de11a70f6e53f9ab193d0f7d1",
+      "credentialAccess": false
+    }
+  ],
+  "bootstrapWrongTargetAndTlsCasesRejected": 11,
+  "browserTransferFictionalRoundTripAndOwnedClosureVerified": true,
+  "reviewedEncryptedTransferCoreUnchanged": true,
+  "employeeBrowserTransferFictionalRoundTripAndOwnedClosureVerified": true,
+  "employeeCredentialCreateThenReconcileVerified": true
+}

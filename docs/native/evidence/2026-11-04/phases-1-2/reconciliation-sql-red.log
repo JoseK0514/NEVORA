@@ -1,0 +1,253 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "./src/test/integration/native-push-fixture-url" without a file extension (vitest.native-push-regressions.config.mts:3:38). Add the file extension
+  - ESM syntax in a file loaded as CommonJS (src/test/integration/native-push-fixture-url.ts:3:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m [30m[45m existing-web-push [49m[39m src/test/integration/notifications.integration.ts [2m([22m[2m77 tests[22m[2m)[22m[33m 61266[2mms[22m[39m
+   [32m✓[39m actual ordered publication and request SQL [2m(18)[22m
+     [33m[2m✓[22m[39m outbox_failure_rolls_back_publication[33m 386[2mms[22m[39m
+     [33m[2m✓[22m[39m failed_mutation_has_no_notification[33m 329[2mms[22m[39m
+     [33m[2m✓[22m[39m draft_publication_race_recomputes_snapshot[33m 486[2mms[22m[39m
+     [33m[2m✓[22m[39m guards_exact_microseconds_and_rejects_post_write_noop[33m 429[2mms[22m[39m
+     [33m[2m✓[22m[39m equivalent_revision_preserves_acknowledgement_and_personal_budget[33m 501[2mms[22m[39m
+     [33m[2m✓[22m[39m explicit_acknowledgement_cancels_claimed_reminder[33m 371[2mms[22m[39m
+     [33m[2m✓[22m[39m repeated_and_concurrent_time_off_decisions_are_exactly_once[33m 432[2mms[22m[39m
+     [33m[2m✓[22m[39m recipient_active_race_aborts_transition_and_intents[33m 670[2mms[22m[39m
+     [33m[2m✓[22m[39m recipient_role_race_aborts_transition_and_intents[33m 599[2mms[22m[39m
+     [33m[2m✓[22m[39m recipient_location_race_aborts_transition_and_intents[33m 464[2mms[22m[39m
+     [33m[2m✓[22m[39m swap_approve_executes_real_transition_SQL[33m 591[2mms[22m[39m
+     [33m[2m✓[22m[39m swap_deny_executes_real_transition_SQL[33m 527[2mms[22m[39m
+     [33m[2m✓[22m[39m swap_decline_executes_real_transition_SQL[33m 859[2mms[22m[39m
+     [33m[2m✓[22m[39m swap_cancel_executes_real_transition_SQL[33m 483[2mms[22m[39m
+     [33m[2m✓[22m[39m coverage_claim_and_approval_commit_assignment_and_outbox[33m 420[2mms[22m[39m
+     [33m[2m✓[22m[39m callout_approve_executes_real_transition_SQL[33m 525[2mms[22m[39m
+     [33m[2m✓[22m[39m callout_deny_executes_real_transition_SQL[33m 566[2mms[22m[39m
+     [33m[2m✓[22m[39m callout_cancel_executes_real_transition_SQL[33m 709[2mms[22m[39m
+   [32m✓[39m actual enrollment, materialization and leases [2m(31)[22m
+     [33m[2m✓[22m[39m foreign_installation_is_not_inherited[33m 645[2mms[22m[39m
+     [33m[2m✓[22m[39m synchronized_same-owner_enrollment_preserves_exact_winner[33m 402[2mms[22m[39m
+     [33m[2m✓[22m[39m synchronized_foreign-installation_enrollment_preserves_exact_winner[33m 429[2mms[22m[39m
+     [33m[2m✓[22m[39m synchronized_same_owner_rotation_fences_stale_generation[33m 356[2mms[22m[39m
+     [33m[2m✓[22m[39m concurrent_workers_claim_disjoint_deliveries[33m 398[2mms[22m[39m
+     [33m[2m✓[22m[39m empty_allowlist_is_not_null_and_environments_are_separate[33m 463[2mms[22m[39m
+     [33m[2m✓[22m[39m expired_lease_takeover_fences_old_finish_release_and_defer[33m 425[2mms[22m[39m
+     [33m[2m✓[22m[39m quiet_deferral_restores_queued_attempt_and_original_expiry[33m 431[2mms[22m[39m
+     [33m[2m✓[22m[39m quiet_deferral_restores_retry_pending_attempt_and_original_expiry[33m 431[2mms[22m[39m
+     [33m[2m✓[22m[39m deferral_at_expiry_is_terminal_without_violating_due_constraint[33m 361[2mms[22m[39m
+     [33m[2m✓[22m[39m session_change_fences_claim_completion[33m 399[2mms[22m[39m
+     [33m[2m✓[22m[39m inactive_change_fences_claim_completion[33m 450[2mms[22m[39m
+     [33m[2m✓[22m[39m generation_change_fences_claim_completion[33m 443[2mms[22m[39m
+     [33m[2m✓[22m[39m cancelled_change_fences_claim_completion[33m 416[2mms[22m[39m
+     [33m[2m✓[22m[39m subscription_expired_change_fences_claim_completion[33m 421[2mms[22m[39m
+     [33m[2m✓[22m[39m natural_session_expiry_keeps_consent_but_explicit_delete_fences_all_paths[33m 414[2mms[22m[39m
+     [33m[2m✓[22m[39m self_test_is_one_subscription_generation_and_is_throttled[33m 352[2mms[22m[39m
+     [33m[2m✓[22m[39m historical_events_do_not_inherit_new_consent_but_unresolved_reminders_do[33m 351[2mms[22m[39m
+     [33m[2m✓[22m[39m stale_invalidation_cannot_disable_new_enrollment_generation[33m 789[2mms[22m[39m
+     [33m[2m✓[22m[39m retry_exhaustion_and_expiry_sweeps_are_terminal[33m 761[2mms[22m[39m
+     [33m[2m✓[22m[39m release_restores_queued_attempt_and_expiry[33m 596[2mms[22m[39m
+     [33m[2m✓[22m[39m release_restores_retry_pending_attempt_and_expiry[33m 393[2mms[22m[39m
+     [33m[2m✓[22m[39m finish_provider_accepted_persists_exact_terminal_or_retry_state[33m 442[2mms[22m[39m
+     [33m[2m✓[22m[39m finish_retry_pending_persists_exact_terminal_or_retry_state[33m 338[2mms[22m[39m
+     [33m[2m✓[22m[39m finish_failed_persists_exact_terminal_or_retry_state[33m 314[2mms[22m[39m
+     [33m[2m✓[22m[39m transaction_abort_rolls_back_and_ambiguous_commit_preserves_durable_identity[33m 455[2mms[22m[39m
+   [32m✓[39m logout and reminder SQL [2m(8)[22m
+     [33m[2m✓[22m[39m push_cleanup_error_cannot_rollback_session_delete[33m 389[2mms[22m[39m
+     [33m[2m✓[22m[39m thirty_plus_real_accounts_continue_after_persisted_pages_and_ineligible_first_accounts[33m 856[2mms[22m[39m
+     [33m[2m✓[22m[39m schedule_recipient_JSON_guards_ack_access_and_actual_source_conflict_retry[33m 666[2mms[22m[39m
+     [33m[2m✓[22m[39m schedule_recipient_JSON_guards_ack_access_and_actual_source_conflict_budget_resume[33m 699[2mms[22m[39m
+     [33m[2m✓[22m[39m availability_zero_hour_submission_and_deadline_summary_use_real_sources at 8 PR[33m 481[2mms[22m[39m
+     [33m[2m✓[22m[39m availability_zero_hour_submission_and_deadline_summary_use_real_sources at 12 PR[33m 466[2mms[22m[39m
+     [33m[2m✓[22m[39m availability_zero_hour_submission_and_deadline_summary_use_real_sources at 17 PR[33m 477[2mms[22m[39m
+   [32m✓[39m deadline writers and persistent grouping [2m(13)[22m
+     [33m[2m✓[22m[39m deadline_change_cancels_claimed_old_version_without_replaying_same_day_budget[33m 445[2mms[22m[39m
+     [33m[2m✓[22m[39m zero_hour_submission_cancels_claimed_reminder_and_deadline_guard_rolls_back[33m 517[2mms[22m[39m
+     [33m[2m✓[22m[39m concurrent_manager_groups_consume_distinct_items_once_and_revalidate_resolved_members at 8 PR[33m 438[2mms[22m[39m
+     [33m[2m✓[22m[39m concurrent_manager_groups_consume_distinct_items_once_and_revalidate_resolved_members at 12 PR[33m 373[2mms[22m[39m
+     [33m[2m✓[22m[39m concurrent_manager_groups_consume_distinct_items_once_and_revalidate_resolved_members at 17 PR[33m 358[2mms[22m[39m
+     [33m[2m✓[22m[39m all_signed_recovery_obligations_delete_renewed_and_associated_sessions[33m 359[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 8 PR (current-day)[33m 393[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 8 PR (Sunday-boundary)[33m 380[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 12 PR (current-day)[33m 362[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 12 PR (Sunday-boundary)[33m 366[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 17 PR (current-day)[33m 368[2mms[22m[39m
+     [33m[2m✓[22m[39m configured_coverage_groups_keep_routine_lifetime_and_new_items_survive_consumed_day_variants at 17 PR (Sunday-boundary)[33m 407[2mms[22m[39m
+   [32m✓[39m real SQL worker recovery with a no-network sender [2m(7)[22m
+     [33m[2m✓[22m[39m healthy_worker_cleans_removed_session_after_failed_logout_without_a_returning_browser[33m 324[2mms[22m[39m
+     [33m[2m✓[22m[39m stalled_sender_is_aborted_at_real_deadline_and_retry_retains_original_expiry[33m 8288[2mms[22m[39m
+     [33m[2m✓[22m[39m unknown_finish_commit_is_not_reported_accepted_and_cannot_duplicate_persistence[33m 378[2mms[22m[39m
+     [33m[2m✓[22m[39m SQL_budget_abort_cancels_real_blocked_statement_without_assuming_commit_rollback[33m 19347[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/foundation.integration.ts [2m([22m[2m69 tests[22m[2m)[22m[33m 26356[2mms[22m[39m
+   [33m[2m✓[22m[39m fixture adoption never restores a revoked Manager or grants a new Manager Company access[33m 470[2mms[22m[39m
+   [33m[2m✓[22m[39m workspace profile enforces active Owner and permits normal availability and unchanged timezone name edits[33m 383[2mms[22m[39m
+   [33m[2m✓[22m[39m existing revision blocks timezone edit[33m 333[2mms[22m[39m
+   [33m[2m✓[22m[39m existing dated exception blocks timezone edit[33m 334[2mms[22m[39m
+   [33m[2m✓[22m[39m existing weekly window blocks timezone edit[33m 420[2mms[22m[39m
+   [33m[2m✓[22m[39m existing weekly submission blocks timezone edit[33m 325[2mms[22m[39m
+   [33m[2m✓[22m[39m existing deadline blocks timezone edit[32m 300[2mms[22m[39m
+   [33m[2m✓[22m[39m existing Time Off blocks timezone edit[33m 389[2mms[22m[39m
+   [33m[2m✓[22m[39m existing time entry blocks timezone edit[33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m timezone edit race serializes first dated write: write-first[33m 332[2mms[22m[39m
+   [33m[2m✓[22m[39m timezone edit race serializes first dated write: edit-first[33m 396[2mms[22m[39m
+   [33m[2m✓[22m[39m location identity supports 20 arbitrary generic locations[33m 609[2mms[22m[39m
+   [33m[2m✓[22m[39m position membership validates permissions and complete qualified sets[33m 460[2mms[22m[39m
+   [33m[2m✓[22m[39m position membership concurrent replacements serialize complete sets[33m 781[2mms[22m[39m
+   [33m[2m✓[22m[39m position membership employee creation is authorized and atomic with qualifications[33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m position membership catalog race validates after lock: assignment-first[33m 410[2mms[22m[39m
+   [33m[2m✓[22m[39m position membership catalog race validates after lock: deactivate-first[33m 371[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 6 SQL context preserves active qualifications, target location facts and cross-location position ledger[33m 326[2mms[22m[39m
+   [33m[2m✓[22m[39m position publication atomicity preserves create edit clear history and rejects stale capabilities[33m 502[2mms[22m[39m
+   [33m[2m✓[22m[39m position SQL read and template save preserve qualified and legacy positionless assignments[33m 431[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race location removal-first[33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race location assignment-first[33m 483[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race position removal-first[33m 510[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race position assignment-first[33m 364[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race qualification removal-first[33m 416[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race qualification assignment-first[33m 505[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race eligibility removal-first[33m 441[2mms[22m[39m
+   [33m[2m✓[22m[39m position assignment lock race eligibility assignment-first[33m 480[2mms[22m[39m
+   [32m✓[39m notification workspace policy [2m(1)[22m
+     [33m[2m✓[22m[39m loads configured zone and filters inactive location access[33m 410[2mms[22m[39m
+   [32m✓[39m notification workspace policy [2m(9)[22m
+     [33m[2m✓[22m[39m Tokyo SQL day budget cancels obsolete reminders without replaying a consumed local day[33m 390[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves CALLOUT APPROVED history after inactive_location[33m 414[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves CALLOUT APPROVED history after removed_eligibility[33m 440[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves CALLOUT DENIED history after inactive_location[33m 423[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves CALLOUT DENIED history after removed_eligibility[33m 375[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves EXCHANGE APPROVED history after inactive_location[33m 389[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves EXCHANGE APPROVED history after removed_eligibility[33m 394[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves EXCHANGE DENIED history after inactive_location[33m 408[2mms[22m[39m
+     [33m[2m✓[22m[39m delivery cancels but the actual open handler preserves EXCHANGE DENIED history after removed_eligibility[33m 462[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 9 atomic profile and coverage quotas persist, retain history, reject grants and roll back[33m 547[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 9 selective inactive quota retention keeps unchanged warnings and rejects regrant or edits[33m 571[2mms[22m[39m
+   [33m[2m✓[22m[39m configured Clocker key survives active name edits and preserves Fuel compatibility labels[33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 identical workspace profile advanced one microsecond rejects a stale guarded transaction without side effects[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 actual createLocation commits before concurrent actor deactivation[33m 326[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 actual createLocation commits before concurrent actor demotion[33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 late credential failure rolls back actual employee creation after memberships exist[33m 333[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 1 active locations and real scheduling[33m 500[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 3 active locations and real scheduling[33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 5 active locations and real scheduling[33m 533[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 separate generic SQL workspace supports exactly 20 active locations and real scheduling[33m 657[2mms[22m[39m
+   [33m[2m✓[22m[39m Task 11 generic fixture replacement preserves the upgraded schema catalog[33m 1058[2mms[22m[39m
+   [32m✓[39m employee profile lifecycle [2m(4)[22m
+     [33m[2m✓[22m[39m deactivates and reactivates without deleting history and revokes existing sessions[33m 478[2mms[22m[39m
+     [33m[2m✓[22m[39m enforces Owner authority, last-active-Owner safety and active-primary-location rules[33m 371[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects stale profile versions without overwriting the newer employee[33m 301[2mms[22m[39m
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/table: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"table","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/table: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"table","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/unique-key: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"unique-key","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mposition/unique-key: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"position","waitKind":"unique-key","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/table: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"table","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/table: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"table","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/unique-key: allows current authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"unique-key","expireDuringWait":false,"resolvedSuccessfully":true,"persistedRows":1}
+
+[90mstdout[2m | src/test/integration/phase-b-late-write-session.integration.ts[2m > [22m[2mlocation/unique-key: rejects expired authority after a real INSERT lock wait
+[22m[39mFINAL_REVIEW_OBSERVATION {"kind":"location","waitKind":"unique-key","expireDuringWait":true,"resolvedSuccessfully":false,"persistedRows":0}
+
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/phase-b-late-write-session.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 10049[2mms[22m[39m
+   [33m[2m✓[22m[39m position/table: allows current authority after a real INSERT lock wait[33m 388[2mms[22m[39m
+   [33m[2m✓[22m[39m position/table: rejects expired authority after a real INSERT lock wait[33m 2022[2mms[22m[39m
+   [33m[2m✓[22m[39m position/unique-key: allows current authority after a real INSERT lock wait[33m 359[2mms[22m[39m
+   [33m[2m✓[22m[39m position/unique-key: rejects expired authority after a real INSERT lock wait[33m 1993[2mms[22m[39m
+   [33m[2m✓[22m[39m location/table: allows current authority after a real INSERT lock wait[33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m location/table: rejects expired authority after a real INSERT lock wait[33m 2011[2mms[22m[39m
+   [33m[2m✓[22m[39m location/unique-key: allows current authority after a real INSERT lock wait[33m 476[2mms[22m[39m
+   [33m[2m✓[22m[39m location/unique-key: rejects expired authority after a real INSERT lock wait[33m 2316[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/native-deliveries.integration.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 7860[2mms[22m[39m
+   [33m[2m✓[22m[39m materializes native work once even after Web Push found no subscription, preserving web state[33m 332[2mms[22m[39m
+   [33m[2m✓[22m[39m supports independent native and Web Push deliveries for the same event[33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m does not backfill pre-consent events or fan out a Web Push self-test to native devices[33m 361[2mms[22m[39m
+   [33m[2m✓[22m[39m claims each delivery only once across two concurrent workers[33m 382[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers an expired lease and refuses the stale worker completion[33m 408[2mms[22m[39m
+   [33m[2m✓[22m[39m restores unspent attempt budget on release and quiet-hour deferral[33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m invalidates only a current leased registration, removes material and cancels its other work[33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves the canonical notification policy for natural cookie expiry but refuses a revoked role[33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses revoked-session claims and cleanup cancels their queued delivery[33m 384[2mms[22m[39m
+   [33m[2m✓[22m[39m does not replay a provider-accepted event after token generation rotates[33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m retargets an unsent event after rotation while keeping its original consent boundary[33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m enforces the existing five-attempt ceiling without leaving a processing lease[33m 392[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches an actual EMPLOYEE source through encrypted registration, SQL leases and a fake APNs transport[33m 407[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches an actual OWNER source through encrypted registration, SQL leases and a fake APNs transport[33m 523[2mms[22m[39m
+   [33m[2m✓[22m[39m stops real leased work when session changes during provider OAuth preparation[33m 571[2mms[22m[39m
+   [33m[2m✓[22m[39m stops real leased work when source changes during provider OAuth preparation[33m 514[2mms[22m[39m
+   [33m[2m✓[22m[39m stops real leased work when preference changes during provider OAuth preparation[33m 471[2mms[22m[39m
+   [33m[2m✓[22m[39m recovers an outage via a fresh durable lease without duplicating native or Web Push acceptance[33m 409[2mms[22m[39m
+ [31m❯[39m [30m[45m native-foundation [49m[39m src/test/integration/native-push.integration.ts [2m([22m[2m26 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 4175[2mms[22m[39m
+   [32m✓[39m persists only encrypted native material and returns only owned registration state[32m 44[2mms[22m[39m
+   [32m✓[39m refuses Manager registration and authority revoked after challenge issuance[32m 34[2mms[22m[39m
+   [32m✓[39m rejects a substituted token, nonce or key without consuming a valid challenge[32m 46[2mms[22m[39m
+   [32m✓[39m returns one durable generation for concurrent identical completion and retries[32m 34[2mms[22m[39m
+   [32m✓[39m recovers an uncertain committed completion from its durable receipt[32m 38[2mms[22m[39m
+   [32m✓[39m rotates tokens and fences old receipts and generation claims[32m 25[2mms[22m[39m
+   [32m✓[39m allows the same physical key to rebind only through fresh account authority and generation[32m 32[2mms[22m[39m
+   [32m✓[39m refuses cross-key token takeover by a different authenticated account[32m 34[2mms[22m[39m
+   [32m✓[39m can detach a revoked registration using its key without recreating a session[32m 27[2mms[22m[39m
+[31m   [31m×[31m retains detached revision for off-to-on and explicitly reconciles lost receipts across accounts[39m[32m 31[2mms[22m[39m
+[31m   [31m×[31m reconciliation cannot retarget a concurrent revision or survive account revocation[39m[32m 34[2mms[22m[39m
+   [32m✓[39m cleans revoked ownership and never keeps a plaintext token after cleanup[32m 28[2mms[22m[39m
+   [32m✓[39m reuses an identical issuance operation but rejects a different account using that operation[32m 14[2mms[22m[39m
+   [32m✓[39m bounds challenge issuance while allowing a retry of an already issued operation[32m 38[2mms[22m[39m
+   [32m✓[39m rejects a correctly signed expired challenge[32m 18[2mms[22m[39m
+   [32m✓[39m rejects a correctly signed future challenge[32m 9[2mms[22m[39m
+   [32m✓[39m refuses a second signed token on a completed challenge without disturbing the first result[32m 19[2mms[22m[39m
+   [32m✓[39m allows only one competing account rebind from a generation[32m 29[2mms[22m[39m
+   [32m✓[39m rechecks an employee role changed after the challenge was read but before the transaction[32m 13[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1590[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1575[2mms[22m[39m
+   [32m✓[39m rechecks neither expiry after a real blocked enrollment INSERT[32m 39[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during rotate without deleting the notification[32m 22[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during detach without deleting the notification[32m 21[2mms[22m[39m
+   [32m✓[39m cancels queued and leased deliveries during cleanup without deleting the notification[32m 16[2mms[22m[39m
+   [32m✓[39m purges old challenges in bounded batches even when there are no revoked installations[32m 18[2mms[22m[39m
+ [32m✓[39m [30m[45m native-foundation [49m[39m src/test/integration/phase-b-management-session.integration.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 2295[2mms[22m[39m
+   [33m[2m✓[22m[39m actual updateLocation action rejects a session revoked after entry authorization[33m 315[2mms[22m[39m
+   [33m[2m✓[22m[39m actual createPosition action rejects a session revoked after entry authorization[33m 375[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m [30m[45m native-foundation [49m[39m src/test/integration/native-push.integration.ts[2m > [22mretains detached revision for off-to-on and explicitly reconciles lost receipts across accounts
+[31m[1mAssertionError[22m: expected 'conflict' to be 'challenge' // Object.is equality[39m
+
+Expected: [32m"c[7mhallenge[27m"[39m
+Received: [31m"c[7monflict[27m"[39m
+
+[36m [2m❯[22m src/test/integration/native-push.integration.ts:[2m172:22[22m[39m
+    [90m170|[39m  expect(await repository.issueEnrollment({proof:proof('O'),binding,spk…
+    [90m171|[39m  const reply=await repository.issueEnrollment({proof:proof('O'),bindin…
+    [90m172|[39m  expect(reply.state).toBe('challenge');if(reply.state!=='challenge')th…
+    [90m   |[39m                      [31m^[39m
+    [90m173|[39m  expect(reply.challenge.expectedGeneration).not.toBeNull();
+    [90m174|[39m  const other=generateKeyPairSync('ec',{namedCurve:'prime256v1'});
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m [30m[45m native-foundation [49m[39m src/test/integration/native-push.integration.ts[2m > [22mreconciliation cannot retarget a concurrent revision or survive account revocation
+[31m[1mError[22m: Expected reconciliation[39m
+[36m [2m❯[22m src/test/integration/native-push.integration.ts:[2m183:93[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m206 passed[39m[22m[90m (208)[39m
+[2m   Start at [22m 15:12:10
+[2m   Duration [22m 113.38s[2m (tests 99%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

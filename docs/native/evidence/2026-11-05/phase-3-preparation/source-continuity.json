@@ -1,0 +1,15 @@
+{
+  "startingCheckpoint": "8630e5af2017f1b31515b250179250127629d178",
+  "checkedPaths": [
+    "src",
+    "db",
+    "package.json",
+    "package-lock.json",
+    "native/ios",
+    "native/android",
+    "scripts/native-owned.mjs",
+    "scripts/native-backend.mts"
+  ],
+  "changedPaths": [],
+  "originalTenPendingFilesPreserved": true
+}

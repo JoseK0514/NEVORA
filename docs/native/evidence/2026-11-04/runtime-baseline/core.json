@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "command": [
+    "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/android/gradlew",
+    "--no-daemon",
+    "--project-cache-dir",
+    "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/runtime-baseline-gradle-cache",
+    "-PnevoraBuildDirectory=/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/runtime-baseline-build",
+    ":app:testDebugUnitTest",
+    ":app:assembleDebug",
+    ":app:assembleDebugAndroidTest",
+    ":app:assembleRelease",
+    ":app:lint"
+  ],
+  "jvm": {
+    "tests": 26,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "debugAndTestAndUnsignedReleaseAndLint": true,
+  "apkMinimumSdk": 29,
+  "log": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/runtime-baseline-core.log"
+}

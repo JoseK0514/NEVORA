@@ -1,0 +1,16 @@
+{
+  "checkpoint": "114d81cfda05c09dc3e68ee593f2b245f997b0b6",
+  "checks": 18,
+  "nativeJourneys": 3,
+  "coldTests": 1,
+  "sourceVerified": true,
+  "ownershipClosed": true,
+  "postgresStopped": true,
+  "provider": {
+    "package": "com.google.android.webview",
+    "version": "156.0.8078.50",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001"
+}

@@ -1,0 +1,7 @@
+[
+  "topResumedActivity=ActivityRecord{263737151 u0 com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity t84}",
+  "Intent { flg=0x800000 xflg=0x4 cmp=com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity (has extras) }",
+  "Intent { flg=0x10000000 xflg=0x5 cmp=com.velani.nevora.development/.PortalActivity (has extras) }",
+  "Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10000100 cmp=com.google.android.apps.nexuslauncher/.NexusLauncherActivity (has extras) }",
+  "ResumedActivity: ActivityRecord{263737151 u0 com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity t84}"
+]

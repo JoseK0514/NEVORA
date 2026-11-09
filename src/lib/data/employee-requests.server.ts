@@ -9,7 +9,7 @@ import {readActivePresentation} from '../workspace-presentation/service';
 import {neonNotificationExecutor} from './notification-transactions';
 import {isManagementAuthorizationError} from './management-session';
 import {assertEmployeeViewProof,employeeReadLimits,employeeViewGuards,readEmployeeWorkspace} from './employee-profile.server';
-import {listOpenCoverage,listIncomingSwaps,listEmployeeExchangeActivity} from './exchanges';
+import {listOpenCoverage,listEmployeeRequestExchanges} from './exchanges';
 import {listEmployeeTimeOffRequests} from './requests';
 import {listEmployeeCallouts} from './callouts';
 import {readShiftChangeAvailability} from './shift-changes';
@@ -32,12 +32,11 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
   };
   const presentation=await readActivePresentation(workspace.id,guarded,{strict:true}),modules=presentation.modules;
   const own=proof.employee.id;
-  const [coverage,activity,timeOff,callouts,incoming]=await Promise.all([
+  const [coverage,exchanges,timeOff,callouts]=await Promise.all([
    modules.marketplace?listOpenCoverage(own,businessDate(new Date(),workspace.timeZone),guarded).catch(()=>null):[],
-   modules.marketplace?listEmployeeExchangeActivity(own,guarded).catch(()=>null):[],
+   modules.marketplace?listEmployeeRequestExchanges(own,guarded).catch(()=>null):{incoming:0,recent:[]},
    modules.timeOff?listEmployeeTimeOffRequests(own,guarded).catch(()=>null):[],
    modules.marketplace?listEmployeeCallouts(own,guarded).catch(()=>null):[],
-   modules.marketplace?listIncomingSwaps(own,guarded).catch(()=>null):[],
   ]);
   const open:OpenEmployeeShift[]|null=coverage===null?null:await Promise.all(coverage.filter(row=>row.actionable&&row.status==='OPEN'&&Number.isSafeInteger(row.requestRevision)&&row.requestRevision!>0).map(async row=>{
    const check=await readShiftChangeAvailability(proof,{kind:'ACCEPT',requestId:row.id,expectedRevision:row.requestRevision!,operationId:randomUUID()},guarded).catch(()=>null);
@@ -45,15 +44,15 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
    return {id:row.id,revision:row.requestRevision!,date:row.sourceShift.date,startTime:row.sourceShift.startTime,endTime:row.sourceShift.endTime,location:row.sourceShift.locationName,position:row.sourceShift.positionName??null,
     check:eligible?'eligible' as const:check?.refusal?'refused' as const:'unavailable' as const,notice:check?.notice??(eligible?null:'Eligibility could not be checked. Refresh before continuing.'),outcome:eligible?check.outcome as 'completed'|'pending':null};
   }));
-  const recent:OwnRequest[]|null=activity===null||timeOff===null||callouts===null?null:[
+  const recent:OwnRequest[]|null=exchanges===null||timeOff===null||callouts===null?null:[
    ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,endDate:row.endDate,startTime:row.startTime&&row.endTime?row.startTime:null,endTime:row.startTime&&row.endTime?row.endTime:null,createdAt:row.createdAt})),
-   ...activity.filter(row=>ownShiftActivity(row,own)).map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
+   ...exchanges.recent.map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
    ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
   ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,8);
   // Recheck current module revision after all independent reads; mixed policy observations never escape.
   const current=await readActivePresentation(workspace.id,guarded,{strict:true});
   if(current.revision!==presentation.revision)throw Error('Requests modules changed');
   const [lease]=await guarded.query<{observedAt:string;validForMs:number}>({text:`SELECT clock_timestamp()::text AS "observedAt",LEAST(45000,FLOOR(EXTRACT(EPOCH FROM (expires_at-clock_timestamp()))*1000))::integer AS "validForMs" FROM employee_sessions WHERE employee_id=$1 AND token_hash=$2`,values:[own,proof.sessionTokenHash]});
-  return parseEmployeeRequests({state:'ready',kind:'requests',authority:employeeViewAuthority(proof,'requests'),...lease,timeZone:workspace.timeZone,modules:{timeOff:modules.timeOff,marketplace:modules.marketplace},open,recent,incoming:incoming?.length??null});
+  return parseEmployeeRequests({state:'ready',kind:'requests',authority:employeeViewAuthority(proof,'requests'),...lease,timeZone:workspace.timeZone,modules:{timeOff:modules.timeOff,marketplace:modules.marketplace},open,recent,incoming:exchanges?.incoming??null});
  }catch(error){return {state:'unavailable',reason:isManagementAuthorizationError(error)?'access_denied':'read_failed'};}
 }

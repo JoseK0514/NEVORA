@@ -1,0 +1,51 @@
+{
+  "provenance": "Existing official NEVORA artwork retained; no redesign. iOS PNG is a lossless rasterization of the existing 1024px SVG; Android is an exact copy of the official maskable PNG. Store artwork reuses these originals.",
+  "rasterizer": "Installed sharp 0.35.5",
+  "files": [
+    {
+      "path": "public/icons/nevora-app-icon-maskable.svg",
+      "sha256": "d652688658294e4ef702d4650c8308e6be194adcfec61a9cb7007860a661dd41",
+      "bytes": 160464
+    },
+    {
+      "path": "public/icons/fuel-maskable-512.png",
+      "sha256": "43cb8817ae2d436d2d27aaa9f56766f5a37cfdc1e4aef2d2747555f26f167acf",
+      "bytes": 12382,
+      "pixels": [
+        512,
+        512
+      ],
+      "pngColorType": 2
+    },
+    {
+      "path": "public/icons/fuel-512.png",
+      "sha256": "d481c70ca56290e590c937b96c2ac03eebb1740ed10374f3ae804acc1624f2f5",
+      "bytes": 15336,
+      "pixels": [
+        512,
+        512
+      ],
+      "pngColorType": 2
+    },
+    {
+      "path": "native/ios/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png",
+      "sha256": "ef59798cbcc2cd1e94e5ed3a2db93ba091bf4181f475991942624ac839ff30e2",
+      "bytes": 30842,
+      "pixels": [
+        1024,
+        1024
+      ],
+      "pngColorType": 2
+    },
+    {
+      "path": "native/android/app/src/main/res/drawable/nevora_app_icon.png",
+      "sha256": "43cb8817ae2d436d2d27aaa9f56766f5a37cfdc1e4aef2d2747555f26f167acf",
+      "bytes": 12382,
+      "pixels": [
+        512,
+        512
+      ],
+      "pngColorType": 2
+    }
+  ]
+}

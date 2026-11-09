@@ -1,0 +1,35 @@
+{
+  "state": "draft-not-submitted",
+  "uiSourceUnchangedSinceNativeCapture": true,
+  "featureGraphic": "Local Playwright rendering of the checked-in HTML, official wordmark PNG, bundled Inter and existing design tokens; no generated/replaced logo or synthetic app screen.",
+  "assets": [
+    {
+      "file": "app-store-icon-1024.png",
+      "pixels": [
+        1024,
+        1024
+      ],
+      "sha256": "ef59798cbcc2cd1e94e5ed3a2db93ba091bf4181f475991942624ac839ff30e2",
+      "bytes": 30842
+    },
+    {
+      "file": "play-icon-512.png",
+      "pixels": [
+        512,
+        512
+      ],
+      "sha256": "d481c70ca56290e590c937b96c2ac03eebb1740ed10374f3ae804acc1624f2f5",
+      "bytes": 15336
+    },
+    {
+      "file": "feature-graphic-1024x500.png",
+      "pixels": [
+        1024,
+        500
+      ],
+      "sha256": "6119ceda5f171d8eb424a617615cd12411c362f53f48b799811d7a68409d2698",
+      "bytes": 34104
+    }
+  ],
+  "fontLicense": "Inter-OFL.txt (exact copy of public/fonts/typeface/inter/OFL.txt)"
+}

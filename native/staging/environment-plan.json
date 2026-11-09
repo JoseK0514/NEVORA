@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "state": "prepared-hosting-on-hold",
+  "sourceCommit": "17102418b80fc5ebcae2fe4890eb1dd8252ac8d3",
+  "purpose": "NEVORA Employee/Owner native staging with fictional data only",
+  "hosting": {
+    "provider": "vercel",
+    "proposedTeamName": "VELANI Native Development",
+    "teamId": null,
+    "plan": "pro",
+    "paidApprovalRecorded": false,
+    "projectName": "nevora-native-staging",
+    "projectId": null,
+    "framework": "nextjs",
+    "installCommand": "npm ci --ignore-scripts --no-audit --no-fund",
+    "buildCommand": "npm run build",
+    "nodeVersion": "24.x",
+    "customEnvironment": "native-staging",
+    "automaticGitDeployments": false,
+    "copyEnvironmentFrom": [],
+    "proposedOrigin": "https://nevora-native-staging-qa.vercel.app",
+    "domainReserved": false,
+    "protection": "Protect generated deployments; one explicitly approved canonical-domain exception for the native probe/login and future public association metadata. Server sessions/authorization remain mandatory for all private data.",
+    "publicDomainApprovalRecorded": false,
+    "firstDeploymentPolicy": "Inspect Vercel first-deployment behavior before any application deploy. If a new-project Production bootstrap is required, it must be a separate inert artifact with no application code, database or secrets. Obtain explicit approval for that bootstrap. Never place staging secrets in Production to work around it.",
+    "nodeVersionReadbackRequiredBeforeBuild": true,
+    "holdRequestedByJose": "2026-11-05"
+  },
+  "database": {
+    "provider": "neon",
+    "organizationId": "org-young-thunder-09560189",
+    "organizationName": "VELANI LLC (MAIN)",
+    "organizationPlan": "launch",
+    "projectName": "nevora-native-staging-20261105",
+    "projectId": null,
+    "region": "aws-us-east-1",
+    "postgresVersion": 17,
+    "branchName": "native-fictional-only",
+    "branchId": null,
+    "databaseName": "nevora_native_staging",
+    "initializeFrom": "new empty root; never clone production or Clocker",
+    "historyRetentionSeconds": 0,
+    "compute": {
+      "minimumCu": 0.25,
+      "maximumCu": 0.25,
+      "idleSuspendSeconds": 300
+    },
+    "quota": {
+      "compute_time_seconds": 3600,
+      "data_transfer_bytes": 1073741824,
+      "logical_size_bytes": 536870912,
+      "active_time_seconds": 14400,
+      "written_data_bytes": 1073741824
+    },
+    "extraBranchesOrEndpoints": false,
+    "authDataApiFunctionsAiGateway": false,
+    "bootstrapRole": "Separate temporary schema installer; never bind it to the web app",
+    "runtimeRole": "Separate non-admin app login; only schema usage and required DML/function/sequence access, no schema CREATE/owner/role administration",
+    "bootstrapTlsMode": "verify-full"
+  },
+  "data": {
+    "fictionalOnly": true,
+    "company": "NEVORA Native QA (Fictional)",
+    "timeZone": "America/Puerto_Rico",
+    "companySetupEnvironment": "development",
+    "initialLocation": {
+      "name": "Native Fixture",
+      "shortName": "NATIVE",
+      "key": "native-qa"
+    },
+    "accounts": [
+      {
+        "employeeId": "NATIVE-QA-OWNER",
+        "firstName": "Fictional",
+        "lastName": "Owner",
+        "role": "OWNER",
+        "phone": "2025550101",
+        "email": "native-owner@example.invalid"
+      },
+      {
+        "employeeId": "NATIVE-QA-EMPLOYEE",
+        "firstName": "Fictional",
+        "lastName": "Employee",
+        "role": "EMPLOYEE",
+        "phone": "2025550102",
+        "email": "native-employee@example.invalid"
+      }
+    ],
+    "passwords": "Generate unique random credentials only after provisioning, store in owner private credential custody, never reuse public fixture passwords"
+  },
+  "native": {
+    "androidPackage": "com.velani.nevora.development",
+    "iosBundle": "com.velani.nevora.development",
+    "androidMinimumApi": 29,
+    "androidMinimumWebViewVersion": "156.0.8078.50",
+    "iosMinimumVersion": "16.0",
+    "nativePushEnabled": false,
+    "associations": "Pending actual installed-app signing identities and active Apple organization team; publish no placeholder associations",
+    "firebaseProject": "nevora-native-development",
+    "firebaseBillingPlan": "Spark (last observed)",
+    "analyticsEnabled": false
+  },
+  "costProposal": {
+    "currency": "USD",
+    "vercelBasePerMonth": 20,
+    "vercelTaxAndMeteredUsageAdditional": true,
+    "additionalNeonMonthlyBudgetRequested": 1,
+    "neonComputeRatePerCuHour": 0.106,
+    "neonStorageRatePerGbMonth": 0.35,
+    "neonBoundedComputeEstimate": 0.106,
+    "neonHalfGiBStorageEstimateConservative": 0.188,
+    "notes": "Requested: $20 base Pro seat + $5 Vercel metered-usage allowance + $1 Neon allowance, plus tax. These are operating budgets, not an invoice guarantee. Check costs before/after each build and at least every15minutes while the canonical domain is exposed; at $3 reported Vercel usage or on unavailable/lagging spend proof, stop public qualification. No unattended public staging. Provider metering/stop latency and retained storage can exceed thresholds; if Jose requires a strict invoice cap, do not provision until a verified enforcing path exists.",
+    "vercelAdditionalUsageBudgetUsd": 5,
+    "vercelStopThresholdUsd": 3,
+    "activeTestMonitoringMinutes": 15,
+    "monitoringOwner": "Codex/root during active qualification",
+    "checkBeforeAndAfterEveryBuild": true,
+    "unattendedPublicAccess": false,
+    "stopOnUnavailableUsageRead": true,
+    "stopAction": "Restore full Vercel Authentication and remove canonical-domain exception, cancel new builds/tests, suspend only the new Neon endpoint, preserve data and request Jose approval before resuming. Production-only pause is insufficient.",
+    "nominalMonthlyTotalWithAllowancesUsd": 26,
+    "invoiceGuarantee": false
+  },
+  "gates": {
+    "sourceInventory": "FAIL: four active remote heads versus three. Three approved branches archived/retired; newly appeared claude/youthful-mendel-9mg8hu preserved pending reconciliation.",
+    "paidHosting": "ON HOLD at Jose request November 5; no subscription, paid provisioning or hosted deployment authorized.",
+    "firstDeploymentTarget": "Await exact new-project bootstrap approval or verified equivalent provider path",
+    "canonicalDomainExposure": "Await explicit approval before adding exception",
+    "cloudCreated": false,
+    "databaseSeeded": false,
+    "deployed": false,
+    "hostedVerified": false,
+    "deviceVerified": false
+  }
+}

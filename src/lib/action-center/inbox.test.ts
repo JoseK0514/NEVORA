@@ -68,4 +68,15 @@ describe('coverage gaps that ended today (Round 5, Nov 7, 2026)', () => {
   it('reads the workspace clock at an observation', () => {
     expect(workspaceNow('2026-11-07T19:30:00Z', 'America/Puerto_Rico')).toBe('2026-11-07T15:30');
   });
+  it('keeps a previous-day overnight gap current until its actual end when a clock is supplied', () => {
+    const overnight = gap('night', '2026-11-07T22:00', '2026-11-08T06:00');
+    expect(isPastCoverageGap(overnight, '2026-11-08', '2026-11-08T02:00')).toBe(false);
+    expect(isPastCoverageGap(overnight, '2026-11-08', '2026-11-08T06:00')).toBe(true);
+    expect(isPastCoverageGap(overnight, '2026-11-08')).toBe(true);
+  });
+  it('uses the workspace midnight and DST clock without depending on the browser zone', () => {
+    expect(workspaceNow('2026-11-08T04:00:00Z', 'America/Puerto_Rico')).toBe('2026-11-08T00:00');
+    expect(workspaceNow('2026-03-08T07:30:00Z', 'America/New_York')).toBe('2026-03-08T03:30');
+    expect(workspaceNow('invalid', 'America/Puerto_Rico')).toBeUndefined();
+  });
 });

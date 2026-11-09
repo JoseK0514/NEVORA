@@ -1,0 +1,22 @@
+{
+  "evidence": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-q2lp6A/nevora-native-android-0ueh_h8u",
+  "serial": "emulator-5560",
+  "passed": false,
+  "fixtureOnly": false,
+  "checkpoint": "ad9f38fa0becc47aa37e4b7c45f8dba78cc72856",
+  "ownerId": "0f05967c6b17b6b0d2acf4e3602e72a4",
+  "qualification": "full-backend",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.google.android.webview",
+    "version": "149.0.7827.5",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "116db8f9100f9d10d50d6d3ddc1290b9fee55a210eaac08b4e262f3d51f5552a",
+  "origin": "http://127.0.0.1:64562",
+  "isolatedTestProcesses": true,
+  "coldInstrumentationTests": 1,
+  "coldProcessRestart": true,
+  "error": "RuntimeError"
+}

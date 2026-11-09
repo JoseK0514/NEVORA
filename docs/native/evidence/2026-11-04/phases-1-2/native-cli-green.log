@@ -1,0 +1,25 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/test/notification-worker-startup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1326[2mms[22m[39m
+   [33m[2m✓[22m[39m the actual npm worker command retains its exact bounded error with package-manager diagnostic false[33m 525[2mms[22m[39m
+   [33m[2m✓[22m[39m the actual npm worker command retains its exact bounded error with package-manager diagnostic true[33m 345[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/apns.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/http.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/worker.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/fcm.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/protocol.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/oauth.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/config.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/material.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/config.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/transport.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[32m225 passed[39m[22m[90m (225)[39m
+[2m   Start at [22m 14:06:18
+[2m   Duration [22m 2.15s[2m (tests 89%, import 8%, transform 2%, worker 1%)[22m
+
+[2m    Isolate [22m [33m11 workers spawned[39m[2m · ~43ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~434ms faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+

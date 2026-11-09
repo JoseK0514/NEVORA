@@ -1,0 +1,21 @@
+{
+  "destinationClass": "owner existing iCloud Drive",
+  "destination": "/Users/josek0514/Library/Mobile Documents/com~apple~CloudDocs/NEVORA Private Recovery/Android Development Upload Key 2026-11-05",
+  "encryptedKeySha256": "2d0f6044cc544d62435e2b1ce1de88245a5447007e99dc382085d6af96bd67e3",
+  "bytes": 3630,
+  "passwordCopied": false,
+  "bitwardenItemSaved": false,
+  "cloudUploadVerified": true,
+  "independentRestoreVerified": false,
+  "privateKeyOrPasswordPrinted": false,
+  "authorizedByJose": "Use iCloud Drive and Bitwarden",
+  "createdAt": 1793962193.404212,
+  "cloudMetadata": {
+    "isUbiquitousItem": true,
+    "isUploaded": true,
+    "isUploading": false,
+    "uploadErrorPresent": false
+  },
+  "cloudFileRestoreVerified": true,
+  "restoredSha256": "2d0f6044cc544d62435e2b1ce1de88245a5447007e99dc382085d6af96bd67e3"
+}

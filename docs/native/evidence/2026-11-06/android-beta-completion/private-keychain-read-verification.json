@@ -1,0 +1,7 @@
+{
+  "source": "existing scoped Keychain integration; interactive access disabled for this caller, no ACL changes",
+  "passwordPrinted": false,
+  "credentialFileWritten": false,
+  "readVerified": true,
+  "cloudKeyOpened": true
+}

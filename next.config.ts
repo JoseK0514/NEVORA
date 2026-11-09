@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import {nativeContentSecurityPolicy} from './src/lib/native-shell/security';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -40,7 +41,19 @@ const nextConfig: NextConfig = {
         ].join('; ')},
       ],
     }));
-    return [...portal, ...clocker, ...activation];
+    // Restrictive renderer profile only; a marker never grants account access.
+    // Keep this after narrower routes so their policies cannot weaken it.
+    const native = {
+      source: '/:path*',
+      has: [{type: 'header' as const, key: 'user-agent', value: '.*(?:^|\\s)NEVORA-Native/(?:iOS|Android)/1(?:\\s.*|$)'}],
+      headers: [
+        {key: 'Content-Security-Policy', value: nativeContentSecurityPolicy(process.env.NODE_ENV === 'development')},
+        {key: 'Cache-Control', value: 'no-store, private'},
+        {key: 'Referrer-Policy', value: 'no-referrer'},
+        {key: 'X-Content-Type-Options', value: 'nosniff'},
+      ],
+    };
+    return [...portal, ...clocker, ...activation, native];
   },
 };
 

@@ -1,0 +1,11 @@
+{
+  "api": 29,
+  "serial": "emulator-5580",
+  "normalSignedUpdate": true,
+  "factorySignerMatches": true,
+  "provider": "com.google.android.webview",
+  "version": "156.0.8078.50",
+  "minimumApi": 29,
+  "readiness": "Waited for WebView Update Service current provider after package installation; initial old-current/new-preferred snapshot retained",
+  "source": "Google-signed mirror artifact; normal adb update, no trust/renderer overrides"
+}

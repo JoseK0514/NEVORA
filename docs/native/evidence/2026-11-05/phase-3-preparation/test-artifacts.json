@@ -1,0 +1,32 @@
+[
+  {
+    "artifact": "task-1-red.log.gz",
+    "rawSha256": "d586325c3016213a699de9fb6984a321b653e3efab7198b0c822ed100d125ca5",
+    "rawBytes": 18030
+  },
+  {
+    "artifact": "task-1-green.log.gz",
+    "rawSha256": "9881f3d94301d524e100c98ea0aebd3d61238ae53d0a7e8be253d559a9bed6b1",
+    "rawBytes": 1212
+  },
+  {
+    "artifact": "task-1-suite.log.gz",
+    "rawSha256": "5362f5cb09b1c3e6897c0f101272a0e9aaef0c942eff2cbbb85a1a03915644e7",
+    "rawBytes": 2585
+  },
+  {
+    "artifact": "review-fixes-red.log.gz",
+    "rawSha256": "2b16ae3cb6f88cd1b39c633feffa2488a6b2f9ce4f2e1b377ea063d7b803b5f6",
+    "rawBytes": 5592
+  },
+  {
+    "artifact": "review-fixes-green.log.gz",
+    "rawSha256": "58e1cdda8ef05790dc426074aa3f3fe37a54ba5dc4d8304a617d7473f2465c0f",
+    "rawBytes": 2953
+  },
+  {
+    "artifact": "task-1-final-tests.log.gz",
+    "rawSha256": "2f13ee7c1a53b212748b7e33e83db6ffc5f1a936b9ae07a874841c0784bbb02f",
+    "rawBytes": 2945
+  }
+]

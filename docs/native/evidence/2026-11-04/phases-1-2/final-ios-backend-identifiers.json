@@ -1,0 +1,71 @@
+{
+  "devices": [
+    {
+      "architecture": "arm64",
+      "deviceId": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+      "deviceName": "NEVORA Phases12 owned 20261104",
+      "modelName": "iPhone 17 Pro",
+      "osBuildNumber": "24A434",
+      "osVersion": "27.0",
+      "platform": "iOS Simulator"
+    }
+  ],
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [
+                {
+                  "duration": "20s",
+                  "durationInSeconds": 20.692956924438477,
+                  "name": "testActivatedAccountCanSignIn()",
+                  "nodeIdentifier": "NevoraBackendUITests/testActivatedAccountCanSignIn()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraBackendUITests/testActivatedAccountCanSignIn",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "49s",
+                  "durationInSeconds": 49.220391035079956,
+                  "name": "testEmployeeActionRevocationOutageAndLogout()",
+                  "nodeIdentifier": "NevoraBackendUITests/testEmployeeActionRevocationOutageAndLogout()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraBackendUITests/testEmployeeActionRevocationOutageAndLogout",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                },
+                {
+                  "duration": "36s",
+                  "durationInSeconds": 36.003183007240295,
+                  "name": "testOwnerActionAndPersistentSession()",
+                  "nodeIdentifier": "NevoraBackendUITests/testOwnerActionAndPersistentSession()",
+                  "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraBackendUITests/testOwnerActionAndPersistentSession",
+                  "nodeType": "Test Case",
+                  "result": "Passed"
+                }
+              ],
+              "name": "NevoraBackendUITests",
+              "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests/NevoraBackendUITests",
+              "nodeType": "Test Suite",
+              "result": "Passed"
+            }
+          ],
+          "name": "NevoraUITests",
+          "nodeIdentifierURL": "test://com.apple.xcode/NEVORA/NevoraUITests",
+          "nodeType": "UI test bundle",
+          "result": "Passed"
+        }
+      ],
+      "name": "NEVORA",
+      "nodeType": "Test Plan",
+      "result": "Passed"
+    }
+  ],
+  "testPlanConfigurations": [
+    {
+      "configurationId": "1",
+      "configurationName": "Test Scheme Action"
+    }
+  ]
+}

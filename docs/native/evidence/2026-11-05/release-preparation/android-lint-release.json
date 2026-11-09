@@ -1,0 +1,12 @@
+{
+  "command": [
+    "./gradlew",
+    "--no-daemon",
+    "--project-cache-dir",
+    "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-gradle-cache",
+    "-PnevoraBuildDirectory=/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build",
+    ":app:lintRelease"
+  ],
+  "exitCode": 0,
+  "seconds": 8.7
+}

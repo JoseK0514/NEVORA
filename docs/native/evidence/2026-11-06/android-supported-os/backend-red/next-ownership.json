@@ -1,0 +1,27 @@
+{
+  "ownerId": "4ec3b1f4-4ef8-4578-b1b6-e932f3cfa839",
+  "source": "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101",
+  "root": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-MUjAjp/owned-next-s84AsS",
+  "runtime": "Next development + owned PostgreSQL; substituted DB transport",
+  "started": true,
+  "pid": 72295,
+  "port": 65487,
+  "url": "http://127.0.0.1:65487",
+  "identity": {
+    "name": "nevora_exchange_test_n_0f58b45c1071",
+    "oid": 16384,
+    "marker": "fuel-phase3-disposable:3a795cd1-9883-4863-9259-5d8281cd6635"
+  },
+  "closed": true,
+  "closedAt": "2026-11-06T03:34:53.277Z",
+  "sourceVerified": true,
+  "mirrorVerified": true,
+  "derivedArtifactsReleased": {
+    "directories": [
+      "app/node_modules",
+      "app/.next"
+    ],
+    "availableBytesBefore": 3379773440,
+    "availableBytesAfter": 4693639168
+  }
+}

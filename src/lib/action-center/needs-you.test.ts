@@ -63,4 +63,14 @@ describe('needs you (F1)', () => {
     const value = needsYou(items, '2026-10-18', [shift('a')]);
     expect(needsYouDetail(value) + needsYouSentence(value.count)).not.toMatch(/miss/i);
   });
+
+  it('uses the optional source clock for expired gaps while preserving older callers', () => {
+    const ended = {...item('ended', 'COVERAGE_GAP', 'scheduling', 'URGENT', '2026-11-07T08:00'), endDateTime:'2026-11-07T12:00'};
+    const running = {...item('running', 'COVERAGE_GAP', 'scheduling', 'URGENT', '2026-11-07T14:00'), endDateTime:'2026-11-07T22:00'};
+    const current = needsYou([ended, running], '2026-11-07', [], '2026-11-07T15:30');
+    expect(current.count).toBe(1);
+    expect(current.now.map(row => row.id)).toEqual(['running']);
+    expect(current.past.map(row => row.id)).toEqual(['ended']);
+    expect(needsYou([ended, running], '2026-11-07').count).toBe(2);
+  });
 });

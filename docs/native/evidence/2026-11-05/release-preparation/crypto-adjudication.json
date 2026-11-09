@@ -1,0 +1,139 @@
+{
+  "scope": "Active iOS/Android code and web native-shell/native-push source,63 scanned files. No private signing directory, vault, deployment or secret history scanned.",
+  "method": "Offline dependency-free crypto-secrets scanner plus semantic review",
+  "results": [
+    {
+      "scope": "native/ios/App",
+      "filesScanned": 5,
+      "skipped": {
+        "binary": 0,
+        "ignored": 0,
+        "oversized": 0,
+        "read_error": 0,
+        "unsupported": 0
+      },
+      "rawExitCode": 0,
+      "rawSummary": {
+        "counts": {
+          "INFO": 0,
+          "P0": 0,
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "deployment_risk": "Low",
+        "rotation_required": 0,
+        "total": 0
+      },
+      "classification": "No scanner candidates found"
+    },
+    {
+      "scope": "native/ios/Sources",
+      "filesScanned": 7,
+      "skipped": {
+        "binary": 0,
+        "ignored": 0,
+        "oversized": 0,
+        "read_error": 0,
+        "unsupported": 0
+      },
+      "rawExitCode": 0,
+      "rawSummary": {
+        "counts": {
+          "INFO": 0,
+          "P0": 0,
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "deployment_risk": "Low",
+        "rotation_required": 0,
+        "total": 0
+      },
+      "classification": "No scanner candidates found"
+    },
+    {
+      "scope": "native/android/app/src/main",
+      "filesScanned": 18,
+      "skipped": {
+        "binary": 0,
+        "ignored": 0,
+        "oversized": 0,
+        "read_error": 0,
+        "unsupported": 6
+      },
+      "rawExitCode": 0,
+      "rawSummary": {
+        "counts": {
+          "INFO": 0,
+          "P0": 0,
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "deployment_risk": "Low",
+        "rotation_required": 0,
+        "total": 0
+      },
+      "classification": "No scanner candidates found"
+    },
+    {
+      "scope": "src/lib/native-shell",
+      "filesScanned": 8,
+      "skipped": {
+        "binary": 0,
+        "ignored": 0,
+        "oversized": 0,
+        "read_error": 0,
+        "unsupported": 0
+      },
+      "rawExitCode": 0,
+      "rawSummary": {
+        "counts": {
+          "INFO": 0,
+          "P0": 0,
+          "P1": 0,
+          "P2": 0,
+          "P3": 0
+        },
+        "deployment_risk": "Low",
+        "rotation_required": 0,
+        "total": 0
+      },
+      "classification": "No scanner candidates found"
+    },
+    {
+      "scope": "src/lib/native-push",
+      "filesScanned": 25,
+      "skipped": {
+        "binary": 0,
+        "ignored": 0,
+        "oversized": 0,
+        "read_error": 0,
+        "unsupported": 0
+      },
+      "rawExitCode": 1,
+      "rawSummary": {
+        "counts": {
+          "INFO": 0,
+          "P0": 0,
+          "P1": 3,
+          "P2": 0,
+          "P3": 0
+        },
+        "deployment_risk": "High",
+        "rotation_required": 3,
+        "total": 3
+      },
+      "classification": "Three scanner hits are explicit fictional OAuth tokens in providers/oauth.test.ts; ephemeral RSA test key, injected fake transport, real HTTPS/HTTP2 calls forbidden by test."
+    }
+  ],
+  "confirmedFindings": [],
+  "syntheticCandidates": 3,
+  "rotationRequired": false,
+  "limitations": [
+    "Static scan cannot prove runtime secrets or external vault policy, deployed TLS, hidden generated files or historical commits.",
+    "Android XML/binary assets are not supported by this scanner; actual manifest was inspected separately.",
+    "No credential validity check or real provider call was made."
+  ]
+}

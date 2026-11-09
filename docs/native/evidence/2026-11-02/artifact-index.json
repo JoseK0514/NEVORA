@@ -1,0 +1,696 @@
+[
+  {
+    "label": "privacy-flag-red",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-4at0r63b",
+    "files": [
+      {
+        "file": "artifacts/privacy-flag-red/instrumentation-0.log",
+        "sha256": "66c1a56b80541373c15fbbd51ccb8274b93c254851f22641d28bdfc886129fbe",
+        "bytes": 3028
+      },
+      {
+        "file": "artifacts/privacy-flag-red/instrumentation.log",
+        "sha256": "66c1a56b80541373c15fbbd51ccb8274b93c254851f22641d28bdfc886129fbe",
+        "bytes": 3028
+      },
+      {
+        "file": "artifacts/privacy-flag-red/result.json",
+        "sha256": "90cca6981d996a7c1ae63e1b2e9be1ea816c799b968a3cf3886c2773bc3e0b56",
+        "bytes": 646
+      }
+    ]
+  },
+  {
+    "label": "recents-revocation-red",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-1zigy83c",
+    "files": [
+      {
+        "file": "artifacts/recents-revocation-red/Fictional_sign_in.xml",
+        "sha256": "b8912a2c1fc6b548a6bf8e20b7bfa0b8b24e9ed4e5879b99a52a4d95d557c8be",
+        "bytes": 18769
+      },
+      {
+        "file": "artifacts/recents-revocation-red/Fictional_sign_in_before_observer.xml",
+        "sha256": "b8912a2c1fc6b548a6bf8e20b7bfa0b8b24e9ed4e5879b99a52a4d95d557c8be",
+        "bytes": 18769
+      },
+      {
+        "file": "artifacts/recents-revocation-red/instrumentation-0.log",
+        "sha256": "89491cfbcb880203f40ba48f0e91ebccf2adea0f6ee161c596c56bd66d9d1790",
+        "bytes": 1201
+      },
+      {
+        "file": "artifacts/recents-revocation-red/instrumentation.log",
+        "sha256": "89491cfbcb880203f40ba48f0e91ebccf2adea0f6ee161c596c56bd66d9d1790",
+        "bytes": 1201
+      },
+      {
+        "file": "artifacts/recents-revocation-red/privacy_recents.xml",
+        "sha256": "a2c932b56068a7d10b15ef14b10e61435ecb972d9445a4f9194aaf4e7e72aa30",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/recents-revocation-red/public_capture_control.png",
+        "sha256": "aa6cdec486ae6452a11e7f49d484f0c5cd93bedc798a13a1186a79c3b1bdc247",
+        "bytes": 1026799
+      },
+      {
+        "file": "artifacts/recents-revocation-red/result.json",
+        "sha256": "279fe0ddeca34369595075e99c9a6c201976cd8e53c5327c54bfb3af1f3df8ec",
+        "bytes": 675
+      }
+    ]
+  },
+  {
+    "label": "recents-focus-green",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-373mth3m",
+    "files": [
+      {
+        "file": "artifacts/recents-focus-green/instrumentation-0.log",
+        "sha256": "0bb3e80257a39d068c9f3db6413080aeabe49ed84652553d45e36a993f2a5f5a",
+        "bytes": 190
+      },
+      {
+        "file": "artifacts/recents-focus-green/instrumentation.log",
+        "sha256": "0bb3e80257a39d068c9f3db6413080aeabe49ed84652553d45e36a993f2a5f5a",
+        "bytes": 190
+      },
+      {
+        "file": "artifacts/recents-focus-green/privacy_recents.xml",
+        "sha256": "f928208c6d1400877e7277ed539e5055e05f58dea3859f1b6248d661d465bf82",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/recents-focus-green/privacy_screen_off_recents.xml",
+        "sha256": "f928208c6d1400877e7277ed539e5055e05f58dea3859f1b6248d661d465bf82",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/recents-focus-green/public_capture_control.png",
+        "sha256": "241e12dfaa1233b1210127078ee97a30b162d8d3c6583c57eaae75758b99c2e2",
+        "bytes": 1026382
+      },
+      {
+        "file": "artifacts/recents-focus-green/result.json",
+        "sha256": "5deb21dbc96e9ba7da5891783ad32d9208fca16e58fdbde1460ebd87a620b180",
+        "bytes": 676
+      }
+    ]
+  },
+  {
+    "label": "recents-focus-reversal",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-die03on0",
+    "files": [
+      {
+        "file": "artifacts/recents-focus-reversal/Fictional_sign_in.xml",
+        "sha256": "2331c72fa1871243a0bed488a09272c45c6ed7fce78114f69c22be354736926c",
+        "bytes": 18320
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/Fictional_sign_in_before_observer.xml",
+        "sha256": "2331c72fa1871243a0bed488a09272c45c6ed7fce78114f69c22be354736926c",
+        "bytes": 18320
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/instrumentation-0.log",
+        "sha256": "c97589f66ea662d66b7d0a64d0db0b89683eaba7d330af6c6a9007d9ca61ae7b",
+        "bytes": 1201
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/instrumentation.log",
+        "sha256": "c97589f66ea662d66b7d0a64d0db0b89683eaba7d330af6c6a9007d9ca61ae7b",
+        "bytes": 1201
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/privacy_recents.xml",
+        "sha256": "abc54fae2242a06f48c3f73d15c54c6ce24ef64579708ed5f9d342259b7bac24",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/public_capture_control.png",
+        "sha256": "ee6c3d82ffcb2cab206ac260b85ea0c3683de6967c4287a01728a955b293548b",
+        "bytes": 1026574
+      },
+      {
+        "file": "artifacts/recents-focus-reversal/result.json",
+        "sha256": "cba5461f20653e6053b66260df83c0f7ca684535f31b4b31880d751227570454",
+        "bytes": 675
+      }
+    ]
+  },
+  {
+    "label": "default32-before-cleanup-red",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-wvs5_i1y",
+    "files": [
+      {
+        "file": "artifacts/default32-before-cleanup-red/Fictional_sign_in.xml",
+        "sha256": "3015890ad1f9f5c2ccb83d44b97d3f34105103391ede9b2f6aebe66a9d692253",
+        "bytes": 14007
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/Fictional_sign_in_before_observer.xml",
+        "sha256": "3015890ad1f9f5c2ccb83d44b97d3f34105103391ede9b2f6aebe66a9d692253",
+        "bytes": 14007
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-0.log",
+        "sha256": "05b4f810c7d79cde33ff72800b86e47fc6696c3e3b91028c61bf0332b09c487e",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-1.log",
+        "sha256": "33d703345cda13976aed153c3e78022859b5b265425202611442211bf2506848",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-2.log",
+        "sha256": "177e577f64df877bf89bf7bd64847405d676ecba7897ed4ab57401226d344723",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-3.log",
+        "sha256": "ea4b3ca90d2c9a07f7e3b589bb71a5e8a06d00b0f8d3d3a90fc0b483a5073a5a",
+        "bytes": 190
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-4.log",
+        "sha256": "42c60bc0efb774aa89f4e1563db733b924ab6b8db5257d099b3462898aef9fdc",
+        "bytes": 1225
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-5.log",
+        "sha256": "630c9002db8709f16824cc93cd968f49157af53e5b6a96408686fa2ce62777f6",
+        "bytes": 1425
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-6.log",
+        "sha256": "3f8262bed64c926561aa19b1946ab382e2ebc8bbfa02d83c7cc59ac8ecfc7347",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-7.log",
+        "sha256": "d4124fee79faa90829c0b5ac4678e4ace411bc7d695768557d08d2690a6c1b07",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation-8.log",
+        "sha256": "763c377926a041c3dee2bc1930643d452cf77314779510b5f08b3cec6599cbae",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/instrumentation.log",
+        "sha256": "947153e6b02dd4d76b5863b4acbb3e81a63adf6c74b6a3ae84854c134ba6bc92",
+        "bytes": 3982
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/privacy_recents.xml",
+        "sha256": "4f61276bd804b23ea0b0657f731f547a229a2061b4356b49dbfab349aab7ce8f",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/privacy_screen_off_recents.xml",
+        "sha256": "4f61276bd804b23ea0b0657f731f547a229a2061b4356b49dbfab349aab7ce8f",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/public_capture_control.png",
+        "sha256": "bc1344f504c2c016f85ab6b4e83c3aceea09d47e12b1feccb6ce9c20a277ab6d",
+        "bytes": 1026585
+      },
+      {
+        "file": "artifacts/default32-before-cleanup-red/result.json",
+        "sha256": "df81e21bf209be37bd0bdf11429ca988c0e7a10272cf809005c347ca115a211f",
+        "bytes": 674
+      }
+    ]
+  },
+  {
+    "label": "default36-clean-green",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-px6do2j2",
+    "files": [
+      {
+        "file": "artifacts/default36-clean-green/cold-start.xml",
+        "sha256": "0f5cdec756b43291abe9f1fbd23902bf71387069806a1614d6358bf397ea69af",
+        "bytes": 7160
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-0.log",
+        "sha256": "6bf9464305f56960240b9e322b449d71dab7d3a41a5674ddcd4e0dc7d1c862bd",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-1.log",
+        "sha256": "6bb503fea742eef66f03a5fd95eb76bcdd247cf549e747db58cf9d54a6231480",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-2.log",
+        "sha256": "87d7f93b8c52357582206f5786467826776610b408a11fe1c3b8454528361f8d",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-3.log",
+        "sha256": "0470301d76dc02f91cacdea8baaaeda4df9f9487fc45ac307c7abbbfb884e59b",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-4.log",
+        "sha256": "8fbd7a23f10ad55287d9b5020e6865b96a97de442b89b69e887a673efa1dc538",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-5.log",
+        "sha256": "8d30265f8b2989745aaf34c317dcef9adb3a4cc440fe890ac238067868483699",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-6.log",
+        "sha256": "886ec74d19b0f0ddf4907a7336a8b083223a57e10aba8ed7af87dda6d30c1f38",
+        "bytes": 84
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-7.log",
+        "sha256": "c1ad3a64ca453b54e3c20da7618aca9bf8661a4eb2d0c9ad1dd874deeeb942da",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation-8.log",
+        "sha256": "1d64af86742b7b572a341429f73552742604ac6ab4927488496ccc72fd1ebf29",
+        "bytes": 83
+      },
+      {
+        "file": "artifacts/default36-clean-green/instrumentation.log",
+        "sha256": "2ea09ba055f68ef6d3d56e7668ac0e2aa73cec9358c697fe105bb34c9387f584",
+        "bytes": 756
+      },
+      {
+        "file": "artifacts/default36-clean-green/owner-cold-start.png",
+        "sha256": "0c58542d3dbe59d6382c9ef0d1383dd8e9f4743caae64ccf1eb21b5117f6af34",
+        "bytes": 64798
+      },
+      {
+        "file": "artifacts/default36-clean-green/result.json",
+        "sha256": "5c1d62e5626a7056c21602b413cc920301fc40c454f45be06562be16b166d80f",
+        "bytes": 705
+      }
+    ]
+  },
+  {
+    "label": "default32-clean-red",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-jrbwotin",
+    "files": [
+      {
+        "file": "artifacts/default32-clean-red/Fictional_Home.xml",
+        "sha256": "deef6fe0a936619caca0c5b09ca4be219084e6bd515ea0ca70c07f9d0e412488",
+        "bytes": 14003
+      },
+      {
+        "file": "artifacts/default32-clean-red/Sign_out.xml",
+        "sha256": "dbccec47fdfeeaf4790bf54109e337ffb5d9eaf4b8fef054ffda27fb19f090c7",
+        "bytes": 18327
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-0.log",
+        "sha256": "5a03e31e840f2850609a97376afe0464fe220cbf14afb581052a95e7b501ac3e",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-1.log",
+        "sha256": "16fb146458c0ab1eab1561f51566f6f8bffab9ef26bef21c4b588e9871660dac",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-2.log",
+        "sha256": "9fdb2b8aca31dc43d260a92ac7a6b1e6c1f75e2aa46595acc1cb947ebb79d41d",
+        "bytes": 1202
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-3.log",
+        "sha256": "8b1f69e85bb8dea8c4af7ef0eaf389f1f4488d7bb430ee17b6cda8047cfeb8a7",
+        "bytes": 1487
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-4.log",
+        "sha256": "25a203b781d55500749672a3c1c9475d5c8164690bec2a2a0c7419664be19c2c",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-5.log",
+        "sha256": "3d6f301af02f0e2db36e4a2181713868069f814a670b334fc84c62a8c56bf4ca",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-6.log",
+        "sha256": "11980bb540b2ef105404325225e19bfaeae088385acbcbb58a8ee06a9b31ffff",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-7.log",
+        "sha256": "7f9c7445a6f8b4094ab055a7824079df0469c18734f5ec6903614866ac85109c",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation-8.log",
+        "sha256": "99a6c32206c5aa151664513527c69277331754426e4fb1fcebfa64a9eea0605f",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/default32-clean-red/instrumentation.log",
+        "sha256": "6704fd8a09b880223cd74af45f936009566183a0fb27ab24058eb3dac2889a69",
+        "bytes": 4020
+      },
+      {
+        "file": "artifacts/default32-clean-red/privacy_recents.xml",
+        "sha256": "acc4e8939e12122ca7a3914d20c853a5726034edb7558e6e0b4a58bcbd406a98",
+        "bytes": 18019
+      },
+      {
+        "file": "artifacts/default32-clean-red/privacy_screen_off_recents.xml",
+        "sha256": "d789d989231ca148529f1f70db560cdb73e93c7ba80e399196f9a3b17e204a80",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/default32-clean-red/public_capture_control.png",
+        "sha256": "9b77d926089a210b8c2269e8362547661ec64164c337028aaa86c28125092b34",
+        "bytes": 1026284
+      },
+      {
+        "file": "artifacts/default32-clean-red/result.json",
+        "sha256": "106538e6d318ff8456c2b7fcfda2aafdaf2997940bc60c71adca508ecc2991dc",
+        "bytes": 674
+      }
+    ]
+  },
+  {
+    "label": "consumer-focused-A",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-r_s085jd",
+    "files": [
+      {
+        "file": "artifacts/consumer-focused-A/instrumentation-0.log",
+        "sha256": "42995229c848e2fa1167ab30bc0f76566db8f0a31400370dd64837d497af3181",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-focused-A/instrumentation.log",
+        "sha256": "42995229c848e2fa1167ab30bc0f76566db8f0a31400370dd64837d497af3181",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-focused-A/public_capture_control.png",
+        "sha256": "668d631628a749ed8173b5900063b455adc225401cbb035588e1751cde7b8c4d",
+        "bytes": 1026956
+      },
+      {
+        "file": "artifacts/consumer-focused-A/result.json",
+        "sha256": "d82fd59ab7f60164e2c654c0974201a1924a056df3080cf33876b76e5a176baa",
+        "bytes": 831
+      }
+    ]
+  },
+  {
+    "label": "consumer-focused-B",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-bv4sesst",
+    "files": [
+      {
+        "file": "artifacts/consumer-focused-B/instrumentation-0.log",
+        "sha256": "8a68a9646b7fe465ac95c9017d5f9b8f2308831d6070040efcd81fa48637bbea",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-focused-B/instrumentation.log",
+        "sha256": "8a68a9646b7fe465ac95c9017d5f9b8f2308831d6070040efcd81fa48637bbea",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-focused-B/public_capture_control.png",
+        "sha256": "b116022ff8f6fdd36f33963b075457408921818a0a25c17b9b36390e58849b1f",
+        "bytes": 1026484
+      },
+      {
+        "file": "artifacts/consumer-focused-B/result.json",
+        "sha256": "f5051a5be6fc0c0697f1e4d47e20d489c2f63ef78d14593fa806db334e870ab6",
+        "bytes": 863
+      }
+    ]
+  },
+  {
+    "label": "consumer-focused-reversal",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-mjccgpiw",
+    "files": [
+      {
+        "file": "artifacts/consumer-focused-reversal/instrumentation-0.log",
+        "sha256": "4b81af9df79508eff24049d19ffd14bdd3187b8632ed88bdef53bc93893f5567",
+        "bytes": 188
+      },
+      {
+        "file": "artifacts/consumer-focused-reversal/instrumentation.log",
+        "sha256": "4b81af9df79508eff24049d19ffd14bdd3187b8632ed88bdef53bc93893f5567",
+        "bytes": 188
+      },
+      {
+        "file": "artifacts/consumer-focused-reversal/public_capture_control.png",
+        "sha256": "b116022ff8f6fdd36f33963b075457408921818a0a25c17b9b36390e58849b1f",
+        "bytes": 1026484
+      },
+      {
+        "file": "artifacts/consumer-focused-reversal/result.json",
+        "sha256": "b3be0f86bfa2ebe973a9e496959b627ea233820a6afd196181506ed946b50370",
+        "bytes": 831
+      }
+    ]
+  },
+  {
+    "label": "consumer-full-A",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-70chz3a1",
+    "files": [
+      {
+        "file": "artifacts/consumer-full-A/Sign_out.xml",
+        "sha256": "15651b3c9778ef596378e8f5668e2767c5545c2f19a5805db81a797bf6731026",
+        "bytes": 18773
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-0.log",
+        "sha256": "75e1f97d7b5d1302b5e851a2cedba1d5b3a02fc29a2cd2107913d495f6d30347",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-1.log",
+        "sha256": "c07e0648b8d83f9520c5b538121d0820996edefcc4bd78f546367b3068146c9e",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-2.log",
+        "sha256": "ccd70c94648ea0292cdafe9fc0b27a265fa8b8f0ea69301b65937e89e147a265",
+        "bytes": 1495
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-3.log",
+        "sha256": "6f9b97e27208b6245ddcda6575165755346df640aca85fe7e8b4de5d9cd16b42",
+        "bytes": 190
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-4.log",
+        "sha256": "24d177834698f3a324ea01f2fbf9e2a3dfef98b18c43f23a6b1a777a482c005d",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-5.log",
+        "sha256": "f1f337135cbe3dac2ca164ce8d6483a9a4a402375bd3d42e8c1a76ad2c3cbe04",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-6.log",
+        "sha256": "497832b673444cb25fcc4c2dc5484fa0d4f7e0b7143a75610d85341ec7b3d388",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-7.log",
+        "sha256": "8a1aa4c0b4a0bd95552dfb4c9ec64c21601f5db708252b5d6a3f251ac4f512a1",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation-8.log",
+        "sha256": "ed0db68e0543699c64fbd7b29ddfa9daf40ea61c376a1c2af0302025cff7c8ed",
+        "bytes": 188
+      },
+      {
+        "file": "artifacts/consumer-full-A/instrumentation.log",
+        "sha256": "96c6e1fa5c43dbdfbd9f515879bce18a4b632ce3bb3c5b395343d2c45ae986e6",
+        "bytes": 3015
+      },
+      {
+        "file": "artifacts/consumer-full-A/privacy_recents.xml",
+        "sha256": "3e4ed5cce6bf5af4f0b9c9000d7e4a5e5b02d1afc7ebd720d9aba538ca7c07c5",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/consumer-full-A/privacy_screen_off_recents.xml",
+        "sha256": "3e4ed5cce6bf5af4f0b9c9000d7e4a5e5b02d1afc7ebd720d9aba538ca7c07c5",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/consumer-full-A/public_capture_control.png",
+        "sha256": "b1b8735f7050bc9e1c442dc2b0129aac7cf89d84fb70ee4cb54da537dc5ee49b",
+        "bytes": 1026886
+      },
+      {
+        "file": "artifacts/consumer-full-A/result.json",
+        "sha256": "bbfad0479ff659a720ab3e4d7f60547880400e5875dbf8f3b4aa7a93051ac7c9",
+        "bytes": 829
+      },
+      {
+        "file": "artifacts/consumer-full-A/runtime.log",
+        "sha256": "56ce62725d94b2e8b5d74e6ec69732baca0837e127d5578559a523a4baf106f7",
+        "bytes": 9954
+      }
+    ]
+  },
+  {
+    "label": "consumer-full-B",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-c8j6p096",
+    "files": [
+      {
+        "file": "artifacts/consumer-full-B/Sign_out.xml",
+        "sha256": "7f3dcb36b9c2e200f93cf58b7fff6e2bb91a81ef1f8ed0e921b2652808c73472",
+        "bytes": 19226
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-0.log",
+        "sha256": "df09ddff074b44dac6307b3ccd1d26f56c2cb3389a41add633807dfbc9a866c1",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-1.log",
+        "sha256": "e2a4bc8dc86738011b9f8785b0c9afc8a21ed03460b1e2309edb5d8579f1197d",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-2.log",
+        "sha256": "aebcd0f08b868c867c8c77442da4b7a98f96997c5c4b02eee917f99349251c35",
+        "bytes": 1495
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-3.log",
+        "sha256": "0818466c8d7368ead432535706aecc220fed9f965e18234fe1647fb2265e142e",
+        "bytes": 190
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-4.log",
+        "sha256": "93a3ca5cdb1a2658c1c189aa5961b8291c00bbe6a17fe2651c9c91ce52c75195",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-5.log",
+        "sha256": "e0682a47e4a5cb570e583d3d43e594c99cfdbb25957825190dbcc28ce43a8a97",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-6.log",
+        "sha256": "93767cb3717715dd1258a698cb166b765790ea9d5f3a816f7ed13711a8af26cb",
+        "bytes": 188
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-7.log",
+        "sha256": "2d0e6e35afa06951237f8ff1f30ad1ec612dd98ff6c77723ae5c0f967a87e280",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation-8.log",
+        "sha256": "df2632ab6fa39d843145bb470b907b0cef9ff6cd40b02cb7e602bf1678e79922",
+        "bytes": 189
+      },
+      {
+        "file": "artifacts/consumer-full-B/instrumentation.log",
+        "sha256": "6c0330a658c9fcb8c6c1e71f1a9ed2e64b4a5814b0bdfbba7861a36b03a7a6c4",
+        "bytes": 3015
+      },
+      {
+        "file": "artifacts/consumer-full-B/privacy_recents.xml",
+        "sha256": "a09dc1787a572faedc093a1448c0a7219f7a9be9509d70b6af3521dc41a4d4ef",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/consumer-full-B/privacy_screen_off_recents.xml",
+        "sha256": "a09dc1787a572faedc093a1448c0a7219f7a9be9509d70b6af3521dc41a4d4ef",
+        "bytes": 18020
+      },
+      {
+        "file": "artifacts/consumer-full-B/public_capture_control.png",
+        "sha256": "36810865657a04366ba41412f6b90fede40a288ecbcbefedc53e3638dcece34e",
+        "bytes": 1026794
+      },
+      {
+        "file": "artifacts/consumer-full-B/result.json",
+        "sha256": "d5cb67bddf814e21b21ba61e676a6c2e390e1ab9fbd3743e07d55698a24f0a89",
+        "bytes": 861
+      },
+      {
+        "file": "artifacts/consumer-full-B/runtime.log",
+        "sha256": "dc206ea91f04ff8be106524f985974fcf88333480b0dd16a99dc265fc346850a",
+        "bytes": 15667
+      }
+    ]
+  },
+  {
+    "label": "android-final-build",
+    "originalRoot": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-final-yvsokd7o",
+    "files": [
+      {
+        "file": "artifacts/android-final-build/artifact-checks.json",
+        "sha256": "492e6d370c58d8fde1d4619a95cc48863cd1b9b50824dcb6919091dcbf5306aa",
+        "bytes": 603
+      },
+      {
+        "file": "artifacts/android-final-build/build-result.json",
+        "sha256": "2cf32092caf80c7fa8f366bd73b02aa2e3f61d780e8be564baed32562ea0afea",
+        "bytes": 172
+      },
+      {
+        "file": "artifacts/android-final-build/build.log",
+        "sha256": "f479f6db0dcdc3197519bd40f5fa008a2f542f2ee96f1e360970b053d51c01cc",
+        "bytes": 6397
+      },
+      {
+        "file": "artifacts/android-final-build/jvm-tests.xml",
+        "sha256": "06b03915e7189c06c9e23e5e02b86eefafedf18343d6514bd7824702aafeaf6f",
+        "bytes": 1166
+      },
+      {
+        "file": "artifacts/android-final-build/lint-results-debug.xml",
+        "sha256": "f9ae1b49d6fae75cbee4c3ff6351017f552c2fa0ce131167e0285ee070d7356a",
+        "bytes": 9561
+      },
+      {
+        "file": "artifacts/android-final-build/release-manifest.xml",
+        "sha256": "b4bcdccf75234a6e5613c7eea5eac5b912e79bc9bac866d156028f79285b5cd5",
+        "bytes": 3052
+      }
+    ]
+  },
+  {
+    "label": "ios-final-fixture",
+    "originalRoot": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-bsi1fbmb",
+    "files": [
+      {
+        "file": "artifacts/ios-final-fixture/result.json",
+        "sha256": "ac2d2dcef4b1957d5e43c9febdd0281e84c3f715cf64ec87ae79d1cdeae796b7",
+        "bytes": 383
+      },
+      {
+        "file": "artifacts/ios-final-fixture/summary.json",
+        "sha256": "210168bd14f7f16c67ca3e8f663d4bb24d89e80259fca5502bba3bc769abc896",
+        "bytes": 973
+      },
+      {
+        "file": "artifacts/ios-final-fixture/test-identifiers.json",
+        "sha256": "ff92f9ba73ab35ba88eee8e8a187577f7e5ad7bd22bbe3742d27e3ac6cc2f9a4",
+        "bytes": 3228
+      },
+      {
+        "file": "artifacts/ios-final-fixture/tests.log",
+        "sha256": "c4545d0ff53626083394b49c92cafe8d83c5390c442dd158865fbefff4f50b23",
+        "bytes": 28793
+      }
+    ]
+  }
+]

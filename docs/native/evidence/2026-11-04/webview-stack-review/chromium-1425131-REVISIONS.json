@@ -1,0 +1,14 @@
+{
+  "chromium_revision": "1425131",
+  "got_angle_revision": "8dbd2fe62ac34bcd1ba4a2f981b7278090719eb9",
+  "got_dawn_revision": "5e291f735ad8917a0d4d317387a7dbf7761fb7f2",
+  "got_revision": "211ffa38c1fd7ab4d2d9329f719a383c52a386d8",
+  "got_revision_cp": "refs/heads/main@{#1425131}",
+  "got_swiftshader_revision": "c12c13839d689f411911326b1f72e96eb525686c",
+  "got_v8_revision": "59bb59c5db9b6af5147747964a2d580ceb04c68a",
+  "got_v8_revision_cp": "refs/heads/13.5.179@{#1}",
+  "got_webrtc_revision": "aeef75a33e0d5f39112f120bb3041b43dedbd843",
+  "got_webrtc_revision_cp": "refs/heads/main@{#43992}",
+  "v8_revision": "1",
+  "v8_revision_git": "59bb59c5db9b6af5147747964a2d580ceb04c68a"
+}

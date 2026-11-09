@@ -15,7 +15,7 @@ import { PlusIcon } from "@phosphor-icons/react/ssr";
 import { NavIcon, type NavIconName } from "@/components/nav-icon";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import { PortalSignout } from "./portal-signout";
-import { PortalDeviceSetup } from "./portal-device-setup";
+import { PortalDeviceSetup,NativePortalDeviceSetup } from "./portal-device-setup";
 import {EmployeeDeviceProvider,EmployeeDevicePopover} from './employee-mobile/device-owner';
 import { PortalAccountMenu } from "./portal-account-menu";
 import { SheetGestures } from "./sheet-gestures";
@@ -72,6 +72,7 @@ type AppShellProps = {
   messagesAuthority?: string;
   communicationAuthority?: string;
   notificationsEnabled?: boolean;
+  nativeApp?: boolean;
   payrollCapabilities?: PayrollCapabilities;
   operationalAuthority?: OperationalAuthorityView;
   children: ReactNode;
@@ -124,7 +125,7 @@ function useOnline() {
  */
 export function AppShell(props:AppShellProps){
  const employee=['EMPLOYEE','LEAD'].includes(props.user.role);
- const content=employee?<EmployeeDeviceProvider key={props.notificationAuthority} authority={props.notificationAuthority} enabled={props.notificationsEnabled??false}><AppShellView {...props}/></EmployeeDeviceProvider>:<AppShellView {...props}/>;
+ const content=employee?<EmployeeDeviceProvider key={props.notificationAuthority} authority={props.notificationAuthority} enabled={!props.nativeApp&&(props.notificationsEnabled??false)}><AppShellView {...props}/></EmployeeDeviceProvider>:<AppShellView {...props}/>;
  return <AppNavigationProvider key={JSON.stringify([props.user.id,props.user.role])}>{props.messagesAuthority&&props.communicationAuthority&&employee?<EmployeeMessageProvider key={props.messagesAuthority} authority={props.messagesAuthority} core={props.communicationAuthority}>{content}</EmployeeMessageProvider>:content}</AppNavigationProvider>;
 }
 
@@ -133,6 +134,7 @@ function AppShellView({
   workspaceName,
   user,
   notificationsEnabled = false,
+  nativeApp = false,
   payrollCapabilities,
   initialCollapsed = false,
   preferenceCookie = "nevora_sidebar",
@@ -538,7 +540,7 @@ function AppShellView({
       <CorpMotion />
       <Toaster />
       <FormValidation />
-      {notificationsEnabled ? employee?<EmployeeDevicePopover role={user.role}/>:<PortalDeviceSetup role={user.role} /> : null}
+      {notificationsEnabled ? employee?<EmployeeDevicePopover role={user.role} nativeApp={nativeApp}/>:nativeApp?<NativePortalDeviceSetup role={user.role}/>:<PortalDeviceSetup role={user.role} /> : null}
     </div>
   );
 }

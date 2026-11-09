@@ -1,0 +1,22 @@
+✔ cancellation must not settle before child closure, and unproved SDK descendants cannot be called closed (12.621ms)
+✔ a timed out build waits for closure and reports descendant ownership unproved (26.806917ms)
+✔ unconfirmed termination is bounded and cannot report closed ownership (21.851917ms)
+﹣ two actual owned PostgreSQL invocations retain different live ports, data and evidence (0.322375ms) # SKIP
+✔ requires explicit local mode/source/platform and rejects ambiguous or device-unspecified work (1.489625ms)
+✔ refuses inherited database selection, including remote/prod and unowned loopback (0.323083ms)
+✔ children receive allowlisted tools and disabled providers, never ambient secrets or preloads (0.209083ms)
+✔ cleanup requires the private canonical resource, matching marker and an external path (2.229834ms)
+✔ a port/PID alone cannot authorize stopping a process (0.732917ms)
+✔ a stalled disposable shutdown is bounded and reproves ownership before immediate shutdown (0.122958ms)
+✔ a changed process can never receive the immediate-shutdown fallback (0.387792ms)
+✔ a large count or fixture run cannot stand in for named full-backend checks (4.670833ms)
+✔ ownership-only concurrency verification cannot be labeled as a device run (0.080625ms)
+✔ mixed current-source bytes or a different SHA cannot produce acceptance (201.9375ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 298.534416

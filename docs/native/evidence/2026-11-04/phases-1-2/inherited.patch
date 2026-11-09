@@ -1,0 +1,181 @@
+diff --git a/src/lib/native-push/providers/apns.test.ts b/src/lib/native-push/providers/apns.test.ts
+index 20da51f8..354423ec 100644
+--- a/src/lib/native-push/providers/apns.test.ts
++++ b/src/lib/native-push/providers/apns.test.ts
+@@ -13,7 +13,7 @@ const now = new Date('2030-01-01T12:00:00.000Z'), generation = '00000000-0000-40
+ const config = {origin: 'https://nevora.example', environment: 'test' as const, appId: 'com.velani.nevora.development', provider: 'apns-sandbox' as const,
+   teamId: 'FAKETEAM01', keyId: 'FAKEKEY001', privateKey: pair.privateKey, clock: () => new Date(now)};
+ const input = () => ({installation: {origin: config.origin, environment: 'test' as const, platform: 'ios' as const, provider: 'apns-sandbox' as const, appId: config.appId, keyFingerprint: '0'.repeat(64), generation, token: 'a1b2'},
+-  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal});
++  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal, beforeHandoff: async (): Promise<number | null> => 60});
+ const response = (statusCode = 200, body: unknown = null, retryAfter?: string): NativeTransportResponse => ({statusCode, body: body === null ? Buffer.alloc(0) : Buffer.from(JSON.stringify(body)), ...(retryAfter ? {retryAfter} : {})});
+ afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+ it('sends only generic data to the exact sandbox topic with a real ES256 JOSE provider signature', async () => {
+@@ -85,3 +85,12 @@ it('redacts unknown transport failures and bounds an injected transport that ign
+   const pending = sender.send(input()); await vi.advanceTimersByTimeAsync(8001);
+   expect(await pending).toEqual({kind: 'retry', errorClass: 'transport_timeout'});
+ });
++it('requires the attempt gate before APNs IO and uses its shorter current TTL', async () => {
++  const m = await api(), requests: Parameters<import('./transport').NativeTransport>[0][] = [];
++  const sender = m.createApnsSender(config, async request => {requests.push(request); return response();});
++  const beforeHandoff = vi.fn(async () => 10), value = {...input(), beforeHandoff};
++  expect(await sender.send(value)).toEqual({kind: 'accepted'});
++  expect(beforeHandoff).toHaveBeenCalledOnce(); expect(requests[0].headers['apns-expiration']).toBe(String(now.getTime() / 1000 + 10));
++  expect(await sender.send({...value, beforeHandoff: async () => null})).toEqual({kind: 'not_sent'});
++  expect(requests).toHaveLength(1);
++});
+diff --git a/src/lib/native-push/providers/apns.ts b/src/lib/native-push/providers/apns.ts
+index 7b1b7faf..1bd6b2ab 100644
+--- a/src/lib/native-push/providers/apns.ts
++++ b/src/lib/native-push/providers/apns.ts
+@@ -3,7 +3,7 @@ import {createHash, sign, type KeyObject} from 'node:crypto';
+ import {parseNativeMaterialBinding} from '../protocol';
+ import type {NativeApnsScope, NativePushSender, NativeProviderResult} from './types';
+ import {createNodeNativeTransport, type NativeTransport, type NativeTransportResponse} from './transport';
+-import {boundedNativeSend, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
++import {boundedNativeSend, nativeHandoff, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
+ 
+ export type ApnsConfig = NativeApnsScope & {teamId: string; keyId: string; privateKey: KeyObject; clock?(): Date};
+ function validConfig(config: ApnsConfig): boolean {
+@@ -48,10 +48,12 @@ export function createApnsSender(config: ApnsConfig | null, transport: NativeTra
+     const value = validateNativeSend(input, ready, 'ios', ready.provider), now = ready.clock?.() ?? new Date();
+     if (!Number.isFinite(now.getTime())) return {kind: 'failed', errorClass: 'provider_configuration'};
+     const jwt = providerToken(now);
+-    signal.throwIfAborted();
++    const ttl = await nativeHandoff(value, signal); if (ttl === null) return {kind: 'not_sent'};
++    const handoffAt = ready.clock?.() ?? new Date();
++    if (!Number.isFinite(handoffAt.getTime())) return {kind: 'failed', errorClass: 'provider_configuration'};
+     const response = await transport({endpoint: `https://${ready.provider === 'apns-sandbox' ? 'api.sandbox.push.apple.com' : 'api.push.apple.com'}/3/device/${value.installation.token}`,
+       headers: {'content-type': 'application/json', authorization: 'bearer ' + jwt, 'apns-topic': ready.appId, 'apns-push-type': 'alert',
+-        'apns-priority': value.urgency === 'high' ? '10' : '5', 'apns-expiration': String(Math.floor(now.getTime() / 1000) + value.ttlSeconds),
++        'apns-priority': value.urgency === 'high' ? '10' : '5', 'apns-expiration': String(Math.floor(handoffAt.getTime() / 1000) + ttl),
+         'apns-collapse-id': createHash('sha256').update(JSON.stringify([value.payload.notificationId, value.payload.generation])).digest('hex')},
+       body: Buffer.from(JSON.stringify({aps: {alert: {title: 'NEVORA', body: 'Open NEVORA.'}}, nevora: {version: 1, ...value.payload}}))}, signal);
+     return outcome(response, ready.clock?.() ?? new Date());
+diff --git a/src/lib/native-push/providers/common.ts b/src/lib/native-push/providers/common.ts
+index 22e49384..92ca9c13 100644
+--- a/src/lib/native-push/providers/common.ts
++++ b/src/lib/native-push/providers/common.ts
+@@ -27,10 +27,18 @@ export function validateNativeSend(input: NativePushInput, scope: NativeProvider
+     closed(input.payload, ['notificationId', 'generation']);
+     if (typeof input.payload.notificationId !== 'string' || !/^[A-Za-z0-9_-]{1,128}$/.test(input.payload.notificationId)
+       || input.payload.generation !== material.generation || !Number.isInteger(input.ttlSeconds) || input.ttlSeconds < 1 || input.ttlSeconds > 7 * 86400
+-      || (input.urgency !== 'normal' && input.urgency !== 'high')) throw new NativeProviderFailure('failed', 'invalid_payload');
+-    return {installation: {...material, token}, payload: {notificationId: input.payload.notificationId, generation: material.generation}, ttlSeconds: input.ttlSeconds, urgency: input.urgency};
++      || (input.urgency !== 'normal' && input.urgency !== 'high') || typeof input.beforeHandoff !== 'function') throw new NativeProviderFailure('failed', 'invalid_payload');
++    return {installation: {...material, token}, payload: {notificationId: input.payload.notificationId, generation: material.generation}, ttlSeconds: input.ttlSeconds, urgency: input.urgency, beforeHandoff: input.beforeHandoff};
+   } catch (error) {if (error instanceof NativeProviderFailure) throw error; throw new NativeProviderFailure('failed', 'invalid_payload');}
+ }
++export async function nativeHandoff(value: ReturnType<typeof validateNativeSend>, signal: AbortSignal): Promise<number | null> {
++  signal.throwIfAborted();
++  const ttl = await value.beforeHandoff(signal);
++  signal.throwIfAborted();
++  if (ttl === null) return null;
++  if (!Number.isInteger(ttl) || ttl < 1 || ttl > 7 * 86400) throw new NativeProviderFailure('failed', 'invalid_payload');
++  return Math.min(ttl, value.ttlSeconds);
++}
+ export function validateNativeResponse(value: NativeTransportResponse): NativeTransportResponse {
+   if (!Number.isInteger(value.statusCode) || value.statusCode < 200 || value.statusCode > 599 || !Buffer.isBuffer(value.body) || value.body.length > 8192
+     || (value.retryAfter !== undefined && (typeof value.retryAfter !== 'string' || value.retryAfter.length > 256))) throw new NativeProviderFailure('failed', 'provider_response');
+diff --git a/src/lib/native-push/providers/fcm.test.ts b/src/lib/native-push/providers/fcm.test.ts
+index 71366bbd..06fe3a5d 100644
+--- a/src/lib/native-push/providers/fcm.test.ts
++++ b/src/lib/native-push/providers/fcm.test.ts
+@@ -10,7 +10,7 @@ async function api() {
+ const generation = '00000000-0000-4000-8000-000000000001', now = new Date('2030-01-01T12:00:00.000Z');
+ const scope = {origin: 'https://nevora.example', environment: 'test' as const, appId: 'com.velani.nevora.development'};
+ const input = () => ({installation: {...scope, platform: 'android' as const, provider: 'fcm' as const, keyFingerprint: '0'.repeat(64), generation, token: 'fictional-token:opaque-1'},
+-  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal});
++  payload: {notificationId: 'fictional-notice', generation}, ttlSeconds: 60, urgency: 'normal' as const, signal: new AbortController().signal, beforeHandoff: async (): Promise<number | null> => 60});
+ const response = (statusCode = 200, body: unknown = {name: 'projects/fictional-test/messages/opaque-notice'}, retryAfter?: string): NativeTransportResponse => ({statusCode, body: Buffer.from(JSON.stringify(body)), ...(retryAfter ? {retryAfter} : {})});
+ const config = () => ({...scope, projectId: 'fictional-test', accessToken: vi.fn(async () => 'fictional-access-token'), clock: () => new Date(now)});
+ afterEach(() => {vi.useRealTimers(); expect(forbidden).not.toHaveBeenCalled();});
+@@ -69,6 +69,15 @@ it('detaches mutable token/payload input before awaiting credentials', async ()
+   const message = JSON.parse(requests[0].body.toString()).message;
+   expect(message.token).toBe('fictional-token:opaque-1'); expect(message.data.notificationId).toBe('fictional-notice');
+ });
++it('rechecks attempt authority after credential preparation and skips a revoked provider handoff', async () => {
++  const m = await api(), transport = vi.fn(async () => response()); let resolve!: (value: string) => void, allowed = true;
++  const beforeHandoff = vi.fn(async () => allowed ? 60 : null);
++  const value = {...input(), beforeHandoff};
++  const pending = m.createFcmSender({...config(), accessToken: () => new Promise<string>(yes => {resolve = yes;})}, transport).send(value);
++  expect(beforeHandoff).not.toHaveBeenCalled(); allowed = false; resolve('fictional-valid-token');
++  expect(await pending).toEqual({kind: 'not_sent'});
++  expect(beforeHandoff).toHaveBeenCalledOnce(); expect(transport).not.toHaveBeenCalled();
++});
+ it('fails closed on invalid UTF8/oversized response bodies and redacts unknown exceptions', async () => {
+   const m = await api();
+   expect(await m.createFcmSender(config(), async () => ({statusCode: 200, body: Buffer.from([0xff])})).send(input())).toEqual({kind: 'retry', errorClass: 'provider_response'});
+diff --git a/src/lib/native-push/providers/fcm.ts b/src/lib/native-push/providers/fcm.ts
+index ba2de357..29dab227 100644
+--- a/src/lib/native-push/providers/fcm.ts
++++ b/src/lib/native-push/providers/fcm.ts
+@@ -2,7 +2,7 @@ import 'server-only';
+ import {parseNativeMaterialBinding} from '../protocol';
+ import type {NativeProviderResult, NativeProviderScope, NativePushSender} from './types';
+ import {createNodeNativeTransport, type NativeTransport, type NativeTransportResponse} from './transport';
+-import {boundedNativeSend, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
++import {boundedNativeSend, nativeHandoff, responseObject, retryDelay, validateNativeResponse, validateNativeSend} from './common';
+ 
+ export type FcmConfig = NativeProviderScope & {projectId: string; accessToken(signal: AbortSignal): Promise<string>; clock?(): Date};
+ export const FCM_NOTIFICATION_CHANNEL = 'nevora_notifications';
+@@ -41,11 +41,12 @@ export function createFcmSender(config: FcmConfig | null, transport: NativeTrans
+     const token = await ready.accessToken(signal);
+     signal.throwIfAborted();
+     if (typeof token !== 'string' || token.length > 4096 || !/^[A-Za-z0-9._~+/-]+={0,2}$/.test(token)) return {kind: 'failed', errorClass: 'provider_configuration'};
++    const ttl = await nativeHandoff(value, signal); if (ttl === null) return {kind: 'not_sent'};
+     const response = await transport({endpoint: `https://fcm.googleapis.com/v1/projects/${ready.projectId}/messages:send`,
+       headers: {'content-type': 'application/json', authorization: 'Bearer ' + token},
+       body: Buffer.from(JSON.stringify({message: {token: value.installation.token, notification: {title: 'NEVORA', body: 'Open NEVORA.'},
+         data: {nevoraProtocol: '1', ...value.payload}, android: {restricted_package_name: ready.appId, priority: value.urgency === 'high' ? 'HIGH' : 'NORMAL',
+-          ttl: `${value.ttlSeconds}s`, notification: {channel_id: FCM_NOTIFICATION_CHANNEL, visibility: 'PRIVATE'}}}}))}, signal);
++          ttl: `${ttl}s`, notification: {channel_id: FCM_NOTIFICATION_CHANNEL, visibility: 'PRIVATE'}}}}))}, signal);
+     const now = ready.clock?.() ?? new Date();
+     if (!Number.isFinite(now.getTime())) return {kind: 'failed', errorClass: 'provider_configuration'};
+     return outcome(response, ready.projectId, now);
+diff --git a/src/lib/native-push/providers/types.ts b/src/lib/native-push/providers/types.ts
+index 1eba8a27..2b37d17d 100644
+--- a/src/lib/native-push/providers/types.ts
++++ b/src/lib/native-push/providers/types.ts
+@@ -2,13 +2,16 @@ import type {NativeEnvironment, NativeMaterialBinding, NativeProvider} from '../
+ import type {ProviderResult} from '../../notifications/types';
+ 
+ export type NativeProviderResult = Exclude<ProviderResult, {kind: 'invalid_subscription'}>
+-  | {kind: 'invalid_registration'; invalidatedAt?: number};
++  | {kind: 'invalid_registration'; invalidatedAt?: number} | {kind: 'not_sent'};
+ export type NativePushInput = {
+   installation: NativeMaterialBinding & {token: string};
+   payload: {notificationId: string; generation: string};
+   ttlSeconds: number;
+   urgency: 'normal' | 'high';
+   signal: AbortSignal;
++  /** Server-only attempt callback, after credentials and before real IO.
++   * Returns the currently authorized TTL, or null after durable cancel/defer. */
++  beforeHandoff(signal: AbortSignal): Promise<number | null>;
+ };
+ export type NativePushSender = {send(input: NativePushInput): Promise<NativeProviderResult>};
+ export type NativeProviderScope = {origin: string; environment: NativeEnvironment; appId: string};
+diff --git a/vitest.native-push-integration.config.mts b/vitest.native-push-integration.config.mts
+index 236433a6..d91bbf76 100644
+--- a/vitest.native-push-integration.config.mts
++++ b/vitest.native-push-integration.config.mts
+@@ -5,5 +5,5 @@ export default defineConfig({
+     '@': fileURLToPath(new URL('./src', import.meta.url)),
+     'server-only': fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js', import.meta.url)),
+   }},
+-  test: {include: ['src/test/integration/native-push.integration.ts'], fileParallelism: false, testTimeout: 15000, hookTimeout: 30000},
++  test: {include: ['src/test/integration/native-push.integration.ts', 'src/test/integration/native-deliveries.integration.ts'], fileParallelism: false, testTimeout: 15000, hookTimeout: 30000},
+ });
+diff --git a/vitest.native-push-regressions.config.mts b/vitest.native-push-regressions.config.mts
+index e5d00a8a..b9ad9217 100644
+--- a/vitest.native-push-regressions.config.mts
++++ b/vitest.native-push-regressions.config.mts
+@@ -4,7 +4,7 @@ import {nativeRegressionTarget} from './src/test/integration/native-push-fixture
+ const resolution = {alias: {'@': fileURLToPath(new URL('./src', import.meta.url)), 'server-only': fileURLToPath(new URL('./node_modules/next/dist/compiled/server-only/empty.js', import.meta.url))}};
+ const groups = [
+   {name: 'native-foundation', prefix: 'nevora_foundation_test_' as const, include: [
+-    'src/test/integration/native-push.integration.ts', 'src/test/integration/foundation.integration.ts',
++    'src/test/integration/native-push.integration.ts', 'src/test/integration/native-deliveries.integration.ts', 'src/test/integration/foundation.integration.ts',
+     'src/test/integration/phase-b-management-session.integration.ts', 'src/test/integration/phase-b-late-write-session.integration.ts',
+   ]},
+   {name: 'existing-web-push', prefix: 'fuel_phase3_test_' as const, include: ['src/test/integration/notifications.integration.ts']},

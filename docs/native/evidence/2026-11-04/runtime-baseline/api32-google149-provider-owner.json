@@ -1,0 +1,17 @@
+{
+  "serial": "emulator-5560",
+  "avd": "NevoraPhase12_API32",
+  "originalVersion": "120.0.6099.193",
+  "originalPath": "/data/app/~~5ebOmxKvWc-REG3qv9CB6g==/com.google.android.webview-6coZIPkS7CeIP2Z10HTcFw==/WebViewGoogle.apk",
+  "originalApk": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/google-sdk149/original-api32-WebViewGoogle.apk",
+  "originalSha256": "b23201f35dd85231787f19652786b615567c4b66a3f6d47635e4ed1b8ef4dee0",
+  "originalCertificateSha256": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5",
+  "originalProviderSetting": null,
+  "newVersion": "149.0.7827.5",
+  "newApk": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/google-sdk149/WebViewGoogle.apk",
+  "newSha256": "ef0a58095b677879ff9164ff4a2bd03cbbd28e1734276d0ed7dd6fe171390d06",
+  "restored": true,
+  "sameSigner": true,
+  "restoredAt": 1793844374.8410182,
+  "restoredApkSha256": "b23201f35dd85231787f19652786b615567c4b66a3f6d47635e4ed1b8ef4dee0"
+}

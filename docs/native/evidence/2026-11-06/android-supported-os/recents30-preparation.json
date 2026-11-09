@@ -1,0 +1,10 @@
+{
+  "api": 30,
+  "ownedSerial": "emulator-5580",
+  "action": "Opened public Android Settings then Overview for required first-use device preparation; actual screenshot retained. No NEVORA assertion or application setting changed.",
+  "pendingObservation": false,
+  "firstUseTutorialObserved": true,
+  "tutorialAbsentAfterBackHomeAndReopen": true,
+  "returnedHome": true,
+  "assertionsOrTimeoutsChanged": false
+}

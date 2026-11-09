@@ -1,0 +1,22 @@
+{
+  "sourceWorktree": "/Users/josek0514/Documents/Codex/2026-10-14/we-wi/work/nevora-cross-platform-poc/apps/employee-poc/android",
+  "gradle": "8.14.3",
+  "officialSha256": {
+    "all.zip": "ed1a8d686605fd7c23bdf62c7fc7add1c5b23b2bbc3721e661934ef4a4911d7c",
+    "wrapper.jar": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172"
+  },
+  "files": [
+    {
+      "path": "gradlew",
+      "sha256": "b187b4c52e749f5760afdd6fadc31b2a98ad35fb249bf0dff03b72650f320409"
+    },
+    {
+      "path": "gradlew.bat",
+      "sha256": "1d297e00bd21de3ace22b4d7f2de1f9dfa858883d66bbf7c1ccbecccec8f4f3b"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "7d3a4ac4de1c32b59bc6a4eb8ecb8e612ccd0cf1ae1e99f66902da64df296172"
+    }
+  ]
+}

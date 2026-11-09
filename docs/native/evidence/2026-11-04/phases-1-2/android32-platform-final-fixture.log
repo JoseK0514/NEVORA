@@ -1,0 +1,21 @@
+(node:33775) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-tz7lvxq7", "serial": "emulator-5560", "passed": false, "fixtureOnly": true, "checkpoint": null, "ownerId": null, "qualification": "transport", "rendererObserver": false, "webView": {"package": "com.google.android.webview", "version": "120.0.6099.193", "accessibilityMode": "platform-default", "runtimeFlagsSha256": null}, "sourceHash": "0b72db2fbc7caa0b4659bbe5e6b6bc11e18cc6ebbdee2ae066e744de327df3c5", "origin": "http://127.0.0.1:56145", "fixtureOrigin": "http://127.0.0.1:56145", "error": "TimeoutExpired"}
+Traceback (most recent call last):
+  File "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/android/test-ui.py", line 215, in <module>
+    if len(selections) > 1: device('shell', 'am', 'force-stop', 'com.velani.nevora.development', timeout=5)
+  File "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/android/test-ui.py", line 84, in device
+    return run([str(adb), '-s', args.serial, *command], **options)
+  File "/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/native/android/test-ui.py", line 78, in run
+    result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=timeout)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 507, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 1134, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 1980, in _communicate
+    self._check_timeout(endtime, orig_timeout, stdout, stderr)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 1178, in _check_timeout
+    raise TimeoutExpired(
+subprocess.TimeoutExpired: Command '['/Users/josek0514/Library/Android/sdk/platform-tools/adb', '-s', 'emulator-5560', 'shell', 'am', 'force-stop', 'com.velani.nevora.development']' timed out after 5 seconds

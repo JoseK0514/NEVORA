@@ -1,0 +1,77 @@
+[
+  {
+    "id": "ApplySharedPref",
+    "severity": "Warning",
+    "message": "Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
+  },
+  {
+    "id": "UnusedAttribute",
+    "severity": "Warning",
+    "message": "Attribute `enableOnBackInvokedCallback` is only used in API level 33 and higher (current min is 29)"
+  },
+  {
+    "id": "AndroidGradlePluginVersion",
+    "severity": "Warning",
+    "message": "A newer version of Gradle than 8.14.3 is available: 8.14.6"
+  },
+  {
+    "id": "SetJavaScriptEnabled",
+    "severity": "Warning",
+    "message": "Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
+  },
+  {
+    "id": "DataExtractionRules",
+    "severity": "Warning",
+    "message": "The attribute `android:dataExtractionRules` only applies for Android 12 and higher; since `minSdkVersion` is API 29 you should also set `android:fullBackupContent`"
+  },
+  {
+    "id": "ObsoleteSdkInt",
+    "severity": "Warning",
+    "message": "Unnecessary; `SDK_INT` is always >= 24"
+  },
+  {
+    "id": "ObsoleteSdkInt",
+    "severity": "Warning",
+    "message": "Unnecessary; `SDK_INT` is always >= 29"
+  },
+  {
+    "id": "ObsoleteSdkInt",
+    "severity": "Warning",
+    "message": "This folder configuration (`v26`) is unnecessary; `minSdkVersion` is 29. Merge all the resources in this folder into `mipmap-anydpi`."
+  },
+  {
+    "id": "ObsoleteSdkInt",
+    "severity": "Warning",
+    "message": "This folder configuration (`v27`) is unnecessary; `minSdkVersion` is 29. Merge all the resources in this folder into `values`."
+  },
+  {
+    "id": "IconLocation",
+    "severity": "Warning",
+    "message": "Found bitmap drawable `res/drawable/nevora_app_icon.png` in densityless folder"
+  },
+  {
+    "id": "SetTextI18n",
+    "severity": "Warning",
+    "message": "String literal in `setText` can not be translated. Use Android resources instead."
+  },
+  {
+    "id": "SetTextI18n",
+    "severity": "Warning",
+    "message": "String literal in `setText` can not be translated. Use Android resources instead."
+  },
+  {
+    "id": "SetTextI18n",
+    "severity": "Warning",
+    "message": "String literal in `setText` can not be translated. Use Android resources instead."
+  },
+  {
+    "id": "SetTextI18n",
+    "severity": "Warning",
+    "message": "String literal in `setText` can not be translated. Use Android resources instead."
+  },
+  {
+    "id": "SetTextI18n",
+    "severity": "Warning",
+    "message": "String literal in `setText` can not be translated. Use Android resources instead."
+  }
+]

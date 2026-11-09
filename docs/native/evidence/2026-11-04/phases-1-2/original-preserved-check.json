@@ -1,0 +1,16 @@
+{
+  "original": "/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101",
+  "allTenPathsUnchanged": true,
+  "paths": {
+    "src/lib/data/native-deliveries.ts": true,
+    "src/test/integration/native-deliveries.integration.ts": true,
+    "src/lib/native-push/providers/apns.test.ts": true,
+    "src/lib/native-push/providers/apns.ts": true,
+    "src/lib/native-push/providers/common.ts": true,
+    "src/lib/native-push/providers/fcm.test.ts": true,
+    "src/lib/native-push/providers/fcm.ts": true,
+    "src/lib/native-push/providers/types.ts": true,
+    "vitest.native-push-integration.config.mts": true,
+    "vitest.native-push-regressions.config.mts": true
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "source": "fafa56ded5fe855350ebd58e3b070ea25c75baf4",
+  "android": {
+    "apkAndAabBuilt": true,
+    "distributionSigned": false,
+    "launcherIconPackaged": true,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.POST_NOTIFICATIONS",
+      "android.permission.ACCESS_NETWORK_STATE",
+      "android.permission.WAKE_LOCK",
+      "com.google.android.c2dm.permission.RECEIVE",
+      "com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    ],
+    "jvm": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "lint": [
+      {
+        "file": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/reports/lint-results-release.xml",
+        "errors": 0,
+        "warnings": 15
+      },
+      {
+        "file": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/reports/lint-results-debug.xml",
+        "errors": 0,
+        "warnings": 15
+      }
+    ],
+    "backendOrigin": "unconfigured",
+    "providersEnabled": false
+  },
+  "ios": {
+    "releaseSimulatorBuilt": true,
+    "organizationSigned": false,
+    "iconPackaged": true,
+    "privacyManifestPackaged": true,
+    "backendOrigin": "",
+    "nativePushEnabled": "false",
+    "collectionManifest": "Omitted; full hosted-data disclosure worksheet required before upload"
+  },
+  "artifacts": [
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/outputs/apk/release/app-release-unsigned.apk",
+      "bytes": 8178553,
+      "sha256": "da4d8f707e1738776c2d9cea0de5f2e3f8ec8303a6735df35651ecc0a832d04a"
+    },
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/android-build/outputs/bundle/release/app-release.aab",
+      "bytes": 2989070,
+      "sha256": "2fbffc6145aaf29fd34396c1c721ed4dd3e0a5e7b782b015c3223e3de1244a99"
+    },
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/ios-release/Build/Products/Release-iphonesimulator/NEVORA.app/Info.plist",
+      "bytes": 1509,
+      "sha256": "f956dfe54b580713b15a915b24348cd7d6136729adf75adb0428365818b93f99"
+    },
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/ios-release/Build/Products/Release-iphonesimulator/NEVORA.app/PrivacyInfo.xcprivacy",
+      "bytes": 548,
+      "sha256": "2794abe82350aa339cb712e9070dc645a70a74d1a2beb6dc0f3fdedde611e40b"
+    },
+    {
+      "path": "/Users/josek0514/.codex/native-runtime/nevora-release-preparation-20261105/ios-release/Build/Products/Release-iphonesimulator/NEVORA.app/Assets.car",
+      "bytes": 78648,
+      "sha256": "9522a212563998d20dc6a0d3d2ae61a5b85b9c46e16ecdf9a25675e59f0b1771"
+    }
+  ],
+  "hostedVerified": false,
+  "usableBeta": false,
+  "uploaded": false
+}

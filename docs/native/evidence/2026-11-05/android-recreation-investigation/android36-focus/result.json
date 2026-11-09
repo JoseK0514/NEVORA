@@ -1,0 +1,21 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-ae_bs5pw",
+  "serial": "emulator-5572",
+  "passed": true,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "ownerId": null,
+  "qualification": "transport",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.google.android.webview",
+    "version": "149.0.7827.5",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "1e49e09de7264c0d33505c9c6bda155c5c08f0b5aba627a8585bcdfeb7d021de",
+  "origin": "http://127.0.0.1:53611",
+  "fixtureOrigin": "http://127.0.0.1:53611",
+  "isolatedTestProcesses": false,
+  "instrumentationTests": 1
+}

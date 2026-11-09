@@ -1,0 +1,40 @@
+{
+  "xcresult": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-at6n4c6f/tests.xcresult",
+  "cases": [
+    {
+      "name": "testNativePresentationMarker()",
+      "nodeIdentifier": "NevoraUITests/testNativePresentationMarker()",
+      "result": "Passed"
+    },
+    {
+      "name": "testOnlineJourneyPersistsOnlyValidSession()",
+      "nodeIdentifier": "NevoraUITests/testOnlineJourneyPersistsOnlyValidSession()",
+      "result": "Passed"
+    },
+    {
+      "name": "testOwnerSessionIsSeparateAndPersistsAcrossRelaunch()",
+      "nodeIdentifier": "NevoraUITests/testOwnerSessionIsSeparateAndPersistsAcrossRelaunch()",
+      "result": "Passed"
+    },
+    {
+      "name": "testRedirectedSubresourcesRequireRendererContainment()",
+      "nodeIdentifier": "NevoraUITests/testRedirectedSubresourcesRequireRendererContainment()",
+      "result": "Passed"
+    },
+    {
+      "name": "testRevocationWhileBackgroundedNeverRevealsOldHome()",
+      "nodeIdentifier": "NevoraUITests/testRevocationWhileBackgroundedNeverRevealsOldHome()",
+      "result": "Passed"
+    },
+    {
+      "name": "testUnavailableBackendShowsRetryWithoutPrivateContent()",
+      "nodeIdentifier": "NevoraUITests/testUnavailableBackendShowsRetryWithoutPrivateContent()",
+      "result": "Passed"
+    },
+    {
+      "name": "testUnconfiguredAppFailsClosed()",
+      "nodeIdentifier": "NevoraUITests/testUnconfiguredAppFailsClosed()",
+      "result": "Passed"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "source": "install.log",
+    "stored": "install.log.gz",
+    "bytes": 26,
+    "sha256": "395ba6defde5fdafce7c9b4b879af527eacc70cc13abc7008aaed26b790b8b59"
+  },
+  {
+    "source": "build.log",
+    "stored": "build.log.gz",
+    "bytes": 6732,
+    "sha256": "da6457e0ceba51a2ce984ce0e097d1bd6396418e7846ed94ce9b2e2cf9b1b5bf"
+  },
+  {
+    "source": "production-start.log",
+    "stored": "production-start.log.gz",
+    "bytes": 364,
+    "sha256": "5c52544e45ea52aa569d0527c95c1bf51359bf905929c82e4f111b7acfeb0af8"
+  },
+  {
+    "source": "final-source-inventory-unit.log",
+    "stored": "final-source-inventory-unit.log.gz",
+    "bytes": 1399,
+    "sha256": "21e05da13a9aba768fa9b1ea4d5e089e9a3651c9ef0f65c2dd7af3cebffe83dd"
+  },
+  {
+    "source": "final-source-inventory-live.log",
+    "stored": "final-source-inventory-live.log.gz",
+    "bytes": 214,
+    "sha256": "7e44b8f8663ecf707e98349e33e83064cc16a84cd0084cd41cb8f84718031dc8"
+  },
+  {
+    "source": "branch-retirement-push.log",
+    "stored": "branch-retirement-push.log.gz",
+    "bytes": 356,
+    "sha256": "670cde2a423c6994a5da5df508d504987375cbf58ccba383c669991fa704ea51"
+  },
+  {
+    "source": "cloud-restore.log",
+    "stored": "cloud-restore.log.gz",
+    "bytes": 647,
+    "sha256": "bfc643593f78c4934d2e732d9e8a532194908ae670e3f3558cb9be73b088d02e"
+  },
+  {
+    "source": "replacement-cloud-restore.log",
+    "stored": "replacement-cloud-restore.log.gz",
+    "bytes": 647,
+    "sha256": "bfc643593f78c4934d2e732d9e8a532194908ae670e3f3558cb9be73b088d02e"
+  },
+  {
+    "source": "recovery-fixture-apksigner.log",
+    "stored": "recovery-fixture-apksigner.log.gz",
+    "bytes": 993,
+    "sha256": "0b92c2a67cfa45840ec37b1404affe41a29b831dc9b579e0aba90782250b0469"
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "sourceAVD": "NevoraPhase12_API37_2",
+  "officialSdkPackage": "system-images;android-37.2;google_apis_ps16k;arm64-v8a",
+  "revision": 7,
+  "artifacts": [
+    {
+      "source": "/data/app/~~yRpHiKSxYXt147JVFW13EQ==/com.google.android.webview-0frX3QyBx-mxf8cW96LUyg==/WebViewGoogle.apk",
+      "apk": "/Users/josek0514/.codex/native-runtime/nevora-phases12-20261104-d791d75a/google-sdk149/WebViewGoogle.apk",
+      "sha256": "ef0a58095b677879ff9164ff4a2bd03cbbd28e1734276d0ed7dd6fe171390d06",
+      "identity": [
+        "package: name='com.google.android.webview' versionCode='782700504' versionName='149.0.7827.5' platformBuildVersionName='DEV' platformBuildVersionCode='37' compileSdkVersion='37' compileSdkVersionCodename='DEV'",
+        "sdkVersion:'32'",
+        "targetSdkVersion:'36'",
+        "native-code: 'arm64-v8a'"
+      ],
+      "certificateSha256": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5"
+    }
+  ]
+}

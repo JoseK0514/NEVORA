@@ -1,0 +1,108 @@
+{
+  "origin": "https://nevora-native-staging-20261106.onrender.com",
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "deploymentId": "dep-dbmu17vf3r2c73bkv07g",
+  "mirrorCommit": "59c78f7b71bfa75e3788c845e8ad04225d705103",
+  "checks": [
+    {
+      "name": "owner-normal-login",
+      "passed": true
+    },
+    {
+      "name": "owner-creates-employee-through-app",
+      "passed": true
+    },
+    {
+      "name": "employee-normal-login",
+      "passed": true
+    },
+    {
+      "name": "employee-management-navigation-absent",
+      "passed": true
+    },
+    {
+      "name": "employee-create-route-redirects-home",
+      "passed": true,
+      "evidence": "Observed normal navigation to /app/employees/new redirect to /app"
+    },
+    {
+      "name": "employee-owner-settings-refused",
+      "passed": true
+    },
+    {
+      "name": "invalid-login-feedback-and-successful-retry",
+      "passed": true
+    },
+    {
+      "name": "employee-availability-write-confirmed",
+      "passed": true,
+      "evidence": "Usual hours saved; Saved hours match your submission; DB Monday 09:00\u201317:00"
+    },
+    {
+      "name": "employee-expired-session-redirects-login",
+      "passed": true,
+      "method": "Expiry injected only into the named fictional Employee session; no cookie/token read"
+    },
+    {
+      "name": "expired-session-native-probe-unauthenticated",
+      "passed": true,
+      "evidence": "Normal browser displayed protocolVersion 1/state unauthenticated"
+    },
+    {
+      "name": "owner-authenticated-native-probe",
+      "passed": true,
+      "evidence": "Normal browser displayed protocolVersion 1/state authenticated"
+    },
+    {
+      "name": "owner-logout-removes-server-session",
+      "passed": true,
+      "evidence": "Owner active sessions 1 before logout, 0 afterward"
+    },
+    {
+      "name": "database-suspended-wake-login",
+      "passed": true,
+      "evidence": "Exact owned endpoint idle before sign-in, active after; first sign-in succeeded"
+    },
+    {
+      "name": "employee-phone-width-and-keyboard",
+      "passed": true,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "documentWidth": 390,
+      "evidence": "Settled screenshot; no horizontal document overflow; Tab focuses Change one week"
+    },
+    {
+      "name": "employee-time-empty-state",
+      "passed": true,
+      "evidence": "No time recorded yet this week; no Clocker punch performed"
+    },
+    {
+      "name": "fictional-team-persists",
+      "passed": true
+    },
+    {
+      "name": "owner-report-csv-download",
+      "passed": true,
+      "evidence": "hosted-document-download.json; actual browser download bytes and period validated"
+    },
+    {
+      "name": "final-logout",
+      "passed": true
+    }
+  ],
+  "employeeCredentialProvisioning": "Owner created profile through app; private random login was seeded separately in the exact fictional staging database, not delivered by invitation",
+  "externalDeliveryEnabled": false,
+  "boundedHostedFlowsPassed": true,
+  "fullNativeOrDeviceQualified": false,
+  "remaining": [
+    "Native origin binding and signed NEVORA candidate",
+    "Physical Android and native document handoff",
+    "Firebase provider enrollment/delivery and Play internal distribution"
+  ],
+  "additionalIdleWakeEvidence": [
+    "render-idle-wake.json",
+    "render-idle-browser-check.json"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "unitTests": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "debugAndInstrumentationBuild": true,
+  "policy": "PRIVATE PROPOSAL ONLY: minimum156.0.8078.50; Android minimum29 unchanged"
+}

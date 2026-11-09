@@ -1,0 +1,52 @@
+{
+  "observedDate": "2026-11-05",
+  "timeZone": "America/Puerto_Rico",
+  "startingNativeCheckpoint": "8630e5af2017f1b31515b250179250127629d178",
+  "fetchedDevelopment": "08d713d466b31357ba1718a9ef57df297fb05d2a",
+  "sourceInventory": {
+    "passed": false,
+    "failures": [
+      "Remote development has changes absent from this checkout",
+      "Unclassified branch: AI-owner",
+      "Remote assembly has changes absent from this checkout",
+      "Unclassified branch: claude/employee-mobile-phase2-20261027",
+      "Unclassified branch: codex/release1-db-rehearsal-20261101",
+      "Remote branch ceiling exceeded: 6 > 3"
+    ]
+  },
+  "connectedPhysicalIos": 0,
+  "connectedPhysicalAndroid": 0,
+  "localCodeSigningIdentities": 0,
+  "apple": {
+    "signInObserved": true,
+    "activeMembershipVerified": false,
+    "lastPage": "account with enrollment offer"
+  },
+  "googlePlay": {
+    "accountSetupObserved": true,
+    "developerAccountVerified": false,
+    "lastPage": "account type signup",
+    "earlierUserControlledStep": "organization payments profile verification"
+  },
+  "firebase": {
+    "consoleSignedIn": true,
+    "projectVerified": false,
+    "lastPage": "initial project setup"
+  },
+  "vercel": {
+    "teamAndProjectListingSucceeded": true,
+    "projectDetails": {
+      "status": 404,
+      "code": "not_found"
+    },
+    "deploymentList": {
+      "status": 403,
+      "code": "forbidden"
+    },
+    "cliInstalled": false,
+    "stagingDatabaseIsolationVerified": false,
+    "nativeDeploymentVerified": false
+  },
+  "externalWritesByCodex": false,
+  "physicalOrHostedAcceptance": false
+}

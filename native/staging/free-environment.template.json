@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "srv-dbmsjuui0phs73co1oq0",
+  "workspaceId": "tea-dbmr3t6c6qcc73cbf0jg",
+  "deploymentScope": "Only the newly owned Free Render staging service",
+  "publicConfiguration": {
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "NEVORA_ENVIRONMENT": "staging",
+    "NEVORA_MOBILE_ACCESS_ENABLED": "true",
+    "NEVORA_MOBILE_ACCESS_SUPPORT_ENABLED": "false",
+    "FUEL_PORTAL_ORIGIN": "https://nevora-native-staging-20261106.onrender.com",
+    "NEXT_PUBLIC_NEVORA_PASSKEYS": "off",
+    "NEVORA_OWNER_ADVISOR_ENABLED": "false",
+    "NEVORA_PAYROLL_ENABLED": "false",
+    "NEVORA_INVITATION_DELIVERY_ENABLED": "false",
+    "NEVORA_CLOCKER_PUNCH_ENABLED": "false",
+    "NEVORA_CLOCKER_UI_V2": "false",
+    "PUSH_ENVIRONMENT": "test",
+    "PUSH_FEATURE_ENABLED": "false",
+    "PUSH_DELIVERY_ENABLED": "false",
+    "PUSH_TEST_DELIVERY_ENABLED": "false",
+    "NATIVE_PUSH_ENVIRONMENT": "test",
+    "NATIVE_PUSH_REGISTRATION_ENABLED": "false",
+    "NATIVE_PUSH_DELIVERY_ENABLED": "false",
+    "NATIVE_PUSH_TEST_DELIVERY_ENABLED": "false",
+    "NODE_VERSION": "24.19.0"
+  },
+  "publicValuesVerifiedBeforeInitialDeployment": true,
+  "secretBindings": {
+    "DATABASE_URL": {
+      "value": null,
+      "provider": "Neon",
+      "projectId": "noisy-fog-17044568",
+      "branchId": "br-still-haze-bb6qa2a2",
+      "databaseName": "nevora_native_staging",
+      "runtimeRoleName": "nevora_native_app",
+      "runtimePrivilegesVerified": true,
+      "bound": true,
+      "requireTlsMode": "verify-full",
+      "scope": "Exact Render service above only; never installer/admin or existing project credentials"
+    }
+  },
+  "omitEntirely": [
+    "NEVORA_APP_DATABASE_URL",
+    "NEVORA_WORKER_DATABASE_URL",
+    "NEVORA_RECOVERY_SMTP_HOST",
+    "NEVORA_RECOVERY_SMTP_USER",
+    "NEVORA_RECOVERY_SMTP_PASSWORD",
+    "NEVORA_RECOVERY_FROM",
+    "PUSH_VAPID_PRIVATE_KEY",
+    "PUSH_SUBSCRIPTION_ENCRYPTION_KEY",
+    "NOTIFICATION_WORKER_SECRET",
+    "NATIVE_PUSH_TOKEN_ENCRYPTION_KEY",
+    "NATIVE_APNS_PRIVATE_KEY",
+    "NATIVE_FCM_PRIVATE_KEY",
+    "OPENAI_API_KEY",
+    "NEON_AI_GATEWAY_TOKEN",
+    "NEVORA_DEV_CAPTURE_DIR"
+  ],
+  "analyticsEnabled": false,
+  "realDeliveryEnabled": false
+}

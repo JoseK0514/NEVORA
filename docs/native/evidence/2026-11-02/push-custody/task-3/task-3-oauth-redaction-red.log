@@ -1,0 +1,45 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/providers/oauth.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 19[2mms[22m[39m
+   [32m✓[39m mints a real RS256 scoped JWT only to the fixed OAuth endpoint and caches the short-lived token[32m 8[2mms[22m[39m
+   [32m✓[39m rejects missing or malformed service-account configuration before IO[32m 1[2mms[22m[39m
+   [32m✓[39m rejects missing or malformed service-account configuration before IO[32m 0[2mms[22m[39m
+   [32m✓[39m rejects missing or malformed service-account configuration before IO[32m 0[2mms[22m[39m
+   [32m✓[39m rejects missing or malformed service-account configuration before IO[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed successful OAuth responses without caching them[32m 1[2mms[22m[39m
+   [32m✓[39m rejects malformed successful OAuth responses without caching them[32m 1[2mms[22m[39m
+   [32m✓[39m rejects malformed successful OAuth responses without caching them[32m 1[2mms[22m[39m
+   [32m✓[39m rejects malformed successful OAuth responses without caching them[32m 1[2mms[22m[39m
+   [32m✓[39m rejects malformed successful OAuth responses without caching them[32m 1[2mms[22m[39m
+   [32m✓[39m classifies auth failures separately from unavailable providers without echoing diagnostics[32m 2[2mms[22m[39m
+[31m   [31m×[31m does not let raw transport or credential diagnostics escape the token-supplier boundary[39m[32m 2[2mms[22m[39m
+   [32m✓[39m bounds a stalled token exchange and refuses to cache its late result[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/oauth.test.ts[2m > [22mdoes not let raw transport or credential diagnostics escape the token-supplier boundary
+[31m[1mAssertionError[22m: expected [Function] to throw error matching /^transport_error$/ but got 'fictional private host/key/token'[39m
+
+[32m- Expected:[39m
+/^transport_error$/
+
+[31m+ Received:[39m
+"fictional private host/key/token"
+
+[36m [2m❯[22m src/lib/native-push/providers/oauth.test.ts:[2m52:55[22m[39m
+    [90m 50|[39m it('does not let raw transport or credential diagnostics escape the to…
+    [90m 51|[39m   const supplier = (await api()).createGoogleAccessTokenSupplier(confi…
+    [90m 52|[39m   await expect(supplier(new AbortController().signal)).rejects.toThrow…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 53|[39m });
+    [90m 54|[39m it('bounds a stalled token exchange and refuses to cache its late resu…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m12 passed[39m[22m[90m (13)[39m
+[2m   Start at [22m 05:53:54
+[2m   Duration [22m 115ms[2m (import 43%, tests 30%, transform 25%, worker 2%)[22m
+

@@ -1,0 +1,13 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <permission android:name="com.velani.nevora.development.test.QA_PROBE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.velani.nevora.development.test.QA_PROBE" />
+    <application>
+        <service android:name="com.velani.nevora.development.QaAccessibilityProbe" android:exported="true" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/qa_accessibility_probe" />
+        </service>
+        <!-- Lifecycle helpers must not become the task whose thumbnail we inspect. -->
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity" android:excludeFromRecents="true" />
+        <activity android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity" android:excludeFromRecents="true" />
+    </application>
+</manifest>

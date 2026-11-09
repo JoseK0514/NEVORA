@@ -5,7 +5,7 @@ on:
   push:
     branches: [development]
     paths:
-      - native/**
+      - native/capacitor-spike/**
       - tools/ci-browser-runtime/**
       - .github/workflows/native-spike.yml
 
@@ -27,7 +27,7 @@ jobs:
     timeout-minutes: 35
     defaults:
       run:
-        working-directory: native
+        working-directory: native/capacitor-spike
         shell: bash
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -39,7 +39,7 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: |
-            native/package-lock.json
+            native/capacitor-spike/package-lock.json
             tools/ci-browser-runtime/package-lock.json
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
@@ -59,7 +59,7 @@ jobs:
       - name: Install locked dependencies
         run: |
           npm ci
-          npm ci --prefix ../tools/ci-browser-runtime
+          npm ci --prefix ../../tools/ci-browser-runtime
           sdkmanager 'platforms;android-36' 'build-tools;35.0.0' 'build-tools;36.0.0'
       - name: Check types and navigation policies
         run: |
@@ -87,7 +87,7 @@ jobs:
           emulator-boot-timeout: 300
           disable-linux-hw-accel: false
           disable-animations: true
-          working-directory: native
+          working-directory: native/capacitor-spike
           script: |
             adb -s emulator-5554 install -r android/app/build/outputs/apk/debug/app-debug.apk
             node tests/android-device.mjs
@@ -97,12 +97,12 @@ jobs:
         with:
           name: native-android-${{ github.sha }}
           path: |
-            native/artifacts/*.json
-            native/artifacts/*.log
-            native/artifacts/*.txt
-            native/artifacts/*.sha256
-            native/artifacts/android-device/
-            native/android/app/build/outputs/apk/debug/app-debug.apk
+            native/capacitor-spike/artifacts/*.json
+            native/capacitor-spike/artifacts/*.log
+            native/capacitor-spike/artifacts/*.txt
+            native/capacitor-spike/artifacts/*.sha256
+            native/capacitor-spike/artifacts/android-device/
+            native/capacitor-spike/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: warn
           retention-days: 7
 
@@ -112,7 +112,7 @@ jobs:
     timeout-minutes: 35
     defaults:
       run:
-        working-directory: native
+        working-directory: native/capacitor-spike
         shell: bash
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -123,7 +123,7 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: native/package-lock.json
+          cache-dependency-path: native/capacitor-spike/package-lock.json
       - name: Record candidate and runner
         run: |
           node ci/record-build.mjs ios
@@ -147,10 +147,10 @@ jobs:
         with:
           name: native-ios-${{ github.sha }}
           path: |
-            native/artifacts/*.json
-            native/artifacts/*.log
-            native/artifacts/*.sha256
-            native/artifacts/ios-simulator-app.tar.gz
-            native/artifacts/ios-simulator/
+            native/capacitor-spike/artifacts/*.json
+            native/capacitor-spike/artifacts/*.log
+            native/capacitor-spike/artifacts/*.sha256
+            native/capacitor-spike/artifacts/ios-simulator-app.tar.gz
+            native/capacitor-spike/artifacts/ios-simulator/
           if-no-files-found: warn
           retention-days: 7

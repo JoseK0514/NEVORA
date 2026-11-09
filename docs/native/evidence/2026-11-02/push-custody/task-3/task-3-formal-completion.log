@@ -1,0 +1,6 @@
+[2m   Duration [22m 5.61s[2m (tests 89%, import 10%, worker 1%, transform 1%)[22m
+
+[2m    Isolate [22m [33m32 workers spawned[39m[2m · ~41ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~1.28s faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+
+ledger: Task 3: complete (commits ae9631f..eb9bf4d, tests: node node_modules/vitest/vitest.mjs run src/lib/native-push src/lib/notifications src/lib/auth/session.test.ts src/app/api/mobile/v1/notifications src/test/native-push-regression-config.test.ts --maxWorkers=1 → [2m            [22m [2mat least ~1.28s faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m)

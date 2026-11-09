@@ -1,0 +1,10 @@
+{
+  "exitCode": 0,
+  "jvm": {
+    "tests": 28,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "testApkCompiled": true
+}

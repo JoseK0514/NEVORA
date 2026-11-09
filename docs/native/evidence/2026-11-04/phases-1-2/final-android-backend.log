@@ -1,0 +1,19 @@
+Owned Next ready http://127.0.0.1:52456
+PASS missing-session
+PASS denied-selectors
+PASS denied-origin
+PASS denied-cross-site
+PASS employee-native-session
+PASS native-renderer-policy
+PASS employee-schedule
+PASS employee-authorized-action
+PASS owner-native-session
+PASS owner-authorized-action
+PASS actual-invitation-activation-and-login
+PASS employee-owner-route-denied
+PASS manager-native-unsupported-web-preserved
+PASS lead-native-unsupported-web-preserved
+PASS expired-session
+PASS revoked-session
+PASS sanitized-database-outage-and-recovery
+{"status":"passed","evidence":"/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-eXKIHJ","ownershipClosed":true,"sourceVerified":true}

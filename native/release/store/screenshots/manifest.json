@@ -1,0 +1,75 @@
+{
+  "state": "draft-native-screenshots-not-submitted",
+  "sourceCommit": "69887718683b3fa2e12133b97c880b0e98c6ca9e",
+  "capturedAt": "2026-11-05",
+  "platform": "iOS27 iPhone17Pro simulator",
+  "fictionalDataOnly": true,
+  "pixelsUnmodified": true,
+  "hostedVerified": false,
+  "finalRequiredSizeSetsVerified": false,
+  "finalAndroidCapturesPending": true,
+  "finalIpadCapturesPending": true,
+  "xcresult": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-AFKipd/nevora-native-ui-z9ttv3gk/tests.xcresult",
+  "images": [
+    {
+      "file": "employee-home.png",
+      "exportedFileName": "CBC6D38D-8722-4E79-A846-807BF52C7B15.png",
+      "test": "NevoraBackendUITests/testEmployeeActionRevocationOutageAndLogout()",
+      "attachment": "Home before Schedule touch_0_CA124588-57C8-4993-AF3D-421CB12A5077.png",
+      "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "sha256": "e632e8da2524765ef7e4c1c8967e92cafd5676cffac6acbaa8b2bac1a622faab"
+    },
+    {
+      "file": "employee-schedule.png",
+      "exportedFileName": "EF0AC526-124B-468C-87A0-C747F5582A0D.png",
+      "test": "NevoraBackendUITests/testEmployeeActionRevocationOutageAndLogout()",
+      "attachment": "Role-specific Schedule after native touch_0_EC2B3304-01B7-4DEC-8F33-86747657A43D.png",
+      "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "sha256": "7b58b73cbd5c0e2f2385eda198ecde27fa992a0eb4b3c2fc77f0ce0c5e948b56"
+    },
+    {
+      "file": "employee-availability.png",
+      "exportedFileName": "3E7174E3-F80D-4C4F-A877-FD17076ED3D6.png",
+      "test": "NevoraBackendUITests/testEmployeeActionRevocationOutageAndLogout()",
+      "attachment": "Employee availability saved_0_E8EBA796-2E03-42B2-A360-07DFB18C3429.png",
+      "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "sha256": "e9323f389a5c4496f797f11c0c14d7d455e3c83e5929c4807ace4915568d6603"
+    },
+    {
+      "file": "owner-home.png",
+      "exportedFileName": "7D0FDA43-4355-4B8C-BE15-702D928162AD.png",
+      "test": "NevoraBackendUITests/testOwnerActionAndPersistentSession()",
+      "attachment": "Home before Schedule touch_0_74AFE271-95AD-4126-ACCC-C8C3D5FAA3B4.png",
+      "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "sha256": "f2154498071c61066c35ed9cd4adad4ddf2f75e98a197e1e0bfa404d1621e3e6"
+    },
+    {
+      "file": "owner-schedule.png",
+      "exportedFileName": "7C32BDCE-C31A-46A6-96CD-1F6612BF734A.png",
+      "test": "NevoraBackendUITests/testOwnerActionAndPersistentSession()",
+      "attachment": "Role-specific Schedule after native touch_0_C492154E-F5CF-4569-B208-8ACDABC87EC0.png",
+      "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+      "pixels": [
+        1206,
+        2622
+      ],
+      "sha256": "2f948e524878dda89417fc79a8f867c53e1a68cbc65c4d4602f6c475a194fb13"
+    }
+  ]
+}

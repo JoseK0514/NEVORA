@@ -22,7 +22,8 @@ function ordered(items: ActionItem[], rank: Partial<Record<ActionItem['type'], n
 export function isPastCoverageGap(item: ActionItem, today?: string, now?: string) {
   if (item.type !== 'COVERAGE_GAP' || !item.dateTime) return false;
   // Round 5 (Nov 7, 2026): a window that has already ended today is history too (it can't be covered any more).
-  return (!!today && item.dateTime.slice(0, 10) < today) || (!!now && !!item.endDateTime && item.endDateTime <= now);
+  if (now && item.endDateTime) return item.endDateTime <= now;
+  return !!today && item.dateTime.slice(0, 10) < today;
 }
 
 /** The workspace's local date and time ("YYYY-MM-DDTHH:MM") at an observation, to compare with coverage windows. */

@@ -1,0 +1,45 @@
+{
+  "scope": "fictional browser bridge and response seam; real component/controller/runtime; no actual OS/provider or backend authority claim",
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "scrollWidth": 320,
+      "controlOverflow": [],
+      "minControlHeight": 44
+    },
+    {
+      "width": 1280,
+      "height": 900,
+      "scrollWidth": 1280,
+      "minControlHeight": 44
+    }
+  ],
+  "checks": [
+    "initial off and explicit enable",
+    "two live Android runtime reply owners",
+    "native+server generation check",
+    "confirmation focused",
+    "cancel restores review opener",
+    "keyboard Enter opens recovery review",
+    "result heading receives focus",
+    "off->on with tombstone receipt",
+    "dropped completion->revoked->explicit reconciliation->enabled",
+    "denied permission hides enable",
+    "pending state hides actions",
+    "fictional account switch requires explicit enrollment",
+    "phone/desktop no horizontal control clipping"
+  ],
+  "observedFixes": [
+    "three recovery controls overflowed at390px; used existing stacked button pattern",
+    "confirmation/result focus restored",
+    "Visual review found collapsed phone actions; scoped flex:none/minimum44px correction rechecked at320px with44px targets, no text overflow, plus confirmation and desktop captures"
+  ],
+  "physicalDevice": false,
+  "realProvider": false,
+  "status": "passed fictional UI scope"
+}

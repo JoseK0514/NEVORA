@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "committed": true,
+  "database": "nevora_native_staging",
+  "installer": "nevora_native_installer",
+  "tlsEncrypted": true,
+  "tlsCertificateAuthorized": true,
+  "tlsHostnameVerified": true,
+  "tlsProtocol": "TLSv1.3",
+  "channelBindingEnabledWhenOffered": true,
+  "channelBindingOffered": true,
+  "providerBackendSslObservation": false,
+  "workspaceId": "602501a9-fb90-4bff-a682-95f6c7ef2053",
+  "locationId": "d7256e3f-172c-4c4a-ab88-ab3eff9bcb14",
+  "counts": {
+    "workspaces": 1,
+    "employees": 1,
+    "fictional_owners": 1,
+    "native_tables": 3
+  },
+  "fictionalOnly": true,
+  "providerDeliveryConfigured": false,
+  "exitCode": 0,
+  "credentialsInArgvOrOutput": false,
+  "privateCredentialCustody": "Scoped macOS login Keychain entries",
+  "projectId": "noisy-fog-17044568",
+  "branchId": "br-still-haze-bb6qa2a2",
+  "endpointId": "ep-jolly-dream-bbqd82uj"
+}

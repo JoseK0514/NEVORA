@@ -1,0 +1,28 @@
+{
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-ji05zp1s",
+  "serial": "emulator-5560",
+  "passed": true,
+  "fixtureOnly": true,
+  "checkpoint": null,
+  "ownerId": null,
+  "qaConsumer": "control",
+  "qaReader": "classic",
+  "qualification": "diagnostic-accessibility-consumer",
+  "rendererObserver": false,
+  "webView": {
+    "package": "com.google.android.webview",
+    "version": "120.0.6099.193",
+    "accessibilityMode": "platform-default",
+    "runtimeFlagsSha256": null
+  },
+  "sourceHash": "aa8fe70bd5bf5330473473322d941c02f35785dd0165e4e4bbae969bc73657c6",
+  "origin": "http://127.0.0.1:56324",
+  "fixtureOrigin": "http://127.0.0.1:56324",
+  "accessibilityBefore": {
+    "enabled_accessibility_services": null,
+    "accessibility_enabled": "0"
+  },
+  "isolatedTestProcesses": false,
+  "instrumentationTests": 1,
+  "accessibilityRestored": true
+}

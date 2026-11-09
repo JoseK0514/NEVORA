@@ -1,0 +1,862 @@
+{
+  "scope": "Local fictional verification; failed gates retained; no release/provider/device approval",
+  "applicationCheckpoint": "0231524bc7ea9f385fcc5249535e75e6e03f3d60",
+  "files": {
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-laid-out-visual-hypothesis.java": {
+      "bytes": 20010,
+      "sha256": "8a2bd20af702a34a435d38ec41bec5ec599c3bdf48a9df089a9e0b879ad199d1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-layout-only-hypothesis.java": {
+      "bytes": 19315,
+      "sha256": "d4a219b7f042419aede63e3ac69d9d8c4322ec845a5d907b20f2c0ade3c3c44f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-provider-diagnostic.java": {
+      "bytes": 17080,
+      "sha256": "ffbc09cff0d80ce18315f37e0523ea2a7538a04e549651b2d7d164375a3ba313"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-provider-stress-diagnostic.java": {
+      "bytes": 21505,
+      "sha256": "1298512f2f7f2b8ebe914b8de892d4a93ba81798270506294f27b0a893de3bcc"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-publication-hypothesis.java": {
+      "bytes": 19500,
+      "sha256": "f80166084ee6b8bdcf4a279bbfc8e38d3c7a5d34cefa150da2ae048e9115eb10"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/PortalActivity-visual-hypothesis.java": {
+      "bytes": 15228,
+      "sha256": "49a5a8de62a55e928d6c1693e9bdb41bfc4db1223f3c4c387ba1a7d4132c6ed1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-blob-confirm.png": {
+      "bytes": 66529,
+      "sha256": "d503c4e95e4377c011f1b0362baa815fb19cfe89c473fbcd79defdd28cfe2d9d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-blob-confirm.xml": {
+      "bytes": 6329,
+      "sha256": "99334189ce938af887d54f932896b102f4d50c0bf5f9a6032c2c137a15583b83"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-completion-green.log": {
+      "bytes": 5374,
+      "sha256": "2ed99413767c4b798347003f44d7547855005895e53acf2b25a5eec13b041c0f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser-activity.json": {
+      "bytes": 483,
+      "sha256": "d6106593f7223099738953e567d07ebad1718fcb9c46a3e00f1b3aa003738771"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser-result.json": {
+      "bytes": 123,
+      "sha256": "9df000f1e777120c8a8f196b34995600a79f08303862e7e7a1f53cb50fe4a365"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-browser.png": {
+      "bytes": 88191,
+      "sha256": "b6d939d8e3cb4cbfa660e27d3a03d383a5014a01b052f26e0dc9465d0cf01742"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-cancel-result.json": {
+      "bytes": 123,
+      "sha256": "a8b478174b7cbaf3beae22b154e596547193396f93213e4598a99f861290eb6a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-cancel.png": {
+      "bytes": 70023,
+      "sha256": "d3c2c2b029f7fabcf25b55ceac8987725f21c444bd561dee72655b9aa4e44fee"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-confirm.png": {
+      "bytes": 67073,
+      "sha256": "875ffe7080dfb9e34a97b0b25ea1d97ce84a18cb1bae320f43555d7c2bd031c9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-confirm.xml": {
+      "bytes": 6329,
+      "sha256": "99334189ce938af887d54f932896b102f4d50c0bf5f9a6032c2c137a15583b83"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser-activity.json": {
+      "bytes": 667,
+      "sha256": "0f327dfe46c57b92b311a2763a191148082cb9b16abaf3a5bdb5f8120f250f8e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser-result.json": {
+      "bytes": 123,
+      "sha256": "686a01cbe9856d161199b44317b529f21a5a8aeaad483be43bef10c133f1a0fe"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-fixed-browser.png": {
+      "bytes": 79870,
+      "sha256": "0fc842b791e07b3067e68133c07d5f01d284eada4d5005f73d9ea669394eaf3e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-initial.png": {
+      "bytes": 69260,
+      "sha256": "13f73012de5ae92e6fc13cb62d3d18d25698921ae49fc34cdb94c319c72dd4bd"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-document-initial.xml": {
+      "bytes": 1941,
+      "sha256": "2abe8f272fffa13959c847347bfe6b50c8da2550114f4fa3bc6ab14ff23af692"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android-platform-checks.log": {
+      "bytes": 8339,
+      "sha256": "519adc11e0b8b005a5af4014e4fd0b1c87e645a8ede6e7fc8bd220f03696e029"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-accessibility-publication-probe.log": {
+      "bytes": 1839,
+      "sha256": "e8e58f6b4ccc777bdfd69a2782204e2cb04726ed7420619dc42fa3195b4f157c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-baseline-2.log": {
+      "bytes": 1899,
+      "sha256": "1f2b3a537086892fb391d832b450a13f9751342fb19fda546e6c780855c24056"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-baseline.log": {
+      "bytes": 1899,
+      "sha256": "428a201d0b07bf4868151b960c25e0179e417cb706eaceca2e57d712dee1ae71"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-before-scanner-cold-start.xml": {
+      "bytes": 7380,
+      "sha256": "bb049fb9108705451085c6ddf065f8b77dd9510cab681640897ab2b9bdf01a85"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-before-scanner-instrumentation.log": {
+      "bytes": 1710,
+      "sha256": "836805eba6c5f90d49d3ece158ddce388185f2ebdf484ae5535881aab6c35e6b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-before-scanner-privacy_recents.xml": {
+      "bytes": 18020,
+      "sha256": "7d37e8cc454b10233f1973452db01e77b4a508e120d6d5c061be834c4b9e180f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-before-scanner-privacy_screen_off_recents.xml": {
+      "bytes": 18020,
+      "sha256": "7d37e8cc454b10233f1973452db01e77b4a508e120d6d5c061be834c4b9e180f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-before-scanner-result.json": {
+      "bytes": 705,
+      "sha256": "d1d2df854a631617fc0483613badfd086bfd765733967343aba44c7b3caa3c79"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-boot.log": {
+      "bytes": 22171,
+      "sha256": "d7842ddb579d4b4dcd8dbca8e21f719715d7e76ee6964c8a10b4ad808282a4f3"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-content-event-diagnostic-2.log": {
+      "bytes": 2102,
+      "sha256": "89824e3208666244a9f2bb6a456446b339874daad1600fec31d3a9b34ffcc642"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-content-event-diagnostic.log": {
+      "bytes": 1245,
+      "sha256": "3d50b1ec474e3081a920e8d9602bd880047520aea674ece54bb4066f5587acd1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-cold-start.xml": {
+      "bytes": 7380,
+      "sha256": "bb049fb9108705451085c6ddf065f8b77dd9510cab681640897ab2b9bdf01a85"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-final.log": {
+      "bytes": 1246,
+      "sha256": "116a5a0650f25693b8972d583e2e552b60411a225dd3e4fdcd5364e367a26863"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-instrumentation.log": {
+      "bytes": 1709,
+      "sha256": "4b46099866ab7853740d64e280ae37a3f3cd5ea9c7d2d47d94e9a9f0429d9fac"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-privacy_recents.xml": {
+      "bytes": 18019,
+      "sha256": "7638a4c948d164ececeab04ea5c74593ba6baaceca1cbc4eb4ac908b51b3a6c1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-privacy_screen_off_recents.xml": {
+      "bytes": 18019,
+      "sha256": "7638a4c948d164ececeab04ea5c74593ba6baaceca1cbc4eb4ac908b51b3a6c1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-documents-result.json": {
+      "bytes": 705,
+      "sha256": "e0412194981946f53b630f6d27ec950794615a7d822bb8df1853045ffee2201b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-hypotheses-events.log": {
+      "bytes": 2380,
+      "sha256": "4eba4f155a97dfb46999fe7d7fa31a0595b01632d0401cb2197371baa54986c5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-laid-out-visual-probe.log": {
+      "bytes": 1839,
+      "sha256": "feaff7d3b5e8da2cb9ac12c64e9fe622c855d6e9ac6c0647f9c98b0b0bc7cbd5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-layout-stress-hypothesis.log": {
+      "bytes": 1839,
+      "sha256": "ef9da10841f6eed1689255cd6121868e0b7d4c1760bb5535986f15dc4ea37134"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-owner.json": {
+      "bytes": 536,
+      "sha256": "c9efed180652bb143ad08c8cdd1da39721f2b7918d5adabdd7aabd21f9b493a8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-platform-baseline.log": {
+      "bytes": 1246,
+      "sha256": "e8dd9bfbf6da1d3646e9ca0b97a7aecdd0906d15d4cd652b522c45f28028415d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-platform-final-fixture.log": {
+      "bytes": 3010,
+      "sha256": "e2b4dbc2075a346f5939bac7a406c2f3100039128a98e220c1d6e3aed5fab553"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-platform-serial-fixture.log": {
+      "bytes": 1246,
+      "sha256": "864006812b136f1e63d40befe2ab3f42f4eecbaa6012aa0b56ba5e86cb1b9944"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-diagnostic.log": {
+      "bytes": 1219,
+      "sha256": "7856aea00b15d11787421590631645901512464d3c13413ff21e43827f46a103"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-matrix.log": {
+      "bytes": 1622,
+      "sha256": "969e4ed574eb8759f0a50630123d2a8b25e6a4944ec1e95e1d53b03628f3c88a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-Sign_out.xml": {
+      "bytes": 18773,
+      "sha256": "69b611c5fca84d132c1a80520bcaf00da0e40ef64dcdcaea1fa18f89188f63f1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-Sign_out_after_content_event.xml": {
+      "bytes": 18773,
+      "sha256": "69b611c5fca84d132c1a80520bcaf00da0e40ef64dcdcaea1fa18f89188f63f1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-diagnostic.log": {
+      "bytes": 1838,
+      "sha256": "178172dcd1ea9a4836205aec47c641b578c7b29bc2a8327f4ce02a212dc4ba00"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-instrumentation.log": {
+      "bytes": 1169,
+      "sha256": "97c1a813f1c4412d20faf5e94e583024e3b1287bd3b63979bb2c2f4ce2ac5eeb"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-result.json": {
+      "bytes": 674,
+      "sha256": "8715d7d0eadf3e0de147d6a0ee20bcb743c268ac128820928089a7ef52f928c8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-stress-trace.log": {
+      "bytes": 317537,
+      "sha256": "28d946e86c039d582017a98e903b65c8073318f1696074f73d2eb58621844d3d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-provider-trace.log": {
+      "bytes": 25428,
+      "sha256": "2edb6d896b354794ecfce8c8ff834fcf2031f47611382047281a729e0ebb68bb"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-Sign_out.xml": {
+      "bytes": 18312,
+      "sha256": "6f6604c4156a313b41e0d2f546ab1801a0084c7d4a1d908a51cef24bcde188c4"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-Sign_out_after_content_event.xml": {
+      "bytes": 18312,
+      "sha256": "7796b85ffcedf32f4aff3054539d32d236313d567d49aa2d368dccc2680c1f92"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-events.log": {
+      "bytes": 515,
+      "sha256": "202506eca06b6cdf7c73084659002b680841a336c4418b2272a2f37a702744b4"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-instrumentation.log": {
+      "bytes": 2879,
+      "sha256": "e7e284efe62455a989ab03f488bfcec088684a54d65c53dc74c8e8b56b666ac4"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-matrix.log": {
+      "bytes": 1838,
+      "sha256": "2c88e2ba7c972a515f78da5eca80dc3b87aaa05d947ec7ab9cf48b87ebb6a107"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-recreation-result.json": {
+      "bytes": 674,
+      "sha256": "a44f720728a5345d914223107c3f68d16e3c091fb56009a06f87cef1e94c8024"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-scanner-final-fixture.log": {
+      "bytes": 1899,
+      "sha256": "a6cb7b6dee3592dcc7bace2cef81e388bffdc7f42984aa8fafc3a257d7148a46"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android32-visual-boundary.log": {
+      "bytes": 1899,
+      "sha256": "e4e1e3c985bc231dc1f7ab446812b992aa8c50b5b1ef828eb4cafb92adc7864c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-channel-component.log": {
+      "bytes": 90,
+      "sha256": "662f1e26dc0da07fde80e9581fd6ad38055a0b68bf1051e9fcab1dbd68143a09"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-cli-crash-instrumentation.log": {
+      "bytes": 754,
+      "sha256": "99c073ac3e9c4deac9fe120fc01344f9e76ad71d5aa0080a8cb881a5f57e46ff"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-cli-crash-result.json": {
+      "bytes": 703,
+      "sha256": "de2ee43b4729d8f760d3aee313cb1d7ef0ac870c74cd47cee40ccd294ccefdf0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-denyFromFreshPermissionState.log": {
+      "bytes": 94,
+      "sha256": "a722574f0ba4dab65f943008a03f0d4dc83542a90f4c3431fbeb976096b38223"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-Fictional_Home.xml": {
+      "bytes": 15529,
+      "sha256": "478094bf5702341724a3219725f4de5dff61002ad9f3fa1d289d848cace146e8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-Sign_out.xml": {
+      "bytes": 20296,
+      "sha256": "d6dbf5653b63001ecdb1f83d2c98e5b7eee8a80aa21c0350cdcc729414584c14"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-Sign_out_after_content_event.xml": {
+      "bytes": 20296,
+      "sha256": "d6dbf5653b63001ecdb1f83d2c98e5b7eee8a80aa21c0350cdcc729414584c14"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-cold-start-instrumentation.log": {
+      "bytes": 87,
+      "sha256": "3db5fa2d7e13fc89bbf407b7134c1b2d48e0060ac12d594affe013393800bdd8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-cold_start.xml": {
+      "bytes": 21193,
+      "sha256": "a7a07bcbde43a991052ac7b084c0ea8e527e75abf874c26d43b9db9a17fa5ce1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-final.log": {
+      "bytes": 2079,
+      "sha256": "00c8d8f27d0d8d63c22ae1ef9da17b76009f531b1a3ae9ad9de02725a7690dd2"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-instrumentation.log": {
+      "bytes": 2879,
+      "sha256": "295478852d0d184a9c7888be5bea184eacf56235db9151d20172d82c23541c63"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-expanded-result.json": {
+      "bytes": 737,
+      "sha256": "bcfe5e813a9ff71bfc11710af9955f9125e9bd6f3a70437083295d5e90cd17a1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-final-build.log": {
+      "bytes": 7941,
+      "sha256": "1a3012e717f28bc7e2cf43c8f309c26d337b67a3d5ec287452a1a5412522d743"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-final-fixture.log": {
+      "bytes": 2103,
+      "sha256": "cadb3b5383db7f7db7e114f304cdababe6b9102c76a63fb17fa2e4550d3b9e76"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-grantFromFreshPermissionState.log": {
+      "bytes": 94,
+      "sha256": "d863bd306323b3c13db99f35b4d171b3a8e173370498752e7355fae7ad22c409"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-permission-initial.log": {
+      "bytes": 8298,
+      "sha256": "e459e97a7a14f8204a2010217189e5468baae1c11a3702f5ee612d029429c582"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/android36-permission-restored.log": {
+      "bytes": 8937,
+      "sha256": "c66445653ec42c483baa7715b7333f8e6973f443792d316916c75feb82acc863"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/baseline-native-sql.log": {
+      "bytes": 1652,
+      "sha256": "4dccf0c10bb5d9c7189dce8e7212dbf5b77d8429abebf4932db2ea45f1823466"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/baseline-push.log": {
+      "bytes": 1736,
+      "sha256": "24fe13c1c07b59ac78b1d2cdacac8fe9fc8899dd2a9ec3b2da73f4b81bf6c4a9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/before-provider-stress-PortalActivity.java": {
+      "bytes": 19310,
+      "sha256": "c5067b4790bb4059cf3fd8d4cc9dacb6bb866f5a9fec6759a3b062d5640e31b9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/before-provider-stress-test-ui.py": {
+      "bytes": 16818,
+      "sha256": "83b929f2ae1a1c6dd273618c33cbe6545fc0b8f28e322f59670fce0dc8ab317b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/bridge-device-api32.log": {
+      "bytes": 5361,
+      "sha256": "e5518a4bb209913abe4e295be7e0ba22d4cedb5d985eb9d18fe7acd7ee6f6f43"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/bridge-device-build.log": {
+      "bytes": 5132,
+      "sha256": "5721dd3cccfd0d6d10f3b6a3acd0a55dd854d340a61275c8d3621b5cc470142f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/bridge-hardening-green.log": {
+      "bytes": 5826,
+      "sha256": "1edef61f8f5803b47ccc26ddcff9a05829a7ad4efddcefaa9f01a956eef7a1e9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/bridge-hardening-red.log": {
+      "bytes": 3078,
+      "sha256": "bcf6914adf0a3b36cfae8dba25f0f98cd0c4c4db9046fa181a44b9436a071c90"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/cancel-close-green.log": {
+      "bytes": 9091,
+      "sha256": "e12b9beed0e8a6528d1ee1b8d47d9f79561623a3f68ea28ed0d762f61e2bea89"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/cancel-close-red.log": {
+      "bytes": 3112,
+      "sha256": "47c39b38e92601ac58ab758454c6544caa864469c68f5041f6c2418b992f89b4"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/cold-start-java-build.log": {
+      "bytes": 5626,
+      "sha256": "bc2e73efc09062395c9cf62497c27a916c81de447ddfcea072bf537875668c52"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/cold-start-python-guards.log": {
+      "bytes": 6475,
+      "sha256": "682aa5ec49c9b7de191379710aa50cf50b903343f0d3d1f56c9de5c851a5acef"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/combined-backend-observation-failure.json": {
+      "bytes": 12087,
+      "sha256": "189ed4cdfd36ded78a818a99d3f12800bb7750a96984a515323bbc63dd317f67"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/combined-backend-observation-failure.log": {
+      "bytes": 751,
+      "sha256": "f81cad48d686905903a45e81ccf83da8aed254c1f66ada53b7d440df6fa6503a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/completion-jvm-red.log": {
+      "bytes": 3202,
+      "sha256": "fee826738aa4822f894b68c2b0d2eb3b0d0ee5fee54ebbb6dff8855517d13542"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/completion-swift-green.log": {
+      "bytes": 6828,
+      "sha256": "250832f4e7013c80658d37bbc83451fb35d764f949999bbec970b5a3cbe4a88b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/completion-swift-red.log": {
+      "bytes": 2289,
+      "sha256": "56498855dd52723735061ce1f06ac3f8fc4d21cd1640f580f8d0f72dc3f99958"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/dependency-copy-owner.json": {
+      "bytes": 680,
+      "sha256": "af86eeb1c754ea6c66f5a48b0b8138cfd74553c8e52e490ace08ae93ae1ee926"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-green-build.log": {
+      "bytes": 7904,
+      "sha256": "8df0b5923ef9ce99952d3a5c41e436a76afb105c6527f0fb05ac68b58ffb0f72"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-green.log": {
+      "bytes": 92,
+      "sha256": "4d59a8d92887a28960841fe4e697248231d9f0e83b226d8bab14116c303ad950"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-red-build.log": {
+      "bytes": 4939,
+      "sha256": "31ef1f748e89f48428798d9a14205ed36d5f3dc173f844724d53aff94f50ab58"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-browser-red.log": {
+      "bytes": 1169,
+      "sha256": "0d614308ebc749d38ce56eae57062777b27a7dc2591d5e4e0c1a1de6b788cd14"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-fixture-eslint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-policy-java-green.log": {
+      "bytes": 8380,
+      "sha256": "a2ac85dc73ccfc0a8b01d61ed56213cb4008769d18cb139806dc575b195fed44"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-policy-java-red.log": {
+      "bytes": 6004,
+      "sha256": "c22b00506614ddf527939894718e187667d0c889bf75549276ffdda5516a120a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-policy-swift-green.log": {
+      "bytes": 9578,
+      "sha256": "6ee341db6404c1afe931f680262d242f782525006e89fd7f3077283ce7101e26"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-policy-swift-red.log": {
+      "bytes": 13966,
+      "sha256": "3e715346e3d4417cd10dac18473ed1a0bb8ce18c14d9d5afa07e574625ff6cbc"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/document-runner-python-guards.log": {
+      "bytes": 6476,
+      "sha256": "1e63a0eb58e057dc91a5097cd2a5d70ca9614607eecc4011b905492d36097216"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-backend.json": {
+      "bytes": 2541,
+      "sha256": "d750f688f21d0c9d897381ed1b9791a53aea45a505459d3ef3d280874ee3f75d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-backend.log": {
+      "bytes": 706,
+      "sha256": "9d8c6ae67ef78eb5cb1709c84e0f6d0d80b2fab4e314f42169e075d1d3a3af5b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-cold-start-instrumentation.log": {
+      "bytes": 86,
+      "sha256": "b8d2d2a50a99b459514200d51ed6487fa462cdf681dc6075ada563eee87a9e26"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-cold_start.xml": {
+      "bytes": 37754,
+      "sha256": "ca02de62866a964791c3f45b1b02d8c5b473ef3c042617b90a8503b1aca137c0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-instrumentation.log": {
+      "bytes": 259,
+      "sha256": "8c8f80b78ebccee513ec4bd44dabbbe4adbb1bb3ed10716d6cdb338f6aa82c62"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-android-result.json": {
+      "bytes": 800,
+      "sha256": "3846184a7a97e9fff6b04b2701363d3f320bf38d555d3ba378fd3ce08d3e8ed5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend-identifiers.json": {
+      "bytes": 2678,
+      "sha256": "cd794382a0f31c5b3360512b790f17a657c4af14fbdf001da0127b29d0377977"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend-tests.log": {
+      "bytes": 36970,
+      "sha256": "0a0040f7176fc20e054e6d4de104c918e9bc825f77f5611a47f696312e6be320"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend.json": {
+      "bytes": 2238,
+      "sha256": "069560deca2a873f5402f2bf622dcc0678c99d1db6743516bae848914bd111e8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-backend.log": {
+      "bytes": 706,
+      "sha256": "0cc3db4948947e56875c34075af79671283a6e2963c1a268e633fe09055d7404"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-ios-result.json": {
+      "bytes": 9108,
+      "sha256": "cdc910a215e24f40a11df064fbef3c0187c04b245e6a0a83c3f945169123b4e7"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/final-verification.json": {
+      "bytes": 1335,
+      "sha256": "073d0488b8523430057680414d91c6c48d2b5850309ffa215399b14c2c30553a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/full-unit-corrected.log": {
+      "bytes": 122611,
+      "sha256": "ff72a169ed8a07f32724909dd43020fabd1665faf5c593f3ad8e8a3db8d87cc9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/full-unit.log": {
+      "bytes": 122418,
+      "sha256": "845213a7f47825c1dbaa891fde0f3ec2effc9d5e5851d24c8716f678c6fbdf77"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/gate-red.log": {
+      "bytes": 4557,
+      "sha256": "f321ffe0d250134c470563d38ae157dde3e3a81fec0cdc36611f91a0b93068d0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/inherited-source.json": {
+      "bytes": 1144,
+      "sha256": "25ae4c9ff18b96d44a8da9070e4c25e5c6a766f5900fb900cac17f5754625828"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/inherited.patch": {
+      "bytes": 16045,
+      "sha256": "296280a7de3a5908b7a3b2eacbda1211ae4c5ccca21430d95ec6303e90a0bbdc"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-capabilities-build.log": {
+      "bytes": 165811,
+      "sha256": "a9d6e5ea23497c851f6938dc3e330badd2b2255e3af531b19a853a866b35260c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-37A701B2-87EA-4940-897B-7C110FA88A6B.png": {
+      "bytes": 159685,
+      "sha256": "22716eb20b84c4cef3150e54aa28638e9519a5f25132ed79835c3748c38972a2"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-E4A93B0C-0BD0-4971-A2D6-79365482D2F3.png": {
+      "bytes": 185511,
+      "sha256": "1de3af60972d32c275eaf22151eef89a5d6dba367e6b897b66ebc943db7e5545"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-attachment-manifest.json": {
+      "bytes": 1223,
+      "sha256": "addf19c541bfa50de916dcfdeca0fac0578796ef133d2e53d6c88e7a8dab4dd5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-identifiers.json": {
+      "bytes": 1712,
+      "sha256": "5c34f44a9800cfc8a3d378cfbefdb060203d64d0a7674d1a34232bd739cd6bbe"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-owned-runner.log": {
+      "bytes": 426,
+      "sha256": "47d88633d186f459f76ef080d023ac8b41e36dea65997b2cb6c58ebbfb5bee1c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-result.json": {
+      "bytes": 450,
+      "sha256": "992032a2df26388b248e17a23af62e2698590e5eec133be3aa5c1c80ed2f0762"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-summary.json": {
+      "bytes": 969,
+      "sha256": "927b007c36b300ec051bfba6afc7ef8572d4f94f8699e2f0ebbe6f3b9b87795a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-document-tests.log": {
+      "bytes": 7098,
+      "sha256": "114d4103dd97214e3d0bff20abf437e6d476292b45773d59c448b5f0b4a10e91"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-debug.log": {
+      "bytes": 203636,
+      "sha256": "2aa0aab7ca4e491b1d9f87c81af52230729f36fa3be8a661fa67130a40a3aee6"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-final-fixture.log": {
+      "bytes": 956,
+      "sha256": "b0fed1a6b0a6418ce9ba628e09121b401c812f7816a464eb75427a6b91f8fa6a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-release.log": {
+      "bytes": 104926,
+      "sha256": "facea1011ef47560926dd59feb4954ef7320d6ff549aad7c5b58f0b6ff4a7e46"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-result.json": {
+      "bytes": 383,
+      "sha256": "7b32d4fa9a5b4fde7fc081ce0c05a2f2f96c4959b2341cbd110f04cb3ed20f85"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-test-identifiers.json": {
+      "bytes": 4819,
+      "sha256": "8401ec56f47b21d2aee5d115fb73ba0a339edbff944ec33eebce6a62dffe9d9b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-documents-tests.log": {
+      "bytes": 35879,
+      "sha256": "b99ad5eaf664552ce20b2aa07ede06834ba883123acbd1894053d4e62afa795a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-final-result.json": {
+      "bytes": 383,
+      "sha256": "221c48dd8633660f3922b931dd30ea52a236e6bf3eacc033c74ac7fc7ee33453"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-final-test-identifiers.json": {
+      "bytes": 1450,
+      "sha256": "da8aaff4964943bfb82dcc77843a7266bde2f93de3189571224e79058f4674dd"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-final-tests.log": {
+      "bytes": 47310,
+      "sha256": "956fb8a21ccc6e44cf5250dbba47642cf308086c2ab377b5fc053e5ccf69ac9d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-owner.json": {
+      "bytes": 156,
+      "sha256": "b1e2fec1f57878c3d93cb256672785f4052bdbb7e28276eaeabe39d58eeb282f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-platform-final-fixture.log": {
+      "bytes": 956,
+      "sha256": "55965dd958db2e5228f0f68ab07e2aa998ff51570c4b00cd894737fb234a5ee9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-platform-fixture.log": {
+      "bytes": 956,
+      "sha256": "e2b91cbe8ad1d170bb72e5d53e2089e79f577e2ad11629f549a3c6e7b2898ca4"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ios-receipt-debug-build.log": {
+      "bytes": 202061,
+      "sha256": "f796224ba4016fd29088473d0f1f335bfb6dbc8ca4db1e70b456014ef54ce632"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/large-envelope-green.log": {
+      "bytes": 2593,
+      "sha256": "1b03f4be2ebde2737c10e3838464c8ec8a0f3cd131f3c1a4e4d7c9591c89edae"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/large-envelope-probe.log": {
+      "bytes": 74126,
+      "sha256": "429291b2dd500a0d20b0801888ef30f57afe9542c9792d40a64c335a69fc3db8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-cli-green.log": {
+      "bytes": 2270,
+      "sha256": "4f457689e4a348ca22989ac5cc8ed6f466dab9f896d806903ea6e3fa3458137d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-cli-red.log": {
+      "bytes": 2464,
+      "sha256": "89516240dd8a04bbe646fb606a1c53d2f00497e09a5e581f49562f8c579f08cb"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-dispatch-review.md": {
+      "bytes": 2786,
+      "sha256": "4df8922b4c9ef4faa2cae908c5c0eb85e6ae213cd81b71414d881c088743dca8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-platform-review.md": {
+      "bytes": 14380,
+      "sha256": "20e77302e35a99c473391167cfd31852006b8013fc46d691898a929f35cd09e1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-receipt-green.log": {
+      "bytes": 5531,
+      "sha256": "ede0fb84d0ac01b201f822076c18f65a9c3ea967330e461d376a1358f2db3224"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/native-receipt-red.log": {
+      "bytes": 7032,
+      "sha256": "7e2565295daa1d93b14af06e25d742e44f20002193894ba9ac2434d57a422590"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build-local-deps.log": {
+      "bytes": 6488,
+      "sha256": "2fea1c617c11c01f2332ab91b7e3c2c54700d0e839d7fac13b95424c7a70567b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build-receipt.json.gz": {
+      "bytes": 773975,
+      "sha256": "d4f0010eccf673c9efab974b5175602f271f6613d25deeb5c1c20307e8ebad38"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/next-production-build.log": {
+      "bytes": 1946,
+      "sha256": "bb0a025c0ffa11e94a13a384a5bd0bfa2801541b5bb1ca7fd09fea4efdf7362f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/node-concurrency.log": {
+      "bytes": 222,
+      "sha256": "2bd066f802dda3e25f1fb399016b52129967f8bb74394bade99fdcc52404fa38"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/node-guards.log": {
+      "bytes": 1487,
+      "sha256": "6a021d2274cdf4c2b8ff1373a07f8337997ae051ed22be56bf15af0b2eba787b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/original-preserved-check.json": {
+      "bytes": 732,
+      "sha256": "b101bc5081a2f8ad9c7e4a806489a1cc838abc9855b20f56f3abb7af3b9cddd8"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/permission-red.log": {
+      "bytes": 6351,
+      "sha256": "a7d4dc1c48e5eb880655786e92f721af82488f8ba969ddc4dd8e7397fc421be6"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-final-eslint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-final-python-guards.log": {
+      "bytes": 6475,
+      "sha256": "d240192e43a4ff217aaa4dfa61efead98827b82416b862a1819fd0d5d4d378da"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-final-typecheck-corrected.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-final-typecheck.log": {
+      "bytes": 426,
+      "sha256": "8bf519d6a8a93ecefbed6b6ce1a386eece821df755b9d5ff35de80a11f8f2120"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-full-unit-bounded.log": {
+      "bytes": 127252,
+      "sha256": "91436dfcd121d34a48dc87d97c590fd73ec4565131eec2d5109ae4beef90988e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-full-unit-receipt-final.log": {
+      "bytes": 127309,
+      "sha256": "e7eeda3480c65dacd179860a54e5e6605e0ca5bda7409d44aeb5a6c725dea9f0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-full-unit.log": {
+      "bytes": 99374,
+      "sha256": "4720aae498c4d0ecdc9cbbcaa54bbf72a2c0f04b3f182d36d69f3380ac92511b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-node-guards.log": {
+      "bytes": 1374,
+      "sha256": "5fad9517505819c57af508f47243c2aa9a75e548ada689f2e95e5801a06d906a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-python-guards-corrected.log": {
+      "bytes": 6047,
+      "sha256": "b70eb53193d8ba619ea4071f1f9a5b603f7be0e9cb5b45460e507c680d00fa7d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-python-guards.log": {
+      "bytes": 6832,
+      "sha256": "d863d4e1cddb7173ad982ed222ec4b75f5bfdb77e85fef691109998da623e9a7"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-review-corrections.md": {
+      "bytes": 4728,
+      "sha256": "46d62cb0c9543f9acb5927100ebdf6b6cc2eaf07fc838485c852840b2f013286"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/platform-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/policy-gate-green.log": {
+      "bytes": 7845,
+      "sha256": "83a043a3406e500c58bfc7427ffa7370be2b905428a63ab8679fed99c343096a"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/policy-jvm-red.log": {
+      "bytes": 3248,
+      "sha256": "c8ff66cbe245f75223c088f1f1f690a6a85c443fead2203a2dc26eb72ae1231f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/policy-swift-green.log": {
+      "bytes": 5081,
+      "sha256": "99a213e9b40921a78e779ac5bb1db9787152679e6238e627a1dc388810035519"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/policy-swift-red-2.log": {
+      "bytes": 3651,
+      "sha256": "7ce08e353a1f58368da147caf4efc894e5e9ade3e9f26f7007e8e32b1360b6d2"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/policy-swift-red.log": {
+      "bytes": 11575,
+      "sha256": "7b88cdb516f6640bddce6671ab35ad772dba482195dadbbd0a81cf536f0ef65c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/progress.md": {
+      "bytes": 18816,
+      "sha256": "d0e90ec058593b79c3625d13691b1232c6ea029154c14165edd902e54d78775c"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/push-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/receipt-final-eslint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/receipt-final-typecheck.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/reconciliation-sql-final.log": {
+      "bytes": 27495,
+      "sha256": "e115f3d091f6a0512f0ba96ba016a70c31379e45a8f3418a8d1a023c6c1640c9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/reconciliation-sql-green.log": {
+      "bytes": 17849,
+      "sha256": "acef68486e340993bb0bdde8ad72ce2f8977dab21fd5dcf9817276dd666b6097"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/reconciliation-sql-red.log": {
+      "bytes": 28438,
+      "sha256": "590ae566d49a0610c967784406f7ca9b03728256a71bac9117719a9693a5654d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/recreation-matrix-python-guards.log": {
+      "bytes": 6475,
+      "sha256": "8f72df97c7a6cd0a64b7b353d6bfa0345d4643055b940d261bd2fa72a7f18757"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/registration-jvm-green.log": {
+      "bytes": 2481,
+      "sha256": "847690ff9a1034cc1354ee9c802f0fb1c86074d8b47814aead70d358116a3de0"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/registration-jvm-red-2.log": {
+      "bytes": 3090,
+      "sha256": "b1add3112d3e59e104f28afab03aeb4c4716b4cb97c66e2ad28738c9a8dcccf5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/registration-jvm-red.log": {
+      "bytes": 4042,
+      "sha256": "ac07012c1f4a013aecddd4f25f51f1000a9545b7f80fdebed6e47264bcc17fd5"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/registration-swift-green.log": {
+      "bytes": 6099,
+      "sha256": "469cff97eceec4212991b3dfcb457e5fc9c6d31e0161d129bb4e8e433a9cd984"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/registration-swift-red.log": {
+      "bytes": 1872,
+      "sha256": "c05160936c3d83ea701d1d6888e1d497e709bbce21704cd62cff9b1d81981036"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/review-correction-green.log": {
+      "bytes": 2415,
+      "sha256": "0807f2fdaf331d64b90819d1505b2a5d22a472dd4999d6359aecef368f205c2e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/review-retry-red.log": {
+      "bytes": 4959,
+      "sha256": "c8f46b7c189918a1e6767a968f61a0e82f2c635f649ee74758027d7696af39e1"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/review-sql-correction.log": {
+      "bytes": 26181,
+      "sha256": "7c8489d58f71de984fbbe5fdfaae029b57baa1c1b5343509e1514d5462bde9dc"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/runtime-owner.json": {
+      "bytes": 533,
+      "sha256": "c6896d9c34cceb476ad3c718a004d37c051098e89163bca0241a0ea80a234738"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/server-verification.json": {
+      "bytes": 4370,
+      "sha256": "6807a295389ccb5d52c8916c1d8c6205b5dee11efe2ac004b209d7a77ce57fdb"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/transport-jvm-green.log": {
+      "bytes": 9125,
+      "sha256": "f579431e1fda56c820c5190032d18c22ff08f6c87deb52465e98f0cd56da2c4f"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/transport-jvm-red.log": {
+      "bytes": 7909,
+      "sha256": "e4402173cada470aed0e4358ac74c37b52472a2ff710926d2d40fe9d09702064"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/typecheck-corrected.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/typecheck.log": {
+      "bytes": 371,
+      "sha256": "d8a35029635fb8d0d5f1100fc7d48f9823f261691830969e28216553617ce77d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-desktop-final.png": {
+      "bytes": 46961,
+      "sha256": "c354d2dc3cd04b6b98d5c2e78e5b4af868fe45f4206c84d7fc316f07c9bf5a53"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-phone-confirmation.png": {
+      "bytes": 80813,
+      "sha256": "d36b780a2b7710778a9f3fde201172153ffe3d7f9ffa49f2bcdd06fb1705ab0d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-phone-final.png": {
+      "bytes": 68788,
+      "sha256": "d5a4f920679ff6e718afdee814ae359800002d9ca3f7fc01671a16fc4eaddb0b"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-qa-inventory.md": {
+      "bytes": 1502,
+      "sha256": "dc6614f25ab6371e52acfaaaeb3ade667133be0dd59095317f7d16838394bace"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-qa-result.json": {
+      "bytes": 1479,
+      "sha256": "9acc1c5a39c97bebf5866b768ce20e105530920a28cf7a8a245f451554d7aa74"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/ui-revision-protocol-result.json": {
+      "bytes": 462,
+      "sha256": "1b55cf4a254bc27a7eea9ddd16981fe9c442a8bd142463daa4f885769a30f86d"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/uiautomator-public-dump-probe.json": {
+      "bytes": 214,
+      "sha256": "de2aae07228cceb166178c387ac1628e7da8e4d57cb697d188af5510bade8f1e"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/unit-stop-receipt.json": {
+      "bytes": 319,
+      "sha256": "18d8352dff0b8f17630a4be95e82c87183bf04e1b3ae61ae8fb1216a5089f708"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/worker-green-2.log": {
+      "bytes": 527,
+      "sha256": "4bfddaf5df5f81de85bf703de4a3f6929de57756b39fac3e332d741c0b55eea9"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/worker-green.log": {
+      "bytes": 11607,
+      "sha256": "d21f8a6ca39cae556bed09e019719680cabcdccf9db2e8cfcda76b3c68177e28"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/worker-red.log": {
+      "bytes": 12860,
+      "sha256": "46869fe35cc8eb0e4201ebf97de359ae03a7b393c5f2adf44ef53ec4ac721f06"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/worker-sql-2.log": {
+      "bytes": 2158,
+      "sha256": "8824383ccb7985ba744673352a8a3a8484b8d1e8f7ccd665a3c36a3ae613c691"
+    },
+    "docs/native/evidence/2026-11-04/phases-1-2/worker-sql.log": {
+      "bytes": 5590,
+      "sha256": "a545c33e9094dd6caa7587b346f425c8b150e34a1fa27fe53c97f833f170f670"
+    }
+  }
+}

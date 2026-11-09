@@ -1,0 +1,66 @@
+{
+  "status": "local-phases-1-2-complete",
+  "approvedBaseline": {
+    "androidMinimumApi": 29,
+    "androidSystemWebViewMinimumMajor": 149,
+    "approvedBy": "Jose",
+    "approvedOn": "2026-11-04"
+  },
+  "applicationCheckpoint": "ad9f38fa0becc47aa37e4b7c45f8dba78cc72856",
+  "androidBackendTestCheckpoint": "79f2d9cbf746009add1be757858664cda0873780",
+  "reviewedHead": "2d3c92cea83f7f441cd6b6d454532845c2517eb8",
+  "review": {
+    "recommendation": "APPROVE",
+    "quality": "WATCH",
+    "blockers": [],
+    "deferredMinor": "bounded extraction of native fallback presentation and runtime diagnostics"
+  },
+  "checks": {
+    "jvm": 26,
+    "androidFoundationTargets": {
+      "API32": {
+        "cases": 10,
+        "cold": 1
+      },
+      "API37.2": {
+        "cases": 10,
+        "cold": 1
+      }
+    },
+    "androidOwnedBackend": {
+      "namedChecks": 18,
+      "nativeJourneys": 3,
+      "cold": 1,
+      "ownershipClosed": true,
+      "sourceVerified": true
+    },
+    "negativeRuntimeUi": [
+      "outdated-provider",
+      "missing-provider",
+      "large-font-landscape-keyboard"
+    ],
+    "priorIosServerSharedWebRetainedByExactSourceComparison": true
+  },
+  "cleanup": {
+    "ownedAndroidSerialsAbsent": [
+      "emulator-5560",
+      "emulator-5562",
+      "emulator-5564"
+    ],
+    "ownedIosSimulatorShutdown": "F69F440D-F4FD-4658-B8AF-DEA3B844CE30",
+    "api32OriginalProviderBytesAndSelectionAndEnableStateRestored": true,
+    "api32OriginalFontSettingAbsenceRestored": true,
+    "api37FactoryProviderUnchanged": true,
+    "ownedBackendClosedAndSourceVerified": true,
+    "reproductionDataAndSdkInstallationRetained": true
+  },
+  "releaseReady": false,
+  "integration": {
+    "state": "local-detached-commits-only",
+    "sourceInventory": "unresolved-red",
+    "push": false,
+    "merge": false,
+    "deployment": false
+  },
+  "nextGate": "Phase3 physical/minimum/retail provider and hosted/device qualification; development source reconciliation before integration"
+}

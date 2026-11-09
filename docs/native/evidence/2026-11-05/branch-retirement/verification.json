@@ -1,0 +1,25 @@
+{
+  "remoteHeads": {
+    "claude-codex-collab-nevora": "875ceda86ab97f2f46fa3370eb5d0af744daf5a8",
+    "claude/youthful-mendel-9mg8hu": "28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+    "development": "e9c3a66da330959738100884f87cb76fd2af8296",
+    "main": "7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  },
+  "archives": {
+    "refs/tags/archive/branches/2026-11-05/AI-owner": "1e0cf1bf33c85cf19e35c56ba9fa5925aedebb64",
+    "refs/tags/archive/branches/2026-11-05/claude/employee-mobile-phase2-20261027": "4a68e5c8db9e8c266fec41fd35d659c2db96f6c8",
+    "refs/tags/archive/branches/2026-11-05/codex/release1-db-rehearsal-20261101": "fb7da7628455434e221e131d81ae417b407162c6"
+  },
+  "localArchiveTagsVerified": true,
+  "allFourLocalBranchesUnchanged": true,
+  "all135WorktreeHeadsAndPathsUnchanged": true,
+  "protectedRemoteHeadsUnchanged": true,
+  "retiredRemoteBranches": 3,
+  "unapprovedNewBranchesPreserved": {
+    "claude/youthful-mendel-9mg8hu": "28c98b79aca42f5796bb68a4984cab6dbc38bc30"
+  },
+  "sourceGateStillBlocked": true,
+  "forcePushUsed": false,
+  "permanentGitConfigChanged": false,
+  "hostingOnHold": true
+}

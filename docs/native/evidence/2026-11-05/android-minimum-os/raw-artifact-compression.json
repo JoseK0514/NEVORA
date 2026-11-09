@@ -1,0 +1,122 @@
+[
+  {
+    "source": "google-apis-image-metadata.xml",
+    "stored": "google-apis-image-metadata.xml.gz",
+    "bytes": 240650,
+    "sha256": "f46a7c36aba029eba520189f731901a95c8f423bc446d16c326bf351efd8855e"
+  },
+  {
+    "source": "prepare29.log",
+    "stored": "prepare29.log.gz",
+    "bytes": 558,
+    "sha256": "453403e09a4cff5e095fd61de26c8e0a8d4ca02a3008d439eea1d8b22c984f2b"
+  },
+  {
+    "source": "avd-29-create.log",
+    "stored": "avd-29-create.log.gz",
+    "bytes": 916,
+    "sha256": "05fa6a14a40cfaf8f414af49c5703d9ee649681a17ea0a0351d0d6a9f476f635"
+  },
+  {
+    "source": "emulator-29.log",
+    "stored": "emulator-29.log.gz",
+    "bytes": 5878,
+    "sha256": "d4f5c7cf196d690570fb92e85f0e2de69f61d3e71a5def0c1516f0641e305a46"
+  },
+  {
+    "source": "emulator-29-restart.log",
+    "stored": "emulator-29-restart.log.gz",
+    "bytes": 8282,
+    "sha256": "a897a14b1a8f097b230c91446ef9a518f984880f48313a1d773906fe2396167a"
+  },
+  {
+    "source": "provider-29-before.txt",
+    "stored": "provider-29-before.txt.gz",
+    "bytes": 912,
+    "sha256": "f499508f3d6359cb895ab64b383c4f175d8aac4580e675b246ac8fa6b27ef7c9"
+  },
+  {
+    "source": "retained-play-package-badging.txt",
+    "stored": "retained-play-package-badging.txt.gz",
+    "bytes": 6000,
+    "sha256": "7fad6337aab8f0ecc101f91efccc24ef47d37c4ca12a9665c5136864124b7d74"
+  },
+  {
+    "source": "retained-play-package-signature.txt",
+    "stored": "retained-play-package-signature.txt.gz",
+    "bytes": 1775,
+    "sha256": "c71a56d19b37dd22d85156246f7cc29ff0e1e9c63965e19d705b42a9158f0667"
+  },
+  {
+    "source": "retained-play-package-api29-install.log",
+    "stored": "retained-play-package-api29-install.log.gz",
+    "bytes": 360,
+    "sha256": "bc7fc90a25875909d59ca620225c8c5f2aee600a264be68be06d05cf1a7756aa"
+  },
+  {
+    "source": "api29-old-provider.log",
+    "stored": "api29-old-provider.log.gz",
+    "bytes": 1218,
+    "sha256": "0c4c87c9dee32394bcefbb102057cf2fad0f70d438fde6e964832b7de1b128ee"
+  },
+  {
+    "source": "api29-large-text.log",
+    "stored": "api29-large-text.log.gz",
+    "bytes": 1218,
+    "sha256": "c64cb79712b6e9723a5ca8f3ab0430e40b1739478005cb82aa570d31ef893d84"
+  },
+  {
+    "source": "fallback29-run.log",
+    "stored": "fallback29-run.log.gz",
+    "bytes": 431,
+    "sha256": "4f7538047d1d037a09fe9f4df23d8c64645f99f49cb955c0525cf3c0b0cf469d"
+  },
+  {
+    "source": "initial-process-exit/api29-old-provider.log",
+    "stored": "initial-process-exit/api29-old-provider.log.gz",
+    "bytes": 2122,
+    "sha256": "4ffa67001f476f0ea26d4603666d35593df1b5f42f4126d6a165a40ec9f0db20"
+  },
+  {
+    "source": "initial-process-exit/fallback29-run.log",
+    "stored": "initial-process-exit/fallback29-run.log.gz",
+    "bytes": 1208,
+    "sha256": "a523f73c5050f3660d0be167f14dbf6df5289a180d6a4023cc4ea4a3f0cd75d4"
+  },
+  {
+    "source": "old-provider/instrumentation-0.log",
+    "stored": "old-provider/instrumentation-0.log.gz",
+    "bytes": 83,
+    "sha256": "82a6667c221ed792087d9207579dbf819e059d1f753d5ce6bb1b7d45cf80ac37"
+  },
+  {
+    "source": "old-provider/instrumentation.log",
+    "stored": "old-provider/instrumentation.log.gz",
+    "bytes": 83,
+    "sha256": "82a6667c221ed792087d9207579dbf819e059d1f753d5ce6bb1b7d45cf80ac37"
+  },
+  {
+    "source": "large-text/instrumentation-0.log",
+    "stored": "large-text/instrumentation-0.log.gz",
+    "bytes": 83,
+    "sha256": "0146e75746d7ab6c98fd62fede1efe9b4ff659c3181bcd0500d5d24d49dec14e"
+  },
+  {
+    "source": "large-text/instrumentation.log",
+    "stored": "large-text/instrumentation.log.gz",
+    "bytes": 83,
+    "sha256": "0146e75746d7ab6c98fd62fede1efe9b4ff659c3181bcd0500d5d24d49dec14e"
+  },
+  {
+    "source": "image-29-metadata.xml",
+    "stored": "image-29-metadata.xml.gz",
+    "bytes": 1211,
+    "sha256": "0d458276223d9288d168ae8f05dd48f95c6da2d87a4096d715b1de5623c44078"
+  },
+  {
+    "source": "source-inventory.log",
+    "stored": "source-inventory.log.gz",
+    "bytes": 181,
+    "sha256": "2aa6d09bb0e755360dd68661e5abb786222d23e50cb23ecc4b461fb9e33f9718"
+  }
+]

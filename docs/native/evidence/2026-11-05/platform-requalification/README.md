@@ -1,0 +1,20 @@
+# Updated native platform requalification — November 5, 2026
+
+Status: **owned-local Android and iOS passed** at committed source `69887718683b3fa2e12133b97c880b0e98c6ca9e`. This includes development `e9c3a66d` and the native integration `cf4fff066`; later retirement/hosting changes are metadata only. Owner: Codex/root. Jose instructed holding paid hosting and continuing useful free work.
+
+| Run | Actual backend checks | Native UI | Additional evidence |
+| --- | --- | --- | --- |
+| Android | 18/18 | 3/3 | Cold process restart; WebView 149.0.7827.5, platform-default accessibility; no renderer observer/command-line overrides |
+| iOS | 18/18 | 3/3, zero skipped/failed | iPhone 17 Pro simulator, iOS27, ordinary application UI and session persistence |
+
+Both `node scripts/native-owned.mjs --mode owned-local --expected-sha 69887718683b3fa2e12133b97c880b0e98c6ca9e --platform <platform> ...` invocations exited 0, verified exact clean source and closed ownership. Explicit targets were invocation-owned `emulator-5570` and iOS UUID `102E75F4-E44B-4A7C-8DE5-A49B7BE3095E`. Environment was whitelisted; PostgreSQL binaries were explicitly selected, with fresh isolated clusters, fictional fixture data and loopback-only Next.js/control/SMTP. No existing cloud database, account, provider secret or real delivery was used.
+
+Backend scenarios verify session/selector/origin/cross-site boundaries, role handling, schedule, Employee and Owner writes, actual invitation activation, unauthorized Owner access, session expiration/revocation and database outage recovery. Native UI cases exercise activated-account login, Employee action/revocation/outage/recovery/logout, and Owner action/persistent session/logout after process restart. Android also passes its separate cold-restart instrumentation. This re-runs actual native containers against updated application code, superseding the earlier statement that only browser contracts had been rerun.
+
+SDK builds used external invocation-owned output directories. Existing SDK deprecation/XML warnings and an Xcode debugger-version lookup diagnostic did not fail the builds/tests. No assertion or application code was changed to obtain these results. The existing inventory snapshot test remains 12 pass / 1 pre-existing failure; live source inventory still fails 4 > 3. See [branch retirement](../branch-retirement/README.md). Shared integration/release is not accepted by these local results.
+
+After success, only this invocation's new Android AVD and new iOS simulator were stopped and removed following name/path/UUID/process ownership checks. All pre-existing simulators remained present; the previously booted iPhone 17 Pro Max remained booted. Harness-owned Next/PostgreSQL/browser resources closed, and evidence is retained. Public receipts here include result/check matrices, SDK artifact hashes, XCTest summary and private-evidence checksums. Raw fixture screenshots/XML/XCTest bundles remain at the recorded external paths; no signing private key/password is part of the evidence.
+
+CTO retains the existing WebView/WKWebView foundation; CISO retains fictional-data isolation and provider-off custody; governance keeps the three-branch and hosted/signing gates; delivery records local requalification separately from Phase3 completion. No policy/risk exception is accepted. This is local HTTP/emulator/simulator verification, not physical-device, minimum-iOS16, HTTPS associations/passkeys, provider delivery, signed release, Play/TestFlight upload or hosted acceptance.
+
+Paid hosting is **ON HOLD**. The staging packet remains prepared without provisioning. Next shared-release gate is source-owner reconciliation of the new unapproved Claude branch plus the existing inventory snapshot assertion. Subsequent distribution work still requires active Apple organization membership/signing, a verified upload-key recovery backup, and an approved isolated HTTPS environment. No immediate user action is needed for the completed local checks; no subscription or production action occurred.

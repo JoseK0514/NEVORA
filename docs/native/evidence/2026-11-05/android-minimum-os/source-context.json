@@ -1,0 +1,45 @@
+{
+  "checkpoint": "c8211cd2a71655bedba067eed2437b5ee7c2c3a4",
+  "development": "e9c3a66da330959738100884f87cb76fd2af8296",
+  "nativeSourceUnchanged": true,
+  "branchPolicy": "four heads retained; collaboration drift retained; no shared integration",
+  "pinnedChromiumSource": "https://chromium.googlesource.com/chromium/src/+/refs/tags/156.0.8078.50/",
+  "sourceSnapshots": {
+    "build_config_android_config.gni": {
+      "sha256": "4771dd7ca70f5d6a24d40bebad4c220f2b05c06d1d687babffc719792cceeae5",
+      "bytes": 22399
+    },
+    "android_webview_BUILD.gn": {
+      "sha256": "2c368a734d31d2e891c8d46465dbef23cc18cb03504aa02eff1be74917a2394f",
+      "bytes": 63297
+    },
+    "android_webview_nonembedded_BUILD.gn": {
+      "sha256": "b90e55d75ae4687f976e1697af7284a6ca63651b1c248feb5726b29fb0c8abe0",
+      "bytes": 11026
+    },
+    "chrome_android_BUILD.gn": {
+      "sha256": "0ddb8f56c59166dcdb6cc49f2e5a8d2ab22491aa8a3822d4ac27a133fa2d3760",
+      "bytes": 174253
+    },
+    "android_webview_docs_webview-providers.md": {
+      "sha256": "6704234a9d0c2d5ee63bad48f99a7c671cd2e6044d9a0a3e79b8944ef0be93e1",
+      "bytes": 7645
+    },
+    "android_webview_system_webview_apk_tmpl.gni": {
+      "sha256": "1fa86b8445a081a5e92b7afa904d119b883289dcb79e12811e4cb57491b13604",
+      "bytes": 12283
+    },
+    "android_webview_expectations_system_webview_64_32_bundle.AndroidManifest.expected": {
+      "sha256": "2b726c53844f399b481c8266f58493390ad5183ae9022042f818115d0a96bc1f",
+      "bytes": 24722
+    }
+  },
+  "privateRoot": "/Users/josek0514/.codex/native-runtime/nevora-android-compat-20261105-cd9302a6",
+  "remoteHeads": [
+    "origin 7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+    "origin/claude-codex-collab-nevora cb53bb42ed6de75c1e5f52a905b208ee921aaa3a",
+    "origin/claude/youthful-mendel-9mg8hu 28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+    "origin/development e9c3a66da330959738100884f87cb76fd2af8296",
+    "origin/main 7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  ]
+}

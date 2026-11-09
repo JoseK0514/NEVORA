@@ -1,0 +1,12 @@
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+.(node:39924) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/src/lib/native-shell/security.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+...
+----------------------------------------------------------------------
+Ran 11 tests in 0.769s
+
+OK

@@ -10,6 +10,8 @@ import {matchesDisplayedShift} from '../../lib/shift-changes/displayed-terms';
 import {shiftTermsFingerprint} from '../../lib/shift-changes/terms';
 import {runShiftChangeMaintenance} from '../../lib/data/shift-change-maintenance';
 import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
+import {readEmployeeRequests} from '../../lib/data/employee-requests.server';
+import type {SqlExecutor} from '../../lib/notifications/types';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 vi.mock('../../lib/db',()=>({getDb:()=>({query:(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values})}),queryRows:(r:unknown)=>r}));
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
@@ -18,6 +20,71 @@ afterEach(async()=>db?.dispose());
 const review=async(id:string)=>{const t=await reviewedFixtureTerms(db.executor,id);return {sourceShiftId:id,sourceEpisodeId:t.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(t)};};
 async function offer(id='source'){const terms=await fixtureShift(db.executor,id);const r=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...terms},db.executor);expect(r.status).toBe('pending');if(r.status!=='pending')throw Error(JSON.stringify(r));return r;}
 const tick=async(executor=db.executor)=>runShiftChangeMaintenance({executor,clock:()=>new Date('2035-09-30T12:00:00Z'),config:await loadWorkspaceNotificationConfig({PUSH_ENVIRONMENT:'test'},db.executor),limit:50});
+it('keeps an incoming swap out of own recent requests until the request is decided',async()=>{
+ const source=await fixtureShift(db.executor,'dedup-source','e1','2035-10-03'),target=await fixtureShift(db.executor,'dedup-target','e2','2035-10-04');
+ const offered=await executeShiftChange(proof('e1'),{kind:'PROPOSE_SWAP',operationId:randomUUID(),...source,targetShiftId:target.sourceShiftId,targetEpisodeId:target.sourceEpisodeId,targetTermsFingerprint:target.sourceTermsFingerprint},db.executor);
+ expect(offered.status).toBe('pending');if(offered.status!=='pending')throw Error('Swap fixture was not created');
+ const recipient=await readEmployeeRequests(proof('e2'),db.executor),sender=await readEmployeeRequests(proof('e1'),db.executor);
+ expect(recipient.state).toBe('ready');expect(sender.state).toBe('ready');
+ if(recipient.state!=='ready'||sender.state!=='ready')throw Error('Requests projection was unavailable');
+ expect(recipient.incoming).toBe(1);
+ expect(recipient.recent?.filter(row=>row.id===offered.requestId)).toEqual([]);
+ expect(sender.recent?.filter(row=>row.id===offered.requestId)).toHaveLength(1);
+ expect((await executeShiftChange(proof('e1'),{kind:'CANCEL',operationId:randomUUID(),requestId:offered.requestId,expectedRevision:1},db.executor)).status).toBe('closed');
+ const decided=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(decided.state).toBe('ready');if(decided.state!=='ready')throw Error('Decided requests projection was unavailable');
+ expect(decided.incoming).toBe(0);
+ expect(decided.recent?.filter(row=>row.id===offered.requestId)).toEqual([expect.objectContaining({kind:'shift',status:'CANCELLED'})]);
+});
+it.each(['incoming-first','history-first'])('keeps a swap in exactly one Requests section when cancellation races the read (%s)',async(order)=>{
+ const source=await fixtureShift(db.executor,'race-source','e1','2035-10-03'),target=await fixtureShift(db.executor,'race-target','e2','2035-10-04');
+ const offered=await executeShiftChange(proof('e1'),{kind:'PROPOSE_SWAP',operationId:randomUUID(),...source,targetShiftId:target.sourceShiftId,targetEpisodeId:target.sourceEpisodeId,targetTermsFingerprint:target.sourceTermsFingerprint},db.executor);
+ expect(offered.status).toBe('pending');if(offered.status!=='pending')throw Error('Swap fixture was not created');
+ let release!:()=>void,cancelled=false;
+ const firstObserved=new Promise<void>(resolve=>{release=resolve;});
+ const racing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const exchange=statements.find(s=>s.text.includes('FROM shift_exchanges x')&&s.text.includes('x.target_employee_id = $1'));
+  if(exchange){
+   const combined=exchange.text.includes('WITH request_candidates AS'),incoming=exchange.text.includes("WHERE x.kind = 'SWAP'");
+   if(combined||(order==='incoming-first'?incoming:!incoming)){
+    try{
+     const rows=await db.executor.transaction(statements,signal);
+     expect((await executeShiftChange(proof('e1'),{kind:'CANCEL',operationId:randomUUID(),requestId:offered.requestId,expectedRevision:1},db.executor)).status).toBe('closed');
+     cancelled=true;return rows;
+    }finally{release();}
+   }
+   await firstObserved;
+  }
+  return db.executor.transaction(statements,signal);
+ }};
+ const result=await readEmployeeRequests(proof('e2'),racing);
+ expect(cancelled).toBe(true);expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('Racing Requests read was unavailable');
+ expect((result.incoming??0)+(result.recent?.filter(row=>row.id===offered.requestId).length??0)).toBe(1);
+});
+it('keeps sent and decided history visible behind twenty pending offers, including effective expiry',async()=>{
+ await fixtureShift(db.executor,'history-self','e2','2035-10-03');await fixtureShift(db.executor,'history-peer','e1','2035-10-04');
+ // Imported/legacy rows are valid read fixtures; current command writes are covered above.
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,created_at) VALUES('sent-old','COVERAGE','history-self','e2','CANCELLED',now()-interval '3 hours')");
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,target_shift_id,requested_by_employee_id,target_employee_id,status,created_at) VALUES('decided-old','SWAP','history-peer','history-self','e1','e2','DENIED',now()-interval '2 hours')");
+ await q("INSERT INTO shifts(id,schedule_id,employee_id,date,start_time,end_time) SELECT 'crowd-'||side||n,'schedule',CASE WHEN side='source' THEN 'e1' ELSE 'e2' END,'2035-10-05','08:00','16:00' FROM generate_series(1,21)n CROSS JOIN (VALUES('source'),('target'))s(side)");
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,target_shift_id,requested_by_employee_id,target_employee_id,status,created_at,completion_deadline) SELECT 'pending-'||n,'SWAP','crowd-source'||n,'crowd-target'||n,'e1','e2','EMPLOYEE_PENDING',now()-n*interval '1 minute',CASE WHEN n=21 THEN now()-interval '1 hour' ELSE NULL END FROM generate_series(1,21)n");
+ const result=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('Crowded Requests read was unavailable');
+ expect(result.incoming).toBe(20);
+ expect(result.recent).toEqual(expect.arrayContaining([
+  expect.objectContaining({id:'sent-old',status:'CANCELLED'}),expect.objectContaining({id:'decided-old',status:'DENIED'}),expect.objectContaining({id:'pending-21',status:'EXPIRED'}),
+ ]));
+ expect(result.recent).toHaveLength(3);
+});
+it('keeps a failed swap source explicit while retaining other available Requests sections',async()=>{
+ const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes('FROM shift_exchanges x')&&s.text.includes('x.target_employee_id = $1')))throw Error('Fictional exchange source outage');
+  return db.executor.transaction(statements,signal);
+ }};
+ const result=await readEmployeeRequests(proof('e2'),failing);
+ expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('Partial Requests read was unavailable');
+ expect(result.open).toEqual([]);expect(result.incoming).toBeNull();expect(result.recent).toBeNull();
+});
 it('H01/A005 rejects different owning weeks at proposal without request side effects',async()=>{
  const source=await fixtureShift(db.executor,'source'),target=await fixtureShift(db.executor,'target','e2','2035-10-09');
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('next','loc-1','2035-10-08','PUBLISHED','owner'); UPDATE shifts SET schedule_id='next' WHERE id='target'");

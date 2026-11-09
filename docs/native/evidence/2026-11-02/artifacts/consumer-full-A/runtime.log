@@ -1,0 +1,91 @@
+--------- beginning of main
+I/NEVORA_QA_AX( 3066): launch task=171 activity=38283517
+I/NEVORA_QA_AX( 3066): launch task=173 activity=73535542
+I/NEVORA_QA_AX( 3897): launch task=176 activity=38283517
+I/cr_A11yState( 3897): Enabled accessibility services list updated.
+I/cr_A11yState( 3897): Informing listeners of changes.
+I/cr_A11yState( 3897): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 4649): launch task=178 activity=38283517
+I/cr_A11yState( 4649): Enabled accessibility services list updated.
+I/cr_A11yState( 4649): Informing listeners of changes.
+I/cr_A11yState( 4649): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 4975): launch task=180 activity=38283517
+I/cr_A11yState( 4975): Enabled accessibility services list updated.
+I/cr_A11yState( 4975): Informing listeners of changes.
+I/cr_A11yState( 4975): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 4975): recents launcher=com.google.android.apps.nexuslauncher lastPackage=com.velani.nevora.development
+I/NEVORA_QA_AX( 4975): snapshot task=180 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 4975): snapshot task=180 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 4975): recents launcher=com.google.android.apps.nexuslauncher lastPackage=com.velani.nevora.development
+I/NEVORA_QA_AX( 4975): snapshot task=180 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 4975): snapshot task=180 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 5588): launch task=182 activity=38283517
+I/cr_A11yState( 5588): Enabled accessibility services list updated.
+I/cr_A11yState( 5588): Informing listeners of changes.
+I/cr_A11yState( 5588): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 5742): launch task=185 activity=38283517
+I/cr_A11yState( 5742): Enabled accessibility services list updated.
+I/cr_A11yState( 5742): Informing listeners of changes.
+I/cr_A11yState( 5742): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 5899): launch task=188 activity=38283517
+I/cr_A11yState( 5899): Enabled accessibility services list updated.
+I/cr_A11yState( 5899): Informing listeners of changes.
+I/cr_A11yState( 5899): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6050): launch task=190 activity=38283517
+I/cr_A11yState( 6050): Enabled accessibility services list updated.
+I/cr_A11yState( 6050): Informing listeners of changes.
+I/cr_A11yState( 6050): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6172): launch task=192 activity=38283517
+I/cr_A11yState( 6172): Enabled accessibility services list updated.
+I/cr_A11yState( 6172): Informing listeners of changes.
+I/cr_A11yState( 6172): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6420): launch task=194 activity=38283517
+I/NEVORA_QA_CONSUMER( 6420): target=6420 flags=1 bound=0
+I/NEVORA_QA_AX( 6420): launch task=196 activity=73535542
+I/NEVORA_QA_CONSUMER( 6420): target=6420 flags=1 bound=0
+I/NEVORA_QA_AX( 6584): launch task=198 activity=38283517
+I/NEVORA_QA_CONSUMER( 6584): target=6584 flags=1 bound=0
+I/cr_A11yState( 6584): Enabled accessibility services list updated.
+I/cr_A11yState( 6584): Informing listeners of changes.
+I/cr_A11yState( 6584): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6715): launch task=200 activity=38283517
+I/NEVORA_QA_CONSUMER( 6715): target=6715 flags=1 bound=0
+I/cr_A11yState( 6715): Enabled accessibility services list updated.
+I/cr_A11yState( 6715): Informing listeners of changes.
+I/cr_A11yState( 6715): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6886): launch task=202 activity=38283517
+I/NEVORA_QA_CONSUMER( 6886): target=6886 flags=1 bound=0
+I/cr_A11yState( 6886): Enabled accessibility services list updated.
+I/cr_A11yState( 6886): Informing listeners of changes.
+I/cr_A11yState( 6886): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 6886): recents launcher=com.google.android.apps.nexuslauncher lastPackage=com.velani.nevora.development
+I/NEVORA_QA_AX( 6886): snapshot task=202 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 6886): snapshot task=202 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 6886): recents launcher=com.google.android.apps.nexuslauncher lastPackage=com.velani.nevora.development
+I/NEVORA_QA_AX( 6886): snapshot task=202 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 6886): snapshot task=202 bounds=173 342 907 1973
+I/NEVORA_QA_AX( 7137): launch task=204 activity=38283517
+I/NEVORA_QA_CONSUMER( 7137): target=7137 flags=1 bound=0
+I/cr_A11yState( 7137): Enabled accessibility services list updated.
+I/cr_A11yState( 7137): Informing listeners of changes.
+I/cr_A11yState( 7137): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 7293): launch task=207 activity=38283517
+I/NEVORA_QA_CONSUMER( 7293): target=7293 flags=1 bound=0
+I/cr_A11yState( 7293): Enabled accessibility services list updated.
+I/cr_A11yState( 7293): Informing listeners of changes.
+I/cr_A11yState( 7293): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 7470): launch task=210 activity=38283517
+I/NEVORA_QA_CONSUMER( 7470): target=7470 flags=1 bound=0
+I/cr_A11yState( 7470): Enabled accessibility services list updated.
+I/cr_A11yState( 7470): Informing listeners of changes.
+I/cr_A11yState( 7470): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 7597): launch task=212 activity=38283517
+I/NEVORA_QA_CONSUMER( 7597): target=7597 flags=1 bound=0
+I/cr_A11yState( 7597): Enabled accessibility services list updated.
+I/cr_A11yState( 7597): Informing listeners of changes.
+I/cr_A11yState( 7597): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}
+I/NEVORA_QA_AX( 7726): launch task=214 activity=38283517
+I/NEVORA_QA_CONSUMER( 7726): target=7726 flags=1 bound=0
+I/cr_A11yState( 7726): Enabled accessibility services list updated.
+I/cr_A11yState( 7726): Informing listeners of changes.
+I/cr_A11yState( 7726): New AccessibilityState: State{isScreenReaderEnabled=false, isTouchExplorationEnabled=false, isPerformGesturesEnabled=false, isAnyAccessibilityServiceEnabled=false, isAccessibilityToolPresent=false, isSpokenFeedbackServicePresent=false, isTextShowPasswordEnabled=true, isOnlyPasswordManagersEnabled=false}

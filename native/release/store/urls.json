@@ -1,0 +1,16 @@
+{
+  "state": "source-paths-prepared-public-origin-pending",
+  "verifiedNativeHttpsOrigin": null,
+  "publicReachabilityVerified": false,
+  "paths": {
+    "privacy": "/privacy",
+    "support": "/support",
+    "terms": "/terms",
+    "deletionInformation": "/account-deletion",
+    "authenticatedDeletion": "/app/account/delete"
+  },
+  "supportEmail": "support@thevelani.com",
+  "mailboxDeliveryVerified": false,
+  "businessWebsitePreviouslyVerifiedInPlay": "https://www.thevelani.com",
+  "note": "A corporate website verification is not proof that the native privacy/support/deletion URLs are publicly reachable. Bind these paths only after the actual app origin and page access are verified."
+}

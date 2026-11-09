@@ -1,5 +1,5 @@
 import { coverageRepairUrl, reportedCoverageState } from '../scheduling/coverage-repair';
-import { formatDisplayDate, formatTime } from '../date-utils';
+import { addDays, formatDisplayDate, formatTime } from '../date-utils';
 
 /** "Mon, Oct 12 · 8:00 AM–4:00 PM" for people; ids and links keep ISO values. */
 function gapWhen(gap: { date: string; startTime: string; endTime: string }) {
@@ -93,9 +93,8 @@ function encode(value: string) {
 /** When a coverage window ends, local to the workspace: the same day, or the next for an overnight (or to-midnight) window. */
 function gapEnd(gap: { date: string; startTime: string; endTime: string }) {
   const end = gap.endTime.slice(0, 5);
-  if (end > gap.startTime.slice(0, 5)) return `${gap.date}T${end}`;
-  const next = new Date(`${gap.date}T12:00:00Z`); next.setUTCDate(next.getUTCDate() + 1);
-  return `${next.toISOString().slice(0, 10)}T${end === "24:00" ? "00:00" : end}`;
+  if (end !== "24:00" && end > gap.startTime.slice(0, 5)) return `${gap.date}T${end}`;
+  return `${addDays(gap.date, 1)}T${end === "24:00" ? "00:00" : end}`;
 }
 
 function coverageAction(

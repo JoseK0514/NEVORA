@@ -1,0 +1,132 @@
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 5.424
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 5.686
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:
+Error in c_employeeHistoryRecreationAndPostLogout(com.velani.nevora.development.ShellInstrumentedTest):
+java.lang.AssertionError: Expected visible text: Fictional Home
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.velani.nevora.development.ShellInstrumentedTest.expectText(ShellInstrumentedTest.java:173)
+	at com.velani.nevora.development.ShellInstrumentedTest.c_employeeHistoryRecreationAndPostLogout(ShellInstrumentedTest.java:257)
+
+
+Time: 26.06
+There was 1 failure:
+1) c_employeeHistoryRecreationAndPostLogout(com.velani.nevora.development.ShellInstrumentedTest)
+java.lang.AssertionError: Expected visible text: Fictional Home
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at com.velani.nevora.development.ShellInstrumentedTest.expectText(ShellInstrumentedTest.java:173)
+	at com.velani.nevora.development.ShellInstrumentedTest.c_employeeHistoryRecreationAndPostLogout(ShellInstrumentedTest.java:257)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:
+Error in d_ownerIsDistinctAndSurvivesRecreation(com.velani.nevora.development.ShellInstrumentedTest):
+java.lang.AssertionError: Exact visible pointer target: Sign out
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.tapText(ShellInstrumentedTest.java:178)
+	at com.velani.nevora.development.ShellInstrumentedTest.signOut(ShellInstrumentedTest.java:188)
+	at com.velani.nevora.development.ShellInstrumentedTest.d_ownerIsDistinctAndSurvivesRecreation(ShellInstrumentedTest.java:275)
+
+
+Time: 43.246
+There was 1 failure:
+1) d_ownerIsDistinctAndSurvivesRecreation(com.velani.nevora.development.ShellInstrumentedTest)
+java.lang.AssertionError: Exact visible pointer target: Sign out
+	at org.junit.Assert.fail(Assert.java:89)
+	at org.junit.Assert.assertTrue(Assert.java:42)
+	at org.junit.Assert.assertNotNull(Assert.java:713)
+	at com.velani.nevora.development.ShellInstrumentedTest.tapText(ShellInstrumentedTest.java:178)
+	at com.velani.nevora.development.ShellInstrumentedTest.signOut(ShellInstrumentedTest.java:188)
+	at com.velani.nevora.development.ShellInstrumentedTest.d_ownerIsDistinctAndSurvivesRecreation(ShellInstrumentedTest.java:275)
+
+FAILURES!!!
+Tests run: 1,  Failures: 1
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 6.769
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 7.195
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 6.007
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 4.847
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord
+
+
+com.velani.nevora.development.ShellInstrumentedTest:.
+
+Time: 4.762
+
+OK (1 test)
+
+
+s_glBindAttribLocation: bind attrib 0 name position
+s_glBindAttribLocation: bind attrib 1 name localCoord

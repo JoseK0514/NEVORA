@@ -2,8 +2,14 @@ import type { UserRole } from '../domain';
 import type { SqlStatement } from '../notifications/types';
 import type { SessionMutationProof } from '../shift-changes/types';
 
+// Stored server-side challenges need only the identity already used by this
+// guard. Profile fields are not authority and must not be fabricated or stored.
+type SessionIdentityProof = Pick<SessionMutationProof, 'sessionTokenHash'> & {
+  employee: Pick<SessionMutationProof['employee'], 'id'>;
+};
+
 /** Server-derived proof only. An employee ID is an audit identity, not authority. */
-export function assertManagementProof(proof: SessionMutationProof, actorEmployeeId: string): void {
+export function assertManagementProof(proof: SessionIdentityProof, actorEmployeeId: string): void {
   if (!proof?.employee?.id || proof.employee.id !== actorEmployeeId || !/^[a-f0-9]{64}$/.test(proof.sessionTokenHash)) {
     throw new Error('management_authorization');
   }
@@ -23,7 +29,7 @@ export function isManagementAuthorizationError(error: unknown): boolean {
  * This matches employee lifecycle: employee lock precedes session deletion.
  * The SHARE session lock serializes logout; wall-clock expiry is checked here.
  * Never expose this proof or hash to a form/client result. */
-export function managementSessionStatements(proof: SessionMutationProof, actorEmployeeId: string, roles: readonly UserRole[] = ['OWNER', 'MANAGER']): SqlStatement[] {
+export function managementSessionStatements(proof: SessionIdentityProof, actorEmployeeId: string, roles: readonly UserRole[] = ['OWNER', 'MANAGER']): SqlStatement[] {
   assertManagementProof(proof, actorEmployeeId);
   return [
     { text: 'SELECT token_hash FROM employee_sessions WHERE token_hash=$1 ORDER BY token_hash FOR SHARE', values: [proof.sessionTokenHash] },

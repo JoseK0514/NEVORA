@@ -1,0 +1,18 @@
+{
+  "fictionalOnly": true,
+  "browser": "Playwright Chromium",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checks": {
+    "currentRevisionHandshake": "passed",
+    "twoSimultaneousConsumers": "passed",
+    "offTombstoneThenEnroll": "passed",
+    "accountSwitchNoAutomaticEnrollment": "passed",
+    "lostCompletionExplicitReviewRecovery": "passed"
+  },
+  "providerOrOsPermissionEvidence": false,
+  "browserClosed": true,
+  "fixtureClosed": true
+}

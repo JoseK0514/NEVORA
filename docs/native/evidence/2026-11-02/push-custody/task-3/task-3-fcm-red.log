@@ -1,0 +1,115 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/providers/fcm.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m15 failed[39m[2m)[22m[32m 11[2mms[22m[39m
+[31m   [31m×[31m sends exact HTTPv1 generic notification/data with package, priority and TTL restrictions[39m[32m 5[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 404 without treating a general invalid argument as token revocation[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 400 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 404 without treating a general invalid argument as token revocation[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 401 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 403 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 429 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 503 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 500 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 302 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m classifies FCM 200 without treating a general invalid argument as token revocation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects foreign app/environment, malformed configuration/token/TTL and private payload fields before IO[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m bounds credential waits and forbids a late credential callback from starting a send after cancellation[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m detaches mutable token/payload input before awaiting credentials[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m fails closed on invalid UTF8/oversized response bodies and redacts unknown exceptions[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 15 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22msends exact HTTPv1 generic notification/data with package, priority and TTL restrictions
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m18:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 404 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 400 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 404 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 401 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 403 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 429 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 503 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 500 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 302 without treating a general invalid argument as token revocation
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mclassifies FCM 200 without treating a general invalid argument as token revocation
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m42:17[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mrejects foreign app/environment, malformed configuration/token/TTL and private payload fields before IO
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m45:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mbounds credential waits and forbids a late credential callback from starting a send after cancellation
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m56:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mdetaches mutable token/payload input before awaiting credentials
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m63:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/providers/fcm.test.ts[2m > [22mfails closed on invalid UTF8/oversized response bodies and redacts unknown exceptions
+[31m[1mAssertionError[22m: expected {} to have property "createFcmSender"[39m
+[36m [2m❯[22m api src/lib/native-push/providers/fcm.test.ts:[2m7:64[22m[39m
+    [90m  5|[39m vi.mock('node:http2', () => ({connect: forbidden}));
+    [90m  6|[39m async function api() {
+    [90m  7|[39m   const m = await import('./fcm').catch(() => ({})); expect(m).toHaveP…
+    [90m   |[39m                                                                [31m^[39m
+    [90m  8|[39m   return m as typeof import('./fcm');
+    [90m  9|[39m }
+[90m [2m❯[22m src/lib/native-push/providers/fcm.test.ts:[2m72:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m15 failed[39m[22m[90m (15)[39m
+[2m   Start at [22m 05:47:09
+[2m   Duration [22m 83ms[2m (transform 45%, tests 35%, import 15%, worker 4%)[22m
+

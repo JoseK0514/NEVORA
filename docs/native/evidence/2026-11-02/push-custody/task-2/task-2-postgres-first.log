@@ -1,0 +1,12 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/test/integration/native-push.integration.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 538[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 05:22:41
+[2m   Duration [22m 642ms[2m (tests 92%, transform 4%, import 4%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

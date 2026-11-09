@@ -1,0 +1,19 @@
+{
+  "purpose": "Diagnostic reversal: unchanged previous149-admitting app/test APKs, not the new156 guard",
+  "appTestSourceHash": "59432cadc11f5e2b704f6fafb13202f1baa82f7c33adb032b1a225fd60859198",
+  "provider": "149.0.7827.5",
+  "providerSha256": "ef0a58095b677879ff9164ff4a2bd03cbbd28e1734276d0ed7dd6fe171390d06",
+  "providerSignerSameAsFactory": true,
+  "artifacts": [
+    {
+      "path": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-6g40ugb7/app-build/outputs/apk/debug/app-debug.apk",
+      "sha256": "3c97c239280921041668867cdfc7ca5a03bb98cb5f967e77f67f1afd157f449f"
+    },
+    {
+      "path": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-android-6g40ugb7/app-build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+      "sha256": "fe425d7a5a48be763479704f938433198dc276b14ee97c1e86f7c3a8d7a2918b"
+    }
+  ],
+  "setupFailure": "uninstall-system-updates returned1 while changing selected package to149; no test ran in that attempt. Version was inspected and normal verified149 APK installation succeeded before replay.",
+  "limit": "Original factory149 code APK hash on Play image not captured; reversal uses verified same-version official GoogleSDK APK."
+}

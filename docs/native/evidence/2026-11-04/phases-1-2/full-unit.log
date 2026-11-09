@@ -1,0 +1,1068 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+[90mstdout[2m | src/lib/scheduling/generation/planner.test.ts[2m > [22m[2mmeasures deterministic 50-worker 7-day 3-location planning
+[22m[39mPLANNER_PERFORMANCE {"locations":3,"employees":50,"milliseconds":1268,"status":"COMPLETE","additions":42,"nodes":43,"evaluations":5499,"cacheHits":62793,"periods":882}
+
+[90mstdout[2m | src/lib/scheduling/generation/planner.test.ts[2m > [22m[2mmeasures deterministic 50-worker 7-day 20-location planning
+[22m[39mPLANNER_PERFORMANCE {"locations":20,"employees":50,"milliseconds":66221,"status":"COMPLETE","additions":280,"nodes":281,"evaluations":86750,"cacheHits":2867530,"periods":39200}
+
+ [32m✓[39m src/lib/scheduling/generation/planner.test.ts [2m([22m[2m56 tests[22m[2m)[22m[33m 108697[2mms[22m[39m
+   [33m[2m✓[22m[39m measures deterministic 50-worker 7-day 3-location planning[33m 2235[2mms[22m[39m
+   [33m[2m✓[22m[39m measures deterministic 50-worker 7-day 20-location planning[33m 105946[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-browser-evidence.test.ts [2m([22m[2m47 tests[22m[2m)[22m[33m 37581[2mms[22m[39m
+   [33m[2m✓[22m[39m accepts five relocated suite artifacts with 70 unique executed cells[33m 1010[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result failure[33m 974[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result cancelled[33m 884[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result skipped[33m 897[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result neutral[33m 975[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result missing[33m 910[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects matrix job result extra[33m 954[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-suite[33m 987[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated extra-suite[33m 972[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-suite[33m 1268[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-cell[33m 817[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-cell[33m 820[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated extra-cell[33m 909[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated failed-cell[33m 803[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated skipped-cell[33m 801[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated empty-checks[33m 804[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated sha[33m 809[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated tree[33m 812[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated source-hash[33m 863[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated mirror-hash[33m 962[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated runtime-error[33m 951[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated pg-open[33m 1112[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated next-open[33m 1104[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated resource-open[33m 886[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-resource[33m 945[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated observation-failure[33m 1071[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated command[33m 915[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-preload[33m 914[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated wrong-preload[33m 1041[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated partial-command-checks[33m 968[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated leaf-proof[33m 1128[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated missing-receipt[33m 1218[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated owner-mismatch[33m 1103[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated traversal[33m 1201[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated symlink[33m 932[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects relocated duplicate-layout[33m 852[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects aggregate without echoing untrusted artifact text[33m 1378[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-guarded-backfill.server.test.ts [2m([22m[2m68 tests[22m[2m)[22m[33m 29284[2mms[22m[39m
+   [32m✓[39m owned local whole-plan typed executor pure boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m rejects exact facts/authority/source drift before transport[33m 457[2mms[22m[39m
+   [32m✓[39m whole-plan typed executor fictional transport lifecycle [2m(10)[22m
+     [33m[2m✓[22m[39m locks all70 source/sidecar tables before transaction MVCC/protocol reads and applies only compiler metadata[33m 763[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves issued cells while detaching mutable request before first await[33m 711[2mms[22m[39m
+     [33m[2m✓[22m[39m denies wrong original backend role OID and selected role separately[33m 310[2mms[22m[39m
+     [33m[2m✓[22m[39m never attempts rollback after COMMIT has begun, returning original plan reconciliation[33m 712[2mms[22m[39m
+     [33m[2m✓[22m[39m identical complete retry does no DML and retains original manifest[33m 1064[2mms[22m[39m
+   [32m✓[39m typed atomic source, target and hostile-input regressions [2m(14)[22m
+     [33m[2m✓[22m[39m retains SQLNULL/JSONNULL/unsafe numbers/native bounds and both typed sidecar literal mirrors[33m 741[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact direct attribution affects zero rows[33m 395[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back when exact sidecar insertion affects zero rows[33m 346[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong complete retry workspace with same original manifest[33m 824[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks wrong sidecar mirror on complete retry[33m 796[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects concurrent invocation on the same client without a second transaction[33m 769[2mms[22m[39m
+   [32m✓[39m post-effect and genuine SQL-key helper failures [2m(4)[22m
+     [33m[2m✓[22m[39m blocks changed supplied opaque SQL-key class through genuine helper error issuer[33m 713[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back post-attribution role drift before commit[33m 475[2mms[22m[39m
+     [33m[2m✓[22m[39m rolls back if original source bytes change after attribution[33m 723[2mms[22m[39m
+   [32m✓[39m typed journal whole-plan successor fictional transaction regressions [2m(17)[22m
+     [33m[2m✓[22m[39m rejects installation JOURNAL_ACLS[0,3] drift before BEGIN[33m 360[2mms[22m[39m
+     [33m[2m✓[22m[39m locks source70 then fixed journal2 before all transaction reads and commits matching structural state[33m 1173[2mms[22m[39m
+     [33m[2m✓[22m[39m exact applied retry reads durable state and issues no source/control/journal DML[33m 1376[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalnull, never retrospectively repairing[33m 1258[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects applied metadata with journalNOT_STARTED, never retrospectively repairing[33m 1327[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting STARTED journal after fresh original source/target reconciliation[33m 1016[2mms[22m[39m
+     [33m[2m✓[22m[39m retains preexisting UNKNOWN journal after fresh original source/target reconciliation[33m 792[2mms[22m[39m
+     [33m[2m✓[22m[39m storage-registration failure rolls back every journal/source/control effect[33m 368[2mms[22m[39m
+     [33m[2m✓[22m[39m metadata failure rolls back previously inserted journal and STARTED states together[33m 471[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses changed or partial persisted coverage without arming metadata[33m 385[2mms[22m[39m
+     [33m[2m✓[22m[39m lost COMMIT acknowledgement never issues secondary SQL and retains original plan reconciliation[33m 826[2mms[22m[39m
+   [32m✓[39m typed journal original-attempt reconciliation boundaries [2m(10)[22m
+     [33m[2m✓[22m[39m does not enroll uncertainty from the original journal-free entrypoint[33m 773[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses originating client before SQL and preserves original uncertain result[33m 1259[2mms[22m[39m
+     [33m[2m✓[22m[39m refuses cloned/serialized/wrapped genuine receipts before SQL[33m 1653[2mms[22m[39m
+     [33m[2m✓[22m[39m does not enroll acknowledged successful or blocked journal results[33m 1205[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-runner.test.ts [2m([22m[2m90 tests[22m[2m)[22m[33m 26844[2mms[22m[39m
+   [33m[2m✓[22m[39m propagates_child_failure and stops the invocation-owned cluster[33m 690[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL assignments executes only its exact config/fixture[33m 693[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL attention executes only its exact config/fixture[33m 601[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communications-schema executes only its exact config/fixture[33m 590[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communications executes only its exact config/fixture[33m 675[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communication-ack executes only its exact config/fixture[33m 730[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL communication-notifications executes only its exact config/fixture[33m 734[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL home executes only its exact config/fixture[33m 799[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL calendar-tokens executes only its exact config/fixture[33m 722[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL calendar-feed executes only its exact config/fixture[33m 734[2mms[22m[39m
+   [33m[2m✓[22m[39m supports_each_allowlisted_suite: SQL employee-navigation executes only its exact config/fixture[33m 682[2mms[22m[39m
+   [33m[2m✓[22m[39m all dispatches all ten SQL suites without accepting unknown arguments[33m 1444[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser home through the owned child and propagates its exit[33m 672[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser communications through the owned child and propagates its exit[33m 616[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser calendar through the owned child and propagates its exit[33m 547[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser navigation through the owned child and propagates its exit[33m 579[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser attention through the owned child and propagates its exit[33m 594[2mms[22m[39m
+   [33m[2m✓[22m[39m dispatches browser all through the owned child and propagates its exit[33m 583[2mms[22m[39m
+   [33m[2m✓[22m[39m refuses teardown if the invocation ownership marker is replaced[33m 434[2mms[22m[39m
+   [33m[2m✓[22m[39m stops a partially started owned PostgreSQL process after a startup failure[33m 511[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects zero executed tests and skipped SQL tests even when the child exits zero[33m 1222[2mms[22m[39m
+   [33m[2m✓[22m[39m accepts a tracked environment template while never forwarding application credentials[33m 610[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence acceptance rejects modified manifest custody[33m 1289[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence acceptance rejects modified ownership custody[33m 1076[2mms[22m[39m
+   [33m[2m✓[22m[39m rejects a successful unrelated SQL fixture during execution[33m 545[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects fixture substitution[33m 1081[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects duplicate-selector substitution[33m 1067[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects command substitution[33m 1072[2mms[22m[39m
+   [33m[2m✓[22m[39m later SQL evidence rejects case-identity substitution[33m 1051[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/backfill.test.ts [2m([22m[2m66 tests[22m[2m)[22m[33m 17733[2mms[22m[39m
+   [32m✓[39m complete-row migration preflight without SQL or rewritten history [2m(23)[22m
+     [33m[2m✓[22m[39m rejects duplicate PKs, row count drift and checksum drift[33m 666[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects source or original-column shape drift and emits no partial executable plan[33m 427[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept current-active-only or unfenced snapshot capture[33m 428[2mms[22m[39m
+     [33m[2m✓[22m[39m does not accept unreconciled new writes or schema/source mismatched writer protocol[33m 417[2mms[22m[39m
+     [33m[2m✓[22m[39m discriminates DEVICE versus WORKSPACE PIN limiter ancestry[33m 467[2mms[22m[39m
+   [32m✓[39m interruption/resume and atomic new immutable-row protocol [2m(9)[22m
+     [33m[2m✓[22m[39m rejects a saved plan whose typed owner or chunk changed after its digest was captured[33m 418[2mms[22m[39m
+   [32m✓[39m source/schema/snapshot/row-bound database namespace witnesses [2m(15)[22m
+     [33m[2m✓[22m[39m includes empty email in the retained IS NOT NULL namespace and excludes NULL[33m 473[2mms[22m[39m
+     [33m[2m✓[22m[39m requires every closed catalog even for empty tables and rejects absent result witnesses[33m 604[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects changed catalog expression, predicate, source evidence and collation checksum[33m 1047[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects omitted collation metadata, predicate mismatch, duplicate and unused witness records[33m 827[2mms[22m[39m
+   [32m✓[39m malformed comparator capture rejection without executing data accessors [2m(6)[22m
+     [33m[2m✓[22m[39m does not execute an accessor or serialize a mutated sparse original payload[33m 473[2mms[22m[39m
+     [33m[2m✓[22m[39m retains inactive template rows but excludes them from the exact active name predicate[33m 366[2mms[22m[39m
+   [32m✓[39m root capture ingestion regression [2m(10)[22m
+     [33m[2m✓[22m[39m blocks a null mappings capture component without throwing[33m 343[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-process.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 15668[2mms[22m[39m
+   [33m[2m✓[22m[39m a short graceful timeout stops detached Next/browser process resources and fails[33m 850[2mms[22m[39m
+   [33m[2m✓[22m[39m a short forced timeout stops detached Next/browser process resources and fails[33m 1408[2mms[22m[39m
+   [33m[2m✓[22m[39m a short forced-title-worker timeout stops detached Next/browser process resources and fails[33m 1933[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: stable-member[33m 2201[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: changed-member[33m 2204[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: changed-leader[33m 1180[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: outside-group[33m 1164[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: recycled-birth[33m 1168[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: changed-ancestry[33m 1161[2mms[22m[39m
+   [33m[2m✓[22m[39m retained Linux marker observation: departed-member[33m 2213[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-retirement.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 15714[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: member-environment[33m 1095[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-environment[33m 596[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-with-live-member[33m 1668[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: member-eacces[33m 1213[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: member-eio[33m 1161[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: member-missing-marker[33m 1136[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: ambiguous-exit[33m 1106[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: ambiguous-exit-stderr[33m 1071[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: ambiguous-exit-malformed[33m 1090[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-ambiguous-exit[33m 591[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: darwin-environment-stderr[33m 1083[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: member-retired-eacces[33m 1095[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-retired-eacces[33m 587[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-retired-eacces-with-live-member[33m 1620[2mms[22m[39m
+   [33m[2m✓[22m[39m owned retirement boundary: root-retired-eacces-ambiguous[33m 599[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-journal-contract.test.ts [2m([22m[2m64 tests[22m[2m)[22m[33m 12924[2mms[22m[39m
+   [32m✓[39m pure explicitly separate typed journal descriptor and structural observation contract [2m(64)[22m
+     [33m[2m✓[22m[39m rejects changed original ownershipDigest boundary without partial observations[33m 309[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects changed observed chunkkeys[33m 303[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects changed observed chunksourceChecksum[33m 333[2mms[22m[39m
+     [33m[2m✓[22m[39m preserves padded/long keys, SQLNULLvsJSONNULL/numeric lexemes/nativearray bounds solely through exact source/wire identity[33m 550[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-root-group-process.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 8413[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: exec-clean-exit[33m 706[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: registered-exec[33m 697[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: registration-after-exec[33m 758[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: root-exit[33m 875[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: forced-root[33m 1850[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: changed-root[33m 882[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: root-marker-lost[33m 590[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: member-marker-lost[33m 599[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: recycled-member[33m 597[2mms[22m[39m
+   [33m[2m✓[22m[39m root-group actual exec: reparented-member[33m 857[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-key-comparators.test.ts [2m([22m[2m113 tests[22m[2m)[22m[33m 8135[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-backfill.test.ts [2m([22m[2m44 tests[22m[2m)[22m[33m 7978[2mms[22m[39m
+   [32m✓[39m pure typed tenant backfill compilation [2m(38)[22m
+     [33m[2m✓[22m[39m preserves exact unsafe JSON numeric lexemes, SQLNULL and JSONNULL distinctly[33m 502[2mms[22m[39m
+     [33m[2m✓[22m[39m changes original retry identities for source/evidence/chunk boundaries, never suggests new operation on uncertainty[33m 433[2mms[22m[39m
+     [33m[2m✓[22m[39m blocks independent genuine rows boundary drift with no partial plan[33m 393[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/key-comparator-recheck.server.test.ts [2m([22m[2m36 tests[22m[2m)[22m[33m 7437[2mms[22m[39m
+   [32m✓[39m locked current key comparator recheck, genuine pure observations and mocked SQL only [2m(36)[22m
+     [33m[2m✓[22m[39m detaches facts/request/protocol before first await, preserving exact original cell provenance[33m 320[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects same-key original wire drift and incomplete source coverage[33m 399[2mms[22m[39m
+     [33m[2m✓[22m[39m rejects observed semanticOPERATOR/9 drift[33m 314[2mms[22m[39m
+     [33m[2m✓[22m[39m compares actual current engine version and effective default collation against original observations[33m 556[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-supervisor-boundary.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 4714[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: leader-retired[33m 605[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: leader-live-member[33m 728[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: leader-ambiguous[33m 615[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: leader-identity-error[33m 600[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: leader-identity-stderr[33m 643[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: root-before-poll[33m 695[2mms[22m[39m
+   [33m[2m✓[22m[39m deterministic supervisor boundary: root-ambiguous[33m 759[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-constraints.test.ts [2m([22m[2m71 tests[22m[2m)[22m[33m 5414[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/journal-contract.test.ts [2m([22m[2m60 tests[22m[2m)[22m[33m 3410[2mms[22m[39m
+[90mstdout[2m | src/lib/owner-advisor/coverage-plan.test.ts[2m > [22m[2mkeeps dense searches bounded, yields, and labels remaining requirements instead of claiming impossibility
+[22m[39mOWNER_COVERAGE_PLAN_PERFORMANCE {"elapsedMs":3433,"yields":167,"maxSliceMs":35,"alternatives":[{"status":"BUDGET_EXHAUSTED","assignments":1,"remaining":20},{"status":"BUDGET_EXHAUSTED","assignments":1,"remaining":20}]}
+
+ [32m✓[39m src/lib/owner-advisor/coverage-plan.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 3499[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps dense searches bounded, yields, and labels remaining requirements instead of claiming impossibility[33m 3435[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/device-client.test.ts [2m([22m[2m52 tests[22m[2m)[22m[33m 2892[2mms[22m[39m
+   [33m[2m✓[22m[39m hanging native unsubscribe keeps exclusion after the UI wait, while server detach and native logout stay independent[33m 2554[2mms[22m[39m
+ [32m✓[39m src/test/qa-server-context.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1721[2mms[22m[39m
+   [33m[2m✓[22m[39m generation SQL config loads current server services in its real Vitest process[33m 311[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-ownership.test.ts [2m([22m[2m73 tests[22m[2m)[22m[33m 1666[2mms[22m[39m
+ [32m✓[39m scripts/lib/git-files.test.mjs [2m([22m[2m2 tests[22m[2m)[22m[33m 2027[2mms[22m[39m
+   [33m[2m✓[22m[39m captures every committed source hash above 1 MiB and still rejects later source changes[33m 1174[2mms[22m[39m
+ [32m✓[39m src/test/notification-worker-startup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1444[2mms[22m[39m
+   [33m[2m✓[22m[39m native dispatch is independently disabled by default without database or provider access[33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m the actual npm worker command retains its exact bounded error with package-manager diagnostic false[33m 564[2mms[22m[39m
+   [33m[2m✓[22m[39m the actual npm worker command retains its exact bounded error with package-manager diagnostic true[33m 367[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/installed-policy-observation.test.ts [2m([22m[2m54 tests[22m[2m)[22m[33m 1293[2mms[22m[39m
+ [32m✓[39m src/components/employee-home-actions.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[33m 1334[2mms[22m[39m
+   [33m[2m✓[22m[39m late_former_authority_reply_discarded[33m 1320[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-journal-storage.test.ts [2m([22m[2m38 tests[22m[2m | [22m[33m23 skipped[39m[2m)[22m[33m 761[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-initializer.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 820[2mms[22m[39m
+ [32m✓[39m src/test/payroll-worker-startup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 798[2mms[22m[39m
+   [33m[2m✓[22m[39m the actual payroll npm launcher reaches its disabled guard with flag false before database or payroll work[33m 341[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/schema-reducer.test.ts [2m([22m[2m26 tests[22m[2m)[22m[33m 601[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/key-comparator-capture.server.test.ts [2m([22m[2m43 tests[22m[2m)[22m[33m 585[2mms[22m[39m
+ [32m✓[39m src/components/payroll-export-lifetime.test.tsx [2m([22m[2m73 tests[22m[2m)[22m[33m 591[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-reference.test.ts [2m([22m[2m80 tests[22m[2m)[22m[33m 455[2mms[22m[39m
+ [32m✓[39m src/components/report-lifetime.test.tsx [2m([22m[2m49 tests[22m[2m)[22m[33m 1637[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-root-exit.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 752[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/edit/page.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[33m 1012[2mms[22m[39m
+   [33m[2m✓[22m[39m retains the editable assignment, notes, lead, and shift identity and restricts date to its existing week[33m 980[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/device-alerts.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 998[2mms[22m[39m
+   [33m[2m✓[22m[39m current-device setup offers explicit consent without employee topic or other-device controls[33m 993[2mms[22m[39m
+ [32m✓[39m src/components/employee-updates.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[33m 688[2mms[22m[39m
+   [33m[2m✓[22m[39m keeps required updates in the review group until acknowledged, even if marked read[33m 682[2mms[22m[39m
+ [32m✓[39m src/test/clocker-runner.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 522[2mms[22m[39m
+   [33m[2m✓[22m[39m stops a partially started owned PostgreSQL cluster before deleting its files[33m 485[2mms[22m[39m
+ [32m✓[39m src/components/action-menu.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 422[2mms[22m[39m
+   [33m[2m✓[22m[39m renders one labelled popover trigger and bounded shared menu surface[33m 418[2mms[22m[39m
+ [32m✓[39m src/components/clocker-recovery-review.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 318[2mms[22m[39m
+ [32m✓[39m src/lib/auth/password.malformed.test.ts [2m([22m[2m39 tests[22m[2m)[22m[33m 364[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/namespace-comparators.test.ts [2m([22m[2m27 tests[22m[2m)[22m[33m 383[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-snapshot.test.ts [2m([22m[2m48 tests[22m[2m)[22m[33m 467[2mms[22m[39m
+ [32m✓[39m src/test/employee-mobile-evidence.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 369[2mms[22m[39m
+ [32m✓[39m src/lib/workspace-presentation/derive.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 289[2mms[22m[39m
+[90mstderr[2m | src/app/app/schedule/page.test.tsx[2m > [22m[2mloads actual history and renders own changes behind authenticated access
+[22m[39mReceived `false` for a non-boolean attribute `scroll`.
+
+If you want to write it to the DOM, pass a string instead: scroll="false" or scroll={value.toString()}.
+
+If you used to conditionally omit it with scroll={condition && value}, pass scroll={condition ? value : undefined} instead.
+
+ [32m✓[39m src/app/app/schedule/page.test.tsx [2m([22m[2m39 tests[22m[2m)[22m[33m 435[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-startup-gate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 221[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/ownership.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 333[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/ddl.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 208[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/explanation-view.test.ts [2m([22m[2m93 tests[22m[2m)[22m[32m 216[2mms[22m[39m
+ [32m✓[39m src/components/generation-explanation-panel.test.tsx [2m([22m[2m69 tests[22m[2m)[22m[32m 231[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/paystub-document.test.ts [2m([22m[2m55 tests[22m[2m)[22m[32m 218[2mms[22m[39m
+ [32m✓[39m src/test/owned-calendar-diagnostics.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 164[2mms[22m[39m
+ [32m✓[39m src/lib/imports/csv.test.ts [2m([22m[2m128 tests[22m[2m)[22m[32m 145[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/journal-storage.test.ts [2m([22m[2m44 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m src/components/timecards.batch.test.tsx [2m([22m[2m51 tests[22m[2m)[22m[32m 149[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/device-ownership-replacement.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 130[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/reservations.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 177[2mms[22m[39m
+ [32m✓[39m src/app/app/api/push/push-routes.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 188[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/provisional-vectors.test.ts [2m([22m[2m68 tests[22m[2m)[22m[32m 169[2mms[22m[39m
+ [32m✓[39m src/test/no-page-entrance-motion.test.ts [2m([22m[2m1 test[22m[2m)[22m[33m 311[2mms[22m[39m
+   [33m[2m✓[22m[39m no application component imports gsap[33m 310[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/manifest.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 292[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-navigation-request.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 99[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-browser-runtime.test.ts [2m([22m[2m142 tests[22m[2m)[22m[32m 159[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/config-cli.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 281[2mms[22m[39m
+ [32m✓[39m src/test/release-source-custody.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 112[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/sr01-professional-rounding.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 107[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/closing-context.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 80[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/document-mapping.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/service-worker.test.ts [2m([22m[2m83 tests[22m[2m)[22m[32m 86[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.transport.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/payroll-export.selection.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+[90mstderr[2m | src/components/app-shell.test.tsx[2m > [22m[2mdoes not add clean Manager operational shortcuts without current scope
+[22m[39mReceived `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ [32m✓[39m src/components/app-shell.test.tsx [2m([22m[2m68 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/lib/data/exchanges-notifications.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.server.test.ts [2m([22m[2m72 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/calculate-extended.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 73[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/workweek-consumer.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 83[2mms[22m[39m
+ [32m✓[39m src/test/nevora-visible-branding.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/components/communication-detail.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 66[2mms[22m[39m
+ [32m✓[39m src/test/integration/local-postgres.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/session.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/test/evidence/complete-native-jsonl.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/lib/communications/http.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/document-manifest.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/recorded-source.server.test.ts [2m([22m[2m61 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/worker.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 90[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/preparation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/app/api/internal/notifications/worker-routes.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/ytd.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/shift-start-day.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32m✓[39m src/components/payroll/provisional-consumer.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 51[2mms[22m[39m
+ [32m✓[39m src/app/app/notifications/open/route.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-home.server.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/lib/action-center/intelligence.test.ts [2m([22m[2m112 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/app/app/exchange/page.test.tsx [2m([22m[2m31 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/executor.server.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/executor.transport.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 69[2mms[22m[39m
+ [32m✓[39m src/app/api/mobile/v1/notifications/route-contract.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/components/manager-weekly-roster.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 58[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/provisional-policy.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-review.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/provider.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m src/components/company-policy-editor.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/payroll/payroll-premium.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/calculate.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.portal-current-source.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/components/publish-warning-review-surface.test.tsx [2m([22m[2m64 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+[90mstderr[2m | src/components/employee-my-schedule.test.tsx[2m > [22m[2ma published empty day is distinguished from an unpublished date
+[22m[39mReceived `false` for a non-boolean attribute `scroll`.
+
+If you want to write it to the DOM, pass a string instead: scroll="false" or scroll={value.toString()}.
+
+If you used to conditionally omit it with scroll={condition && value}, pass scroll={condition ? value : undefined} instead.
+
+ [32m✓[39m src/components/employee-my-schedule.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-artifacts.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/lib/business-improvements/company-policies/model.test.ts [2m([22m[2m324 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/components/activity-history-panel.test.tsx [2m([22m[2m46 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/settings/page.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-evidence.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/components/timecards.employee-unchanged.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/components/corp/corp-round2.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/login/actions.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 62[2mms[22m[39m
+ [32m✓[39m src/components/payroll/private-statements.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/documents.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/components/employee-home-reviewed.test.tsx [2m([22m[2m30 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/components/payroll-period-close-lifetime.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/components/employee-time-panel.test.tsx [2m([22m[2m17 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/components/manager-action-center.test.tsx [2m([22m[2m41 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/components/manager-profile/manager-profile.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-root-source-observation.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/replacement-context.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/workweek-policy.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/components/payroll/api.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/reminders.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-administrative-authority-storage.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/publish-warning-policy.test.ts [2m([22m[2m91 tests[22m[2m)[22m[32m 85[2mms[22m[39m
+ [32m✓[39m src/lib/attendance/project.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/provisional-history.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/lib/data/callouts-notifications.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-current-issuance-source.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-notification-list.cfr003-carry-forward.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/components/manager-reviewed-views.test.tsx [2m([22m[2m71 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+ [32m✓[39m src/lib/data/notification-transactions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/lib/data/shift-change-held-edits.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+[90mstderr[2m | src/app/app/schedule/coverage/page.test.tsx[2m > [22m[2mactual manager position/Lead action opens the matching location/interval and excludes unqualified employees
+[22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ [32m✓[39m src/app/app/schedule/coverage/page.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/employer-counter-consistency.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/lib/data/push-deliveries.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/data/push-subscriptions.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/lib/capabilities/policy.test.ts [2m([22m[2m347 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/pay.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-review-regressions.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/lib/management-profile-route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/coverage-review.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/subscription-service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/lib/data/coverage-repair.server.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+[90mstderr[2m | src/components/employee-account-panel-lifetime.test.tsx[2m > [22m[2mclears source-expired rows without inventing lost access and recovers through Retry
+[22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ [32m✓[39m src/components/employee-account-panel-lifetime.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/transport.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/lib/activity/project.test.ts [2m([22m[2m80 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-wire.test.ts [2m([22m[2m91 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/intelligence.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/components/clocker-device-manager.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/generation-actions.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.portal-native-version.test.ts [2m([22m[2m57 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/lib/auth/portal-request.server.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/lib/data/publication-revisions.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/components/clocker-photo/photo-review.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+[90mstderr[2m | src/app/legal-pages.test.tsx[2m > [22m[2mpublic policy pages[2m > [22m[2mthe sign-in footer and Profile link the policies and Delete my account in production
+[22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ [32m✓[39m src/app/legal-pages.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/manager-inbox-corp.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/signature/hex-guard.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/components/manager-inbox.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 77[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/exact-cent.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-native-installation-producer.test.ts [2m([22m[2m93 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/lib/data/publish-changes.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/logout.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/installation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/schedule-candidates.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/lib/payroll-export/service.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/deletion.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 71[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/notifications-list.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/lib/action-center/canonical-source.test.ts [2m([22m[2m36 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/demand.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/expand.test.ts [2m([22m[2m26 tests[22m[2m | [22m[33m21 skipped[39m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/lib/timecards/reviewed-batch.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/http.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/lossless-json.test.ts [2m([22m[2m61 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/shift-change-evaluation.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/module-graph.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/actions.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/pay-corp.test.tsx [2m([22m[2m14 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/components/manager-workflows.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/components/notification-bell-lifetime.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/components/owner-home-corp.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/calendar-subscription-panel-lifetime.test.tsx [2m([22m[2m20 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/provider.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 70[2mms[22m[39m
+ [32m✓[39m src/components/assisted-recovery.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/federal-employee-tax.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/config.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/components/employee-home-reviewed-wiring.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/loop.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 63[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/http.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/audited-role-guard.test.ts [2m([22m[2m38 tests[22m[2m)[22m[32m 40[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/adversarial.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-profile-form.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/hours-corp.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/app/api/company-policies/route.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+[90mstderr[2m | src/components/app-shell-management-signout.test.tsx[2m > [22m[2mOWNER has native sign-out in the account menu
+[22m[39mReceived `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ [32m✓[39m src/components/app-shell-management-signout.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/workweek-boundaries.test.ts [2m([22m[2m75 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/data/schedules-notifications.test.ts [2m([22m[2m24 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/controller.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/coverage-assistant.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/app/api/reports/route.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/manual-conflict-actions.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/lib/passkeys/management.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/business-improvements/attendance-policy/model.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/decision.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/app/api/employee/time-corrections/route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [31m❯[39m src/lib/native-push/worker.test.ts [2m([22m[2m24 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 17[2mms[22m[39m
+   [32m✓[39m dispatches generic opaque metadata and records provider acceptance separately from delivery[32m 6[2mms[22m[39m
+   [32m✓[39m refuses disabled before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m refuses allowlist before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m refuses wrong-environment before claiming work[32m 0[2mms[22m[39m
+   [32m✓[39m prevents revoked registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents role registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents resolved registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents generation registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m prevents material registrations or sources from reaching transport[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks revoked after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks resolved after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks generation after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m rechecks quiet after waiting for provider credentials[32m 1[2mms[22m[39m
+   [32m✓[39m rechecks expiry after waiting for provider credentials[32m 0[2mms[22m[39m
+   [32m✓[39m defers normal work during quiet hours without spending another attempt[32m 0[2mms[22m[39m
+   [32m✓[39m allows current urgent work during quiet hours but never after source expiry[32m 0[2mms[22m[39m
+   [32m✓[39m retains replacement generation after a delayed provider rejection[32m 0[2mms[22m[39m
+   [32m✓[39m persists bounded retries and the fifth attempt fails terminally[32m 0[2mms[22m[39m
+[31m   [31m×[31m never retries before a validated native provider delay of 7200 seconds[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m never retries before a validated native provider delay of 2147483647 seconds[39m[32m 1[2mms[22m[39m
+   [32m✓[39m defers a quiet boundary crossed milliseconds into credential preparation while the lease and budget stay valid[32m 0[2mms[22m[39m
+   [32m✓[39m defers transient authority failures and releases unattempted storage failures[32m 0[2mms[22m[39m
+   [32m✓[39m does not release an ambiguously committed provider acceptance[32m 0[2mms[22m[39m
+   [32m✓[39m bounds a hung transport and aborts every attempted request[32m 2[2mms[22m[39m
+ [32m✓[39m src/app/api/reports/export/route.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/mobile-access.integration.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/messages-view.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/lib/employee-creation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.administrative-scope.test.ts [2m([22m[2m66 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/templates/page.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/app/app/requests/page.withdrawal-carry-forward.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-policy-joint-observation.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/schedule-generation-controls-state.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-native-root-observation.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/coverage-actions-controller.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/oauth.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/action-center/route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/recipients.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/scheduling-rules.test.ts [2m([22m[2m59 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/kit/kit.test.tsx [2m([22m[2m16 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/new/review.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-policy-complete-dependency.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/attention.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/time-corrections/route.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/components/time-off-withdrawal.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/page.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/auth/invitations/delivery.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/data/notification-state.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/command-http.test.ts [2m([22m[2m32 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/consumers.test.ts [2m([22m[2m34 tests[22m[2m)[22m[32m 31[2mms[22m[39m
+ [32m✓[39m src/app/app/exchange/swap/page.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/passkeys.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/notebook-controller.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/new/scoped.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/app/access-help/[[...topic]]/page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/page.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/components/premium-home.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/owner-setup-card.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.observation-boundary.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/app/api/payroll-export/profiles/route.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-invitation.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation-claims.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/model.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-policy-joint-locks.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 37[2mms[22m[39m
+ [32m✓[39m src/lib/employee-view-route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/app/api/employee/home/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/test/owned-creation-diagnostics.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-session-issuance-storage.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/app/app/timecards/page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/assignment-actions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/http.server.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/api/timecards/route.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/activity/project.boundary.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/fcm.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/apns.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/private-photo.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/citations.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/company-policies/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/minimum-wage.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/creation-view.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/mobile-home-overview.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/employee-review.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/employee-home/project.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/ytd-base-consistency.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/operational-parity.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/account-recovery.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/operational-rules.test.ts [2m([22m[2m35 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/manager-time-corrections.test.tsx [2m([22m[2m18 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/attendance/route.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/timecards/route.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/lib/timecards/project.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-source-binding.test.ts [2m([22m[2m84 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/app/app/layout.native.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+[90mstderr[2m | src/components/employee-account-panel.test.tsx[2m > [22m[2mrenders safe-open links without read/ack or consent actions
+[22m[39mReceived `false` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="false" or prefetch={value.toString()}.
+
+If you used to conditionally omit it with prefetch={condition && value}, pass prefetch={condition ? value : undefined} instead.
+
+ [32m✓[39m src/components/employee-account-panel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/profile-preferences.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/api/auth/recovery/route.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/today/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/calendar-subscription-panel.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/reports/project.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/lib/business-improvements/attendance-policy/runtime.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/lib/employee-time-client.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 67[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-notification-list.payroll.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/json-body.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-source-locks.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+[90mstderr[2m | src/components/app-shell-identity-refresh.test.tsx[2m > [22m[2mrevalidates the retained server layout after an identity change through the navigation barrier
+[22m[39mReceived `true` for a non-boolean attribute `prefetch`.
+
+If you want to write it to the DOM, pass a string instead: prefetch="true" or prefetch={value.toString()}.
+
+ [32m✓[39m src/components/app-shell-identity-refresh.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/clock-monitor/route.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/calendar.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/app/api/payroll-export/route.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 64[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/new/location.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/test/calendar-request-monitor.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/[employeeId]/page.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/protocol.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/finder/route.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/catalog-revisions.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/mobile/v1/session/route.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/app/exchange/callout/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/exchange-view.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/render.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/client.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/app-error-screen.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/resolve.incarnation.test.ts [2m([22m[2m46 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/payroll/documents/navigation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/notebook-panel.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/employee-state-copy.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/publish/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/dev/capture.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/app/api/manager/inbox-count/route.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-authority-storage.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/settings/actions.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/account/delete/actions.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/auth/activate/route.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/command-parser.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/company-access/commands.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/transport.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/employee-time.test.ts [2m([22m[2m40 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-navigation-diagnostic.test.ts [2m([22m[2m39 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/config.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/app/api/workspaces/[locator]/session/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/platform-worker.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/app/app/dashboard-access.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-runtime-startup-loader.test.ts [2m([22m[2m29 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/components/employee-home-clock.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/punch-client.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/profile.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/api/employee/my-time/route.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/hours-records.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/self-service-guards.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/app/clocker/clocker-page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/app/operational-page-composition.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/lib/dev/inspection.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-config.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/locations/page.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/acknowledge-actions.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/actions.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 34[2mms[22m[39m
+ [32m✓[39m src/components/ui-preview/home-preview-shell.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/lib/attendance/historical-schedule.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/clocker/actions.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 30[2mms[22m[39m
+ [32m✓[39m src/app/api/payroll/documents/[id]/view/route.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/app/app/requests/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/app/app/requests/actions.withdrawal-carry-forward.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m scripts/company-setup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/shift-change-form-state.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/communication-compose.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/app/app/requests/hub/page.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/lib/action-center/present.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/actions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/breaks/actions.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 25[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/coverage-plans.test.tsx [2m([22m[2m15 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/[employeeId]/clocker-pin/actions.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/new/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/app/app/requests/actions.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/pickup-operation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/data/requests-notifications.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/positions.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/publish/actions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/auth/invitations/privacy.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/request-operation.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/attendance/client.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/periods.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/worker-auth.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/components/brand-lockup.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/data/reviewed-coverage-draft.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/coverage-repair.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/workweek-source.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 38[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/review.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/app/exchange/actions.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+ [32m✓[39m src/components/configuration-choice-controls.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/lib/clock-monitor-client.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 191[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/creation-operation.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/lib/data/workspaces.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/components/employee-core-profile-form.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m src/lib/employee-requests.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/app/brand-pages.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/app/app/availability/actions.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/payroll/money.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/backlog.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/app/app/exchange/callout/actions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/[employeeId]/clocker-pin/page.test.tsx [2m([22m[2m12 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-setup-trace.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/components/clocker-copy.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/app/app/reports/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/policy-form.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/service-worker.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/lib/attendance/validation.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/company-access/operational-scope.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/locations/[locationId]/page.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/providers/transport.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/employee-exchange.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/notification-inbox-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/workspace/validation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/breaks/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/payroll/native-settings.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/config.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-lineage.test.ts [2m([22m[2m70 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/employee-requests-corp.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/settings/shift-policy-actions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m src/lib/data/schedule-generation-review.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/ui-preview/home-preview.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/private-snapshot-client.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/audited-helper-storage.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/manager-dashboard.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/lib/data/scheduling-inputs.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/positions/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/briefing.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/foundation-pages.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/control-storage.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/signature/sig-button.test.tsx [2m([22m[2m13 tests[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/maintenance.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/decode.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/typed-journal-binding.server.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 16[2mms[22m[39m
+ [32m✓[39m src/app/login/page-message.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/manager-attendance-review.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/clocker/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/app/workspace-presentation.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/lib/data/manager-location-scope.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/shift-change-policy-fields.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/original-runtime-login.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-source-dependency.test.ts [2m([22m[2m27 tests[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/policy.test.ts [2m([22m[2m22 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/whos-working-corp.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/locations/new/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/components/signature/sig-components.test.tsx [2m([22m[2m10 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/app/activate/activation-invitation.test.tsx [2m([22m[2m24 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/app/reset-access/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/lib/business-improvements/labor-budget/model.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/data/time-clock.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/workspace/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/employee-hours.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/query-contract.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/jpeg.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/lib/reports/period.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/clock-monitor.test.ts [2m([22m[2m30 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/lib/data/shift-change-notification-versions.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/communications/policy.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/coverage-ranking.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-source-observation.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 41[2mms[22m[39m
+ [32m✓[39m src/lib/business-time.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/callout-view.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-installed-policy-observation.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/capabilities/policy.rule-observations.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/components/portal-device-setup.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/communications/validation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/communications/notification-intents.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/payroll-export/model.test.ts [2m([22m[2m70 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/schedule-generation-controls.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/coverage-actions.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/manager-clock-monitor.test.tsx [2m([22m[2m7 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/validate-shift.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/communications/recovery.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/native-push/material.test.ts [2m([22m[2m26 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/app/app/inbox/page.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/pending-changes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m scripts/clocker-recovery-privacy.test.ts [2m([22m[2m33 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/read-model.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/components/quiet/quiet-skeleton.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/model.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/capabilities/policy.verifier-capability.test.ts [2m([22m[2m54 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/app/employees/recovery-composition.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/lossless-array.test.ts [2m([22m[2m106 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/components/availability-team-list.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/manager-week-overview.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/lib/navigation-coordinator.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/workspace-incarnation-storage.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/lib/employee-hours-draft.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/requests.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/validate.test.ts [2m([22m[2m38 tests[22m[2m | [22m[33m36 skipped[39m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/destinations.cfr002-carry-forward.test.ts [2m([22m[2m68 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/lib/auth/session.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/components/payroll/my-pay.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-dependency-copy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/business-improvements/company-policies/history.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/clocker-photo/notice-settings.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/workspace-presentation/model.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/data/portal-notification-list.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/app/activate/page.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/components/select-field.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/components/company-access/scoped-read-frame-checking.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-published-assignments.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/data/scheduling-operational-parity.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/sr01-cent-vectors.test.ts [2m([22m[2m67 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/rules/pr-2026.test.ts [2m([22m[2m52 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/app/app/settings/layout.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/camera.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/validation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/data/management-profile.server.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/rules-hours-list.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/components/schedule-publication-change.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/role-guard-installers.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/lib/celebrations.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/workspace-locator-storage.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-original-source-invalidation.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/navigation.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/payroll/payroll-stepper.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/app/not-found.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/company-access/scoped-read-frame.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/company-policy-time.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/account-deletion/requests.server.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/workspace-incarnation.test.ts [2m([22m[2m48 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/new/page.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/clocker-photo/photo-notice.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/app/app/schedule/copy-receipt/page.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/capabilities/policy.observation-boundary.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/swap-shift-summary.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/hours-operation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/company-access/scoped-read-frame-tab-fence.test.tsx [2m([22m[2m11 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/message-draft.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/http.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/components/schedule-template-controls.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/notebook.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/theme.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/employee-profile-tabs.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/auth/portal-credential-session.server.test.ts [2m([22m[2m31 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/availability-corp.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/company-access/operational-unavailable.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/validation.test.ts [2m([22m[2m55 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/legal/employee-context.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/original-runtime-login-installer.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/passkeys/client.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/data/scheduling-source-facts.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/phase-c-governance-cleanup.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/clocker-language.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/components/signature/sig-pending-label.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/finder.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/sql-lexer.test.ts [2m([22m[2m20 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/identity.test.ts [2m([22m[2m42 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/key-comparator-installer-recheck.server.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/portal-access-lineage.source.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/location-readiness.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/data/weekly-approved-absences.server.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/schedule-generation.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/app/clocker/clocker-home-screen.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/portal-signout.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/schedule-health.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/coverage-actions-response.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/acknowledgements.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/components/auth-premium/lang-switch.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-current-source-enrollment.source.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/payloads.test.ts [2m([22m[2m19 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/components/reports-periods.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/employee-planning.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/assistance/manager-actions.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/coverage-repair.test.ts [2m([22m[2m15 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/coverage-actions.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/sql-repository.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/request-termination-observer.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/shift-change-history.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/operational-profile.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-path.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/auth-copy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/destinations.test.ts [2m([22m[2m45 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/fixture-read-gate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-notification-list.server.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/lib/assistance/availability-submission.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/portal-generated-publication.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/today/project.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/workflows.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/phase-c-release-migrations.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/action-center/inbox.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/employee-dashboard.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/punch-inherited-command.test.ts [2m([22m[2m25 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/assistance/notification-events.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/notice-service.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/data/locations.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/reports/csv.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/source.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/policy.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/contract.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/portal-device-setup-focus.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/break-types.test.ts [2m([22m[2m21 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/cli.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/punch-command.test.ts [2m([22m[2m23 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/inventory/serialize.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/payroll-export/client.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/portal-legacy-reconciliation.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/attendance-review.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/page.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/lifecycle.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/assistance/publication-diff.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/guarded-backfill.server.test.ts [2m([22m[2m23 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-device-environment.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/auth/recovery-delivery.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/attendance/format.test.ts [2m([22m[2m14 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/notice-settings.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/client.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/capture.server.test.ts [2m([22m[2m27 tests[22m[2m | [22m[33m21 skipped[39m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/settings.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/eligibility-reasons.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/callouts-held-display.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/navigation-access.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/ical.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/generation-exclusions.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-attention-receipts.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/requests.withdrawal-carry-forward.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/phase-c-qa-harness.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/phase-c-release-ci.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/native-shell/security.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/navigation-sidebar.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/private-fragment-focus.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/timecards/client.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-test-resources.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/phase-d-correction-migration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/employee-messages.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/weekly-availability.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/portal-legacy-access-enrollment.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/premium-projections.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/employee-message-page.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/phase-e-home-response.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/device-protocol.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/employee-directory.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/fairness.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/integration/native-device-control.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/authority.server.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/auth/login-limits.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/integration/calendar-log-redaction.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/data/action-request-facts.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/action-center/needs-you.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/components/employee-home-corp.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/open-period.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/employee-mobile-chrome.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/schedule-templates.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/payroll-review-copy.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/runtime/role-guard.test.ts [2m([22m[2m56 tests[22m[2m | [22m[33m54 skipped[39m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/data/shift-change-policy.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/owner-advisor/coverage-plan-contracts.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/copy-week.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/employee-view.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/legal/policies.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/configuration-form.test.tsx [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/recovery-journal.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/token.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/planning-operation.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/payroll/workflow-status.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/migrations/employee-number-enrollment-binding.server.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/date-utils.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/communications/service.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/time-off-withdrawal.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation-provenance.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-requests.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/lib/data/positions.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/dashboard-status.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/notifications.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/navigation-ownership.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-advisor.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/hour-fairness.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m src/lib/workspace-presentation/updates-held.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-profile.server.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/fixture-company-access.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/reports/insights.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/exchange-validation.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/app-shell.prefetch.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/auth/passkeys/config.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/shift-changes/terms.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/calendar/command.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/employee-mobile-communications-fixtures.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/native-shell/context.test.ts [2m([22m[2m17 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/notifications/device-state.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/clocker-privacy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-server/platform-lifecycle.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/assistance/acknowledgement-state.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/payroll-export/selection.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/authority-refusal-observation.test.ts [2m([22m[2m13 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/migration-order.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-exchange.server.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/requests.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/action-menu-geometry.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/time-corrections/review-recovery.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/publish-readiness.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/database-date.test.ts [2m([22m[2m11 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/migration-order.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/keep-whole.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/notification-inbox.prefetch.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/command-finder.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/company-access/scope-selection.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/availability-presets.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/exchange-marketplace.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/native-push-regression-config.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/fixtures/nevora-workspace.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/employee-timecard-presentation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/data/employee-creation.server.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/employee-message-navigation.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/employee-view-authority.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/lifecycle.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/retired-views.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/components/time-clock-widget.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/employee-compensation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/clocker/photo-client/result-copy.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/schedule.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/workspace-presentation/current.server.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/request-status.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/payroll/payroll-settings-today.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/publication-note.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/company-access/operational-unavailable.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/mobile-keyboard.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/phone.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/integration/owned-next-payroll.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/tenancy/types.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/generation/explanations.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/data/exchanges-history.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m src/lib/payroll/native/scope.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/employee-display.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/employee-mobile/availability-summary.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/components/owner-advisor/signout.test.tsx [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/notification-labels.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/scheduling/capabilities.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/duration-text.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m src/lib/time-zone-label.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [2m[90m↓[39m[22m src/lib/auth/portal-credential-session.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/test/integration/coverage-repair.integration.test.ts [2m([22m[2m39 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/test/integration/employee-notification-capacity.integration.test.ts [2m([22m[2m9 tests[22m[2m | [22m[33m9 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/test/integration/f1-canonical-native.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/audited-role-guard.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/catalog-fence.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/control-storage.postgres.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m14 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/employee-login-identity-storage.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/executor-catalog-fence.postgres.test.ts [2m([22m[2m4 tests[22m[2m | [22m[33m4 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/original-runtime-login-installer.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/original-runtime-login.postgres.test.ts [2m([22m[2m40 tests[22m[2m | [22m[33m40 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-administrative-authority-storage.postgres.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m24 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-authority-storage.postgres.test.ts [2m([22m[2m25 tests[22m[2m | [22m[33m25 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-native-installation-producer.postgres.test.ts [2m([22m[2m57 tests[22m[2m | [22m[33m2 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-runtime-startup-graph.postgres.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-session-issuance-storage.postgres.test.ts [2m([22m[2m24 tests[22m[2m | [22m[33m24 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-dependency.postgres.test.ts [2m([22m[2m30 tests[22m[2m | [22m[33m30 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-locks.postgres.test.ts [2m([22m[2m20 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/portal-source-observation.postgres.test.ts [2m([22m[2m39 tests[22m[2m | [22m[33m39 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/role-guard-installers.postgres.test.ts [2m([22m[2m16 tests[22m[2m | [22m[33m16 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/workspace-incarnation-storage.postgres.test.ts [2m([22m[2m46 tests[22m[2m | [22m[33m46 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/runtime/workspace-locator-storage.postgres.test.ts [2m([22m[2m20 tests[22m[2m | [22m[33m20 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/migrations/lossless-array.postgres.test.ts [2m([22m[2m35 tests[22m[2m | [22m[33m35 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-constraints-with-keys.postgres.test.ts [2m([22m[2m8 tests[22m[2m | [22m[33m8 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-guarded-backfill.postgres.test.ts [2m([22m[2m58 tests[22m[2m | [22m[33m58 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-key-comparators.postgres.test.ts [2m([22m[2m11 tests[22m[2m | [22m[33m11 skipped[39m[2m)[22m
+ [2m[90m↓[39m[22m src/lib/tenancy/migrations/typed-ownership.postgres.test.ts [2m([22m[2m9 tests[22m[2m | [22m[33m9 skipped[39m[2m)[22m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mnever retries before a validated native provider delay of 7200 seconds
+[31m[1mAssertionError[22m: expected 1893517203875 to be greater than or equal to 1893520800000[39m
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m122:62[22m[39m
+    [90m120|[39m   if (seconds === 7200) {
+    [90m121|[39m     expect(report.retried).toBe(1);
+    [90m122|[39m     expect(Date.parse(f.completed[0].result.nextAttemptAt!)).toBeGreat…
+    [90m   |[39m                                                              [31m^[39m
+    [90m123|[39m   } else {expect(report.expired).toBe(1); expect(report.retried).toBe(…
+    [90m124|[39m });
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/worker.test.ts[2m > [22mnever retries before a validated native provider delay of 2147483647 seconds
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m src/lib/native-push/worker.test.ts:[2m123:34[22m[39m
+    [90m121|[39m     expect(report.retried).toBe(1);
+    [90m122|[39m     expect(Date.parse(f.completed[0].result.nextAttemptAt!)).toBeGreat…
+    [90m123|[39m   } else {expect(report.expired).toBe(1); expect(report.retried).toBe(…
+    [90m   |[39m                                  [31m^[39m
+    [90m124|[39m });
+    [90m125|[39m it('defers a quiet boundary crossed milliseconds into credential prepa…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m711 passed[39m[22m[2m | [22m[33m27 skipped[39m[90m (739)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m10881 passed[39m[22m[2m | [22m[33m801 skipped[39m[90m (11739)[39m
+[2m   Start at [22m 14:10:53
+[2m   Duration [22m 491.95s[2m (tests 79%, import 18%, transform 2%)[22m
+
+[2m    Isolate [22m [33m739 workers spawned[39m[2m · ~57ms startup each (spawn + environment, per file)[22m
+[2m            [22m [2mat least ~42.07s faster with [22m[33misolate: false[39m[2m — reuses workers across files instead of one per file[22m
+

@@ -1,0 +1,17 @@
+{
+  "redCheckpoint": "6b27f408cdab13f59ce08473a8ed80f5245fa707",
+  "backendRoot": "/private/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-owned-MUjAjp",
+  "backendChecksPassed": 17,
+  "nativeJourneysPassed": 2,
+  "nativeJourneysFailed": 1,
+  "coldRestartPassed": true,
+  "failure": "Owner expectPath /app/settings after unscoped Settings tap",
+  "cause": "UiObject2 log proves global label selector clicked SystemUI notification at (161,31), not app Settings",
+  "clickEvidence": [
+    "11-05 23:34:26.957  8387  8418 D UiObject2: Clicking on (161, 31).",
+    "11-05 23:34:26.958  8387  8418 W UiObject2: Clicking on non-clickable object: android.view.accessibility.AccessibilityNodeInfo@9ea27; boundsInParent: Rect(0, 0 - 58, 63); boundsInScreen: Rect(132, 0 - 190, 63); packageName: com.android.systemui; className: android.widget.ImageView; text: null; error: null; maxTextLength: -1; contentDescription: Settings notification: Unsupported Virtual SD card; tooltipText: null; viewIdResName: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: true; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_NEXT_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY - null, AccessibilityAction: ACTION_SET_SELECTION - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]"
+  ],
+  "sourceVerified": true,
+  "ownershipClosed": true,
+  "fix": "Scope all backend-test tap selectors to the actual target application package; assert package before clicking. All path/text/save/restart assertions retained."
+}

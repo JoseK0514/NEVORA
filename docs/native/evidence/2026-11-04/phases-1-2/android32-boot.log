@@ -1,0 +1,250 @@
+INFO         | Android emulator version 37.2.12.0 (build_id 16428233) (CL:N/A)
+INFO         | Graphics backend: gfxstream
+INFO         | Found systemPath /Users/josek0514/Library/Android/sdk/system-images/android-32/google_apis/arm64-v8a/
+INFO         | Saving last run QEMU version for the AVD to 2
+WARNING      | Please update the emulator to one that supports the feature(s): Vulkan
+INFO         | Guest GLES Driver: Auto (ext controls)
+INFO         | emuglConfig_init: vulkan_mode_selected:swiftshader gles_mode_selected:swangle
+INFO         | Checking system compatibility:
+INFO         |   Checking: hasSufficientDiskSpace
+INFO         |      Ok: Disk space requirements to run avd: `NevoraPhase12_API32` are met
+INFO         |   Checking: hasSufficientHwGpu
+INFO         |      Ok: Hardware GPU compatibility checks are not required
+INFO         |   Checking: hasSufficientSystem
+INFO         |      Ok: System requirements to run avd: `NevoraPhase12_API32` are met
+INFO         | Storing crashdata in: /tmp/android-unknown/emu-crash-37.2.12.db, detection is enabled for process: 92708
+INFO         | Initializing gfxstream backend
+INFO         | startOpenglesRendererImpl: gpu info
+INFO         | 
+INFO         | initIcdPaths: ICD set to 'swiftshader', using Swiftshader ICD
+INFO         | Setting ICD filenames for the loader = /Users/josek0514/Library/Android/sdk/emulator/lib64/vulkan/vk_swiftshader_icd.json
+INFO         | SharedLibrary::open for [/Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/lib64/vulkan/libvulkan.dylib]
+INFO         | Added library: /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/lib64/vulkan/libvulkan.dylib
+INFO         | Enabling Vulkan portability.
+INFO         | Selecting Vulkan device: SwiftShader Device (LLVM 10.0.0), Version: 1.3.0
+INFO         | Using Vulkan externalMemoryMode: OpaqueFd for VkEmulation
+INFO         | Format VK_FORMAT_G10X6_B10X6R10X6_2PLANE_422_UNORM_3PACK16 does not support YCbCr sampler conversion
+INFO         | Initializing VkEmulation features:
+INFO         |     glInteropSupported: false
+INFO         |     useDeferredCommands: true
+INFO         |     createResourceWithRequirements: true
+INFO         |     useVulkanComposition: false
+INFO         |     useVulkanNativeSwapchain: false
+INFO         |     enable guestRenderDoc: false
+INFO         |     ASTC LDR emulation mode: Gpu
+INFO         |     enable ETC2 emulation: true
+INFO         |     enable Ycbcr emulation: false
+INFO         |     guestVulkanOnly: false
+INFO         |     useDedicatedAllocations: false
+INFO         |     guestVulkanMaxApiVersion: 1.3.0
+INFO         |     enableProtectedMemoryEmulation: false
+INFO         | Graphics Adapter Vendor Google (Google Inc. (Google))
+INFO         | Graphics Adapter Android Emulator OpenGL ES Translator (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver-5.0.0))
+INFO         | Graphics API Version OpenGL ES 3.0 (OpenGL ES 3.1.0 (ANGLE 2.1.1 git hash: fbf66f49c7cc))
+INFO         | Graphics API Extensions GL_OES_EGL_sync GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_depth24 GL_OES_depth32 GL_OES_element_index_uint GL_OES_texture_float GL_OES_texture_float_linear GL_OES_compressed_paletted_texture GL_OES_compressed_ETC1_RGB8_texture GL_OES_depth_texture GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_OES_packed_depth_stencil GL_OES_vertex_half_float GL_OES_standard_derivatives GL_OES_texture_npot GL_OES_rgb8_rgba8 GL_OVR_multiview2 GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_EXT_texture_format_BGRA8888 GL_APPLE_texture_format_BGRA8888 GL_EXT_draw_buffers_indexed GL_EXT_clip_cull_distance 
+INFO         | Graphics Device Extensions N/A
+INFO         | Disabling sparse binding feature support
+INFO         | Sending adb public key [QAAAAEX+aIBzm3pqoMWcHoSZcWCnBGr0s6cUhLR0HbqbGN19gFCcPSfUR0eNsp9YzFTnv1GKV4FRqSqrxNqlcDl4+qISl9UxuL1zirGyd8UlMAhexpKhFBdN7zk5yT/AqH5/CK6cyM/zZaV6ukoMikhxUOZVpcEunkMw/blw+KI2TmVzk6F8xqyuv41+Na/mgQQlitb6yq6woy71Veu0Q0D3Jr+UOhPImhlBg89iUZq1QTsru4TLHuq1NbUzXaIPgKMYnmjvbJ/kyP1BF01B1aNBBwDXz3NrTJiOP8vFgigN0APxaKdfYsGtNGb6p7+S6ZNC+RVWxOBaDOkU5agyuP/u8g3vrDa6MyEkLNe6ZG72hKWHGQ3DYWkTEFbGcFoMqhAZUpujwVPHytfHfK4bWkWFFYUFCjl0KLp+VTt7k34AGaIXC9vviaGzdDOcFGu6iFOlknIxXx4ttI3YaAXh1efGJuVPMDbMug8I0eBpbSctszeSLB/Pu7cyBkk+cdQQRDl11E1MnVOGtSLrDzlduIhCGktZsAYsGm1qzU7gIHWgW6lD4DNC86lcOJHBnvi/DEAKErawUnOd/AQG65gJXNPP2TG6f7FiQmeIMB/pOudYYoUrB0/B4A7iWxiYCJd+Ntni46Ka66CFU4VONLQuacFs8rhWdzLvZUKnN7wj/yVbZu0KpITpPwEAAQA= @unknown]
+INFO         | Userspace boot properties:
+INFO         |   androidboot.boot_devices=a003600.virtio_mmio
+INFO         |   androidboot.dalvik.vm.heapsize=512m
+INFO         |   androidboot.debug.hwui.renderer=skiagl
+INFO         |   androidboot.hardware=ranchu
+INFO         |   androidboot.hardware.gltransport=pipe
+INFO         |   androidboot.hardware.vulkan=ranchu
+INFO         |   androidboot.logcat=*:V
+INFO         |   androidboot.opengles.version=196609
+INFO         |   androidboot.qemu=1
+INFO         |   androidboot.qemu.adb.pubkey=QAAAAEX+aIBzm3pqoMWcHoSZcWCnBGr0s6cUhLR0HbqbGN19gFCcPSfUR0eNsp9YzFTnv1GKV4FRqSqrxNqlcDl4+qISl9UxuL1zirGyd8UlMAhexpKhFBdN7zk5yT/AqH5/CK6cyM/zZaV6ukoMikhxUOZVpcEunkMw/blw+KI2TmVzk6F8xqyuv41+Na/mgQQlitb6yq6woy71Veu0Q0D3Jr+UOhPImhlBg89iUZq1QTsru4TLHuq1NbUzXaIPgKMYnmjvbJ/kyP1BF01B1aNBBwDXz3NrTJiOP8vFgigN0APxaKdfYsGtNGb6p7+S6ZNC+RVWxOBaDOkU5agyuP/u8g3vrDa6MyEkLNe6ZG72hKWHGQ3DYWkTEFbGcFoMqhAZUpujwVPHytfHfK4bWkWFFYUFCjl0KLp+VTt7k34AGaIXC9vviaGzdDOcFGu6iFOlknIxXx4ttI3YaAXh1efGJuVPMDbMug8I0eBpbSctszeSLB/Pu7cyBkk+cdQQRDl11E1MnVOGtSLrDzlduIhCGktZsAYsGm1qzU7gIHWgW6lD4DNC86lcOJHBnvi/DEAKErawUnOd/AQG65gJXNPP2TG6f7FiQmeIMB/pOudYYoUrB0/B4A7iWxiYCJd+Ntni46Ka66CFU4VONLQuacFs8rhWdzLvZUKnN7wj/yVbZu0KpITpPwEAAQA= @unknown
+INFO         |   androidboot.qemu.avd_name=NevoraPhase12_API32
+INFO         |   androidboot.qemu.camera_hq_edge_processing=0
+INFO         |   androidboot.qemu.camera_protocol_ver=1
+INFO         |   androidboot.qemu.cpuvulkan.version=4202496
+INFO         |   androidboot.qemu.gltransport.drawFlushInterval=800
+INFO         |   androidboot.qemu.gltransport.name=pipe
+INFO         |   androidboot.qemu.hwcodec.avcdec=2
+INFO         |   androidboot.qemu.hwcodec.hevcdec=2
+INFO         |   androidboot.qemu.hwcodec.vpxdec=2
+INFO         |   androidboot.qemu.settings.system.screen_off_timeout=2147483647
+INFO         |   androidboot.qemu.skin=1080x2400
+INFO         |   androidboot.qemu.virtiowifi=1
+INFO         |   androidboot.qemu.vsync=60
+INFO         |   androidboot.serialno=EMULATOR37X2X12X0
+INFO         |   androidboot.vbmeta.digest=3a34eabda34d1645657039c93b53e562d07a08f2d9e3fcc390717b4bf843a957
+INFO         |   androidboot.vbmeta.hash_alg=sha256
+INFO         |   androidboot.vbmeta.size=6208
+INFO         |   androidboot.veritymode=enforcing
+INFO         | Monitoring duration of emulator setup.
+INFO         | Activated packet streamer for bluetooth emulation
+INFO         | Successfully initialized netsim WiFi
+INFO         | Setting display: 0 configuration to: 1080x2400, dpi: 420x420 
+INFO         | setDisplayActiveConfig: id:0, 1080x2400
+INFO         | emulatorSetupEnvironment: Environment scene is not required
+USER_INFO    | Emulator is performing a full startup. This may take upto two minutes, or more.
+INFO         | Boot completed in 34007 ms
+INFO         | Increasing screen off timeout, logcat buffer size to 2M.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74ac67c0a8
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74ac61b5c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74ac61b5c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74ac67f0c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b1f819a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b212e8a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b229ab28
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b2299a48
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b23072a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b23072a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b23063a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b23f7208
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b24b5688
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b24b5688
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b2b2ebc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b25e2bc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b25e2bc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b26b1a48
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b5f6ed08
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b8595cc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b8601b88
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b8685e08
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b8685e08
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74baf23ca8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b1cea948
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b87e4288
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b1cea948
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74b87e7708
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74c1adb668
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74c7d02bc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74c7ef5cc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74c7d02bc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to find ColorBuffer: 2127
+ERROR        | Failed to bind to texture: invalid color buffer.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d3c6c648
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d3eddae8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d3fd4f08
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74cdaea808
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d3fd7708
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to find ColorBuffer: 2568
+ERROR        | Failed to bind to texture: invalid color buffer.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d9106088
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74d9106088
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74cf29b488
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74cf3e4e68
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e40068a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e4153a28
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e55a9d68
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e564df48
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e5679d68
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e564ff28
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74eb9f2d08
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to find ColorBuffer: 3590
+ERROR        | Failed to bind to texture: invalid color buffer.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74ebbaee48
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f3c65868
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f3d5bac8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f3f34f08
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f3d5ba28
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbc94148
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f3f377a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbc96d08
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74e541c788
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f799b348
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbea66c8
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbea77a8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to find ColorBuffer: 4229
+ERROR        | Failed to bind to texture: invalid color buffer.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x7506cc5908
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x7504518be8
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbea7708
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74fbea7708
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f7b98d28
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x750451b848
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x750451b848
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x74f7920788
+ERROR        | Failed to restore previous context: 12297
+ERROR        | Failed to find ColorBuffer: 4572
+ERROR        | Failed to bind to texture: invalid color buffer.
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x7506e0caa8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x75046935c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x750476abc8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x75047ca6c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x751104a128
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x75110761c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x75110761c8
+ERROR        | Failed to restore previous context: 12297
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x751263fc08
+ERROR        | DisplaySurfaceGlContextHelper context was preempted by others, current=0x3, needed=0x3, thread=0x751263fc08
+ERROR        | Failed to restore previous context: 12297
+INFO         | Wait for emulator (pid 92708) 20 seconds to shutdown gracefully before kill;you can set environment variable ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL(in seconds) to change the default value (20 seconds)
+
+USER_INFO    | Snapshots have been disabled by the user, save request is ignored.
+INFO         | Saving snapshot 'default_boot' took 0 ms
+WARNING      | Emulator client has not yet been configured.. Call configure me first!
+INFO         | removeAll
+WARNING      | Netsim Wifi dns:///localhost:64457 is gone due to Stream removed (CANCELLED)
+INFO         | ipv6:%5B::1%5D:64457: Got goaway [2] err=UNAVAILABLE:GOAWAY received; Error code: 2; Debug Text: Cancelling all calls {http2_error:2}

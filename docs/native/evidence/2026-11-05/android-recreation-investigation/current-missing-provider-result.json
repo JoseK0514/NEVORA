@@ -1,0 +1,10 @@
+{
+  "profile": "intentional-missing-provider",
+  "qualification": "fallback regression only",
+  "passed": false,
+  "sourceHash": "fc8fdacece992d93db683f909827da3ae61bc03ed9d8e96ea6a220fe25331001",
+  "providerEnabledBefore": 0,
+  "providerEnabledRestored": true,
+  "restoredProvider149": true,
+  "cleanupClosed": true
+}

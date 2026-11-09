@@ -1,0 +1,20 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [32m✓[39m src/test/integration/native-push.integration.ts [2m([22m[2m24 tests[22m[2m)[22m[33m 4102[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks session expiry after a real blocked enrollment INSERT[33m 1594[2mms[22m[39m
+   [33m[2m✓[22m[39m rechecks challenge expiry after a real blocked enrollment INSERT[33m 1585[2mms[22m[39m
+ [32m✓[39m src/test/integration/native-deliveries.integration.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 4174[2mms[22m[39m
+   [33m[2m✓[22m[39m supports independent native and Web Push deliveries for the same event[33m 321[2mms[22m[39m
+   [33m[2m✓[22m[39m does not backfill pre-consent events or fan out a Web Push self-test to native devices[33m 365[2mms[22m[39m
+   [33m[2m✓[22m[39m restores unspent attempt budget on release and quiet-hour deferral[33m 389[2mms[22m[39m
+   [33m[2m✓[22m[39m never lets an old generation finish or invalidate a replacement registration[33m 312[2mms[22m[39m
+   [33m[2m✓[22m[39m preserves a token registered after an older APNs invalidation timestamp[33m 319[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m38 passed[39m[22m[90m (38)[39m
+[2m   Start at [22m 14:00:03
+[2m   Duration [22m 8.64s[2m (tests 97%, transform 2%, import 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.

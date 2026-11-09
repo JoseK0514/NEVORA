@@ -1,0 +1,1 @@
+{"passed": true, "classesDexAbsent": true, "originalAssertionUnchanged": true, "correction": "Standard R8 release optimization removes the unused generated R class in the disposable fixture only", "applicationSourceChanged": false}

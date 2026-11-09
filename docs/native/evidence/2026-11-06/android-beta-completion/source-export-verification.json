@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "bc6b739750562716283d57b821ca6ef4aca72370",
+  "files": 2777,
+  "bytes": 50068440,
+  "selectionPolicy": "Same reviewed positive allowlist as November 5: src/db/public/scripts/tools and named root build configuration; no native, .env, authoring/history or secret files",
+  "changedFromPriorExport": [
+    "scripts/development-source-inventory.check.mjs"
+  ],
+  "exportPath": "/Users/josek0514/.codex/native-runtime/nevora-android-beta-20261106-963ca3c0/application-source",
+  "archivePath": "/Users/josek0514/.codex/native-runtime/nevora-android-beta-20261106-963ca3c0/native-staging-source-bc6b7397.tar.gz",
+  "archiveSha256": "f51600f5a975033f5415155383c153d147528df2aa45728f660a96f91cf3bb5b",
+  "cloudUploaded": false,
+  "deployed": false,
+  "allExportedFilesMatchFrozenCommit": true,
+  "postBuildSourceChanges": [],
+  "archiveUnchangedAfterBuild": true
+}

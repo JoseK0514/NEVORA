@@ -1,0 +1,18 @@
+[
+  {
+    "api": 30,
+    "source": "/Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/image-30",
+    "allFileHashesReverified": true,
+    "ownedAvdClosedAndRemoved": true,
+    "removedAt": 1793959887.1963782,
+    "scope": "Only task-private downloaded SDK image, no preexisting installed SDK/user image"
+  },
+  {
+    "api": 31,
+    "source": "/Users/josek0514/.codex/native-runtime/nevora-android-supported-20261105-15d325e9/image-31",
+    "allFileHashesReverified": true,
+    "ownedAvdClosedAndRemoved": true,
+    "removedAt": 1793959889.428156,
+    "scope": "Only task-private downloaded SDK image, no preexisting installed SDK/user image"
+  }
+]

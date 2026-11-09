@@ -1,0 +1,284 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/http.test.ts [2m([22m[2m19 tests[22m[2m | [22m[31m19 failed[39m[2m)[22m[32m 22[2mms[22m[39m
+[31m   [31m×[31m uses the actual browser proof and configured binding without accepting account or environment selectors[39m[32m 6[2mms[22m[39m
+[31m   [31m×[31m denies absent, Manager and Lead browser authority before creating a repository[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m rejects browser Origin https://foreign.example before session/database work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects browser Origin null before session/database work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects browser Origin  before session/database work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects browser Origin https://nevora.example.evil before session/database work[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m permits cookie-free native completion and maintenance without reading a browser session[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects cross-site, foreign origin, cookies, method/query/path and disabled runtime before writes[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON {"keyFingerprint":"a","keyFingerprint":"b"}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON {"keyFingerprint":"a","key\u0046ingerprint":"b"}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON {"keyFingerprint":{}}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON [][39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON null[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON {"unknown":"a"}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects ambiguous or non-flat JSON {"keyFingerprint":1}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m bounds actual streamed UTF8 bytes independently of Content-Length and cancels rejected input[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects oversized declared lengths, invalid UTF8, wrong content type and aborted bodies[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m times out a stalled body and cancels its stream without repository work[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m returns status without identity/material and sanitizes uncertain database failures[39m[32m 1[2mms[22m[39m
+ [31m❯[39m src/lib/native-push/config.test.ts [2m([22m[2m21 tests[22m[2m | [22m[31m21 failed[39m[2m)[22m[32m 14[2mms[22m[39m
+[31m   [31m×[31m is disabled without every explicit registration setting; no provider delivery is enabled[39m[32m 4[2mms[22m[39m
+[31m   [31m×[31m rejects environment alias test [39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects environment alias Production[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects environment alias [39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects environment alias staging[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin http://nevora.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin http://localhost:3000[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://localhost[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://127.0.0.1[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://[::1][39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://nevora.example/[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://NEVORA.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://nevora.example:443[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://nevora.example/path[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects unqualified release origin https://nevora.example?x=1[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m separates production config from test/preview processes and provider environments[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects invalid/noncanonical protection material without echoing it[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects invalid/noncanonical protection material without echoing it[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects invalid/noncanonical protection material without echoing it[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects invalid/noncanonical protection material without echoing it[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects invalid/noncanonical protection material without echoing it[39m[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 40 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mis disabled without every explicit registration setting; no provider delivery is enabled
+[31m[1mAssertionError[22m: expected {} to have property "readNativeRegistrationConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/config.test.ts:[2m4:13[22m[39m
+    [90m  2|[39m async function api() {
+    [90m  3|[39m   const m = await import('./config').catch(() => ({}));
+    [90m  4|[39m   expect(m).toHaveProperty('readNativeRegistrationConfig');
+    [90m   |[39m             [31m^[39m
+    [90m  5|[39m   return m as typeof import('./config');
+    [90m  6|[39m }
+[90m [2m❯[22m src/lib/native-push/config.test.ts:[2m13:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects environment alias test 
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects environment alias Production
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects environment alias 
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects environment alias staging
+[31m[1mAssertionError[22m: expected {} to have property "readNativeRegistrationConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/config.test.ts:[2m4:13[22m[39m
+    [90m  2|[39m async function api() {
+    [90m  3|[39m   const m = await import('./config').catch(() => ({}));
+    [90m  4|[39m   expect(m).toHaveProperty('readNativeRegistrationConfig');
+    [90m   |[39m             [31m^[39m
+    [90m  5|[39m   return m as typeof import('./config');
+    [90m  6|[39m }
+[90m [2m❯[22m src/lib/native-push/config.test.ts:[2m26:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin http://nevora.example
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin http://localhost:3000
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://localhost
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://127.0.0.1
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://[::1]
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://nevora.example/
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://NEVORA.example
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://nevora.example:443
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://nevora.example/path
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects unqualified release origin https://nevora.example?x=1
+[31m[1mAssertionError[22m: expected {} to have property "readNativeRegistrationConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/config.test.ts:[2m4:13[22m[39m
+    [90m  2|[39m async function api() {
+    [90m  3|[39m   const m = await import('./config').catch(() => ({}));
+    [90m  4|[39m   expect(m).toHaveProperty('readNativeRegistrationConfig');
+    [90m   |[39m             [31m^[39m
+    [90m  5|[39m   return m as typeof import('./config');
+    [90m  6|[39m }
+[90m [2m❯[22m src/lib/native-push/config.test.ts:[2m30:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mseparates production config from test/preview processes and provider environments
+[31m[1mAssertionError[22m: expected {} to have property "readNativeRegistrationConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/config.test.ts:[2m4:13[22m[39m
+    [90m  2|[39m async function api() {
+    [90m  3|[39m   const m = await import('./config').catch(() => ({}));
+    [90m  4|[39m   expect(m).toHaveProperty('readNativeRegistrationConfig');
+    [90m   |[39m             [31m^[39m
+    [90m  5|[39m   return m as typeof import('./config');
+    [90m  6|[39m }
+[90m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects invalid/noncanonical protection material without echoing it
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects invalid/noncanonical protection material without echoing it
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects invalid/noncanonical protection material without echoing it
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects invalid/noncanonical protection material without echoing it
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mrejects invalid/noncanonical protection material without echoing it
+[31m[1mAssertionError[22m: expected {} to have property "readNativeRegistrationConfig"[39m
+[36m [2m❯[22m api src/lib/native-push/config.test.ts:[2m4:13[22m[39m
+    [90m  2|[39m async function api() {
+    [90m  3|[39m   const m = await import('./config').catch(() => ({}));
+    [90m  4|[39m   expect(m).toHaveProperty('readNativeRegistrationConfig');
+    [90m   |[39m             [31m^[39m
+    [90m  5|[39m   return m as typeof import('./config');
+    [90m  6|[39m }
+[90m [2m❯[22m src/lib/native-push/config.test.ts:[2m43:11[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22muses the actual browser proof and configured binding without accepting account or environment selectors
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m37:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mdenies absent, Manager and Lead browser authority before creating a repository
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m49:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects browser Origin https://foreign.example before session/database work
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects browser Origin null before session/database work
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects browser Origin  before session/database work
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects browser Origin https://nevora.example.evil before session/database work
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m57:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mpermits cookie-free native completion and maintenance without reading a browser session
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m63:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects cross-site, foreign origin, cookies, method/query/path and disabled runtime before writes
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m71:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON {"keyFingerprint":"a","keyFingerprint":"b"}
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON {"keyFingerprint":"a","key\u0046ingerprint":"b"}
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON {"keyFingerprint":{}}
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON []
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON null
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON {"unknown":"a"}
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects ambiguous or non-flat JSON {"keyFingerprint":1}
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m83:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mbounds actual streamed UTF8 bytes independently of Content-Length and cancels rejected input
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m87:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mrejects oversized declared lengths, invalid UTF8, wrong content type and aborted bodies
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m94:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mtimes out a stalled body and cancels its stream without repository work
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m103:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/40]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/http.test.ts[2m > [22mreturns status without identity/material and sanitizes uncertain database failures
+[31m[1mAssertionError[22m: expected {} to have property "createNativeRegistrationHandlers"[39m
+[36m [2m❯[22m api src/lib/native-push/http.test.ts:[2m6:13[22m[39m
+    [90m  4|[39m async function api() {
+    [90m  5|[39m   const m = await import('./http').catch(() => ({}));
+    [90m  6|[39m   expect(m).toHaveProperty('createNativeRegistrationHandlers');
+    [90m   |[39m             [31m^[39m
+    [90m  7|[39m   return m as typeof import('./http');
+    [90m  8|[39m }
+[90m [2m❯[22m setup src/lib/native-push/http.test.ts:[2m33:57[22m[39m
+[90m [2m❯[22m src/lib/native-push/http.test.ts:[2m109:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/40]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m40 failed[39m[22m[90m (40)[39m
+[2m   Start at [22m 05:25:10
+[2m   Duration [22m 220ms[2m (tests 47%, transform 28%, import 20%, worker 6%)[22m
+

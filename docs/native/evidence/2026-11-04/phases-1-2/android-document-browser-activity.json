@@ -1,0 +1,6 @@
+[
+  "topResumedActivity=ActivityRecord{48755618 u0 com.velani.nevora.development/.PortalActivity t82}",
+  "Intent { flg=0x10000000 xflg=0x5 cmp=com.velani.nevora.development/.PortalActivity (has extras) }",
+  "Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10000100 cmp=com.google.android.apps.nexuslauncher/.NexusLauncherActivity (has extras) }",
+  "ResumedActivity: ActivityRecord{48755618 u0 com.velani.nevora.development/.PortalActivity t82}"
+]

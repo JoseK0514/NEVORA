@@ -1,0 +1,20 @@
+{
+  "workspaceId": "tea-dbmr3t6c6qcc73cbf0jg",
+  "plan": "Hobby",
+  "noCardOnFile": true,
+  "includedServices": 1,
+  "freeInstanceHours": 0.97,
+  "freeInstanceHoursLimit": 750,
+  "includedBandwidthReportedMb": 0,
+  "includedPipelineMinutes": 2,
+  "serviceChargesUsd": 0,
+  "pipelineChargesUsd": 0,
+  "pastInvoicesPresent": false,
+  "billingMutationPerformed": false,
+  "usageMayLag": true,
+  "observationWindowUtc": "2026-11-06 approximately 14:49 UTC",
+  "includedBandwidthLimitGb": 5,
+  "includedPipelineMinutesLimit": 500,
+  "totalMonthToDateUsd": 0,
+  "projectedMonthTotalUsd": 0
+}

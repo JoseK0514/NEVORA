@@ -1,0 +1,37 @@
+{
+  "devicesAndConfigurations": [
+    {
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "102E75F4-E44B-4A7C-8DE5-A49B7BE3095E",
+        "deviceName": "NEVORA Sync 20261105 81c1dd3d",
+        "modelName": "iPhone 17 Pro",
+        "osBuildNumber": "24A434",
+        "osVersion": "27.0",
+        "platform": "iOS Simulator"
+      },
+      "expectedFailures": 0,
+      "failedTests": 0,
+      "passedTests": 3,
+      "skippedTests": 0,
+      "testPlanConfiguration": {
+        "configurationId": "1",
+        "configurationName": "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription": "NEVORA \u00b7 Built with macOS 27.0.1",
+  "expectedFailures": 0,
+  "failedTests": 0,
+  "finishTime": 1793922213.266,
+  "passedTests": 3,
+  "result": "Passed",
+  "runtimeWarnings": [],
+  "skippedTests": 0,
+  "startTime": 1793922066.01,
+  "statistics": [],
+  "testFailures": [],
+  "title": "Test - NEVORA",
+  "topInsights": [],
+  "totalTestCount": 3
+}

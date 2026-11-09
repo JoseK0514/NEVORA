@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm",
+    "test",
+    "--",
+    "src/test/phase-e-browser-evidence.test.ts",
+    "--maxWorkers=1",
+    "--no-color"
+  ],
+  "exitCode": 0,
+  "seconds": 34.8,
+  "sourceChangesToFailingTests": false
+}

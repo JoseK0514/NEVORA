@@ -1,0 +1,18 @@
+[
+  {
+    "database_name": "nevora_native_staging",
+    "role_name": "nevora_native_app",
+    "rolsuper": false,
+    "rolcreatedb": false,
+    "rolcreaterole": false,
+    "rolbypassrls": false,
+    "neon_admin_member": false,
+    "installer_member": false,
+    "schema_create": false,
+    "database_create": false,
+    "temporary_create": false,
+    "platform_cleanup_denied": true,
+    "protected_tables_denied": true,
+    "employee_dml_allowed": true
+  }
+]

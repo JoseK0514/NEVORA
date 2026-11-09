@@ -1,0 +1,14 @@
+{
+  "source": "APKMirror package page downloaded normally in Chrome after Mac unlock",
+  "page": "https://www.apkmirror.com/apk/google-inc/android-system-webview/android-system-webview-156-0-8078-50-release/android-system-webview-156-0-8078-50-android-apk-download/",
+  "bytes": 262075753,
+  "sha256": "67d8707f1f16ffaab0f6d89db2c67afc7f723d6f35d43f3c864de4c7fd04c951",
+  "certificateSha256": "6faf3c4140407473400934d117815a21af1cfefc5c0bee61c858bc3d72ba6fe5",
+  "signatureVerified": true,
+  "matchesPreviouslyVerifiedGooglePlaySigner": true,
+  "minimumApi": 29,
+  "package": "com.google.android.webview",
+  "version": "156.0.8078.50",
+  "downloadSourceIsGooglePlay": false,
+  "note": "Publisher identity verified independently; OS-specific Google Play delivery and physical behavior remain separate."
+}

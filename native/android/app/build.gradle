@@ -1,62 +1,43 @@
-apply plugin: 'com.android.application'
+import groovy.json.JsonOutput
+plugins { id 'com.android.application' }
 
 android {
-    namespace = "com.nevora.spike"
-    compileSdk = rootProject.ext.compileSdkVersion
+    namespace 'com.velani.nevora.development'
+    compileSdk 36
     defaultConfig {
-        applicationId "com.nevora.spike"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        applicationId 'com.velani.nevora.development'
+        minSdk 29
+        targetSdk 36
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        versionName '0.1.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        buildConfigField 'String', 'BACKEND_ORIGIN', JsonOutput.toJson(providers.gradleProperty('nevoraBackendOrigin').getOrElse(''))
+        buildConfigField 'boolean', 'NATIVE_PUSH_ENABLED', providers.gradleProperty('nevoraNativePushEnabled').getOrElse('false') == 'true' ? 'true' : 'false'
+        ['Environment', 'FirebaseProject', 'FirebaseApp', 'FirebaseApiKey', 'FirebaseSender'].each { key ->
+            buildConfigField 'String', 'NATIVE_' + key.replaceAll(/([a-z])([A-Z])/, '$1_$2').toUpperCase(), JsonOutput.toJson(providers.gradleProperty('nevoraNative' + key).getOrElse(''))
         }
+        def linkOrigin = providers.gradleProperty('nevoraBackendOrigin').getOrElse('')
+        def linkHost = linkOrigin.startsWith('https://') ? new URI(linkOrigin).host : null
+        manifestPlaceholders.nevoraAppLinkHost = linkHost ?: 'unconfigured.invalid'
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+    buildFeatures { buildConfig true }
+    testOptions { unitTests.all { systemProperty 'nevora.registrationVectors', rootProject.file('../contracts/registration-v1.json').absolutePath } }
+    buildTypes { release { minifyEnabled false; signingConfig null } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
-
-repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-    }
-}
-
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
-    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
-    implementation project(':capacitor-android')
-    testImplementation "junit:junit:$junitVersion"
-    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation project(':capacitor-cordova-android-plugins')
+    implementation 'androidx.activity:activity:1.11.0'
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'com.google.firebase:firebase-messaging:26.0.1'
+    testImplementation 'junit:junit:4.13.2'
+    // Android's platform JSONObject at runtime; a real implementation for JVM tests.
+    testImplementation 'org.json:json:20260814'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.7.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.4.0'
 }
-
-apply from: 'capacitor.build.gradle'
-
-// This isolated spike is intentionally debug-only. A store build needs its own
-// release decision, verified HTTPS origin, privacy review and signing setup.
-androidComponents {
-    beforeVariants(selector().withBuildType('release')) { variantBuilder ->
-        variantBuilder.enable = false
-    }
-}
-
-try {
-    def servicesJSON = file('google-services.json')
-    if (servicesJSON.text) {
-        apply plugin: 'com.google.gms.google-services'
-    }
-} catch(Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+if (providers.gradleProperty('nevoraBuildDirectory').isPresent()) {
+    layout.buildDirectory.set(file(providers.gradleProperty('nevoraBuildDirectory').get()))
 }

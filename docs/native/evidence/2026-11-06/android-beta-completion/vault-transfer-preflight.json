@@ -1,0 +1,26 @@
+{
+  "fixtureOnly": true,
+  "actualCredentialRead": false,
+  "checks": [
+    {
+      "name": "wrong-device-cleanup-refused-before-file-removal",
+      "passed": true
+    },
+    {
+      "name": "malformed-cleanup-does-not-prepare-transfer",
+      "passed": true
+    },
+    {
+      "name": "actual-encrypted-fixture-preparation-and-owned-cleanup",
+      "passed": true
+    },
+    {
+      "name": "missing-import-file-owned-image-cleanup",
+      "redExit": 1,
+      "greenExit": 0,
+      "passed": true
+    }
+  ],
+  "fixtureLease": "/Users/josek0514/.codex/native-runtime/nevora-android-beta-20261106-963ca3c0/vault-transfer-7b9570aa244b498fbc2b8ecd804ee5b2/lease.json",
+  "closed": true
+}

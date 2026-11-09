@@ -1,0 +1,8 @@
+{
+  "exit": 0,
+  "stdout": "UI hierchary dumped to: /data/local/tmp/nevora-dump-probe-3738133d03804be5aa73fd06476e74e7.xml\n",
+  "stderr": "",
+  "xmlReadExit": 0,
+  "xmlBytes": 13199,
+  "containsHierarchy": true
+}

@@ -1,0 +1,38 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/worktrees/nevora-native-phases-one-two/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/test/notification-worker-startup.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m5 skipped[39m[2m)[22m[33m 610[2mms[22m[39m
+[31m   [31m×[31m native dispatch is independently disabled by default without database or provider access[39m[33m 609[2mms[22m[39m
+   [2m[90m↓[39m[22m the actual npm worker command retains its exact bounded error with package-manager diagnostic false
+   [2m[90m↓[39m[22m the actual npm worker command retains its exact bounded error with package-manager diagnostic true
+   [2m[90m↓[39m[22m the explicit Node server entry loads the actual worker and executes an injected disabled dispatch without any IO
+   [2m[90m↓[39m[22m the Node server resolver leaves every non-marker package lookup to normal resolution
+   [2m[90m↓[39m[22m loading the Node hook without the explicit react-server condition does not permit a server-only import
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/notification-worker-startup.test.ts[2m > [22mnative dispatch is independently disabled by default without database or provider access
+[31m[1mAssertionError[22m: expected 1 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m src/test/notification-worker-startup.test.ts:[2m9:19[22m[39m
+    [90m  7|[39m it('native dispatch is independently disabled by default without datab…
+    [90m  8|[39m  const r=spawnSync('npm',['run','notifications:worker','--','native-di…
+    [90m  9|[39m  expect(r.status).toBe(0);expect(r.error).toBeUndefined();
+    [90m   |[39m                   [31m^[39m
+    [90m 10|[39m  const last=r.stdout.trim().split('\n').at(-1)!;
+    [90m 11|[39m  expect(JSON.parse(last)).toEqual({claimed:0,accepted:0,retried:0,fail…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m5 skipped[39m[90m (6)[39m
+[2m   Start at [22m 14:05:49
+[2m   Duration [22m 698ms[2m (tests 97%, transform 2%, import 1%)[22m
+

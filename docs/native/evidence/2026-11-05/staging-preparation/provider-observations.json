@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-11-05",
+  "existingVercelTeam": {
+    "id": "team_Lzbw410WwXGWHTuUXuamRI1N",
+    "slug": "josekarlo-5933s-projects",
+    "plan": "Hobby",
+    "source": "Authenticated dashboard sidebar; screenshot retained outside Git",
+    "projectsListed": 7,
+    "nativeStagingProjectFound": false
+  },
+  "selectedNeonOrganization": {
+    "id": "org-young-thunder-09560189",
+    "name": "VELANI LLC (MAIN)",
+    "plan": "launch",
+    "projectsListed": 10,
+    "nativeStagingProjectFound": false
+  },
+  "otherAccessibleNeonOrganization": {
+    "id": "org-gentle-resonance-80806666",
+    "name": "VELANI LLC",
+    "plan": "launch"
+  },
+  "credentialsRetrieved": false,
+  "providerWrites": false,
+  "githubOpenPullRequestsRead": "gh pr list after connected search returned an unrelated issue for the PR-only query; no result from that search used as proof",
+  "sourceGate": "Remote branch ceiling exceeded: 6 > 3",
+  "privateScreenshot": "/Users/josek0514/.codex/native-runtime/nevora-native-staging-20261105/vercel-hobby-plan.jpg"
+}

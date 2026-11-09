@@ -1,0 +1,87 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-3_3myl_i/DerivedData/Build/Products/InvocationOwned.xctestrun -destination "platform=iOS Simulator,id=F69F440D-F4FD-4658-B8AF-DEA3B844CE30" -parallel-testing-enabled NO -resultBundlePath /var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-3_3myl_i/tests.xcresult "-only-testing:NevoraUITests/NevoraDocumentUITests"
+
+Writing result bundle at path:
+	/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-3_3myl_i/tests.xcresult
+
+2026-11-04 17:56:46.298975-0400 NevoraUITests-Runner[33028:2746861] [Default] Running tests...
+    t =      nans Interface orientation changed to Portrait
+Test Suite 'Selected tests' started at 2026-11-04 17:56:48.772.
+Test Suite 'NevoraUITests.xctest' started at 2026-11-04 17:56:48.772.
+Test Suite 'NevoraDocumentUITests' started at 2026-11-04 17:56:48.772.
+Test Case '-[NevoraUITests.NevoraDocumentUITests testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff]' started.
+    t =     0.00s Start Test at 2026-11-04 17:56:48.776
+    t =     0.06s Set Up
+    t =     0.06s Open com.velani.nevora.development
+    t =     0.07s     Launch com.velani.nevora.development
+2026-11-04 17:56:49.013 xcodebuild[33027:2746637] [MT] IDELaunchParametersSnapshot: debugger version lookup failed for path '<nil>': noURL
+2026-11-04 17:56:49.013 xcodebuild[33027:2746637] [MT] IDELaunchParametersSnapshot: no debugger version
+objc[33028]: Class UIAccessibilityLoaderWebShared is implemented in both /private/var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.Esijjb/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebKit.axbundle/WebKit (0x107a28398) and /private/var/run/com.apple.security.cryptexd/mnt/com.apple.iPhoneOS.SimulatorRuntime-v24.1.434.0.Esijjb/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/AccessibilityBundles/WebCore.axbundle/WebCore (0x107b60310). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+    t =     2.75s         Setting up automation session
+    t =     4.36s         Wait for com.velani.nevora.development to idle
+    t =     5.69s Waiting 20.0s for "Fictional exports" StaticText to exist
+    t =     6.74s     Checking `Expect predicate `existsNoRetry == 1` for object "Fictional exports" StaticText`
+    t =     6.75s         Checking existence of `"Fictional exports" StaticText`
+    t =     6.80s         Capturing element debug description
+    t =     7.75s     Checking `Expect predicate `existsNoRetry == 1` for object "Fictional exports" StaticText`
+    t =     7.75s         Checking existence of `"Fictional exports" StaticText`
+    t =     7.78s Tap "Download fictional CSV" Link
+    t =     7.78s     Wait for com.velani.nevora.development to idle
+    t =     7.79s     Find the "Download fictional CSV" Link
+    t =     7.79s     Check for interrupting elements affecting "Download fictional CSV" Link
+    t =     7.83s     Synthesize event
+    t =     8.14s     Wait for com.velani.nevora.development to idle
+    t =     8.50s Waiting 5.0s for "Download in your browser" Alert to exist
+    t =     9.56s     Checking `Expect predicate `existsNoRetry == 1` for object "Download in your browser" Alert`
+    t =     9.56s         Checking existence of `"Download in your browser" Alert`
+    t =     9.59s Checking existence of `"Continue in browser" Button`
+    t =     9.60s Find the Target Application 'com.velani.nevora.development'
+    t =     9.69s Added attachment named 'Fictional document native confirmation'
+    t =     9.69s Tap "Cancel" Button
+    t =     9.69s     Wait for com.velani.nevora.development to idle
+    t =     9.69s     Find the "Cancel" Button
+    t =     9.71s     Check for interrupting elements affecting "Cancel" Button
+    t =     9.72s     Synthesize event
+    t =    10.01s     Wait for com.velani.nevora.development to idle
+    t =    10.25s Checking existence of `"Download in your browser" Alert`
+    t =    10.26s Checking existence of `"Download fictional blob" Button`
+    t =    10.27s Tap "Download fictional blob" Button
+    t =    10.27s     Wait for com.velani.nevora.development to idle
+    t =    10.27s     Find the "Download fictional blob" Button
+    t =    10.28s     Check for interrupting elements affecting "Download fictional blob" Button
+    t =    10.30s     Synthesize event
+    t =    10.58s     Wait for com.velani.nevora.development to idle
+    t =    10.86s Waiting 5.0s for "Download in your browser" Alert to exist
+    t =    11.92s     Checking `Expect predicate `existsNoRetry == 1` for object "Download in your browser" Alert`
+    t =    11.92s         Checking existence of `"Download in your browser" Alert`
+    t =    11.96s Tap "Continue in browser" Button
+    t =    11.96s     Wait for com.velani.nevora.development to idle
+    t =    11.96s     Find the "Continue in browser" Button
+    t =    11.98s     Check for interrupting elements affecting "Continue in browser" Button
+    t =    12.00s     Synthesize event
+    t =    12.28s     Wait for com.velani.nevora.development to idle
+    t =    12.55s Wait for com.apple.mobilesafari to become Running Foreground
+    t =    12.59s Waiting 10.0s for "Fictional exports" StaticText to exist
+    t =    13.68s     Checking `Expect predicate `existsNoRetry == 1` for object "Fictional exports" StaticText`
+    t =    13.68s         Checking existence of `"Fictional exports" StaticText`
+    t =    13.72s Find the Application 'com.apple.mobilesafari'
+    t =    13.79s Added attachment named 'Deliberate browser handoff'
+    t =    13.81s Terminate com.velani.nevora.development:33037
+    t =    14.88s Tear Down
+Test Case '-[NevoraUITests.NevoraDocumentUITests testDocumentFallbackRequiresReviewAndDeliberateBrowserHandoff]' passed (14.913 seconds).
+Test Suite 'NevoraDocumentUITests' passed at 2026-11-04 17:57:03.689.
+	 Executed 1 test, with 0 failures (0 unexpected) in 14.913 (14.917) seconds
+Test Suite 'NevoraUITests.xctest' passed at 2026-11-04 17:57:03.692.
+	 Executed 1 test, with 0 failures (0 unexpected) in 14.913 (14.919) seconds
+Test Suite 'Selected tests' passed at 2026-11-04 17:57:03.692.
+	 Executed 1 test, with 0 failures (0 unexpected) in 14.913 (14.920) seconds
+2026-11-04 17:57:04.011 xcodebuild[33027:2746637] [MT] IDETestOperationsObserverDebug: 20.029 elapsed -- Testing started completed.
+2026-11-04 17:57:04.011 xcodebuild[33027:2746637] [MT] IDETestOperationsObserverDebug: 0.000 sec, +0.000 sec -- start
+2026-11-04 17:57:04.011 xcodebuild[33027:2746637] [MT] IDETestOperationsObserverDebug: 20.029 sec, +20.029 sec -- end
+
+Test session results, code coverage, and logs:
+	/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-native-ui-3_3myl_i/tests.xcresult
+
+** TEST EXECUTE SUCCEEDED **
+
+Testing started

@@ -1,4 +1,5 @@
 "use client";
+import {NativeDeviceSettings} from './native-shell/device-settings';
 import {isPopoverOpen} from "./kit/popover-open";
 
 import { useEffect, useRef, useState } from 'react';
@@ -49,7 +50,10 @@ export function DeviceSetupContent(props: ContentProps) {
     {props.message ? <p className="portal-device-message" role={props.state === 'error' ? 'alert' : 'status'}>{props.message}</p> : null}
   </div>;
 }
-export function PortalDeviceSetup({ role }: { role: UserRole }) {
+export function NativePortalDeviceSetup({role}:{role:UserRole}) {
+ return <div id="portal-device-settings" className="portal-device-settings" popover="auto" aria-label="Device settings" data-role={role}><div className="portal-device-heading"><strong>Device settings</strong><button type="button" className="portal-device-close c-done" popoverTarget="portal-device-settings" popoverTargetAction="hide">Done</button></div><NativeDeviceSettings/></div>;
+}
+export function PortalDeviceSetup({role}:{role:UserRole}) {
   const controller = useRef<DeviceController | null>(null);
   const popover = useRef<HTMLDivElement>(null);
   const popoverOpener = useRef<HTMLElement | null>(null);

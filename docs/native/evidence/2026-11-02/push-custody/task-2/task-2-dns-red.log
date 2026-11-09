@@ -1,0 +1,344 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/lib/native-push/config.test.ts [2m([22m[2m26 tests[22m[2m | [22m[31m5 failed[39m[2m)[22m[32m 13[2mms[22m[39m
+   [32m✓[39m is disabled without every explicit registration setting; no provider delivery is enabled[32m 8[2mms[22m[39m
+   [32m✓[39m rejects environment alias test [32m 0[2mms[22m[39m
+   [32m✓[39m rejects environment alias Production[32m 0[2mms[22m[39m
+   [32m✓[39m rejects environment alias [32m 0[2mms[22m[39m
+   [32m✓[39m rejects environment alias staging[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin http://nevora.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin http://localhost:3000[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://localhost[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://127.0.0.1[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://[::1][32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://nevora.example/[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://NEVORA.example[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://nevora.example:443[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://nevora.example/path[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unqualified release origin https://nevora.example?x=1[32m 0[2mms[22m[39m
+[31m   [31m×[31m matches the shells' release DNS policy for https://bad..example[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m matches the shells' release DNS policy for https://-bad.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m matches the shells' release DNS policy for https://bad_.example[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m matches the shells' release DNS policy for https://nevora.123abc[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m matches the shells' release DNS policy for https://127.nevora.example[39m[32m 0[2mms[22m[39m
+   [32m✓[39m separates production config from test/preview processes and provider environments[32m 0[2mms[22m[39m
+   [32m✓[39m rejects invalid/noncanonical protection material without echoing it[32m 0[2mms[22m[39m
+   [32m✓[39m rejects invalid/noncanonical protection material without echoing it[32m 0[2mms[22m[39m
+   [32m✓[39m rejects invalid/noncanonical protection material without echoing it[32m 0[2mms[22m[39m
+   [32m✓[39m rejects invalid/noncanonical protection material without echoing it[32m 0[2mms[22m[39m
+   [32m✓[39m rejects invalid/noncanonical protection material without echoing it[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mmatches the shells' release DNS policy for https://bad..example
+[31m[1mAssertionError[22m: expected { Object (origin, environment, ...) } to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "applications": {
+    "android": {
+      "appId": "com.velani.nevora.development",
+      "provider": "fcm",
+    },
+    "ios": {
+      "appId": "com.velani.nevora.development",
+      "provider": "apns-sandbox",
+    },
+  },
+  "encryptionKey": Buffer [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  ],
+  "environment": "test",
+  "origin": "https://bad..example",
+}
+
+[36m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:101[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mmatches the shells' release DNS policy for https://-bad.example
+[31m[1mAssertionError[22m: expected { Object (origin, environment, ...) } to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "applications": {
+    "android": {
+      "appId": "com.velani.nevora.development",
+      "provider": "fcm",
+    },
+    "ios": {
+      "appId": "com.velani.nevora.development",
+      "provider": "apns-sandbox",
+    },
+  },
+  "encryptionKey": Buffer [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  ],
+  "environment": "test",
+  "origin": "https://-bad.example",
+}
+
+[36m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:101[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mmatches the shells' release DNS policy for https://bad_.example
+[31m[1mAssertionError[22m: expected { Object (origin, environment, ...) } to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "applications": {
+    "android": {
+      "appId": "com.velani.nevora.development",
+      "provider": "fcm",
+    },
+    "ios": {
+      "appId": "com.velani.nevora.development",
+      "provider": "apns-sandbox",
+    },
+  },
+  "encryptionKey": Buffer [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  ],
+  "environment": "test",
+  "origin": "https://bad_.example",
+}
+
+[36m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:101[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mmatches the shells' release DNS policy for https://nevora.123abc
+[31m[1mAssertionError[22m: expected { …(4) } to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "applications": {
+    "android": {
+      "appId": "com.velani.nevora.development",
+      "provider": "fcm",
+    },
+    "ios": {
+      "appId": "com.velani.nevora.development",
+      "provider": "apns-sandbox",
+    },
+  },
+  "encryptionKey": Buffer [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  ],
+  "environment": "test",
+  "origin": "https://nevora.123abc",
+}
+
+[36m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:101[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/lib/native-push/config.test.ts[2m > [22mmatches the shells' release DNS policy for https://127.nevora.example
+[31m[1mAssertionError[22m: expected { …(4) } to be null[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+{
+  "applications": {
+    "android": {
+      "appId": "com.velani.nevora.development",
+      "provider": "fcm",
+    },
+    "ios": {
+      "appId": "com.velani.nevora.development",
+      "provider": "apns-sandbox",
+    },
+  },
+  "encryptionKey": Buffer [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+  ],
+  "environment": "test",
+  "origin": "https://127.nevora.example",
+}
+
+[36m [2m❯[22m src/lib/native-push/config.test.ts:[2m33:101[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m21 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 05:33:35
+[2m   Duration [22m 80ms[2m (tests 49%, transform 32%, import 15%, worker 5%)[22m
+

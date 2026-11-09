@@ -1,7 +1,7 @@
 import { assertPilotLedger, validatePilot, PILOT, type OwnerAdvisorPilot } from './owner-advisor-pilot.mjs';
 import { createECDH,createHash, randomUUID } from 'node:crypto';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
-import { constants, cpSync, createWriteStream } from 'node:fs';
+import { constants, cpSync, createWriteStream, realpathSync } from 'node:fs';
 import { access, copyFile, lstat, mkdir, mkdtemp, readFile, readdir, realpath, rm, statfs, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:net';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
@@ -16,7 +16,7 @@ const applicationInput = (name: string) => ['src/', 'public/'].some(prefix => na
 export function copyOwnedDependencies(source: string, mirror: string): void {
   // An external cp can be observed between fork and exec as the parent's Node
   // argv. Copy in-process instead of relaxing the supervisor's identity fence.
-  cpSync(join(source, 'node_modules'), join(mirror, 'node_modules'), {
+  cpSync(realpathSync(join(source, 'node_modules')), join(mirror, 'node_modules'), {
     recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE,
   });
 }

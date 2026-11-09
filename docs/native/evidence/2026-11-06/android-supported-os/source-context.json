@@ -1,0 +1,14 @@
+{
+  "candidate": "3e22d98b61dab82f33b64b6f1b553d2b16b097fb",
+  "fetchedDevelopment": "e9c3a66da330959738100884f87cb76fd2af8296",
+  "inventoryExitCode": 1,
+  "inventoryOutput": "\n> fuel-scheduler@0.1.0 check:development-sources\n> node scripts/development-source-inventory.mjs\n\nBranch advanced: claude-codex-collab-nevora\nRemote branch ceiling exceeded: 4 > 3\n",
+  "remoteHeads": [
+    "origin 7ffd013e39a9763a0655aa092b159dea4cbbfb50",
+    "origin/claude-codex-collab-nevora cb53bb42ed6de75c1e5f52a905b208ee921aaa3a",
+    "origin/claude/youthful-mendel-9mg8hu 28c98b79aca42f5796bb68a4984cab6dbc38bc30",
+    "origin/development e9c3a66da330959738100884f87cb76fd2af8296",
+    "origin/main 7ffd013e39a9763a0655aa092b159dea4cbbfb50"
+  ],
+  "clean": true
+}

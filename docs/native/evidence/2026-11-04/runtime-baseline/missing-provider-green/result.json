@@ -1,0 +1,13 @@
+{
+  "qualification": "diagnostic-missing-provider",
+  "serial": "emulator-5560",
+  "evidence": "/var/folders/4b/9tfty_tx1vdg9pg02qrgnr2r0000gn/T/nevora-missing-webview-ysa324a6",
+  "passed": true,
+  "sourceHash": "002412b0b81cf6870c662f6f295c8a06c4f24ead502f12d6d6d57b1c0513e245",
+  "owner": "4eb81f91d6814af18259a40d435c5b5d",
+  "enabledStateBefore": "User 0: ceDataInode=123164 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false",
+  "sourceVerified": true,
+  "providerAbsentBeforeAfter": true,
+  "enabledStateAfter": "User 0: ceDataInode=123164 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false",
+  "providerStateRestored": true
+}

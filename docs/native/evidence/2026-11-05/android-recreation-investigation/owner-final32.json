@@ -1,0 +1,28 @@
+{
+  "name": "NevoraAXFinal32_e33cd13a",
+  "serial": "emulator-5574",
+  "pid": 849,
+  "started": 1793931309.8867881,
+  "command": [
+    "/Users/josek0514/Library/Android/sdk/emulator/emulator",
+    "-avd",
+    "NevoraAXFinal32_e33cd13a",
+    "-port",
+    "5574",
+    "-no-snapshot",
+    "-no-boot-anim",
+    "-no-window",
+    "-no-audio"
+  ],
+  "image": "system-images;android-32;google_apis;arm64-v8a",
+  "avdHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/avds",
+  "userHome": "/Users/josek0514/.codex/native-runtime/nevora-android-axfix-20261105-6a31fbbd/android-user",
+  "configSha256": "1c9e5c6dc5d253e5aa08dea74f69661d8a92a3debadcb6ed1de6abf0bb3f3da8",
+  "dataPartition": "4G",
+  "setupNote": "Initial port5572/5573 bind remained unavailable after prior device closure; no other process was stopped. Fresh unused5574/5575 selected before launch.",
+  "processIdentity": "Thu Nov  5 22:15:09 2026     /Users/josek0514/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd NevoraAXFinal32_e33cd13a -port 5574 -no-snapshot -no-boot-anim -no-window -no-audio",
+  "stopped": true,
+  "serialAbsent": true,
+  "stoppedAt": 1793933096.0965,
+  "disposableAvdRemoved": true
+}

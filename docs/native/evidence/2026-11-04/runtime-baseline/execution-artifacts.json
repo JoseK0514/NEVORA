@@ -1,0 +1,27 @@
+[
+  {
+    "artifact": "verify-core.py.gz",
+    "rawSha256": "e9e64ce28bd89bc86456c48a33ca575004c1703776f05b1fd978f9303682fd6a",
+    "rawBytes": 1816
+  },
+  {
+    "artifact": "verify-qualification.py.gz",
+    "rawSha256": "122961febe214c7c59a8095cd6480e920158dacc2648c516c0a6dcdc8ffba9ab",
+    "rawBytes": 3547
+  },
+  {
+    "artifact": "test-missing-provider.py.gz",
+    "rawSha256": "a3a3971a151182772253b13d82bd2bfb83ff8451532e974ec0b91b69a03783d4",
+    "rawBytes": 5592
+  },
+  {
+    "artifact": "task-1-tests.log.gz",
+    "rawSha256": "143fd94eb4dc71a78bdfc0d5795dadbbe96abe346e1cf071aec4c527173a2685",
+    "rawBytes": 782
+  },
+  {
+    "artifact": "task-2-tests.log.gz",
+    "rawSha256": "099a5b20e9bb8a91f0152521565a9256b5b6597973119ba4b412c7fec933b713",
+    "rawBytes": 316
+  }
+]

@@ -1,0 +1,178 @@
+Activity Resolver Table:
+  Schemes:
+      https:
+        4d70480 com.velani.nevora.development/.PortalActivity filter 1c1eefe
+          Action: "android.intent.action.VIEW"
+          Category: "android.intent.category.DEFAULT"
+          Category: "android.intent.category.BROWSABLE"
+          Scheme: "https"
+          Authority: "unconfigured.invalid": -1
+          AutoVerify=true
+
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        4d70480 com.velani.nevora.development/.PortalActivity filter dec1ab9
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        2aaa975 com.velani.nevora.development/androidx.profileinstaller.ProfileInstallReceiver filter c40e398
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        2aaa975 com.velani.nevora.development/androidx.profileinstaller.ProfileInstallReceiver filter 7c9fd0a
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      com.google.android.c2dm.intent.RECEIVE:
+        cd8565f com.velani.nevora.development/com.google.firebase.iid.FirebaseInstanceIdReceiver filter ee7e8ac
+          Action: "com.google.android.c2dm.intent.RECEIVE"
+      androidx.profileinstaller.action.SKIP_FILE:
+        2aaa975 com.velani.nevora.development/androidx.profileinstaller.ProfileInstallReceiver filter bd5f97b
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        2aaa975 com.velani.nevora.development/androidx.profileinstaller.ProfileInstallReceiver filter c8967f1
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+
+Service Resolver Table:
+  Non-Data Actions:
+      com.google.firebase.MESSAGING_EVENT:
+        992dfd6 com.velani.nevora.development/.NativeMessagingService filter 940b257
+          Action: "com.google.firebase.MESSAGING_EVENT"
+        d2ca144 com.velani.nevora.development/com.google.firebase.messaging.FirebaseMessagingService filter 3bb922d
+          Action: "com.google.firebase.MESSAGING_EVENT"
+          mPriority=-500, mOrder=0, mHasStaticPartialTypes=false, mHasDynamicPartialTypes=false
+
+Domain verification status:
+  com.velani.nevora.development:
+    ID: dde381c4-2319-4425-8781-dcfa0d09b144
+    Signatures: [6E:70:C9:5C:1F:E1:CF:5D:11:4D:42:64:9D:26:9B:FE:C1:46:99:06:D4:0E:1A:88:64:F3:C6:BB:FE:C8:3A:D1]
+    Domain verification state:
+      unconfigured.invalid: none
+    User all:
+      Verification link handling allowed: true
+      Selection state:
+        Disabled:
+          unconfigured.invalid
+
+Permissions:
+  Permission [com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (1e2f1dd):
+    sourcePackage=com.velani.nevora.development
+    uid=10213 gids=[] type=0 prot=signature
+    perm=PermissionInfo{1408152 com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+    flags=0x0
+
+Registered ContentProviders:
+  com.velani.nevora.development/androidx.startup.InitializationProvider:
+    Provider{74a3c23 com.velani.nevora.development/androidx.startup.InitializationProvider}
+
+ContentProvider Authorities:
+  [com.velani.nevora.development.androidx-startup]:
+    Provider{74a3c23 com.velani.nevora.development/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{e47c34c com.velani.nevora.development}
+
+Key Set Manager:
+  [com.velani.nevora.development]
+      Signing KeySets: 61
+
+Packages:
+  Package [com.velani.nevora.development] (f47e302):
+    appId=10213
+    pkg=Package{e527413 com.velani.nevora.development}
+    codePath=/data/app/~~ppXMhK5LaH9qHa4x8YmTGQ==/com.velani.nevora.development-Lick65FA_mzJV0c2HqEo5A==
+    resourcePath=/data/app/~~ppXMhK5LaH9qHa4x8YmTGQ==/com.velani.nevora.development-Lick65FA_mzJV0c2HqEo5A==
+    legacyNativeLibraryDir=/data/app/~~ppXMhK5LaH9qHa4x8YmTGQ==/com.velani.nevora.development-Lick65FA_mzJV0c2HqEo5A==/lib
+    extractNativeLibs=false
+    primaryCpuAbi=arm64-v8a
+    secondaryCpuAbi=null
+    cpuAbiOverride=null
+    versionCode=1 minSdk=26 targetSdk=36
+    minExtensionVersions=[]
+    versionName=0.1.0
+    hiddenApiEnforcementPolicy=2
+    usesNonSdkApi=false
+    splits=[base]
+    apkSigningVersion=2
+    flags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE HAS_DOMAIN_URLS PARTIALLY_DIRECT_BOOT_AWARE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    pageSizeCompat=0
+    queriesIntents=[Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] }]
+    scannedAsStoppedSystemApp=false
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    timeStamp=2026-11-04 16:39:56
+    lastUpdateTime=2026-11-04 16:39:56
+    installerPackageName=null
+    installerPackageUid=-1
+    initiatingPackageName=com.android.shell
+    originatingPackageName=null
+    packageSource=1
+    appMetadataFilePath=null
+    appMetadataSource=0
+    signatures=PackageSignatures{22b6650 version:2, signatures:[bdb7340f], past signatures:[]}
+    installPermissionsFixed=false
+    pkgFlags=[ DEBUGGABLE HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privatePkgFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE HAS_DOMAIN_URLS PARTIALLY_DIRECT_BOOT_AWARE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    apexModuleName=null
+    declared permissions:
+      com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature
+    requested permissions:
+      android.permission.POST_NOTIFICATIONS
+      com.google.android.c2dm.permission.RECEIVE
+      com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.WAKE_LOCK
+    install permissions:
+      com.google.android.c2dm.permission.RECEIVE: granted=true
+      com.velani.nevora.development.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.WAKE_LOCK: granted=true
+    User 0: ceDataInode=566894 deDataInode=401922 installed=true hidden=false suspended=false distractionFlags=0 stopped=true notLaunched=true enabled=0 instant=false virtual=false quarantined=false
+      installReason=0
+      dataDir=/data/user/0/com.velani.nevora.development
+      firstInstallTime=2026-11-04 16:39:56
+      uninstallReason=0
+      overlay paths:
+        /product/overlay/EmulationPixel7/EmulationPixel7Overlay.apk
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+      legacy overlay paths:
+        /product/overlay/EmulationPixel7/EmulationPixel7Overlay.apk
+        /product/overlay/NavigationBarModeGestural/NavigationBarModeGesturalOverlay.apk
+      gids=[3003]
+      runtime permissions:
+        android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+
+Queries:
+  system apps queryable: false
+  queries via forceQueryable:
+  queries via package name:
+    com.velani.nevora.development:
+      com.velani.nevora.development.test
+    com.velani.nevora.development.test:
+      com.velani.nevora.development
+  queries via component:
+    com.google.android.settings.intelligence:
+      com.velani.nevora.development
+    com.google.android.as:
+      com.velani.nevora.development
+    com.google.android.apps.messaging:
+      com.velani.nevora.development
+    com.google.android.apps.accessibility.voiceaccess:
+      com.velani.nevora.development
+    com.velani.nevora.development:
+      com.google.android.apps.restore
+      com.google.android.apps.nexuslauncher
+  queryable via interaction:
+    User 0:
+  queryable via uses-library:
+
+Dexopt state:
+  [com.velani.nevora.development]
+    path: /data/app/~~ppXMhK5LaH9qHa4x8YmTGQ==/com.velani.nevora.development-Lick65FA_mzJV0c2HqEo5A==/base.apk
+      arm64: [status=run-from-apk] [reason=unknown] [primary-abi]
+        [location is error]
+
+Compiler stats:
+  [com.velani.nevora.development]
+    (No recorded stats)

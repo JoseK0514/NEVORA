@@ -1,0 +1,315 @@
+{
+  "testedCodeCommit": "cf4fff066f3bba83c83a0a034786f544db3cb936",
+  "scope": "Local native development synchronization; no hosted/device/store certification",
+  "sourceCustody": {
+    "nativeCheckpoint": "1ea6e798c522ddcff96d6f315a9feb77d96b0500",
+    "development": "e9c3a66da330959738100884f87cb76fd2af8296",
+    "mergeBase": "1e6f35ab9731234fc765aa18ee817cb196459e2e",
+    "activeNativeFilesUnchanged": 96,
+    "prototypeFilesPreserved": 81,
+    "developmentChangedFilesOutsideNativePreserved": 199,
+    "intentionalIntegrationFiles": [
+      ".github/workflows/native-spike.yml",
+      "src/components/app-shell.tsx"
+    ],
+    "nativeAndDevelopmentShellFeaturesPresent": true,
+    "prototypeCiPathsVerified": true,
+    "prototypeReadmePathFixes": [
+      "Build instructions select native/capacitor-spike",
+      "Evidence link resolves ../../docs/product/specs/capacitor-spike"
+    ],
+    "finalPrototypeBytesVerified": true
+  },
+  "checks": [
+    {
+      "label": "root-unit",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 154.64,
+      "logSha256": "169625cf376a4e8c153f8c3c7959717c7dae8241a80d0b526c62cb8c6a8aea6b"
+    },
+    {
+      "label": "typecheck",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 61.29,
+      "logSha256": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec"
+    },
+    {
+      "label": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 64.34,
+      "logSha256": "45dd42c28bc5a51b907c86db4ed50cb3e1379f11c10454748a96d2528f6bb7c7"
+    },
+    {
+      "label": "swift",
+      "command": [
+        "swift",
+        "test",
+        "--package-path",
+        "native/ios",
+        "--scratch-path",
+        "/Users/josek0514/.codex/native-runtime/nevora-development-sync-20261105/swift-build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 18.64,
+      "logSha256": "414a75f914597f16337b98dd0b142d863c1f950595ccabd74520da0b0706f9f4"
+    },
+    {
+      "label": "android",
+      "command": [
+        "native/android/gradlew",
+        "-p",
+        "native/android",
+        "--no-daemon",
+        "--project-cache-dir",
+        "/Users/josek0514/.codex/native-runtime/nevora-development-sync-20261105/gradle-cache",
+        "-PnevoraBuildDirectory=/Users/josek0514/.codex/native-runtime/nevora-development-sync-20261105/android-build",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        ":app:assembleDebugAndroidTest",
+        ":app:assembleRelease",
+        ":app:lint"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 45.75,
+      "logSha256": "00431ca9b878adc3ab1e9904c7f993e7066fc30085f2d01887a03ccfe03822e7"
+    },
+    {
+      "label": "ios-release",
+      "command": [
+        "xcodebuild",
+        "-project",
+        "native/ios/NEVORA.xcodeproj",
+        "-scheme",
+        "NEVORA",
+        "-configuration",
+        "Release",
+        "-sdk",
+        "iphonesimulator",
+        "-destination",
+        "generic/platform=iOS Simulator",
+        "-derivedDataPath",
+        "/Users/josek0514/.codex/native-runtime/nevora-development-sync-20261105/ios-release",
+        "CODE_SIGNING_ALLOWED=NO",
+        "build"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 15.54,
+      "logSha256": "1e1df6d76435dd37b5d67b689ea14220e66b7164a318e8c151f43dbbcc1aef99"
+    },
+    {
+      "label": "python-native",
+      "command": [
+        "python3",
+        "-"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.97,
+      "logSha256": "4a27c8068bf312b4b989293c389ec5ca3c81e3a725803bd6696848c882c2076a"
+    },
+    {
+      "label": "node-native-final",
+      "command": [
+        "node",
+        "--test",
+        "scripts/native-build.check.mjs",
+        "scripts/native-owned.check.mjs",
+        "scripts/native-owned-concurrency.check.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.2,
+      "logSha256": "1371019a5123ee22a971c51c1812ce4fc595be640d1d26f3b606dde8c79ee0d0"
+    },
+    {
+      "label": "prototype-policy",
+      "command": [
+        "node",
+        "--experimental-strip-types",
+        "--test",
+        "native/capacitor-spike/tests/config.test.mjs",
+        "native/capacitor-spike/tests/fixture-navigation.test.mjs",
+        "native/capacitor-spike/android/tests/back-policy.test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.26,
+      "logSha256": "16fe011e9f653506b3533454c0612b6aea99dac15c758134efcc94790fde8f65"
+    },
+    {
+      "label": "association",
+      "command": [
+        "node",
+        "--test",
+        "native/association/prepare.check.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.35,
+      "logSha256": "1d49f6ebe50051a49ca438736d057603f022c6d7e521b999ee031be54a2ee1f1"
+    },
+    {
+      "label": "native-sql",
+      "command": [
+        "node",
+        "scripts/payroll-postgres.mjs",
+        "vitest.native-push-regressions.config.mts"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 90.03,
+      "logSha256": "9c558d60bf06550aa1b695ac89e51db7d10351cec66dfe50a0d4924d0aaf4adc"
+    },
+    {
+      "label": "full-backend-final",
+      "command": [
+        "node",
+        "scripts/native-owned.mjs",
+        "--mode",
+        "owned-local",
+        "--expected-sha",
+        "cf4fff066f3bba83c83a0a034786f544db3cb936",
+        "--platform",
+        "contract"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 39.64,
+      "logSha256": "b481aa8f662e9730480792e8b051e02b00ffdd58501eb69801e2d5a3e61075df"
+    },
+    {
+      "label": "source-gate",
+      "command": [
+        "npm",
+        "run",
+        "check:development-sources"
+      ],
+      "exitCode": 1,
+      "elapsedSeconds": 2.51,
+      "logSha256": "8884e984fdad0113f26204d9df5b3c6ebe5463fc287ea77726eea9999345b234"
+    }
+  ],
+  "counts": {
+    "rootUnitPassed": 10978,
+    "rootUnitSkipped": 801,
+    "rootFilesPassed": 723,
+    "rootFilesSkipped": 27,
+    "nativeSqlPassed": 211,
+    "nativeSqlFilesPassed": 6,
+    "swiftPassed": 29,
+    "androidJvm": {
+      "tests": 26,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "pythonPassed": 22,
+    "nodeNativePassed": 14,
+    "prototypePolicyPassed": 19,
+    "associationPassed": 17,
+    "browserBackendScenariosPassed": 17
+  },
+  "backendChecks": [
+    {
+      "name": "missing-session",
+      "status": "passed"
+    },
+    {
+      "name": "denied-selectors",
+      "status": "passed"
+    },
+    {
+      "name": "denied-origin",
+      "status": "passed"
+    },
+    {
+      "name": "denied-cross-site",
+      "status": "passed"
+    },
+    {
+      "name": "employee-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "native-renderer-policy",
+      "status": "passed"
+    },
+    {
+      "name": "employee-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "employee-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "owner-native-session",
+      "status": "passed"
+    },
+    {
+      "name": "owner-authorized-action",
+      "status": "passed"
+    },
+    {
+      "name": "actual-invitation-activation-and-login",
+      "status": "passed"
+    },
+    {
+      "name": "employee-owner-route-denied",
+      "status": "passed"
+    },
+    {
+      "name": "manager-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "lead-native-unsupported-web-preserved",
+      "status": "passed"
+    },
+    {
+      "name": "expired-session",
+      "status": "passed"
+    },
+    {
+      "name": "revoked-session",
+      "status": "passed"
+    },
+    {
+      "name": "sanitized-database-outage-and-recovery",
+      "status": "passed"
+    }
+  ],
+  "backendOwnershipClosed": true,
+  "actualPlatformUiRerun": false,
+  "sharedReleaseGate": "FAIL: Remote branch ceiling exceeded: 6 > 3",
+  "initialExecutionCorrections": [
+    {
+      "label": "node-native",
+      "cause": "Test runner selected a nonexistent PostgreSQL bin path",
+      "resolution": "Selected the existing local binary; all14 checks including actual concurrent clusters passed"
+    },
+    {
+      "label": "full-backend",
+      "cause": "Executor mistyped the expected SHA; source guard rejected it before allocation",
+      "resolution": "Read exact SHA directly from Git; all17 contract scenarios passed"
+    }
+  ],
+  "historicalWhitespace": "Unfiltered merge diff-check reports inherited whitespace in unchanged raw evidence. Novel synchronization delta is clean; historical evidence is preserved.",
+  "review": {
+    "reviewedCommit": "cf4fff066f3bba83c83a0a034786f544db3cb936",
+    "verdict": "Ready for local update; no blocking findings",
+    "minor": "Prototype README cd command corrected by executor; npm package/script metadata verified",
+    "secondReview": false
+  },
+  "pushed": false,
+  "deployed": false,
+  "uploadKeySignedReleaseOrUploaded": false
+}

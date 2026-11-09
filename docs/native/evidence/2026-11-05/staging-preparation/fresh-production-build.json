@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "17102418b80fc5ebcae2fe4890eb1dd8252ac8d3",
+  "command": [
+    "npm",
+    "run",
+    "build"
+  ],
+  "nodeVersion": "v24.19.0",
+  "cleanAllowlistedSource": true,
+  "publicRegistry": "https://registry.npmjs.org",
+  "reusedNodeModules": false,
+  "initialNpmCacheFresh": true,
+  "databaseOrProviderCredentialsSupplied": false,
+  "exitCode": 0,
+  "seconds": 23.7,
+  "deployed": false
+}

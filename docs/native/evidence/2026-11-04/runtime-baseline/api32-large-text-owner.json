@@ -1,0 +1,9 @@
+{
+  "serial": "emulator-5560",
+  "before": null,
+  "during": "2.0",
+  "restored": true,
+  "orientation": "Activity-owned landscape request only, no global rotation setting change",
+  "after": null,
+  "restorationCorrection": "First delete restored effective scale1 but Android materialized default1.0. After configuration settled, delete again restored exact original absence; verified twice. Canonical UI case passed; initial cleanup failure retained."
+}

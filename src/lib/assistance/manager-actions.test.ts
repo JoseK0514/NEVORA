@@ -3,6 +3,16 @@ import { buildManagerActionItems } from "./manager-actions";
 import { parseCoverageRepairLocator } from '../scheduling/coverage-repair';
 
 describe("buildManagerActionItems", () => {
+  it.each([
+    ['08:00', '12:00', '2026-12-31T12:00'],
+    ['22:00', '06:00', '2027-01-01T06:00'],
+    ['20:00', '24:00', '2027-01-01T00:00'],
+  ])('preserves the canonical coverage end for %s–%s', (startTime, endTime, expected) => {
+    const [item] = buildManagerActionItems({weekStart:'2026-12-28', coverageGaps:[{
+      key:'boundary',locationId:'loc-1',locationName:'Fictional',date:'2026-12-31',startTime,endTime,gap:1,
+    }],availabilityDeadlineSet:true,coverageRulesConfigured:true});
+    expect(item.endDateTime).toBe(expected);
+  });
   it("prioritizes an upcoming coverage gap ahead of missing setup", () => {
     const items = buildManagerActionItems({
       weekStart: "2026-09-28",

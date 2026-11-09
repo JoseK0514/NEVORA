@@ -1,0 +1,165 @@
+[Payroll PostgreSQL] New owned loopback cluster started; no existing databases used.
+
+[1m[30m[46m RUN [49m[39m[22m [36mv5.0.5 [39m[90m/Users/josek0514/.codex/.chatgpt-projects/g-p-6abf0d9359708191a1e72c421bc4de9d/work/nevora-native-employee-owner-20261101[39m
+
+ [31m❯[39m src/test/integration/native-push.integration.ts [2m([22m[2m10 tests[22m[2m | [22m[31m10 failed[39m[2m)[22m[33m 319[2mms[22m[39m
+[31m   [31m×[31m persists only encrypted native material and returns only owned registration state[39m[32m 11[2mms[22m[39m
+[31m   [31m×[31m refuses Manager registration and authority revoked after challenge issuance[39m[32m 16[2mms[22m[39m
+[31m   [31m×[31m rejects a substituted token, nonce or key without consuming a valid challenge[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m returns one durable generation for concurrent identical completion and retries[39m[32m 6[2mms[22m[39m
+[31m   [31m×[31m recovers an uncertain committed completion from its durable receipt[39m[32m 6[2mms[22m[39m
+[31m   [31m×[31m rotates tokens and fences old receipts and generation claims[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m allows the same physical key to rebind only through fresh account authority and generation[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m refuses cross-key token takeover by a different authenticated account[39m[32m 7[2mms[22m[39m
+[31m   [31m×[31m can detach a revoked registration using its key without recreating a session[39m[32m 6[2mms[22m[39m
+[31m   [31m×[31m cleans revoked ownership and never keeps a plaintext token after cleanup[39m[32m 6[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 10 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mpersists only encrypted native material and returns only owned registration state
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m66:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mrefuses Manager registration and authority revoked after challenge issuance
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m77:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mrejects a substituted token, nonce or key without consuming a valid challenge
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m86:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mreturns one durable generation for concurrent identical completion and retries
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m95:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mrecovers an uncertain committed completion from its durable receipt
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m103:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mrotates tokens and fences old receipts and generation claims
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m115:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mallows the same physical key to rebind only through fresh account authority and generation
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m129:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mrefuses cross-key token takeover by a different authenticated account
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m138:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mcan detach a revoked registration using its key without recreating a session
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m150:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/native-push.integration.ts[2m > [22mcleans revoked ownership and never keeps a plaintext token after cleanup
+[31m[1mAssertionError[22m: expected {} to have property "sqlNativeInstallationRepository"[39m
+[36m [2m❯[22m api src/test/integration/native-push.integration.ts:[2m12:18[22m[39m
+    [90m 10|[39m async function api() {
+    [90m 11|[39m   const result = await import('../../lib/data/native-installations').c…
+    [90m 12|[39m   expect(result).toHaveProperty('sqlNativeInstallationRepository');
+    [90m   |[39m                  [31m^[39m
+    [90m 13|[39m   return result as typeof import('../../lib/data/native-installations'…
+    [90m 14|[39m }
+[90m [2m❯[22m repo src/test/integration/native-push.integration.ts:[2m30:13[22m[39m
+[90m [2m❯[22m src/test/integration/native-push.integration.ts:[2m161:22[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[90m (10)[39m
+[2m   Start at [22m 05:15:55
+[2m   Duration [22m 432ms[2m (tests 85%, transform 8%, import 6%, worker 1%)[22m
+
+[Payroll PostgreSQL] Owned cluster stopped.
