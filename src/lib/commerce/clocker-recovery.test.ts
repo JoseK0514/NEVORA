@@ -12,7 +12,7 @@ it.each(['restricted','unavailable'])('retains the exact tablet path through a %
  enable();const path='/clocker/abcdefgh_123';
  const response=await commerceGate(path,'GET',state==='restricted'?restricted:async()=>{throw Error('offline');},new Request('https://company.example.test'+path+'?untrusted=discard',{headers:{accept:'text/html'}}));
  expect(response?.status).toBe(303);
- const target=new URL(response!.headers.get('location')!,'https://company.example.test');
+ const target=new URL(response!.headers.get('location')!);
  expect(target.origin).toBe('https://company.example.test');expect(target.pathname).toBe('/clocker/paused');
  expect(target.searchParams.get('from')).toBe(path);expect(target.searchParams.get('reason')).toBe(state==='restricted'?'subscription_required':'billing_status_unavailable');
  expect(target.searchParams.has('untrusted')).toBe(false);expect(response!.headers.get('cache-control')).toBe('no-store');

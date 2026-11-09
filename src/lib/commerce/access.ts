@@ -79,7 +79,7 @@ export async function requireOperationalCommerce() {
 export function commerceDenial(path:string,method:string,code:'subscription_required'|'billing_status_unavailable',request?:Request):Response {
   if(request&&method==='GET'&&/^\/clocker\/[A-Za-z0-9_-]{8,128}$/.test(path)&&!request.headers.get('accept')?.includes('application/json')){
     const query=new URLSearchParams({reason:code,from:path});
-    return new Response(null,{status:303,headers:{location:'/clocker/paused?'+query,'cache-control':'no-store','referrer-policy':'no-referrer'}});
+    return new Response(null,{status:303,headers:{location:new URL('/clocker/paused?'+query,request.url).href,'cache-control':'no-store','referrer-policy':'no-referrer'}});
   }
   return Response.json({error:{code}},{status:code==='subscription_required'?402:503,headers:{'cache-control':'no-store'}});
 }
