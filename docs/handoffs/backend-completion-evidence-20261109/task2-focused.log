@@ -1,0 +1,24 @@
+
+ RUN  v5.0.5 /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109
+
+ ❯ src/lib/owner-advisor/operational-insights.test.ts (6 tests | 1 failed) 6ms
+   × validates public history bounds, totals and unavailable state rather than accepting forged evidence 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/lib/owner-advisor/operational-insights.test.ts > validates public history bounds, totals and unavailable state rather than accepting forged evidence
+AssertionError: expected [Function] to throw an error
+ ❯ src/lib/owner-advisor/operational-insights.test.ts:46:360
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 26 passed (27)
+      Tests  1 failed | 255 passed (256)
+   Start at  08:47:43
+   Duration  5.00s (tests 84%, import 10%, transform 5%, worker 1%)
+
+    Isolate  27 workers spawned · ~49ms startup each (spawn + environment, per file)
+             at least ~611ms faster with isolate: false — reuses workers across files instead of one per file
+
