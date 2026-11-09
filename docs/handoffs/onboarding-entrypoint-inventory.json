@@ -961,6 +961,15 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/employee/time-off-staffing/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected read-only staffing endpoint uses the shared host-bound application SQL executor; current session/actor/view, role, workspace and scoped/own authorization remain enforced before and after source reads. The bounded selector cannot choose a workspace or database.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/internal/notifications/dispatch/route.ts",
       "tags": [
         "request-entrypoint"
@@ -1120,6 +1129,15 @@
       ],
       "status": "CONVERTED",
       "reason": "Business data uses shared scoped SQL/applicationSql; auth/device cookie transports use company/incarnation/purpose envelopes. Public presentation reads remain registered-host scoped; caches are per render, private or disabled. Existing domain authorization remains required.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/manager/time-off-staffing/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Protected read-only staffing endpoint uses the shared host-bound application SQL executor; current session/actor/view, role, workspace and scoped/own authorization remain enforced before and after source reads. The bounded selector cannot choose a workspace or database.",
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
