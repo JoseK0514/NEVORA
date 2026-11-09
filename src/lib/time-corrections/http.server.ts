@@ -7,8 +7,28 @@ export const correctionResponseHeaders = {
   'X-Content-Type-Options':'nosniff',
 } as const;
 
-export const correctionJson = (body: object, status = 200) =>
-  Response.json(body,{status,headers:correctionResponseHeaders});
+export type CorrectionFailure = 'authentication_required' | 'access_denied' | 'actor_mismatch' | 'view_invalid' |
+  'request_intent_required' | 'cross_site_request' | 'json_required' | 'origin_mismatch' |
+  'origin_unavailable' | 'invalid_request' | 'source_unavailable' | 'conflict';
+
+/** Nonsecret transport classification; existing response bodies remain compatible. */
+export const correctionJson = (body: object, status = 200, failure?: CorrectionFailure) => {
+  const codes: Partial<Record<number, CorrectionFailure>> = {400:'invalid_request',401:'authentication_required',403:'access_denied',409:'conflict',503:'source_unavailable'};
+  const code = failure ?? codes[status];
+  return Response.json(body,{status,headers:{...correctionResponseHeaders,...(code?{'X-Nevora-Failure':code}:{})}});
+};
+
+/** Only this platform-issued deployment name, never an arbitrary vercel.app host.
+ * Isolated workspaces continue to use their registry-bound domain admission. */
+function exactPreviewOrigin(request: Request): string | null {
+  if (workspaceMode() !== 'single_company' || process.env.VERCEL !== '1' || process.env.VERCEL_ENV !== 'preview') return null;
+  const hostname = process.env.VERCEL_URL;
+  if (!hostname || hostname.length > 253 || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.vercel\.app$/.test(hostname)) return null;
+  const host = request.headers.get('host') ?? new URL(request.url).host;
+  const forwardedHost = request.headers.get('x-forwarded-host'), protocol = request.headers.get('x-forwarded-proto');
+  if (host !== hostname || forwardedHost && forwardedHost !== hostname || protocol && protocol !== 'https') return null;
+  return 'https://' + hostname;
+}
 
 function allowedOrigin(request: Request): string | null {
   try{if(workspaceMode()==='isolated')return workspaceRequestOrigin(request);}catch{return null;}
@@ -46,23 +66,34 @@ function allowedOrigin(request: Request): string | null {
  * Writes require the allowed origin and JSON; reads still reject cross-site
  * metadata, missing intent markers and query parameters.
  */
-export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction',maxBytes=8192): 400 | 403 | 503 | null {
+function admissionFailure(request: Request, write: boolean, header: string, maxBytes: number): {status:400|403|503;code:CorrectionFailure} | null {
   const fetchSite=request.headers.get('sec-fetch-site');
-  if((fetchSite&&fetchSite!=='same-origin')||
-      request.headers.get(header)!=='1') return 403;
-  if(new URL(request.url).search) return 400;
+  if(fetchSite&&fetchSite!=='same-origin') return {status:403,code:'cross_site_request'};
+  if(request.headers.get(header)!=='1') return {status:403,code:'request_intent_required'};
+  if(new URL(request.url).search) return {status:400,code:'invalid_request'};
   if(!write) return null;
 
   const contentType=request.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
-  if(contentType!=='application/json') return 403;
+  if(contentType!=='application/json') return {status:403,code:'json_required'};
 
   const expected=allowedOrigin(request);
-  if(!expected) return 503;
-  if(request.headers.get('origin')!==expected) return 403;
+  if(!expected) return {status:503,code:'origin_unavailable'};
+  const origin = request.headers.get('origin');
+  const preview = exactPreviewOrigin(request);
+  if(origin!==expected && (!preview || origin!==preview)) return {status:403,code:'origin_mismatch'};
 
   const length=request.headers.get('content-length');
-  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>maxBytes)) return 400;
+  if(length!==null&&(!/^\d+$/.test(length)||Number(length)>maxBytes)) return {status:400,code:'invalid_request'};
   return null;
+}
+
+export function correctionBoundary(request: Request, write: boolean, header='x-nevora-time-correction',maxBytes=8192): 400 | 403 | 503 | null {
+  return admissionFailure(request,write,header,maxBytes)?.status ?? null;
+}
+
+export function correctionBoundaryResponse(request: Request, write: boolean, header='x-nevora-time-correction',maxBytes=8192,body:object={state:'unavailable'}): Response | null {
+  const failure=admissionFailure(request,write,header,maxBytes);
+  return failure?correctionJson(body,failure.status,failure.code):null;
 }
 
 /** Enforce the limit while streaming actual UTF-8 bytes, even when Content-Length was absent or inaccurate. */

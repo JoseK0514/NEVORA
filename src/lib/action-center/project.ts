@@ -3,7 +3,7 @@ import type {ManagerActionItem} from '../assistance/manager-actions';
 import type {AttendanceDisplayReview} from '../attendance/read-model';
 import type {ManagerTimeCorrections} from '../time-corrections/read-model';
 import type {TimecardsResult} from '../timecards/read-model';
-export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['type']|'ATTENDANCE'|'TIME_CORRECTION'|'TIMECARD';category:'scheduling'|'requests'|'timekeeping';request?:import('../data/action-request-facts.server').ActionRequestFacts};
+export type ActionItem=Omit<ManagerActionItem,'type'>&{type:ManagerActionItem['type']|'ATTENDANCE'|'TIME_CORRECTION'|'TIMECARD';category:'scheduling'|'requests'|'timekeeping';request?:import('../data/action-request-facts.server').ActionRequestFacts;purpose?:'STAFFING_REPAIR';ownerEmployeeId?:string|null};
 export type ActionCenter={state:'ready';observedAt:string;validForMs:number;weekStart:string;items:ActionItem[];counts:{total:number;scheduling:number;requests:number;timekeeping:number};limitedAttendance:boolean}|{state:'unavailable';reason:'access_denied'|'read_failed'};
 function validateRequestFacts(value:NonNullable<ActionItem['request']>) {
  const date=(v:unknown):v is string=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)&&Number.isFinite(Date.parse(v))&&new Date(v).toISOString().slice(0,10)===v;

@@ -5,7 +5,7 @@ import {
   reviewManagerTimeCorrection,
 } from '@/lib/data/time-corrections';
 import {
-  correctionBoundary,
+  correctionBoundaryResponse,
   correctionJson,
   readCorrectionJson,
 } from '@/lib/time-corrections/http.server';
@@ -15,8 +15,8 @@ export const runtime='nodejs';
 export const dynamic='force-dynamic';
 
 export async function GET(request: Request): Promise<Response> {
-  const boundary=correctionBoundary(request,false);
-  if (boundary) return correctionJson({state:'unavailable'},boundary);
+  const boundary=correctionBoundaryResponse(request,false);
+  if(boundary)return boundary;
   try {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
@@ -33,14 +33,14 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 export async function POST(request: Request): Promise<Response> {
-  const boundary=correctionBoundary(request,true);
-  if (boundary) return correctionJson({state:'unavailable'},boundary);
+  const boundary=correctionBoundaryResponse(request,true);
+  if(boundary)return boundary;
   try {
     const session=await getSession();
     if (!session) return correctionJson({state:'unavailable'},401);
     if(request.headers.get('x-nevora-actor')&&request.headers.get('x-nevora-actor')!==session.id)return correctionJson({state:'unavailable'},403);
     if (session.role!=='OWNER' && session.role!=='MANAGER') return correctionJson({state:'unavailable'},403);
-    if(!await matchesCorrectionAuthority(request.headers.get('x-nevora-correction-authority')))return correctionJson({state:'unavailable'},403);
+    if(!await matchesCorrectionAuthority(request.headers.get('x-nevora-correction-authority')))return correctionJson({state:'unavailable'},403,'view_invalid');
     let command;
     try {
       command=parseCorrectionReviewCommand(await readCorrectionJson(request));

@@ -6,7 +6,7 @@ import {ALL_MODULES_ON} from '../workspace-presentation/modules';
 import type {SessionMutationProof} from '../shift-changes/types';
 import type {SqlExecutor} from '../notifications/types';
 
-const readers=vi.hoisted(()=>({attendance:vi.fn(),corrections:vi.fn(),cards:vi.fn(),presentation:vi.fn()}));
+const readers=vi.hoisted(()=>({attendance:vi.fn(),corrections:vi.fn(),cards:vi.fn(),presentation:vi.fn(),staffing:vi.fn()}));
 // Canonical reader I/O is replaced only to control source lifetimes/failures.
 // Real company/session/SQL behavior is exercised by the owned D7 integration suite.
 vi.mock('../company-access/company-result.server',()=>({readCompanyResult:async(_proof:unknown,load:()=>Promise<unknown>)=>load()}));
@@ -14,6 +14,7 @@ vi.mock('../data/workspaces',()=>({getWorkspace:async()=>({id:'workspace-test',t
 vi.mock('../data/attendance-review.server',()=>({readAttendanceReview:readers.attendance}));
 vi.mock('../data/time-corrections.server',()=>({readManagerTimeCorrections:readers.corrections}));
 vi.mock('../timecards/service',()=>({readTimecards:readers.cards}));
+vi.mock('../time-off-staffing/service.server',()=>({readLeaveStaffing:readers.staffing}));
 vi.mock('../workspace-presentation/service',()=>({readActivePresentation:readers.presentation}));
 vi.mock('../data/action-request-facts.server',()=>({withActionRequestFacts:async(_proof:unknown,_workspace:unknown,items:unknown)=>items}));
 import {readActionCenter} from './service';
@@ -35,6 +36,7 @@ beforeEach(()=>{
   vi.spyOn(performance,'now').mockReturnValue(0);
   readers.attendance.mockResolvedValue(attendance);readers.corrections.mockResolvedValue(corrections);
   readers.presentation.mockResolvedValue({modules:ALL_MODULES_ON});
+  readers.staffing.mockResolvedValue({state:'ready',validForMs:45000,items:[]});
   readers.cards.mockImplementation(async(_proof,period)=>period.startDate==='2026-09-14'?previous():current());
 });
 afterEach(()=>vi.restoreAllMocks());
@@ -55,4 +57,24 @@ it('does not return source rows after the shorter previous-week budget expires d
 it('preserves a previous-week reader rejection as unavailable without private diagnostics',async()=>{
   readers.cards.mockImplementation(async(_proof,period)=>{if(period.startDate==='2026-09-14')throw Error('private source detail');return current();});
   expect(await read()).toEqual({state:'unavailable',reason:'read_failed'});
+});
+
+it('counts an approved-leave staffing repair as assigned scheduling work, not another pending request',async()=>{
+  readers.staffing.mockResolvedValue({state:'ready',validForMs:45000,items:[{id:'LEAVE_STAFFING:request:shift',state:'repair_required',employeeId:'worker',employeeName:'Fictional Worker',requestId:'request',ownerEmployeeId:'reviewer',shiftId:'shift',locationId:'loc-1',locationName:'West',date:'2026-09-22',startTime:'08:00',endTime:'12:00',publicationId:'p1',revisionNumber:1,overlapMinutes:240}]});
+  const result=await read();
+  expect(result.state==='ready'&&result.counts).toEqual({total:1,scheduling:1,requests:0,timekeeping:0});
+  expect(result.state==='ready'&&result.items[0]).toMatchObject({id:'LEAVE_STAFFING:request:shift',type:'TIME_OFF',purpose:'STAFFING_REPAIR',priority:'URGENT',ownerEmployeeId:'reviewer'});
+});
+it('does not report all clear when staffing repair evidence cannot be read',async()=>{
+  readers.staffing.mockResolvedValue({state:'unavailable',reason:'read_failed'});
+  expect(await read()).toEqual({state:'unavailable',reason:'read_failed'});
+});
+it('spends the shorter staffing-source observation lifetime',async()=>{
+  readers.staffing.mockResolvedValue({state:'ready',validForMs:400,items:[]});
+  const result=await read();expect(result.state==='ready'&&result.validForMs).toBe(400);
+});
+it('fails closed when combined scheduling and repair sources exceed the bounded aggregate',async()=>{
+  readers.staffing.mockResolvedValue({state:'ready',validForMs:45000,items:Array.from({length:1000},(_,index)=>({id:`LEAVE_STAFFING:${index}:shift`,state:'repair_required',employeeId:'worker',employeeName:'Fictional',ownerEmployeeId:'reviewer',locationId:'loc-1',locationName:'West',date:'2026-09-22',startTime:'08:00',endTime:'12:00'}))});
+  const result=await readActionCenter(proof,week,executor,async()=>[{id:'setup',type:'TARGET_MISSING',priority:'MISSING_INPUT',title:'Set target',detail:'Missing target',href:'/app/employees'}]);
+  expect(result).toEqual({state:'unavailable',reason:'read_failed'});
 });

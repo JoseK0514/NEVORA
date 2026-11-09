@@ -1,4 +1,5 @@
 import type { Position, Workspace } from "../domain";
+import {summarizeCoverageMinutes} from './coverage-minutes';
 import { employeeCanWorkPosition, employeeCanWorkLocation } from "./capabilities";
 import { weekStartFor } from "../date-utils";
 import { minutesInWorkweek, businessDateStart, isLeadCapable, periodsOverlap, shiftPeriod, splitBusinessDays } from "./periods";
@@ -364,6 +365,7 @@ export function calculateScheduleHealth({
       uncoveredBlocks,
       missingLeadBlocks,
       fullyCovered: !setupIssues.some(issue => issue.locationId === location.id) && blocks.length > 0 && uncoveredBlocks === 0,
+      coverageMinutes: summarizeCoverageMinutes(blocks,!setupIssues.some(issue=>issue.locationId===location.id)),
     };
   });
 
@@ -451,6 +453,7 @@ export function calculateScheduleHealth({
     workweekStart,
     coverageBlocks,
     coverageSummary,
+    coverageMinutes: summarizeCoverageMinutes(coverageBlocks,setupIssues.length===0),
     locationCoverage,
     hourBalances,
     underTargetCount: hourBalances.filter((item) => item.status === "UNDER")
