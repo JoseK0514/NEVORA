@@ -1,5 +1,10 @@
 # NEVORA mobile design context
 
+> **Superseded (November 8, 2026).** Every surface now uses **Direction B** (teal band, white 22px cards on #F2F5F4,
+> Inter, Phosphor bold icons, pills, light only). The current rules are in `DESIGN.MD` ("Current direction" table and
+> the Direction B sections) and the approved mocks in `docs/product/direction-b/`. The notes below are history from
+> October 2026 (deep-blue masthead, mobile-workforce tokens) and must not be used for new work.
+
 Authoritative tokens: src/app/mobile-workforce.css and src/components/manager-home-mobile.css. Authoritative decisions: DESIGN.MD and .21st/design.json.
 
 ## Remaining mobile workforce pages (2026-10-13)

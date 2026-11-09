@@ -1,9 +1,9 @@
 ---
 version: "nevora-signature-2026-10-20"
 name: "NEVORA Workforce portal"
-description: "Workforce scheduling, time and pay app. Current direction (October 20, 2026): the employee app, sign-in/activation and the Clocker use Signature (deep band #0D3634, soft-white sheet #F7F6F3, system font today, Phosphor regular icons), specified in docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md and tokenised in src/components/signature/tokens.css. Manager and Owner use the clean-manager v3 design (docs/product/specs/clean-manager/spec.md). The Gusto portal tokens below remain the base layer and the B1 brand default. The body of this file records each approved refinement; older sections are history."
+description: "Workforce scheduling, time and pay app. Current direction (November 8, 2026): Direction B for every surface: Owner, Manager, Employee and Lead on phones, tablets (768-1023, small desktop with the icon rail) and desktop; sign-in, recovery, activation, policy, 404 and public error pages; and the Clocker kiosk. Inter, teal #0B6E69 with the teal band, canvas #F2F5F4, white 22px cards, pills, Phosphor bold icons, light only. See the Current direction table below and the Direction B sections (approved mocks in docs/product/direction-b/). The Signature and clean-manager v3 tokens below are retained as the base layer and history; where they disagree with Direction B, Direction B wins."
 colors:
-  # Signature (CURRENT for the employee app, sign-in/activation and the Clocker). Full roles in SIGNATURE-SPEC.md section 3.
+  # Signature (superseded by Direction B, Nov 2026; tokens kept as the base layer). Full roles in SIGNATURE-SPEC.md section 3.
   sig-page: "#F7F6F3"
   sig-card: "#FFFFFF"
   sig-ink-1: "#161C1B"
@@ -353,19 +353,35 @@ components:
     textColor: "{colors.login-blue-hover}"
 ---
 
-# Current direction (October 20, 2026)
+# Current direction (November 8, 2026)
 
 Read this first. The rest of the file is a dated history of approved refinements; where an older section disagrees with
 this one, this one wins.
 
 | Surface | Current design | Source of truth |
 |---|---|---|
-| Employee app (Employee and Lead, `data-nv-e5`) | **Signature**, approved by Jose on October 20, 2026 | [SIGNATURE-SPEC.md](docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md) |
-| Sign-in, forgot access, reset access, account activation (`.ap`) | **Signature** (the E4 sign-in carried forward, then restyled in phase 4 and activation v3) | SIGNATURE-SPEC.md; E4 base in [auth-premium/SPEC.md](docs/product/specs/auth-premium/SPEC.md) |
-| Clocker tablet and PIN setup | **Signature** (approved c4 boards) | SIGNATURE-SPEC.md |
-| Manager and Owner (`data-nv-clean`) | **Clean manager v3** (Wave A v3 light mockups, approved October 19) | [clean-manager/spec.md](docs/product/specs/clean-manager/spec.md), `src/app/app/premium-clean-manager.css` |
+| Owner and Manager, phones and desktop | **Direction B** (approved Nov 5–6, 2026) | "Owner and Manager phones: Direction B" and "Owner and Manager desktop: Direction B" below; mocks 1–2 in [docs/product/direction-b](docs/product/direction-b/README.md) |
+| Employee and Lead, phones and desktop | **Direction B** (approved Nov 6 and Nov 8, 2026) | "Employee phones: Direction B" and "Direction B for the remaining surfaces" below; mocks 3–5 |
+| Tablets 768–1023, every role | **Direction B, Option B "small desktop"** with the icon rail | "Direction B for the remaining surfaces"; mock 6 |
+| Sign-in, recovery, activation, Mobile Access, policy pages, 404, public error page | **Direction B** (teal band, lifted card; desktop brand panel) | "Direction B for the remaining surfaces"; mock 7 |
+| Clocker kiosk | **Direction B**, the only kiosk look (Signature and `NEVORA_CLOCKER_UI_V2` retired) | "Clocker Direction B" below; mock 8 |
 
-Signature in one paragraph: a deep band (`#0D3634`) with the NEVORA Λ mark and grain carries each page's key fact in
+Direction B in one paragraph: a teal band (`#0C726C` to `#08504C`) carries the page title and its key figures in glass
+tiles; white cards (22px radius, soft layered shadow) sit on the `#F2F5F4` canvas, overlapping the band's lower edge.
+Inter throughout, ink `#111517`, grey `#6A7176`, Phosphor bold icons in tinted circles, pills for actions and chips,
+48px+ targets, light only. Status colours: red stops you, amber means wait or check, green is done, teal is information.
+The screenshot harness for checking it is in `tools/ui-scan/`.
+
+## Previous direction (October 20, 2026; superseded)
+
+| Surface | Design then | Source |
+|---|---|---|
+| Employee app (Employee and Lead, `data-nv-e5`) | Signature, approved October 20, 2026 | [SIGNATURE-SPEC.md](docs/product/specs/employee-style/signature/SIGNATURE-SPEC.md) |
+| Sign-in, forgot access, reset access, account activation (`.ap`) | Signature (E4 sign-in carried forward) | SIGNATURE-SPEC.md; [auth-premium/SPEC.md](docs/product/specs/auth-premium/SPEC.md) |
+| Clocker tablet and PIN setup | Signature (approved c4 boards) | SIGNATURE-SPEC.md |
+| Manager and Owner (`data-nv-clean`) | Clean manager v3 (approved October 19) | [clean-manager/spec.md](docs/product/specs/clean-manager/spec.md) |
+
+Signature in one paragraph (history): a deep band (`#0D3634`) with the NEVORA Λ mark and grain carries each page's key fact in
 large light type; a soft-white sheet (`#F7F6F3`) rises over it with 28px top corners and holds white cards (22px
 radius). One message per card, no glass, Phosphor regular icons (fill only for the active tab), no illustration on Home.
 Shared values are in `src/components/signature/tokens.css` (`--sig-*`). Pages read those tokens and never declare their
