@@ -1,5 +1,7 @@
 # Rondo provider diagnostics and challenge readiness
 
+Follow-up: the separately budgeted [live replay](2026-11-09-rondo-live-replay.md) subsequently answered all three original failure cases safely and completed eleven Owner model scenarios. Two Owner scenarios remain unscored at the new cap. The results below describe the earlier local-readiness checkpoint.
+
 November 9, 2026. Local follow-up over `537e4eb8454f0a0f072b4ef013e950054d15ee7d`, originally based on development `3446982085c32b238b4d329c98639f3978c6e8b2`. No branch, production deployment, remote push, customer mutation or new paid model call.
 
 ## Findings and remediation
