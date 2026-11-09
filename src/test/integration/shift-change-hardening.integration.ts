@@ -10,6 +10,7 @@ import {matchesDisplayedShift} from '../../lib/shift-changes/displayed-terms';
 import {shiftTermsFingerprint} from '../../lib/shift-changes/terms';
 import {runShiftChangeMaintenance} from '../../lib/data/shift-change-maintenance';
 import {loadWorkspaceNotificationConfig} from '../../lib/notifications/config';
+import {readEmployeeRequests} from '../../lib/data/employee-requests.server';
 let db:Awaited<ReturnType<typeof createDisposableExchangeDatabase>>;
 vi.mock('../../lib/db',()=>({getDb:()=>({query:(text:string,values:readonly unknown[]=[])=>db.executor.query({text,values})}),queryRows:(r:unknown)=>r}));
 const q=(text:string,values:readonly unknown[]=[])=>db.executor.query<Record<string,unknown>>({text,values});
@@ -18,6 +19,22 @@ afterEach(async()=>db?.dispose());
 const review=async(id:string)=>{const t=await reviewedFixtureTerms(db.executor,id);return {sourceShiftId:id,sourceEpisodeId:t.assignmentEpisodeId,sourceTermsFingerprint:shiftTermsFingerprint(t)};};
 async function offer(id='source'){const terms=await fixtureShift(db.executor,id);const r=await executeShiftChange(proof('e1'),{kind:'OFFER_COVERAGE',operationId:randomUUID(),...terms},db.executor);expect(r.status).toBe('pending');if(r.status!=='pending')throw Error(JSON.stringify(r));return r;}
 const tick=async(executor=db.executor)=>runShiftChangeMaintenance({executor,clock:()=>new Date('2035-09-30T12:00:00Z'),config:await loadWorkspaceNotificationConfig({PUSH_ENVIRONMENT:'test'},db.executor),limit:50});
+it('keeps an incoming swap out of own recent requests until the request is decided',async()=>{
+ const source=await fixtureShift(db.executor,'dedup-source','e1','2035-10-03'),target=await fixtureShift(db.executor,'dedup-target','e2','2035-10-04');
+ const offered=await executeShiftChange(proof('e1'),{kind:'PROPOSE_SWAP',operationId:randomUUID(),...source,targetShiftId:target.sourceShiftId,targetEpisodeId:target.sourceEpisodeId,targetTermsFingerprint:target.sourceTermsFingerprint},db.executor);
+ expect(offered.status).toBe('pending');if(offered.status!=='pending')throw Error('Swap fixture was not created');
+ const recipient=await readEmployeeRequests(proof('e2'),db.executor),sender=await readEmployeeRequests(proof('e1'),db.executor);
+ expect(recipient.state).toBe('ready');expect(sender.state).toBe('ready');
+ if(recipient.state!=='ready'||sender.state!=='ready')throw Error('Requests projection was unavailable');
+ expect(recipient.incoming).toBe(1);
+ expect(recipient.recent?.filter(row=>row.id===offered.requestId)).toEqual([]);
+ expect(sender.recent?.filter(row=>row.id===offered.requestId)).toHaveLength(1);
+ expect((await executeShiftChange(proof('e1'),{kind:'CANCEL',operationId:randomUUID(),requestId:offered.requestId,expectedRevision:1},db.executor)).status).toBe('closed');
+ const decided=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(decided.state).toBe('ready');if(decided.state!=='ready')throw Error('Decided requests projection was unavailable');
+ expect(decided.incoming).toBe(0);
+ expect(decided.recent?.filter(row=>row.id===offered.requestId)).toEqual([expect.objectContaining({kind:'shift',status:'CANCELLED'})]);
+});
 it('H01/A005 rejects different owning weeks at proposal without request side effects',async()=>{
  const source=await fixtureShift(db.executor,'source'),target=await fixtureShift(db.executor,'target','e2','2035-10-09');
  await q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('next','loc-1','2035-10-08','PUBLISHED','owner'); UPDATE shifts SET schedule_id='next' WHERE id='target'");

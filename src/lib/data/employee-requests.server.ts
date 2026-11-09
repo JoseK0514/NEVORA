@@ -14,6 +14,12 @@ import {listEmployeeTimeOffRequests} from './requests';
 import {listEmployeeCallouts} from './callouts';
 import {readShiftChangeAvailability} from './shift-changes';
 
+/** A shift request belongs in the employee's own list when they sent it, or when it was sent to them and is no longer
+ * waiting on their answer. One still waiting on them is counted in `incoming` ("A teammate requested a swap"), as Pick up
+ * and swap's My requests already does; listing it here too showed it twice, labelled as waiting on a teammate. */
+export const ownShiftActivity=(row:{requestedByEmployeeId?:string|null;targetEmployeeId?:string|null;status:string},own:string)=>
+ row.requestedByEmployeeId===own||row.targetEmployeeId===own&&row.status!=='EMPLOYEE_PENDING';
+
 /** Existing read owners run inside the shared Employee guards. No business SQL or eligibility rules are copied here. */
 export async function readEmployeeRequests(proof:SessionMutationProof,executor:SqlExecutor=neonNotificationExecutor()):Promise<EmployeeRequestsSnapshot>{
  try{assertEmployeeViewProof(proof);}catch{return {state:'unavailable',reason:'access_denied'};}
@@ -41,7 +47,7 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
   }));
   const recent:OwnRequest[]|null=activity===null||timeOff===null||callouts===null?null:[
    ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,endDate:row.endDate,startTime:row.startTime&&row.endTime?row.startTime:null,endTime:row.startTime&&row.endTime?row.endTime:null,createdAt:row.createdAt})),
-   ...activity.filter(row=>row.requestedByEmployeeId===own||row.targetEmployeeId===own).map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
+   ...activity.filter(row=>ownShiftActivity(row,own)).map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
    ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
   ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,8);
   // Recheck current module revision after all independent reads; mixed policy observations never escape.

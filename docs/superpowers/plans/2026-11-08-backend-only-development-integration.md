@@ -29,19 +29,19 @@
 ## Task 1: Employee Requests deduplication
 
 **Files:** `src/lib/data/employee-requests.server.ts`, its existing unit test,
-`src/test/integration/shift-change-views.integration.ts`.
+`src/test/integration/shift-change-hardening.integration.ts`.
 
 **Interfaces:** Keep `readEmployeeRequests(proof, executor)` unchanged. Add the
 source's pure `ownShiftActivity(row, own)` filter without changing authorization.
 
-- [ ] Add upstream unit cases and an actual SQL scenario: propose a future swap,
+- [x] Add upstream unit cases and an actual SQL scenario: propose a future swap,
   assert recipient incoming=1/recent excludes it, sender recent includes it;
   cancel and assert recipient incoming=0/recent includes decided history.
-- [ ] Run the unit/SQL cases before implementation; expect the recipient duplicate
+- [x] Run the unit/SQL cases before implementation; expect the recipient duplicate
   or missing-helper regression to fail, retaining the output.
-- [ ] Apply only the selected server filter from d349b661.
-- [ ] Run the same cases; expect all pass, plus existing scope/error checks.
-- [ ] Commit Task1 and record its exact range/results in the ledger.
+- [x] Apply only the selected server filter from d349b661.
+- [x] Run the same cases; expect all pass, plus existing scope/error checks.
+- [x] Commit Task1 and record its exact range/results in the ledger.
 
 ## Task 2: Action-center sources and optional timing contract
 
