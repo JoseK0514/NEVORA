@@ -45,7 +45,7 @@ source's pure `ownShiftActivity(row, own)` filter without changing authorization
 
 ## Task 2: Action-center sources and optional timing contract
 
-**Files:** `src/lib/action-center/{service,inbox,needs-you}.ts`,
+**Files:** `src/lib/action-center/{service,project,inbox,needs-you}.ts`,
 `src/lib/assistance/manager-actions.ts`, their focused unit tests and
 `src/test/integration/clocker-action-center.integration.ts`.
 
@@ -54,16 +54,16 @@ the previous and current week's canonical timecard rows, keeping exact periods.
 `ManagerActionItem.endDateTime?`, `workspaceNow(observedAt, zone)`, and optional
 clock arguments are additive; existing callers need no changes.
 
-- [ ] Add tests before implementation: include previous-week work, reject a failed
+- [x] Add tests before implementation: include previous-week work, reject a failed
   added source, and limit the actual aggregate by its shorter source lifetime.
-- [ ] Add boundary tests for today-end equality, active overnight windows from
+- [x] Add boundary tests for today-end equality, active overnight windows from
   yesterday, next-day midnight for 24:00, and unchanged no-clock callers.
-- [ ] Run and retain expected RED results.
-- [ ] Apply selected source changes, correcting previous-period lifetime handling
+- [x] Run and retain expected RED results.
+- [x] Apply selected source changes, correcting previous-period lifetime handling
   and canonical boundary behavior. Preserve all company/session/source guards.
-- [ ] Leave `src/lib/data/inbox-count.server.ts` and all UI paths unchanged.
-- [ ] Run focused tests and owned action-center SQL; expect all pass.
-- [ ] Commit Task2 and record results/rulings.
+- [x] Leave `src/lib/data/inbox-count.server.ts` and all UI paths unchanged.
+- [x] Run focused tests and owned action-center SQL; expect all pass.
+- [x] Commit Task2 and record results/rulings.
 
 ## Task 3: Reconcile, verify and integrate
 
