@@ -1,0 +1,28 @@
+# Dedicated non-native worker; create_new only. Native staging is not managed.
+previews:
+  generation: "off"
+services:
+  - type: web
+    name: nevora-web-workforce-staging
+    runtime: node
+    region: virginia
+    plan: 0.5c-512mb
+    branch: development
+    autoDeployTrigger: "off"
+    numInstances: 1
+    buildCommand: npm ci --include=dev --ignore-scripts && node scripts/build-managed-workforce.mjs
+    startCommand: node build/workforce/host.mjs
+    healthCheckPath: /ready
+    disk:
+      name: workforce-state
+      mountPath: /var/lib/nevora
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 24.19.0
+      - key: NEVORA_WORKFORCE_ENABLED
+        value: "false"
+      - key: NEVORA_WORKFORCE_STATE_DIR
+        value: /var/lib/nevora/managed
+# Profiles and health key are installed separately from approved secure custody.
+# Closed deployment needs neither. Do not put keys, owner/APP DSNs or SMTP here.

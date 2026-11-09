@@ -5,7 +5,7 @@ import {CommerceError} from '../../commerce/model';
 import {roleCapabilitiesAllowed,type FunctionRole} from './capabilities';
 import {hostedSourceMatches} from './source';
 export const UNUSABLE_DATABASE_URL = 'postgresql://disabled.invalid/disabled';
-export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner';
+export type HostedRole = 'commercequeue' | 'commercereconcile' | 'provisioner' | 'workforcemonitor';
 type Env=Readonly<Record<string,string|undefined>>;
 const answer=(value:unknown,status=200)=>Response.json(value,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff'}});
 const fail=(code:string,status:number)=>answer({error:{code}},status);

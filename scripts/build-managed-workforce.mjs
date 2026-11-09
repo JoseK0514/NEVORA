@@ -1,0 +1,15 @@
+import {build} from 'esbuild';
+import {spawnSync} from 'node:child_process';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',timeout:10000});if(r.status!==0)throw Error('managed_source_unavailable');return r.stdout.trim();};
+const source=git('rev-parse','HEAD'),status=git('status','--porcelain');
+if(status||!/^[a-f0-9]{40}$/.test(source)||process.env.RENDER_GIT_COMMIT&&process.env.RENDER_GIT_COMMIT!==source)throw Error('managed_source_invalid');
+const output=resolve(root,'build/workforce');await mkdir(output,{recursive:true});
+const result=await build({entryPoints:[resolve(root,'scripts/managed-workforce-host.mts')],bundle:true,write:false,format:'esm',platform:'node',target:'node24',packages:'external',alias:{'server-only':resolve(root,'node_modules/next/dist/compiled/server-only/empty.js')},define:{__NEVORA_NEON_BUILD_SOURCE_SHA__:JSON.stringify(source)},logLevel:'silent'});
+if(git('rev-parse','HEAD')!==source||git('status','--porcelain')!==status)throw Error('managed_source_changed');
+const bytes=result.outputFiles[0].contents;await writeFile(resolve(output,'host.mjs'),bytes);await writeFile(resolve(output,'receipt.json'),JSON.stringify({schemaVersion:1,sourceSha:source,sourceClean:true,sourceUnchanged:true,sha256:createHash('sha256').update(bytes).digest('hex')})+'\n');
+console.log(JSON.stringify({sourceSha:source,sourceClean:true,sourceUnchanged:true}));

@@ -1,7 +1,7 @@
 import {parsePostgresUrl} from '../../../src/lib/postgres-url';
 import {databaseTarget} from '../../commerce/config';
 export type HostedEnvironment=Readonly<Record<string,string|undefined>>;
-export type FunctionRole='stripewebhook'|'commercequeue'|'commercereconcile'|'provisioner'|'commerceauthority'|'commerceapi';
+export type FunctionRole='stripewebhook'|'commercequeue'|'commercereconcile'|'provisioner'|'commerceauthority'|'commerceapi'|'workforcemonitor';
 /** Override provider-injected aliases: only explicit named application DSNs and
  * approved app credentials may grant access. Empty values restore injections. */
 export const INERT_HOST_CAPABILITIES=Object.freeze({PGDATABASE:'disabled',PGHOST:'disabled.invalid',PGHOST_UNPOOLED:'disabled.invalid',PGPASSWORD:'disabled',PGUSER:'disabled',AWS_ACCESS_KEY_ID:'disabled',AWS_SECRET_ACCESS_KEY:'disabled',AWS_REGION:'us-east-1',AWS_ENDPOINT_URL_S3:'https://disabled.invalid',NEON_AI_GATEWAY_TOKEN:'disabled',NEON_AI_GATEWAY_BASE_URL:'https://disabled.invalid'});
@@ -18,6 +18,7 @@ const roleFields:Record<FunctionRole,readonly string[]>={
  commercequeue:[...catalog,...billing,...mail],commercereconcile:[...catalog,...billing],provisioner:provision,
  commerceauthority:['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_PORTAL_BASE_DOMAIN','NEVORA_COMMERCE_ENABLED','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_BINDING_KEY','NEVORA_COMMERCE_COMPANY_GATEWAY_KEY'],
  commerceapi:[...catalog,...billing,'NEVORA_COMMERCE_API_ENABLED','NEVORA_COMMERCE_ALLOWED_ORIGINS'],
+ workforcemonitor:['NEVORA_OPERATIONS_MONITOR_ENABLED','NEVORA_OPERATIONS_MONITOR_ORIGIN','NEVORA_OPERATIONS_MONITOR_SOURCE_SHA','NEVORA_OPERATIONS_MONITOR_EXPECTED_COMMANDS','NEVORA_OPERATIONS_MONITOR_DATABASE_URL','NEVORA_WORKFORCE_HEALTH_KEY','NEVORA_OPERATIONS_ALERT_MAIL_ENABLED','NEVORA_RECOVERY_SMTP_HOST','NEVORA_RECOVERY_SMTP_PORT','NEVORA_RECOVERY_SMTP_USER','NEVORA_RECOVERY_SMTP_PASSWORD','NEVORA_RECOVERY_FROM','NEVORA_STAGING_EMAIL_RECIPIENT','FUEL_PORTAL_ORIGIN'],
 };
 export function approvedCapabilityNames(role:FunctionRole):ReadonlySet<string>{return new Set([...common,...(roleFields[role]??[])]);}
 
@@ -46,6 +47,7 @@ export function roleCapabilitiesAllowed(role:FunctionRole,env:HostedEnvironment)
  if(env.NEVORA_COMMERCE_PROVISIONING_MODE!==undefined&&env.NEVORA_COMMERCE_PROVISIONING_MODE!=='onboarding')return false;
  try{
   if(env.NEVORA_COMMERCE_DATABASE_URL){const url=new URL(databaseTarget(env.NEVORA_COMMERCE_DATABASE_URL,'staging'));if(!/^nv_commerce_api_[a-f0-9]{24}$/.test(decodeURIComponent(url.username)))return false;}
+  if(role==='workforcemonitor'&&env.NEVORA_OPERATIONS_MONITOR_DATABASE_URL){const url=parsePostgresUrl(env.NEVORA_OPERATIONS_MONITOR_DATABASE_URL);if(!/^nv_ops_monitor_[a-f0-9]{24}$/.test(decodeURIComponent(url.username))||!url.password||[...url.searchParams].length!==1||url.searchParams.get('sslmode')!=='verify-full'||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(url.hostname)||['postgres','template0','template1'].includes(decodeURIComponent(url.pathname.slice(1))))return false;}
   if(env.NEVORA_PROVISIONER_CONTROL_DATABASE_URL)provisionerEnvironment(env);
   if(role==='commerceauthority'&&env.NEVORA_CONTROL_DATABASE_URL){const url=parsePostgresUrl(env.NEVORA_CONTROL_DATABASE_URL);if(!/^nv_control_commerce_[a-f0-9]{24}$/.test(decodeURIComponent(url.username))||!url.password||url.searchParams.get('sslmode')!=='verify-full'||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(url.hostname)||['postgres','template0','template1'].includes(decodeURIComponent(url.pathname.slice(1))))return false;}
   return true;

@@ -99,6 +99,11 @@
       "reason": "Owned QA/bootstrap test harness; not a deployed application or onboarding invocation."
     },
     {
+      "path": "scripts/managed-workforce-host.mts",
+      "status": "CONVERTED",
+      "reason": "Dedicated health-only workforce host. Compiled/deployed source equality, fixed scoped profiles and child environments, private disk singleton, authenticated read-only cached health; no public execution route. Disabled initial deployment."
+    },
+    {
       "path": "scripts/native-owned.mjs",
       "tags": [
         "runtime-boundary-audit"
@@ -494,6 +499,11 @@
       "status": "CONVERTED",
       "reason": "Native Neon staging receiver verifies compiled source, exact test branch/environment, closed feature gate, least-privilege named catalog DSN and Stripe signature before queue IO; injected default database capability is inert. No Owner/provisioner/Stripe API capability.",
       "isolatedBehavior": "GUARDED_STAGING_CATALOG"
+    },
+    {
+      "path": "services/hosted/neon/workforcemonitor.entry.ts",
+      "status": "CONVERTED",
+      "reason": "Fixed authenticated native Neon schedule only. Strict monitor capability allowlist, inert injected credentials, compiled-source/branch/test gates before monitor construction. Independent restricted journal DSN and fenced support SMTP only; host and mail initially disabled."
     },
     {
       "path": "src/app/access-help/[[...topic]]/page.tsx",
@@ -3669,6 +3679,11 @@
       "status": "CONVERTED",
       "reason": "Current Owner guards and canonical write-only transaction composition with atomic progress/receipt; derived current-data readiness.",
       "isolatedBehavior": "BOUND_ORIGIN"
+    },
+    {
+      "path": "src/lib/operations/monitor-store.ts",
+      "status": "CONVERTED",
+      "reason": "Independent aggregate-only incident journal under a dedicated non-owner LOGIN role and forced session-user RLS; no company, onboarding, employee or provisioning access. Setup grants are operator-only; ambiguous SMTP sends are retained."
     },
     {
       "path": "src/lib/operations/routing-reader.ts",
