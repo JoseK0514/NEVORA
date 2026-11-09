@@ -59,7 +59,12 @@ export async function claimInvitation(proof:string,password:string,executor:SqlE
  let release:(()=>void)|null=null,commitAttempted=false;
  try{
   const digest=invitationProofDigest(proof);
-  // A unique indexed known-custody read precedes counters, process slots and password work.
+  // Reject unknown digests with only the unique-index lookup. Planning the full
+  // authority join for every random proof is avoidable public-endpoint work.
+  // This existence read grants nothing: recognized proofs still repeat every
+  // current binding below and in the locked admission/consume transactions.
+  const known=await executor.query<{id:string}>({text:'SELECT id::text FROM company_invitations WHERE proof_digest=$1 LIMIT 1',values:[digest]},signal);
+  if(!known.length||signal?.aborted)return {state:'invalid'};
   const rows=await executor.query<Custody>({text:`SELECT i.id::text,i.employee_id AS "employeeId",i.issuer_employee_id AS "issuerId",w.id AS "workspaceId",
    w.name,w.time_zone AS "timeZone",w.created_at::text AS "createdAt",w.updated_at::text AS "updatedAt"
    ${joins} WHERE i.proof_digest=$1 AND ${binding} AND ${live}

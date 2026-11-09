@@ -1,0 +1,9 @@
+# Missing invitation proof planning repair — November 9, 2026
+
+The d8f35da6 hosted onboarding gate failed twice at its existing5000 actual invalid loopback HTTP claims /120s deadline. The second artifact13686896935 preserves the primary timeout and later fixture-ownership refusals. No third unchanged retry was requested. Existing database adoption/teardown guards were not relaxed.
+
+Owned PostgreSQL17 diagnostics used the actual claim query and the same executor/connection-reset behavior:100 original unknown-proof reads2609.58ms versus100 indexed proof-only reads50.29ms. EXPLAIN reported34.868ms planning/0.052ms execution, total estimated cost28.36; local JIT unavailable. This identifies avoidable multi-join planning for missing proofs; the exact new-source hosted run must establish whether it resolves the observed gate.
+
+The implementation rejects absent digests with one bounded unique-index read. It grants no authority: recognized digests still execute the original full current workspace/employee/email/issuer/adoption/lifetime/counter binding and original locked admission/consume transactions. A real owned-SQL regression failed against old source, then passed with the repair; it also revokes a recognized invitation after the preliminary read and proves no hashing, counter allocation or consume. All33 claim/admission/race cases pass, including the unchanged5000HTTP/100 exhausted/valid-use case, with the same120s deadline. Types and changed lint pass. Full qualification and exact-source CI are subsequent gates.
+
+No product UI/native-app bytes, schema/manifest, API shape, credential, customer data, production, model budget or infrastructure setting changed. Existing closed10b Neon adapters are still accurately labeled10b; their unchanged module inputs need no redeployment. The protected Next staging Preview must identify its new exact source when refreshed. Historical a07 hosted-company acceptance and old A/B manifests remain separate.
