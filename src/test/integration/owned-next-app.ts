@@ -159,7 +159,7 @@ export function ownedDeviceEnvironment(origin:string,enabled=false):Record<strin
  * generated dev type-reference paths. Production source,
  * existing databases and existing processes are never edited or reused.
  */
-export async function createOwnedNextApp(evidenceDirectory: string, options: { mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
+export async function createOwnedNextApp(evidenceDirectory: string, options: { mobileAccessEnabled?:boolean;mobileSupportEnabled?:boolean;loginDiagnostics?:boolean;calendarDiagnostics?:boolean;creationDiagnostics?:boolean; ownerAdvisorPilot?: OwnerAdvisorPilot; ownerAdvisorEnabled?: boolean; passkeysEnabled?: boolean; deviceAlertsEnabled?:boolean; nativeAlertsEnabled?:boolean; clockerPinKey?: string; clockerPunchEnabled?: boolean; payrollEnabled?: boolean; emptyDatabase?: boolean; initializeDatabase?:OwnedNextDatabaseInitializer; recoverySmtpPort?:number; invitationSmtpPort?:number; pinDevTypeReferences?: boolean; signal?: AbortSignal; processOwnerId?: string; onProcessStarted?: (child: ChildProcess, identity: { ownerId: string; root: string; source: string }) => Promise<void> } = {}) {
   if (options.clockerPinKey !== undefined && !/^[a-f0-9]{64}$/.test(options.clockerPinKey)) throw new Error('Owned Clocker PIN key must be 32-byte hex.');
   validateOwnedMailOptions(options);
   const advisorEnvironment = ownedAdvisorEnvironment(options);
@@ -293,6 +293,11 @@ export async function createOwnedNextApp(evidenceDirectory: string, options: { m
       ...ownedMailEnvironment(url,options),
       NEXT_TELEMETRY_DISABLED: '1', PUSH_ENVIRONMENT: 'test', PUSH_FEATURE_ENABLED: 'false', PUSH_DELIVERY_ENABLED: 'false', PUSH_TEST_DELIVERY_ENABLED: 'false',
       ...ownedDeviceEnvironment(url,options.deviceAlertsEnabled),
+      // UI scans of the phone app's Alerts page: the fictional test registration settings (no provider credentials, no
+      // delivery); the page's own status reads are answered by the scan, never by a provider.
+      ...(options.nativeAlertsEnabled?{NATIVE_PUSH_REGISTRATION_ENABLED:'true',NATIVE_PUSH_ENVIRONMENT:'test',NATIVE_PUSH_ORIGIN:'https://nevora.example',
+        NATIVE_PUSH_IOS_APP_ID:'com.velani.nevora.development',NATIVE_PUSH_IOS_PROVIDER:'apns-sandbox',NATIVE_PUSH_ANDROID_APP_ID:'com.velani.nevora.development',
+        NATIVE_PUSH_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,5).toString('base64url')}:{}),
       NEVORA_OWNED_APP_DATABASE: database.connectionString,
       NEVORA_OWNED_APP_IDENTITY: JSON.stringify(identity), NEVORA_OWNED_APP_BARRIERS: barriers,
       ...((options.loginDiagnostics||options.calendarDiagnostics||options.creationDiagnostics)?{NODE_OPTIONS:[

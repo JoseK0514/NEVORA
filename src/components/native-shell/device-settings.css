@@ -9,3 +9,31 @@
   padding-bottom: 12px;
   white-space: normal;
 }
+
+/* The phone app's Alerts page, Direction B (Nov 9, 2026): the browser Alerts screen's card with the state as a 64px ring,
+   its explanation, and stacked 52px pill actions. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-state { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 6px 22px 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-ring { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 0 14px; background: #F0F2F3; color: #3F464B; box-shadow: inset 0 0 0 3px #DDE2E4; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-ring[data-tone=teal] { background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 3px #B9DCD7; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-ring[data-tone=red] { background: #FDECEA; color: #B42318; box-shadow: inset 0 0 0 3px #F4B7B0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; box-shadow: inset 0 0 0 3px #F3D3A0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-title { margin: 0; font-size: 19px; line-height: 25px; font-weight: 700; letter-spacing: -.015em; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-title:focus { outline: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-title:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; border-radius: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-text { margin: 6px 0 0; max-width: 40ch; font-size: 15px; line-height: 21px; color: #3F464B; text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-acts { display: grid; gap: 10px; padding: 18px 20px 4px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm { padding: 20px 20px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm .nd-text { margin: 0; max-width: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm .nd-acts { padding: 16px 0 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm:focus { outline: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; }
+/* Spacing when a state has no actions (checking, paused), the turn-off pill's red outline over the phone card's
+   flat-button rule, and on tablets and desktops a 440px action column and the confirmations' pills side by side. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-state + .eb-cardnote { padding-top: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-acts { padding-bottom: 14px; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .nd-card .nd-acts > .eb-btn-outline-danger.b-btn { background: #FFFFFF; color: #B42318; box-shadow: inset 0 0 0 1.5px #B42318; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-acts { box-sizing: border-box; width: 100%; max-width: 480px; margin-inline: auto; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm .nd-acts { grid-auto-flow: column; grid-auto-columns: minmax(200px, max-content); justify-content: end; }
+}
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-state:last-child { padding-bottom: 22px; }

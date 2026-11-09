@@ -8,7 +8,7 @@ import {useEmployeeDevice} from './device-owner';
 import {EmployeeAlertsB} from '../employee-b/account-b-client';
 import {shown} from '../employee-b/account-host';
 import './account-corp.css';
-import {NativeDeviceSettings} from '../native-shell/device-settings';
+import {NativeAlertsUnavailableB,NativeDeviceSettings} from '../native-shell/device-settings';
 
 type Props={snapshot:DeviceSnapshot|null;paused:boolean;enabled:boolean;canInstall:boolean;confirm:boolean;onEnable():void;onRefresh():void;onPostpone():void;onInstall():void;onReview():void;onKeep():void;onTurnOff():void;onTest():void;confirmationRef?:RefObject<HTMLDivElement|null>;feedbackRef?:RefObject<HTMLDivElement|null>;turnOffRef?:RefObject<HTMLButtonElement|null>;installMessage?:string};
 /** Board E-NotificationSettings, honest version: NEVORA can turn alerts on or off for this browser only. Per-topic
@@ -50,7 +50,9 @@ export function EmployeeDeviceAlertsView({confirmationRef,feedbackRef,turnOffRef
 }
 
 export function EmployeeDeviceAlertsPage({enabled,nativeApp=false}:{enabled:boolean;nativeApp?:boolean}){
- return nativeApp?<EmployeeAccountFrame title="Alerts" back={{href:'/app/notifications',label:'Notifications'}}>{enabled?<NativeDeviceSettings/>:<p className="c-note">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p>}</EmployeeAccountFrame>:<BrowserDeviceAlertsPage enabled={enabled}/>;
+ // The phone app (Direction B, Nov 9, 2026): the Alerts screen as the browser draws it, with the card view kept for a phone
+ // held sideways; when the workplace hasn't made app alerts available, the same note on the Direction B card.
+ return nativeApp?<EmployeeAccountFrame title="Alerts" back={{href:'/app/notifications',label:'Notifications'}}>{enabled?<NativeDeviceSettings page/>:<><NativeAlertsUnavailableB/><p className="c-note">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p></>}</EmployeeAccountFrame>:<BrowserDeviceAlertsPage enabled={enabled}/>;
 }
 function BrowserDeviceAlertsPage({enabled}:{enabled:boolean}){
  const owner=useEmployeeDevice(),[review,setReview]=useState<{generation:string|undefined}|null>(null),confirmation=useRef<HTMLDivElement>(null),feedback=useRef<HTMLDivElement>(null),trigger=useRef<HTMLButtonElement>(null),lastMessage=useRef('');

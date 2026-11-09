@@ -9,6 +9,10 @@ The test files live in `zz-scan.tar.gz`. They are kept archived because they imp
 app with paths relative to the repository root, so they are unpacked only while a scan runs
 (and removed afterwards). This keeps them out of `tsc`, ESLint and Vitest.
 
+The phone app flow simulates the app's bridge (`window.nevoraCapabilities`) the way
+`native/capability-ui/main.tsx` does and answers `/api/mobile/v1/notifications/*` from Playwright routes: fictional
+replies only, no device or provider calls. Its states are saved as `native-<state>-<width>.png`.
+
 ## Requirements
 
 - Postgres 16 binaries at `/usr/lib/postgresql/16/bin` and a `pgtest` system user (the
@@ -29,6 +33,11 @@ W=390,1440 tools/ui-scan/desk.sh /tmp/scan-emp /app,/app/schedule \
 # Owner rich data: NEVORA_SCAN_RICH_OWNER=1 (+ NEVORA_SCAN_STATES_OWNER=1 for states).
 # Signed-out public pages: NEVORA_SCAN_PUBLIC=1 NEVORA_SCAN_PUBLIC_W=390,1440 NEVORA_SCAN_PUBLIC_LANGS=en,es
 # Clocker kiosk flow: NEVORA_SCAN_CLOCKER_FLOW=1 (fictional tablet key scan-kiosk-main)
+# Phone app user agent: NEVORA_SCAN_UA=native-ios or native-android (NEVORA-Native/iOS/1, NEVORA-Native/Android/1)
+# Phone app alerts on (fictional NATIVE_PUSH_* test config): NEVORA_SCAN_NATIVE_ALERTS=1
+# Phone app Alerts page states with a simulated bridge: NEVORA_SCAN_NATIVE_FLOW=1 (NEVORA_SCAN_NATIVE_W=390,900,1440)
+# Browser device alerts on (fictional web push config): NEVORA_SCAN_DEVICE_ALERTS=1
+# Owner Device settings popover: NEVORA_SCAN_POPOVER=1 (NEVORA_SCAN_POPOVER_W=390,1440)
 ```
 
 Screenshots are named `owner-<route-slug>-<width>.png` (the prefix is historical; the role is

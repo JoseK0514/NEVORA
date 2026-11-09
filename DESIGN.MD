@@ -1577,6 +1577,18 @@ Mocks: Lead (phone + desktop), Employee desktop, Tablets (Option A vs B), Sign-i
   (or Welcome's and Access help's content) is the lifted white card with the title in ink and the passkey button at the
   card's foot; tablets and desktops were already the Direction B sign-in. The Clocker is unchanged (captured before and
   after, pixel-identical).
+- **Phone app screens and the Owner device popover (Nov 9, 2026).** In the NEVORA phone app (user agent
+  `NEVORA-Native/iOS/1` or `/Android/1`) the Employee's Alerts page is the browser Alerts screen's Direction B: the band
+  with the way back to Notifications, one card with the state as a 64px ring (teal on, red blocked, amber check, grey off
+  or checking), its explanation and the stacked pills (Turn on alerts, Check again, Turn off alerts as a red outline,
+  Review app setup); the turn-off and use-for-this-account confirmations are their own cards under it, and when the
+  workplace hasn't made app alerts available the card says so. Same words, handlers, focus and `data-native-*` hooks;
+  the card view stays as the sideways-phone fallback (`native-shell/device-settings.tsx`). "Use NEVORA in your web
+  browser" (the app's Manager and Lead screen) is the 404's band with the wordmark and title, one card with its two
+  lines and the Sign out pill (same form action). The Owner's Device settings popover (browser web push, and the phone
+  app's card) is a 22px white card with the soft layered shadow, an Inter title with Done as a quiet pill and 48px pill
+  actions; above the tab bar on phones, centred over a light scrim from 768px (`portal-device-setup.css`). In the app
+  the Owner has no visible opener for it (the Profile row is gated by the browser web push flag).
 
 ## Clocker Direction B (Jose approved the round-2 mock, Nov 8, 2026)
 Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now the **only** Clocker presentation.

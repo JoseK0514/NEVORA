@@ -1,0 +1,60 @@
+/* Device settings (Owner and Manager), Direction B (Nov 9, 2026): the B card as a popover. 22px radius and the layered
+ * soft shadow, an Inter heading with Done as a quiet pill, stacked pill buttons, 48px targets. Phones: above the tab bar;
+ * tablets and desktops: centred over a light scrim. The browser (web push) and phone app (native) variants share it. */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings.portal-device-settings {
+  inset: auto 12px calc(88px + env(safe-area-inset-bottom)) 12px; width: auto; max-height: calc(100dvh - 112px - env(safe-area-inset-bottom));
+  margin: 0; padding: 0; border: 0; border-radius: 22px; background: #FFFFFF; color: #111517; overflow-y: auto; overscroll-behavior: contain;
+  box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 24px 48px -16px rgb(16 40 38 / .32);
+  font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+@media (min-width: 768px) {
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings.portal-device-settings {
+    inset: 0; width: min(420px, calc(100vw - 48px)); height: fit-content; max-height: calc(100dvh - 48px); margin: auto; }
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b]:not(.employee-shell) .portal-device-settings::backdrop { background: rgb(17 21 23 / .18); }
+}
+/* Heading: the title on the left, Done as a quiet pill on the right. */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-heading.portal-device-heading {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 0; margin: 0; padding: 18px 16px 6px 22px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-heading.portal-device-heading > strong {
+  text-align: left; font: 700 19px/24px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -.015em; color: #111517; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-heading > .portal-device-close.portal-device-close {
+  display: inline-flex; align-items: center; justify-content: center; width: auto; min-width: 48px; height: 48px; padding: 0 18px; border: 0; border-radius: 24px;
+  background: #F0F2F3; box-shadow: none; color: #111517; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; cursor: pointer; transition: transform 120ms ease, background-color 140ms ease; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-heading > .portal-device-close:active { opacity: 1; transform: scale(.96); }
+/* Content: Inter headings, grey body text, the status in a soft box, stacked pills. */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-content { display: grid; gap: 10px; padding: 8px 22px 22px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-content :is(h2, h3) { margin: 8px 0 0; font: 700 16px/22px Inter, "Inter Fallback", -apple-system, sans-serif; color: #111517; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-content p { margin: 0; font: 400 14.5px/21px Inter, "Inter Fallback", -apple-system, sans-serif; color: #3F464B; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-content p[role] { padding: 12px 14px; border-radius: 14px; background: #F2F5F4; color: #3F464B; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-actions { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 4px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings :is(.portal-device-button, .portal-device-button:is(.primary, .secondary)) {
+  min-height: 48px; padding: 12px 20px; border: 0; border-radius: 24px; background: #F0F2F3 !important; box-shadow: none; color: #111517 !important;
+  font: 700 15.5px/20px Inter, "Inter Fallback", -apple-system, sans-serif; transition: transform 120ms ease, background-color 140ms ease; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-button.primary { background: #0C726C !important; color: #FFFFFF !important; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-button:active:not(:disabled) { transform: scale(.96); }
+@media (hover: hover) {
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-button.secondary:hover:not(:disabled) { background: #E6E9EA !important; }
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-button.primary:hover:not(:disabled) { background: #0A5F5A !important; }
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-close:hover { background: #E6E9EA; }
+}
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings :is(button, a):focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .portal-device-message { padding: 12px 14px; border-radius: 14px; background: #E8F3F1; color: #0B4F4B; }
+/* The phone app's card inside the popover: part of the popover (no second card), the same pills. */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card.native-device-card { margin: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-card__head { display: none; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-card__body { display: grid; gap: 10px; padding: 6px 22px 22px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card h3 { margin: 4px 0 0; font: 700 17px/23px Inter, "Inter Fallback", -apple-system, sans-serif; color: #111517; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card h3:focus { outline: none; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card p { margin: 0; font: 400 14.5px/21px Inter, "Inter Fallback", -apple-system, sans-serif; color: #3F464B; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-note { font-size: 13px; line-height: 18px; color: #5E666B; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card [data-native-confirm] { display: grid; gap: 10px; padding: 14px; border-radius: 16px; background: #F2F5F4; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-btns { display: grid; grid-template-columns: minmax(0, 1fr); justify-items: stretch; align-items: stretch; justify-self: stretch; width: 100%; margin: 0; gap: 10px; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-btn.c-btn {
+  width: 100%; max-width: none; min-width: 0; flex: none; justify-self: stretch; margin: 0; min-height: 48px; height: auto; padding: 12px 20px; border: 0; border-radius: 24px; background: #0C726C; color: #FFFFFF; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6);
+  font: 700 15.5px/20px Inter, "Inter Fallback", -apple-system, sans-serif; transition: transform 120ms ease, background-color 140ms ease; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-btn.c-btn--secondary { background: #F0F2F3; color: #111517; box-shadow: none; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-btn.c-btn--danger { background: #FFFFFF; color: #B42318; box-shadow: inset 0 0 0 1.5px #B42318; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card [data-native-confirm] .c-btn.c-btn--danger { background: #B42318; color: #FFFFFF; box-shadow: none; }
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings .native-device-card .c-btn:active:not(:disabled) { transform: scale(.96); }
+@media (prefers-reduced-motion: reduce) {
+  :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b]:not(.employee-shell) .portal-device-settings :is(button) { transition: none !important; transform: none !important; }
+}
