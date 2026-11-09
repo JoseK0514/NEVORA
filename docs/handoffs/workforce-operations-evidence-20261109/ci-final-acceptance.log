@@ -1,0 +1,6 @@
+{"step":"inventory-contract","exitCode":0,"elapsedMs":289}
+{"step":"manifest","exitCode":0,"elapsedMs":48}
+{"step":"owned-onboarding","exitCode":0,"elapsedMs":67718}
+{"step":"company-access-foundation","exitCode":0,"elapsedMs":204140}
+{"step":"company-access-exchange","exitCode":0,"elapsedMs":13876}
+Onboarding backend evidence: /Users/josek0514/.codex/tmp/nevora-final-onboarding-acceptance-a4fef4717-20261109/a4fef47174b2b410c01bdcf392ad1616b86622ce-974b921d-0125-41fd-a689-fbfe89098b7a

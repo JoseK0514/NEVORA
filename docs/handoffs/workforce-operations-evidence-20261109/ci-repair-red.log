@@ -1,0 +1,50 @@
+✔ prefers the existing official HTTPS archive while retaining both runner fallbacks (0.536166ms)
+✖ retains the exact observed AWS Ubuntu fallback while preferring the same signed official archives (0.111458ms)
+✔ refuses an unexpected mirror inventory instead of changing package trust (0.559792ms)
+✔ names the inventory it found, so a changed runner image can be reviewed (0.088084ms)
+✔ the command refuses execution outside GitHub Actions before touching system files (27.845875ms)
+✔ new download, auth action, worker and direct database paths cannot evade the entrypoint inventory (2.846583ms)
+✔ test-only suffixes are bounded exemptions, invalid inventory dispositions are rejected (0.079041ms)
+✔ server actions after comments, without semicolons, or inline in a page still require classification (0.333417ms)
+✔ commerce server/catalog/worker boundaries cannot evade the runtime inventory (0.071125ms)
+✖ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (0.239333ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 8
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 153.573125
+
+✖ failing tests:
+
+test at scripts/ci-ubuntu-mirrors.check.mjs:13:1
+✖ retains the exact observed AWS Ubuntu fallback while preferring the same signed official archives (0.111458ms)
+  Error: Unexpected Ubuntu mirror inventory: ["http://us-east-2.ec2.archive.ubuntu.com/ubuntu/ priority:1","https://archive.ubuntu.com/ubuntu/ priority:2","https://security.ubuntu.com/ubuntu/ priority:3"]
+      at prioritizeUbuntuArchive (file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/ci-ubuntu-mirrors.mjs:7:217)
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/ci-ubuntu-mirrors.check.mjs:15:15)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at scripts/onboarding-inventory.check.mjs:25:1
+✖ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (0.239333ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/scripts/onboarding-inventory.check.mjs:26:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /Unclassified runtime entrypoint/,
+    operator: 'throws',
+    diff: 'simple'
+  }

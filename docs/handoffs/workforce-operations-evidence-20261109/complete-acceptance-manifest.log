@@ -1,0 +1,5 @@
+(node:75640) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/db/migrations/order.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/josek0514/.codex/worktrees/nevora-web-backend-completion-20261109/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Canonical onboarding manifest matches source: 5ab65c15a384c0f2f08e0f9954d61ded8c2622a9d8763110c3684b21927a23a3

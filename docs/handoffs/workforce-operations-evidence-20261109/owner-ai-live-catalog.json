@@ -1,0 +1,111 @@
+{
+  "id": "gpt-6-1-sol",
+  "object": "model",
+  "type": "model",
+  "created": 1790640000,
+  "created_at": "2026-09-29T00:00:00Z",
+  "owned_by": "openai",
+  "name": "GPT-6.1 Sol",
+  "display_name": "GPT-6.1 Sol",
+  "canonical_slug": "gpt-6-1-sol",
+  "context_length": 1050000,
+  "max_input_tokens": 922000,
+  "max_tokens": 128000,
+  "architecture": {
+    "modality": "text+image+file->text",
+    "input_modalities": [
+      "text",
+      "image",
+      "file"
+    ],
+    "output_modalities": [
+      "text"
+    ],
+    "tokenizer": "GPT",
+    "instruct_type": null
+  },
+  "pricing": {
+    "prompt": "0.000002",
+    "completion": "0.00001",
+    "input_cache_read": "0.0000001",
+    "input_cache_write": "0.0000025",
+    "overrides": [
+      {
+        "min_prompt_tokens": 272000,
+        "prompt": "0.000004",
+        "completion": "0.000015",
+        "input_cache_read": "0.0000002",
+        "input_cache_write": "0.000005"
+      }
+    ]
+  },
+  "top_provider": {
+    "is_moderated": false,
+    "context_length": 1050000,
+    "max_completion_tokens": 128000
+  },
+  "per_request_limits": null,
+  "supported_parameters": [
+    "include_reasoning",
+    "max_tokens",
+    "reasoning",
+    "reasoning_effort",
+    "response_format",
+    "structured_outputs",
+    "tool_choice",
+    "tools"
+  ],
+  "reasoning": {
+    "supported_efforts": [
+      "low",
+      "medium",
+      "high",
+      "xhigh",
+      "max"
+    ],
+    "mandatory": null,
+    "default_enabled": null,
+    "default_effort": null
+  },
+  "reasoning_options": [
+    {
+      "type": "effort",
+      "values": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ]
+    }
+  ],
+  "knowledge_cutoff": null,
+  "capabilities": null,
+  "line": null,
+  "model_eligibility": {
+    "status": "eligible",
+    "evaluated_runtime": "http"
+  },
+  "provider": "openai",
+  "dialects": [
+    "chat_completions",
+    "openai_responses"
+  ],
+  "enabled": true,
+  "family": "gpt-sol",
+  "release_date": "2026-09-29",
+  "model_type": "language",
+  "features": {
+    "chat": true,
+    "responses": true,
+    "embeddings": false,
+    "web_search": false,
+    "image_generation": false,
+    "tool_call": true,
+    "structured_output": true,
+    "reasoning": true,
+    "temperature": false,
+    "open_weights": false,
+    "attachment": true
+  }
+}

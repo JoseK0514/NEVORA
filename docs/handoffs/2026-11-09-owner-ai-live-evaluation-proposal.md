@@ -1,3 +1,5 @@
+> November9 outcome: fresh$10 approval received and one run executed on sourcea4fef4717. Baseline two-turn reversal captured; high reasoning canceled at the response deadline; critic not run under existing fail-stop.7 attempts/$1.75 maximum reserved. See2026-11-09-owner-ai-live-evaluation-result.md. The unapproved/not-run wording below is the preserved pre-approval proposal, not current status.
+
 # Disabled actual-model evaluation proposal
 
 Status: prepared, NOT approved or run. Existing live-model ledgers are exhausted/expired and remain immutable. No credential, provider catalog or inference is accessed by this document. Offline/scripted checks are not semantic model-quality proof.

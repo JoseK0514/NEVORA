@@ -1,0 +1,16 @@
+{
+  "approvedAt": "2026-11-09T14:23:07.832Z",
+  "approval": "Fresh user reply: Approve up to $10",
+  "requestId": "call_93d85d3a08dd4c749c00c42ad2c1bf55",
+  "sourceSha": "a4fef47174b2b410c01bdcf392ad1616b86622ce",
+  "case": "availability-reversal",
+  "fictionalOnly": true,
+  "maxMicrodollars": 10000000,
+  "maxHttpAttempts": 40,
+  "variants": [
+    "baseline",
+    "high",
+    "bounded_critic"
+  ],
+  "priorLedgersUnchanged": true
+}

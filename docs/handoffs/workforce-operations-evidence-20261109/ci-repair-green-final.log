@@ -1,0 +1,18 @@
+✔ prefers the existing official HTTPS archive while retaining both runner fallbacks (0.487833ms)
+✔ retains the exact observed AWS Ubuntu fallback while preferring the same signed official archives (0.602875ms)
+✔ refuses an unexpected mirror inventory instead of changing package trust (0.09625ms)
+✔ names the inventory it found, so a changed runner image can be reviewed (0.058708ms)
+✔ the command refuses execution outside GitHub Actions before touching system files (24.214583ms)
+✔ new download, auth action, worker and direct database paths cannot evade the entrypoint inventory (3.064375ms)
+✔ test-only suffixes are bounded exemptions, invalid inventory dispositions are rejected (0.0795ms)
+✔ server actions after comments, without semicolons, or inline in a page still require classification (0.340875ms)
+✔ commerce server/catalog/worker boundaries cannot evade the runtime inventory (0.073042ms)
+✔ the private workforce command and every tracked transport boundary have an explicit reviewed disposition (361.076167ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 499.706541
