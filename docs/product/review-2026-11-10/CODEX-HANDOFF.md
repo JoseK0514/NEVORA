@@ -26,6 +26,7 @@ UI already shipped in reduced form; **P3** clean-up.
 | NV-158 | P3 | Employee requests/schedule reads don't say whether device alerts are on. Add `deviceAlerts: boolean` to the hub read (or reuse profile config) so empty states can hide "Get alerts on this device". | — |
 | NV-091 / NV-240 | P3 | Optional `late` status per clocked-in person, so desktop can show Working · Late · Off today from one read (phone uses two reads today). | — |
 | NV-137 | P3 | Closed pages name the active Owners via `listEmployees()`. A lighter "owner names" read is optional; UI accepts `owners: string[]`. A direct message or "request access" notice to Owners would give the notice an action (no person-to-person path exists). | Notice names the Owners. |
+| NV-079 | P2 | Things to do swap and can't-work rows can't name the other person: the request facts (`src/lib/data/action-request-facts.server.ts:12`) carry no counterpart. Add a non-private `counterpartName` (the swap partner, or the person covering) so a row reads "Swap with Ana · Thu Nov 12". | Rows show the request kind and shift. |
 | NV-033 | P3 | Withdraw works (`withdrawTimeOffAction`). Fixture ids like `scan-leave-maria` aren't UUID v4, so `canWithdrawTimeOff` hides it in scans. Only if real older requests have non-UUID ids does the command need to accept them; otherwise use UUIDs in fixtures. | "Withdraw request" with confirm on phone and desktop (Jose: allowed). |
 
 ## 2. New commands
