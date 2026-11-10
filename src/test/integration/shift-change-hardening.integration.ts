@@ -76,6 +76,60 @@ it('keeps sent and decided history visible behind twenty pending offers, includi
  ]));
  expect(result.recent).toHaveLength(3);
 });
+it('retains older waiting time-off requests beyond the latest eight own requests',async()=>{
+ await fixtureShift(db.executor,'waiting-history-shift','e2','2035-10-03');
+ await q("INSERT INTO shift_exchanges(id,kind,source_shift_id,requested_by_employee_id,status,created_at) VALUES('waiting-recent-shift','COVERAGE','waiting-history-shift','e2','CANCELLED',now())");
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) SELECT 'waiting-decided-'||n,'e2','2035-10-10','2035-10-10','OWN PRIVATE REASON','APPROVED',now()-n*interval '1 hour' FROM generate_series(1,9)n");
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,created_at) VALUES('waiting-recent','e2','2035-10-11','2035-10-11','OWN PRIVATE REASON','PENDING',now()-interval '30 minutes'),('waiting-old-1','e2','2035-10-12','2035-10-12','OWN PRIVATE REASON','PENDING',now()-interval '2 days'),('waiting-old-2','e2','2035-10-13','2035-10-13','OWN PRIVATE REASON','PENDING',now()-interval '3 days'),('waiting-peer','e1','2035-10-14','2035-10-14','PEER PRIVATE REASON','PENDING',now()+interval '1 hour')");
+ const result=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(result.state).toBe('ready');if(result.state!=='ready')throw Error('Crowded time-off Requests read was unavailable');
+ expect(result.recent?.filter(row=>row.kind==='timeOff'&&row.status==='PENDING').map(row=>row.id)).toEqual(['waiting-recent','waiting-old-1','waiting-old-2']);
+ // The original latest eight across request kinds stay intact; only older waiting time off is added.
+ expect(result.recent?.map(row=>row.id)).toEqual(['waiting-recent-shift','waiting-recent','waiting-decided-1','waiting-decided-2','waiting-decided-3','waiting-decided-4','waiting-decided-5','waiting-decided-6','waiting-old-1','waiting-old-2']);
+ expect(new Set(result.recent?.map(row=>row.kind+':'+row.id)).size).toBe(result.recent?.length);
+ expect(JSON.stringify(result)).not.toMatch(/waiting-peer|PRIVATE REASON|employeeId|reviewerName|sessionTokenHash/);
+ const repeated=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(repeated.state).toBe('ready');if(repeated.state!=='ready')throw Error('Repeated Requests read was unavailable');
+ expect(repeated.recent).toEqual(result.recent);
+});
+it('keeps time-off source failure explicit and skips that source when its module is disabled',async()=>{
+ let timeOffReads=0;
+ const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes('FROM time_off_requests r'))){timeOffReads++;throw Error('Fictional private time-off outage');}
+  return db.executor.transaction(statements,signal);
+ }};
+ const partial=await readEmployeeRequests(proof('e2'),failing);
+ expect(partial.state).toBe('ready');if(partial.state!=='ready')throw Error('Partial time-off read was unavailable');
+ expect(partial.recent).toBeNull();expect(partial.incoming).toBe(0);expect(partial.open).toEqual([]);expect(timeOffReads).toBe(1);
+ expect(JSON.stringify(partial)).not.toContain('private time-off outage');
+ await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','owner',0,$2,repeat('a',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['timeOff']}})]);
+ const disabled=await readEmployeeRequests(proof('e2'),failing);
+ expect(disabled.state).toBe('ready');if(disabled.state!=='ready')throw Error('Disabled time-off read was unavailable');
+ expect(disabled.modules.timeOff).toBe(false);expect(disabled.recent).toEqual([]);expect(timeOffReads).toBe(1);
+});
+it('does not release Requests under a module revision changed during the source reads',async()=>{
+ let changed=false;
+ const changing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const rows=await db.executor.transaction(statements,signal);
+  if(!changed&&statements.some(s=>s.text.includes('FROM time_off_requests r'))){
+   changed=true;
+   await q("SELECT nevora_set_workspace_presentation($1,'workspace-fuel','owner',0,$2,repeat('b',64))",[randomUUID(),JSON.stringify({version:1,brand:{},modules:{disabled:['timeOff']}})]);
+  }
+  return rows;
+ }};
+ expect(await readEmployeeRequests(proof('e2'),changing)).toEqual({state:'unavailable',reason:'read_failed'});expect(changed).toBe(true);
+});
+it('refuses retained time-off history after the actual employee role or session loses authority',async()=>{
+ await q("INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status) VALUES('guarded-waiting','e2','2035-10-10','2035-10-10','PRIVATE REASON','PENDING')");
+ const authorized=await readEmployeeRequests(proof('e2'),db.executor);
+ expect(authorized.state).toBe('ready');if(authorized.state!=='ready')throw Error('Authorized Requests read was unavailable');
+ expect(authorized.recent?.map(row=>row.id)).toEqual(['guarded-waiting']);
+ await q("UPDATE employees SET role='OWNER' WHERE id='e2'");
+ expect(await readEmployeeRequests(proof('e2'),db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ expect(await readEmployeeRequests({...proof('e2'),employee:{...proof('e2').employee,role:'OWNER'}},db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+ await q("UPDATE employees SET role='EMPLOYEE' WHERE id='e2'; UPDATE employee_sessions SET expires_at=now()-interval '1 minute' WHERE employee_id='e2'");
+ expect(await readEmployeeRequests(proof('e2'),db.executor)).toEqual({state:'unavailable',reason:'access_denied'});
+});
 it('keeps a failed swap source explicit while retaining other available Requests sections',async()=>{
  const failing:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
   if(statements.some(s=>s.text.includes('FROM shift_exchanges x')&&s.text.includes('x.target_employee_id = $1')))throw Error('Fictional exchange source outage');

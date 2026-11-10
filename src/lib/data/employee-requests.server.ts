@@ -38,11 +38,12 @@ export async function readEmployeeRequests(proof:SessionMutationProof,executor:S
    return {id:row.id,revision:row.requestRevision!,date:row.sourceShift.date,startTime:row.sourceShift.startTime,endTime:row.sourceShift.endTime,location:row.sourceShift.locationName,position:row.sourceShift.positionName??null,
     check:eligible?'eligible' as const:check?.refusal?'refused' as const:'unavailable' as const,notice:check?.notice??(eligible?null:'Eligibility could not be checked. Refresh before continuing.'),outcome:eligible?check.outcome as 'completed'|'pending':null};
   }));
+  // Keep the combined recent eight, plus every own time-off request still awaiting a decision.
   const recent:OwnRequest[]|null=exchanges===null||timeOff===null||callouts===null?null:[
    ...timeOff.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'timeOff' as const,status:row.status,date:row.startDate,endDate:row.endDate,startTime:row.startTime&&row.endTime?row.startTime:null,endTime:row.startTime&&row.endTime?row.endTime:null,createdAt:row.createdAt})),
    ...exchanges.recent.map(row=>({id:row.id,kind:'shift' as const,status:row.status,date:row.sourceShift.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
    ...callouts.filter(row=>row.employeeId===own).map(row=>({id:row.id,kind:'callout' as const,status:row.status,date:row.date,endDate:null,startTime:null,endTime:null,createdAt:row.createdAt})),
-  ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).slice(0,8);
+  ].sort((a,b)=>Date.parse(b.createdAt)-Date.parse(a.createdAt)).filter((row,index)=>index<8||(row.kind==='timeOff'&&row.status==='PENDING'));
   // Recheck current module revision after all independent reads; mixed policy observations never escape.
   const current=await readActivePresentation(workspace.id,guarded,{strict:true});
   if(current.revision!==presentation.revision)throw Error('Requests modules changed');
