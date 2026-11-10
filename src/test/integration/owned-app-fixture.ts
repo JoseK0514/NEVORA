@@ -72,3 +72,18 @@ export async function seedOwnedScenario(executor: SqlExecutor, label: string, of
   }
   return { label, actors, week, sourceId, targetId, sourceDate: addDays(week, 1), targetDate: addDays(week, 2) };
 }
+
+/** Fictional role change, retaining the application's workspace/employee
+ * row-before-DML lock order (prepareEmployeeProfileMutation). A bare UPDATE
+ * takes ROW EXCLUSIVE before waiting on the row and can deadlock Home's final
+ * SHARE range lock. This helper adds no retry and bypasses no source lock. */
+export async function setOwnedEmployeeRole(executor:SqlExecutor,employeeId:string,role:'EMPLOYEE'|'MANAGER'):Promise<void>{
+ if(!employeeId||employeeId.length>200||!['EMPLOYEE','MANAGER'].includes(role))throw Error('Invalid owned role fixture');
+ const rows=await executor.transaction([
+  {text:'SELECT id FROM workspaces WHERE singleton=true ORDER BY id FOR SHARE',values:[]},
+  {text:'SELECT id FROM employees WHERE id=$1 ORDER BY id FOR UPDATE',values:[employeeId]},
+  {text:'UPDATE employees SET role=$2 WHERE id=$1 RETURNING id,role',values:[employeeId,role]},
+ ]);
+ const changed=rows[2]?.[0] as {id:string;role:string}|undefined;
+ if(changed?.id!==employeeId||changed.role!==role)throw Error('Owned role fixture was not changed');
+}

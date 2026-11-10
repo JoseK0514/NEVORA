@@ -4,7 +4,7 @@ import {previewCommunicationAudience,executeCommunicationCommand,communicationAu
 import type {CommunicationDraft} from '../../lib/communications/types';
 import {Client} from 'pg';
 import {createDisposableFoundationDatabase} from './local-postgres';
-import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner} from './owned-app-fixture';
+import {seedOwnedApp,seedOwnedScenario,seedOwnedScenarioOwner,setOwnedEmployeeRole} from './owned-app-fixture';
 import {admitLogin,admitLoginAttempt,LOGIN_LIMITS,releaseLoginAddress} from '../../lib/auth/login-limits.server';
 import {readEmployeeHome,homeAuthority} from '../../lib/data/employee-home.server';
 import {readEmployeeWeeklyReview} from '../../lib/data/employee-weekly-review.server';
@@ -353,4 +353,27 @@ it('shift reassignment during final Home wait revokes current grant without back
  const r=await readEmployeeHome(proof,ex);expect(r).toMatchObject({state:'partial',allSet:false,snapshot:{sources:{communications:{state:'unavailable',reason:'source_changed'}}}});if('snapshot' in r)expect(r.snapshot.attention.some(row=>row.ref.id===result.id)).toBe(false);
  expect(await readCommunication(proof,result.id,db.executor)).toMatchObject({state:'unauthorized'});
  expect(await q('SELECT employee_id FROM communication_recipients WHERE communication_id=$1',[result.id])).toEqual([{employee_id:proof.employee.id}]);
+});
+
+it('fictional role changes preserve the application row-before-write protocol during a final Home range read',async()=>{
+ const reader=new Client({connectionString:db.connectionString});await reader.connect();
+ let writing:Promise<unknown>|undefined,sourceFailure:string|null=null;
+ try{
+  await reader.query("SET deadlock_timeout='50ms'; SET lock_timeout='2000ms'");
+  await reader.query('BEGIN');const readerPid=(await reader.query('SELECT pg_backend_pid() AS pid')).rows[0].pid;
+  // The actual Home guards hold this row before their final source-range lock.
+  await reader.query('SELECT id FROM employees WHERE id=$1 FOR SHARE',[proof.employee.id]);
+  writing=setOwnedEmployeeRole(db.executor,proof.employee.id,'MANAGER').then(()=>null,error=>String(error.code??'unknown'));
+  const deadline=Date.now()+2000;let waiting=false;
+  while(Date.now()<deadline){
+   const rows=await q('SELECT pid FROM pg_stat_activity WHERE $1::integer=ANY(pg_blocking_pids(pid))',[readerPid]);
+   if(rows.length){waiting=true;break;}await new Promise(resolve=>setTimeout(resolve,5));
+  }
+  expect(waiting,'Role writer must actually wait on the Home employee row').toBe(true);
+  try{await reader.query('LOCK TABLE employees IN SHARE MODE');}catch(error){sourceFailure=String((error as {code?:string}).code??'unknown');}
+  await reader.query('ROLLBACK');
+  const writerFailure=await writing;
+  expect({sourceFailure,writerFailure}).toEqual({sourceFailure:null,writerFailure:null});
+  expect(await q('SELECT role FROM employees WHERE id=$1',[proof.employee.id])).toEqual([{role:'MANAGER'}]);
+ }finally{await reader.query('ROLLBACK').catch(()=>{});if(writing)await writing;await reader.end();}
 });
