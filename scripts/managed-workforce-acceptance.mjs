@@ -4,6 +4,7 @@ import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {resolve,join,isAbsolute} from 'node:path';
 import {createServer} from 'node:net';
 import {createHash,generateKeyPairSync} from 'node:crypto';
+import {readManagedStartupObservation} from './managed-workforce-acceptance-observer.mts';
 const git=(...args)=>{const r=spawnSync('git',args,{encoding:'utf8',timeout:10000});assert.equal(r.status,0);return r.stdout.trim();};
 const source=git('rev-parse','HEAD');assert.equal(git('status','--porcelain'),'','Managed acceptance requires clean committed source');
 const output=process.argv[2];assert(output&&isAbsolute(output)&&process.argv.length===3,'Supply a new absolute evidence directory');await mkdir(output,{recursive:false,mode:0o700});
@@ -16,20 +17,25 @@ const preflightEnv={...safe,RENDER_GIT_COMMIT:source,NEVORA_WORKFORCE_ENABLED:'t
 assert.deepEqual(JSON.parse(run(['build/workforce/host.mjs','--validate-config'],preflightEnv)),{state:'valid',enabled:true,profiles:1});
 const mixed=spawnSync(process.execPath,['build/workforce/host.mjs','--validate-config'],{env:{...preflightEnv,NEVORA_WORKFORCE_PROFILES:JSON.stringify([{...sourceProfile,env:{...sourceProfile.env,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,4).toString('base64url')}}])},encoding:'utf8',timeout:5000});assert.equal(mixed.status,1);assert.equal(mixed.stdout,'');assert.equal(mixed.stderr,'managed_workforce_unavailable\n');
 const port=await new Promise((ok,bad)=>{const s=createServer();s.once('error',bad);s.listen(0,'127.0.0.1',()=>{const a=s.address();s.close(()=>ok(a.port));});});
-let child,exited=false,outputBytes=0,errors='';
+let child,exited=false,outputBytes=0,errors='',exitCode=null,exitSignal=null,spawnError=null;
+const startupObservations=[];
+const ownedListening=()=>startupObservations.length===1&&startupObservations[0].kind==='listening';
 try{
- child=spawn(process.execPath,['build/workforce/host.mjs'],{env:{...safe,RENDER_GIT_COMMIT:source,PORT:String(port)},stdio:['ignore','pipe','pipe'],detached:true});
- child.stdout.on('data',chunk=>{outputBytes+=chunk.length;});child.stderr.on('data',chunk=>{if(errors.length<4096)errors+=chunk.toString();});
- const exit=new Promise(ok=>{child.once('error',()=>{exited=true;ok(null);});child.once('close',code=>{exited=true;ok(code);});});
+ child=spawn(process.execPath,['--import',resolve('scripts/managed-workforce-acceptance-observer.mts'),'build/workforce/host.mjs'],{env:{...safe,RENDER_GIT_COMMIT:source,PORT:String(port)},stdio:['ignore','pipe','pipe','ipc'],detached:true});
+ child.stdout.on('data',chunk=>{outputBytes+=chunk.length;});child.stderr.on('data',chunk=>{if(errors.length<4096)errors+=chunk.toString().slice(0,4096-errors.length);});
+ child.on('message',value=>{const observation=readManagedStartupObservation(value);if(observation&&startupObservations.length<2)startupObservations.push(observation);});
+ const exit=new Promise(ok=>{child.once('error',error=>{exited=true;spawnError=['ENOENT','EACCES','EPERM'].includes(error.code)?error.code:'OTHER';ok(null);});child.once('close',(code,signal)=>{exited=true;exitCode=code;exitSignal=signal;ok(code);});});
  let ready;const until=Date.now()+15000;
- while(Date.now()<until&&!exited){try{ready=await fetch('http://127.0.0.1:'+port+'/ready',{signal:AbortSignal.timeout(1000)});if(ready.status===200)break;}catch{/* Startup is bounded above. */}await new Promise(r=>setTimeout(r,50));}
+ while(Date.now()<until&&!exited){try{ready=await fetch('http://127.0.0.1:'+port+'/ready',{signal:AbortSignal.timeout(1000)});if(ready.status===200&&ownedListening())break;}catch{/* Startup is bounded above. */}await new Promise(r=>setTimeout(r,50));}
+ if(ready?.status!==200||!ownedListening())await writeFile(join(output,'startup-failure.json'),JSON.stringify({sourceSha:source,port,childPid:child.pid??null,exited,exitCode,exitSignal,spawnError,httpStatus:ready?.status??null,outputBytes,stderrClass:errors.trim()==='managed_workforce_unavailable'?'managed_workforce_unavailable':errors?'other':'empty',startupObservations})+'\n');
  assert.equal(ready?.status,200,errors);assert.deepEqual(await ready.json(),{ready:true});
+ assert.deepEqual(startupObservations,[{version:1,kind:'listening'}],'Owned child listening observation required');
  for(const [path,expected] of [['/private/health',401],['/run',404],['/ready?command=payroll',404]])assert.equal((await fetch('http://127.0.0.1:'+port+path,{signal:AbortSignal.timeout(1000)})).status,expected);
  const at=Date.now();process.kill(-child.pid,'SIGTERM');
  let timer;const result=await Promise.race([exit,new Promise(ok=>{timer=setTimeout(()=>ok('timeout'),3000);})]);clearTimeout(timer);assert.equal(result,0,'Disabled service must drain cleanly');assert(Date.now()-at<3000);assert.equal(outputBytes,0);assert.equal(errors,'');
  const rejected=spawnSync(process.execPath,['build/workforce/host.mjs'],{env:{...safe,RENDER_GIT_COMMIT:'f'.repeat(40),PORT:String(port)},encoding:'utf8',timeout:5000});assert.equal(rejected.status,1);assert.match(rejected.stderr,/managed_workforce_unavailable/);
  const bundle=join(output,'monitor-bundle');await writeFile(join(output,'monitor-build.log'),run(['scripts/build-neon-onboarding.mjs','--workforce-monitor-only',bundle]));await writeFile(join(output,'monitor-verify.log'),run(['scripts/verify-neon-onboarding.mjs','--workforce-monitor-only',bundle]));
  assert.equal(git('rev-parse','HEAD'),source);assert.equal(git('status','--porcelain'),'');
- await writeFile(join(output,'report.json'),JSON.stringify({sourceSha:source,state:'passed',disabledActualHttp:true,enrolledProfileCompiledPreflight:true,mixedCustodyRejected:true,privateHealthUnauthorized:true,publicExecutionAbsent:true,gracefulShutdown:true,sourceMismatchRejected:true,actualMonitorZipVerified:true,hosted:false,mailSent:false})+'\n');
+ await writeFile(join(output,'report.json'),JSON.stringify({sourceSha:source,state:'passed',disabledActualHttp:true,startupObservations,enrolledProfileCompiledPreflight:true,mixedCustodyRejected:true,privateHealthUnauthorized:true,publicExecutionAbsent:true,gracefulShutdown:true,sourceMismatchRejected:true,actualMonitorZipVerified:true,hosted:false,mailSent:false})+'\n');
  console.log(JSON.stringify({sourceSha:source,state:'passed',output}));
 }finally{if(child&&!exited)try{process.kill(-child.pid,'SIGKILL');}catch{/* Process already gone. */}}
