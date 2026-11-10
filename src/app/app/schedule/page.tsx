@@ -215,7 +215,7 @@ export default async function SchedulePage({
       lead={session.role === 'LEAD'}
       modules={modules}
       view={params.view === 'open' ? 'open' : 'mine'}
-      intent={params.intent === 'swap' ? 'swap' : undefined}
+      intent={params.intent === 'swap' ? 'swap' : params.intent === 'callout' ? 'callout' : undefined}
       openShifts={openShifts}
       weekStart={weekStart}
       today={today}
@@ -342,7 +342,8 @@ export default async function SchedulePage({
   const weekState = !counts || !inView.length ? null
     : changes && !counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber"><span className="c-sched-state__lead">Published · </span>{`${changes} ${changes === 1 ? "change" : "changes"}`}</span>
     : counts.drafts ? <span className="c-meta c-sched-weekstate" data-tone="amber">{`${counts.drafts === inView.length ? "Draft" : `${counts.drafts} ${counts.drafts === 1 ? "draft" : "drafts"}`}${changesText}`}</span>
-    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate">Published</span>
+    // Review B6 (NV-088): Published is the done state, so it is green.
+    : counts.published === inView.length ? <span className="c-meta c-sched-weekstate" data-tone="green">Published</span>
     : counts.published ? <span className="c-meta c-sched-weekstate">{`${counts.published} of ${inView.length} published`}</span>
     : <span className="c-meta c-sched-weekstate">Not started</span>;
   const todayLong = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric", timeZone: "UTC" }).format(new Date(`${today}T12:00:00Z`));

@@ -3,7 +3,8 @@
   /* The next payday on the hero: "Next payday · Tomorrow", the date large, then the period chip and See your hours. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: var(--b-on-band-2); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: 2px 0 10px; font-size: 34px; line-height: 40px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF; }
+  /* Review B6 (NV-154): the date is a 28/34 figure under its label, so the page title "Pay" (30px) leads. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: 2px 0 10px; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-chip { height: 24px; padding: 0 9px; border-radius: 12px; font-size: 12.5px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 12px; border-radius: 16px; font-size: 13.5px; }
@@ -29,4 +30,9 @@
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { gap: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { padding: 0 10px; }
+}
+
+/* Review B6 (NV-155): a statement a correction replaced reads muted; the correction is the current one. */
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-muted { color: var(--b-grey); font-weight: 600; }
 }

@@ -39,3 +39,9 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-state:last-child { padding-bottom: 22px; }
 /* Review B1 (NV-210): each confirmation has a visible heading that names it. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm__t { margin: 0 0 6px; font-size: 17px; line-height: 22px; font-weight: 700; color: #111517; }
+
+/* Review B6 (NV-211, NV-060): "This device" as a small grey eyebrow above the ring, and a failure's message in the card. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-state:first-child { padding-top: 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-eyebrow { margin: 0 0 12px; font-size: 13.5px; line-height: 18px; font-weight: 600; letter-spacing: 0; color: var(--b-grey, #6A7176); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-msg { margin: 10px 0 0; max-width: 40ch; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--b-ink2, #3F464B); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-msg[data-tone=amber] { color: #8A4B00; }

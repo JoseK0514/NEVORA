@@ -125,7 +125,8 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
       {/* v5 (Jose approved the regrouping, Oct 24): the same sentences as rows; the retention schedule opens from "What may be kept". */}
       <QuietGroup id="deletion-effects" label="What happens">
         <QuietList>
-          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><SignOutIcon className="q-ic" /></span>
+          {/* Review B6 (NV-143): the same flow for every role: "access ends" is red-tinted, consent is a checkbox. */}
+          <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av q-av--red" aria-hidden="true"><SignOutIcon className="q-ic" /></span>
             <span className="q-rt"><b>Your access ends now.</b><i>You’re signed out on every device and can’t sign in again. Calendar feed links stop working.</i></span></div></li>
           <li><div className="q-row q-row--av q-deletion__fact"><span className="q-av" aria-hidden="true"><TrashIcon className="q-ic" /></span>
             <span className="q-rt"><b>What is removed</b><i>Your profile, sign-in details, notification subscriptions, calendar links and the content you contributed, within {period ?? unresolved("DELETION_COMPLETION_PERIOD")}.</i></span></div></li>
@@ -153,7 +154,7 @@ export function AccountDeletionForm({ account, period, retention, existing, owne
         </div>
         <QuietList>
           <li><label className="q-row q-deletion__check"><span className="q-rt"><b>I understand my NEVORA account will be deleted and I won’t be able to sign in again.</b></span>
-            <input type="checkbox" className="q-tog" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
+            <input type="checkbox" className="q-deletion__box" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} disabled={pending} /></label></li>
         </QuietList>
       </QuietGroup>
       {state.kind === "failed" || state.kind === "unavailable" || state.kind === "uncertain" || state.kind === "busy" || (checking && state.kind === "wrong_password") ? <div className="q-deletion__alert" ref={outcome} tabIndex={-1} role="alert">

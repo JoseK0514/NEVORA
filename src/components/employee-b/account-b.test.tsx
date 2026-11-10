@@ -66,12 +66,13 @@ describe('Updates', () => {
     partial: false, search: '', filter: 'all', timeZone: 'America/Puerto_Rico', onSearch: noop, onFilter: noop, onOpen: noop, more: false, busy: false, onConfirm: noop, onCompose: noop, ...patch});
   it('search and Show on glass, To confirm with Open and Confirm, Earlier rows, Write an update at the foot', () => {
     const html = renderToStaticMarkup(<EmployeeUpdatesB list={list()} />), plain = text(html);
-    for (const value of ['Updates', 'To confirm', 'Holiday hours', 'Must read', 'Management · Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb */'Acknowledge', 'Earlier', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
+    for (const value of ['Updates', 'To confirm', 'Holiday hours', 'Must read', /* B6 (NV-157): a Dotted line */'Management', 'Wed, Nov 4', 'Fictional store hours for the week.', 'Open', /* B7 wording (NV-284): one verb */'Acknowledge', 'Earlier', 'Break room rules', 'Write an update']) expect(plain).toContain(value);
     expect(html).toContain('placeholder="Search update titles"');expect(html).toMatch(/<select id="b-updates-filter"/);expect(html).toContain('href="/app/updates/compose"');expect(html).toContain('href="/app/more"');
     expect(html).toContain('href="/app/updates/u1"');expect(html).toContain('href="/app/updates/u2"');
-    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Earlier'));// Employee desktop (Nov 8, 2026) also draws Write an update as the band's action (desktop only, eb-desk); the phone's row
-    // is the last one, at the foot of the list.
-    expect(plain.indexOf('Break room rules')).toBeLessThan(plain.lastIndexOf('Write an update'));
+    expect(plain.indexOf('To confirm')).toBeLessThan(plain.indexOf('Earlier'));
+    // Review B6 (NV-166): Write an update is the band's action at every width (white on desktop, glass on the phone), not a
+    // row under the read items.
+    expect(plain.indexOf('Write an update')).toBeLessThan(plain.indexOf('To confirm'));expect(html).not.toContain('class="b-add"');
   });
   it('a search with no match, an empty page and a confirm in flight', () => {
     expect(text(renderToStaticMarkup(<EmployeeUpdatesB list={list({search: 'nothing like this'})} />))).toContain('No matches on this page');

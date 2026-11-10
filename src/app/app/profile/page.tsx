@@ -10,5 +10,5 @@ export const metadata = { title: "Profile" };
 /** Board E-Profile. The calendar link and passkeys moved to their own pages (/app/profile/calendar, /passkeys). */
 export default async function ProfilePage(){
  const proof=await requireSessionMutationProof();if(['OWNER','MANAGER'].includes(proof.employee.role))return <ManagerProfilePage proof={proof}/>;if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app');
- return <EmployeeProfilePage authority={employeeViewAuthority(proof,'profile')} lang={await readAuthLang()} policies={policiesVisible()} lead={proof.employee.role==='LEAD'}/>;
+ return <EmployeeProfilePage authority={employeeViewAuthority(proof,'profile')} lang={await readAuthLang()} policies={policiesVisible()} lead={proof.employee.role==='LEAD'} name={`${proof.employee.firstName} ${proof.employee.lastName}`.trim()||undefined}/>;
 }

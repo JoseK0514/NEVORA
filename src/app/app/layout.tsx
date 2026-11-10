@@ -51,6 +51,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { preload } from "react-dom";
 import { AppShell } from "@/components/app-shell";
+import { BEntrance } from "@/components/b-entrance";
 import { LeaveStaffingProvider } from "@/components/leave-staffing/use-leave-staffing";
 import { NevoraFailureNotice } from "@/components/leave-staffing/failure-notice";
 import { readNotificationConfig } from "@/lib/notifications/config";
@@ -133,6 +134,8 @@ export default async function PlatformLayout({ children, sheet }: { children: Re
       {sheet}
       {/* Face ID offer after a password sign-in (hidden unless NEXT_PUBLIC_NEVORA_PASSKEYS=on). */}
       <PasskeyOffer />
+      {/* Review B6 (NV-326): the B entrance plays on the first page of a session only. */}
+      <BEntrance />
     </AppShell>
   );
 }

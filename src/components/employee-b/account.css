@@ -270,3 +270,35 @@
 @media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span .eb-nowrap { white-space: nowrap; text-wrap: nowrap; }
 }
+
+/* ---------- Review B6 (Nov 10, 2026): Profile, Help, More and Delete account ---------- */
+/* NV-159: Delete account is a form: on a phone it hides the tab bar, the bell and the avatar (as Request time off does). */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell.app-shell[data-nv-b][data-nv-b]:has(.c-page > .b-screen > .eb-form) .mobile-nav { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell.app-shell[data-nv-b][data-nv-b]:has(.c-page > .b-screen > .eb-form) .mobile-header .mobile-header-actions { display: none !important; }
+}
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-form { display: none; }
+  /* NV-159, NV-143: Delete my account is a working red pill from the start (errors show on submit); while it sends it
+   * takes the disabled pair. The whole "I understand" line is a 48px target. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-confirm:not(:disabled):not(#e-none) { background: var(--b-red) !important; color: #FFFFFF !important; border-radius: 999px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-confirm:disabled:not(#e-none) { background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; border-radius: 999px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .em-delete-check:not(#e-none) { min-height: 48px; padding: 4px 0; align-items: center; }
+  /* NV-285, NV-293: the language switch keeps its 34px look with a 44px tap area. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button { position: relative; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-lseg button::after { content: ""; position: absolute; inset: -6px 0; }
+  /* NV-105: you, on More's glass, as in the header: a white circle with teal initials. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-me { background: #FFFFFF; color: #0B6E69; font-weight: 700; }
+  /* NV-286: Help's Contact: one reply-time line, then the warning as a tinted note with the lock. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-help-note__a { display: inline-block; margin: -12px 0; padding: 12px 0; color: #0B6E69; font-weight: 600; white-space: nowrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn { margin: 0 18px 18px; padding: 12px 14px; border-radius: 14px; background: var(--b-quiet); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-notice__t { font-size: 13.5px; line-height: 19px; font-weight: 600; color: var(--b-ink2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-note { padding-bottom: 12px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen #b-help-contact .eb-help-warn .b-ico { background: #FFFFFF; }
+}
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-143 (LN-034, TB-045): on desktop and tablets "Confirm it's you" is the card itself, not a card inside the form's card. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page:has(> .b-screen--back) > .b-keep.eb-delete-keep:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { padding: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .eb-delete-keep .eb-confirm:not(#e-none) { padding: 0 22px 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen #b-help-contact .eb-help-warn:not(#e-none) { margin: 0 22px 22px; }
+}

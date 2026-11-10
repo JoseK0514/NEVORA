@@ -22,8 +22,12 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) {
     display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: #0B6E69; color: #FFFFFF;
     font: 600 14px/1 Inter, "Inter Fallback", sans-serif; box-shadow: 0 4px 10px -6px rgb(11 110 105 / 0.55); cursor: pointer; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-disabled="true"] { opacity: 0.55; box-shadow: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act p { flex-basis: 100%; font-size: 13px; line-height: 18px; color: var(--b-grey); text-align: right; }
+  /* Review B6 (NV-152): while it confirms, the button keeps its place, width and colour ("Confirming…"); a line about the
+   * fresh read is for screen readers only, so the card doesn't grow. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action) { min-width: 112px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-busy="true"] { cursor: progress; box-shadow: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act :is(.q-bs, .employee-action)[aria-disabled="true"]:not([aria-busy="true"]) { opacity: 0.55; box-shadow: none; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act p:not(.b-sr) { flex-basis: 100%; font-size: 13px; line-height: 18px; color: var(--b-grey); text-align: right; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-quiet-status { font-size: 13.5px; font-weight: 600; color: var(--b-grey); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act .employee-quiet-status.success { color: #1D6B45; }
   /* What changed in the schedule (the app's own disclosure), as a card. */
@@ -79,8 +83,8 @@
  * keeps one line and the card doesn't jump. Why other shifts aren't available: the corporate summary's own inset goes, so
  * its words line up with the rows' text and its chevron with theirs. */
 @media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) { flex-basis: 100%; padding-left: 48px; justify-content: flex-start; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) .employee-weekly-confirmation { align-items: flex-start; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p) p { text-align: left; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) { flex-basis: 100%; padding-left: 48px; justify-content: flex-start; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) .employee-weekly-confirmation { align-items: flex-start; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-confirm__act:has(.employee-quiet-status, p[role="alert"]) p { text-align: left; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-screen .es-blocked summary { padding: 0 !important; min-height: 36px; }
 }

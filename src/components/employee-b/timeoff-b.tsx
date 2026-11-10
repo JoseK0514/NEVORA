@@ -61,14 +61,15 @@ function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) 
     end={filter !== 'decided' && request.status === 'PENDING' ? undefined : <BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
 }
 
-/** One request: when it was sent, its dates and length (with the person's note), then who it waits on or who decided it. */
+/** One request: its dates as the title with its status chip (amber Waiting, as in the list), then its length, when it was
+ * sent and the person's note, then who it waits on or who decided it (review B6, NV-093: the dates lead, not "Sent"). */
 function RequestCardB({request, zone}: {request: TimeOffView; zone: string}) {
   const sent = request.createdAt ? sentDay(request.createdAt, zone) : '';
   const {by, title, detail} = timeOffDecision(request, zone);
-  return <BCard id="b-timeoff-request" title={sent ? keepWhole(`Sent ${sent}`) : 'Time-off request'}>
+  const pill = timeOffPill(request.status);
+  return <BCard id="b-timeoff-request" title={keepWhole(timeOffDates(request))} chip={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>}>
     <div className="eb-tof-req">
-      <p className="eb-tof-req__d">{keepWhole(timeOffDates(request))}</p>
-      <p className="eb-tof-req__l">{keepWhole(timeOffLength(request))}{request.note ? ` · ${request.note}` : ''}</p>
+      <p className="eb-tof-req__l"><Dotted text={[keepWhole(timeOffLength(request)), sent ? keepWhole(`Sent ${sent}`) : null, request.note || null].filter(Boolean).join(' · ')}/></p>
     </div>
     <BList><BRow lead={by ? <BAvatar name={by}/> : undefined} title={keepWhole(title)} sub={detail ?? undefined}/></BList>
   </BCard>;

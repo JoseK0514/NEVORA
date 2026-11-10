@@ -27,9 +27,10 @@ export default async function CalloutPage({
   const workspace = await getWorkspace();
   const params = await searchParams;
 
-  // Opened without choosing a shift: back to My requests quietly (inspection Oct 24).
+  // Opened without choosing a shift: Schedule asks for the shift (review B6, NV-290: a deep link never lands on a generic
+  // list).
   if (!params.shiftId) {
-    redirect("/app/exchange?tab=my");
+    redirect("/app/schedule?intent=callout");
   }
 
   // A shift with held edits still opens and shows its published version

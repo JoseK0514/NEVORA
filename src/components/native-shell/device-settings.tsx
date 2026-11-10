@@ -80,15 +80,19 @@ function ring(p: Props, busy: boolean) {
  * two confirmations as their own cards. Same words, controls, handlers and data-native-* hooks as the card view. */
 export function NativeDeviceSettingsB(p: Props) {
     const d = describe(p), s = d.s;
+    const message = s.message && !p.paused && s.message.trim() !== d.text.trim() ? s.message : null;
     return <BScreen back>
     <BHero back={{ href: '/app/notifications', label: 'Notifications' }} title="Alerts" titleId="b-native-alerts-title"/>
     <BStack>
-      <section className="b-card nd-card" aria-label="App alerts" aria-busy={d.busy}>
-        <div className="b-card__h"><h2>This device</h2></div>
+      {/* Review B6 (NV-211): "This device" is the centred stack's eyebrow, not a left header over centred content. NV-060:
+        * a failure's own message sits in the card under its explanation (amber ink), not in a teal note under the card. */}
+      <section className="b-card nd-card" aria-labelledby="nd-device-h" aria-busy={d.busy}>
         <div className="nd-state">
+          <h2 className="nd-eyebrow" id="nd-device-h">This device</h2>
           {ring(p, d.busy)}
           <h3 className="nd-title" tabIndex={-1} data-native-status>{d.title}</h3>
           <p className="nd-text">{d.text}</p>
+          {message ? <p className="nd-msg" data-tone={['error', 'revoked', 'denied'].includes(s.state) ? 'amber' : undefined} role="status">{message}</p> : null}
         </div>
         {d.acts ? <div className="nd-acts">
           {/* Review B1 (NV-320, Jose: follow the report): one primary, the red action last. */}
@@ -109,7 +113,6 @@ export function NativeDeviceSettingsB(p: Props) {
         <p className="nd-text">Turn off alerts for this account in this app? Your phone permission and other devices stay the same. An alert already queued by your phone may still appear.</p>
         <div className="nd-acts"><BButton kind="quiet" big full onClick={p.onKeep}>Keep current setup</BButton><button type="button" className="b-btn b-btn--big b-btn--full eb-btn-danger" onClick={p.onTurnOff}>Turn off alerts</button></div>
       </div> : null}
-      {s.message && !p.paused ? <p className="b-note eb-callout" role="status">{s.message}</p> : null}
     </BStack>
   </BScreen>;
 }
@@ -118,9 +121,8 @@ export function NativeAlertsUnavailableB() {
     return <BScreen back>
     <BHero back={{ href: '/app/notifications', label: 'Notifications' }} title="Alerts" titleId="b-native-alerts-title"/>
     <BStack>
-      <section className="b-card nd-card" aria-label="App alerts">
-        <div className="b-card__h"><h2>This device</h2></div>
-        <div className="nd-state"><Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>
+      <section className="b-card nd-card" aria-labelledby="nd-device-h">
+        <div className="nd-state"><h2 className="nd-eyebrow" id="nd-device-h">This device</h2><Ring tone="grey"><BellSlashIcon size={28} weight="bold"/></Ring>
           <p className="nd-text">Your workplace has not made app alerts available. Your notifications remain in NEVORA.</p></div>
       </section>
     </BStack>

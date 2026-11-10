@@ -47,7 +47,8 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero .b-btn--glass:not(#e-none) { font-weight: 600 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero :is(.b-hrow, .b-hpad):not(#e-none) { padding: 18px 0 0 !important; gap: 10px !important; }
   /* Live figures on glass. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live:not(#e-none) { margin: 24px 0 0 !important; max-width: 920px !important; border-radius: 20px !important; }
+  /* Review B6 (NV-094): the strip spans the content grid, so it ends on the cards' right edge at every width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live:not(#e-none) { margin: 24px 0 0 !important; max-width: none !important; border-radius: 20px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(.b-live__i > .b-live__a, .b-live__i:not(:has(> .b-live__a))):not(#e-none) { padding: 14px 20px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__l:not(#e-none) { font-size: 13.5px !important; line-height: 19px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-live__v:not(#e-none) { font-size: 28px !important; line-height: 34px !important; }
@@ -401,11 +402,11 @@
 
 /* ---------- Lead (Direction B, Nov 8, 2026): the Employee screens with a Lead's extras ---------- */
 @media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  /* Home: the shift and Things to do on the left, Today's team and Coming up on the right. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-team) > #b-home-todo:not(#e-none):not(#e-none2) { grid-column: 1 !important; grid-row: 2 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-team) > #b-home-team:not(#e-none):not(#e-none2) { grid-column: 2 !important; grid-row: 1 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-team) > #b-home-upcoming:not(#e-none):not(#e-none2) { grid-column: 2 !important; grid-row: 2 / span 3 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> #b-home-team) > .b-note:not(#e-none):not(#e-none2) { grid-column: 1 !important; grid-row: 3 !important; }
+  /* Home: the shift and Things to do on the left; Today's team over Coming up on the right, as one column that flows on its
+   * own (review B6, NV-095: no hole under Today's team), in the DOM order left then right (NV-288). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> .eb-side) > #b-home-todo:not(#e-none):not(#e-none2) { grid-column: 1 !important; grid-row: 2 / span 3 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> .eb-side) > .eb-side:not(#e-none):not(#e-none2) { grid-column: 2 !important; grid-row: 1 / span 4 !important; display: flex !important; flex-direction: column !important; gap: 20px !important; min-width: 0 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-ehome > .b-screen .b-stack:has(> .eb-side) > .eb-side > .b-note:not(#e-none):not(#e-none2) { margin-top: -8px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen #b-home-team .eb-cardnote:not(#e-none) { padding-top: 4px !important; font-size: 14.5px !important; line-height: 21px !important; color: #2A3033 !important; }
   /* Profile: the Calendar and alerts card. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-calalerts:not(#e-none) { display: block !important; }
@@ -477,3 +478,173 @@
 @media (min-width: 1024px) and (max-width: 1279px) {
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .em-requests-mobile .eb-sib > .b-screen .b-stack:has(> .eb-xpane):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
 }
+
+/* ---------- Review B6 (Nov 10, 2026): Employee, Lead and tablets ---------- */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-295: "Clock in on the Main Office tablet" is information, so it is a plain line with its icon, not a filled block
+   * that reads as a button. A clock state (green clocked in, amber not yet) keeps its status tint. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint:not([data-tone]):not(#e-none):not(#e-none2) { padding: 0 !important; border-radius: 0 !important; background: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint[data-tone="green"]:not(#e-none):not(#e-none2) { background: var(--b-green-50) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift .eb-tint[data-tone="amber"]:not(#e-none):not(#e-none2) { background: var(--b-amber-50) !important; }
+  /* NV-287: a second list in one card (Things to do's two desktop rows) keeps the inset divider rows use. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-list + .b-list > .b-li:first-child:not(#e-none) { box-shadow: none !important; background: linear-gradient(#ECEEEF, #ECEEEF) 22px 0 / calc(100% - 44px) 1px no-repeat !important; }
+}
+/* NV-069: on a tablet under 820px Home's two columns are narrow, so the shift's range is 26px, as on the phone. */
+@media (min-width: 768px) and (max-width: 819px) and (min-height: 501px), (min-width: 768px) and (max-width: 819px) and (pointer: fine) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-shift__time:not(#e-none):not(#e-none2) { font-size: 26px !important; line-height: 32px !important; }
+}
+
+/* Review B6: Schedule (desktop and tablet). */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-151: "Confirm this week" is the one thing the manager asked for, so it leads the page, across the width, as on the
+   * phone (where it is the first card). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack > #b-my-review:has(.es-confirm):not(#e-none):not(#e-none2) { grid-column: 1 / -1 !important; order: -1 !important; }
+  /* NV-146: every day block is as tall as the week's tallest; its status chip and a Lead's marker share one row at the
+   * block's foot, on white so a teal chip shows on a teal block. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wd > .eb-wsh:last-child:not(#e-none) { flex: 1 0 auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh__chips:not(#e-none) { display: flex !important; flex-wrap: wrap !important; gap: 4px !important; margin-top: auto !important; padding-top: 6px !important; overflow: visible !important; white-space: normal !important; text-overflow: clip !important; text-wrap: wrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh .eb-wsh__chips .b-chip:not(#e-none):not(#e-none2) { margin: 0 !important; background: #FFFFFF !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh--now .eb-wsh__chips .b-chip:not(#e-none):not(#e-none2) { background: rgb(255 255 255 / .18) !important; color: #FFFFFF !important; }
+  /* A Lead who leads every shift: the week card's header says so once. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wkc .b-card__meta:not(#e-none) { font-size: 14px !important; color: var(--b-grey) !important; }
+}
+@media (min-width: 1024px) {
+  /* NV-150: the week card already holds the week, so Coming up beside it shows today and the next shift only. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-esched > .b-screen .b-stack:has(> .eb-wkc) > #b-my-agenda .b-list > .b-li:nth-child(n + 3):not(#e-none) { display: none !important; }
+}
+/* NV-169, NV-044 (tablet): the narrow day blocks show the time (it may take two lines) and the status chip; the role and
+ * place lines go, since Coming up under the card lists them in full. */
+@media (min-width: 768px) and (max-width: 1023px) and (min-height: 501px), (min-width: 768px) and (max-width: 1023px) and (pointer: fine) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh > .eb-wsh__l:not(#e-none):not(#e-none2):not(#e-none3) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh:not(#e-none):not(#e-none2):not(#e-none3) { min-height: 72px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh > b:not(#e-none):not(#e-none2) { white-space: normal !important; overflow-wrap: normal !important; text-wrap: balance !important; }
+  /* "Tomorrow" doesn't fit a tablet's day (the next column is tomorrow); a Lead's marker beside it stays. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh__chips--tomorrow > .b-chip:not(.eb-wsh__lead):not(#e-none):not(#e-none2) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-wsh__chips--tomorrow:not(:has(.eb-wsh__lead)):not(#e-none):not(#e-none2) { display: none !important; }
+}
+
+/* Review B6: one width and one inset on desktop and tablets. */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-113: a reading page is one 812px column, its band action included: the screen itself is 812px wide (the band still
+   * paints the full width through its border-image), so the white pill ends on the cards' right edge. Pages that lay their
+   * cards out in two columns (contents list, calendar providers, past timecards, Time) keep the full width. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] :is(.c-hours, .tof-frame, .em-account:not(.em-delete), .c-embed) > .b-screen--back:not(:has(.eb-toc, #b-calendar-providers, #b-hours-weeks, #b-hours-week)):not(#e-none):not(#e-none2):not(#e-none3) { max-width: 812px !important; }
+  /* …and More's identity strip spans its two columns. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-more > .b-screen .eb-id:not(#e-none):not(#e-none2):not(#e-none3) { max-width: none !important; }
+  /* NV-141: Updates' search starts on the band's text edge (the phone's 20px gutter stays on the phone). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-hero > .eb-tools:not(#e-none):not(#e-none2) { margin-left: 0 !important; margin-right: 0 !important; }
+  /* NV-147: one 22px inner inset for a card's header, rows and text blocks (the phone keeps 18px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(.eb-body, .eb-notice, .eb-update, .eb-doc, .eb-doc__body, .eb-doc__links, .eb-text, .ep-status, .ep-empty, .b-route-state, .eb-inline, .eb-pad, .eb-resp, .eb-help-note):not(#e-none):not(#e-none2) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-doc__sec > summary:not(#e-none):not(#e-none2) { padding-left: 22px !important; padding-right: 22px !important; }
+  /* NV-293: a notice's icon and text sit on the rows' geometry (text 22px after the 36px icon). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-notice:not(#e-none):not(#e-none2) { column-gap: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen :is(.eb-upd__body, .eb-upd__acts):not(#e-none):not(#e-none2) { padding-left: 81px !important; padding-right: 22px !important; }
+}
+
+/* Review B6: Pay (desktop and tablets). */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-154: one presentation at every width: the page's title is "Pay"; the next payday is a 28/34 figure under "Next payday
+   * · In 10 days" (the date no longer outranks the title, and the title is no longer hidden). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next):not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { position: static !important; top: auto !important; right: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .b-hero > .b-title:has(+ .ep-next) > .b-title__text:not(#e-none):not(#e-none2) { position: static !important; width: auto !important; height: auto !important; overflow: visible !important; clip: auto !important; white-space: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next:not(#e-none):not(#e-none2):not(#e-none3) { padding-top: 14px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen .ep-next__v:not(#e-none):not(#e-none2) { font-size: 28px !important; line-height: 34px !important; }
+  /* NV-278: Last pay statement and Earlier end on one line. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last):not(#e-none):not(#e-none2):not(#e-none3) { align-items: stretch !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-pay > .b-screen:not(.b-screen--back) .b-stack:has(> #b-pay-last) > .b-note:not(#e-none):not(#e-none2) { align-self: start !important; }
+}
+
+/* Review B6: Availability, a request's card and the shared pieces (desktop and tablets). */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-291: Save spans the card as on the phone, with its hint centred under it, both on the card's 22px edge; the week's
+   * header, rows and hour axis share that edge too (they kept the phone's 18px). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > :not(dialog):not(.c-card):not(#e-none):not(#e-none2) { margin-left: 22px !important; margin-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > .c-btn:not(#e-none):not(#e-none2) { align-self: stretch !important; width: auto !important; max-width: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > .c-avail__note:not(#e-none):not(#e-none2) { text-align: center !important; justify-content: center !important; font-variant-numeric: normal !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone > .c-avail__form > .c-card > .c-card__head:not(#e-none):not(#e-none2):not(#e-none3):not(#e-none4) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .c-avail--phone .c-avail__day:not(#e-none):not(#e-none2) { padding-left: 22px !important; padding-right: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .c-page > .b-keep.c-avail .c-avail__axis:not(#e-none):not(#e-none2) { margin: 0 222px 0 160px !important; }
+  /* A time-off request's card text on the 22px edge. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .eb-tof-req:not(#e-none):not(#e-none2) { padding-left: 22px !important; padding-right: 22px !important; }
+}
+
+/* ---------- Review B6: shared by every Direction B role ---------- */
+/* NV-272: no keyboard shortcut hint on a touch screen (and none while it's still empty before hydration). */
+@media (pointer: coarse) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .command-finder-trigger kbd:not(#e-none):not(#e-none2) { display: none !important; }
+}
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .command-finder-trigger kbd:empty:not(#e-none):not(#e-none2) { display: none !important; }
+/* NV-326: the hero is the page's identity and never fades in; only the cards stagger, and only on a session's first page
+ * (src/components/b-entrance.tsx marks the root once it has played). */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] .b-hero > .b-title:not(#e-none) { animation: none !important; }
+html[data-nv-entered] :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b] :is(.b-stack > *, .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep)):not(#e-none) { animation: none !important; }
+/* NV-231: notes and repair notes share the cards' radius and elevation (one shadow colour, --b-elev-1). */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-notes > *:not(#e-none) { border-radius: var(--b-radius-card); box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .ls-repair:not([data-tone=amber]):not(#e-none) { box-shadow: var(--b-elev-1); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .ls-repair[data-tone=amber]:not(#e-none) { box-shadow: inset 4px 0 0 var(--b-amber), var(--b-elev-1); }
+/* NV-165, NV-281: a tab's count is a small pill beside its label at every width (For you's is amber: it needs an answer). */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .b-screen .b-seg > :has(> .eb-segn) { display: inline-flex !important; align-items: center !important; justify-content: center !important; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-seg .eb-segn { display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin-left: 6px; padding: 0 5px; border-radius: 9px; background: rgb(255 255 255 / 0.22); color: #FFFFFF; font-size: 12px; line-height: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-seg > :is([aria-current="page"], [aria-pressed="true"]) .eb-segn { background: #E8F3F1; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-seg .eb-segn--amber, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-seg > :is([aria-current="page"], [aria-pressed="true"]) .eb-segn--amber { background: #FDF3E4; color: #8A4B00; }
+
+/* ---------- Review B6: tablet fixes on Owner and Manager pages (kept here, after owner-b-desktop.css, so that file is left
+ * to its own batch; same weight plus one step) ---------- */
+/* NV-044: in the week grid a shift's time wraps to two lines instead of ending in "…" ("8:30… 4:30p"), and on a narrow
+ * grid (under 820px of card) the person column gives the seven days 32px back (148px: avatar and a name on two lines). */
+@container c-sched (min-width: 560px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid :is(.cm-block, .cm-open-past) > span:not(#nvd-none):not(#e-b6) { min-width: 0 !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+}
+@container c-sched (min-width: 560px) and (max-width: 819px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-sched-slot .cm-grid thead th.cm-grid__corner:not(#nvd-none):not(#e-b6) { width: 148px !important; }
+}
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* NV-086: Edit shift's title starts on its own sub line's edge ("Published · Wed, Nov 25"), not centred over it. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page > .c-shift > .c-shift__head > .c-shift__titles:not(#nvd-none):not(#e-b6) { align-items: flex-start !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page > .c-shift > .c-shift__head > .c-shift__titles > .c-shift__title:not(#nvd-none):not(#e-b6) { flex: none !important; }
+  /* …and Delete shift sits on the Cancel and Save centre line (it was about 8px high). */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-shift-page .c-shift__delete:has(> [aria-expanded="false"]):not(#e-b6) { bottom: 16px !important; }
+  /* NV-092: Call and Message are 44px tinted circles with a 48px target. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-person__act:not(#nvd-none):not(#e-b6) { width: 44px !important; height: 44px !important; border-radius: 22px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-person__act:not(#nvd-none):not(#e-b6)::before { inset: -2px !important; border-radius: 50%; }
+  /* NV-294: on a tablet or desktop the rail already holds Insights, Updates and Settings, so the Owner's More doesn't list
+   * them again; Sign out is centred, as on the Employee's More. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-more:not(.c-more--employee) li:has(> .c-row:is([href="/app/reports"], [href="/app/updates"], [href="/app/settings"])):not(#e-b6) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-more:not(.c-more--employee) section:has(li > .c-row:is([href="/app/reports"], [href="/app/updates"], [href="/app/settings"])):not(:has(li:not(:has(> .c-row:is([href="/app/reports"], [href="/app/updates"], [href="/app/settings"]))))):not(#e-b6) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-more:not(.c-more--employee) .c-more__signout-row:not(#nvd-none):not(#e-b6) { justify-content: center !important; text-align: center !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-more:not(.c-more--employee) .c-more__signout-row .c-row__main:not(#e-b6) { flex: none !important; }
+}
+/* NV-080: the asked-for tile is the teal-tinted one (the desktop layer greys every tile). */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-tcx .correction-comparison > div.correction-comparison__ask:not(#nvd-none):not(#nvd-none2):not(#e-b6) { background: #E8F3F1 !important; }
+/* NV-168 (tablets): Payday and This week end together, Payday's button at its foot; Covered this week's figures are one
+ * compact line each, so "189 h of 336 h" never wraps. */
+@media (min-width: 768px) and (max-width: 1023px) and (min-height: 501px), (min-width: 768px) and (max-width: 1023px) and (pointer: fine) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-stack > :is(.b-ink, .b-ink + .b-card):not(#nvd-none):not(#nvd-none2):not(#e-b6) { align-self: stretch !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home > .b-screen .b-stack > .b-ink > :last-child:not(#e-b6) { margin-top: auto !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home .cov__list:not(#e-b6) { grid-template-columns: minmax(0, 1fr) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home .cov__list > div:not(#e-b6) { display: flex !important; flex-wrap: wrap !important; align-items: baseline !important; column-gap: 8px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home .cov__list dd:not(#e-b6) { display: flex !important; align-items: baseline !important; gap: 8px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.c-home .cov__list dd span:not(#e-b6) { white-space: nowrap !important; overflow-wrap: normal !important; }
+}
+
+/* NV-105: a person's initials keep their face tint (set inline as --fa/--fc) wherever the older pages draw a plain circle. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) .q-av[style*="--fa"]:not(#e-b6) { background: var(--fa) !important; color: var(--fc) !important; }
+:is(#c-root, html) .q-av[style*="--fa"] { background: var(--fa); color: var(--fc); }
+
+/* NV-088 (desktop and tablets): the week's state sits on the band beside the week stepper as a chip (green Published, amber
+ * drafts or changes), so the grid card no longer opens with a near-empty row; "Covered this week" sits over its figures. */
+@container c-sched (min-width: 560px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav) .c-sched-gridbar:not(#nvd-none):not(#e-b6) { min-height: 0 !important; height: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; overflow: visible !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav) .c-sched-gridbar > .c-sched-weekstate:not(#nvd-none):not(#e-b6) {
+    position: absolute !important; right: 0 !important; bottom: calc(100% + 18px) !important; z-index: 1 !important; display: inline-flex !important; align-items: center !important; height: 26px !important; margin: 0 !important; padding: 0 11px !important; border-radius: 999px !important;
+    background: #F0F2F3 !important; color: #3F464B !important; font: 700 13px/26px Inter, "Inter Fallback", sans-serif !important; white-space: nowrap !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav) .c-sched-gridbar > .c-sched-weekstate[data-tone="amber"]:not(#nvd-none):not(#e-b6) { background: #FDF3E4 !important; color: #8A4B00 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav) .c-sched-gridbar > .c-sched-weekstate[data-tone="green"]:not(#nvd-none):not(#e-b6) { background: #E7F4EC !important; color: #1D6B45 !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-roster:has(.c-sched-gridbar > .c-sched-week__nav) .c-sched-gridbar > .c-sched-weekstate .c-sched-state__lead:not(#e-b6) { display: inline !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-grid__coverage:not(#e-b6) { padding-top: 18px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-grid__coverage .cov:not(#e-b6) { grid-template-columns: minmax(0, 1fr) !important; row-gap: 8px !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-sched .cm-grid__coverage .cov__list:not(#e-b6) { grid-template-columns: repeat(3, minmax(0, 200px)) !important; }
+}
+
+/* NV-061: "Alerts on this phone" reads as one label (the device word took the row's detail style). */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .premium-manager-profile .q-rt b :is(.pmp-device-phone, .pmp-device-other):not(#nvd-none):not(#e-b6) { font: inherit !important; color: inherit !important; letter-spacing: inherit !important; }

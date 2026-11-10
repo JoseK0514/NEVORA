@@ -5,7 +5,7 @@ import { isStaffingRepair, repairOwnerLine } from "@/lib/time-off-staffing/prese
 import Link from "next/link";
 import { ScopedReadFrame, type ScopedObservation } from "./company-access/scoped-read-frame";
 import { useToday } from "./manager-today";
-import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowsLeftRightIcon, CalendarBlankIcon, CaretDownIcon, CaretRightIcon, ChatTextIcon, ClockIcon, PhoneIcon, PlusIcon, UserCheckIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { useActionCenter, mobileActionDetail, type ActionCenterConnection } from "./manager-action-center";
@@ -20,6 +20,8 @@ import { CLOCK_IN, presentItem } from "@/lib/action-center/present";
 import { groupInboxItems, inboxFilter, workspaceNow, type InboxFilter } from "@/lib/action-center/inbox";
 import { needsYou, needsYouSentence } from "@/lib/action-center/needs-you";
 import { keepWhole } from "@/lib/keep-whole";
+import { faceTint } from "@/lib/face-tint";
+const faceStyle = (name: string) => { const [bg, fg] = faceTint(name); return { "--fa": bg, "--fc": fg } as CSSProperties; };
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 
@@ -147,7 +149,8 @@ export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, 
   const shown = presentItem({ ...item, detail: mobileActionDetail(item.detail) }, action.label, timeZone);
   const facts = request ? (item as ActionItem & { request?: RequestFacts }).request : undefined;
   return { key: item.id, href: withFilter(action.href, filter, item.id), label: `${shown.action}: ${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, urgent,
-    leading: request && shown.person ? <span className="q-av" aria-hidden="true">{initials(shown.person)}</span> : undefined,
+    // Review B6 (NV-105): a person keeps one face tint on every screen (the B kit's faceTint).
+    leading: request && shown.person ? <span className="q-av" aria-hidden="true" style={faceStyle(shown.person)}>{initials(shown.person)}</span> : undefined,
     title: shown.title, meta: <MetaParts text={shown.detail} />, action: shown.action,
     status: request ? <Status tone="review">Waiting</Status> : repair ? <Status tone="urgent">Needs a replacement</Status> : urgent ? <Status tone="urgent">Not covered</Status> : undefined,
     trailing: undefined,

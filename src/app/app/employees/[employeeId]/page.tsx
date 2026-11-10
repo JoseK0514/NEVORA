@@ -1,5 +1,5 @@
 import {readEmployeeClockerPin,type EmployeePinView} from '@/lib/clocker/pins.server';
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import {withOperationalCompany} from '@/lib/company-access/operational-scope.server';
 import {OperationalUnavailable} from '@/components/company-access/operational-unavailable';
 import {readOperationalEmployeeProfile} from '@/lib/company-access/operational-read.server';
@@ -66,7 +66,8 @@ export default async function EmployeeProfilePage({
   const query = (await searchParams) ?? {};
   const editing = query.edit === "1" ? "core" : query.edit === "positions" ? "positions" : query.edit === "rules" ? "rules" : null;
   const accessView = !editing && query.view === "access";
-  const positionNames = employee.positionIds.map(id => positions.find(position => position.id === id)?.name).filter(Boolean).join(", ");
+  const positionList = employee.positionIds.map(id => positions.find(position => position.id === id)?.name).filter((name): name is string => !!name);
+  const positionNames = positionList.join(", ");
   const name = `${employee.firstName} ${employee.lastName}`;
   const base = `/app/employees/${encodeURIComponent(employee.id)}`;
   const recoverable = employee.id !== actor.id && (actor.role === "OWNER" || employee.role === "EMPLOYEE" || employee.role === "LEAD");
@@ -91,9 +92,11 @@ export default async function EmployeeProfilePage({
           <span className="c-row__main">
             {/* Round 5 (Nov 7): each segment carries its own "· " so a phone can wrap segments whole and clip the dot that
               would start a line; the text reads the same as before ("Kitchen · Calle Loíza", "555-0199 · ID 7"). */}
-            <span className="c-row__title c-row__title--b">{[positionNames || roleLabel, place].filter(Boolean).map((part, index) =>
-              <Fragment key={index}>{index ? " " : null}<span className="c-person__part">{index ? <span className="c-person__sep">·{" "}</span> : null}{part}</span></Fragment>)}</span>
-            <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span>{" "}<span className="c-person__bit"><span className="c-person__sep">·{" "}</span>{`ID ${employee.id}`}</span></span>
+            {/* Review B6 (NV-092): where they work leads; positions are chips under it; the employee ID moves to Access and
+              * sign-in (internals stay out of the most-read line). */}
+            <span className="c-row__title c-row__title--b">{place ?? roleLabel}</span>
+            {positionList.length ? <span className="c-person__chips">{positionList.map(position => <span key={position} className="c-person__chip">{position}</span>)}</span> : null}
+            <span className="c-row__detail"><span className="c-person__bits"><span className="c-person__bit">{employee.phone ? phoneDisplay(employee.phone) : "No phone number"}</span></span>
               {employee.active ? <TeamLivePill employeeId={employee.id} /> : <CorpMeta>Inactive</CorpMeta>}</span>
           </span>
           {dial ? <a className="c-person__act" href={`tel:${dial}`} aria-label={`Call ${name}`}><PhoneIcon className="c-ic" aria-hidden="true" /></a> : null}
@@ -127,6 +130,8 @@ export default async function EmployeeProfilePage({
           <li>{canManageCore ? <CorpRow href={`${base}?edit=1`} title="Role" value={roleLabel} valueTone="soft" label={`Role, ${roleLabel}. Change it in Edit employee`} chevron /> : <CorpRow title="Role" value={roleLabel} valueTone="soft" />}</li>
           {pinShown ? <li><CorpRow href={`${base}/clocker-pin`} title="Clocker PIN" value={pinValue} valueTone="soft" chevron /></li> : null}
           <li><CorpRow title="Account" value={accountValue} valueTone="soft" /></li>
+          {/* Review B6 (NV-092): the employee ID lives here, not in the person's first line. */}
+          <li><CorpRow title="Employee ID" value={employee.id} valueTone="soft" /></li>
         </CorpRows>
       </CorpCard>
       {canManageCore && employee.active && recoverable ? <CorpCard as="div" ariaLabel="Reset password">

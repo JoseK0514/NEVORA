@@ -116,3 +116,7 @@
 :is(#c-root, html) .c-person .c-person__who .c-row__detail { align-items: flex-start; }
 :is(#c-root, html) .c-person .c-person__who .c-row__detail > span:first-child { white-space: normal; overflow: visible; }
 :is(#c-root, html) .c-person .c-person__who .c-person__bit { white-space: nowrap; }
+
+/* Review B6 (NV-092): positions as chips under the place; Call and Message are 44px tinted circles with 48px targets. */
+:is(#c-root, html) .c-person .c-person__chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 4px 0 2px; }
+:is(#c-root, html) .c-person .c-person__chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 12.5px; line-height: 24px; font-weight: 600; white-space: nowrap; }

@@ -33,7 +33,8 @@ export type EmployeeMyScheduleProps = {
   /** Own locations that haven't published this week; names them in the week's note. */
   unpublishedLocationIds?: readonly string[];
   /** "swap": the person came to pick a shift to swap (Home's Swap a shift); options open on eligible shifts. */
-  intent?: 'swap';
+  /** "callout": the person came to report a shift they can't work (review B6, NV-290), without a shift chosen yet. */
+  intent?: 'swap' | 'callout';
   /** Company modules (B2): shift swaps and time off links follow them. */
   modules?: EnabledModules;
   openShifts?: { available: OpenShift[]; requested: OpenShift[]; unavailable?: OpenShift[] } | null;

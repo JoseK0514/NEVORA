@@ -96,7 +96,8 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
       right={settingsHref ? <BButtonLink href={settingsHref} kind="glass" label="Settings for alerts on this device">Settings</BButtonLink> : undefined}>
       {list ? <BSeg label="Show notifications" items={[
         {key: 'all', label: 'All', current: list.tab === 'all', onSelect: () => list.onTab('all')},
-        {key: 'unread', label: unread ? `Unread ${unread}` : 'Unread', current: list.tab === 'unread', onSelect: () => list.onTab('unread'), aria: unread ? `Unread, ${unread}` : undefined},
+        // Review B6 (NV-281): the count is the same small pill the other tabs use.
+        {key: 'unread', label: unread ? <>Unread<span className="eb-segn">{unread}</span></> : 'Unread', current: list.tab === 'unread', onSelect: () => list.onTab('unread'), aria: unread ? `Unread, ${unread}` : undefined},
       ]} /> : null}
     </BHero>
     <BStack>
@@ -110,7 +111,8 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
             // Review B1 (NV-142): every item that needs an action is amber, whatever its kind.
             const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = required ? 'amber' : 'grey';
             const earlier = group.name === 'Earlier', time = clock(item.at, zone);
-            const sub = [required ? 'Action needed' : null, earlier ? `${longDay(item.at, zone)} · ${time}` : null].filter(Boolean).join(' · ');
+            // Review B6 (NV-271): an earlier notice's date is on the right, so its sub-line carries only the time.
+            const sub = [required ? 'Action needed' : null, earlier ? time : null].filter(Boolean).join(' · ');
             return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}
               onClick={event => list.onOpen(event, item.id, item.href)} aria-busy={busy || undefined}
               aria-label={`${item.label}${isUnread ? ', unread' : ''}${required ? ', action needed' : ''}, ${earlier ? `${longDay(item.at, zone)} · ${time}` : time}`}>
@@ -118,6 +120,7 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.label}</span></span>{sub ? <span className="b-row__s"><Dotted text={sub}/></span> : null}</span>
               <span className="b-row__end eb-when"><span>{earlier ? shortDate(item.at, zone) : time}</span>
                 {busy ? <CircleNotchIcon className="eb-spin" size={16} weight="bold" aria-hidden="true" /> : isUnread ? <i className="eb-unread" aria-hidden="true" /> : null}</span>
+              <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
             </Link></li>;
           })}</ul>
         </BCard>) : <BCard><div className="eb-empty"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon><b>{list.tab === 'unread' ? 'You’re all caught up' : list.partial ? 'Nothing confirmed on this page' : 'No current notifications'}</b>
@@ -130,10 +133,6 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
   </BScreen>;
 }
 
-/** The action row at the foot of the Updates list. */
-function WriteRow({onClick}: {onClick: () => void}) {
-  return <li className="b-li"><Link className="b-add" href="/app/updates/compose" onClick={onClick}><span className="b-ico b-ico--teal" aria-hidden="true"><PencilSimpleIcon weight="bold" /></span>Write an update</Link></li>;
-}
 
 export type UpdatesBList = {items: ReadyUpdate[]; partial: boolean; search: string; filter: MessageFilter; timeZone: string; onSearch: (value: string) => void; onFilter: (value: MessageFilter) => void;
   onOpen: Open; more: boolean; busy: boolean; onConfirm: (item: ReadyUpdate) => void; onCompose: () => void};
@@ -151,9 +150,11 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
   const confirm = matches.filter(row => row.required), earlier = matches.filter(row => !row.required);
   const narrowed = !!list && (!!list.search || list.filter !== 'all');
   return <BScreen back>
-    {/* Desktop: Write an update is the band's white action (eb-desk); the phone's row sits at the foot of the list. */}
+    {/* Write an update is the band's action at every width (review B6, NV-166): the white pill on desktop, a glass pill on
+      * the phone (Schedule's Availability slot), never a row under the read items. The pencil means compose everywhere. */}
     <BHero back={{href: '/app/more', label: 'More'}} title="Updates" titleId="b-updates-title"
-      right={list ? <span className="eb-desk"><Link className="b-btn b-btn--white" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={17} weight="bold" aria-hidden="true" />Write an update</Link></span> : undefined}>
+      right={list ? <><span className="eb-desk"><Link className="b-btn b-btn--white" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={17} weight="bold" aria-hidden="true" />Write an update</Link></span>
+        <span className="eb-phone"><Link className="b-btn b-btn--glass" href="/app/updates/compose" onClick={list.onCompose}><PencilSimpleIcon size={16} weight="bold" aria-hidden="true" />Write</Link></span></> : undefined}>
       {list ? <div className="eb-tools">
         <label className="b-search b-glass eb-tools__search"><MagnifyingGlassIcon size={19} weight="bold" aria-hidden="true" /><span className="b-sr">Search this page</span>
           <input id="b-updates-search" type="search" maxLength={120} value={list.search} onChange={event => list.onSearch(event.target.value)} autoComplete="off" placeholder="Search update titles" /></label>
@@ -170,7 +171,7 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
         {confirm.length ? <BCard title="To confirm" id="b-updates-confirm">
           <ul className="b-list">{confirm.map(({item, at}) => <li className="b-li" key={item.id}><div className="eb-upd">
             <div className="b-row eb-upd__head"><BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">Must read</BChip></span><span className="b-row__s">{item.authorContext} · {longDay(at, list.timeZone)}</span></span></div>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span><BChip tone="amber">Must read</BChip></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)}`} /></span></span></div>
             <p className="eb-upd__body">{item.body}</p>
             <div className="eb-upd__acts">
               <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
@@ -183,18 +184,16 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
             <Link id={'b-message-' + item.id} className="b-row b-row--link" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)}
               aria-label={`${item.title}, ${state}, ${messageTime(at, list.timeZone)}`}>
               <BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>
-              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s">{item.authorContext} · {longDay(at, list.timeZone)} · {state}</span></span>
+              <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">{item.title}</span></span><span className="b-row__s"><Dotted text={`${item.authorContext} · ${longDay(at, list.timeZone)} · ${state}`} /></span></span>
               {unread ? <span className="b-row__end eb-when"><i className="eb-unread" aria-hidden="true" /></span> : null}
               <CaretRightIcon className="b-chev" size={18} weight="bold" aria-hidden="true" />
-            </Link></li>)}
-            <WriteRow onClick={list.onCompose} /></ul>
+            </Link></li>)}</ul>
           : <>
             <div className="eb-empty" role={list.partial ? 'status' : undefined}><BIcon tone="grey"><MegaphoneSimpleIcon weight="bold" /></BIcon>{list.partial
               ? <><b>{rows.length ? 'No confirmed matches on this page' : 'Nothing confirmed on this page'}</b><span>Some current updates couldn’t be checked, so they aren’t listed. {narrowed ? 'Try a different search or show All, or refresh to check again.' : 'Refresh to check again.'}</span></>
               : <><b>{narrowed ? 'No matches on this page' : 'No current updates'}</b><span>{narrowed ? 'Try a different search or show All.' : 'There are no current items on this page.'}{list.more ? ' Older items may be on another page.' : ''}</span></>}</div>
-            <ul className="b-list"><WriteRow onClick={list.onCompose} /></ul>
           </>}
-        </BCard> : <BCard label="Write an update"><ul className="b-list"><WriteRow onClick={list.onCompose} /></ul></BCard>}
+        </BCard> : null}
       </> : null}
       <Pager pager={pager} />
       {opening ? <p className="b-sr" role="status">Opening current details…</p> : null}

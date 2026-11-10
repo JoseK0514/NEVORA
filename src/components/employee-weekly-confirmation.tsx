@@ -36,10 +36,12 @@ export function EmployeeWeeklyConfirmation({weekStart,expectedRevisionId,intent,
   {result?.status==='blocked'?null:ready?<form action={submit}>
    <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="expectedRevisionId" value={expectedRevisionId}/>
    <input type="hidden" name="operationId" value={intent.operationId}/><input type="hidden" name="authority" value={intent.authority}/>
-   <button className={quiet?'q-bs q-bs--go':'employee-action primary'} disabled={(!pending&&!retryable)||undefined} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={event=>{if(pending)event.preventDefault();}} aria-label={quiet&&!pending&&result?'Retry confirmation':compact&&!pending&&!result?'Confirm schedule':undefined}>{quiet?(pending?'Confirming…':result?'Retry':'Confirm'):<SigPendingLabel pending={pending} pendingText="Confirming…">{result?'Retry confirmation':compact?'Confirm':'Confirm schedule'}</SigPendingLabel>}</button>
+   <button className={quiet?'q-bs q-bs--go':'employee-action primary'} disabled={(!pending&&!retryable)||undefined} aria-disabled={pending||undefined} aria-busy={pending||undefined} onClick={event=>{if(pending)event.preventDefault();}} aria-label={quiet&&!pending&&result?'Retry confirmation':compact&&!pending&&!result?'Confirm schedule':undefined}>{quiet?(pending?'Confirming…':result?.status==='committed'?'Confirmed':result?'Retry':'Confirm'):<SigPendingLabel pending={pending} pendingText="Confirming…">{result?'Retry confirmation':compact?'Confirm':'Confirm schedule'}</SigPendingLabel>}</button>
   </form>:quiet?<button className="q-bs q-bs--go" type="button" aria-disabled="true" aria-label="Confirm schedule, preparing">Confirm</button>:<p className="employee-confirmation-preparing" role="status">Preparing confirmation…</p>}
   {result&&result.status!=='committed'?<p role="alert">{result.status==='conflict'?'The schedule changed. Review the current week before confirming.':result.status==='blocked'?'This review is no longer authorized. Sign in and review the schedule again.':result.status==='outcome_unknown'?'Confirmation outcome unknown. Retry to check the original confirmation.':'Confirmation unavailable. Retry the original confirmation.'}</p>:null}
-  {result?.status==='committed'?<p role="status">Checking the current schedule confirmation…</p>:null}
+  {/* Review B6 (NV-152): in the B row the button itself says "Confirmed" while the fresh read lands, so the line is for
+    screen readers only and the card keeps its size. */}
+  {result?.status==='committed'?<p role="status" className={quiet?'b-sr':undefined}>Checking the current schedule confirmation…</p>:null}
   {result?.status==='conflict'?<button className={quiet?'q-bs':'employee-action'} onClick={()=>router.refresh()}>Review current schedule</button>:null}
  </div>;
 }

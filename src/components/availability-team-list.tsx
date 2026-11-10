@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { formatTime } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 import { initialsOf } from "@/components/quiet/quiet";
+import { faceTint } from "@/lib/face-tint";
 import { CorpSegments } from "@/components/corp/corp";
 import type { AvailabilitySubmissionListItem } from "@/lib/data/availability-submissions";
 import type { AvailabilityRecord } from "@/lib/data/availability";
@@ -53,7 +54,8 @@ export function AvailabilityTeamList({ employees, employeeId }: {
         const detail = employee.submitted && employee.windowCount === 0 ? `${employee.locationName} · Unavailable all week`
           : !employee.submitted && employee.updatedLabel ? `${employee.locationName} · Updated ${employee.updatedLabel}` : employee.locationName;
         const head = <>
-          <span className="q-av" aria-hidden="true">{initialsOf(employee.employeeName)}</span>
+          {/* Review B6 (NV-105): a person keeps one face tint on every screen. */}
+          <span className="q-av" aria-hidden="true" style={{ "--fa": faceTint(employee.employeeName)[0], "--fc": faceTint(employee.employeeName)[1] } as CSSProperties}>{initialsOf(employee.employeeName)}</span>
           <span className="q-rt"><b>{employee.employeeName}</b><i>{detail}</i></span>
         </>;
         return <li ref={selected ? target : undefined} tabIndex={-1} id={`employee-${employee.employeeId}`} data-selected={selected ? "true" : undefined} key={employee.employeeId}>

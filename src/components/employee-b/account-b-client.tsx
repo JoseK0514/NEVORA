@@ -38,10 +38,12 @@ function Field({label, value}: {label: string; value: string}) {
 
 /** Profile and settings (board E-Profile): Personal info as label-over-value rows, Display with the language switch,
  * Security. The read is the page's own (one controller for both presentations). */
-export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead}: {
+export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, ending, lead, name}: {
   state: PrivatePanelState<EmployeeViewSnapshot>; onRetry: () => void; lang: AuthLang; passkeys: boolean; policies: boolean; ending: boolean;
   /** A Lead's desktop adds a small Calendar and alerts card (eb-desk; Direction B, Nov 8, 2026). */
   lead?: boolean;
+  /** The signed-in name the shell already shows, for Name while the profile read is unavailable (review B6, NV-285). */
+  name?: string;
 }) {
   const ready = !state.paused && state.snapshot?.state === 'ready' && state.snapshot.kind === 'profile' ? state.snapshot : null;
   const denied = state.snapshot?.state === 'unavailable' && state.snapshot.reason === 'access_denied';
@@ -53,7 +55,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
       {ending ? <BCard><p className="b-state eb-pad" role="status">Signing out…</p></BCard> : <>
         <BCard title="Personal info" id="b-profile-personal">
           <ul className="b-list" aria-label="Your work profile">
-            <Field label="Name" value={value(ready?.profile.name)} />
+            <Field label="Name" value={value(ready?.profile.name ?? (state.paused ? undefined : name))} />
             <Field label="Locations" value={value(ready?.profile.locations.join(' · '))} />
             <Field label="Time zone" value={value(ready ? timeZoneLabel(ready.profile.timeZone).replace(/ time$/, '') : undefined)} />
           </ul>
@@ -76,7 +78,8 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
           <li className="b-li"><Link className="b-row b-row--link" href="/app/profile/device-alerts"><BIcon tone="grey"><BellIcon weight="bold" /></BIcon>
             <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Alerts on this device</span></span><span className="b-row__s">Settings for this browser</span></span><Chev /></Link></li>
         </ul></BCard></div> : null}
-        {passkeys || policies ? <BCard title="Security" id="b-profile-security">
+        {/* Review B6 (NV-293): "Security" when it holds passkeys; "Account" when deletion is all it holds. */}
+        {passkeys || policies ? <BCard title={passkeys ? 'Security' : 'Account'} id="b-profile-security">
           <ul className="b-list">
             {passkeys ? <li className="b-li"><Link id="b-profile-passkeys" className="b-row b-row--link" href="/app/profile/passkeys"><BIcon tone="grey"><KeyIcon weight="bold" /></BIcon>
               <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Passkeys</span></span></span><Chev /></Link></li> : null}
@@ -227,6 +230,8 @@ export function EmployeeDeleteB({state, period, workplace, outcomeRef, missingPe
   const receipt = state.kind === 'received' || state.kind === 'duplicate', ended = state.kind === 'signed_out' || state.kind === 'changed';
   const within = period ?? missingPeriod;
   return <BScreen back={!receipt && !ended}>
+    {/* Review B6 (NV-159): a form's screen hides the tab bar, the bell and the avatar (account.css). */}
+    {!receipt && !ended ? <span className="eb-form" hidden /> : null}
     <BHero back={!receipt && !ended ? {href: '/app/profile#profile-account-deletion', label: 'Profile'} : undefined} title={receipt ? 'Deletion requested' : 'Delete account'} titleId="b-deletion-title"
       sub={receipt || ended ? undefined : 'Your NEVORA sign-in, not your job'} />
     <BStack>

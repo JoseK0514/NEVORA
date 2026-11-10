@@ -39,6 +39,11 @@ function startsIn(shift: Shift, today: string, observedAt: string, timeZone: str
   } catch { return null; }
 }
 
+/** "You lead all 7 shifts": a Lead's one line when every shift in the week is led (review B6, NV-289). */
+function allLedNote(lead: boolean, shifts: Shift[]) {
+  return lead && shifts.length > 1 && shifts.every(shift => shift.isDesignatedLead === true) ? `You lead all ${shifts.length} shifts` : null;
+}
+
 function OpenShiftCards({ open, weekStart }: { open: EmployeeMyScheduleProps['openShifts']; weekStart: string }) {
   if (!open) return <CorpCard label="Open shifts"><CorpBody><p className="c-esched__state">We couldn’t check open shifts right now.</p>
     <CorpButtonLink href="/app/exchange?tab=available" kind="secondary" size="md" full>Open shift requests</CorpButtonLink></CorpBody></CorpCard>;
@@ -83,7 +88,10 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   const zoneName = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
   const swapIntent = props.intent === 'swap' && modules.marketplace && view === 'mine';
   const swapCount = swapIntent ? shifts.filter(shift => swappable(shift, today, observedAt, timeZone)).length : 0;
-  const keep = swapIntent ? '&intent=swap' : '';
+  // Review B6 (NV-290): opened from "Can't work a shift" with no shift chosen, the week asks for one the same way.
+  const calloutIntent = props.intent === 'callout' && modules.marketplace && view === 'mine';
+  const calloutCount = calloutIntent ? shifts.filter(shift => !shift.isCalloutApproved && hasNotEnded(shift, observedAt, timeZone)).length : 0;
+  const keep = swapIntent ? '&intent=swap' : calloutIntent ? '&intent=callout' : '';
   const nameOf = (id: string) => locations.find(location => location.id === id)?.shortName?.trim() ?? '';
   const unpublishedNames = (props.unpublishedLocationIds ?? []).map(nameOf).filter(Boolean);
   const publishedNames = [...new Set(shifts.map(shift => nameOf(shift.locationId)).filter(Boolean))];
@@ -126,18 +134,23 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
 
   const listLabel = chosen ? keepWhole(dayFmt(chosen, { weekday: 'long', month: 'short', day: 'numeric' })) : weekStart === currentWeek ? 'Coming up' : weekStart < currentWeek ? 'This week' : 'Shifts';
   const subText = state === 'unavailable' ? 'Your schedule couldn’t be checked'
-    : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>;
+    : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>;
   const rowLabel = (shift: Shift) => keepWhole(`${dayFmt(shift.date, { weekday: 'long', month: 'long', day: 'numeric' })}, ${hours(shift)}, ${[shift.positionName, nameOf(shift.locationId) || 'Location unavailable'].filter(Boolean).join(', ')}`);
-  const rowDetail = (shift: Shift) => [shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ');
+  // Review B6 (NV-163, NV-289): "Shift lead" leads the row's sub-line, so the one chip slot (Now, Starts in, Tomorrow) never
+  // hides it; when every shift this week is led, the list's header says so once and the rows don't repeat it.
+  const allLed = allLedNote(props.lead === true, shifts) !== null;
+  const rowDetail = (shift: Shift) => [shift.isDesignatedLead && !allLed ? 'Shift lead' : null, shift.positionName, nameOf(shift.locationId) || 'Location unavailable', overnight(shift) ? `Ends ${dayFmt(addDays(shift.date, 1), { weekday: 'short', month: 'short', day: 'numeric' })}` : null].filter(Boolean).join(' · ');
   const bChip = (shift: Shift) => {
     const soon = startsIn(shift, today, observedAt, timeZone);
-    return shift.isCalloutApproved ? <BChip tone="grey">Can’t work · approved</BChip> : soon ? <BChip tone="teal">{soon}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : shift.isDesignatedLead ? <BChip tone="grey">Shift lead</BChip> : undefined;
+    return shift.isCalloutApproved ? <BChip tone="grey">Can’t work · approved</BChip> : soon ? <BChip tone="teal">{soon}</BChip> : when(shift, today) === 'Tomorrow' ? <BChip tone="teal">Tomorrow</BChip> : undefined;
   };
   const bLead = (shift: Shift) => <BDay date={shift.date} today={shift.date === today} past={shift.date < today}/>;
   return <CorpPage className="c-esched">
     {/* Direction B: the phone screen (phones only; tablets and desktop keep the layout below). The shift sheets and the
       * confirmation are mounted once, in the layout that shows. */}
-    <ScheduleB sub={subText} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
+    <ScheduleB sub={subText} leadNote={allLedNote(props.lead === true, shifts)}
+      // Review B6 (NV-152): a confirmed week keeps a green card where Confirm was, so the change is visible in place.
+      done={review && acknowledged ? { title: 'Week confirmed', detail: keepWhole(`${weekRange(weekStart)} · Your manager can see you checked it`) } : null} range={<>{weekRange(weekStart)}<span className="b-sr">, {weekStart.slice(0, 4)}</span></>} confirmed={!!review && !!acknowledged}
       todayHref={weekStart !== currentWeek ? `/app/schedule?week=${currentWeek}` : null} prevHref={`/app/schedule?week=${addDays(weekStart, -7)}${keep}`} nextHref={`/app/schedule?week=${addDays(weekStart, 7)}${keep}`}
       days={dates.map(date => {
         const assigned = shifts.some(shift => shift.date === date);
@@ -150,7 +163,8 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
         control: <PhoneOnly fallback={<span className="b-btn b-btn--teal" aria-hidden="true">Confirm</span>}>{confirmation}</PhoneOnly> } : null}
       celebration={review && acknowledged && props.acknowledgedRevisionId ? <PhoneOnly><Celebration kind="SCHEDULE_CONFIRMED" eventKey={`${weekStart}:${props.acknowledgedRevisionId}`} confirmed /></PhoneOnly> : null}
       changes={changes && state !== 'unavailable' ? changes : null}
-      swap={swapIntent ? { title: swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week', detail: swapCount ? 'Tap the shift, then Swap with someone.' : 'Only upcoming shifts can be swapped.', doneHref: `/app/schedule?week=${weekStart}` } : null}
+      swap={swapIntent ? { title: swapCount ? 'Choose the shift you want to swap' : 'No shifts to swap this week', detail: swapCount ? 'Tap the shift, then Swap with someone.' : 'Only upcoming shifts can be swapped.', doneHref: `/app/schedule?week=${weekStart}` }
+        : calloutIntent ? { title: calloutCount ? 'Choose the shift you can’t work' : 'No shifts to report this week', detail: calloutCount ? 'Tap the shift, then Can’t work this shift.' : 'Only shifts that haven’t ended can be reported.', doneHref: `/app/schedule?week=${weekStart}` } : null}
       error={error ? <>Confirmation could not be completed. {typeof error === 'string' ? error : 'Review the current schedule and try again.'}</> : null}
       receipt={null}
       open={modules.marketplace && view === 'mine' ? { count: openCount, href: `/app/schedule?week=${weekStart}&view=open`,
@@ -168,7 +182,8 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
       unpublished={state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null}
       // Employee desktop, Direction B (Nov 8, 2026): the whole week as seven days; each day opens as the strip's chosen day.
       weekCard={state === 'unavailable' ? null : {
-        summary: [shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts',
+        // Review B6 (NV-150, NV-289): the band already says "7 shifts · 59.5 h"; the footer keeps only the publication sentence.
+        summary: [shifts.length ? null : 'No published shifts',
           state === 'unpublished' ? (shifts.length ? unpublishedNote(unpublishedNames, publishedNames) : `${unpublishedNote(unpublishedNames)} An empty day isn’t a day off yet.`) : null].filter(Boolean).join(' · '),
         days: dates.map(date => ({ date, short: dayFmt(date, { weekday: 'short' }), day: Number(date.slice(8)), today: date === today, selected: chosen ? date === chosen : date === today,
           href: date === chosen ? `/app/schedule?week=${weekStart}${keep}` : dayHref(date),
@@ -176,11 +191,14 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
           shifts: shifts.filter(shift => shift.date === date).map(shift => {
             const kind = shift.date < today || (shift.date === today && !hasNotEnded(shift, observedAt, timeZone)) ? 'past' as const : shift.date === today ? 'now' as const : 'up' as const;
             // A Lead's shift lead marker is its own chip (Direction B, Nov 8, 2026), so the status chip doesn't repeat it.
-            const leads = props.lead === true && shift.isDesignatedLead === true;
+            // Review B6 (NV-289, Jose approved): when the Lead leads every shift, the header says so once and only today's
+            // block keeps the chip.
+            const leads = props.lead === true && shift.isDesignatedLead === true && (!allLed || shift.date === today);
             const chip = kind === 'past' ? null : bChip(shift) ?? null;
-            return { key: shift.id, time: compactRange(hours(shift)), position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+            // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8 AM –" / "4 PM") on a narrow day.
+            return { key: shift.id, time: keepWhole(compactRange(hours(shift))), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
-              label: leads ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
+              label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
       : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>}

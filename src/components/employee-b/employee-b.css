@@ -200,3 +200,14 @@
   :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child .b-live__l { flex: 1 0 100%; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child .b-live__m { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; line-height: 18px; color: var(--b-on-band); }
 }
+
+/* ---------- Review B6 (Nov 10, 2026): Employee and Lead ---------- */
+@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  /* A Lead's Today's team over Coming up (NV-095): on a phone, two cards in the stack's rhythm. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-side { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  /* NV-069: a time never breaks inside itself ("11:30 PM"); the range breaks only after its dash. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__time time { white-space: nowrap; }
+}
+@media (max-width: 359px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-shift__time { font-size: 22px; line-height: 28px; }
+}

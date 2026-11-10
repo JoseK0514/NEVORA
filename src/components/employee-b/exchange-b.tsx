@@ -134,7 +134,8 @@ export function ExchangeListB({mode, state, enabled, recoveries, rows, split}: {
       {state ?? (enabled === false ? <BCard><BText status>Shift requests are turned off for your company.</BText></BCard> : <>
         {recoveries}
         {rows === null ? <BCard><BText status>{mode === 'incoming' ? 'Incoming swaps' : 'Your request activity'} couldn’t be checked. Refresh to try again.</BText></BCard>
-          : mode === 'incoming' ? <BCard label="Needs your answer">{list ?? <BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No swaps need your answer" sub="A request addressed to you will appear here."/>}</BCard>
+          // Review B6 (NV-290): For you is a titled card, like Open shifts' "You can pick up".
+          : mode === 'incoming' ? <BCard id="b-exchange-foryou" title="Needs your answer" count={rows.length || undefined}>{list ?? <BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No swaps need your answer" sub="A request addressed to you will appear here."/>}</BCard>
           : rows.length ? <BCard id="b-exchange-activity" title="Recent activity">{list}</BCard>
           : <BCard><BEmpty icon={<ArrowsLeftRightIcon weight="bold"/>} title="No recent shift requests" sub="Start a swap or cover offer from your own schedule."/></BCard>}
         {paned ? paned.pane : <MyScheduleCardB/>}

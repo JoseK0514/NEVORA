@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import type {ReactNode} from 'react';
+import type {CSSProperties, ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {BellIcon} from '@phosphor-icons/react/dist/ssr/Bell';
 import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
@@ -14,7 +14,8 @@ import {QuestionIcon} from '@phosphor-icons/react/dist/ssr/Question';
 import {FlagIcon} from '@phosphor-icons/react/dist/ssr/Flag';
 import {ScalesIcon} from '@phosphor-icons/react/dist/ssr/Scales';
 import {TrashIcon} from '@phosphor-icons/react/dist/ssr/Trash';
-import {BAvatar, BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BStack} from '../owner-b/b-kit';
+import {LockSimpleIcon} from '@phosphor-icons/react/dist/ssr/LockSimple';
+import {BButtonLink, BCard, BHero, BIcon, BList, BRow, BScreen, BStack, initialsOf} from '../owner-b/b-kit';
 import {PortalSignout} from '../portal-signout';
 import {BlockView, shortTitle} from '../legal/legal-document';
 import type {Block, PolicyDocument} from '../../lib/legal/policies';
@@ -28,6 +29,8 @@ import './account.css';
  * has, and the corporate layout beside it stays what tablets and desktop show. */
 
 const grey = (icon: ReactNode) => <BIcon tone="grey">{icon}</BIcon>;
+/** "We aim to respond within two business days." from the policy's longer reply-time text. */
+const firstSentence = (text: string) => text.trim().match(/^.*?[.!?](?=\s|$)/)?.[0] ?? text.trim();
 
 /** More (board E-More): your face, name and places on glass with Profile and settings under them, then Your work, Help
  * and legal, and Sign out on its own. Only places the company has switched on; values are the page's own reads. */
@@ -39,7 +42,8 @@ export function EmployeeMoreB({name, place, availability, has, count}: {
     <NoHeaderActions />
     <BHero back={{href: '/app', label: 'Home'}} title="More" titleId="b-more-title">
       <div className="eb-id b-glass">
-        <div className="eb-id__me"><BAvatar name={name} size={48} /><span className="eb-id__tx"><b>{name}</b>{place ? <span><Dotted text={place} /></span> : null}</span></div>
+        {/* Review B6 (NV-105): you are drawn as in the header (white circle, teal initials); the six tints are for other people. */}
+        <div className="eb-id__me"><span className="b-av eb-me" style={{'--s': '48px'} as CSSProperties} aria-hidden="true">{initialsOf(name)}</span><span className="eb-id__tx"><b>{name}</b>{place ? <span><Dotted text={place} /></span> : null}</span></div>
         <Link className="eb-id__link" href="/app/profile" aria-label={`Profile and settings, ${name}`}>Profile and settings<CaretRightIcon size={18} weight="bold" aria-hidden="true" /></Link>
       </div>
     </BHero>
@@ -86,7 +90,9 @@ export function EmployeeHelpB({email, response, signIn, work, report, legal}: {
         <BList>
           <BRow href={`mailto:${email}`} lead={<BIcon tone="teal"><EnvelopeSimpleIcon weight="bold" /></BIcon>} title="Email support" sub={email} label={`Email support, ${email}`} />
         </BList>
-        <p className="eb-help-note">{response ? `${response} ` : ''}<b>Never email passwords, codes, bank details or pay documents.</b></p>
+        {/* Review B6 (NV-286): one line on when we reply (the full hours are on Support), then the warning as its own note. */}
+        {response ? <p className="eb-help-note">{firstSentence(response)}{response.trim() !== firstSentence(response) ? <> <Link className="eb-help-note__a" href="/app/profile/support">Support hours</Link></> : null}</p> : null}
+        <div className="eb-tint eb-help-warn"><BIcon tone="grey"><LockSimpleIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Never email passwords, codes, bank details or pay documents.</span></span></div>
       </BCard>
       {signIn || work || report.length ? <BCard title="Common questions" id="b-help-questions">
         <ul className="b-list" aria-label="Common questions">

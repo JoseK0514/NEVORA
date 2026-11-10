@@ -1,5 +1,4 @@
 import {logout} from '@/app/login/actions';
-import {AuthBrand} from '@/components/auth-brand';
 import {BrandWordmark} from '@/components/brand-mark';
 import {NUVORA_BRAND} from '@/lib/brand';
 import '@/app/not-found.css';
@@ -21,7 +20,8 @@ export function UnsupportedNativeRole() {
         <p className="not-found-text">You can continue using your account in your web browser.</p>
         <form action={logout}><button type="submit" className="nf-cta nu-signout">Sign out</button></form>
       </div>
-      <footer className="nf-foot"><AuthBrand/><small>{NUVORA_BRAND.poweredBy}</small></footer>
+      {/* Review B6 (NV-321): the band carries the wordmark; the footer is only the operator line. */}
+      <footer className="nf-foot"><small>{NUVORA_BRAND.poweredBy}</small></footer>
     </section>
   </main>;
 }

@@ -13,10 +13,39 @@ function correctionEnd(start:string,end:string,zone:string){
   return day(start)===day(end)?new Intl.DateTimeFormat('en-US',{timeZone:zone,hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(end)):correctionStamp(end,zone);
 }
 
-export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone,proposedStartAt,proposedEndAt,proposedLabel,recordedLabel='Recorded'}:{
+/** "+35 min", "−1 h 10 min": how much longer or shorter the asked-for time is than the time it changes. */
+function lengthChange(baseStart:string,baseEnd:string,start:string,end:string){
+  const minutes=Math.round(((Date.parse(end)-Date.parse(start))-(Date.parse(baseEnd)-Date.parse(baseStart)))/60_000);
+  if(!minutes)return null;
+  const size=Math.abs(minutes),hours=Math.floor(size/60),rest=size%60;
+  return `${minutes>0?'+':'−'}${hours?`${hours} h${rest?` ${rest} min`:''}`:`${rest} min`}`;
+}
+
+export function CorrectionComparison({recordedStartAt,recordedEndAt,context,zone,proposedStartAt,proposedEndAt,proposedLabel,recordedLabel='Recorded',compact=false,note}:{
   proposedLabel?:string;recordedLabel?:string;recordedStartAt:string|null;recordedEndAt:string|null;context:CorrectionContext;zone:string;proposedStartAt?:string;proposedEndAt?:string;
+  /** Review B6 (NV-080), a manager deciding: two tiles (Recorded, Asked for) with the changed time in bold and how much it
+   * changes; Current effective only when it differs from Recorded; the helper lines folded into one (`note`). */
+  compact?:boolean;note?:string;
 }){
   const interval=(start:string,end:string)=><><time dateTime={start}>{correctionStamp(start,zone)}</time> → <time dateTime={end}>{correctionEnd(start,end,zone)}</time></>;
+  if(compact&&proposedStartAt&&proposedEndAt){
+    const effective=context.state==='confirmed'?{start:context.startAt,end:context.endAt}:null;
+    const differs=!!effective&&(!recordedStartAt||!recordedEndAt||Date.parse(effective.start)!==Date.parse(recordedStartAt)||Date.parse(effective.end)!==Date.parse(recordedEndAt));
+    const base=differs?effective:recordedStartAt&&recordedEndAt?{start:recordedStartAt,end:recordedEndAt}:effective;
+    const change=base?lengthChange(base.start,base.end,proposedStartAt,proposedEndAt):null;
+    const moved=(a:string|undefined,b:string|undefined)=>!!a&&!!b&&Date.parse(a)!==Date.parse(b);
+    const startTime=<time dateTime={proposedStartAt}>{correctionStamp(proposedStartAt,zone)}</time>,endTime=<time dateTime={proposedEndAt}>{correctionEnd(proposedStartAt,proposedEndAt,zone)}</time>;
+    return <>
+      <div className="correction-comparison correction-comparison--compact">
+        <div><small>{recordedLabel}</small><strong>{recordedStartAt&&recordedEndAt?interval(recordedStartAt,recordedEndAt):'No recorded entry'}</strong></div>
+        {differs&&effective?<div><small>Current effective</small><strong>{interval(effective.start,effective.end)}</strong>
+          {context.state==='confirmed'&&context.sourceKind==='ADJUSTMENT'?<small>{recordedLabel==='Approved missing time'||!recordedStartAt?'Approved missing time · no device punch':'Approved adjustment · original punch unchanged'}</small>:null}</div>:null}
+        <div className="correction-comparison__ask"><small>Asked for{change?<span className="correction-comparison__chg">{change}</span>:null}</small>
+          <strong>{base&&moved(base.start,proposedStartAt)?<b>{startTime}</b>:startTime} → {base&&moved(base.end,proposedEndAt)?<b>{endTime}</b>:endTime}</strong></div>
+      </div>
+      <p className="correction-context-zone">{[`Times in ${timeZoneLabel(zone)}`,note].filter(Boolean).join('. ')}{note?'.':''}</p>
+    </>;
+  }
   return <>
     <div className="correction-comparison">
       <div><small>{recordedLabel}</small><strong>{recordedStartAt&&recordedEndAt?interval(recordedStartAt,recordedEndAt):'No recorded entry'}</strong></div>

@@ -11,6 +11,7 @@ import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
+import {useEmployeeDevice} from '../employee-mobile/device-owner';
 import './employee-b.css';
 import './requests.css';
 
@@ -57,9 +58,13 @@ export function BEmpty({icon, title, sub}: {icon: ReactNode; title: ReactNode; s
 
 /** Open shifts with nothing to pick up, the same on Schedule's and Pick up and swap's Open shifts. */
 export function OpenShiftsEmptyB() {
+  // Review B6 (NV-158): the link shows only where this device can get alerts (the workplace has them on and the shell's
+  // device read answered); otherwise it would lead to "Your workplace hasn't turned on device alerts".
+  const device = useEmployeeDevice()?.snapshot;
+  const alerts = !!device && device.state !== 'unavailable';
   return <><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
     {/* Review B2 (NV-158): "device", since it shows on computers too. */}
-    <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link></>;
+    {alerts ? <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link> : null}</>;
 }
 
 /** A plain paragraph inside a card (a notice, a reason). */
@@ -113,9 +118,11 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
       </BCard> : null}
-      {shiftRequests ? <div className="eb-desk eb-shiftreq"><BCard title="Shift requests"><BList>
+      {/* Review B6 (NV-279): phones get the same way to Pick up and swap (under Decided); the second row says what it
+        * does and opens Schedule asking for the shift. */}
+      {shiftRequests ? <div className="eb-shiftreq"><BCard title="Shift requests"><BList>
         <BRow href="/app/exchange" lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold"/></BIcon>} title="Pick up and swap" sub="Open shifts, swaps for you, your requests"/>
-        <BRow href="/app/schedule" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="My schedule" sub="Start a swap or cover offer"/>
+        <BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/>
       </BList></BCard></div> : null}
     </BStack>
   </BScreen>;
@@ -152,14 +159,16 @@ export function ExchangeHeroB({tab, tabs = true, back = '/app/schedule', counts}
   return <BHero back={{href: back, label: 'Schedule'}} title="Pick up and swap" titleId="b-exchange-title">
     {tabs ? <BSeg label="Pick up and swap" items={EXCHANGE_TABS.map(item => {
       const count = counts?.[item.key];
-      return {key: item.key, label: typeof count === 'number' && count > 0 ? <>{item.label}<span className="eb-desk"> · {count}</span></> : item.label, href: item.href, current: item.key === tab};
+      // Review B6 (NV-165, NV-281): the count is a small pill beside the label at every width; For you's is amber, since
+      // it holds swaps that need your answer.
+      return {key: item.key, label: typeof count === 'number' && count > 0 ? <>{item.label}<span className={item.key === 'foryou' ? 'eb-segn eb-segn--amber' : 'eb-segn'}><span className="b-sr">, </span>{count}</span></> : item.label, href: item.href, current: item.key === tab};
     })}/> : null}
   </BHero>;
 }
 
 /** The way to start a swap or cover offer: from a shift on your own schedule. */
 export function MyScheduleCardB() {
-  return <BCard label="My schedule"><BList><BRow href="/app/schedule" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="My schedule" sub="Start a swap or cover offer"/></BList></BCard>;
+  return <BCard label="Swap or give away a shift"><BList><BRow href="/app/schedule?intent=swap" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold"/></BIcon>} title="Swap or give away a shift" sub="Choose one of your shifts"/></BList></BCard>;
 }
 
 /** Marks a form's screen (Request time off, Swap shift, Offer for cover, Can't work): while it shows, the shell hides the

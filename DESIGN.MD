@@ -1766,3 +1766,33 @@ Source: `docs/product/review-2026-11-10/` (batch B5). Presentation only; reads, 
   than a group shows says "6 of 11 people · keep typing to narrow".
 - **Activity:** newest first with Today on top; anything dated after today is one "Coming up" card with amber icons.
 - **Punch photos off:** the moment switches are disabled and look it. Things to do's More shortcuts are sticky on desktop.
+
+## Employee, Lead, tablets and the phone app (review batch B6, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B6). No read, handler, authorization or contract changed; server and
+native needs are listed for Codex.
+- **Lead Home (Jose approved NV-161, NV-289):** when the hero already shows "On shift now", the shift card is "Your shift"
+  with the Shift lead chip only (no "Until" chip, no sentence). Things to do comes before Today's team; on desktop and
+  tablets Today's team and Coming up are one right-hand column (no hole; focus goes left column, then right). The
+  "isn't published yet" note is Coming up's footer.
+- **Shift lead marker:** it leads a row's sub-line ("Shift lead · Customer Support · Main Office") on Home and Schedule, so
+  Now, Starts in and Tomorrow never hide it. When a Lead leads every shift of the week, Schedule says "You lead all 7
+  shifts" once (week card header, list header) and only today's block keeps the chip.
+- **Schedule (desktop, tablets):** Confirm this week leads the page across its width; a confirmed week shows a green
+  "Week confirmed" card in its place; the button keeps its place and width while it confirms. The week card's footer
+  keeps only the publication sentence; Coming up beside it shows two rows on desktop. Day blocks share one height, their
+  chips sit in one row at the foot on white; on tablets a block is the time (two lines when long) and its chip.
+- **One edge:** the glass figure strip spans the grid; reading pages are one 812px column, band action included; card
+  text blocks use the rows' 22px inset on desktop; Updates' search starts on the band's text edge.
+- **Counts on tabs** are a small pill beside the label at every width (amber for For you). **Write an update** is the
+  band's action at every width (glass on the phone). Earlier notifications show their date once, with a chevron.
+- **Forms:** Delete account hides the tab bar, bell and avatar on a phone; Delete my account is a working red pill from the
+  start; the "I understand" line is a 48px target; on desktop "Confirm it's you" is the card (no card in a card). Every
+  role's delete flow uses a checkbox and a red-tinted "access ends" icon. Fix my time is one white card over the hero.
+- **Bare links:** `/app/exchange/swap` and `/app/exchange/callout` without a shift open Schedule asking for the shift
+  (`?intent=swap`, `?intent=callout`), never a silent list.
+- **Phone app:** the Alerts card has "This device" as a grey eyebrow over the ring and a failure's own message inside the
+  card (amber); the Owner's Profile row "Alerts on this phone" opens the app's alerts popover; the unsupported page shows
+  one wordmark.
+- **Motion:** the hero never fades in; the cards' entrance plays on a session's first page only (`b-entrance.tsx`).
+- **Not done here:** landscape phones (NV-274) still keep the corporate phone page: moving them needs the B layers'
+  phone media queries rewritten as one alias (B8's layering work); recommended target is the tablet layout.

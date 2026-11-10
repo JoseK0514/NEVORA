@@ -3,6 +3,7 @@ import type {ReactNode} from 'react';
 import {CalendarBlankIcon} from '@phosphor-icons/react/dist/ssr/CalendarBlank';
 import {CaretLeftIcon} from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
+import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {InfoIcon} from '@phosphor-icons/react/dist/ssr/Info';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BNote, BRow, BScreen, BStack} from '../owner-b/b-kit';
@@ -36,25 +37,33 @@ export type ScheduleBProps = {
   unpublished: ReactNode;
   /** Desktop only: the whole week as seven days, each with its shifts, and the week's summary line. */
   weekCard?: {days: WeekCardDay[]; summary: ReactNode} | null;
+  /** A Lead who leads every shift this week: "You lead all 7 shifts", said once (review B6, NV-289). */
+  leadNote?: string | null;
+  /** The week is confirmed: a green card where Confirm was (review B6, NV-152). */
+  done?: {title: string; detail: string} | null;
 };
-export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string; lead?: boolean};
+export type WeekCardShift = {key: string; time: string; position: string | null; place: string; kind: 'past' | 'now' | 'up'; chip: ReactNode; label: string; lead?: boolean;
+  /** The chip is "Tomorrow" (a tablet's narrow day leaves it out: the next column is tomorrow). */
+  tomorrow?: boolean};
 export type WeekCardDay = {date: string; short: string; day: number; today: boolean; selected: boolean; href: string; label: string; shifts: WeekCardShift[]};
 
 /** Desktop: "Your week", seven columns; a day opens as the chosen day (the strip's own link). The week's changes sit in the
  * card's footer beside its summary. */
-function WeekCard({days, summary, changes}: {days: WeekCardDay[]; summary: ReactNode; changes: ReactNode}) {
+function WeekCard({days, summary, changes, leadNote}: {days: WeekCardDay[]; summary: ReactNode; changes: ReactNode; leadNote?: string | null}) {
   return <section className="b-card eb-desk eb-wkc" aria-labelledby="b-week-card-h">
-    <div className="b-card__h"><h2 id="b-week-card-h">Your week</h2></div>
+    <div className="b-card__h"><h2 id="b-week-card-h">Your week</h2>{leadNote ? <span className="b-card__meta">{leadNote}</span> : null}</div>
     <ol className="eb-wk">{days.map(day => <li key={day.date} className={['eb-wd', day.today ? 'is-today' : '', day.selected ? 'is-on' : ''].filter(Boolean).join(' ')}>
       <span className="eb-wd__h" aria-hidden="true"><span>{day.short}</span><b>{day.day}</b></span>
       {/* One stop per shift (a day off is one stop too), each opening that day. */}
       {day.shifts.length ? day.shifts.map(shift => <Link key={shift.key} className={`eb-wsh eb-wsh--${shift.kind}`} href={day.href} scroll={false} aria-label={shift.label}>
-        <b>{shift.time}</b>{shift.position ? <span>{shift.position}</span> : null}<span>{shift.place}</span>{shift.chip}
-        {/* A Lead's marker on the shifts they lead; "Lead" where a tablet's day is narrow. */}
-        {shift.lead ? <span className="b-chip b-chip--grey eb-wsh__lead"><span className="eb-wsh__lead-l">Shift lead</span><span className="eb-wsh__lead-s">Lead</span></span> : null}
+        <b>{shift.time}</b>{shift.position ? <span className="eb-wsh__l">{shift.position}</span> : null}<span className="eb-wsh__l">{shift.place}</span>
+        {/* Review B6 (NV-146): the status chip and a Lead's marker share one row at the block's foot ("Lead" where a
+          * tablet's day is narrow). */}
+        {shift.chip || shift.lead ? <span className={shift.tomorrow ? 'eb-wsh__chips eb-wsh__chips--tomorrow' : 'eb-wsh__chips'}>{shift.chip}
+          {shift.lead ? <span className="b-chip b-chip--grey eb-wsh__lead"><span className="eb-wsh__lead-l">Shift lead</span><span className="eb-wsh__lead-s">Lead</span></span> : null}</span> : null}
       </Link>) : <Link className="eb-wsh eb-wsh--off" href={day.href} scroll={false} aria-label={day.label}/>}
     </li>)}</ol>
-    <div className="eb-wkc__foot"><p className="eb-wkc__sum">{summary}</p>{changes ? <div className="eb-wkc__changes">{changes}</div> : null}</div>
+    {summary || changes ? <div className="eb-wkc__foot">{summary ? <p className="eb-wkc__sum">{summary}</p> : null}{changes ? <div className="eb-wkc__changes">{changes}</div> : null}</div> : null}
   </section>;
 }
 
@@ -78,15 +87,18 @@ function Week({range, confirmed, todayHref, prevHref, nextHref, days}: Pick<Sche
 }
 
 export function ScheduleB(props: ScheduleBProps) {
-  const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished, weekCard} = props;
+  const {sub, confirm, celebration, changes, swap, error, receipt, open, unavailable, list, unpublished, weekCard, leadNote, done} = props;
   return <BScreen>
     <BHero title="Schedule" titleId="b-schedule-title" sub={sub}
       right={<BButtonLink href="/app/availability" kind="glass" label="Availability"><CalendarBlankIcon size={16} weight="bold" aria-hidden="true"/>Availability</BButtonLink>}>
       <Week {...props}/>
     </BHero>
     <BStack>
-      {weekCard ? <WeekCard days={weekCard.days} summary={weekCard.summary} changes={changes}/> : null}
+      {weekCard ? <WeekCard days={weekCard.days} summary={weekCard.summary} changes={changes} leadNote={leadNote}/> : null}
       {celebration}
+      {done && !confirm ? <BCard id="b-my-review" label={done.title}>
+        <BList><BRow lead={<BIcon tone="green"><CheckIcon weight="bold"/></BIcon>} title={<span role="status">{done.title}</span>} sub={done.detail}/></BList>
+      </BCard> : null}
       {confirm ? <BCard id="b-my-review" label={confirm.title}>
         <div className="b-row es-confirm" role="group" aria-labelledby="b-my-review-title">
           <BIcon tone="teal"><CalendarBlankIcon weight="bold"/></BIcon>
@@ -108,7 +120,7 @@ export function ScheduleB(props: ScheduleBProps) {
       {unavailable ? <BCard title="Schedule unavailable">
         <div className="es-state"><p className="b-state" role="status"><span className="b-sr">Schedule unavailable. </span>We couldn’t load your schedule.</p>
           <BButtonLink href={unavailable.retryHref} kind="quiet" full>Try again<span className="b-sr"> to load your schedule</span></BButtonLink></div>
-      </BCard> : <BCard id="b-my-agenda" title={list.label} link={list.wholeWeekHref ? {href: list.wholeWeekHref, label: 'Whole week'} : undefined}>
+      </BCard> : <BCard id="b-my-agenda" title={list.label} link={list.wholeWeekHref ? {href: list.wholeWeekHref, label: 'Whole week'} : undefined} meta={leadNote ?? undefined}>
         {list.empty ? <p className="b-state es-empty">{list.empty}</p> : <BList>{list.rows}</BList>}
       </BCard>}
       {unpublished ? <BNote>{unpublished}</BNote> : null}

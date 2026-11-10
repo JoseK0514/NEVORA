@@ -25,8 +25,8 @@ it('ended-shift exclusion uses the coherent server observation even when renderi
  try {await expect(CalloutPage({searchParams:Promise.resolve({shiftId:'shift'})})).rejects.toThrow('error=INVALID_SHIFT');}
  finally {clock.observedAt='2026-10-04T09:00:00Z';vi.useRealTimers();}
 });
-it('opened without choosing a shift returns to My requests with no false error (inspection Oct 24)',async()=>{
- await expect(CalloutPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^\/app\/exchange\?tab=my$/);
+it('opened without choosing a shift asks for the shift on Schedule (review B6, NV-290)',async()=>{
+ await expect(CalloutPage({searchParams:Promise.resolve({})})).rejects.toThrow(/^\/app\/schedule\?intent=callout$/);
 });
 // Jose, 2026-10-31: a shift with held edits still opens. The employee sees the
 // published version; the report binds to the live assignment (later end here).

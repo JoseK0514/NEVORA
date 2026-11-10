@@ -11,7 +11,7 @@ import { ActionForm } from "@/components/wave-a/action-form";
 import { CorpPill } from "@/components/corp/corp";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { ManagerIssueFocus } from './manager-issue-focus';
-import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpSegments, CorpTitle } from "@/components/corp/corp";
 import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
@@ -92,10 +92,13 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
     <CorpNav back={backTo(origin)} title="Time-off request" titleId="request-nav-title" phoneOnly />
     <CorpTitle id="request-title" title="Time-off request" sub={request.employeeName} wide />
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
+    {/* Review B6 (NV-093): one request card: who and its amber Waiting status, the dates, their note and when it was sent,
+      * then that week's schedule and who else is off as rows of the same card. */}
     <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
       <div className="c-request__who">
         <CorpAvatar name={request.employeeName} initials={initialsOf(request.employeeName)} large />
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{request.employeeName}</span></span>
+        <span className="c-request__status">Waiting</span>
       </div>
       <div className="c-request__body">
         <span className="c-big">{dates.title}</span>
@@ -103,22 +106,23 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
         {request.reason ? <p className="c-request__note">{`“${request.reason}”`}</p> : <p className="c-line3">No note</p>}
         {sent ? <span className="c-line3">{sent}</span> : null}
       </div>
+      <CorpRows label="That week">
+        <li><CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="See that week’s schedule" chevron /></li>
+        {offNames ? <li><CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" /></li> : null}
+      </CorpRows>
     </CorpCard>
-    <CorpCard as="div" ariaLabel="That week">
-      <CorpRow href={`/app/schedule?week=${encodeURIComponent(week)}`} bold title="See that week’s schedule" chevron />
-    </CorpCard>
-    {offNames ? <CorpCard as="div" ariaLabel={offLabel}>
-      <CorpRow title={offLabel} value={offNames.length ? offNames.join(", ") : "No one"} valueTone="soft" />
-    </CorpCard> : null}
     {/* Nov 9, 2026: the published shifts this time off overlaps, and what approving does to them, before Approve. */}
     <LeaveConflictCheck request={{ id: request.id, startDate: request.startDate, endDate: request.endDate }} employeeName={request.employeeName} />
-    <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
-      <input type="hidden" name="requestId" value={request.id} />
-      <input type="hidden" name="returnTo" value={origin.from} />
-      <input type="hidden" name="returnFilter" value={origin.filter} />
-      <TimeOffReviewActions name={request.employeeName} corp />
-    </form>
-    <CorpNote center>{`${first} gets a notification either way.`}</CorpNote>
+    {/* Review B6 (NV-093): the decision is one footer: who hears about it, then Decline and Approve, on the right. */}
+    <div className="c-request__foot">
+      <CorpNote>{`${first} gets a notification either way.`}</CorpNote>
+      <form action={reviewTimeOffAction} className="c-request__decide" aria-label={`Review time off for ${request.employeeName}`}>
+        <input type="hidden" name="requestId" value={request.id} />
+        <input type="hidden" name="returnTo" value={origin.from} />
+        <input type="hidden" name="returnFilter" value={origin.filter} />
+        <TimeOffReviewActions name={request.employeeName} corp />
+      </form>
+    </div>
   </CorpPage>;
 }
 

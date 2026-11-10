@@ -88,11 +88,12 @@ export function ManagerTimeCorrectionsSurface({
             </div>
             <span>Pending</span>
           </div>
-          <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
-          <PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>
+          {/* Review B6 (NV-080): Recorded and Asked for, the change in bold with how much it moves; Current effective only
+            * when it differs; one line for the zone and what approving does; the reason as a labelled quote. */}
+          <CorrectionComparison compact note="Approving changes the timecard; the original clock times stay in the history" recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
+          {item.context.state==='confirmed'&&item.context.totalDecisions?<PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>:null}
           {item.baseChanged?<p className="manager-correction-self" role="status">The timecard changed after this request. Check the current times before deciding.</p>:null}
-          <p className="manager-correction-reason">{item.reason}</p>
-          <p className="manager-correction-provenance">Approving changes the timecard. The original clock times stay in the history.</p>
+          <p className="manager-correction-reason"><span className="manager-correction-reason__k">Their reason</span><q>{item.reason}</q></p>
           {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
           <div className="manager-correction-actions">
             <button type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>

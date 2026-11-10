@@ -28,7 +28,8 @@ const period = (start: string, end: string) => { const short = (date: string) =>
 const paycheckHref = (id: string) => `/app/my-pay?paycheck=${encodeURIComponent(id)}`;
 const documentHref = (statement: Statement) => `/api/payroll/documents/${encodeURIComponent(statement.id)}`;
 const role = (item: Statement) => item.correctedBy ? 'replaced statement' : item.corrects ? 'corrected statement' : 'statement';
-const tag = (item: Statement) => item.correctedBy ? <BChip tone="grey">Replaced</BChip> : item.corrects ? <BChip tone="grey">Correction</BChip> : null;
+// Review B6 (NV-155): the correction is the current statement ("Corrected", teal); the one it replaced is muted ("Replaced").
+const tag = (item: Statement) => item.correctedBy ? <BChip tone="grey">Replaced</BChip> : item.corrects ? <BChip tone="teal">Corrected</BChip> : null;
 
 export type PayBStatus = {title: string; body: string; action?: ReactNode; live: 'status' | 'alert'} | null;
 export type PayBProps = {
@@ -48,8 +49,10 @@ export type PayBProps = {
   onOpenPdf: (id: string) => void;
 };
 
-function Row({item}: {item: Statement}) {
-  return <BRow href={paycheckHref(item.id)} title={payday(item.payday)} chip={tag(item)} sub={`For work ${period(item.period.startDate, item.period.endDate)}`}
+function Row({item, byId}: {item: Statement; byId?: Map<string, Statement>}) {
+  const by = item.correctedBy ? byId?.get(item.correctedBy) : undefined;
+  const sub = by ? `Replaced by the ${fmt({month: 'short', day: 'numeric'}).format(utc(by.payday))} correction` : `For work ${period(item.period.startDate, item.period.endDate)}`;
+  return <BRow href={paycheckHref(item.id)} title={item.correctedBy ? <span className="ep-muted">{payday(item.payday)}</span> : payday(item.payday)} chip={tag(item)} sub={sub}
     label={`${paydayLong(item.payday)}, ${role(item)} for ${period(item.period.startDate, item.period.endDate)}`}/>;
 }
 
@@ -105,7 +108,7 @@ export function PayB(props: PayBProps) {
       <BStack>
         {!ready ? fallback : <>
           {[...months].map(([month, items]) => <BCard key={month} title={monthName(month)}>
-            <BList>{items.map(item => <Row key={item.id} item={item}/>)}</BList>
+            <BList>{items.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>
           </BCard>)}
           {/* Desktop: one table grouped by month (eb-desk); the month cards above are the phone's. No amounts, as on the phone. */}
           {months.size ? <section className="b-card eb-desk eb-paytable" aria-labelledby="b-pay-page-title"><table>
@@ -146,7 +149,7 @@ export function PayB(props: PayBProps) {
         <BList><BAddRow href={paycheckHref(latest.id)} icon={<FileTextIcon weight="bold"/>} label={`View statement, ${paydayLong(latest.payday)}`}>View statement</BAddRow></BList>
       </BCard> : fallback}
       {earlier.length ? <BCard id="b-pay-recent" title="Earlier" link={ordered.length > 3 ? {href: '/app/my-pay?view=history', label: 'See all', aria: 'See all pay'} : undefined}>
-        <BList label="Earlier pay">{earlier.map(item => <Row key={item.id} item={item}/>)}</BList>
+        <BList label="Earlier pay">{earlier.map(item => <Row key={item.id} item={item} byId={byId}/>)}</BList>
       </BCard> : latest ? <BCard label="Pay history"><BList><BRow href="/app/my-pay?view=history" title="Pay history" sub="Every published statement"/></BList></BCard> : null}
       {latest ? <BNote>Open a statement to download its PDF. Downloaded files may contain personal pay information.</BNote> : null}
     </BStack>
