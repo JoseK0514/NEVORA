@@ -36,8 +36,8 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
  const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
  const reloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
  const runtimeErrors=[],execution={engine,navigationDiagnostics:[]};
- const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true});
- const assertWindowClean=()=>assert.deepEqual(runtimeErrors.filter(event=>event.type==='window-javascript-error'),[],'Browser attribution cannot hide genuine window exceptions');
+ const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,navigationReadKinds:['notification-read'],requireNotificationGetWitness:true});
+ const assertWindowClean=()=>assert.deepEqual(runtimeErrors.filter(event=>['window-javascript-error','unproven-notification-read'].includes(event.type)),[],'Browser attribution cannot hide window exceptions or unproved notification methods');
  await cell.observeContext(employee,'primary');await cell.observeContext(owner,'manager');
  const ep=await employee.newPage(),mp=await owner.newPage();
  ep.setDefaultTimeout(15000);mp.setDefaultTimeout(15000);

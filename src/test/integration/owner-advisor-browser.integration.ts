@@ -86,7 +86,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
           );
           await context.tracing.start({ screenshots: true, snapshots: true });
           const execution={engine,actor,navigationDiagnostics:[]};browserDiagnostics.push(execution);
-          const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true});
+          const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true,navigationReadKinds:['notification-read'],requireNotificationGetWitness:true});
           await cell.observeContext(context,actor==='QAOWNER'?'manager':'primary');
           const page = await context.newPage();
           let phase = "login";

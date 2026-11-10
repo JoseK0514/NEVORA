@@ -3,13 +3,13 @@ import {resolve} from 'node:path';
 import {expect,it,vi} from 'vitest';
 const {observeBrowserCell}=await import(resolve('scripts/phase-e-browser-qa.mjs'));
 
-async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications'}={}){
+async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications',notificationOnly=false,requireWitness=false}={}){
  let currentUrl='http://127.0.0.1:43210/app';
  const errors:unknown[]=[],execution={suite:'home',engine,width:390,status:'failed',navigationDiagnostics:[]},frame={url:()=>currentUrl};
  const binding=vi.fn();
  const context=Object.assign(new EventEmitter(),{exposeBinding:vi.fn(async(_name:string,fn:unknown)=>{binding.mockImplementation(fn as (...args:unknown[])=>unknown);}),addInitScript:vi.fn(async()=>{})});
  const page=Object.assign(new EventEmitter(),{url:()=>currentUrl,mainFrame:()=>frame});
- const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
+ const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified,...(notificationOnly?{navigationReadKinds:['notification-read']}:{ }),requireNotificationGetWitness:requireWitness});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
  const destination=sameUrl?currentUrl:'http://127.0.0.1:43210/app/schedule';
  const request={isNavigationRequest:()=>true,resourceType:()=> 'document',method:()=> 'GET',frame:()=>frame,url:()=>destination};
  if(pending)page.emit('request',request);
@@ -121,4 +121,13 @@ it('keeps a genuine application TypeError fatal during navigation',async()=>{
 });
 it('rejects native-shaped messages with an extra suffix',async()=>{
  const f=await fixture();f.error.message+=' PRIVATE_ACTOR_TOKEN';f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(JSON.stringify(f.errors)).not.toContain('PRIVATE');
+});
+
+it.each([false,true])('a newly scoped observer keeps unproved notification methods fatal (same URL=%s)',async sameUrl=>{
+ const f=await fixture({sameUrl,reloadVerified:true,notificationOnly:true,requireWitness:true});
+ f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
+});
+it.each(['/api/employee/home','/api/manager/today','/api/manager/action-center'])('notification-only consumers never expand the distinct-URL exception to %s',async path=>{
+ const f=await fixture({path,notificationOnly:true});f.page.emit('pageerror',f.error);
+ expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
 });
