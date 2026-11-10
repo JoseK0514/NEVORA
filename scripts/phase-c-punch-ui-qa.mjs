@@ -193,7 +193,7 @@ try{
   checked(engine+': stale break selection rejects safely, then requires an explicit current type');
   await editBreak(ownerPage,'Future rest','REST',5);await archiveBreak(ownerPage,'Archive');
   await verify(t);await t.getByRole('button',{name:'End Break',exact:true}).waitFor();await t.getByText('Meal reference',{exact:true}).waitFor();
-  await t.getByText('Reference: 30 min',{exact:false}).waitFor();assert.equal(await t.getByText('Future rest',{exact:true}).count(),0);
+  await t.getByText('Suggested: 30 min',{exact:false}).waitFor();assert.equal(await t.getByText('Future rest',{exact:true}).count(),0);
   const captured=(await q("SELECT break_type_snapshot AS settings FROM break_entries b JOIN time_entries t ON t.id=b.time_entry_id WHERE t.employee_id='PUNCH-A' ORDER BY b.break_start_at DESC LIMIT 1"))[0].settings;
   assert.equal(captured.name,'Meal reference');assert.equal(captured.category,'MEAL');assert.equal(captured.targetMinutes,30);
   await shot(t,engine+'-historical-break-settings');await t.getByRole('button',{name:'End Break',exact:true}).click();await success(t,'Break End');await done(t);

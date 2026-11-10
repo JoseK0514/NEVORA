@@ -1,0 +1,5 @@
+/* The Clocker's own 404 (Nov 10 review, NV-174): the hint is the card's lead; sign-in is a text link under it. */
+.lead.lead { margin: 0; font-size: 1rem; line-height: 1.5rem; }
+.other { margin: 16px 0 0; font-size: .9375rem; line-height: 1.375rem; color: #3F464B; }
+.signIn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; border-radius: 999px; color: #0B6E69; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.signIn:focus-visible { outline: 3px solid #0B6E69; outline-offset: 2px; }

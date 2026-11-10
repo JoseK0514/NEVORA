@@ -74,10 +74,15 @@
 .ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; box-shadow: inset 0 0 0 3px #F3D3A0; }
 .ring[data-tone=red] { background: #FDECEA; color: #B42318; box-shadow: inset 0 0 0 3px #F4B7B0; }
 .ring[data-tone=green] { background: #E7F4EC; color: #1D6B45; box-shadow: inset 0 0 0 3px #B3DDC3; }
-.flow.flow .description { font-size: 1rem; line-height: 1.45; color: #3F464B; }
+.flow.flow .description { font-size: 1rem; line-height: 1.45; color: #3F464B; text-align: center; }
 .flow.flow .notice { padding: 14px 16px; border-radius: 16px; background: #F2F5F4; color: #3F464B; font-size: .9375rem; line-height: 1.45; }
 .flow.flow .photoNotice details { border: 0; border-radius: 16px; background: #F2F5F4; }
-.flow.flow .photoNotice summary { min-height: 48px; padding: 13px 16px; color: #0B6E69; font-size: .9375rem; font-weight: 600; }
+.flow.flow .photoNotice summary { min-height: 48px; padding: 13px 16px; color: #0B6E69; font-size: .9375rem; font-weight: 600;
+  list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+/* The kiosk's disclosure: a trailing Phosphor caret that turns when open, as on Action reference (Nov 10 review, NV-306). */
+.flow.flow .photoNotice summary::-webkit-details-marker { display: none; }
+.flow.flow .photoNotice summary > svg { transition: transform 160ms ease; }
+.flow.flow .photoNotice details[open] > summary > svg { transform: rotate(180deg); }
 .flow.flow .photoNotice summary:focus-visible, .flow.flow .actions button:focus-visible { outline: 3px solid #0B6E69; outline-offset: 3px; }
 .flow.flow .cameraFrame { border-radius: 18px; }
 .flow.flow .actions { gap: 12px; margin-top: 22px; }
@@ -87,4 +92,4 @@
 .flow.flow .quiet { min-height: 48px; background: transparent; color: #0B6E69; font-size: .96875rem; font-weight: 600; }
 .flow.flow .actions button:active { transform: scale(.96); }
 @media (hover: hover) { .flow.flow .primary:hover { background: var(--clocker-accent-hover, #0A5F5A); } .flow.flow .secondary:hover { background: #E6E9EA; } }
-@media (prefers-reduced-motion: reduce) { .flow.flow .actions button { transition: none; } .flow.flow .actions button:active { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .flow.flow .actions button, .flow.flow .photoNotice summary > svg { transition: none; } .flow.flow .actions button:active { transform: none; } }

@@ -15,6 +15,8 @@ import { HourglassMediumIcon } from '@phosphor-icons/react/dist/ssr/HourglassMed
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info';
 import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 import { MapPinIcon } from '@phosphor-icons/react/dist/ssr/MapPin';
+import { PauseIcon } from '@phosphor-icons/react/dist/ssr/Pause';
+import { PlayIcon } from '@phosphor-icons/react/dist/ssr/Play';
 import { ShieldCheckIcon } from '@phosphor-icons/react/dist/ssr/ShieldCheck';
 import { SignInIcon } from '@phosphor-icons/react/dist/ssr/SignIn';
 import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
@@ -25,15 +27,16 @@ import { XCircleIcon } from '@phosphor-icons/react/dist/ssr/XCircle';
 
 export type ClockerIconName = 'lock' | 'location' | 'arrow' | 'delete' | 'check' | 'clock-in' | 'clock-out' | 'break' | 'resume'
   | 'refresh' | 'shield' | 'globe' | 'rest' | 'meal' | 'tablet' | 'wait' | 'offline' | 'building' | 'stop' | 'warning' | 'camera'
-  | 'info' | 'caret';
+  | 'info' | 'caret' | 'pause';
 
-/** Clocker icons (Direction B): Phosphor, the app's icon family, bold. */
+/** Clocker icons (Direction B): Phosphor, the app's icon family, bold. Each headline glyph means one thing (Nov 10 review,
+ * NV-171): the cup starts a break and play ends it; the hourglass is work in progress and pause is the tablet's lockout. */
 const icons: Record<ClockerIconName, Icon> = {
   lock: LockSimpleIcon, location: MapPinIcon, arrow: ArrowRightIcon, delete: BackspaceIcon, check: CheckIcon,
-  'clock-in': SignInIcon, 'clock-out': SignOutIcon, break: CoffeeIcon, resume: CoffeeIcon, refresh: ArrowClockwiseIcon,
+  'clock-in': SignInIcon, 'clock-out': SignOutIcon, break: CoffeeIcon, resume: PlayIcon, refresh: ArrowClockwiseIcon,
   shield: ShieldCheckIcon, globe: GlobeIcon, rest: TimerIcon, meal: ForkKnifeIcon, tablet: DeviceTabletIcon,
   wait: HourglassMediumIcon, offline: WifiSlashIcon, building: BuildingsIcon, stop: XCircleIcon, warning: WarningCircleIcon,
-  camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon,
+  camera: CameraIcon, info: InfoIcon, caret: CaretDownIcon, pause: PauseIcon,
 };
 
 export function ClockerIcon({ name, size = 24, weight = 'bold', style }: { name: ClockerIconName; size?: number; weight?: IconWeight; style?: CSSProperties }) {

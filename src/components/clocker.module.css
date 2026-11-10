@@ -53,7 +53,8 @@
 
 /* ---------- the frame: band beside the task (landscape), band above it (portrait and phones) ---------- */
 .frame { flex: 1; min-width: 0; display: flex; min-height: 100dvh; }
-.band { position: relative; isolation: isolate; overflow: hidden; flex: 0 0 clamp(320px, 36vw, 480px); min-width: 0; display: flex; flex-direction: column; gap: 24px;
+/* The band is a size container, so the clock is sized to the band and never clips (Nov 10 review, NV-048). */
+.band { position: relative; isolation: isolate; overflow: hidden; container-type: inline-size; flex: 0 0 clamp(320px, 36vw, 480px); min-width: 0; display: flex; flex-direction: column; gap: 24px;
   padding: max(36px, env(safe-area-inset-top)) 36px max(30px, env(safe-area-inset-bottom)) max(36px, env(safe-area-inset-left));
   color: #FFFFFF;
   background: radial-gradient(70% 90% at 100% 0%, rgb(63 179 168 / .40) 0%, transparent 55%), radial-gradient(70% 80% at 0% 100%, rgb(5 48 46 / .85) 0%, transparent 70%), linear-gradient(165deg, #0E7A74 0%, #0B6E69 42%, #06403C 100%); }
@@ -64,12 +65,14 @@
 .wordmark { display: grid; gap: 6px; }
 .logo { display: block; height: 18px; color: #FFFFFF; line-height: 0; }
 .logo :global(.brand-wordmark) { display: block; width: auto; height: 100%; }
-.label { font-size: .78125rem; line-height: 1.2; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgb(255 255 255 / .74); }
+.label { font-size: .78125rem; line-height: 1.2; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #FFFFFF; }
 .workspace { display: inline-flex; align-items: center; max-width: 100%; min-height: 34px; padding: 6px 14px; border-radius: 17px; font-size: .875rem; line-height: 1.3; font-weight: 600; overflow-wrap: anywhere; }
 .companyLogo { display: inline-flex; align-items: center; justify-content: center; height: 40px; max-width: 160px; padding: 5px 10px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 6px 16px -8px rgb(0 0 0 / .4); }
 .companyLogo img { display: block; max-width: 100%; max-height: 30px; width: auto; height: auto; object-fit: contain; }
 .when { margin: auto 0; min-width: 0; }
-.clock { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: clamp(5.5rem, 11.7vw, 8.25rem); line-height: .95; font-weight: 600; letter-spacing: -.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* Digits plus the day period fit the band's content width in English and Spanish ("10:43 p. m."): about 2.7em of digits
+ * plus 88px for the gap, the period and a safety margin. */
+.clock { display: flex; align-items: baseline; gap: 10px; margin: 0; font-size: clamp(3.5rem, calc((100cqi - 88px) / 2.7), 8.25rem); line-height: .95; font-weight: 600; letter-spacing: -.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .clock > span { font-size: 1.875rem; letter-spacing: -.01em; font-weight: 600; color: rgb(255 255 255 / .84); }
 .under { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: 18px; }
 .location { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-height: 36px; margin: 0; padding: 6px 14px 6px 12px; border-radius: 18px; font-size: .9375rem; line-height: 1.3; font-weight: 600; }
@@ -92,7 +95,7 @@
 /* Portrait tablets and phones: the band across the top fills the space above; the card sits low, toward the hand. */
 @media (orientation: portrait), (max-width: 699px) {
   /* Keys grow with the screen's height: about 84px at 1024 tall, 96px from about 1080. */
-  .page { --ck-btn: 64px; --ck-keyh: clamp(72px, calc((100dvh - 690px) / 4), 96px); }
+  .page { --ck-btn: 64px; --ck-keyh: clamp(72px, calc((100dvh - 740px) / 4), 96px); }
   .frame { flex-direction: column; }
   .band { flex: 1 1 auto; gap: 0; padding: max(26px, env(safe-area-inset-top)) max(36px, env(safe-area-inset-right)) 84px max(36px, env(safe-area-inset-left)); }
   .brand { flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
@@ -130,8 +133,13 @@
 /* Short landscape screens keep the clock and card in view. */
 @media (orientation: landscape) and (max-height: 700px) and (min-width: 700px) {
   .page { --ck-keyh: 64px; --ck-btn: 52px; }
-  .clock { font-size: clamp(4.5rem, 9vw, 6rem); }
+  .clock { font-size: clamp(3.5rem, calc((100cqi - 88px) / 2.7), 6rem); }
   .card { padding: 22px 26px 20px; }
+}
+/* Landscape: the band holds the screen's height, so content growing in the card (the saved-action help) never moves the
+ * clock (Nov 10 review, NV-185). */
+@media (orientation: landscape) and (min-width: 700px) {
+  .band { position: sticky; top: 0; align-self: flex-start; height: 100dvh; }
 }
 
 /* ---------- card content ---------- */
@@ -185,13 +193,18 @@
   .link:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 4px; }
 }
 .stack { display: grid; gap: 12px; width: 100%; margin-top: 22px; }
-.links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 24px; margin-top: 6px; }
-.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 48px; padding: 0 6px; border: 0; background: transparent; color: var(--ck-focus);
+.links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 24px; margin-top: 10px; }
+.link { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 48px; padding: 0 6px; border: 0; border-radius: 999px; background: transparent; color: var(--ck-focus);
   font-size: .96875rem; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
 .link:disabled { opacity: .55; cursor: not-allowed; }
+/* Leaving beside a state's own actions: a text link in the same stack, so every gap is 12px (NV-184). */
+.stack > .link { justify-self: center; }
 .clears { margin: 4px 0 0; font-size: .84375rem; line-height: 1.35; color: var(--ck-grey); text-align: center; }
 .busy { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 14px 0 0; font-size: .875rem; color: var(--ck-grey); }
 .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #D5DADC; border-top-color: var(--ck-focus); animation: ckSpin .9s linear infinite; }
+/* Continue while the PIN is checked: the busy state sits where the user pressed (NV-179). */
+.btn[data-kind=primary][data-busy]:disabled { background: var(--ck-accent); color: #FFFFFF; opacity: .88; }
+.btn[data-busy] .spin { border-color: rgb(255 255 255 / .4); border-top-color: #FFFFFF; }
 @keyframes ckSpin { to { transform: rotate(360deg); } }
 
 /* Language switch (the existing English/Spanish choice, remembered per tablet). */
@@ -204,7 +217,7 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9375rem; font-weight: 400; line-height: 1.45; color: var(--ck-ink); word-break: break-all; }
 .field textarea:focus { outline: none; box-shadow: inset 0 0 0 2px var(--ck-focus); }
 .field textarea[aria-invalid=true] { box-shadow: inset 0 0 0 2px var(--ck-red); }
-.hint { margin: 8px 0 0; font-size: .84375rem; line-height: 1.4; font-weight: 400; color: var(--ck-grey); }
+.hint { margin: 8px 0 0; font-size: .84375rem; line-height: 1.4; font-weight: 400; color: var(--ck-grey); text-align: left; }
 .form { width: 100%; margin: 0; }
 .form fieldset { display: grid; gap: 0; border: 0; padding: 0; margin: 0; min-width: 0; }
 .form .btn { margin-top: 18px; }
@@ -213,24 +226,24 @@
 .meta[data-align=center] { justify-content: center; }
 
 /* ---------- PIN ---------- */
-.pin { position: relative; width: 100%; height: 60px; margin: 20px 0 0; border-radius: 16px; background: var(--ck-canvas); box-shadow: inset 0 0 0 2px var(--ck-focus); }
+.pin { position: relative; width: 100%; height: 60px; margin: 20px 0 0; border-radius: 16px; background: var(--ck-canvas); box-shadow: inset 0 0 0 2px var(--ck-field); }
 .pin input { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; padding: 0; border: 0; border-radius: inherit; background: transparent; color: transparent; caret-color: transparent; font-size: 24px; }
 .pin input:focus-visible { outline: none; }
-.pin:focus-within { box-shadow: inset 0 0 0 3px var(--ck-focus); }
+.pin:focus-within { box-shadow: inset 0 0 0 2px var(--ck-focus), 0 0 0 4px rgb(11 110 105 / .18); }
 .slots { display: flex; align-items: center; justify-content: center; gap: 18px; height: 100%; pointer-events: none; }
-.slots > span { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 2px #9AA3A8; transition: background-color 120ms ease, box-shadow 120ms ease; }
+.slots > span { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 2px #7A8489; transition: background-color 120ms ease, box-shadow 120ms ease; }
 .slots > span[data-filled=true] { background: var(--ck-focus); box-shadow: none; }
 .pin[data-error=true] { background: var(--ck-red-wash); box-shadow: inset 0 0 0 2px var(--ck-red); }
-.pin[data-error=true] .slots > span { box-shadow: inset 0 0 0 2px #E19A92; }
+.pin[data-error=true] .slots > span { box-shadow: inset 0 0 0 2px #C2554A; }
 .pin[data-shake=a] { animation: ckShakeA 220ms ease-in-out 1; }
 .pin[data-shake=b] { animation: ckShakeB 220ms ease-in-out 1; }
 @keyframes ckShakeA { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
 @keyframes ckShakeB { 0%, 100% { transform: none; } 20% { transform: translateX(-8px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
-.pinMsg { justify-content: center; text-align: center; }
+.pinMsg { justify-content: center; min-height: 2.8em; margin-top: 8px; text-align: center; }
 .keys { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; width: 100%; margin-top: 16px; }
-.key { display: grid; place-items: center; height: var(--ck-keyh); padding: 0; border: 0; border-radius: 22px; background: var(--ck-key); color: var(--ck-ink);
+.key { display: grid; place-items: center; height: var(--ck-keyh); padding: 0; border: 0; border-radius: 22px; background: var(--ck-key); color: var(--ck-ink); box-shadow: inset 0 0 0 1px var(--ck-field);
   font-size: 1.875rem; line-height: 1; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 90ms ease, box-shadow 90ms ease; }
-.key[data-key=tool] { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ck-line); font-size: 1rem; color: var(--ck-ink2); }
+.key[data-key=tool] { background: transparent; box-shadow: inset 0 0 0 2px var(--ck-field); font-size: 1rem; color: var(--ck-ink2); }
 .key:active:not(:disabled) { background: #CFE7E3; color: #08524E; box-shadow: inset 0 0 0 2px var(--ck-focus); }
 @media (hover: hover) { .key:hover:not(:disabled) { background: #E6E9EA; } .key[data-key=tool]:hover:not(:disabled) { background: var(--ck-canvas); } .key:active:not(:disabled) { background: #CFE7E3; } }
 .key:disabled { opacity: .45; cursor: not-allowed; }
@@ -242,11 +255,13 @@
 .blocked .smsg { margin-top: 0; }
 .blocked .btn { margin-top: 18px; }
 .blocked .btn[data-kind=secondary] { background: #FFFFFF; box-shadow: inset 0 0 0 1.5px var(--ck-line); }
+/* The blocked state's instruction (who can fix it), under its message (NV-051). */
+.blockedHint { margin: 8px auto 0; max-width: 36ch; font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-wrap: pretty; }
 
 /* The privacy reminder: a dark pill over the bottom of the task area. */
-.privacy { position: absolute; left: 50%; bottom: max(22px, env(safe-area-inset-bottom)); z-index: 3; transform: translateX(-50%); width: min(472px, calc(100% - 48px)); display: flex; align-items: center; gap: 14px;
+.privacy { position: absolute; left: 50%; bottom: max(22px, env(safe-area-inset-bottom)); z-index: 3; transform: translateX(-50%); width: min(472px, calc(100% - 48px)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
   padding: 10px 10px 10px 16px; border-radius: 24px; background: #111517; color: #FFFFFF; box-shadow: 0 18px 40px -16px rgb(0 0 0 / .5); text-align: left; }
-.privacy p { flex: 1; margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
+.privacy p { flex: 1 1 auto; min-width: 9ch; margin: 0; font-size: .9375rem; font-weight: 600; line-height: 1.35; }
 .privacy .count { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; font-size: .9375rem; font-weight: 700; box-shadow: inset 0 0 0 3px #FFC46B; }
 .privacy .btn { width: auto; min-height: 48px; padding: 0 18px; font-size: .9375rem; background: #FFFFFF; color: #0B3B38; flex: none; }
 
@@ -299,7 +314,7 @@
 @keyframes ckDraw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
 .hero { margin: 6px 0 0; font-size: 3.5rem; line-height: 1.05; font-weight: 700; letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .bye { margin: 8px 0 0; font-size: 1.125rem; font-weight: 600; color: var(--ck-green); }
-.saved { margin: 12px 0 0; font-size: .90625rem; line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; }
+.saved { margin: 12px 0 0; font-size: .90625rem; line-height: 1.45; color: var(--ck-ink2); overflow-wrap: anywhere; text-wrap: pretty; }
 .saved time { font-weight: 600; color: var(--ck-ink); }
 .countdown { display: block; width: 70%; height: 6px; margin: 18px auto 0; border-radius: 3px; background: var(--ck-green-wash); overflow: hidden; }
 .countdown > i { display: block; height: 100%; border-radius: 3px; background: var(--ck-green-fill); transform-origin: left; animation: ckClear 8s linear forwards; }
@@ -318,27 +333,40 @@
 
 /* ---------- saved-action help (handoff) ---------- */
 .handoff { width: 100%; margin-top: 8px; text-align: center; }
-.handoffPanel { margin-top: 8px; padding: 16px; border-radius: 16px; background: var(--ck-canvas); font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-align: left; }
+.handoffPanel { margin-top: 8px; padding: 16px; border-radius: 16px; background: var(--ck-canvas); font-size: .9375rem; line-height: 1.45; color: var(--ck-ink2); text-align: left;
+  max-height: 40dvh; overflow-y: auto; overscroll-behavior: contain; }
 .handoffPanel p { margin: 0 0 10px; overflow-wrap: anywhere; }
 .handoffPanel ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
 .handoffPanel li { display: grid; gap: 8px; }
-.handoffPanel code { display: block; padding: 10px 12px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-line); font-size: .8125rem; overflow-wrap: anywhere; }
+.handoffPanel code { display: block; padding: 10px 12px; border-radius: 10px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--ck-line); font-size: .75rem; overflow-wrap: anywhere; }
 .handoffPanel .btn { min-height: 48px; font-size: .9375rem; }
 
 /* ---------- motion: never under reduced motion; the words carry every state ---------- */
 @media (prefers-reduced-motion: reduce) {
   .page *, .page *::before, .page *::after { transition: none !important; scroll-behavior: auto !important; }
-  .pin[data-shake], .spin, .progress > i, .countdown > i, .check svg { animation: none !important; }
+  .pin[data-shake], .spin, .progress > i, .check svg { animation: none !important; }
+  /* The receipt's bar steps down once a second (a width change, not motion) instead of staying full (NV-304). */
+  .countdown > i { animation: ckClear 8s steps(8, end) forwards !important; }
   .check { animation: ckFade 200ms linear both !important; }
   .btn:active:not(:disabled), .act:active:not(:disabled), .lang:active { transform: none; }
-  .progress > i { transform: translateX(80%); }
+  /* An indeterminate bar can't stand still truthfully: the track stays, its fill goes; the line under it says it. */
+  .progress > i { display: none; }
 }
 @keyframes ckFade { from { opacity: 0; } to { opacity: 1; } }
 
 /* The punch panel inside the PIN gate's centred column takes the full card width. */
 .content .content { width: 100%; }
+/* While the privacy pill counts down, the static 30-second line steps aside (NV-181). */
+.content:has(> .privacy) .clears { visibility: hidden; }
 /* The privacy pill never covers a receipt. */
 .content:has([data-clocker-state=success]) > .privacy { display: none; }
 /* The saved-action link inline in the ready screen's link row; its panel takes the next line. */
 .handoff[data-inline] { display: contents; }
 .links > .handoffPanel, .handoff[data-inline] > .handoffPanel { flex: 1 0 100%; }
+/* Phones, after the component rules they adjust (Nov 10 review): one left edge in the clock-state card (NV-299), and the
+ * privacy reminder stays in view with its button wrapped under the line (NV-053). */
+@media (max-width: 599px) {
+  .strow, .breakContext { margin-left: 0; }
+  .privacy { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: calc(100% - 32px); }
+  .privacy .btn { flex: 1 0 100%; }
+}

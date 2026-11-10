@@ -1,7 +1,8 @@
 import {renderToStaticMarkup} from 'react-dom/server';
 import {expect,it} from 'vitest';
 import {clockerText,CLOCKER_COPY} from './clocker-copy';
-import {ClockerPresentation} from './clocker-language';
+import {ClockerPresentation,ClockerText} from './clocker-language';
+import {ClockerReceipt,clockTime} from './clocker-receipt';
 import {ClockerShell} from './clocker-shell';
 import {ClockerSetup} from './clocker-setup';
 it('translates complete visible and accessible phrases, retaining interpolation',()=>{for(const [en,es] of Object.entries(CLOCKER_COPY)){expect(es.trim()).not.toBe('');expect(clockerText('en',en)).toBe(en);}expect(clockerText('es','Number {number}',{number:4})).toBe('Número 4');expect(clockerText('es','Set up this tablet')).toBe('Configura esta tableta');});
@@ -24,8 +25,39 @@ it('carries the approved recorded and recording lines in English and Spanish',()
 // Every literal the kiosk passes to t() has its Spanish line, so a Spanish tablet never falls back to the generic sentence.
 it('has a Spanish line for every phrase the kiosk screens translate',async()=>{
  const {readFile}=await import('node:fs/promises');
- const files=['clocker-shell.tsx','clocker-setup.tsx','clocker-pin-gate.tsx','clocker-punch-panel.tsx','clocker-recovery.tsx','clocker-photo/punch-photo-flow.tsx'];
+ const files=['clocker-shell.tsx','clocker-setup.tsx','clocker-pin-gate.tsx','clocker-punch-panel.tsx','clocker-recovery.tsx','clocker-receipt.tsx','clocker-photo/punch-photo-flow.tsx','clocker-photo/photo-notice.tsx'];
  const missing:string[]=[];
  for(const file of files){const source=await readFile(new URL('./'+file,import.meta.url),'utf8');for(const m of source.matchAll(/\bt\((['"])((?:(?!\1).)+)\1/g))if(!(m[2] in CLOCKER_COPY))missing.push(file+': '+m[2]);}
  expect(missing).toEqual([]);
+});
+
+// Nov 10 review (NV-045): every message the Clocker's server sends to the kiosk has its Spanish line.
+it('has a Spanish line for every message the Clocker server can send to the kiosk',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const sources=['../lib/clocker/pin-transport.server.ts','../lib/clocker/setup.server.ts','../lib/clocker/punch-transport.server.ts','../lib/clocker/punch-command.ts','../lib/clocker/punch-client.ts','../lib/clocker/photo-server/transport.ts'];
+ const found=new Set<string>();
+ for(const file of sources){const source=await readFile(new URL(file,import.meta.url),'utf8');
+  for(const m of source.matchAll(/\berror\s*:\s*'([^']+)'/g))found.add(m[1]);
+  // punch-command.ts: the message for each punch error code.
+  for(const m of source.matchAll(/^\s*[A-Z_]+:'([^']+)'/gm))found.add(m[1]);
+  for(const m of source.matchAll(/PunchRequestError\([^;]*?'([A-Z][^']{15,})'/g))found.add(m[1]);}
+ expect(found.size).toBeGreaterThan(25);
+ expect([...found].filter(text=>!(text in CLOCKER_COPY))).toEqual([]);
+});
+it('shows a Spanish tablet an unknown message in English, marked as English, never an unrelated sentence',()=>{
+ expect(clockerText('es','A message the kiosk has never seen.')).toBe('A message the kiosk has never seen.');
+ const html=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerText text="A message the kiosk has never seen."/>|<ClockerText text="Too many attempts. Wait a few minutes before trying again."/></ClockerPresentation>);
+ expect(html).toBe('<span lang="en">A message the kiosk has never seen.</span>|Demasiados intentos. Espera unos minutos antes de reintentar.');
+ expect(clockerText('es','PIN not recognized for this location. Try again or ask your manager.')).toContain('tu gerente');
+ expect(Object.values(CLOCKER_COPY).join(' ')).not.toContain('acción de tiempo');
+});
+// Nov 10 review (NV-183, NV-173, NV-303): Intl orders the date, one sentence carries the time, and today's date isn't repeated.
+it('orders the receipt date for each language and writes one Saved sentence',()=>{
+ const at='2026-11-10T02:47:00Z';
+ expect(clockTime(at,'America/Puerto_Rico','en-US')).toBe('Nov 9 · 10:47 PM');
+ expect(clockTime(at,'America/Puerto_Rico','es-PR')).toMatch(/^9 nov\.? · 10:47\sp\.\sm\.$/);
+ const es=renderToStaticMarkup(<ClockerPresentation initialLocale="es"><ClockerReceipt action="CLOCK_IN" performedAt={at} commandId="c1" timeZone="America/Puerto_Rico" locale="es-PR" firstName="Ana"/></ClockerPresentation>);
+ expect(es).toContain('Que tengas un buen turno, Ana.');expect(es).toMatch(/Registrado <time[^>]*>[^<]*p\.\sm\.<\/time> Esta pantalla se borra en 8 segundos\./);
+ const en=renderToStaticMarkup(<ClockerReceipt action="CLOCK_OUT" performedAt={new Date().toISOString()} timeZone="UTC" locale="en-US" firstName="James"/>);
+ expect(en).toMatch(/Saved <time[^>]*>\d{1,2}:\d{2}\s[AP]M<\/time>\. This screen clears in 8 seconds\./);expect(en).toContain('See you next time, James.');expect(en).not.toContain('Action reference');
 });

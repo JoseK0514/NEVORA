@@ -1,7 +1,7 @@
 'use client';
 
 import {createContext,useContext,useSyncExternalStore,type ReactNode} from 'react';
-import {clockerText,type ClockerLocale} from './clocker-copy';
+import {clockerHasText,clockerText,type ClockerLocale} from './clocker-copy';
 import { ClockerIcon } from './clocker-icon';
 import styles from './clocker.module.css';
 
@@ -31,5 +31,11 @@ export function ClockerPresentation({initialLocale='en',children}:{initialLocale
 }
 export function useClockerPresentation(){return useContext(Presentation);}
 export function useClockerCopy(){const {locale}=useClockerPresentation();return (key:string,params?:Record<string,string|number>)=>clockerText(locale,key,params);}
+/** A message that may come from the server: in Spanish, a sentence the kiosk has no line for stays in English and is
+ * marked as English for screen readers (Nov 10 review, NV-045). */
+export function ClockerText({text}:{text:string}){
+ const {locale}=useClockerPresentation();
+ return clockerHasText(locale,text)?<>{clockerText(locale,text)}</>:<span lang="en">{text}</span>;
+}
 /** The locale for Intl date and time formatting. */
 export function useClockerIntlLocale(){return useClockerPresentation().locale==='es'?'es-PR':'en-US';}

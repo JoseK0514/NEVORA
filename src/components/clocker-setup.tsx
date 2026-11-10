@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import {ClockerPresentation,ClockerLanguageToggle,useClockerCopy} from './clocker-language';
+import {ClockerPresentation,ClockerLanguageToggle,ClockerText,useClockerCopy} from './clocker-language';
 import type {ClockerLocale} from './clocker-copy';
 import styles from './clocker.module.css';
 import { ClockerPinGate } from './clocker-pin-gate';
@@ -75,6 +75,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   }
 
   const linked=state.state === 'connected' && pinEnabled;
+  const [deviceBefore, deviceAfter = ''] = t('{device} is registered for this location.', { device: '\u0000' }).split('\u0000');
   return <ClockerShell locationLabel={locationLabel} timeZone={timeZone} brand={brand} workspaceName={workspaceName}
     deviceName={state.state === 'connected' ? state.deviceName : undefined}
     status={feedback?.uncertain ? 'unconfirmed' : pending ? 'checking' : state.state === 'connected' ? 'connected' : 'setup'}>
@@ -86,31 +87,34 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
       </> : state.state === 'connected' ? <>
         <span className={styles.ring} data-tone="green"><ClockerIcon name="check" size={28}/></span>
         <h1 className={styles.title}>{t("Tablet connected")}</h1>
-        <p className={styles.lead}><strong>{state.deviceName}</strong>{' '}{t("is registered for this location.")}</p>
-        <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Employee PINs and real time punches are being connected. Do not use this tablet to record worked time yet.")}</p></div>
+        {/* One sentence with a placeholder (Nov 10 review, NV-173). */}
+        <p className={styles.lead}>{deviceBefore}<strong>{state.deviceName}</strong>{deviceAfter}</p>
+        <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")}</p></div>
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}</p>
         <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" disabled={pending} onClick={check}>{t("Check Connection")}</button></div>
       </> : <>
         <span className={styles.ring}><ClockerIcon name="lock" size={28}/></span>
         <p className={styles.eyebrow}>{t("One-time setup")}</p>
         <h1 className={styles.title}>{t("Set up this tablet")}</h1>
-        <p className={styles.lead}>{t("Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.")}</p>
+        <p className={styles.lead}>{t("Ask your Owner to add this device in Settings → Clocker tablets. Then paste the one-use setup code.")}</p>
         <form onSubmit={connect} className={styles.form}>
           <fieldset disabled={pending || Boolean(feedback?.uncertain)}>
             <label className={styles.field}>{t("Setup code")}<textarea ref={input} name="enrollmentToken" rows={3} required maxLength={72} autoComplete="off" autoCapitalize="none" spellCheck={false}
               aria-invalid={feedback && !feedback.uncertain ? true : undefined} aria-describedby={feedback && !feedback.uncertain ? 'clocker-setup-error clocker-setup-help' : 'clocker-setup-help'} /></label>
-            {feedback && !feedback.uncertain ? <p id="clocker-setup-error" role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span>{t(feedback.message)}</span></p> : null}
+            {feedback && !feedback.uncertain ? <p id="clocker-setup-error" role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span><ClockerText text={feedback.message}/></span></p> : null}
             <p id="clocker-setup-help" className={styles.hint}>{t("This is the tablet setup code, not an employee PIN. Cookies must be allowed.")}</p>
-            <button className={styles.btn} data-kind="primary" type="submit">{t(pending ? 'Checking setup...' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
+            <button className={styles.btn} data-kind="primary" type="submit">{pending ? <span className={styles.spin} aria-hidden="true"/> : null}{t(pending ? 'Checking setup…' : 'Connect tablet')}{!pending ? <ClockerIcon name="arrow" size={20}/> : null}</button>
           </fieldset>
         </form>
       </>}
-      {pending ? <p role="status" className={styles.busy}><span className={styles.spin} aria-hidden="true"/>{t("Checking this tablet...")}</p> : null}
-      {/* A definite answer from the server: its message under the field (on the form) or under the card's content, with
-        * Check Setup as before. */}
-      {feedback && !feedback.uncertain ? <>{state.state === 'connected' ? <p role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span>{t(feedback.message)}</span></p> : null}
+      {/* The busy state shows in the button; this line is for screen readers only (Nov 10 review, NV-298). */}
+      <p role="status" className={styles.sr}>{pending ? t("Checking this tablet…") : ''}</p>
+      {/* A definite answer from the server: its message under the field (on the form) or under the card's content. On the
+        * form it is about the pasted code, so Check Setup (which can't fix it) shows only for a connected tablet or an
+        * uncertain result (Nov 10 review, NV-298). */}
+      {feedback && !feedback.uncertain && state.state === 'connected' ? <><p role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span><ClockerText text={feedback.message}/></span></p>
         <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={check}><ClockerIcon name="refresh" size={18}/>{t("Check Setup")}</button></div></> : null}
-      {feedback?.uncertain ? <><p role="alert" className={styles.smsg}>{t(feedback.message)}</p>
+      {feedback?.uncertain ? <><p role="alert" className={styles.smsg}><ClockerText text={feedback.message}/></p>
         <div className={styles.stack}><button className={styles.btn} data-kind="primary" type="button" disabled={pending} onClick={check}>{t("Check Setup")}</button></div></> : null}
       <div className={styles.meta} data-align="center"><ClockerLanguageToggle/></div>
     </div>}
