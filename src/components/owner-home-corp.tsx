@@ -1,4 +1,6 @@
 "use client";
+import { parsePeriod } from '@/lib/timecards/project';
+import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import "./owner-home-corp.css";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
@@ -14,8 +16,8 @@ import { gapRow } from "./manager-inbox-corp";
 export { toDoSentence } from "./manager-inbox-corp";
 
 /* Owner and Manager Home in the corporate look (Release 1; approved board C-Owner, Oct 26). Presentation only: every number
- * comes from the same reads as before (Today's published shifts, the clock-in monitor, the shared needs-you count that the
- * sidebar badge and Things to do use, and My pay's next payday). Three cards at most: Today, Payday, Things to do.
+ * comes from Today's published shifts, the clock-in monitor, the shared needs-you count, My pay's next payday and
+ * the protected Owner payroll preparation read. Three cards at most: Today, Payday, Things to do.
  * Owner premium round 2 (R6): Today is the one focus, full width; its figures open their lists; Payday and Things to do
  * sit under it, level on desktop. Figures are ink (R3) and Payday says what to do and when (R7).
  * Owner premium (Oct 31, A5/A2/P3/P7): Today holds the shift counts and Things to do lists only the decisions, so no count
@@ -41,13 +43,14 @@ export type OwnerHomeCorpProps = {
   value: NeedsYou | null;
   connection: ActionCenterConnection;
   onRetryActions?: () => void;
-  /** Period timecards still to approve, from the same action center read. */
+  /** Period timecards still to review or finalize, from the same action center read. */
   timecards: ActionItem[];
   /** The action center read behind `timecards` has loaded (an empty list then means none are waiting, not "unknown"). */
   timecardsReady?: boolean;
   /** The workspace's business date ("2026-10-31"), so Payday can tell whether a pay period has ended. */
   businessDay?: string;
   nextPay?: NextPay;
+  payrollStatus?: HomePayrollStatus | null;
   setup?: ReactNode;
   liveReaders?: string;
 };
@@ -57,7 +60,7 @@ export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
     <div data-live-readers={props.liveReaders} hidden />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
-    <PaydayCard nextPay={props.nextPay} timecards={props.timecards} ready={props.timecardsReady ?? props.value !== null} connection={props.connection} businessDay={props.businessDay} />
+    <PaydayCard nextPay={props.nextPay} payrollStatus={props.payrollStatus} timecards={props.timecards} ready={props.timecardsReady ?? props.value !== null} connection={props.connection} businessDay={props.businessDay} />
     <ThingsToDo {...props} />
   </CorpPage>;
 }
@@ -142,34 +145,60 @@ const homeGap = <T extends { detail?: string }>(row: T): T => row.detail ? { ...
 
 const dayName = (date: string, style: "long" | "short") => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", weekday: style, ...(style === "short" ? { month: "short", day: "numeric" } : {}) }).format(new Date(`${date}T12:00:00Z`));
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
-/** A timecard item's pay period end, from the review link the server built for it (`/app/timecards?start=…&end=…`). */
-const periodEnd = (item: ActionItem) => { try { return new URL(item.href, "https://nevora.invalid").searchParams.get("end"); } catch { return null; } };
+/** Keep the exact canonical review period; dropping it would open the current week instead of the counted cards. */
+const timecardPeriod = (item: ActionItem) => {
+  try {
+    const url = new URL(item.href, "https://nevora.invalid");
+    return url.pathname === "/app/timecards" ? parsePeriod(url.searchParams.get("start") ?? "", url.searchParams.get("end") ?? "") : null;
+  } catch { return null; }
+};
 
 /** Payday: the next payday, then what to do about its timecards and when (R7). Approvals open the day after a period ends
  * (as Timecards says), so before then the card names that day ("You can approve from Mon, Nov 2"); it names a count to
- * approve only for periods that have ended; and it never says "approved" (an empty list can mean none were recorded) or
- * claims anything while the read is loading or has failed. Two rows, so on desktop it sits level with Things to do. */
-function PaydayCard({ nextPay, timecards, ready, connection, businessDay }: { nextPay?: NextPay; timecards: ActionItem[]; ready: boolean; connection: ActionCenterConnection; businessDay?: string }) {
-  if (!nextPay && !(ready && timecards.length)) return null;
+ * review only for periods that have ended; and it never says "approved" (an empty list can mean none were recorded) or
+ * claims anything while the read is loading or has failed. Owner payroll preparation facts use the same card. */
+function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, businessDay }: { nextPay?: NextPay; payrollStatus?: HomePayrollStatus | null; timecards: ActionItem[]; ready: boolean; connection: ActionCenterConnection; businessDay?: string }) {
+  const payrollNeedsAttention = payrollStatus?.state === 'unavailable' || (payrollStatus?.state === 'ready' && (payrollStatus.overdue || payrollStatus.reviewRequired));
+  if (!nextPay && !payrollNeedsAttention && !(ready && timecards.length)) return null;
   // "Tue, Nov 3" with how far away it is in grey ("Tomorrow", "In 3 days"); the card's label already says Payday.
   const when = nextPay ? dayName(nextPay.payday, "short") : null;
   const away = nextPay ? nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days` : undefined;
-  const ends = timecards.map(periodEnd);
-  const closed = businessDay ? ends.filter(end => end && end < businessDay).length : 0;
+  const periods = timecards.map(timecardPeriod);
+  const ends = periods.map(period => period?.endDate);
+  const closed = new Map<string, {startDate: string; endDate: string; count: number}>();
+  if (ready && businessDay) for (const period of periods) {
+    if (!period || period.endDate >= businessDay) continue;
+    const key = `${period.startDate}:${period.endDate}`;
+    const group = closed.get(key);
+    if (group) group.count++;
+    else closed.set(key, {...period, count: 1});
+  }
   // The earliest period still open: a waiting timecard's, or else the next payday's own period.
   const openEnd = businessDay ? [...ends, nextPay?.period?.endDate].filter((end): end is string => !!end && end >= businessDay).sort()[0] : undefined;
   // While the read is out of reach the line says so (and keeps the card's height); it never guesses a count.
   const step: { title: string; detail: string } = !ready
     ? { title: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking timecards…" : connection === "offline" ? "Updates when you reconnect"
       : connection === "paused" ? "Updates when you’re back" : "Timecards aren’t available right now" }
-    : closed ? { title: `Approve ${count(closed, "timecard", "timecards")}`, detail: "Ready now" }
     : openEnd ? { title: "Approve timecards", detail: `You can approve from ${dayName(nextDay(openEnd), "short")}` }
     : { title: "Timecards", detail: "No timecards waiting" };
   const period = nextPay?.period ? periodLabel(nextPay.period.startDate, nextPay.period.endDate) : "";
-  return <CorpCard id="home-payday" label={when ? "Payday" : "Timecards"}>
-    <CorpRows label={when ? "Payday" : "Timecards"}>
+  const label = when ? "Payday" : payrollNeedsAttention ? "Payroll" : "Timecards";
+  const payrollFact = (title: string, fact: {payday: string; period: {startDate: string; endDate: string}}) => {
+    const fullDate = (date: string) => new Intl.DateTimeFormat("en-US", {timeZone: "UTC", month: "short", day: "numeric", year: "numeric"}).format(new Date(`${date}T12:00:00Z`));
+    const detail = `Payday ${dayName(fact.payday, "short")}, ${fact.payday.slice(0, 4)} · Pay period ${fullDate(fact.period.startDate)} – ${fullDate(fact.period.endDate)}`;
+    return <li><CorpRow title={title} detail={detail} href="/app/payroll" chevron label={`${title}. ${detail}. Opens Payroll`} /></li>;
+  };
+  return <CorpCard id="home-payday" label={label}>
+    <CorpRows label={label}>
+      {payrollStatus?.state === 'unavailable' ? <li><CorpRow title="Payroll" detail="Payroll status isn’t available right now" href="/app/payroll" chevron label="Payroll status isn’t available right now. Opens Payroll" /></li> : null}
+      {payrollStatus?.state === 'ready' && payrollStatus.overdue ? payrollFact("Payroll to prepare", payrollStatus.overdue) : null}
+      {payrollStatus?.state === 'ready' && payrollStatus.reviewRequired ? payrollFact("Payroll schedule needs review", payrollStatus.reviewRequired) : null}
       {when ? <li><CorpRow title={when} bold detail={period ? `Pay period ${period}` : undefined} value={away} valueTone="soft" /></li> : null}
-      <li className="c-home__payday"><CorpRow title={step.title} detail={step.detail} href="/app/timecards" chevron label={`${step.title}. ${step.detail}. Opens Timecards`} /></li>
+      {closed.size ? [...closed.values()].sort((a, b) => a.startDate.localeCompare(b.startDate) || a.endDate.localeCompare(b.endDate)).map(period => {
+        const title = `Review ${count(period.count, "timecard", "timecards")}`;
+        const detail = `Before payroll · ${periodLabel(period.startDate, period.endDate)}`;
+        return <li key={`${period.startDate}:${period.endDate}`} className="c-home__payday"><CorpRow title={title} detail={detail} href={`/app/timecards?start=${period.startDate}&end=${period.endDate}`} chevron label={`${title}. ${detail}. Opens Timecards`} /></li>;
+      }) : <li className="c-home__payday"><CorpRow title={step.title} detail={step.detail} href="/app/timecards" chevron label={`${step.title}. ${step.detail}. Opens Timecards`} /></li>}
     </CorpRows>
   </CorpCard>;
 }

@@ -26,7 +26,7 @@ import {currentPresentation} from '@/lib/workspace-presentation/current.server';
 import {requestTypeAllowed} from '@/lib/workspace-presentation/modules';
 import {addDays,formatWeekRange,isValidWeekStart,weekStartFor} from '@/lib/date-utils';
 import {redirect} from 'next/navigation';
-import {readNextPay} from './my-pay/next-pay';
+import {readHomePayrollStatus,readNextPay} from './my-pay/next-pay';
 import {retiredViewDestination} from '@/lib/retired-views';
 
 const DASHBOARD_VIEWS: ManagerDashboardView[] = [
@@ -110,6 +110,7 @@ export default async function DashboardPage({
   const {modules}=await currentPresentation();
   // MK1: Home's "Next payday" row, from the date My pay shows (none when pay statements are off or there's no schedule).
   const nextPay=view==='overview'&&modules.payStatements?await readNextPay(workspace.timeZone):null;
+  const payrollStatus=session.role==='OWNER'&&view==='overview'&&modules.payStatements&&process.env.NEVORA_PAYROLL_ENABLED==='true'?await readHomePayrollStatus(proof):null;
   return (<ManagerCorrectionRecoveryBoundary key={recoveryKey}><ScopedReadFrame observation={source.state==='ready'?source:null}>
     {session.role === "OWNER" && process.env.NEVORA_OWNER_ADVISOR_ENABLED === "true" ? <Link className="nv-btn" data-kind="secondary" href="/app/ai-manager">AI manager</Link> : null}
     <ManagerDashboard
@@ -138,6 +139,7 @@ export default async function DashboardPage({
       days={daySummaries}
       hours={hourRows}
       nextPay={nextPay}
+      payrollStatus={payrollStatus}
       latestRevision={
         latestRevision
           ? {

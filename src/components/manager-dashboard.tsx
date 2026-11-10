@@ -1,4 +1,5 @@
 import { ManagerAttendanceReview } from "./manager-attendance-review";
+import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import { WhosWorkingCorp } from "./whos-working-corp";
 import { TeamOverviewCorp } from "./team/team-overview";
 import { ManagerTimeCorrections } from "./manager-time-corrections";
@@ -67,6 +68,7 @@ export type DashboardRevisionItem = {
 type Props = {
   /** MK1: the next payday from My pay's pay schedule, for Home's Coming up row. */
   nextPay?: NextPay;
+  payrollStatus?: HomePayrollStatus | null;
   /** Display-only compositions can supply prepared panels without mounting readers. */
   overviewSlots?: { actions: ReactNode; activity: ReactNode; today?: ReactNode; setup?: ReactNode; /** Fictional snapshots for the premium Home preview. */ snapshots?: { today: Today; actions: ActionCenter; monitor?: ClockMonitor } };
   /** Workspace date for the Home band, e.g. "Sunday, October 18". */
@@ -225,11 +227,11 @@ function PremiumOverview(props: Props) {
   // Corporate (Release 1, board C-Owner): "Welcome back, Carmen".
   const common = { greeting: `Welcome back, ${props.firstName}`, dateLabel: props.dateLabel ?? homeDateLabel(props.timeZone), timeZone: props.timeZone, week: homeWeek(props), workspaceName: props.workspaceName };
   const slots = props.overviewSlots;
-  if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
+  if (slots?.snapshots) return <PremiumHomeSurface {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={slots.setup ?? null} setupHoldsItems={!!slots.setup}
     today={slots.snapshots.today} monitor={slots.snapshots.monitor ?? null} actions={slots.snapshots.actions} actionsConnection="ready" />;
   return <SharedHomeRead key={`${props.actorId}:${props.weekStart}`} live weekStart={props.weekStart} actorId={props.actorId ?? ''}
     owner={props.role === 'OWNER'} initialItems={props.managerActions}>
-    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
+    <PremiumHomeLive {...common} corporate nextPay={props.nextPay ?? null} payrollStatus={props.payrollStatus} setup={props.role === 'OWNER' ? <OwnerSetupCorpLive locationCount={props.totalLocations}/> : null} />
   </SharedHomeRead>;
 }
 

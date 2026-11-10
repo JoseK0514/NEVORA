@@ -1,4 +1,5 @@
 "use client";
+import type { HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import Link from "next/link";
 import { focusAfterRetry } from "@/components/kit/focus-after-retry";
 
@@ -48,6 +49,7 @@ export type PremiumHomeProps = {
   setupHoldsItems?: boolean;
   /** MK1: the next payday from My pay's pay schedule; Home shows it as one Coming up row. */
   nextPay?: NextPay;
+  payrollStatus?: HomePayrollStatus | null;
   /** Quiet (v4): the workspace name in Home's top bar. */
   workspaceName?: string;
   /** Corporate (Release 1): Owner and Manager Home on the corporate kit. */
@@ -101,7 +103,7 @@ export type PremiumHomeSurfaceProps = PremiumHomeProps & {
 
 /** Presentation only, so the fictional preview can show Home without a session. */
 export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceName, setup, setupHoldsItems = false, today, monitor = null, monitorPending = false, todayRefreshing = false, onRetryToday,
-  actions, actionsConnection, onRetryActions, liveReaders, offline = false, nextPay, corporate = false }: PremiumHomeSurfaceProps) {
+  actions, actionsConnection, onRetryActions, liveReaders, offline = false, nextPay, payrollStatus, corporate = false }: PremiumHomeSurfaceProps) {
   const readyToday = today?.state === "ready" ? today : null;
   // r4 QA: Home remembers whether the Owner setup card shows, so the next route placeholder starts with its shape.
   const hasSetup = !!setup;
@@ -148,7 +150,7 @@ export function PremiumHomeSurface({ greeting, dateLabel, timeZone, workspaceNam
   // Corporate (Release 1, approved board C-Owner): Today, Payday and Things to do on the corporate kit.
   if (corporate) return <OwnerHomeCorp greeting={greeting} dateLabel={dateLabel} summary={summary} today={today} monitor={monitor} monitorPending={monitorPending}
     todayRefreshing={todayRefreshing} onRetryToday={onRetryToday} offline={offline} value={value} connection={offline ? "offline" : actionsConnection} onRetryActions={retryAll}
-    timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} setup={setup} liveReaders={liveReaders} />;
+    timecards={items.filter(item => item.type === "TIMECARD")} timecardsReady={!!readyActions} businessDay={readyToday?.today ?? day} nextPay={nextPay} payrollStatus={payrollStatus} setup={setup} liveReaders={liveReaders} />;
   // Quiet (v4, approved Oct 23): top bar, title, Right now, Needs you, Setup. Nothing else on Home.
   return <div className="q-page premium-home cm-home" data-nv-page="" data-live-readers={liveReaders}>
     <QuietBar org={workspaceName}><QuietBarIcon href="/app/notifications" label="Notifications"><BellIcon className="q-ic" aria-hidden="true" /></QuietBarIcon></QuietBar>

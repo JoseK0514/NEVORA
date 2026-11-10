@@ -1,3 +1,8 @@
+import type { SessionMutationProof } from '@/lib/shift-changes/types';
+import type { SqlExecutor } from '@/lib/notifications/types';
+import { neonNotificationExecutor } from '@/lib/data/notification-transactions';
+import { withOperationalCompany } from '@/lib/company-access/operational-scope.server';
+import { readPayrollBacklog, homePayrollStatus, type HomePayrollStatus } from '@/lib/payroll/backlog-read';
 import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
@@ -11,4 +16,13 @@ export async function readNextPay(timeZone?: string): Promise<NextPay> {
   const today = businessDate(new Date(), zone);
   const daysUntil = Math.round((Date.parse(`${pay.payday}T12:00:00Z`) - Date.parse(`${today}T12:00:00Z`)) / 86_400_000);
   return daysUntil >= 0 ? { payday: pay.payday, daysUntil } : null;
+}
+
+/** Additive Owner Home facts: independent of the personal upcoming-only NextPay contract.
+ * The outer company envelope retains its final authority/workspace fence; the inner
+ * payroll read retains current session/Owner checks around the bounded source query. */
+export async function readHomePayrollStatus(proof: SessionMutationProof, ex: SqlExecutor = neonNotificationExecutor()): Promise<HomePayrollStatus | null> {
+  if (proof.employee.role !== 'OWNER' || process.env.NEVORA_PAYROLL_ENABLED !== 'true') return null;
+  const result = await withOperationalCompany(proof, async () => homePayrollStatus(await readPayrollBacklog(proof, ex, 'OWNER')), ex);
+  return result.state === 'ready' ? result.data : {state: 'unavailable'};
 }
