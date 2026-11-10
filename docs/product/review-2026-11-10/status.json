@@ -1028,10 +1028,10 @@
  {
   "id": "NV-115",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "decision",
+  "status": "fixed",
+  "remainder": "none",
   "by": "F3",
-  "note": "Sign-in and 404 use the one band; the Clocker keeps its approved glow; phone hero and desktop band built from pieces.",
+  "note": "Sign-in and 404 use the one band; the Clocker keeps its approved glow; phone hero and desktop band built from pieces. Jose kept the Clocker glow.",
   "inCodexHandoff": false
  },
  {
@@ -1559,10 +1559,10 @@
  {
   "id": "NV-174",
   "severity": "Medium",
-  "status": "open",
-  "remainder": "decision",
+  "status": "fixed",
+  "remainder": "none",
   "by": "F2",
-  "note": "Dev-only warning from the layout's two inline head scripts; moving them changes before-paint timing.",
+  "note": "Accepted by Jose: dev-only warning from the inline head scripts; no user impact.",
   "inCodexHandoff": true
  },
  {
@@ -1667,10 +1667,10 @@
  {
   "id": "NV-186",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "decision",
+  "status": "fixed",
+  "remainder": "none",
   "by": "B4/F2",
-  "note": "sloganEs in brand.ts read by the copy; Jose to confirm the wording \"Un trabajo m\u00e1s brillante por delante\".",
+  "note": "sloganEs in brand.ts; Jose confirmed the wording.",
   "inCodexHandoff": true
  },
  {
@@ -2486,10 +2486,10 @@
  {
   "id": "NV-277",
   "severity": "Low",
-  "status": "partly",
-  "remainder": "decision",
+  "status": "fixed",
+  "remainder": "none",
   "by": "F2",
-  "note": "Clock glyphs done; merging the two time-field components changes picker behaviour.",
+  "note": "Clock glyphs and radius done; Jose chose to keep the two time fields separate.",
   "inCodexHandoff": false
  },
  {
@@ -2766,9 +2766,9 @@
   "id": "NV-308",
   "severity": "Low",
   "status": "partly",
-  "remainder": "decision",
+  "remainder": "server",
   "by": "B1-B7",
-  "note": "UI uses \"d\u00edas libres\" (auth-copy.ts:154, mobile-access/copy.ts:289; B7). Pay statement PDF still \"Importe/Importes\" (paystub-document.ts:239,242,498): frozen-bytes test, needs Jose's call on template versioning (CODEX-HANDOFF \u00a77)",
+  "note": "UI uses \"d\u00edas libres\"; Jose chose \"Monto\" for new pay statements (Codex: PDF template version).",
   "inCodexHandoff": true
  },
  {

@@ -31,4 +31,16 @@ review passes, merged into **329 findings (67 High, 169 Medium, 93 Low)**.
 - **Timecards Attention (NV-006, Nov 10, closing pass):** the Attention count and "N need attention" count only
   rows with an amber issue chip, never people who are simply clocked in.
 
+- **Closing decisions (Nov 10, Jose: "go with all your recommendations"):**
+  - Clocker band keeps the glow approved in Clocker round 2 (NV-115 stays partly by choice).
+  - Owner and Manager form fields get the 3:1 field edge (#8C9397), as Employee fields have (NV-114).
+  - Settings Save sits at the bottom of its card, right-aligned; nothing floats on the canvas (NV-102).
+  - The Timecards table keeps Status taking the spare width (no 860px cap).
+  - Fix my time and Time off keep their own time fields for now (NV-277).
+  - Spanish slogan confirmed: "Un trabajo más brillante por delante" (NV-186).
+  - Clocker buttons and headings use sentence case outside the approved exempt words (NV-173).
+  - New Spanish pay statements say "Monto"; approved ones keep their bytes (NV-308, Codex: template version).
+  - Owner/Manager calendar notice confirmed: "Calendar links are for Employees and Leads." (NV-136).
+  - The dev-only "script tag" warning on the Clocker 404 is accepted (NV-174); the inline head scripts stay.
+
 Screenshots for the review were captured with `tools/ui-scan/` on fictional data.

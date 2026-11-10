@@ -119,7 +119,7 @@ client wording ("Your access changed", "That didn’t go through / Nothing was s
 
 ## 7. Needs Jose's decision first
 
-- **NV-308** Spanish pay statement PDF uses "Importe/Importes" (`src/lib/payroll/native/paystub-document.ts:239,242,498`); Puerto Rico usage is "Monto". `provisional-history.test.ts` checks bytes of a frozen approved statement. Option: version the template so new statements say "Monto" and approved ones keep their bytes.
+- **NV-308 (Jose decided Nov 10: new statements say "Monto")** Spanish pay statement PDF uses "Importe/Importes" (`src/lib/payroll/native/paystub-document.ts:239,242,498`); Puerto Rico usage is "Monto". `provisional-history.test.ts` checks bytes of a frozen approved statement. Version the template so new statements say "Monto" and approved ones keep their bytes.
 - **Reports definitions** (`src/lib/reports/project.ts:141,144`) still say "Unable to work". DESIGN.MD keeps the technical wording there.
 - **NV-052** per-person PIN lockout scope and any countdown.
 - **Legal policy** "Forgot access" wording.
