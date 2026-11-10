@@ -49,17 +49,34 @@ async function assertIssuerPrivileges(admin:EnrollmentQuery,role:string){
    FROM pg_catalog.pg_roles p WHERE p.rolname=$1`,[role])).rows;
   if(rows.length!==1||['rolcanlogin','flags','unshared','original_custody'].some(k=>rows[0][k]!==true))throw invalid();
 }
+/** Audit only the newly introduced capability; original provisioning grants
+ * remain unchanged. Missing minimum rights are allowed only before setup. */
+async function assertEnrollmentPrivileges(admin:EnrollmentQuery,role:string,requireAccess:boolean){
+ const rows=(await admin.query(`SELECT c.relrowsecurity AND c.relforcerowsecurity AND c.relowner<>p.oid AS rls,
+  EXISTS(SELECT 1 FROM pg_catalog.pg_trigger t WHERE t.tgrelid=c.oid AND t.tgname='worker_enrollment_immutable' AND t.tgenabled IN('O','A') AND t.tgfoid='nevora_onboarding.worker_enrollment_immutable()'::pg_catalog.regprocedure) AS immutable,
+  NOT pg_catalog.has_table_privilege(p.oid,c.oid,'INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER'||CASE WHEN pg_catalog.current_setting('server_version_num')::int>=170000 THEN ',MAINTAIN' ELSE '' END)
+  AND NOT pg_catalog.has_table_privilege(p.oid,c.oid,'SELECT WITH GRANT OPTION')
+  AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped AND (
+   pg_catalog.has_column_privilege(p.oid,c.oid,a.attnum,'INSERT,REFERENCES,SELECT WITH GRANT OPTION,INSERT WITH GRANT OPTION,UPDATE WITH GRANT OPTION')
+   OR (a.attname NOT IN('status','key_envelope','ciphertext','issued_at') AND pg_catalog.has_column_privilege(p.oid,c.oid,a.attnum,'UPDATE')))) AS bounded,
+  pg_catalog.has_table_privilege(p.oid,c.oid,'SELECT') AND NOT EXISTS(SELECT 1 FROM unnest(ARRAY['status','key_envelope','ciphertext','issued_at']) a WHERE NOT pg_catalog.has_column_privilege(p.oid,c.oid,a,'UPDATE')) AS ready
+ FROM pg_catalog.pg_roles p JOIN pg_catalog.pg_class c ON c.oid='nevora_onboarding.worker_runtime_enrollments'::pg_catalog.regclass WHERE p.rolname=$1`,[role])).rows;
+ if(rows.length!==1||['rls','immutable','bounded'].some(k=>rows[0][k]!==true)||requireAccess&&rows[0].ready!==true)throw invalid();
+}
+function transactionClient(value:unknown):value is EnrollmentClient{
+ return !!value&&typeof value==='object'&&'query'in value&&typeof value.query==='function'&&'release'in value&&typeof value.release==='function'&&'on'in value&&typeof value.on==='function'&&'removeListener'in value&&typeof value.removeListener==='function';
+}
 /** Adds only the enrollment-table capability to an existing restricted issuer
  * that already reads original provisioning custody. No role/password is made. */
-export async function configureWorkerEnrollmentIssuer(admin:EnrollmentQuery,role:string){
- if(!/^nv_control_provision_[a-f0-9]{24}$/.test(role))throw invalid();
+export async function configureWorkerEnrollmentIssuer(admin:unknown,role:string){
+ if(!transactionClient(admin)||!/^nv_control_provision_[a-f0-9]{24}$/.test(role))throw invalid();
  await admin.query('BEGIN');try{
-  await assertIssuerPrivileges(admin,role);
+  await assertIssuerPrivileges(admin,role);await assertEnrollmentPrivileges(admin,role,false);
   const policy='enrollment_issuer_'+role.slice(-24);
   await admin.query(`DROP POLICY IF EXISTS "${policy}" ON nevora_onboarding.worker_runtime_enrollments`);
   await admin.query(`CREATE POLICY "${policy}" ON nevora_onboarding.worker_runtime_enrollments TO "${role}" USING(true) WITH CHECK(true)`);
   await admin.query(`GRANT USAGE ON SCHEMA nevora_onboarding TO "${role}"; GRANT SELECT,UPDATE(status,key_envelope,ciphertext,issued_at) ON nevora_onboarding.worker_runtime_enrollments TO "${role}"`);
-  await admin.query('COMMIT');
+  await assertEnrollmentPrivileges(admin,role,true);await admin.query('COMMIT');
  }catch{await admin.query('ROLLBACK').catch(()=>{});throw invalid();}
 }
 function bindings(value:unknown):readonly WorkerEnrollmentRequestBinding[]{
@@ -75,7 +92,7 @@ export async function processWorkerEnrollmentOnce(pool:EnrollmentDatabase,select
   await client.query('BEGIN');transaction=true;
   const login=(await client.query('SELECT session_user::text AS login,current_user::text AS effective')).rows;
   if(login.length!==1||typeof login[0].login!=='string'||login[0].login!==login[0].effective)throw invalid();
-  await assertIssuerPrivileges(client,login[0].login);
+  await assertIssuerPrivileges(client,login[0].login);await assertEnrollmentPrivileges(client,login[0].login,true);
   const receipts=(await client.query('SELECT id::text,request_hash FROM nevora_onboarding.worker_runtime_enrollments WHERE id=ANY($1::uuid[])',[requests.map(r=>r.id)])).rows;
   if(receipts.some(r=>requests.find(x=>x.id===r.id)?.requestHash!==r.request_hash))throw invalid();
   const rows=(await client.query(`SELECT ${queryColumns} FROM nevora_onboarding.worker_runtime_enrollments WHERE id=ANY($1::uuid[]) AND status='PENDING' AND revoked_at IS NULL AND request_expires_at>clock_timestamp() AND expires_at>clock_timestamp() ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 1`,[requests.map(r=>r.id)])).rows;
@@ -90,9 +107,10 @@ export async function processWorkerEnrollmentOnce(pool:EnrollmentDatabase,select
   const {registryRevision,recipientPublicKey,requestExpiresAt,...identity}=request;void registryRevision;void requestExpiresAt;
   const material=parseWorkerEnrollmentMaterial({databaseUrl,commerceWorkerSecret:workspaceInstanceSecret(commerceWorkerRoot,request)},identity);
   if(await verifyCompany(identity,material)!==true)throw invalid();
+  await assertIssuerPrivileges(client,login[0].login);await assertEnrollmentPrivileges(client,login[0].login,true);
   const envelope=sealWorkerEnrollment(identity,material,recipientPublicKey);
   const changed=(await client.query("UPDATE nevora_onboarding.worker_runtime_enrollments SET status='COMPLETE',key_envelope=$2,ciphertext=$3,issued_at=clock_timestamp() WHERE id=$1 AND status='PENDING' AND revoked_at IS NULL AND request_expires_at>clock_timestamp() AND expires_at>clock_timestamp() RETURNING id",[request.enrollmentId,envelope.keyEnvelope,envelope.ciphertext])).rows;
-  if(changed.length!==1)throw invalid();await client.query('COMMIT');transaction=false;return {state:'processed'};
+  if(changed.length!==1)throw invalid();await assertIssuerPrivileges(client,login[0].login);await assertEnrollmentPrivileges(client,login[0].login,true);await client.query('COMMIT');transaction=false;return {state:'processed'};
  }catch{clean=false;throw invalid();}
  finally{if(transaction&&!lost)await client.query('ROLLBACK').catch(()=>{clean=false;});client.release(!clean||lost);client.removeListener('error',loss);}
 }

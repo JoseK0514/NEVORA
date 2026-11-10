@@ -36,3 +36,11 @@ it('curates enrolled host profiles without synthesizing or passing shared roots'
 it.each(['NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY'])('refuses an unnecessary global %s on a managed host',field=>{
  expect(()=>parseManagedHostConfig({...host([profile()]),[field]:Buffer.alloc(32,3).toString('base64url')},sha,managedDestinations)).toThrow('managed_configuration_invalid');
 });
+it('F5 rejects mixed sibling custody in either order while retaining all-legacy compatibility',()=>{
+ const legacy=(id:string)=>{const p=profile(id),env:Record<string,string>={...p.env};delete env.NEVORA_WORKER_ENROLLMENT_ID;delete env.NEVORA_WORKER_RECIPIENT_PRIVATE_KEY;return {...p,env:{...env,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,11).toString('base64url'),NEVORA_COMMERCE_WORKER_BINDING_KEY:Buffer.alloc(32,12).toString('base64url')}};};
+ for(const profiles of [[profile(),legacy(otherScope)],[legacy(otherScope),profile()]])expect(()=>parseManagedHostConfig(host(profiles),sha,managedDestinations)).toThrow('managed_configuration_invalid');
+ expect(parseManagedHostConfig(host([legacy(scope),legacy(otherScope)]),sha,managedDestinations).profiles).toHaveLength(2);
+});
+it.each(['NEVORA_PROVISIONER_API_KEY','NEVORA_PROVISIONER_CONTROL_DATABASE_URL','NEVORA_OPERATOR_CONTROL_DATABASE_URL','STRIPE_SECRET_KEY'])('F5 refuses ambient %s on an enrolled host',field=>{
+ expect(()=>parseManagedHostConfig({...host([profile()]),[field]:'fictional-private-authority'},sha,managedDestinations)).toThrow('managed_configuration_invalid');
+});

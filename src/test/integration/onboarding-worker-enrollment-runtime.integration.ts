@@ -94,3 +94,44 @@ it('denies current company role escalation and lifecycle drift after a successfu
  await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[e.request.workspaceId]);
  try{await expect(db.query({text:'SELECT 1 AS n',values:[]})).rejects.toThrow('Workspace is unavailable');}finally{await f.db.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='ACTIVE',revision=revision+1 WHERE id=$1",[e.request.workspaceId]);}
 });
+it.each(['PUBLIC','LOGIN'] as const)('F1 refuses effective %s access to Owner credentials before issuance and after transport priming',async grantee=>{
+ const cold=await enrollment(a,{issue:false}),warm=await enrollment(),company=a.c.resource.db.pool,db=getWorkspaceDb(warm.binding),target=grantee==='PUBLIC'?'PUBLIC':cold.request.loginRole;
+ expect(await db.query({text:'SELECT 1 AS n',values:[]})).toEqual([{n:1}]);
+ await company.query('GRANT SELECT(password_hash) ON public.employee_credentials TO '+target);
+ try{
+  await expect(processWorkerEnrollmentOnce(f.principals!.pools[1],[cold.selected],sha,f.config.encryptionKey,workerRoot,verifyWorkerEnrollmentCompany)).rejects.toThrow('worker_enrollment_invalid');
+  expect((await f.db.pool.query('SELECT status,ciphertext FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[cold.selected.id])).rows).toEqual([{status:'PENDING',ciphertext:null}]);
+  await expect(db.query({text:'SELECT count(password_hash)::int AS n FROM public.employee_credentials',values:[]})).rejects.toThrow('Workspace is unavailable');
+ }finally{await company.query('REVOKE SELECT(password_hash) ON public.employee_credentials FROM '+target);}
+});
+it('F2 refuses colliding Worker/Owner hashes before sealing and on current enrolled commerce use',async()=>{
+ const cold=await enrollment(a,{issue:false}),warm=await enrollment(),company=a.c.resource.db.pool,original=(await company.query('SELECT instance_secret_hash,worker_secret_hash FROM nevora_commerce_installation')).rows[0];
+ await company.query('UPDATE nevora_commerce_installation SET worker_secret_hash=instance_secret_hash');
+ try{
+  await expect(processWorkerEnrollmentOnce(f.principals!.pools[1],[cold.selected],sha,f.config.encryptionKey,ownerRoot,verifyWorkerEnrollmentCompany)).rejects.toThrow('worker_enrollment_invalid');
+  expect((await f.db.pool.query('SELECT status,ciphertext FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[cold.selected.id])).rows).toEqual([{status:'PENDING',ciphertext:null}]);
+  await company.query('UPDATE nevora_commerce_installation SET worker_secret_hash=$1,instance_secret_hash=$1',[original.worker_secret_hash]);
+  vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+  await expect(withWorkspaceBinding(warm.binding,isolatedCommerceConnection)).rejects.toThrow('commerce_not_enrolled');
+ }finally{await company.query('UPDATE nevora_commerce_installation SET instance_secret_hash=$1,worker_secret_hash=$2',[original.instance_secret_hash,original.worker_secret_hash]);}
+});
+it.each(['revoke','expire'] as const)('F3 rechecks enrolled admission after an asynchronous entitlement %s',async mode=>{
+ const {readCommerceAuthority,resetCommerceAccessCache}=await import('@/lib/commerce/access');resetCommerceAccessCache();const e=await enrollment(a,{runtimeMs:mode==='expire'?2500:3600000});
+ vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+ try{await expect(withWorkspaceBinding(e.binding,()=>readCommerceAuthority(async()=>{
+  if(mode==='revoke')await f.db.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=clock_timestamp() WHERE id=$1',[e.selected.id]);
+  else await f.db.pool.query('SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (expires_at-clock_timestamp())))+0.05) FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[e.selected.id]);
+  return Response.json({businessId:e.request.workspaceId,installationId:e.request.workspaceId,state:'active',operational:true,validUntil:Date.now()+30000});
+ }))).rejects.toThrow('Workspace is unavailable');}finally{resetCommerceAccessCache();}
+});
+it('F3 retains valid entitlement and cache positives while denying a later revoked receipt',async()=>{
+ const {readCommerceAuthority,resetCommerceAccessCache}=await import('@/lib/commerce/access');resetCommerceAccessCache();const e=await enrollment();
+ vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');vi.stubEnv('NEVORA_COMMERCE_API_ORIGIN','https://fictional.invalid');vi.stubEnv('NEVORA_COMMERCE_WORKER_BINDING_KEY',undefined);vi.stubEnv('NEVORA_COMMERCE_BINDING_KEY',undefined);
+ let fetched=0;const get=()=>withWorkspaceBinding(e.binding,()=>readCommerceAuthority(async()=>{fetched++;return Response.json({businessId:e.request.workspaceId,installationId:e.request.workspaceId,state:'active',operational:true,validUntil:Date.now()+30000});}));
+ try{expect((await get()).operational).toBe(true);expect((await get()).operational).toBe(true);expect(fetched).toBe(1);await f.db.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=clock_timestamp() WHERE id=$1',[e.selected.id]);await expect(get()).rejects.toThrow('Workspace is unavailable');expect(fetched).toBe(1);}finally{resetCommerceAccessCache();}
+});
+it('F1 denies a newly created callable pg_catalog security-definer function despite its native-looking schema',async()=>{
+ const cold=await enrollment(a,{issue:false}),warm=await enrollment(),company=a.c.resource.db.pool,db=getWorkspaceDb(warm.binding);await db.query({text:'SELECT 1 AS n',values:[]});
+ await company.query("CREATE FUNCTION pg_catalog.enrollment_owner_probe() RETURNS integer LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT count(*)::integer FROM public.employee_credentials'");
+ try{await expect(processWorkerEnrollmentOnce(f.principals!.pools[1],[cold.selected],sha,f.config.encryptionKey,workerRoot,verifyWorkerEnrollmentCompany)).rejects.toThrow('worker_enrollment_invalid');await expect(db.query({text:'SELECT pg_catalog.enrollment_owner_probe()',values:[]})).rejects.toThrow('Workspace is unavailable');}finally{await company.query('DROP FUNCTION pg_catalog.enrollment_owner_probe()');}
+});

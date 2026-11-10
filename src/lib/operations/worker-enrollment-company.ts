@@ -1,4 +1,5 @@
 import 'server-only';
+import {companyWorkerPrivilegePredicate} from '../company-bootstrap/worker-privilege-guard';
 import {createHash} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
 import {parseWorkerEnrollmentIdentity,parseWorkerEnrollmentMaterial,type WorkerEnrollmentIdentity,type WorkerEnrollmentMaterial} from './worker-enrollment';
@@ -19,7 +20,8 @@ export async function verifyWorkerEnrollmentCompany(identity:WorkerEnrollmentIde
    AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_class t WHERE t.relowner=p.oid)
    AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc fn WHERE fn.proowner=p.oid)
    AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_database d WHERE d.datdba=p.oid)
-   AND c.business_id::text=$1 AND c.installation_id::text=$1 AND c.environment=$2 AND c.incarnation=$3::bigint AND c.canonical_origin=$6 AND c.worker_secret_hash=$7
+   AND ${companyWorkerPrivilegePredicate}
+   AND c.worker_secret_hash<>c.instance_secret_hash AND c.business_id::text=$1 AND c.installation_id::text=$1 AND c.environment=$2 AND c.incarnation=$3::bigint AND c.canonical_origin=$6 AND c.worker_secret_hash=$7
   ) AS verified`,[r.workspaceId,r.environment,r.incarnation,r.providerProjectId,r.loginRole,r.canonicalOrigin,createHash('sha256').update(m.commerceWorkerSecret).digest('hex')],{fetchOptions:{signal:AbortSignal.timeout(5000)}});
   return rows.length===1&&rows[0].verified===true;
  }catch{return false;}

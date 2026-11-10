@@ -135,3 +135,43 @@ it.each([false,undefined,'true',{valid:true}])('refuses unproved company-side wo
   expect((await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING',key_envelope:null,ciphertext:null}]);
  }finally{await f.close();}
 });
+it.each(['PUBLIC-TRUNCATE','LOGIN-DELETE','COLUMN-UPDATE','GRANT-OPTION','RLS','TRIGGER'] as const)('F4 refuses %s drift at setup and issuance without publishing an envelope',async kind=>{
+ const f=await fixture();const table='nevora_onboarding.worker_runtime_enrollments';try{
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request()),grants={
+   'PUBLIC-TRUNCATE':[`GRANT TRUNCATE ON ${table} TO PUBLIC`,`REVOKE TRUNCATE ON ${table} FROM PUBLIC`],
+   'LOGIN-DELETE':[`GRANT DELETE ON ${table} TO ${f.issuer}`,`REVOKE DELETE ON ${table} FROM ${f.issuer}`],
+   'COLUMN-UPDATE':[`GRANT UPDATE(request_hash) ON ${table} TO ${f.issuer}`,`REVOKE UPDATE(request_hash) ON ${table} FROM ${f.issuer}`],
+   'GRANT-OPTION':[`GRANT UPDATE(ciphertext) ON ${table} TO ${f.issuer} WITH GRANT OPTION`,`REVOKE GRANT OPTION FOR UPDATE(ciphertext) ON ${table} FROM ${f.issuer}`],
+   'RLS':[`ALTER TABLE ${table} NO FORCE ROW LEVEL SECURITY`,`ALTER TABLE ${table} FORCE ROW LEVEL SECURITY`],
+   'TRIGGER':[`ALTER TABLE ${table} DISABLE TRIGGER worker_enrollment_immutable`,`ALTER TABLE ${table} ENABLE TRIGGER worker_enrollment_immutable`],
+  }[kind];await f.pool.query(grants[0]);
+  try{const admin=await f.pool.connect();try{await expect(configureWorkerEnrollmentIssuer(admin,f.issuer)).rejects.toThrow('worker_enrollment_invalid');}finally{admin.release();}
+   await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)).rejects.toThrow('worker_enrollment_invalid');
+   expect((await f.pool.query('SELECT status,ciphertext FROM '+table)).rows).toEqual([{status:'PENDING',ciphertext:null}]);
+  }finally{await f.pool.query(grants[1]);}
+ }finally{await f.close();}
+});
+it('F6 rejects a pool before any setup write and preserves the existing policy on actual client mid-DDL failure',async()=>{
+ const f=await fixture(),pool=new Pool({connectionString:f.connectionUrl,maxUses:1,max:1}),query="SELECT count(*)::int n FROM pg_catalog.pg_policies WHERE schemaname='nevora_onboarding' AND tablename='worker_runtime_enrollments' AND policyname=$1",values=['enrollment_issuer_'+f.issuer.slice(-24)];
+ try{
+  expect((await f.pool.query(query,values)).rows).toEqual([{n:1}]);
+  // Unsupported runtime callers cannot accidentally split a transaction across pool connections.
+  await expect(configureWorkerEnrollmentIssuer(pool,f.issuer)).rejects.toThrow('worker_enrollment_invalid');expect((await f.pool.query(query,values)).rows).toEqual([{n:1}]);
+  await f.pool.query("CREATE FUNCTION public.enrollment_reject_policy() RETURNS event_trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'fixture_reject_policy'; END $$; CREATE EVENT TRIGGER enrollment_reject_policy ON ddl_command_start WHEN TAG IN ('CREATE POLICY') EXECUTE FUNCTION public.enrollment_reject_policy()");
+  const admin=await f.pool.connect();try{await expect(configureWorkerEnrollmentIssuer(admin,f.issuer)).rejects.toThrow('worker_enrollment_invalid');}finally{admin.release();}
+  expect((await f.pool.query(query,values)).rows).toEqual([{n:1}]);
+  expect((await f.issuerPool.query("SELECT has_column_privilege(current_user,'nevora_onboarding.worker_runtime_enrollments','ciphertext','UPDATE') allowed")).rows).toEqual([{allowed:true}]);
+ }finally{await pool.end();await f.close();}
+});
+it('F4 rechecks effective issuer authority after the asynchronous company proof before committing any result',async()=>{
+ const f=await fixture();try{
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request()),probe=async(identity:import('@/lib/operations/worker-enrollment').WorkerEnrollmentIdentity,material:import('@/lib/operations/worker-enrollment').WorkerEnrollmentMaterial)=>{const valid=await f.probe(identity,material);await f.pool.query('GRANT TRUNCATE ON nevora_onboarding.worker_runtime_enrollments TO PUBLIC');return valid;};
+  try{await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,probe)).rejects.toThrow('worker_enrollment_invalid');expect((await f.pool.query('SELECT status,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING',ciphertext:null}]);}finally{await f.pool.query('REVOKE TRUNCATE ON nevora_onboarding.worker_runtime_enrollments FROM PUBLIC');}
+ }finally{await f.close();}
+});
+it('F4 rechecks actual issuer flags after asynchronous company proof',async()=>{
+ const f=await fixture();try{
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request()),probe=async(identity:import('@/lib/operations/worker-enrollment').WorkerEnrollmentIdentity,material:import('@/lib/operations/worker-enrollment').WorkerEnrollmentMaterial)=>{const valid=await f.probe(identity,material);await f.pool.query('ALTER ROLE '+f.issuer+' INHERIT');return valid;};
+  try{await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,probe)).rejects.toThrow('worker_enrollment_invalid');expect((await f.pool.query('SELECT status,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING',ciphertext:null}]);}finally{await f.pool.query('ALTER ROLE '+f.issuer+' NOINHERIT');}
+ }finally{await f.close();}
+});
