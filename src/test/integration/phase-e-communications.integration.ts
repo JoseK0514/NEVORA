@@ -10,6 +10,11 @@ import type {CommunicationDraft,CommunicationCommand} from '../../lib/communicat
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {currentShiftFingerprintSql,currentShiftTermsSql} from '../../lib/data/shift-change-release';
+import {runReminders} from '../../lib/notifications/reminders';
+import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
+import {readNotificationConfig} from '../../lib/notifications/config';
+import {getWorkspace} from '../../lib/data/workspaces';
+
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
 const owner:SessionMutationProof={employee:{id:'owner',firstName:'Fictional',lastName:'Owner',role:'OWNER',primaryLocationId:'loc-1'},sessionTokenHash:'a'.repeat(64)};
 const employee:SessionMutationProof={employee:{id:'employee',firstName:'Fictional',lastName:'Self',role:'EMPLOYEE',primaryLocationId:'loc-1'},sessionTokenHash:'b'.repeat(64)};
@@ -295,4 +300,32 @@ it('an older required update without an expiry remains eligible for a bounded ne
  expect(await readCommunication(employee,id,db.executor)).toMatchObject({state:'ready',acknowledgement:'REQUIRED'});
  expect(await executeManagerReminder(owner,{kind:'COMMUNICATION',operationId:randomUUID(),authority:communicationAuthority(owner),employeeId:'employee',communicationId:id,expectedRevisionId:revisionId},db.executor)).toMatchObject({status:'committed'});
  expect(await q("SELECT expires_at>clock_timestamp() AS future,expires_at<=clock_timestamp()+interval '30 days' AS bounded FROM notifications WHERE purpose='REMINDER'")).toEqual([{future:true,bounded:true}]);
+});
+
+// The worker scanner and the manual command plan independently, then reach their
+// real outbox transactions together. No source, authority or persistence is mocked.
+it('scanner and manual availability reminder races spend only one shared delivery-day budget',async()=>{
+ const [time]=await q('SELECT to_jsonb(clock_timestamp()) AS instant') as {instant:string}[];
+ // A real named business zone at local noon isolates this race from quiet/day boundaries.
+ const instant=new Date(time.instant),timeZone=Intl.supportedValuesOf('timeZone').find(zone=>new Intl.DateTimeFormat('en-GB',{timeZone:zone,hour:'2-digit',hourCycle:'h23'}).format(instant)==='12');
+ if(!timeZone)throw Error('Expected a named business timezone at local noon');
+ await q('UPDATE workspaces SET time_zone=$1',[timeZone]);
+ const initial=await managerReminderFixture('AVAILABILITY');
+ if(initial.kind!=='AVAILABILITY')throw Error('Expected availability fixture');
+ const [source]=await q("UPDATE schedule_week_settings SET availability_deadline=date_trunc('milliseconds',clock_timestamp()+interval '18 hours') WHERE week_start=$1::date RETURNING to_char(availability_deadline,'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS deadline",[initial.weekStart]) as {deadline:string}[];
+ const command={...initial,expectedDeadline:source.deadline};
+ let arrivals=0,release!:()=>void;const ready=new Promise<void>(resolve=>{release=resolve;});
+ const executor:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  const targetInsert=statements.some(statement=>statement.text.includes('INSERT INTO notifications')&&statement.values[1]==='employee'&&statement.values[8]==='AVAILABILITY'&&statement.values[9]===command.weekStart);
+  if(targetInsert){if(++arrivals===2)release();let timer:ReturnType<typeof setTimeout>|undefined;
+   try{await Promise.race([ready,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Both real reminder writers must reach persistence')),5000);})]);}finally{clearTimeout(timer);}}
+  return db.executor.transaction(statements,signal);
+ }};
+ const workspace=await getWorkspace(executor),base=readNotificationConfig({PUSH_ENVIRONMENT:'test'});
+ const config={...base,workspace,featureEnabled:true,policy:{...base.policy,timeZone}};
+ const [manual]=await Promise.all([executeManagerReminder(owner,command,executor),runReminders({executor,state:sqlNotificationStateRepository(executor,workspace),config,clock:()=>new Date()})]);
+ expect(arrivals).toBe(2);expect(manual).toMatchObject({status:'committed'});
+ expect(await q("SELECT count(*)::int count FROM notifications WHERE purpose='REMINDER' AND source_kind='AVAILABILITY' AND source_id=$1 AND employee_id='employee'",[command.weekStart])).toEqual([{count:1}]);
+ expect(await findManagerReminderOperation(owner,command.operationId,command.authority,db.executor)).toEqual(manual);
+ expect(await q("SELECT count(*)::int count FROM employee_attention_operations WHERE operation_id=$1::uuid AND result->>'kind'='MANAGER_REMINDER'",[command.operationId])).toEqual([{count:1}]);
 });

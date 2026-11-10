@@ -70,7 +70,12 @@ it('team decision expires after actual writes and the final DB-clock guard rolls
 });
 const form=(f:Fixture)=>{const body=new FormData();body.set('requestId',f.requestId);body.set('decision','APPROVED');body.set('managerId','owner');return body;};
 it('normal time-off review action denies a scoped Manager with a generic review redirect and no writes',async()=>{const f=await setup();try{await choose(f,'LOCATIONS');const before=await snapshot(f);await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=team&error=review'});expect(await snapshot(f)).toEqual(before);}finally{await close(f);}});
-it('normal Company review action uses the session actor and retains its known successful decision',async()=>{const f=await setup();try{await expect(reviewTimeOffAction(form(f))).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1'});expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:'APPROVED',reviewed_by:'manager'}]);}finally{await close(f);}});
+it.each([{decision:'APPROVED',code:'timeoff-approved'},{decision:'DENIED',code:'timeoff-declined'}] as const)('normal Company $decision action retains its session actor and exact known-decision redirect',async({decision,code})=>{
+ const f=await setup();try{const body=form(f);body.set('decision',decision);
+  await expect(reviewTimeOffAction(body)).rejects.toMatchObject({destination:'/app/requests?tab=pending&reviewed=1&decided='+code});
+  expect(await f.q('SELECT status,reviewed_by FROM time_off_requests WHERE id=$1',[f.requestId])).toEqual([{status:decision,reviewed_by:'manager'}]);
+ }finally{await close(f);}
+});
 it.each(['EMPLOYEE','LEAD'] as const)('%s own submission/withdrawal/replay remains identity-based after Manager restriction',async role=>{
  const f=await setup();try{await f.q('UPDATE employees SET role=$1 WHERE id=\'target\'',[role]);f.employee={...f.employee,employee:{...f.employee.employee,role}};await choose(f,'LOCATIONS');const ownRequest=randomUUID();await createTimeOffRequest({requestId:ownRequest,employeeId:'target',proof:f.employee,startDate:'2030-11-04',endDate:'2030-11-05',reason:'Owned self-service submission after restriction'},f.db.executor);const input={requestId:ownRequest,operationId:withdrawalIdentity(ownRequest),employeeId:'target',proof:f.employee};const receipt=await withdrawTimeOffRequest(input,f.db.executor);expect(receipt).toMatchObject({requestId:ownRequest,status:'CANCELLED',reviewedBy:'target'});const before=await snapshot(f);expect(await withdrawTimeOffRequest(input,f.db.executor)).toEqual(receipt);expect(await snapshot(f)).toEqual(before);}finally{await close(f);}
 });
