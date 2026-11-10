@@ -83,9 +83,14 @@ async function closeGeneration(generation) {
 self.addEventListener('install', event => {
   if (RETIRE) return;
   event.waitUntil((async () => {
-    // Fetch and validate the complete public set before writing any entry.
-    const responses = await Promise.all(PUBLIC_ASSETS.map(path => fetch(path, { cache: 'no-store', credentials: 'omit', redirect: 'error' })));
-    if (responses.some(response => !response.ok || response.redirected || response.type === 'opaque')) throw new Error('Public offline assets unavailable');
+    // Read each public body promptly to release installing-browser fetch slots.
+    // Keep the original response metadata and validate the full set before writes.
+    const responses = await Promise.all(PUBLIC_ASSETS.map(async path => {
+      const response = await fetch(path, { cache: 'no-store', credentials: 'omit', redirect: 'error' });
+      if (!response.ok || response.redirected || response.type === 'opaque') throw new Error('Public offline assets unavailable');
+      await response.clone().arrayBuffer();
+      return response;
+    }));
     const cache = await caches.open(CACHE_NAME);
     await Promise.all(PUBLIC_ASSETS.map((path, index) => cache.put(path, responses[index])));
   })());
