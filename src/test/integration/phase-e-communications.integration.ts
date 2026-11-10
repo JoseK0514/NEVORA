@@ -312,8 +312,9 @@ it('scanner and manual availability reminder races spend only one shared deliver
  await q('UPDATE workspaces SET time_zone=$1',[timeZone]);
  const initial=await managerReminderFixture('AVAILABILITY');
  if(initial.kind!=='AVAILABILITY')throw Error('Expected availability fixture');
- const [source]=await q("UPDATE schedule_week_settings SET availability_deadline=date_trunc('milliseconds',clock_timestamp()+interval '18 hours') WHERE week_start=$1::date RETURNING to_char(availability_deadline,'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS deadline",[initial.weekStart]) as {deadline:string}[];
+ const [source]=await q("UPDATE schedule_week_settings SET availability_deadline=date_trunc('milliseconds',clock_timestamp()+interval '18 hours') WHERE week_start=$1::date RETURNING to_char(availability_deadline AT TIME ZONE 'UTC','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS deadline",[initial.weekStart]) as {deadline:string}[];
  const command={...initial,expectedDeadline:source.deadline};
+ expect(await q('SELECT availability_deadline=$2::timestamptz AS exact FROM schedule_week_settings WHERE week_start=$1::date',[command.weekStart,command.expectedDeadline]),'The command must retain the exact stored instant regardless of DB session timezone').toEqual([{exact:true}]);
  let arrivals=0,release!:()=>void;const ready=new Promise<void>(resolve=>{release=resolve;});
  const executor:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
   const targetInsert=statements.some(statement=>statement.text.includes('INSERT INTO notifications')&&statement.values[1]==='employee'&&statement.values[8]==='AVAILABILITY'&&statement.values[9]===command.weekStart);
