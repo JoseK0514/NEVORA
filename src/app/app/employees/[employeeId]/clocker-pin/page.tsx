@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import {ClockerPinEditor} from '@/components/clocker-pin-editor';
 import '@/components/clocker-pin-page.css';
 import { QuietNav } from '@/components/quiet/quiet';
+import { CaretLeftIcon } from '@phosphor-icons/react/dist/ssr/CaretLeft';
 import { requireRoles } from '@/lib/auth/permissions';
 import { requireSessionMutationProof } from '@/lib/auth/session';
 import { getEmployeeManagementProfile } from '@/lib/data/employees';
@@ -43,9 +44,11 @@ export default async function EmployeeClockerPinPage({params}:{params:Promise<{e
  if(ready&&pin)return <ScopedReadFrame observation={source}><ClockerPinEditor employeeId={employeeId} name={name} initialVersion={pin.version} action={saveClockerPinAction} checkStatus={checkClockerPinSaveAction}/></ScopedReadFrame>;
  // Quiet (v4, approved Oct 23): a sheet: Cancel, the title, Save; the person's name; the two PIN rows.
  return <ScopedReadFrame observation={source}><div className="q-page wa-pin" data-nv-page="" data-q-sheet="">
-  <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={employeeHref}>Cancel</Link>} title="Clocker PIN"
+  <QuietNav left={<Link className="q-nav__l q-nav__l--teal" href={employeeHref}><span className="wa-pin__cancel">Cancel</span><span className="wa-pin__back"><CaretLeftIcon className="q-ic q-ic--s" weight="bold" aria-hidden="true"/>{name}</span></Link>} title="Clocker PIN"
    />
-  <div className="q-hd wa-pin__hd"><h1>{name}</h1><p className="wa-pin__sub">Clocker PIN</p></div>
+  {/* Closing F1 (NV-256): "‹ Maria Rivera" on tablets and desktop, as on the editor. */}
+  <div className="q-hd wa-pin__hd"><div className="wa-pin__title">
+   <h1><span className="wa-pin__h-phone">{name}</span><span className="wa-pin__h-wide">Clocker PIN</span></h1></div></div>
   <div>
    {!allowed?closed('Owner access required','Only an Owner can manage another Owner’s Clocker PIN.',employeeHref,'Back to employee')
     :!employee.active?closed('Employee is inactive','Inactive people can’t use a PIN. Make them active again before setting one.',employeeHref,'View employee')

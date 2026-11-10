@@ -1,0 +1,8 @@
+/* Closing F1 (NV-104): Availability's sent rows open in place, so their disclosure is a CaretDown that turns when open
+   (Direction B foundation: CaretRight only for rows that navigate). */
+:is(#c-root, html) .q-avail-list .q-details > summary .q-chev--disc { transition: rotate 150ms ease-out; }
+:is(#c-root, html) .q-avail-list .q-details[open] > summary .q-chev--disc { transform: none; rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .q-avail-list .q-details > summary .q-chev--disc { transition: none; } }
+/* Closing F1 (NV-261): with the segments in the band, the deadline card and the people card follow each other; keep the
+   cards' 12px gap between them. */
+:is(#c-root, html) .app-shell .q-page.q-availability .q-avail-list { margin-top: 12px !important; }

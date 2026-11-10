@@ -12,7 +12,7 @@ import { QuietHeader, QuietList, QuietPage, QuietRow } from '../quiet/quiet';
 import { useEmployeeMobile } from '../employee-mobile/use-mobile';
 import { EmployeePayView } from '../employee-mobile/pay';
 import { CorpPayView } from '../employee-mobile/pay-corp';
-import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
+import { CorpButtonLink, CorpCard, CorpErrorCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpTitle } from '../corp/corp';
 
 /* My pay in the Signature style (phase 1, approved Oct 20, 2026; target:
  * docs/product/specs/employee-style/signature/phase-1/p1c-pay.png). The band carries the next payday from the pay
@@ -98,7 +98,7 @@ export function QuietMyPay({ nextPay = null }: { nextPay?: NextPay }) {
     <CorpNav back={{ href: '/app/more', label: 'More' }} title="My pay" titleId="mypay-nav-title" phoneOnly />
     <CorpTitle id="mypay-title" title="My pay" wide />
     {payday ? <CorpCard id="mypay-payday" label="Payday">
-      <CorpRows label="Payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} value={away} valueTone="soft" /></li></CorpRows>
+      <CorpRows label="Payday"><li><CorpRow title={payday} bold detail={nextPay?.period ? `Pay period ${periodLabel(nextPay.period.startDate, nextPay.period.endDate).replace('–', ' – ')}` : undefined} trail={away ? <CorpPill tone="teal">{away}</CorpPill> : undefined} /></li></CorpRows>
     </CorpCard> : null}
     {loading ? <CorpCard id="mypay-statements" label="Statements"><div className="c-empty c-empty--card" role="status"><span className="c-empty__body">Loading…</span></div></CorpCard>
       : error ? <CorpErrorCard title={error === PAYROLL_SIGNED_OUT ? 'Sign in again to see your statements.' : 'Couldn’t load your statements.'} body={null}

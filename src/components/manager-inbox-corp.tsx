@@ -223,6 +223,9 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   const grouped = ready ? groupThingsToDo(ready, today, timeZone, coverageFirst) : null;
   const value = grouped?.value ?? null, more = grouped?.more ?? [], families = grouped?.families ?? [], waiting = grouped?.waiting ?? [];
   const moreView = view === "more";
+  // Closing F1 (NV-002): the Later and done row names what it holds.
+  const moreCount = (id: string) => { const group = more.find(item => item.id === id); return group ? groupCount(group) : 0; };
+  const laterCounts = { plan: moreCount("plan"), earlier: moreCount("earlier") };
   const shown = moreView ? more.length : families.length + waiting.length;
   const todayFailed = today?.state === "unavailable";
   const summary = value ? `${toDoSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : statusText[connection];
@@ -262,7 +265,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
     {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
-    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} /> : <InboxB ready={ready} families={families} waiting={waiting} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
+    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} connection={connection} /> : <InboxB ready={ready} families={families} waiting={waiting} later={ready ? laterCounts : undefined} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />

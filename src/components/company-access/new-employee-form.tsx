@@ -27,7 +27,9 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
  }
  const activePositions=positions.filter(position=>position.active);
  return <>
-  <FormHead titleId="new-employee-title" title="Add employee" step={`Step ${step} of 2`}
+  {/* Closing F1 (NV-257): two dots show where the form is (the words stay); on tablets and desktop step 1 goes back to
+    "‹ Team" above the title like every pushed page (the phone sheet keeps Cancel). */}
+  <FormHead titleId="new-employee-title" title="Add employee" back={{href:'/app/employees',label:'Team'}} step={<><span className="c-formhead__dots" aria-hidden="true"><i data-on=""/><i data-on={step===2?'':undefined}/></span>{`Step ${step} of 2`}</>}
    left={step===1?<FormHeadLink href="/app/employees">Cancel</FormHeadLink>:<FormHeadBack onClick={()=>setStep(1)}>Back</FormHeadBack>}
    right={step===1?<button type="button" onClick={next} disabled={blocked}>Next</button>:<button type="submit" form="new-employee-form" disabled={blocked}>Add</button>}/>
   <EmployeeAccessForm id="new-employee-form" action={action} build={(fields,id)=>createCommandFromForm(fields,actorRole,scope,id)} className="c-teamform">

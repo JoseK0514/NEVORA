@@ -15,7 +15,7 @@ import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
-import { BAvatar, BButtonLink, BCard, BFaces, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, partOfDay } from "./b-kit";
+import { BAvatar, BButtonLink, BCard, BFaces, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, BState, partOfDay } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -39,7 +39,12 @@ export type HomeBProps = {
   today: Today | null; monitor: ClockMonitor | null; monitorPending: boolean; offline: boolean;
   value: NeedsYou | null; connection: ActionCenterConnection; timecards: ActionItem[]; timecardsReady: boolean; businessDay?: string;
   nextPay?: NextPay; setup?: ReactNode; dateLabel: string; summary: string; week?: HomeBWeek; greeting: string;
+  /** Closing F1 (NV-123): Things to do's fresh read, for the failed card's Try again. */
+  onRetry?: () => void;
 };
+
+/** Closing F1 (NV-095): Things to do shows up to six rows; below 1024px the card keeps three (owner-home-corp.css). */
+const NEEDS_ROWS = 6;
 
 const working = (shift: TodayShift) => shift.status === "clocked_in" || shift.status === "on_break";
 const people = (shifts: TodayShift[]) => new Set(shifts.map(shift => shift.employeeId)).size;
@@ -91,9 +96,13 @@ export function HomeB(props: HomeBProps) {
   </BScreen>;
 }
 
-function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: HomeBProps & { gapRows: ReturnType<typeof gapRow>[]; openHref: string }) {
+function NeedsYouCard({ value, connection, offline, gapRows, openHref, today, onRetry }: HomeBProps & { gapRows: ReturnType<typeof gapRow>[]; openHref: string }) {
+  const failed = !value && !offline && (connection === "unavailable" || connection === "ready");
+  // Closing F1 (NV-123, NV-075): a failed read is the kit's state card with its one way forward (Try again).
+  if (failed) return <BCard title="Things to do" id="b-home-needs"><BState kind="failed" title="Things to do didn’t load" line="Check your connection, then try again."
+    action={onRetry ? { label: "Try again", onClick: onRetry } : undefined} /></BCard>;
   if (!value) return <BCard title="Things to do" id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
-    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Things to do didn’t load. Pull down to refresh, or try again."}</p></BCard>;
+    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "access_lost" ? "Sign in again to see what needs you." : "Checking what needs you…"}</p></BCard>;
   const rows: ReactNode[] = [];
   if (gapRows.length) {
     const next = gapRows[0];
@@ -117,7 +126,7 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
       href="/app/inbox#todo-missed" label={`Missed clock-ins: ${names.join(", ")}`} />);
   }
   const requests = [...value.now.filter(item => item.category === "requests"), ...value.requests];
-  for (const item of requests.slice(0, Math.max(0, 3 - rows.length))) {
+  for (const item of requests.slice(0, Math.max(0, NEEDS_ROWS - rows.length))) {
     const person = itemPerson(item);
     const facts = item.request;
     rows.push(<BRow key={item.id} lead={person ? <BAvatar name={person} size={32} /> : <BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
@@ -125,10 +134,10 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
       href={facts?.reviewHref ?? "/app/inbox#todo-requests"} label={`${requestKind[item.type] ?? item.title}${person ? `, ${person}` : ""}`} />);
   }
   const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
-  if (rows.length < 3 && others.length) rows.push(<BRow key="others" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
+  if (rows.length < NEEDS_ROWS && others.length) rows.push(<BRow key="others" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
   return <BCard title="Things to do" count={value.count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
-    {rows.length ? <BList label="Things to do">{rows.slice(0, 3)}</BList>
+    {rows.length ? <BList label="Things to do">{rows.slice(0, NEEDS_ROWS)}</BList>
       : <p className="b-state">{today?.state === "unavailable" ? "Clock-ins can’t be checked right now." : "Nothing needs you right now."}</p>}
   </BCard>;
 }

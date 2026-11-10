@@ -6,7 +6,7 @@ import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
 import { KeyIcon } from "@phosphor-icons/react/dist/ssr/Key";
 import { UserMinusIcon } from "@phosphor-icons/react/dist/ssr/UserMinus";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "@/components/employee-directory-filters";
-import { useTeamLive } from "@/components/team-live";
+import { lateText, teamStateOf, useTeamLive } from "@/components/team-live";
 import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow, BScreen, BStack } from "./b-kit";
 
 /* Direction B, Team on a phone (mock screen "Owner · Team"). The same people, links, search and tools as the corporate
@@ -16,7 +16,6 @@ import { BAvatar, BButtonLink, BCard, BChip, BFilters, BHero, BIcon, BList, BRow
 export type TeamBPerson = { id: string; name: string; detail: string; href: string; label: string; active: boolean };
 type Filter = "all" | "working" | "late" | "off";
 
-const lateText = (minutes: number) => minutes >= 60 ? `Late ${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `Late ${minutes} min`;
 
 export function TeamB({ people, inactive, total, query, filtered, people_word, person_word, seeAll, tools, searchHidden, status, limit }: {
   people: TeamBPerson[]; inactive: TeamBPerson[]; total: number; query: string; filtered: boolean; people_word: string; person_word: string;
@@ -28,7 +27,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
 }) {
   const live = useTeamLive();
   const [filter, setFilter] = useState<Filter>("all");
-  const state = (id: string) => !live.ready ? null : live.working.has(id) ? "working" : live.onBreak.has(id) ? "break" : live.late.has(id) ? "late" : live.scheduled.has(id) ? "later" : "off";
+  const state = (id: string) => teamStateOf(live, id);
   const working = people.filter(person => ["working", "break"].includes(state(person.id) ?? "")).length;
   const late = people.filter(person => state(person.id) === "late").length;
   const off = people.filter(person => state(person.id) === "off").length;

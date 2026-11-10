@@ -79,7 +79,9 @@ function Block({ shift, person, onLeave = false }: { shift: RosterShift; person:
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
     {/* Review B5 (NV-131): the position under the time (12px), as on the mock. */}
     {shift.position && !onLeave ? <span className="cm-block__pos" aria-hidden="true">{shift.position}</span> : null}
-    <span className="sr-only">{shiftLabel(shift, person)}</span>
+    {/* Closing F1 (NV-027): a shift on a day of time off opens the same place as Things to do's repair ("Open the shift": its edit
+      page, where it gets someone else), and says so: "Fill Ana Colon's shift". The coverage page would add a second shift. */}
+    <span className="sr-only">{onLeave ? `${shiftLabel(shift, person).replace(/^Edit /, "Fill ")}, time off that day` : shiftLabel(shift, person)}</span>
     {shift.position ? <span className="sr-only schedule-assigned-position">{`, ${shift.position}`}</span> : null}
     {overnight(shift) ? <span className="sr-only">{`, Ends ${formatDayLabel(addDays(shift.date, 1)).day}`}</span> : null}
     <span className="sr-only">{`, ${statusWord(shift.status)}`}</span>
@@ -183,8 +185,18 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
     window.addEventListener(REPAIR_DAY_EVENT, open); return () => window.removeEventListener(REPAIR_DAY_EVENT, open);
   }, [dates]);
   const visibleDates = focus === "all" ? dates : dates.filter(date => date === focus);
-  const newShift = (date?: string, employeeId?: string) => `/app/schedule/new?week=${encodeURIComponent(dates[0])}${date ? `&date=${encodeURIComponent(date)}` : ""}${employeeId ? `&employeeId=${encodeURIComponent(employeeId)}` : ""}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}`;
   const allShifts = employees.flatMap(employee => employee.shifts.map(shift => ({ shift, employee })));
+  // Closing F1 (NV-227): a cell's "+ Add" starts where this person's nearest shift this week starts (the previous day's
+  // first), else where that day's first shift starts; the form then sets End to Start + 8 h. Nothing to go on: no default.
+  const usualStart = (date: string, employeeId: string) => {
+    const own = employees.find(employee => employee.id === employeeId)?.shifts.filter(shift => shift.date !== date) ?? [];
+    const nearest = [...own].sort((a, b) => Math.abs(Date.parse(a.date) - Date.parse(date)) - Math.abs(Date.parse(b.date) - Date.parse(date)) || a.date.localeCompare(b.date) || a.startTime.localeCompare(b.startTime))[0];
+    const sameDay = allShifts.filter(({ shift }) => shift.date === date).map(({ shift }) => shift.startTime).sort()[0];
+    const start = nearest?.startTime ?? sameDay;
+    return start && /^\d{2}:\d{2}$/.test(start.slice(0, 5)) ? start.slice(0, 5) : undefined;
+  };
+  const newShift = (date?: string, employeeId?: string) => { const start = date && employeeId ? usualStart(date, employeeId) : undefined;
+    return `/app/schedule/new?week=${encodeURIComponent(dates[0])}${date ? `&date=${encodeURIComponent(date)}` : ""}${employeeId ? `&employeeId=${encodeURIComponent(employeeId)}` : ""}${locationId ? `&locationId=${encodeURIComponent(locationId)}` : ""}${start ? `&start=${encodeURIComponent(start)}` : ""}`; };
   const shiftsOn = (date: string) => allShifts.filter(({ shift }) => shift.date === date);
 
   // ---------- Phone: week strip and the chosen day ----------

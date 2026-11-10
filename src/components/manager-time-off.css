@@ -18,3 +18,10 @@
   :is(#c-root, html) .c-request .c-request__foot { flex-direction: column-reverse; align-items: stretch; }
   :is(#c-root, html) .c-request .c-request__foot > .c-note { text-align: center; }
 }
+
+/* Closing F1 (NV-077): a waiting row's confirmed Decline is the red stop pill (as on Things to do). */
+/* The B page layers paint every q-bs grey with !important; the stop pill matches their reach to stay red. */
+:is(#c-root, html) .q-timeoff .q-acts .q-bs--stop,
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.q-timeoff .q-acts .q-bs.q-bs--stop:not(#nvd-none):not(#nvd-none2) { background: #B42318 !important; color: #FFFFFF !important; }
+:is(#c-root, html) .q-timeoff .q-acts a.q-bs { text-decoration: none; }
+:is(#c-root, html) .q-timeoff .q-request > .q-acts-note { margin: 0; }

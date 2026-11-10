@@ -3,6 +3,7 @@
 import { keepWhole } from "@/lib/keep-whole";
 import { durationSentence } from "@/lib/duration-format";
 import Link from 'next/link';
+import { offlineListener } from "@/lib/offline-hold";
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -213,7 +214,7 @@ export function AttendanceReviewSurface({
                   : unavailable ? 'Couldn’t update.'
                     : 'Checking…'}
             {/* TC-50: offline, paused and no access say what to do in the main block; the footer keeps just the state word. */}
-            {ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
+            {ready && !online ? <span>Offline.</span> : ready || !(unavailable || denied || paused) ? <span>Updates every 30s.</span> : unavailable ? <span>Try Refresh.</span> : null}
           </small>
         </div>
         {denied ? (
@@ -225,7 +226,7 @@ export function AttendanceReviewSurface({
             // IS-58: busy is aria-disabled, so keyboard focus stays on Refresh while it works.
             onClick={() => { if (!refreshing) onRefresh(); }}
             aria-disabled={refreshing || undefined}
-            disabled={paused}
+            disabled={paused || !online}
             aria-label={refreshing ? "Refreshing attendance review" : "Refresh attendance review"}
           >
             {refreshing ? 'Refreshing…' : 'Refresh'}
@@ -247,18 +248,24 @@ export function ManagerAttendanceReview() {
   useEffect(() => {
     const current = createAttendanceReviewController(setState, fetchAttendanceReview);
     controller.current = current;
-    let mounted = true,active = false;
+    let mounted = true,active = false,holding = false;
     const sync = (event?:Event) => {
       if(event?.type==='focus'&&(event.target!==window||active))return;
+      // Holding the loaded review offline (NV-001): nothing re-reads until 'online' runs a fresh check.
+      if(holding&&!navigator.onLine)return;
+      holding=false;
       current.pause();
       active=document.visibilityState!=='hidden'&&navigator.onLine;
       if (document.visibilityState !== 'hidden' && navigator.onLine) current.start();
     };
-    const pause = (event?:Event) => {if(event?.type==='blur'&&event.target!==window)return;active=false;current.pause();};
+    const pause = (event?:Event) => {if(event?.type==='blur'&&event.target!==window)return;active=false;holding=false;current.pause();};
+    // Review B2 / closing F1 (NV-001): offline with the person still here, the loaded review stays on screen read-only
+    // (no reads, no expiry; the shell says when it was updated). Stepping away still clears.
+    const offline = offlineListener({ pause: () => pause(), hold: () => { active=false; holding=true; current.hold(); } });
 
     document.addEventListener('visibilitychange', sync);
     window.addEventListener('online', sync);
-    window.addEventListener('offline', pause);
+    window.addEventListener('offline', offline);
     window.addEventListener('pagehide', pause);window.addEventListener('blur', pause);
     window.addEventListener('pageshow', sync);
     window.addEventListener('focus', sync);
@@ -274,7 +281,7 @@ export function ManagerAttendanceReview() {
       controller.current = null;
       document.removeEventListener('visibilitychange', sync);
       window.removeEventListener('online', sync);
-      window.removeEventListener('offline', pause);
+      window.removeEventListener('offline', offline);
       window.removeEventListener('pagehide', pause);window.removeEventListener('blur', pause);
       window.removeEventListener('pageshow', sync);
       window.removeEventListener('focus', sync);

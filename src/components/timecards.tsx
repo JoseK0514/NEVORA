@@ -264,6 +264,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         commandRef.current=null;setPending(null);
         // Review B2 (NV-029): the page stays as it was while the fresh read runs in the background (it replaces the rows when it
         // lands), and the status line says what happened ("…approved"). A failed background read falls back as before.
+        if(result.status==='approved'||result.status==='finalized'){const name=source.current?.cards.find(card=>card.card.employeeId===command.employeeId)?.card.employeeName??'This';setDone({employeeId:command.employeeId,revision:command.expectedRevision,action:result.status,name});}
         if(['approved','finalized','reopened'].includes(result.status)){running.current=false;setBusy(false);await refresh(period,true);if(generation.current-own<=1)setMessage(feedback);}
       }
     }catch{if(own===generation.current){if(performance.now()>=validUntil.current)expireProtected();else setMessage('We couldn’t confirm that. Try again; it won’t be done twice.');}}
@@ -305,6 +306,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const cards=currentActor&&data?.state==='ready'?[...data.cards].sort((a,b)=>Number(needsAttention(b.card))-Number(needsAttention(a.card))||a.card.employeeName.localeCompare(b.card.employeeName)):[];
   const eligible=cards.filter(item=>!batchExclusion(item,actorId,batchAction));
   // Clean Manager and Owner (v3) state. Hooks stay unconditional; the employee view below never reads them.
+  const [attentionOnly,setAttentionOnly]=useState(false);
+  // Closing F1 (NV-029): the card just approved or finalized, so its row and panel show the new state at once while the
+  // fresh read runs in the background (the read's own state wins once it lands: a new revision).
+  const [done,setDone]=useState<{employeeId:string;revision:number;action:'approved'|'finalized';name:string}|null>(null);
   const [tab,setTab]=useState<'all'|'review'|'approved'>('all'),[selecting,setSelecting]=useState(false),[openId,setOpenId]=useState<string|null>(null);
   const [phone,setPhone]=useState(false);
   // Nov 1 upscale (review M5): from 1024px up the timecard panel is a non-modal inspector beside the live table.
@@ -338,6 +343,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   // cleared; that automatic close moves no focus.
   const sheetOpen=!!openKey||(!!openId&&busy);
   useEffect(()=>{if(openId&&!openKey&&!busy)setOpenId(null);},[openId,openKey,busy]);
+  // The panel's confirmation belongs to the card it was said for; another card or another week drops it.
+  useEffect(()=>{setDone(current=>current&&current.employeeId!==openId?null:current);},[openId,period]);
   // Reliability R-04: the address names the period. When it changes from outside the period control (the Time tab's
   // link to the bare page, browser history), the page moves to that period, so the screen agrees with a reload.
   // The new address can arrive a moment before the server's default period for it, so both are part of the check.
@@ -349,7 +356,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const [start,end]=addressKey.split('|')[0].split('~');let next=initialPeriod;
     if(start&&end)try{next=parsePeriod(start,end);}catch{/* An invalid address falls back to the default period, as the server does. */}
     if(samePeriod(next,period))return;
-    setOpenId(null);setSelecting(false);setTab('all');setDraft(next);setPeriod(next);
+    setOpenId(null);setSelecting(false);setTab('all');setAttentionOnly(false);setDraft(next);setPeriod(next);
   },[addressKey,initialPeriod,period]);
   if(manager){
     const ready=currentActor&&data?.state==='ready';
@@ -369,15 +376,16 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const open=!!today&&period.endDate>=today;
     const reviewItems=cards.filter(needsReview).sort(byName),approvedCount=cards.filter(isApproved).length;
     const listed=[...cards].sort(reviewFirst).filter(item=>tab==='all'||(tab==='review'?needsReview(item)&&!isApproved(item):isApproved(item)));
-    // UI-9: two or more people with no time yet share one row, opened in place; a link to one of them opens it.
-    // It stays open while one of them is selected or open, and there's nothing to fold when no one has time yet.
-    const idle=listed.filter(noTime),fold=idle.length>1&&listed.length>idle.length&&!showNoTime&&!idle.some(item=>openId===item.card.employeeId||selected.includes(item.card.employeeId));
+    // UI-9: people with no time yet share one row, opened in place; a link to one of them opens it. Closing F1 (NV-252):
+    // one person folds too, so every week reads the same. It stays open while one of them is selected or open, and there's
+    // nothing to fold when no one has time yet.
+    const idle=listed.filter(noTime),fold=idle.length>0&&listed.length>idle.length&&!showNoTime&&!idle.some(item=>openId===item.card.employeeId||selected.includes(item.card.employeeId));
     const tableItems=fold?listed.filter(item=>!noTime(item)):listed;
     const showRole=cards.some(item=>roleOf(item.card));
     const locked=busy||!!pending||!!outcomes;
     const goTo=(next:Period)=>{
       if(paused||busy||pending)return;
-      setDraft(next);setPeriod(next);setTab('all');if(samePeriod(next,period))void refresh(next);
+      setDraft(next);setPeriod(next);setTab('all');setAttentionOnly(false);if(samePeriod(next,period))void refresh(next);
       // The address keeps the period, so a reload or a shared link opens the same week (?start=&end= as before).
       try{const url=new URL(window.location.href);url.searchParams.set('start',next.startDate);url.searchParams.set('end',next.endDate);url.hash='';window.history.replaceState(window.history.state,'',url);}catch{/* No address to update. */}
     };
@@ -386,8 +394,12 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const exclusionText=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?`Not selectable for ${batchAction==='APPROVE'?'approval':'finalization'}: ${{self:'a different manager must review',issues:'resolve timecard issues first',state:batchAction==='APPROVE'?'it is already approved':'approve it first'}[exclusion]}.`:undefined;};
     // Owner premium (A5/A8): a row's state is plain text. It is amber only when someone can act on it now (an issue, or a
     // period that has ended); the normal waiting state stays grey. No pills on rows.
-    const rowCue=(item:TimecardItem)=>{const row=rowStatus(item);return {text:row.text,act:row.tone==='review'&&(!open||item.card.issues.some(issue=>issue!=='period_open'))};};
-    const status=openItem?rowStatus(openItem):null,own=openItem?.card.employeeId===actorId;
+    const justSaved=(item:TimecardItem)=>!!done&&done.employeeId===item.card.employeeId&&done.revision===item.revision&&item.state!==(done.action==='approved'?'APPROVED':'FINALIZED');
+    const statusOf=(item:TimecardItem):{text:string;tone:RowTone}=>justSaved(item)?{text:done?.action==='finalized'?'Finalized':'Ready to finalize',tone:'done'}:rowStatus(item);
+    const rowCue=(item:TimecardItem)=>{const row=statusOf(item);return {text:row.text,act:row.tone==='review'&&(!open||item.card.issues.some(issue=>issue!=='period_open'))};};
+    // Review NV-071/NV-104: one status chip on every width (green done, amber when someone can act now, grey otherwise).
+    const toneOf=(item:TimecardItem)=>{const row=statusOf(item);return row.tone==='done'?'green' as const:row.tone==='review'&&rowCue(item).act?'amber' as const:null;};
+    const status=openItem?statusOf(openItem):null,own=openItem?.card.employeeId===actorId;
     const tone=openItem?employeeTimecardPresentation(openItem.card.issues).tone:'neutral',waiting=!!openItem&&!own&&tone==='neutral'&&openItem.card.issues.length>0;
     // Corporate (Release 1, board O-TimecardDetail): the timecard as the kit's sheet (grabber, swipe down, page locked
     // behind): who and the period's figures, anything that needs attention, the days, then the one decision. Same
@@ -417,7 +429,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               <CorpAvatar name={openItem.card.employeeName} initials={initialsOf(openItem.card.employeeName)}/>
               <span className="c-row__main"><h3 id="cm-tc-sheet-title" className="c-row__title c-row__title--b">{openItem.card.employeeName}</h3>
                 <span className="c-row__detail"><span>{keepWhole(`${roleOf(openItem.card)?`${roleOf(openItem.card)} · `:''}${rangeText(period)}`)}</span></span></span>
-              {status?<span className="c-meta c-tc-sheet__state" data-act={rowCue(openItem).act||undefined}>{status.text}</span>:null}
+              {status?<span className="c-tc-sheet__state"><BChip tone={toneOf(openItem)??'grey'}>{status.text}</BChip></span>:null}
             </div>
             <CorpStats items={[{label:'Recorded',value:compactHours(openItem.card.recordedNanoseconds)},{label:'Breaks',value:compactHours(openItem.card.breakNanoseconds)},{label:'Clock-ins',value:openItem.card.entries.length}]}/>
           </section>
@@ -438,8 +450,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             </div></li>)}</ul>:<CorpBody><p className="c-tc-sheet__note">{`No hours this ${periodNoun(period)}`}</p></CorpBody>}
             <details className="c-tc-sheet__more"><summary>Clock-ins and fixes</summary><Details card={openItem.card}/></details>
           </CorpCard>
+          {/* Closing F1 (NV-029): the decision is confirmed in the panel at once, in words, while the fresh read runs. */}
+          {done?.employeeId===openItem.card.employeeId?<p className="c-tc-sheet__done" role="status"><CheckIcon weight="bold" aria-hidden="true"/>{`${done.name==='This'?'This':`${done.name}’s`} timecard is ${done.action==='finalized'?'finalized':'approved'}.`}</p>:null}
           <div className="c-tc-sheet__actions">
-            {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
+            {justSaved(openItem)?null:pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
               own?<p className="c-tc-sheet__note">Another manager approves your own timecard.</p>:
@@ -485,7 +499,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Board G-O-Time on every width, Owner premium R10: the period card says where approval stands in one line (the subtitle
     // already names the week, so no date header). While the period is open: when approval opens. The bar shows only once
     // something is approved (no empty 0% bar). Once the period ends it offers "Approve N ready" (the same reviewed batch).
-    const attention=cards.filter(item=>item.state!=='FINALIZED'&&item.card.issues.some(issue=>issue!=='period_open')).length;
+    // Closing F1 (NV-006): Attention counts exactly the rows that carry an amber chip (a real issue), so the figure can be
+    // traced to rows; someone simply clocked in now (an open entry in a period that hasn't ended) isn't counted.
+    const attentionRow=(item:TimecardItem)=>item.state!=='FINALIZED'&&rowStatus(item).tone==='review'&&item.card.issues.some(issue=>issue!=='period_open');
+    const attention=cards.filter(attentionRow).length;
     const inProgress=cards.some(item=>needsReview(item)&&item.card.issues.includes('period_open'));
     const percent=cards.length?Math.round(approvedCount/cards.length*100):0;
     const allApproved=cards.length>0&&approvedCount===cards.length;
@@ -526,6 +543,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     </CorpRows></CorpCard>;
     if(phone){
       const rows=[...cards].sort(reviewFirst);
+      const attentionShown=attentionOnly&&attention>0;
+      const phoneRows=attentionShown?rows.filter(attentionRow):rows;
       const bulk=ready&&showBulk?<section className="q-page q-tc-bulk c-tc-bulk" aria-label="Selected timecard review">
         <div className="q-grp"><h2>{selected.length} selected</h2></div>
         <p className="q-help">{eligible.length} eligible · {cards.length-eligible.length} excluded · Select up to 100 current timecards below.</p>
@@ -558,7 +577,6 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       // then each person's recorded time. Selecting and the reviewed batch keep the layout below, unchanged.
       const most=cards.reduce((max,item)=>{const n=/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;return Math.max(max,n);},0);
       const minutesOf=(item:TimecardItem)=>/^\d+$/.test(item.card.recordedNanoseconds)?Number(BigInt(item.card.recordedNanoseconds)/BigInt(60_000_000_000)):0;
-      const toneOf=(item:TimecardItem)=>{const row=rowStatus(item);return row.tone==='done'?'green' as const:row.tone==='review'&&rowCue(item).act?'amber' as const:null;};
       const bScreen=showBulk||selecting?null:<BScreen>
         <BHero title="Timecards" titleId="b-tc-title" sub={subtitle} right={canSelect?<BButton kind="glass" onClick={toggleSelecting}>Select</BButton>:undefined}>
           <BSeg label="Week" items={[
@@ -569,7 +587,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           <BLive label="This period" items={[
             {label:'Recorded',value:ready?recordedWhole:'—'},
             {label:'Approved',value:ready?approvedCount:'—',small:ready&&cards.length?`/${cards.length}`:undefined},
-            {label:'Attention',dot:attention?'warn':undefined,value:ready?attention:'—'},
+            // Closing F1 (NV-006): Attention filters the list to the timecards it counts (each has an amber chip).
+            {label:'Attention',dot:attention?'warn':undefined,value:ready?attention:'—',...(ready&&attention?{onSelect:()=>setAttentionOnly(on=>!on),pressed:attentionOnly,aria:attentionOnly?`Attention, ${attention}. Showing these only; show everyone`:`Attention, ${attention}. Show these only`}:{})},
           ]}/>
         </BHero>
         <BStack>
@@ -579,8 +598,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
-          {ready&&cards.length?<BCard id="b-tc-team" title="Team" count={cards.length}>
-            <BList label="Timecards in this period">{rows.map(item=>{
+          {ready&&cards.length?<BCard id="b-tc-team" title={attentionShown?'Needs attention':'Team'} count={attentionShown?phoneRows.length:cards.length}
+            chip={attentionShown?<button type="button" className="b-card__a" onClick={()=>setAttentionOnly(false)}>Show all</button>:undefined}>
+            <BList label={attentionShown?'Timecards that need attention':'Timecards in this period'}>{phoneRows.map(item=>{
               const id=item.card.employeeId,name=item.card.employeeName,row=rowCue(item),minutes=minutesOf(item),hours=noTime(item)?'':compactHours(item.card.recordedNanoseconds),tone=toneOf(item);
               // Round 5 (Nov 8): "2 h 30 breaks" is one unit; non-breaking spaces keep it whole when the sub line wraps.
               const breaks=/^\d+$/.test(item.card.breakNanoseconds)&&item.card.breakNanoseconds!=='0'?`${compactHours(item.card.breakNanoseconds)} breaks`.replaceAll(' ','\u00a0'):null;
@@ -686,11 +706,11 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 {showRole?<td data-col="role" className="c-tc-muted">{roleOf(item.card)??'—'}</td>:null}
                 <td data-col="recorded" className="c-tc-num"><CorpDuration>{compactHours(item.card.recordedNanoseconds)}</CorpDuration></td>
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
-                <td data-col="status"><span className="c-tc-cue" data-act={row.act||undefined} data-done={rowStatus(item).tone==='done'||undefined}>{row.text}</span></td>
+                <td data-col="status"><BChip tone={toneOf(item)??'grey'}>{row.text}</BChip></td>
               </tr>;
             }):<tr><td colSpan={cols} className="c-tc-none">{tab==='review'?(inProgress?'No timecards in progress.':'No timecards to approve.'):'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="c-tc-idle">{selecting?<td className="c-tc-check" aria-hidden="true"/>:null}<td colSpan={cols-(selecting?1:0)}>
-              <button type="button" className="c-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.c-tc-person')?.focus());}}><span>{`${idle.length} people with no time yet`}</span><span className="c-tc-idle__hours" aria-hidden="true">0 h</span><CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></button>
+              <button type="button" className="c-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.c-tc-person')?.focus());}}><span>{`${idle.length} ${idle.length===1?'person':'people'} with no time yet`}</span><span className="c-tc-idle__hours" aria-hidden="true">0 h</span><CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></button>
             </td></tr>:null}</tbody>
             {/* R10: the week's totals, from the same read (all timecards; Scheduled isn't part of this read, so no column). */}
             {tab==='all'?<tfoot><tr className="c-tc-total">

@@ -82,7 +82,8 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
   const [location, setLocation] = useState(props.locationId ?? "");
   const [day, setDay] = useState(props.date);
   const [start, setStart] = useState(props.startTime ?? "");
-  const [end, setEnd] = useState(props.endTime === "24:00" ? "00:00" : props.endTime ?? "");
+  // Closing F1 (NV-227): a start passed in without an end (Schedule's "+ Add" offers the person's usual start) ends 8 h later.
+  const [end, setEnd] = useState(props.endTime === "24:00" ? "00:00" : props.endTime ?? (props.mode === "add" && props.startTime && /^\d{2}:\d{2}$/.test(props.startTime) ? eightHoursAfter(props.startTime) : ""));
   const [lead, setLead] = useState(!!props.isDesignatedLead);
   const employee = employees.find(item => item.id === person);
   const name = employee ? `${employee.firstName} ${employee.lastName}` : "";

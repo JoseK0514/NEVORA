@@ -8,6 +8,7 @@ import { hasDirectoryFilters, type DirectoryFilters } from "@/lib/employee-direc
 import { CorpAvatar, CorpBody, CorpButtonLink, CorpCard, CorpLink, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "./corp/corp";
 import { EmployeeDirectoryFilters, EmployeeSearchInput } from "./employee-directory-filters";
 import { TeamLivePill, TeamLiveProvider, TeamWorkingNow } from "./team-live";
+import { TeamDeskPeople } from "./team-desk-people";
 import "./employee-directory-corp.css";
 import { TeamB, type TeamBPerson } from "./owner-b/team-b";
 
@@ -38,7 +39,6 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
   const inactive = visibleEmployees.filter(employee => !employee.active).sort(byName);
   const activeCount = employees.filter(employee => employee.active).length;
   const all = showAll || filtered;
-  const shown = all ? active : active.slice(0, TEAM_SHOWN);
   const where = (employee: Employee) => { const location = locationsById.get(employee.primaryLocationId); return location ? `${location.shortName}${location.active ? "" : " (Inactive)"}` : "Location not assigned"; };
   // The position first; a Manager or Owner also shows their role (Owner premium R7: the screen matches what it announces).
   // Lead is on hold, so it is never added.
@@ -50,7 +50,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
     const name = `${employee.firstName} ${employee.lastName}`;
     return <li key={employee.id}><CorpRow href={`/app/employees/${encodeURIComponent(employee.id)}`} bold title={name} detail={`${role(employee)} · ${where(employee)}`}
       avatar={<CorpAvatar name={`${employee.firstName} ${employee.lastName}`} initials={employeeInitials(employee.firstName, employee.lastName)} grey={!employee.active} />}
-      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron={false}
+      trail={employee.active ? <TeamLivePill employeeId={employee.id} /> : undefined} chevron
       label={`${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}${employee.active ? "" : ", inactive"}`} /></li>;
   };
   // Direction B (Jose approved Nov 5, 2026; mock "Owner · Team"): the phone screen, from the same list, links and search.
@@ -88,8 +88,13 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
       <p className="c-sr" role="status" aria-live="polite" aria-atomic="true">{filtered ? `${visibleEmployees.length} of ${employees.length} ${employees.length === 1 ? person : people}` : ""}</p>
       {/* Owner premium R5: list pages put the group's label above its card (CorpSection), "See all" on its line. */}
       {active.length ? <CorpSection id="team-people" label={filtered ? `${active.length} ${active.length === 1 ? "match" : "matches"}` : "People"}
-        aside={!all && active.length > TEAM_SHOWN ? <CorpLink href="/app/employees?all=1" label={`See all ${active.length} ${people}`}>See all</CorpLink> : undefined}>
-        <CorpCard as="div"><CorpRows label={people}>{shown.map(row)}</CorpRows></CorpCard>
+        aside={!all && active.length > TEAM_SHOWN ? <CorpLink href="/app/employees?all=1" label={`See all ${active.length} ${people}`}>{`See all ${active.length}`}</CorpLink> : undefined}>
+        {/* Closing F1 (NV-091): the phone's filters and live chips, with a chevron on each row (team-desk-people.tsx). */}
+        <TeamDeskPeople peopleLabel={people} limit={all ? undefined : TEAM_SHOWN} rows={active.map(employee => {
+          const name = `${employee.firstName} ${employee.lastName}`;
+          return { id: employee.id, name, initials: employeeInitials(employee.firstName, employee.lastName), detail: `${role(employee)} · ${where(employee)}`,
+            href: `/app/employees/${encodeURIComponent(employee.id)}`, label: `${name}, ${employeeRoleLabel(employee.role)}, ${where(employee)}${employee.phone ? `, ${formatPhoneNumber(employee.phone)}` : ""}` };
+        })} />
       </CorpSection> : inactive.length ? null : <CorpCard as="div" ariaLabel={people}><CorpBody>
         <p className="c-team__empty">{employees.length ? `No ${people} match “${filters.query}”.` : `No ${people} yet.`}</p>
         <CorpButtonLink href={employees.length ? "/app/employees" : "/app/employees/new"} kind={employees.length ? "secondary" : "primary"} size="md">{employees.length ? "Clear search" : `Add ${person}`}</CorpButtonLink>

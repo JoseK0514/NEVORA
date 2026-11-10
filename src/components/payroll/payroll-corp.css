@@ -317,3 +317,18 @@ html body .page-frame:has(.c-pay-tabs) > .section-tabs { display: none !importan
 :is(#c-root, html) .c-pset .c-pset__fields > .c-pay__group + .c-pay__group,
 :is(#c-root, html) .c-page.c-pset > .c-pset__form + .c-pay__group { margin-top: 20px; }
 :is(#c-root, html) .c-pay .c-pay__sec-aside .c-pay__aside { font-size: 13px; line-height: 18px; color: var(--c-grey); }
+
+/* Closing F1 (NV-255): the section count is the kit's teal-50 count pill (12.5px 700) at every width, with no inner span
+   (the desktop band layer styles a label's first span as the 17px title). */
+:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-left: 8px; padding: 0 8px; border-radius: 999px; background: #E8F3F1; color: #0B6E69; font-size: 12.5px; line-height: 16px; font-weight: 700; vertical-align: middle; }
+:is(#c-root, html) .c-pay .c-pay__sec .c-pay__count * { color: inherit; font: inherit; }
+
+/* Closing F1 (NV-081): an unopened period's quiet "Prepare" pill and the disclosure caret (turns when open). */
+:is(#c-root, html) .c-pay .c-row .c-pay__rowpill { flex: none; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 14px; line-height: 18px; font-weight: 600; white-space: nowrap; }
+:is(#c-root, html) .c-pay .c-row .c-pay__caret { flex: none; width: 16px; height: 16px; margin-left: 4px; color: #6A7176; transition: rotate 150ms ease-out; }
+:is(#c-root, html) .c-pay .c-row[aria-expanded="true"] .c-pay__caret { rotate: 180deg; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) .c-pay .c-row .c-pay__caret { transition: none; } }
+
+/* Closing F1 (NV-082): money in ink 600, tabular, at the row's end; a payroll a correction replaced sits under it, indented. */
+:is(#c-root, html) .c-pay .c-row__value--ink { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; color: var(--c-ink); }
+:is(#c-root, html) .c-pay li.c-pay__replaced > .c-row { padding-left: 44px; }

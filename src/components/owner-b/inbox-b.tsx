@@ -14,7 +14,7 @@ import { useLeaveStaffing, type StaffingState } from "@/components/leave-staffin
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
 import { conflictShift } from "@/lib/time-off-staffing/present";
-import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack } from "./b-kit";
+import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
  * corporate page (groupThingsToDo); the glass chips filter them by job. An open shift's Find cover opens the same coverage
@@ -32,9 +32,23 @@ const familyCount = (family: Family) => family.groups.reduce((total, group) => t
 const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new URL(item.request.reviewHref, "https://nevora.invalid").searchParams.get("requestId") : null; } catch { return null; } };
 const FILTER_LABEL: Record<Exclude<Filter, "all">, string> = { "card-open": "Shifts", review: "Time", "card-requests": "Requests" };
 
-export function InboxB({ ready, families, waiting = [], total, connection, statusLine, todayFailed, onRefresh, back }: {
+/** Closing F1 (NV-075): Things to do's own read, when it isn't ready, is one state card (said once, not also in the band). */
+function ReadState({ connection, statusLine, onRefresh }: { connection: ActionCenterConnection; statusLine: string; onRefresh: () => void }) {
+  if (connection === "loading" || connection === "reconnecting") return <BState kind="loading" line={statusLine} />;
+  if (connection === "offline") return <BState kind="offline" title="You’re offline" line="Things to do updates when you reconnect." />;
+  if (connection === "paused") return <BState kind="paused" title="Paused while you’re away" line="It updates when you come back to this page." />;
+  if (connection === "access_lost") return <BState kind="locked" title="Your session ended" line="Sign in again to see what needs you." action={{ label: "Sign in", href: "/login" }} />;
+  return <BState kind="failed" title="Things to do didn’t load" line="Check your connection, then try again." action={{ label: "Try again", onClick: onRefresh }} />;
+}
+
+/** Closing F1 (NV-002): Later and done says what it holds ("Plan ahead 47 · Earlier 3"), so nothing waits unseen. */
+export type LaterCounts = { plan: number; earlier: number };
+const laterLine = (later?: LaterCounts) => !later ? "Plan ahead and earlier this week" : later.plan + later.earlier === 0 ? "Nothing later or done"
+  : [later.plan ? `Plan ahead ${later.plan}` : null, later.earlier ? `Earlier this week ${later.earlier}` : null].filter(Boolean).join(" · ");
+
+export function InboxB({ ready, families, waiting = [], total, connection, statusLine, todayFailed, onRefresh, back, later }: {
   ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; waiting?: Group[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
-  todayFailed: boolean; onRefresh: () => void; back: boolean;
+  todayFailed: boolean; onRefresh: () => void; back: boolean; later?: LaterCounts;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
   const items = new Map((ready?.items ?? []).map(item => [item.id, item]));
@@ -49,17 +63,15 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
   for (const family of shown) for (const group of family.groups) cards.push(<GroupCard key={group.id} group={group} items={items} staffing={staffing} checked={checked} />);
   return <BScreen back={back}>
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
-      sub={<>{total === null ? statusLine : total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
+      sub={total === null ? undefined : <>{total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
         { key: "all", label: total === null ? "All" : `All ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
         ...families.map(family => ({ key: family.id, label: `${FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title} ${familyCount(family)}`, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) })),
       ]} /> : null}
     </BHero>
     <BStack>
-      {todayFailed ? <BCard label="Clock-ins"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">Clock-ins can’t be checked right now</span></span>
-        <BButton kind="ghost" onClick={onRefresh}>Try again</BButton></div></BCard> : null}
-      {!ready ? <BCard label="Things to do"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>{statusLine}</span></span>
-        {connection === "unavailable" || connection === "ready" ? <BButton kind="ghost" onClick={onRefresh}>Try again</BButton> : connection === "access_lost" ? <BButtonLink href="/login" kind="ghost">Sign in</BButtonLink> : null}</div></BCard>
+      {todayFailed ? <BCard label="Clock-ins"><BState kind="failed" title="Clock-ins can’t be checked right now" line="Missed clock-ins may be missing from this list." action={{ label: "Try again", onClick: onRefresh }} /></BCard> : null}
+      {!ready ? <BCard label="Things to do"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : cards.length || waiting.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait (not due today) are listed after today's cards. */}
           {filter === "all" || filter === "review" ? waiting.map(group => <GroupCard key={group.id} group={{ ...group, title: `${group.title} · waiting` }} items={items} staffing={staffing} checked={checked} />) : null}</> : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
       {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines. */}
@@ -67,7 +79,7 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
         <BList label="More">
           <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
           <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
-          <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub="Plan ahead and earlier this week" href="/app/inbox?view=more" label="Later and done: plan ahead and earlier this week" />
+          <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub={laterLine(later)} href="/app/inbox?view=more" label={`Later and done: ${laterLine(later).toLowerCase()}`} />
         </BList>
       </BCard>
     </BStack>
@@ -76,13 +88,12 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
 
 /** Review B5 (NV-031): Later and done is a Direction B page on phones too (the band with "‹ Things to do"), so the phone
  * no longer shows the white header and a title straddling the band. The same groups as the desktop list. */
-export function LaterB({ ready, groups, statusLine, onRefresh }: { ready: boolean; groups: Group[]; statusLine: string; onRefresh: () => void }) {
+export function LaterB({ ready, groups, statusLine, onRefresh, connection = "unavailable" }: { ready: boolean; groups: Group[]; statusLine: string; onRefresh: () => void; connection?: ActionCenterConnection }) {
   const none = new Map<string, ActionItem>(), idle: StaffingState = { status: "loading" }, unchecked = new Set<string>();
   return <BScreen back>
     <BHero back={{ href: "/app/inbox", label: "Things to do" }} title="Later and done" titleId="b-later-title" />
     <BStack>
-      {!ready ? <BCard label="Later and done"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{statusLine}</span></span>
-        <BButton kind="ghost" onClick={onRefresh}>Try again</BButton></div></BCard>
+      {!ready ? <BCard label="Later and done"><ReadState connection={connection} statusLine={statusLine} onRefresh={onRefresh} /></BCard>
         : groups.length ? groups.map(group => <GroupCard key={group.id} group={group} items={none} staffing={idle} checked={unchecked} />)
         : <BCard label="Later and done"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
     </BStack>

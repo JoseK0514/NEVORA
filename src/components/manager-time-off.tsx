@@ -16,6 +16,7 @@ import "./manager-time-off.css";
 import { inboxFilter } from "@/lib/action-center/inbox";
 import { LeaveConflictCheck } from "@/components/leave-staffing/conflict-check";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { TimeOffWaitingList } from "@/components/time-off-waiting-list";
 
 const tabs = [
   { id: "pending", label: "Waiting", status: "PENDING" },
@@ -90,7 +91,8 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
   const offLabel = request.startDate === request.endDate ? "Also off that day" : "Also off those days";
   return <CorpPage className="c-request c-page--narrow" labelledBy="request-title">
     <CorpNav back={backTo(origin)} title="Time-off request" titleId="request-nav-title" phoneOnly />
-    <CorpTitle id="request-title" title="Time-off request" sub={request.employeeName} wide />
+    {/* Closing F1 (NV-268): the card below names the person, so the band doesn't repeat it. */}
+    <CorpTitle id="request-title" title="Time-off request" wide />
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
     {/* Review B6 (NV-093): one request card: who and its amber Waiting status, the dates, their note and when it was sent,
       * then that week's schedule and who else is off as rows of the same card. */}
@@ -181,14 +183,13 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
         label: item.id === "pending" && waiting ? `Waiting (${waiting})` : item.label }))} />
       {error ? <p className="q-error q-first" role="alert">That decision wasn’t saved. The request may have changed; check it and decide again.</p> : null}
       {reviewed ? <p className="q-help q-first" role="status">Decision saved.</p> : null}
-      {selected.id === "pending" ? (requests.length ? <ul className="q-list q-requests" aria-label="Waiting time off">{requests.map(request => {
+      {/* Closing F1 (NV-077): each waiting row carries the staffing check and the compact Decline / Approve, as on Things to
+        do (this replaces Release 1's "no decision in the list"; the row still opens the request with its shifts). */}
+      {selected.id === "pending" ? (requests.length ? <TimeOffWaitingList requests={requests.map(request => {
         const sent = (request as { createdAt?: string }).createdAt;
-        return <li key={request.id} id={`request-${request.id}`} tabIndex={-1} className="q-request">
-          {/* Release 1 (Jose's rule): no Approve or Decline in the list; the row opens the request, where the decision is made. */}
-          <QuietRow bare avatar={initialsOf(request.employeeName)} title={request.employeeName} detail={whenLabel(request)}
-            value={sent ? agoLabel(sent, source.observedAt) : undefined} href={`/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}`} />
-        </li>;
-      })}</ul> : <p className="q-empty q-first">You’re all caught up.</p>)
+        return { id: request.id, employeeName: request.employeeName, avatar: initialsOf(request.employeeName), startDate: request.startDate, endDate: request.endDate,
+          when: whenLabel(request), ago: sent ? agoLabel(sent, source.observedAt) : undefined, href: `/app/requests?tab=pending&requestId=${encodeURIComponent(request.id)}` };
+      })} /> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
           <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}
             detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)}

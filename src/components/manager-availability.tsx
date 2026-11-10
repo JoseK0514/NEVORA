@@ -52,12 +52,14 @@ export async function ManagerAvailability({ week, currentWeek, employeeId, timeZ
     <QuietPage className="q-availability">
       <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />
       <QuietHeader title="Availability" sub={`${keepWhole(weekLabel(selectedWeek))} · ${statuses.length - notSubmitted} of ${statuses.length} sent`} />
-      {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
-      <QuietList style={{ marginTop: 16 }}>
-        <QuietRow title="Deadline" value={deadlineDay ?? "Not set"} tone="l" href="/app/schedule/settings"
-          label={locked ? `Deadline passed ${deadline}` : deadline ? `Deadline ${deadline}` : "No deadline set. Set one in Scheduling rules"} />
-      </QuietList>
-      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} />
+      {/* Closing F1 (NV-261): Not sent / Sent sit right under the title (in the band); the notice and the deadline follow. */}
+      <AvailabilityTeamList employees={reviewEmployees} employeeId={employeeId} before={<>
+        {invalidWeek ? <p className="q-error q-first" role="alert">That week isn’t valid, so this is the upcoming week.</p> : null}
+        <QuietList style={{ marginTop: 16 }}>
+          <QuietRow title="Deadline" value={deadlineDay ?? "Not set"} tone="l" href="/app/schedule/settings"
+            label={locked ? `Deadline passed ${deadline}` : deadline ? `Deadline ${deadline}` : "No deadline set. Set one in Scheduling rules"} />
+        </QuietList>
+      </>} />
     </QuietPage>
   </ScopedReadFrame>);
 }

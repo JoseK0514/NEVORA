@@ -7,3 +7,8 @@
 :is(#c-root, html) .c-team .c-team-search__field input::-webkit-search-decoration { -webkit-appearance: none; }
 :is(#c-root, html) .c-team .c-team__empty { margin: 0; font-size: 15px; line-height: 20px; color: var(--c-ink2); }
 :is(#c-root, html) .c-team .c-team__empty + .c-btn { margin-top: 12px; }
+
+/* Closing F1 (NV-091): the phone's Team filters at the top of the desktop People card, on the rows' 22px inset. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-team .c-card > .b-filters { padding: 16px 22px 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-team .c-card > .b-filters button { border: 0; font-family: inherit; cursor: pointer; }
+:is(#c-root, html) .c-team .c-team__empty--filter { padding: 16px 22px 20px; }

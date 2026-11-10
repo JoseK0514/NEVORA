@@ -18,7 +18,16 @@
 :is(#c-root, html) .app-shell[data-nv-b] .b-week > .cov { margin-top: 12px; padding-top: 12px; box-shadow: inset 0 1px 0 rgb(255 255 255 / .14); }
 /* Desktop and tablet schedule: the week's coverage under the grid's bar, label beside the three figures. */
 :is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage { padding: 4px 22px 16px; text-align: left; }
-:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage .cov { grid-template-columns: auto minmax(0, 560px); align-items: center; column-gap: 18px; }
+/* Closing F1 (NV-088): the label sits above its three figures (it read 350px away from them beside the grid's width). */
+:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage .cov { grid-template-columns: minmax(0, 560px); align-items: start; }
 /* Review B2 (NV-108): obligations nobody set up, said once under the tiles. */
 :is(#c-root, html) .app-shell[data-nv-b] .cov__none-line { margin: 8px 0 0; font-size: 13.5px; line-height: 18px; color: #6A7176; }
 :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__none-line { color: rgb(255 255 255 / .86); }
+
+/* Closing F1 (NV-126): on phones the band's coverage is one line; the tiles stay for tablets and desktop. */
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__line { display: none; margin: 0; font-size: 14.5px; line-height: 20px; font-weight: 600; color: #FFFFFF; }
+@media (max-width: 767px) {
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass { gap: 2px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__line { display: block; }
+  :is(#c-root, html) .app-shell[data-nv-b] .cov--glass :is(.cov__list, .cov__none-line) { display: none; }
+}

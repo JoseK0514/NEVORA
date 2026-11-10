@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, type ReactNode } from "react";
-import { CorpMeta } from "./corp/corp";
+import { CorpPill } from "./corp/corp";
 import { useToday } from "./manager-today";
 import { useClockMonitor } from "./clean/use-clock-monitor";
 
@@ -34,14 +34,24 @@ export function TeamLiveProvider({ children }: { children: ReactNode }) {
   return <TeamLiveContext.Provider value={{ ready, working, onBreak, late, scheduled }}>{children}</TeamLiveContext.Provider>;
 }
 
-/** "Working" or "On break" for one person; nothing until the reads are ready. Off is the normal state, so it shows no
- * pill (Owner premium A5: a pill only for the exception; the subtitle says how many are working). */
+/** One person's state today from the Team live read: null until the reads are ready. "later" has a shift that hasn't
+ * started; "off" has no shift today. */
+export type TeamState = "working" | "break" | "late" | "later" | "off";
+export function teamStateOf(live: Live, id: string): TeamState | null {
+  return !live.ready ? null : live.working.has(id) ? "working" : live.onBreak.has(id) ? "break" : live.late.has(id) ? "late" : live.scheduled.has(id) ? "later" : "off";
+}
+export const lateText = (minutes: number) => minutes >= 60 ? `Late ${Math.floor(minutes / 60)} h${minutes % 60 ? ` ${minutes % 60} min` : ""}` : `Late ${minutes} min`;
+
+/** One person's live chip, the phone Team's words on every width (closing F1, NV-071/NV-091): a green "Clocked in" with
+ * the live dot, teal "On break", amber "Late 12 min", grey "Off today"; nothing until the reads are ready, and nothing for
+ * someone whose shift starts later today. */
 export function TeamLivePill({ employeeId }: { employeeId: string }) {
   const live = useContext(TeamLiveContext);
-  if (!live.ready) return null;
-  // Owner premium R3: being at work is a state, not an exception, so it is grey text (the kit's CorpMeta), never a pill.
-  if (live.working.has(employeeId)) return <CorpMeta>Working</CorpMeta>;
-  if (live.onBreak.has(employeeId)) return <CorpMeta>On break</CorpMeta>;
+  const state = teamStateOf(live, employeeId);
+  if (state === "working") return <CorpPill tone="green" dot>Clocked in</CorpPill>;
+  if (state === "break") return <CorpPill tone="teal">On break</CorpPill>;
+  if (state === "late") return <CorpPill tone="amber">{lateText(live.late.get(employeeId) ?? 0)}</CorpPill>;
+  if (state === "off") return <CorpPill tone="neutral">Off today</CorpPill>;
   return null;
 }
 

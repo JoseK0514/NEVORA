@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
 import {announceFailure,clearsProtectedData,failureRecovery,nevoraFailure} from '@/lib/http/nevora-failure';
+import {announceOfflineHeld,offlineListener} from '@/lib/offline-hold';
 import {isPopoverOpen} from './kit/popover-open';
 import type React from 'react';
 import type {CSSProperties} from 'react';
@@ -299,7 +300,8 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
   </CorpCard>
   {/* R13: the period's total is said once, in Hours worked; this card shows how it falls across the days. */}
   <CorpCard id="ins-days" label="Hours by day">
-   {days&&days.some(day=>(day.minutes??0)>0)?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
+   {/* Closing F1 (NV-239): bars only once two days have time (one bar on a whole week's track says nothing yet). */}
+   {days&&days.filter(day=>(day.minutes??0)>0).length>=2?<><div className="c-ins__chart" aria-hidden="true" data-dense={days.length>7||undefined} style={{'--c-bars':days.length} as CSSProperties}>
     {days.map(day=><span key={day.date} className="c-ins__col">
      {/* Visual-craft J: a day with no recorded time gets no bar and no "0", only the baseline; days to come get nothing. */}
      {days.length<=7?<small className="c-num">{day.minutes?Math.round(day.minutes/60):''}</small>:null}
@@ -307,6 +309,7 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
      <em>{days.length<=7?dayName(day.date):''}</em>
     </span>)}
    </div><ul className="c-sr" aria-label="Hours by day">{days.filter(day=>day.minutes!==null).map(day=><li key={day.date}>{dayLabel(day.date)}: {day.minutes?spoken(BigInt(day.minutes!)*MINUTE_NS):'no hours'}</li>)}</ul></>
+    :days&&days.some(day=>(day.minutes??0)>0)?<div className="c-empty c-empty--card"><b className="c-empty__title">Not enough data yet</b><span className="c-empty__body">The chart appears once two days have recorded time.</span></div>
     :<div className="c-empty c-empty--card"><b className="c-empty__title">No recorded time in this period</b><span className="c-empty__body">Hours appear here as people clock in and out.</span></div>}
    <details className="c-ins__counted">
     <summary>How we count<CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></summary>
@@ -361,15 +364,21 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
  const reloadRef=useRef<()=>void>(()=>{}),exportRef=useRef<()=>Promise<void>>(async()=>{}),printRef=useRef<()=>void>(()=>{});
  const [exporting,setExporting]=useState(false);
  const [custom,setCustom]=useState(false);
+ // Review B2 / closing F1 (NV-001): offline with the person still here, the loaded report stays read-only; the period
+ // controls wait for the connection (a new period can't load offline).
+ const [held,setHeld]=useState(false);
  useEffect(()=>{
+  let holding=false,loadedAt:string|null=null;
   let active=true,focused=document.hasFocus(),printing=false,printBlurred=false,validUntil=0,generation=0,controller:AbortController|null=null,exportController:AbortController|null=null,timer:ReturnType<typeof setTimeout>|null=null,refresher:ReturnType<typeof setTimeout>|null=null,heldScroll:number|null=null;
   // ST-B01: if a snapshot expires before its replacement arrives, the page keeps its height and the reader's place
   // while the new one loads (only the size is kept, never the content).
   const holdPlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(!box)return;box.style.minHeight=`${box.getBoundingClientRect().height}px`;heldScroll=typeof window.scrollY==='number'?window.scrollY:null;};
   const releasePlace=()=>{const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';if(heldScroll!==null&&typeof window.scrollTo==='function')window.scrollTo({top:heldScroll});heldScroll=null;};
-  const clear=(next:State)=>{if(next!=='loading'&&next!=='reconnecting'&&heldScroll!==null){const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';heldScroll=null;}generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;if(active){setReport(null);setState(next);setExporting(false);}};
+  const clear=(next:State)=>{if(next!=='loading'&&next!=='reconnecting'&&heldScroll!==null){const box=document.querySelector?.('.wb-insights') as HTMLElement|null;if(box)box.style.minHeight='';heldScroll=null;}generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;validUntil=0;printing=false;printBlurred=false;holding=false;loadedAt=null;if(active){setReport(null);setState(next);setExporting(false);setHeld(false);}};
   const load=async(reconnecting=false,silent=false)=>{
    if(!active||!focused||printing||document.visibilityState==='hidden')return;
+   // Holding the loaded report offline: no reads until the connection is back ('online' runs a fresh check).
+   if(holding&&!navigator.onLine)return;
    // A silent refresh keeps the verified report on screen; its own expiry timer still retires it if this read fails.
    if(silent){if(!navigator.onLine)return;}else{clear(navigator.onLine?(reconnecting?'reconnecting':'loading'):'offline');if(!navigator.onLine)return;}
    const current=generation;controller=new AbortController();const started=performance.now();
@@ -382,7 +391,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
     const body=await response.json();if(!active||current!==generation)return;if(!response.ok||body?.state!=='ready'||!Number.isSafeInteger(body.validForMs)||body.validForMs<1||body.validForMs>15000)throw new Error('Unavailable');
     const result=projectReports(body.source);if(result.period.startDate!==period.startDate||result.period.endDate!==period.endDate)throw new Error('Incorrect period');
     const remaining=body.validForMs-(performance.now()-started);if(remaining<=0)throw new Error('Expired snapshot');
-    validUntil=started+body.validForMs;setReport(result);setState('ready');
+    validUntil=started+body.validForMs;loadedAt=result.observedAt;setReport(result);setState('ready');
     if(timer)clearTimeout(timer);if(refresher)clearTimeout(refresher);refresher=null;
     timer=setTimeout(()=>{holdPlace();clear('loading');void load();},remaining);
     // ST-B13: restore the place only once the report is back on the page (React may commit after the next frame).
@@ -417,7 +426,12 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    clear('paused');
   };
   const focus=(event:FocusEvent)=>{if(event.target!==window||printing||focused)return;focused=document.hasFocus();if(focused)void load();};
-  const refresh=()=>{focused=document.hasFocus();void load();},reconnect=()=>{focused=document.hasFocus();void load(true);},offline=()=>clear('offline'),hide=()=>{focused=false;clear('paused');},visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
+  const refresh=()=>{focused=document.hasFocus();void load();},reconnect=()=>{focused=document.hasFocus();holding=false;void load(true);},offline=offlineListener({pause:()=>{focused=false;clear('paused');},hold:()=>{
+   // Review B2 (NV-001): keep the verified report on screen, read-only: no more reads and no expiry while offline.
+   if(holding)return;if(!loadedAt){clear('offline');return;}
+   holding=true;generation++;controller?.abort();exportController?.abort();if(timer)clearTimeout(timer);timer=null;if(refresher)clearTimeout(refresher);refresher=null;
+   if(active){setExporting(false);setHeld(true);}announceOfflineHeld(loadedAt);
+  }}),hide=()=>{focused=false;clear('paused');},visibility=()=>{if(document.visibilityState==='hidden')hide();else refresh();};
   const accountChanged=()=>{clear('unavailable');focused=document.hasFocus();void load();};
   const media=window.matchMedia('print'),printChange=()=>media.matches?beginPrint():endPrint();
   void load();window.addEventListener('blur',blur);window.addEventListener('focus',focus);window.addEventListener('beforeprint',beginPrint);window.addEventListener('afterprint',endPrint);media.addEventListener('change',printChange);window.addEventListener('pageshow',refresh);window.addEventListener('storage',accountChanged);window.addEventListener('online',reconnect);window.addEventListener('offline',offline);window.addEventListener('pagehide',hide);document.addEventListener('visibilitychange',visibility);
@@ -444,7 +458,7 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
    <div className="cm-insights__tools c-ins__tools">
     <button type="button" className="cm-insights__button cm-insights__picker" popoverTarget="report-period-menu"><span><span className="nv-sr">Report period: </span>{current.long}</span><CaretDownIcon size={16} weight="bold" aria-hidden="true"/></button>
     <div id="report-period-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Report period">
-     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&!presets} onClick={()=>choose(item.mode)}>{mode===item.mode?<CheckIcon size={16} weight="bold" aria-hidden="true"/>:<span className="cm-insights__menu-gap" aria-hidden="true"/>}{item.mode==='custom'?'Custom period…':item.long}</button>)}
+     {MODES.map(item=><button key={item.mode} type="button" className="cm-insights__menu-item" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||held)} onClick={()=>choose(item.mode)}>{mode===item.mode?<CheckIcon size={16} weight="bold" aria-hidden="true"/>:<span className="cm-insights__menu-gap" aria-hidden="true"/>}{item.mode==='custom'?'Custom period…':item.long}</button>)}
     </div>
     <button type="button" className="cm-insights__button cm-insights__export" popoverTarget="report-export-menu" aria-busy={exporting||undefined}><ExportIcon size={18} aria-hidden="true"/><span className="cm-insights__export-text">Export</span></button>
     <div id="report-export-menu" className="cm-insights__menu" popover="auto" role="group" aria-label="Export this period">
@@ -471,10 +485,11 @@ export function Reports({initialPeriod,today}:{initialPeriod:Period;today?:strin
   <CorpNav back={{href:'/app/more',label:'More'}} title="Insights" phoneOnly/>
   <CorpTitle id="ins-title" title="Insights" wide actions={tools}/>
   <div className="c-seg c-ins__seg" role="group" aria-label="Report period" data-report-entrance="">
-   {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
+   {MODES.map(item=><button key={item.mode} type="button" aria-pressed={mode===item.mode} disabled={item.mode!=='custom'&&(!presets||busy||held)} onClick={()=>choose(item.mode)}>{item.short}</button>)}
   </div>
   {/* R7 (copy row 174): this week reads "Oct 26 – 31 so far", which says why it stops before Sunday. */}
-  <p className="c-ins__range c-num">{`${quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
+  {/* Closing F1 (NV-239): a one-day period reads "Mon, Nov 9 so far", never "Nov 9 – 9 so far". */}
+  <p className="c-ins__range c-num">{`${period.startDate===period.endDate?dayLabel(period.startDate):quietRange(period)}${mode==='now'?' so far':''} · All locations`}</p>
   {custom_}
   {notice&&notice!==PERIOD_ERROR?<p className="c-ins__error" id="report-export-error" role="alert">{notice}</p>:null}
   <div className="wb-insights c-ins__body" data-report-entrance=""><CorpReportsView report={report} state={state}/></div>

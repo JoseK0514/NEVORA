@@ -66,8 +66,9 @@ it("preserves submitted field names, required contact fields and optional email"
   expect(fields.find(field => field.includes('name="email"'))).not.toContain('required=""');
   expect(html).toContain('value="EMPLOYEE" selected=""');
   // A sheet, so Cancel (to Team) is the one way back: in the phone header, and in the card footer on tablets and desktop
-  // (each shown at its own width only).
-  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(2);
+  // (each shown at its own width only). Closing F1 (NV-257): tablets and desktop also go back with "‹ Team" over the title.
+  expect(html.match(/href="\/app\/employees"/g)).toHaveLength(3);
+  expect(html).toMatch(/<a href="\/app\/employees" class="c-formhead__up">.*?Team<\/a>/);
   expect(html).toMatch(/<div class="c-form-foot"><a href="\/app\/employees" class="c-btn c-btn--secondary">Cancel<\/a><button type="button" class="c-btn">Next<\/button><\/div>/);
   expect(html).toContain("Email (optional)");
 });

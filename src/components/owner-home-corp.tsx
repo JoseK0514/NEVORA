@@ -62,7 +62,7 @@ export function OwnerHomeCorp(props: OwnerHomeCorpProps) {
     {/* Direction B: the phone screen (shown on phones under data-nv-b; tablets and desktop keep the cards below). */}
     <HomeB today={props.today} monitor={props.monitor} monitorPending={props.monitorPending} offline={props.offline} value={props.value} connection={props.connection}
       timecards={props.timecards} timecardsReady={props.timecardsReady ?? props.value !== null} businessDay={props.businessDay} nextPay={props.nextPay} setup={props.setup}
-      dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} />
+      dateLabel={props.dateLabel} summary={props.summary} week={props.week} greeting={props.greeting} onRetry={props.onRetryActions} />
     <CorpTitle title={props.greeting} sub={<>{props.dateLabel}<span role="status" className="c-sr">{props.summary}</span></>} />
     <TodayCard {...props} />
     <PaydayCard nextPay={props.nextPay} timecards={props.timecards} ready={props.timecardsReady ?? props.value !== null} connection={props.connection} businessDay={props.businessDay} />

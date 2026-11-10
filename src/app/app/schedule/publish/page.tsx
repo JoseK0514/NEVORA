@@ -83,7 +83,10 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
     return value === "PUBLISHED" ? <CorpPill tone="green">Published</CorpPill> : value === "DRAFT" ? <CorpPill tone="amber">Draft</CorpPill> : value === null ? null : <CorpPill tone="neutral">Not started</CorpPill>;
   };
   const scheduleHref = `/app/schedule?week=${encodeURIComponent(weekStart)}`;
-  const pill = drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill> : null;
+  // Closing F1 (NV-088): the week's state as the Schedule band says it: amber while something waits, green once published.
+  const allPublished = !drafts.length && !pending?.hasPendingChanges && locations.some(location => status(location.id) === "PUBLISHED");
+  const pill = drafts.length || pending?.hasPendingChanges ? <CorpPill tone="amber">{[drafts.length ? plural(drafts.length, "draft", "drafts") : "", pending?.hasPendingChanges ? plural(pending.pendingCount, "change", "changes") : ""].filter(Boolean).join(" · ")}</CorpPill>
+    : allPublished ? <CorpPill tone="green">Published</CorpPill> : null;
   const notified = <CorpNote icon={<BellIcon className="c-ic c-ic--s" aria-hidden="true" />}>{pending?.hasPendingChanges && drafts.length ? "Your team is notified when you publish. Changes to published days go out too." : "Your team is notified when you publish."}</CorpNote>;
   // Release 1 (board O-BuildPublish): a sheet. The week and its state, Start from (build from availability, copy last
   // week or use a template), each location's state, then the one Publish. Changes held on published days and readiness
@@ -163,7 +166,7 @@ export default async function BuildAndPublishPage({ searchParams }: { searchPara
             <EmployeeSubmitButton className="c-btn c-btn--full" pendingText="Publishing…">
               {`Publish ${drafts.length === 1 ? drafts[0].shortName : plural(drafts.length, "draft", "drafts")}${pending?.hasPendingChanges ? " and changes" : ""}${review.length ? " anyway" : ""}`}
             </EmployeeSubmitButton>
-          </form> : <CorpNote icon={<CheckCircleIcon className="c-ic c-ic--s" aria-hidden="true" />}>{locations.some(location => status(location.id) === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>}
+          </form> : <CorpNote icon={<CheckCircleIcon className={allPublished ? "c-ic c-ic--s c-pub__done" : "c-ic c-ic--s"} weight={allPublished ? "fill" : undefined} aria-hidden="true" />}>{locations.some(location => status(location.id) === "PUBLISHED") ? "Everything planned this week is published." : "Nothing is planned yet. Build the week to start a draft."}</CorpNote>}
         </div>
       </div>
     </CorpPage>

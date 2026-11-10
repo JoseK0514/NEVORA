@@ -284,10 +284,10 @@ export function ManagerDashboard(props: Props) {
   // Release 1 (Team → Hours this week): the kit page, from the same read.
   if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
     nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} viewerId={props.actorId} />;
-  // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
+  // Release 1 (board O-OnShift): Who's working, then the attendance review. Closing F1 (NV-240): time corrections are
+  // reviewed under Time (Time corrections), not here.
   if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
     <ManagerAttendanceReview />
-    <ManagerTimeCorrections key={props.correctionAuthority??props.actorId} actorId={props.actorId} authority={props.correctionAuthority}/>
     {props.role==='OWNER' ? <Link className="c-link c-link--l" href="/app/clocker-recovery">Clocker recovery</Link> : null}
   </WhosWorkingCorp>;
   // Release 1 (board O-Activity): Schedule activity is its own page under Schedule.

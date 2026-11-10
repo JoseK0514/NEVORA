@@ -149,7 +149,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     return <li key={device.id}>
       <button type="button" className="c-row c-tablets__row" data-clocker-device={device.id} aria-label={`${device.name}, options`} disabled={!hydrated} onClick={event => open({ operation: 'RENAME', device }, event)}>
         <span className="c-row__main"><span className="c-row__title c-row__title--b">{device.name}</span>
-          <span className="c-row__detail"><span>{[exception, place(device.locationId) ?? 'Location unavailable', seen].filter(Boolean).join(' · ')}</span></span></span>
+          {/* Closing F1 (NV-247): one meta order everywhere, location · status · last use. */}
+          <span className="c-row__detail"><span>{[place(device.locationId) ?? 'Location unavailable', exception, seen].filter(Boolean).join(' · ')}</span></span></span>
         <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
       </button>
     </li>;
@@ -178,7 +179,8 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
     </section> : null}
     <div className="c-page c-embed c-tablets__page">
       <p className="c-sr" role="status">{`${registered} registered, ${waiting} waiting for setup, ${revoked} removed`}</p>
-      {current.length ? <CorpCard as="div" label={`Tablets (${current.length})`}><ul className="c-rows" aria-label="Your tablets">{current.map(deviceRow)}</ul></CorpCard> : null}
+      {/* Closing F1 (NV-238): "Tablets 2", title and count pill. */}
+      {current.length ? <CorpCard as="div" label="Tablets" count={current.length}><ul className="c-rows" aria-label="Your tablets">{current.map(deviceRow)}</ul></CorpCard> : null}
       <section className="c-card c-tablets__steps" aria-labelledby="clocker-steps-title">
         <div className="c-card__head"><h2 className="c-card__label" id="clocker-steps-title">Set up a tablet</h2></div>
         <ol className="c-tablets__list">
@@ -193,7 +195,7 @@ export function ClockerDeviceManager({ initialDevices, locations, timeZone, acti
         </div>
       </section>
       <p className="c-tablets__note">One tablet per location works best.</p>
-      {removed.length ? <CorpCard as="div" label={`Removed (${removed.length})`}><ul className="c-rows" aria-label="Removed tablets">{removed.map(deviceRow)}</ul></CorpCard> : null}
+      {removed.length ? <CorpCard as="div" label="Removed" count={removed.length}><ul className="c-rows" aria-label="Removed tablets">{removed.map(deviceRow)}</ul></CorpCard> : null}
       {/* Inside the kit page so the sheet reads the kit's colour tokens. */}
       <QuietSheet open={!!selection} onClose={close} labelledBy="clocker-dialog-title">
         {selection ? <form ref={sheetForm} noValidate onSubmit={submit} key={`${selection.operation}-${selection.device?.id ?? 'new'}`} aria-busy={pending} aria-describedby="clocker-dialog-text" className="c-sheet c-tablet-sheet" {...handlers}>

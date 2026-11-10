@@ -10,10 +10,12 @@ import { phoneTyping } from "./phone";
  * control keeps the field name and constraints its form's command reads. */
 
 /** A sheet's header: Cancel (or ‹ Back) left, the title with an optional step under it, Save / Next / Add right. */
-export function FormHead({ left, title, step, right, titleId }: { left: ReactNode; title: ReactNode; step?: ReactNode; right?: ReactNode; titleId?: string }) {
+export function FormHead({ left, title, step, right, titleId, back }: { left: ReactNode; title: ReactNode; step?: ReactNode; right?: ReactNode; titleId?: string;
+  /** Closing F1 (NV-257): on tablets and desktop (where the bar's own links leave the band) a "‹ Team" back link over the title. */
+  back?: { href: string; label: string } }) {
   return <div className="c-nav c-formhead">
     <span className="c-formhead__l">{left}</span>
-    <span className="c-formhead__t"><h1 className="c-nav__title" id={titleId} tabIndex={-1}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
+    <span className="c-formhead__t">{back ? <Link className="c-formhead__up" href={back.href}><CaretLeftIcon className="c-ic" weight="bold" aria-hidden="true" />{back.label}</Link> : null}<h1 className="c-nav__title" id={titleId} tabIndex={-1}>{title}</h1>{step ? <span className="c-formhead__step">{step}</span> : null}</span>
     <span className="c-nav__right">{right ?? null}</span>
   </div>;
 }

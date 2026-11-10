@@ -11,6 +11,8 @@ import { ActionForm } from "@/components/wave-b-forms";
 import { QuietHeader, QuietNav, QuietPage, weekLabel as compactWeek } from "@/components/quiet/quiet";
 import "../../settings/settings-corp.css";
 import { getWorkspace } from "@/lib/data/workspaces";
+import { BState } from "@/components/owner-b/b-kit";
+import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { businessDate } from "@/lib/business-time";
 import { MANAGER_ROLES, requireRoles } from "@/lib/auth/permissions";
 import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
@@ -69,7 +71,10 @@ export default async function ScheduleTemplatesPage({
           {" "}<Link className="q-link" href={`/app/schedule?week=${weekStart}`}>Review schedule</Link></p> : null}
       </TemplateFeedback> : null}
 
-      <p className="wc-intro" id="st-library">{templates.length ? `${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}` : "No saved weeks yet"}</p>
+      {/* Closing F1 (NV-084): no saved weeks is the kit's empty card (a tinted icon, the state and what a template is for). */}
+      {templates.length ? <p className="wc-intro" id="st-library">{`${templates.length} saved ${templates.length === 1 ? "week" : "weeks"}`}</p>
+        : <section className="q-list wc-tcard st-empty" aria-label="Saved weeks"><BState kind="empty" icon={<CalendarBlankIcon weight="bold" />} title="No saved weeks yet"
+          line="Save a week’s shifts as a template, then use it for any week." /></section>}
       {templates.length ? <ul className="wc-cards" aria-labelledby="st-library">
         {templates.map((template, index) => <li className="q-list wc-tcard" key={template.id}>
           <div className="wc-cardhead"><span>{template.name}</span></div>

@@ -129,13 +129,14 @@ export function ClockerBreakTypes({ initialTypes, action }: {
   return <SettingsFrame className={ownerStyles.owner} title="Break types">
     <p className="q-sr" role="status">Showing {activeCount} of {types.length} {types.length === 1 ? 'break type' : 'break types'}</p>
     <ul className="q-list" aria-label="Configured break types">
-      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>{`${activeCount} ${activeCount === 1 ? 'break type' : 'break types'}`}</span></li> : null}
+      {/* Closing F1 (NV-238): "Break types 3", the title inside the card with its count pill. */}
+      {activeCount ? <li className="wc-cardhead" aria-hidden="true"><span>Break types<span className="wc-count c-num">{activeCount}</span></span></li> : null}
       {types.filter(type => type.active).map(row)}
       {!activeCount ? <li className="wc-emptyrow"><b>{types.length ? 'No active break types' : 'No break types yet'}</b>{types.length ? null : <span>Add the breaks your team takes, like a 30-minute meal.</span>}</li> : null}
       <li><button ref={addButton} type="button" className="wc-addrow" onClick={event => open({ operation: 'CREATE' }, event)}><PlusIcon aria-hidden="true" weight="bold" />Add break type</button></li>
     </ul>
     {archived.length ? <ul className="q-list" aria-label="Archived break types">
-      <li className="wc-cardhead" aria-hidden="true"><span>{`Archived (${archived.length})`}</span></li>
+      <li className="wc-cardhead" aria-hidden="true"><span>Archived<span className="wc-count c-num">{archived.length}</span></span></li>
       {archived.map(row)}
     </ul> : null}
     <p className="wc-foot">Changes apply to new breaks only.</p>

@@ -42,6 +42,8 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
 }
 
 export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string; aria?: string;
+  /** Closing F1 (NV-006): a figure that filters the list below it (a toggle; `pressed` while the filter is on). */
+  onSelect?: () => void; pressed?: boolean;
   /** A short line under the figure; Employee desktop shows it (employee-b-desktop.css), phones don't. */
   meta?: ReactNode };
 /** Live figures on frosted glass (two to three columns). A figure with `href` opens its list. Review B1 (NV-005): a list
@@ -54,6 +56,7 @@ export function BLive({ items, label }: { items: BLiveItem[]; label: string }) {
       {item.meta ? <span className="b-live__m">{item.meta}</span> : null}
     </>;
     return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href} aria-label={item.aria}>{body}</Link></li>
+      : item.onSelect ? <li key={index} className="b-live__i"><button type="button" className="b-live__a b-live__btn" aria-pressed={item.pressed ? "true" : "false"} aria-label={item.aria} onClick={item.onSelect}>{body}</button></li>
       : <li key={index} className="b-live__i">{body}</li>;
   })}</ul>;
 }

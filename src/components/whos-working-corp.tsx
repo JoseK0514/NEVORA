@@ -21,7 +21,8 @@ const lateBy = (start: string, observedAt: string) => {
 const SHOWN = 5;
 /** R3: one count voice. The label, then the figure in grey, no brackets ("Clocked in 2"). */
 const headed = (title: string, n: number) => <>{title}<span className="c-count c-num">{n}</span></>;
-const REVIEW_FRAGMENT = /^#(?:review$|attendance-.|correction-.)/;
+const REVIEW_FRAGMENT = /^#(?:review$|attendance-.)/;
+const CORRECTION_FRAGMENT = /^#correction-./;
 
 export function WhosWorkingCorp({ children, homeHref = "/app" }: { children?: ReactNode; homeHref?: string }) {
   const { monitor, refreshing } = useClockMonitor();
@@ -33,12 +34,16 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
   monitor: ClockMonitor | null; today: Today | null; refreshing?: boolean; onRetry?: () => void; homeHref?: string; children?: ReactNode;
 }) {
   const [all, setAll] = useState(false);
-  // The attendance review and time corrections sit behind one row, open when a link points at them: #review, or an
-  // Inbox link to one flagged clock-in (#attendance-…) or one correction request (#correction-…), which the review
-  // then focuses. Read after mount: the server render has no fragment, and a client navigation sets it at commit.
+  // Closing F1 (NV-240): time corrections live under Time (Time corrections), so the row here is only the flagged clock-ins
+  // (the attendance review), open when a link points at them: #review or one flagged clock-in (#attendance-…), which the
+  // review then focuses. A link to one correction request (#correction-…, from Things to do) goes on to Time corrections,
+  // which focuses it there. Read after mount: the server render has no fragment, and a client navigation sets it at commit.
   const [reviewOpen, setReviewOpen] = useState(false);
   useEffect(() => {
-    const sync = () => { if (REVIEW_FRAGMENT.test(window.location.hash)) setReviewOpen(true); };
+    const sync = () => {
+      if (CORRECTION_FRAGMENT.test(window.location.hash)) window.location.replace(`/app/timecards/corrections${window.location.hash}`);
+      else if (REVIEW_FRAGMENT.test(window.location.hash)) setReviewOpen(true);
+    };
     sync();
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
@@ -83,8 +88,8 @@ export function WhosWorkingView({ monitor, today, refreshing = false, onRetry, h
         detail={`${clock(shift.startAt, timeZone)} – ${clock(shift.endAt, timeZone)}${where(shift.locationName)}`} chevron />
     </li>)}</ul></CorpCard> : null}
     {children ? <CorpCard as="div" ariaLabel="Review">
-      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Time corrections" chevron={false}
-        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Time corrections and flagged clock-ins, ${reviewOpen ? "expanded" : "collapsed"}`} />
+      <CorpRow onClick={() => setReviewOpen(open => !open)} bold title="Clock-ins to check" detail="Times that don’t match the schedule or breaks" chevron={false}
+        trail={<CaretDownIcon className={reviewOpen ? "c-chev c-who__caret c-who__caret--open" : "c-chev c-who__caret"} weight="bold" aria-hidden="true" />} label={`Clock-ins to check, ${reviewOpen ? "expanded" : "collapsed"}`} />
     </CorpCard> : null}
     {children && reviewOpen ? <div className="c-who__review" id="review">{children}</div> : null}
   </CorpPage>;

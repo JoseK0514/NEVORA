@@ -108,3 +108,10 @@
   /* The back link ("‹ Settings") is at most ~88px; the centred name gets what is left on both sides of it. */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page.wc-page:not(.q-sheet) > .q-nav > .q-nav__t { justify-self: center; min-width: 0; max-width: calc(100vw - 32px - 2 * 92px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 }
+
+/* Closing F1 (NV-238): an index card's title carries its count as the kit's teal-50 pill ("Locations 2"). */
+:is(#c-root, html) .app-shell .q-page .wc-cardhead .wc-count { display: inline-grid; place-items: center; min-width: 24px; height: 24px; margin-left: 8px; padding: 0 8px; border-radius: 999px; background: #E8F3F1; color: #0B6E69; font: 700 12.5px/16px Inter, "Inter Fallback", -apple-system, sans-serif; vertical-align: middle; font-variant-numeric: tabular-nums; }
+/* Closing F1 (NV-248): a location's name and its second line wrap to two lines before they are cut. */
+:is(#c-root, html) .app-shell .q-page .q-list.wc-locations .q-rt > :is(b, i) { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: clip; overflow-wrap: anywhere; }
+/* Closing F1 (NV-084): the empty Saved weeks card keeps the cards' 12px gap above New template. */
+:is(#c-root, html) .app-shell .q-page.q-templates .wc-tcard.st-empty { margin-bottom: 12px !important; }

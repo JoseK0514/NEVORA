@@ -120,3 +120,15 @@
 /* Review B6 (NV-092): positions as chips under the place; Call and Message are 44px tinted circles with 48px targets. */
 :is(#c-root, html) .c-person .c-person__chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 4px 0 2px; }
 :is(#c-root, html) .c-person .c-person__chip { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; background: #F0F2F3; color: #3F464B; font-size: 12.5px; line-height: 24px; font-weight: 600; white-space: nowrap; }
+
+/* Closing F1 (NV-257): Add employee's two step dots (the current one filled, the next a ring, in the step line's colour)
+   and its "‹ Team" back link on tablets and desktop (the phone sheet keeps Cancel). */
+:is(#c-root, html) .c-formhead .c-formhead__dots { display: inline-flex; align-items: center; gap: 6px; margin-right: 8px; vertical-align: middle; }
+:is(#c-root, html) .c-formhead .c-formhead__dots > i { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px currentColor; }
+:is(#c-root, html) .c-formhead .c-formhead__dots > i[data-on] { background: currentColor; }
+:is(#c-root, html) .c-formhead .c-formhead__up { display: none; }
+@media (min-width: 768px) {
+  :is(#c-root, html) .c-formhead .c-formhead__up { display: flex; align-items: center; gap: 4px; width: fit-content; min-height: 44px; margin: -8px 0 4px -4px; padding: 0 4px; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: var(--c-teal, #0B6E69); text-decoration: none; }
+  :is(#c-root, html) .c-formhead .c-formhead__up .c-ic { width: 16px; height: 16px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-formhead .c-formhead__up { color: #FFFFFF; }
+}

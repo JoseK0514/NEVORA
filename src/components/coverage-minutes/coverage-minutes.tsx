@@ -31,5 +31,8 @@ export function CoverageFigures({coverage,label='Coverage this week',variant='b'
    <dt>{name}</dt><dd><b className="c-num">{percentText(value)}</b><span>{detail(value,none)}</span></dd>
   </div>)}</dl>
   {folded.length?<p className="cov__none-line">{`${folded.length===2?'Positions and leads aren’t':folded[0]==='positions'?'Positions aren’t':'Leads aren’t'} required`}</p>:null}
+  {/* Closing F1 (NV-126): on a phone's band the tiles become one line ("Staffing 57% · 192 h of 336 h", then Positions and
+    Lead only when required), so the day's shifts come up the screen; coverage-minutes.css swaps them under 768px. */}
+  {variant==='glass'?<p className="cov__line c-num">{shown.map(([name,value],index)=>index===0?`${name} ${percentText(value)}${value.required?` · ${detail(value,'')}`:''}`:`${name} ${percentText(value)}`).join(' · ')}</p>:null}
  </div>;
 }
