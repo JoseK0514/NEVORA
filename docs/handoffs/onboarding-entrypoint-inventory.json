@@ -3686,6 +3686,11 @@
       "reason": "Independent aggregate-only incident journal under a dedicated non-owner LOGIN role and forced session-user RLS; no company, onboarding, employee or provisioning access. Setup grants are operator-only; ambiguous SMTP sends are retained."
     },
     {
+      "path": "src/lib/operations/principal-policy.ts",
+      "status": "CONVERTED",
+      "reason": "Shared metadata-only admission for fixed monitor or company WORKER-reader policies; effective PUBLIC/role privileges, all object ownership, routines, sequences, large objects and supported PG maintenance rights checked before admission. No runtime DSN, grants, credential retrieval or business mutation."
+    },
+    {
       "path": "src/lib/operations/routing-reader.ts",
       "tags": [
         "setup-only",

@@ -1,26 +1,13 @@
 import 'server-only';
 import type {Pool,PoolClient} from 'pg';
 import {randomUUID} from 'node:crypto';
+import {assertMachinePrincipal} from './principal-policy';
 import type {MonitorCondition,MailResult,NoticeKind} from './monitor';
 const validRole=(role:string)=>/^nv_ops_monitor_[a-f0-9]{24}$/.test(role);
 /** Effective privileges include PUBLIC grants; never rewrite shared defaults
  * here. Both setup and each observation require this same current evidence. */
 export async function assertMonitorPrincipal(client:PoolClient,role:string){
- if(!validRole(role))throw Error('monitor_principal_invalid');
- try{
-  const r=(await client.query(`SELECT p.rolcanlogin,p.rolsuper,p.rolcreatedb,p.rolcreaterole,p.rolinherit,p.rolreplication,p.rolbypassrls,
-   EXISTS(SELECT 1 FROM pg_auth_members m WHERE m.member=p.oid) memberships,
-   has_database_privilege(p.oid,current_database(),'CREATE,TEMPORARY') database_create_temp,
-   EXISTS(SELECT 1 FROM pg_namespace n WHERE has_schema_privilege(p.oid,n.oid,'CREATE')) schema_create,
-   EXISTS(SELECT 1 FROM pg_proc f JOIN pg_namespace n ON n.oid=f.pronamespace WHERE f.prosecdef AND n.nspname NOT IN('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_%' AND has_function_privilege(p.oid,f.oid,'EXECUTE')) callable_definer,
-   (EXISTS(SELECT 1 FROM pg_class c WHERE c.relowner=p.oid) OR EXISTS(SELECT 1 FROM pg_namespace n WHERE n.nspowner=p.oid) OR EXISTS(SELECT 1 FROM pg_proc f WHERE f.proowner=p.oid) OR EXISTS(SELECT 1 FROM pg_database d WHERE d.datdba=p.oid)) owns_objects,
-   EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_%' AND c.relkind IN('r','p','v','m','f') AND
-    CASE WHEN n.nspname='nevora_operations' AND c.relname IN('monitor_state','monitor_notices','monitor_attempts')
-     THEN has_table_privilege(p.oid,c.oid,'DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(p.oid,c.oid,'REFERENCES')
-     ELSE has_table_privilege(p.oid,c.oid,'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER') OR has_any_column_privilege(p.oid,c.oid,'SELECT,INSERT,UPDATE,REFERENCES') END) extra_access
-   FROM pg_roles p WHERE p.rolname=$1`,[role])).rows;
-  if(r.length!==1||r[0].rolcanlogin!==true||['rolsuper','rolcreatedb','rolcreaterole','rolinherit','rolreplication','rolbypassrls','memberships','owns_objects','extra_access','database_create_temp','schema_create','callable_definer'].some(k=>r[0][k]!==false))throw Error();
- }catch{throw Error('monitor_principal_invalid');}
+ try{await assertMachinePrincipal(client,role,'monitor');}catch{throw Error('monitor_principal_invalid');}
 }
 /** Setup only. No role/password creation or implicit PUBLIC privilege changes. */
 export async function configureMonitorPrincipal(admin:PoolClient,role:string){

@@ -15,7 +15,57 @@ import {freshOnboardingControl} from './onboarding-fixture';
 import {configureMonitorPrincipal,processMonitorObservation} from '@/lib/operations/monitor-store';
 import {sendMonitorNotice,type MonitorConfig} from '@/lib/operations/monitor';
 import {ownedSmtpLostAcknowledgement} from './owned-smtp-ack-fixture';
+import {assertMachinePrincipal} from '@/lib/operations/principal-policy';
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();});
+it.each(['tablespace','parameter','routine','foreign-wrapper','foreign-server','grant-option'] as const)('rejects non-journal %s authority for both machine principals',async capability=>{
+ const f=await freshOnboardingControl(),monitor='nv_ops_monitor_'+randomBytes(12).toString('hex'),worker=workerControlRole(randomUUID(),'test'),roles=[monitor,worker],pools:Pool[]=[];
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);
+  for(const role of roles){const password=randomBytes(32).toString('base64url');await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);const u=new URL(f.connectionUrl);u.username=role;u.password=password;pools.push(new Pool({connectionString:u.href}));}
+  const setup=await f.pool.connect();try{
+   await configureMonitorPrincipal(setup,monitor);await configureWorkerControlReader(setup,worker);
+   if(capability.startsWith('foreign'))await f.pool.query('CREATE FOREIGN DATA WRAPPER fictional_wrapper; CREATE SERVER fictional_server FOREIGN DATA WRAPPER fictional_wrapper');
+   for(let i=0;i<2;i++){
+    const role=roles[i];
+    if(capability==='tablespace')await f.pool.query(`GRANT CREATE ON TABLESPACE pg_default TO ${role}`);
+    if(capability==='parameter')await f.pool.query(`GRANT ALTER SYSTEM ON PARAMETER log_statement TO ${role}`);
+    if(capability==='routine')await f.pool.query(`GRANT EXECUTE ON FUNCTION pg_catalog.pg_read_file(text) TO ${role}`);
+    if(capability==='foreign-wrapper')await f.pool.query(`GRANT USAGE ON FOREIGN DATA WRAPPER fictional_wrapper TO ${role}`);
+    if(capability==='foreign-server')await f.pool.query(`GRANT USAGE ON FOREIGN SERVER fictional_server TO ${role}`);
+    if(capability==='grant-option')await f.pool.query(`GRANT SELECT ON ${i?'nevora_onboarding.worker_workspace_registry':'nevora_operations.monitor_state'} TO ${role} WITH GRANT OPTION`);
+   }
+   // An explicit restricted C-function grant really reads this owned server's
+   // benign version file; there is no external filesystem or network target.
+   if(capability==='routine')for(const pool of pools)expect((await pool.query("SELECT pg_catalog.pg_read_file('PG_VERSION') AS version")).rows[0].version).toMatch(/^\d/);
+   await expect(configureMonitorPrincipal(setup,monitor)).rejects.toThrow('monitor_principal_invalid');await expect(configureWorkerControlReader(setup,worker)).rejects.toThrow('operations_reader_scope_invalid');
+   let sampled=false;await expect(processMonitorObservation(pools[0],monitor,async()=>{sampled=true;return 'ok';},false,async()=>'accepted')).rejects.toThrow('monitor_principal_invalid');expect(sampled).toBe(false);
+  }finally{setup.release();}
+ }finally{for(const pool of pools)await pool.end();for(const role of roles){await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});}await f.close();}
+});
+it('rejects deceptive schema names, sequences, PG17 maintenance and private large objects for both machine principals',async()=>{
+ const f=await freshOnboardingControl(),monitor='nv_ops_monitor_'+randomBytes(12).toString('hex'),worker=workerControlRole(randomUUID(),'test'),roles=[monitor,worker],pools:Pool[]=[];
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);
+  for(const role of roles){const password=randomBytes(32).toString('base64url');await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);const u=new URL(f.connectionUrl);u.username=role;u.password=password;pools.push(new Pool({connectionString:u.href}));}
+  const setup=await f.pool.connect();
+  try{
+   const configure=[()=>configureMonitorPrincipal(setup,monitor),()=>configureWorkerControlReader(setup,worker)];
+   await assertMachinePrincipal(setup,monitor,'monitor');await assertMachinePrincipal(setup,worker,'worker-reader');
+   for(const c of configure)await c();
+   await f.pool.query("CREATE SCHEMA pgxreview; CREATE TABLE pgxreview.restricted(s text); INSERT INTO pgxreview.restricted VALUES('fictional-private'); CREATE FUNCTION pgxreview.private_read() RETURNS text LANGUAGE SQL SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT s FROM pgxreview.restricted'; REVOKE EXECUTE ON FUNCTION pgxreview.private_read() FROM PUBLIC; CREATE SEQUENCE pgxreview.business_sequence");
+   for(const role of roles)await f.pool.query(`GRANT USAGE ON SCHEMA pgxreview TO ${role}`);
+   const deny=async()=>{for(let i=0;i<2;i++)await expect(configure[i]()).rejects.toThrow(i?'operations_reader_scope_invalid':'monitor_principal_invalid');let sampled=false;await expect(processMonitorObservation(pools[0],monitor,async()=>{sampled=true;return 'ok';},false,async()=>'accepted')).rejects.toThrow('monitor_principal_invalid');expect(sampled).toBe(false);};
+   for(const role of roles)await f.pool.query(`GRANT EXECUTE ON FUNCTION pgxreview.private_read() TO ${role}`);await deny();for(const role of roles)await f.pool.query(`REVOKE EXECUTE ON FUNCTION pgxreview.private_read() FROM ${role}`);
+   for(const privilege of ['USAGE','SELECT','UPDATE']){for(const role of roles)await f.pool.query(`GRANT ${privilege} ON SEQUENCE pgxreview.business_sequence TO ${role}`);await deny();for(const role of roles)await f.pool.query(`REVOKE ${privilege} ON SEQUENCE pgxreview.business_sequence FROM ${role}`);}
+   const version=Number((await f.pool.query("SELECT current_setting('server_version_num') AS version")).rows[0].version);
+   if(version>=170000){for(const role of roles)await f.pool.query(`GRANT MAINTAIN ON pgxreview.restricted TO ${role}`);await deny();for(const role of roles)await f.pool.query(`REVOKE MAINTAIN ON pgxreview.restricted FROM ${role}`);}
+   const large=Number((await f.pool.query("SELECT lo_from_bytea(0,convert_to('fictional private object','utf8')) AS id")).rows[0].id);
+   for(const privilege of ['SELECT','UPDATE']){for(const role of roles)await f.pool.query(`GRANT ${privilege} ON LARGE OBJECT ${large} TO ${role}`);await deny();for(const role of roles)await f.pool.query(`REVOKE ${privilege} ON LARGE OBJECT ${large} FROM ${role}`);}
+   await f.pool.query(`ALTER LARGE OBJECT ${large} OWNER TO ${monitor}`);await expect(configure[0]()).rejects.toThrow('monitor_principal_invalid');await f.pool.query(`ALTER LARGE OBJECT ${large} OWNER TO ${worker}`);await expect(configure[1]()).rejects.toThrow('operations_reader_scope_invalid');await f.pool.query('SELECT lo_unlink($1)',[large]);
+   for(const c of configure)await c();for(const pool of pools){await expect(pool.query('SELECT pgxreview.private_read()')).rejects.toMatchObject({code:'42501'});await expect(pool.query("SELECT setval('pgxreview.business_sequence',947)")).rejects.toMatchObject({code:'42501'});}
+  }finally{setup.release();}
+ }finally{for(const pool of pools)await pool.end();for(const role of roles){await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});}await f.close();}
+});
 it('refuses effective PUBLIC TEMP, schema/database CREATE and callable security-definer privilege before setup or observation',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex');let pool:Pool|undefined;
  try{
@@ -147,6 +197,7 @@ it('observes real due/future/failed/leased queues under restricted WORKER withou
 });
 it('uses actual company-scoped WORKER-only control custody without any browser key and rejects broad/mismatched readers',async()=>{
  const f=await onboardingJourneyFixture();const readers:Pool[]=[],roles:string[]=[];try{
+  await f.db.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.db.name} FROM PUBLIC`);
   const a=await f.activateCompany(await f.createCompany()),b=await f.activateCompany(await f.createCompany('beta','b@example.invalid'));vi.stubEnv('NEVORA_WORKSPACE_MODE','isolated');
   async function reader(environment:'test'|'production'){
    const role=workerControlRole(a.c.row.workspace_id,environment),password=randomBytes(32).toString('base64url');roles.push(role);
