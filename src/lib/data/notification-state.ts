@@ -33,7 +33,8 @@ export const notificationReadSql = {
     coverageEmployees: () => `SELECT e.id,e.first_name AS name,e.role,e.active,ARRAY(SELECT location_id FROM employee_location_eligibility WHERE employee_id=e.id) AS "eligibleLocationIds",ARRAY(SELECT ep.position_id FROM employee_positions ep JOIN positions p ON p.id=ep.position_id WHERE ep.employee_id=e.id AND p.active=true) AS "positionIds" FROM employees e`,
     coveragePositions: () => `SELECT id,workspace_id AS "workspaceId",name,active,created_at::text AS "createdAt",updated_at::text AS "updatedAt" FROM positions`,
     communication: (id='$1') => `SELECT r.id::text AS version,to_jsonb(r.published_at) AS updated_at,to_jsonb(r.expires_at) AS expires_at,
-      ARRAY(SELECT candidate.id FROM employees candidate WHERE ${communicationRecipientAllowedSql('candidate.id')} ORDER BY candidate.id) AS recipient_ids
+      ARRAY(SELECT candidate.id FROM employees candidate WHERE ${communicationRecipientAllowedSql('candidate.id')} ORDER BY candidate.id) AS recipient_ids,
+      ARRAY(SELECT candidate.id FROM employees candidate WHERE r.acknowledgement='REQUIRED' AND ${communicationRecipientAllowedSql('candidate.id')} AND NOT EXISTS(SELECT 1 FROM communication_receipts receipt WHERE receipt.workspace_id=c.workspace_id AND receipt.communication_id=c.id AND receipt.revision_id=r.id AND receipt.employee_id=candidate.id) ORDER BY candidate.id) AS missing_acknowledgement_recipient_ids
       FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id JOIN workspaces w ON w.id=c.workspace_id AND w.singleton AND w.active
       WHERE c.id::text=${id} AND c.state='PUBLISHED' AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND ${communicationDevelopmentAllowedSql()}`, 
     intent: (id='$1') => `SELECT * FROM notifications WHERE id = ${id} AND environment IS NOT NULL AND cancelled_at IS NULL LIMIT 1`,
@@ -160,8 +161,8 @@ export function sqlNotificationStateRepository(executor: SqlExecutor = neonNotif
                 return {kind:'MANAGER_SUMMARY',source:{...source,kind:'MANAGER_SUMMARY'},updatedAt:intent.dueAt,weekStart:'',items,expiresAt:intent.expiresAt};
             }
             if (source.kind === 'COMMUNICATION') {
-                const [row]=await executor.query<{version:string;updated_at:string;expires_at:string|null;recipient_ids:string[]}>({text:notificationReadSql.communication(),values:[source.id]});
-                return row && Array.isArray(row.recipient_ids) ? {kind:'COMMUNICATION',source:{kind:'COMMUNICATION',id:source.id,version:row.version},updatedAt:row.updated_at,expiresAt:row.expires_at,recipientIds:row.recipient_ids} : null;
+                const [row]=await executor.query<{version:string;updated_at:string;expires_at:string|null;recipient_ids:string[];missing_acknowledgement_recipient_ids:string[]}>({text:notificationReadSql.communication(),values:[source.id]});
+                return row && Array.isArray(row.recipient_ids) ? {kind:'COMMUNICATION',source:{kind:'COMMUNICATION',id:source.id,version:row.version},updatedAt:row.updated_at,expiresAt:row.expires_at,recipientIds:row.recipient_ids,missingAcknowledgementRecipientIds:row.missing_acknowledgement_recipient_ids} : null;
             }
             const [row] = await executor.query<{employee_id:string;expires_at:string}>({text:notificationReadSql.selfTest(),values:[source.id,source.version]});
             return row ? {kind:'SELF_TEST',source:{...source,kind:'SELF_TEST'},updatedAt:'',employeeId:row.employee_id,expiresAt:row.expires_at ? instant(row.expires_at)! : '9999-01-01T00:00:00.000Z'} : null;
@@ -282,7 +283,7 @@ export function evaluateNotificationSource(intent: NotificationIntent, recipient
         if (intent.urgency==='high' && !coverage.some(start=>start>now.getTime() && start-now.getTime()<=12*3600000)) return rejected(intent,'urgent_source_resolved');
         expiry = Math.min(expiry,Date.parse(source.expiresAt),...coverage);
     } else if (source.kind==='COMMUNICATION') {
-        if(intent.environment!=='test' || intent.type!=='COMMUNICATION' || intent.purpose!=='EVENT' || source.source.version!==intent.source.version || !isSelfServiceRecipient(recipient) || !source.recipientIds.includes(recipient.employeeId)) return rejected(intent,'communication_access_lost');
+        if(intent.environment!=='test' || intent.type!=='COMMUNICATION' || !['EVENT','REMINDER'].includes(intent.purpose) || (intent.purpose==='REMINDER' && !source.missingAcknowledgementRecipientIds?.includes(recipient.employeeId)) || source.source.version!==intent.source.version || !isSelfServiceRecipient(recipient) || !source.recipientIds.includes(recipient.employeeId)) return rejected(intent,'communication_access_lost');
         if(source.expiresAt)expiry=Math.min(expiry,Date.parse(source.expiresAt));
     } else if (source.kind==='SELF_TEST') {
         if (intent.purpose!=='TEST' || source.employeeId!==recipient.employeeId) return rejected(intent,'test_access_lost');

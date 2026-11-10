@@ -1,3 +1,4 @@
+import {executeManagerReminder,findManagerReminderOperation} from '../../lib/manager-reminders/service.server';
 import {readOwnerOperationalScope,assignOperationalScope} from '../../lib/company-access/operational-scope.server';
 import {readFile} from 'node:fs/promises';
 import {afterEach,beforeEach,expect,it} from 'vitest';
@@ -147,4 +148,127 @@ it('protected management status names recipients; employee receives only own sta
  const {r}=await publish();const staff=await readCommunication(employee,r.id,db.executor),management=await readCommunication(owner,r.id,db.executor);
  expect(staff).toMatchObject({state:'ready',validForMs:expect.any(Number),observedAt:expect.any(String)});expect(staff).not.toHaveProperty('management');
  expect(management).toMatchObject({state:'ready',management:{recipients:[{name:'Fictional Self',acknowledgedAt:null}],draft}});
+});
+
+// NV261: real transactions prove reminder receipt/outbox/cadence behavior.
+async function managerReminderFixture(kind:'AVAILABILITY'|'COMMUNICATION'){
+ if(kind==='COMMUNICATION'){
+  const {r}=await publish();return {kind,communicationId:r.id,expectedRevisionId:r.version,employeeId:'employee',operationId:randomUUID(),authority:communicationAuthority(owner)};
+ }
+ const [date]=await q("SELECT (date_trunc('week',clock_timestamp())+interval '7 days')::date::text AS week, to_char(clock_timestamp()+interval '10 days','YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"') AS deadline") as {week:string;deadline:string}[];
+ await q('INSERT INTO schedule_week_settings(week_start,availability_deadline) VALUES($1::date,$2::timestamptz)',[date.week,date.deadline]);
+ return {kind,weekStart:date.week,expectedDeadline:date.deadline,employeeId:'employee',operationId:randomUUID(),authority:communicationAuthority(owner)};
+}
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: concurrent same and different operations share one daily queue entry',async kind=>{
+ const c=await managerReminderFixture(kind);
+ const results=await Promise.all([executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,c,db.executor),executeManagerReminder(owner,{...c,operationId:randomUUID()},db.executor)]);
+ expect(results[0]).toMatchObject({status:'committed'});expect(results[1]).toEqual(results[0]);expect(results[2]).toMatchObject({status:'committed'});
+ expect(await q("SELECT count(*)::int AS count FROM notifications WHERE purpose='REMINDER'")).toEqual([{count:1}]);
+ expect(await q("SELECT count(*)::int AS count FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([{count:2}]);
+ expect(await findManagerReminderOperation(owner,c.operationId,c.authority,db.executor)).toEqual(results[0]);
+ expect(await executeManagerReminder(owner,{...c,employeeId:'other'},db.executor)).toMatchObject({status:'conflict'});
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: resolved action denies queue but original operation remains recoverable',async kind=>{
+ const c=await managerReminderFixture(kind),r=await executeManagerReminder(owner,c,db.executor);expect(r.status).toBe('committed');
+ if(c.kind==='AVAILABILITY')await q("INSERT INTO weekly_availability_submissions(employee_id,week_start,submitted_at) VALUES('employee',$1::date,clock_timestamp())",[c.weekStart]);
+ else {const update=await readCommunication(employee,c.communicationId,db.executor);if(update.state!=='ready')throw Error('No update');expect(await executeCommunicationCommand(employee,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:communicationAuthority(employee),communicationId:c.communicationId,expectedRevisionId:c.expectedRevisionId,contentHash:update.contentHash},db.executor)).toMatchObject({status:'committed'});}
+ expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},db.executor)).toMatchObject({status:'conflict'});
+ expect(await executeManagerReminder(owner,c,db.executor)).toEqual(r);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: queue fault rolls back audited operation',async kind=>{
+ const c=await managerReminderFixture(kind);await q("CREATE FUNCTION fixture_reminder_fault() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'fixture_reminder_fault'; END $$; CREATE TRIGGER fixture_reminder_fault BEFORE INSERT ON notifications FOR EACH ROW WHEN (NEW.purpose='REMINDER') EXECUTE FUNCTION fixture_reminder_fault()");
+ expect(await executeManagerReminder(owner,c,db.executor)).toMatchObject({status:'outcome_unknown'});
+ expect(await q("SELECT * FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([]);
+ expect(await findManagerReminderOperation(owner,c.operationId,c.authority,db.executor)).toMatchObject({status:'unavailable',reason:'operation_not_found'});
+});
+it('manager reminder targets use canonical recipient IDs without adding employee roster access',async()=>{
+ const {r}=await publish();
+ expect(await readCommunication(owner,r.id,db.executor)).toMatchObject({state:'ready',management:{recipients:[{employeeId:'employee',name:'Fictional Self',acknowledgedAt:null}]}});
+ const own=await readCommunication(employee,r.id,db.executor);expect(own.state).toBe('ready');expect(own).not.toHaveProperty('management');
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: source and recipient changes invalidate an unqueued command',async kind=>{
+ const c=await managerReminderFixture(kind);
+ await q("UPDATE employees SET active=false WHERE id='employee'");expect(await executeManagerReminder(owner,c,db.executor)).toMatchObject({status:'conflict'});await q("UPDATE employees SET active=true WHERE id='employee'");
+ if(c.kind==='AVAILABILITY')await q("UPDATE schedule_week_settings SET availability_deadline=availability_deadline+interval '1 hour' WHERE week_start=$1",[c.weekStart]);
+ else expect(await executeCommunicationCommand(owner,{...(await command({...draft,body:'New required revision'})),kind:'REVISE',communicationId:c.communicationId,expectedRevisionId:c.expectedRevisionId},db.executor)).toMatchObject({status:'committed'});
+ expect(await executeManagerReminder(owner,c,db.executor)).toMatchObject({status:'conflict'});
+ await q("UPDATE employees SET active=false WHERE id='employee'");expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},db.executor)).toMatchObject({status:'conflict'});
+ expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: company grant, role and live session control commands and lookup',async kind=>{
+ const c=await managerReminderFixture(kind);
+ expect(await executeManagerReminder(employee,{...c,authority:communicationAuthority(employee)},db.executor)).toMatchObject({status:'blocked'});
+ await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES('reminder-manager','Fictional','Manager','QA-NO-PHONE','MANAGER','loc-1')");
+ const manager={...owner,employee:{...owner.employee,id:'reminder-manager',role:'MANAGER' as const},sessionTokenHash:'f'.repeat(64)};
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES($1,$2,clock_timestamp()+interval '1 day')",[manager.sessionTokenHash,manager.employee.id]);
+ const mc={...c,authority:communicationAuthority(manager)};
+ expect(await executeManagerReminder(manager,mc,db.executor)).toMatchObject({status:'blocked'});
+ const context=await readOwnerOperationalScope(owner,manager.employee.id,db.executor);if(context.state!=='ready')throw Error('No manager context');const cur=context.data.current;
+ expect(await assignOperationalScope(owner,manager.employee.id,{operationId:randomUUID(),action:'ASSIGN',expectedEmployeeVersion:cur.employeeUpdatedAt,expectedRoleGeneration:cur.roleGeneration,expectedScopeRevision:cur.scopeRevision,scope:{mode:'COMPANY',locationIds:[]}},db.executor)).toMatchObject({state:'saved'});
+ expect(await executeManagerReminder(manager,mc,db.executor)).toMatchObject({status:'committed'});
+ await q('DELETE FROM employee_sessions WHERE token_hash=$1',[manager.sessionTokenHash]);
+ expect(await executeManagerReminder(manager,{...mc,operationId:randomUUID()},db.executor)).toMatchObject({status:'blocked'});
+ expect(await findManagerReminderOperation(manager,mc.operationId,mc.authority,db.executor)).toMatchObject({status:'blocked'});
+ expect(await findManagerReminderOperation(owner,mc.operationId,c.authority,db.executor)).toMatchObject({status:'unavailable',reason:'operation_not_found'});
+});
+it('optional, withdrawn, expired, and revoked-grant communications cannot be reminded',async()=>{
+ for(const action of ['optional','withdrawn','expired','revoked'] as const){
+  const c=await command({...draft,acknowledgement:action==='optional'?'OPTIONAL':'REQUIRED',expiresAt:action==='expired'?new Date(Date.now()+3000).toISOString():null});
+  const r=await executeCommunicationCommand(owner,c,db.executor);if(r.status!=='committed')throw Error('No communication');
+  if(action==='withdrawn')expect(await executeCommunicationCommand(owner,{kind:'WITHDRAW',operationId:randomUUID(),authority:c.authority,communicationId:r.id,expectedRevisionId:r.version},db.executor)).toMatchObject({status:'committed'});
+  if(action==='expired')await new Promise(resolve=>setTimeout(resolve,3100));
+  if(action==='revoked')await q("UPDATE employees SET primary_location_id='loc-2' WHERE id='employee'");
+  expect(await executeManagerReminder(owner,{kind:'COMMUNICATION',operationId:randomUUID(),authority:c.authority,employeeId:'employee',communicationId:r.id,expectedRevisionId:r.version},db.executor)).toMatchObject({status:'conflict'});
+ }
+ expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: lost response recovers durable atomic receipt',async kind=>{
+ const c=await managerReminderFixture(kind);let committed=false;
+ const transport:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{const rows=await db.executor.transaction(statements,signal);if(!committed&&statements.some(s=>s.text.includes("'manager-reminder-operation:'"))){committed=true;throw Error('Fictional connection lost after commit');}return rows;}};
+ expect(await executeManagerReminder(owner,c,transport)).toMatchObject({status:'outcome_unknown'});
+ const recovered=await findManagerReminderOperation(owner,c.operationId,c.authority,db.executor);expect(recovered).toMatchObject({status:'committed',disposition:'queued'});
+ expect(await executeManagerReminder(owner,c,db.executor)).toEqual(recovered);
+ await q("INSERT INTO employee_sessions(token_hash,employee_id,expires_at) VALUES(repeat('e',64),'owner',clock_timestamp()+interval '1 day')");
+ const replacement={...owner,sessionTokenHash:'e'.repeat(64)};
+ expect(await findManagerReminderOperation(replacement,c.operationId,communicationAuthority(replacement),db.executor)).toMatchObject({status:'unavailable',reason:'operation_not_found'});
+ expect(await q("SELECT count(*)::int AS count FROM notifications WHERE purpose='REMINDER'")).toEqual([{count:1}]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: audit failure rolls back queued notification',async kind=>{
+ const c=await managerReminderFixture(kind);await q("CREATE FUNCTION fixture_reminder_audit_fault() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'fixture_reminder_audit_fault'; END $$; CREATE TRIGGER fixture_reminder_audit_fault BEFORE INSERT ON employee_attention_operations FOR EACH ROW WHEN (NEW.result->>'kind'='MANAGER_REMINDER') EXECUTE FUNCTION fixture_reminder_audit_fault()");
+ expect(await executeManagerReminder(owner,c,db.executor)).toMatchObject({status:'outcome_unknown'});
+ expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
+ expect(await q("SELECT * FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: quiet-hour command queues for the next local 07:00',async kind=>{
+ const {businessTime}=await import('../../lib/business-time');
+ const zone=Intl.supportedValuesOf('timeZone').find(zone=>businessTime(new Date(),zone).slice(0,2)==='22');if(!zone)throw Error('Missing quiet timezone');
+ await q('UPDATE workspaces SET time_zone=$1',[zone]);
+ const c=await managerReminderFixture(kind);expect(await executeManagerReminder(owner,c,db.executor)).toMatchObject({status:'committed'});
+ expect(await q("SELECT EXTRACT(hour FROM due_at AT TIME ZONE $1)::int AS hour, due_at>clock_timestamp() AS future FROM notifications WHERE purpose='REMINDER'",[zone])).toEqual([{hour:7,future:true}]);
+});
+it('communication reminder delivery source guard requires the current missing required receipt',async()=>{
+ const {communicationIntentAllowedSql}=await import('../../lib/communications/sql');
+ const {sqlNotificationStateRepository}=await import('../../lib/data/notification-state');
+ const c=await managerReminderFixture('COMMUNICATION');if(c.kind!=='COMMUNICATION')throw Error('Wrong fixture');
+ const result=await executeManagerReminder(owner,c,db.executor);if(result.status!=='committed')throw Error('No reminder');
+ const state=sqlNotificationStateRepository(db.executor),intent=await state.findIntent(result.notificationId);if(!intent)throw Error('No intent');
+ expect(await state.check(intent,'employee',new Date())).toMatchObject({deliverable:true});
+ expect(await q(`SELECT ${communicationIntentAllowedSql()} AS allowed FROM notifications n WHERE n.id=$1`,[result.notificationId])).toEqual([{allowed:true}]);
+ const read=await readCommunication(employee,c.communicationId,db.executor);if(read.state!=='ready')throw Error('No update');
+ expect(await executeCommunicationCommand(employee,{kind:'ACKNOWLEDGE',operationId:randomUUID(),authority:communicationAuthority(employee),communicationId:c.communicationId,expectedRevisionId:c.expectedRevisionId,contentHash:read.contentHash},db.executor)).toMatchObject({status:'committed'});
+ expect(await state.check(intent,'employee',new Date())).toMatchObject({deliverable:false});
+ expect(await q(`SELECT ${communicationIntentAllowedSql()} AS allowed FROM notifications n WHERE n.id=$1`,[result.notificationId])).toEqual([{allowed:false}]);
+});
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: final source/session checks reject a race after planning',async kind=>{
+ const c=await managerReminderFixture(kind);let changed=false;
+ const race:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(!changed&&statements.some(s=>s.text.includes("'manager-reminder-operation:'"))){changed=true;
+   if(c.kind==='AVAILABILITY')await q("INSERT INTO weekly_availability_submissions(week_start,employee_id) VALUES($1::date,'employee')",[c.weekStart]);
+   else await q("UPDATE employees SET primary_location_id='loc-2' WHERE id='employee'");
+  }
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await executeManagerReminder(owner,c,race)).toMatchObject({status:'conflict'});expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
+ const revoked:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('AS "expiresAt"')))await q("DELETE FROM employee_sessions WHERE employee_id='owner'");return db.executor.transaction(statements,signal);}};
+ expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},revoked)).toMatchObject({status:'blocked'});
 });

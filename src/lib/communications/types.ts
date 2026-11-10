@@ -13,7 +13,7 @@ export type CommunicationCommand=
  | {kind:'WITHDRAW';operationId:string;authority:string;communicationId:string;expectedRevisionId:string}
  | {kind:'ACKNOWLEDGE';operationId:string;authority:string;communicationId:string;expectedRevisionId:string;contentHash:string};
 export type CommunicationRead=
- | {state:'ready';id:string;revisionId:string;contentHash:string;title:string;body:string;type:CommunicationDraft['type'];publishedAt:string;editedAt:string|null;acknowledgement:CommunicationDraft['acknowledgement'];ownAcknowledgedAt:string|null;ownReadAt:string|null;authority:string;observedAt:string;validForMs:number;timeZone:string;expiresAt:string|null;authorContext:string;canWithdraw:boolean;sentCount?:number;management?:{draft:CommunicationDraft;recipients:{name:string;acknowledgedAt:string|null}[]}}
+ | {state:'ready';id:string;revisionId:string;contentHash:string;title:string;body:string;type:CommunicationDraft['type'];publishedAt:string;editedAt:string|null;acknowledgement:CommunicationDraft['acknowledgement'];ownAcknowledgedAt:string|null;ownReadAt:string|null;authority:string;observedAt:string;validForMs:number;timeZone:string;expiresAt:string|null;authorContext:string;canWithdraw:boolean;sentCount?:number;management?:{draft:CommunicationDraft;recipients:{employeeId:string;name:string;acknowledgedAt:string|null}[]}}
  | {state:'withdrawn'|'unauthorized'|'unavailable';reason:string};
 export type CommunicationListRead=
  | {state:'complete'|'partial';observedAt:string;items:CommunicationRead[];reason:string|null;validForMs:number;authority:string;timeZone:string}
