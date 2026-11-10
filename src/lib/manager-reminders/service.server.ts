@@ -64,10 +64,10 @@ export async function findManagerReminderOperation(proof:SessionMutationProof,id
 /** This source predicate is used both before planning and inside the final write.
  * Root/availability locks prevent resolution/revision while persisting. */
 function sourceStatement(a:Access,c:ManagerReminderCommand):SqlStatement{
- if(c.kind==='COMMUNICATION')return {text:`SELECT to_jsonb(clock_timestamp()) AS "observedAt",to_jsonb(LEAST(COALESCE(r.expires_at,r.published_at+interval '30 days'),r.published_at+interval '30 days')) AS "expiresAt"
+ if(c.kind==='COMMUNICATION')return {text:`SELECT to_jsonb(clock_timestamp()) AS "observedAt",to_jsonb(LEAST(COALESCE(r.expires_at,clock_timestamp()+interval '30 days'),clock_timestamp()+interval '30 days')) AS "expiresAt"
  FROM communications c JOIN communication_revisions r ON r.id=c.head_revision_id
  WHERE c.workspace_id=$1 AND c.id=$3::uuid AND r.id=$4::uuid AND c.state='PUBLISHED' AND r.acknowledgement='REQUIRED'
- AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp()) AND r.published_at+interval '30 days'>clock_timestamp()
+ AND (r.expires_at IS NULL OR r.expires_at>clock_timestamp())
  AND ${communicationRecipientAllowedSql()}
  AND NOT EXISTS(SELECT 1 FROM communication_receipts receipt WHERE receipt.workspace_id=c.workspace_id AND receipt.communication_id=c.id AND receipt.revision_id=r.id AND receipt.employee_id=$2)`,values:[a.workspace.id,c.employeeId,c.communicationId,c.expectedRevisionId]};
  return {text:`SELECT to_jsonb(clock_timestamp()) AS "observedAt",to_jsonb(w.availability_deadline) AS "expiresAt" FROM schedule_week_settings w

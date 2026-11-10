@@ -282,3 +282,17 @@ it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: session
  expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
  expect(await q("SELECT * FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([]);
 });
+it('an older required update without an expiry remains eligible for a bounded new reminder',async()=>{
+ const {communicationRootInsert,communicationRevisionInsert,communicationGrantInsert,communicationContentHash}=await import('../../lib/data/communications.server');
+ const [{id:workspaceId}]=await q('SELECT id FROM workspaces WHERE singleton') as {id:string}[];
+ const id=randomUUID(),revisionId=randomUUID(),old=new Date(Date.now()-40*86400000).toISOString();
+ await db.executor.transaction([
+  communicationRootInsert(workspaceId,id,owner.employee.id),
+  communicationRevisionInsert({workspaceId,communicationId:id,revisionId,version:1,actorId:owner.employee.id,draft,audienceFingerprint:'a'.repeat(64),observedAt:old,publishedAt:old}),
+  communicationGrantInsert({workspaceId,communicationId:id,revisionId,employeeId:'employee',contentHash:communicationContentHash(draft),locationId:'loc-1',observedAt:old,provenance:{source:'fictional-old-update-fixture'},kind:'LOCATION'}),
+  {text:"UPDATE communications SET state='PUBLISHED',head_revision_id=$2::uuid WHERE id=$1::uuid",values:[id,revisionId]},
+ ]);
+ expect(await readCommunication(employee,id,db.executor)).toMatchObject({state:'ready',acknowledgement:'REQUIRED'});
+ expect(await executeManagerReminder(owner,{kind:'COMMUNICATION',operationId:randomUUID(),authority:communicationAuthority(owner),employeeId:'employee',communicationId:id,expectedRevisionId:revisionId},db.executor)).toMatchObject({status:'committed'});
+ expect(await q("SELECT expires_at>clock_timestamp() AS future,expires_at<=clock_timestamp()+interval '30 days' AS bounded FROM notifications WHERE purpose='REMINDER'")).toEqual([{future:true,bounded:true}]);
+});

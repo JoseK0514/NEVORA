@@ -12,7 +12,7 @@ Development only: commands retain the existing communication owned-loopback acti
 {"kind":"COMMUNICATION","operationId":"UUID","authority":"session authority","employeeId":"target","communicationId":"UUID","expectedRevisionId":"UUID"}
 ```
 
-The availability source must still have that deadline, remain open, and lack a submission. Communication must remain published, unexpired, on that required revision, with an active current recipient grant and no acknowledgement receipt. Optional updates are ineligible. Targets are Employee/Lead only.
+The availability source must still have that deadline, remain open, and lack a submission. Communication must remain published, unexpired, on that required revision, with an active current recipient grant and no acknowledgement receipt. Optional updates are ineligible. An update with no source expiry remains actionable regardless of publication age; each new reminder has a maximum 30-day delivery lifetime from the database clock, shortened by an explicit source expiry. Targets are Employee/Lead only.
 
 `GET /api/manager/reminders/operations/:operationId` uses the same request-intent and authority headers. It recovers only the requesting actor/session's explicit `MANAGER_REMINDER` operation. A replacement login cannot recover the prior session's operation.
 
