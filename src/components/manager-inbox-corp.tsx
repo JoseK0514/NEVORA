@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import "./manager-inbox-corp.css";
 import type { ReactNode } from "react";
 import { CorpBody, CorpButton, CorpButtonLink, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpRows, CorpTitle } from "@/components/corp/corp";
@@ -12,7 +13,7 @@ import { itemPerson, presentItem, readableDates, spacedRanges } from "@/lib/acti
 import { actionCenterNavigation } from "./action-center-navigation";
 import type { ActionCenter, ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
-import { InboxB } from "./owner-b/inbox-b";
+import { InboxB, LaterB } from "./owner-b/inbox-b";
 import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffing/present";
 
 /* Things to do (Release 1; approved board O-Inbox, Oct 26). Presentation only: the same action center and Today reads as
@@ -78,7 +79,8 @@ function timecardRows(items: ActionItem[]): Row[] {
   for (const item of items) { const period = item.detail.split(" · ")[1] ?? ""; byPeriod.set(period, [...(byPeriod.get(period) ?? []), item]); }
   return [...byPeriod].map(([period, list]) => {
     const names = list.map(item => itemPerson(item) ?? item.detail.split(" · ")[0]).map(name => name.split(" ")[0]);
-    const title = plain(period ? spacedRanges(readableDates(period)) : "This pay period");
+    // Review B5 (NV-243): a period is a title, never a sentence ("Nov 2 – Nov 8", not "Nov 2 – Nov 8.").
+    const title = plain(period ? spacedRanges(readableDates(period)) : "This pay period").replace(/\.\s*$/, "");
     // Time opens on that pay period (the items' own review link: ?start=&end=), and on the person's card when only one
     // is waiting. Without the period it would open the current week, where an earlier period's cards aren't shown.
     const review = new URL(list[0].href, "https://nevora.invalid");
@@ -260,7 +262,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
     {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
-    {moreView ? null : <InboxB ready={ready} families={families} waiting={waiting} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
+    {moreView ? <LaterB ready={!!ready} groups={more} statusLine={summary} onRefresh={onRefresh} /> : <InboxB ready={ready} families={families} waiting={waiting} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />
@@ -269,6 +271,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
       <CorpButton kind="secondary" size="md" onClick={onRefresh}>Try again</CorpButton>
     </CorpBody></CorpCard> : null}
     {body}
-    {ready?.limitedAttendance ? <CorpNote>Some attendance comparisons are unavailable.</CorpNote> : null}
+    {/* Review B5 (NV-243): the note offers where to look instead. */}
+    {ready?.limitedAttendance ? <CorpNote>Some attendance comparisons are unavailable. <Link className="c-link" href="/app?view=attendance">See who’s working</Link></CorpNote> : null}
   </CorpPage>;
 }

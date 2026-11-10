@@ -5,7 +5,10 @@ import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent, typ
 import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
 import type { UserRole } from "@/lib/domain";
 import type { PayrollCapabilities } from "@/lib/payroll/contracts";
-import { finderItems, rankFinder, type FinderData } from "@/lib/finder";
+import { finderItems, finderOverflow, rankFinder, type FinderData } from "@/lib/finder";
+import { LightningIcon } from "@phosphor-icons/react/dist/ssr/Lightning";
+import { FileIcon } from "@phosphor-icons/react/dist/ssr/File";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
 import type { NavContext } from "@/lib/navigation";
 
 /** `offline` is client-only: the phone knew it had no connection, so no request was sent. */
@@ -77,6 +80,9 @@ function emphasise(label: string, query: string): ReactNode {
  * locations. Opens instantly (no animation: it's a keyboard tool used often),
  * traps focus in a native modal dialog and returns focus on close. On phones
  * the same dialog fills the screen and opens from the header or More. */
+/** "Maria Rivera" → "MR", for a person's row. */
+const finderInitials = (name: string) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase();
+
 export function CommandFinder({ role, payroll, context }: { role: UserRole; payroll?: PayrollCapabilities; context?: NavContext }) {
   const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
@@ -91,7 +97,11 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   const hint = useRef<HTMLElement>(null);
 
   // Review B2 (NV-216): an Employee's or Lead's empty finder lists every one of their pages (they fit), not the first six.
-  const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query, role === "EMPLOYEE" || role === "LEAD" ? 16 : 6), [role, payroll, remote.data, query, context]);
+  const perGroup = role === "EMPLOYEE" || role === "LEAD" ? 16 : 6;
+  const all = useMemo(() => finderItems(role, payroll, remote.data, context), [role, payroll, remote.data, context]);
+  const results = useMemo(() => rankFinder(all, query, perGroup), [all, query, perGroup]);
+  // Review B5 (NV-216): a typed query that matches more than a group shows says so ("6 of 11 people · keep typing").
+  const overflow = useMemo(() => finderOverflow(all, query, perGroup), [all, query, perGroup]);
 
   // Employee desktop (Nov 8, 2026): an Employee's finder lists their own pages only, so it reads nothing and opens only
   // where its top-bar button shows (desktop and tablets, not a phone held sideways).
@@ -196,10 +206,13 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
             {/* Review B1 (NV-217): each option is described by its group ("Schedule, Actions" vs "Schedule, Pages"). */}
             <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option" aria-describedby={`command-finder-group-${groupKey(item.group)}`}
               data-group={item.group} onMouseMove={() => { setActive(index); setKeyboard(false); }} onClick={() => go(index)}>
+              {/* Review B5 (NV-218): each row leads with its kind: a bolt for actions, a page, a person's initials, a pin. */}
+              <span className="command-finder-ico" data-group={item.group} aria-hidden="true">{item.group === "Actions" ? <LightningIcon weight="bold" /> : item.group === "Pages" ? <FileIcon weight="bold" /> : item.group === "Locations" ? <MapPinIcon weight="bold" /> : finderInitials(item.label)}</span>
               <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{item.detail}</span> : null}
             </li>
           </Fragment>)}
         </ul>
+        {overflow.length ? <p className="command-finder-more">{overflow.map(entry => `${entry.shown} of ${entry.total} ${entry.group.toLowerCase()}`).join(" · ")} · keep typing to narrow</p> : null}
         <p className="command-finder-hint" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> to move · <kbd>Enter</kbd> to open · <kbd>Esc</kbd> to close</p>
       </div>
     </dialog>

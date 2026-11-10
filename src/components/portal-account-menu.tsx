@@ -4,7 +4,8 @@ import type { ReactNode } from "react";
 import { ActionMenu } from "./action-menu";
 
 /** The account menu's width on tablets and desktop (upscale S7): a desktop menu, not a phone sheet. */
-export const ACCOUNT_MENU_WIDTH = 240;
+/** Review B5 (NV-110): 280px so the workspace name has room (it wraps to a second line rather than being cut). */
+export const ACCOUNT_MENU_WIDTH = 280;
 
 /** Desktop account menu (avatar, name, account actions) at the top right of
  * every portal page. Phones keep account actions in their existing menus.

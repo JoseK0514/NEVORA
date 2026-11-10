@@ -519,9 +519,10 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // R10: Time exports and Time corrections sit in their own card below the team (ink rows with chevrons, like Team's
     // tools card), on every width and in every state; the links need no read.
     const toolsCard=<CorpCard as="div" ariaLabel="Time tools"><CorpRows label="Time tools">
-      <li><CorpRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} title="Time exports" chevron/></li>
+      {/* Review B5 (NV-263): the same rows as the phone, an icon and a line under each. */}
+      <li><CorpRow href={`/app/payroll-export?start=${period.startDate}&end=${period.endDate}`} icon={<UploadSimpleIcon className="c-ic" weight="bold"/>} title="Time exports" detail="Download hours for payroll" chevron/></li>
       {/* A9: employees' time corrections are reviewed under Time. */}
-      <li><CorpRow href="/app/timecards/corrections" title="Time corrections" chevron/></li>
+      <li><CorpRow href="/app/timecards/corrections" icon={<PencilSimpleIcon className="c-ic" weight="bold"/>} title="Time corrections" detail="Fixes people asked for" chevron/></li>
     </CorpRows></CorpCard>;
     if(phone){
       const rows=[...cards].sort(reviewFirst);

@@ -77,6 +77,8 @@ function Block({ shift, person, onLeave = false }: { shift: RosterShift; person:
     {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
     <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
     {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
+    {/* Review B5 (NV-131): the position under the time (12px), as on the mock. */}
+    {shift.position && !onLeave ? <span className="cm-block__pos" aria-hidden="true">{shift.position}</span> : null}
     <span className="sr-only">{shiftLabel(shift, person)}</span>
     {shift.position ? <span className="sr-only schedule-assigned-position">{`, ${shift.position}`}</span> : null}
     {overnight(shift) ? <span className="sr-only">{`, Ends ${formatDayLabel(addDays(shift.date, 1)).day}`}</span> : null}
@@ -341,7 +343,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
       <th scope="row" className="cm-person">
         <Avatar initials={initials(employee.name)} />
         <span className="cm-person__text">
-          <span className="cm-person__name">{employee.name}</span>
+          <span className="cm-person__name" title={employee.name}>{employee.name}</span>
           <span className="cm-person__sub c-num" aria-hidden="true" title={employee.hours ? hoursText(employee.hours) : undefined}>{week} h{over && employee.hours ? <em>{` · ${overBy(employee.hours)} over ${employee.hours.maximum} h`}</em> : null}</span>
           <span className="sr-only">{week} h assigned this week</span>
           {employee.hours ? <span className="sr-only mws-hours" data-over={over || undefined}>{`, ${hoursText(employee.hours)}`}</span> : null}
@@ -361,7 +363,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
   };
   // R11: on desktop the week bar (‹ week › and the week's state) is the grid card's head.
   const grid = <div className="cm-grid-wrap">
-    {corp ? <div className="c-sched-gridbar">{weekNav}<>{corp.status ?? null}</></div> : null}
+    {/* Review B5 (NV-131): the grid's three block looks are explained once, beside the week's state. */}
+    {corp ? <div className="c-sched-gridbar">{weekNav}<span className="cm-legend" aria-hidden="true"><span data-k="published">Published</span><span data-k="draft">Draft</span><span data-k="open">Open</span></span><>{corp.status ?? null}</></div> : null}
     {/* Nov 9, 2026: the week's coverage (schedule health's required minutes, staffing, positions and lead apart). */}
     {b?.coverage ? <div className="cm-grid__coverage"><CoverageFigures coverage={b.coverage} label="Covered this week" /></div> : null}
     {focus !== "all" ? <div className="cm-grid__focus">

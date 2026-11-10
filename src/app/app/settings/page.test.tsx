@@ -50,8 +50,8 @@ it('says Set up for a zero count, and counts tablets waiting for setup instead o
  reads.devices=[{state:'UNREGISTERED'},{state:'PENDING'}];
  let html=renderToStaticMarkup(await SettingsPage());
  expect(html).toMatch(/Break types<\/span><\/span><span class="c-row__value c-row__value--soft">None yet</);
- // Review B1 (NV-247): tablets waiting for setup read amber; plain counts stay grey.
- expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--amber">2 not set up</);
+ // Review B5 (NV-247): tablets waiting for setup are an amber chip; plain counts stay grey.
+ expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__trail"><span class="c-pill c-pill--amber">2 not set up</);
  reads.devices=[{state:'ACTIVE'}];reads.breaks=[{active:true}];
  html=renderToStaticMarkup(await SettingsPage());
  expect(html).toMatch(/Clocker tablets<\/span><\/span><span class="c-row__value c-row__value--soft">1</);

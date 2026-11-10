@@ -21,7 +21,7 @@ import { PayrollTabs, type PayrollTab } from './payroll-tabs';
 import { flagProblems, formKeys } from './form-keys';
 import { payDay, periodRange } from './payroll-format';
 import { Num, PayGroup } from './pay-group';
-import { BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BStack } from '../owner-b/b-kit';
+import { BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BStack, BState } from '../owner-b/b-kit';
 import { GearIcon } from '@phosphor-icons/react/dist/ssr/Gear';
 import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 import { UploadSimpleIcon } from '@phosphor-icons/react/dist/ssr/UploadSimple';
@@ -62,10 +62,11 @@ function Pushed({ back, title, id, sub }: { back: { href: string; label: string 
 
 /** Owner premium (visual-craft K): one empty or "not available" state, a centred card with a 15/600 line, an optional
  * 13px line and at most one secondary next step. No icon or illustration. */
+/** Review B5 (NV-254): the one empty-state pattern: an icon in a tinted circle, a 16/22 title, the line, the action as a pill,
+ * left-aligned (it was centred with a grey button). */
 export function EmptyCard({ title, detail, action, alert, label = 'Payroll' }: { title: string; detail?: ReactNode; action?: { href: string; label: string }; alert?: boolean; label?: string }) {
   return <CorpCard as="div" ariaLabel={label}>
-    <div className="c-empty c-pay__empty" role={alert ? 'alert' : 'status'}><b>{title}</b>{detail ? <span>{detail}</span> : null}</div>
-    {action ? <div className="c-pay__empty-action"><CorpButtonLink href={action.href} kind="secondary" size="md">{action.label}</CorpButtonLink></div> : null}
+    <div className="c-pay__empty"><BState kind={alert ? 'failed' : 'empty'} alert={alert} icon={alert ? undefined : <ReceiptIcon weight="bold" />} title={title} line={detail} action={action ? { label: action.label, href: action.href } : undefined} /></div>
   </CorpCard>;
 }
 
@@ -184,7 +185,7 @@ function RunRow({ item }: { item: PayrollRun }) {
   const approved = item.status === 'APPROVED';
   // Round 5 (Nov 7, 2026): drawn like Payroll's Recent payrolls: the receipt icon, a "Correction" pill instead of words in
   // the title, the amount bold. A status that needs the Owner still wins the pill.
-  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" />}
+  return <CorpRow href={reviewHref(item.id)} bold icon={<ReceiptIcon className="c-ic" weight="bold" />}
     title={<><Num>{quietRange(item.period.startDate, item.period.endDate)}</Num>{approved && item.correctionOf ? <> <CorpPill tone="neutral">Correction</CorpPill></> : null}</>}
     detail={<>Payday <Num>{quietDay(item.payday)}</Num>{approved ? ' · Approved' : ''}</>}
     value={item.totals ? <Num>{formatPayrollMoney(item.totals.netMinor)}</Num> : undefined} valueTone="ink"
@@ -244,13 +245,14 @@ function PayrollHome({ current, data, state, today, canEditSettings, company, op
         {data && oldest ? <BCard label="Pay periods with no payroll"><div className="b-notice"><BIcon tone="red"><WarningIcon weight="bold" /></BIcon>
           <span className="b-notice__tx"><span className="b-notice__t">{data.backlog && !data.backlog.overflow && data.backlog.missingCount !== null && data.backlog.missingCount > 1 ? `${data.backlog.missingCount} pay periods have no payroll` : `${quietRange(oldest.period.startDate, oldest.period.endDate)} has no payroll`}</span>
             <span className="b-notice__s">{data.backlog && !data.backlog.overflow && data.backlog.missingCount === 1 ? `Its payday was ${quietDay(oldest.payday)}` : `Oldest is ${quietRange(oldest.period.startDate, oldest.period.endDate).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f').replace(/–/g, '–\u2060')}, payday ${quietDay(oldest.payday).replace(/ /g, '\u00a0').replace(/\u2009/g, '\u202f')}`}</span></span>
-          <BButtonLink href={`/app/payroll/prepare#${unpaidHash(oldest)}`} kind="ghost">Prepare</BButtonLink></div></BCard> : null}
+          {/* Review B5 (NV-081): the overdue period is the page's one filled action; the current period's steps back. */}
+          <BButtonLink href={`/app/payroll/prepare#${unpaidHash(oldest)}`} kind="teal" label={`Prepare ${quietRange(oldest.period.startDate, oldest.period.endDate)}`}>Prepare</BButtonLink></div></BCard> : null}
         {current ? <BCard title={open?.status === 'APPROVED' ? 'Payroll approved' : 'Prepare payroll'} id="b-payroll-steps">
           <div className="b-steps">
             {bStep(1, 'Prepare payroll', open ? 'Started from approved time' : 'Bring in approved time for this period')}
             {bStep(2, fixing ? 'Fix issues' : 'Review pay', fixing ? 'Something stops this payroll' : 'Hours, rates and deductions')}
             {bStep(3, 'Approve payroll', 'Then share pay statements')}
-            <BButtonLink href={step.href} kind={step.quiet ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>
+            <BButtonLink href={step.href} kind={step.quiet || (data && oldest) ? 'ghost' : 'teal'} full big label={`${step.label}, ${quietRange(current.period.startDate, current.period.endDate)}`}>{step.label}</BButtonLink>
           </div>
           {missing && !oldest ? <BList label="Periods with no payroll"><BRow href="/app/payroll/prepare" title="Periods with no payroll" sub="Prepare payroll for each one" end={<b className="c-num">{missing.missingCount === null ? 'Check' : String(missing.missingCount)}</b>} /></BList> : null}
         </BCard> : <BCard label="Pay schedule"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">No pay schedule yet</span><span className="b-notice__s">Set your pay schedule to see the current period.</span></span>

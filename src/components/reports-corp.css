@@ -82,3 +82,7 @@
 /* Every tap answers (phone P4). */
 :is(#c-root, html) .c-ins .c-ins__counted summary { -webkit-tap-highlight-color: transparent; transition: opacity 150ms ease-out; }
 :is(#c-root, html) .c-ins .c-ins__counted summary:active { opacity: .55; transition: none; }
+/* Review B5 (NV-072): over plan, the planned part (teal) then the excess (amber), side by side. */
+:is(#c-root, html) .c-ins .c-ins__bar[data-over] { display: flex; }
+:is(#c-root, html) .c-ins .c-ins__bar[data-over] > span { flex: none; border-radius: 3px 0 0 3px; }
+:is(#c-root, html) .c-ins .c-ins__bar[data-over] > .c-ins__bar-over { flex: 1 1 auto; border-radius: 0 3px 3px 0; background: #E9A23B; }

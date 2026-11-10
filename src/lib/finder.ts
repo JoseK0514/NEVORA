@@ -120,11 +120,22 @@ function score(item: FinderItem, query: string) {
 
 /** Ranked, grouped results. An empty query shows actions and pages only, so
  * opening the finder never lists the whole team. */
-export function rankFinder(items: FinderItem[], rawQuery: string, perGroup = 6): FinderItem[] {
+function matchFinder(items: FinderItem[], rawQuery: string) {
   const query = rawQuery.trim().toLocaleLowerCase();
-  const matched = query
+  return query
     ? items.map((item, index) => ({ item, index, rank: score(item, query) })).filter(entry => entry.rank !== null)
       .sort((a, b) => a.rank! - b.rank! || a.index - b.index).map(entry => entry.item)
     : items.filter(item => !item.searchOnly && (item.group === 'Actions' || item.group === 'Pages'));
+}
+export function rankFinder(items: FinderItem[], rawQuery: string, perGroup = 6): FinderItem[] {
+  const matched = matchFinder(items, rawQuery);
   return GROUP_ORDER.flatMap(group => matched.filter(item => item.group === group).slice(0, perGroup));
+}
+
+/** Review B5 (NV-216): the groups a typed query cut short, with how many matched ("6 of 11 people"). */
+export function finderOverflow(items: FinderItem[], rawQuery: string, perGroup = 6): { group: FinderGroup; shown: number; total: number }[] {
+  if (!rawQuery.trim()) return [];
+  const matched = matchFinder(items, rawQuery);
+  return GROUP_ORDER.map(group => ({ group, total: matched.filter(item => item.group === group).length }))
+    .filter(entry => entry.total > perGroup).map(entry => ({ ...entry, shown: perGroup }));
 }

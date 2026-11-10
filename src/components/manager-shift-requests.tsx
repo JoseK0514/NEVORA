@@ -153,7 +153,8 @@ export async function ManagerShiftRequests({ tab, error, requestId, timeZone }: 
     ...history.map(callout => ({ id: callout.id, createdAt: callout.createdAt, status: callout.status, name: callout.employeeName, line: `Can’t work ${at(callout)}`,
       note: callout.status === "APPROVED" && !callout.releaseApplies ? "This approval was for an earlier version of the shift. Check who is assigned now." : null })),
   ].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 30);
-  const sent = (createdAt: string) => agoLabel(createdAt, now, true);
+  // Review B5 (NV-268): one relative-time format with "ago", as on Time off.
+  const sent = (createdAt: string) => agoLabel(createdAt, now);
 
   return <ScopedReadFrame observation={source}><QuietPage className="q-shiftreq">
     <QuietNav back={{ href: "/app/inbox", label: "Things to do" }} />

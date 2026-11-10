@@ -56,11 +56,15 @@ export function ClockerPhotoSettings({initialPolicy,saveAction,readAction,childr
           <span className="c-row__main"><span className="c-row__title">Take punch photos</span><span className="c-row__detail"><span>Starts when photos are available</span></span></span>
           <input id="photo-enabled" type="checkbox" role="switch" className="c-switch" checked={draft.enabled} onChange={e=>setDraft({...draft,enabled:e.target.checked})}/>
         </label>
-        <h3 className="c-photos__label" id="photo-events">When to take a photo</h3>
+        {/* Review B5 (NV-083): while punch photos are off, the moments read as off too (disabled, the disabled look); the
+          choices are kept and come back when photos are turned on. */}
+        <fieldset className="c-photos__events" disabled={!draft.enabled} data-off={!draft.enabled || undefined}>
+        <legend className="c-photos__label" id="photo-events">When to take a photo</legend>
         <ul className="c-rows" aria-labelledby="photo-events">{PHOTO_ACTIONS.map(action=><li key={action}><label className="c-row c-row--one c-photos__switch" htmlFor={`photo-event-${action}`}>
           <span className="c-row__main"><span className="c-row__title">{labels[action]}</span></span>
           <input id={`photo-event-${action}`} type="checkbox" role="switch" className="c-switch" checked={draft.events.includes(action)} onChange={e=>setDraft({...draft,events:e.target.checked?[...draft.events,action]:draft.events.filter(value=>value!==action)})}/>
         </label></li>)}</ul>
+        </fieldset>
         <div className="c-field c-photos__keep"><label className="c-field__label" htmlFor="photo-retention-days">Keep photos for</label>
           <span className="c-photos__days"><input id="photo-retention-days" className="c-in" aria-describedby="photo-retention-help" type="number" min={1} max={30} step={1} inputMode="numeric" enterKeyHint="done" value={draft.retentionDays} onChange={e=>setDraft({...draft,retentionDays:e.target.value})}/><span aria-hidden="true">days</span></span>
           <span id="photo-retention-help" className="c-field__help">1 to 30 days. Shortening it deletes older photos.</span></div>

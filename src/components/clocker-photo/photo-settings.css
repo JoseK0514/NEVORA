@@ -9,7 +9,7 @@
 :is(#c-root, html) .c-photos .c-photos__state-title { font-size: 15px; line-height: 20px; font-weight: 600; color: var(--c-ink); }
 :is(#c-root, html) .c-photos .c-photos__state-body { font-size: 13px; line-height: 18px; color: var(--c-grey); }
 :is(#c-root, html) .c-photos .c-photos__fields > .c-photos__switch,
-:is(#c-root, html) .c-photos .c-photos__fields > .c-rows > li + li > .c-row,
+:is(#c-root, html) .c-photos .c-photos__fields .c-rows > li + li > .c-row,
 :is(#c-root, html) .c-photos .c-photos__more,
 :is(#c-root, html) .c-photos .c-photos__keep,
 :is(#c-root, html) .c-photos .c-photos__help,

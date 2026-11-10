@@ -280,10 +280,12 @@ export function CorpReportsView({report,state}:{report:PeriodReports|null;state:
  const days=wholeWeek(recordedByDay(report),report.period);
  const most=days?Math.max(1,...days.map(day=>day.minutes??0)):1;
  return <>
-  {/* R3: the gap to plan is grey text, not a pill. */}
-  <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<span className="c-meta">{`${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</span>:undefined}>
+  <CorpCard id="ins-labor" label="Hours worked" aside={gap!==null&&gap!==BigInt(0)?<CorpPill tone={gap>BigInt(0)?'neutral':'amber'}>{`${gap>BigInt(0)?'':'+'}${spoken(gap)} ${gap>BigInt(0)?'under':'over'} plan`}</CorpPill>:undefined}>{/* Review B5 (NV-072): over plan is an amber chip */}
    <div className="c-ins__labor"><b className="c-num">{spoken(recorded)}</b>{planned!==null?<span className="c-num">{`of ${spoken(planned)} planned`}</span>:null}</div>
-   {planned!==null?<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
+   {/* Review B5 (NV-072): over plan, the planned part is teal and the excess amber (the bar never looks calm and full). */}
+   {planned!==null?gap!==null&&gap<BigInt(0)&&recorded>BigInt(0)
+    ?<span className="c-ins__bar" data-over="" aria-hidden="true"><span style={{width:`${Number(planned*BigInt(100)/recorded)}%`}}/><span className="c-ins__bar-over"/></span>
+    :<span className="c-ins__bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
   </CorpCard>
   <CorpCard id="ins-attendance" label="Attendance">
    {/* Nov 1 upscale (review S14): a figure slot never holds words. A zero is "0"; a figure the period can't give is the

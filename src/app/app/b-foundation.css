@@ -184,3 +184,103 @@
 /* ---------- "What changed in your schedule" (review B2, NV-226): a chip per change and 12px between rows ---------- */
 :is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: 12px; padding-bottom: 12px; }
 :is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: 8px; vertical-align: 1px; }
+
+/* ---------- Desktop schedule blocks (review B5, NV-131): published teal-50 with teal text, draft grey, open shifts an amber
+ * dashed outline; a 12px position line; the legend beside the week's state. ---------- */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block:not(.draft):not(.open):not(.conflict):not(#nv-none):not(#nv-none2) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.draft:not(#nv-none):not(#nv-none2) { background: var(--b-quiet) !important; color: var(--b-ink2) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.open:not(#nv-none):not(#nv-none2) { background: #FFFFFF !important; box-shadow: none !important; border: 1.5px dashed #E9A23B !important; color: var(--b-amber) !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block:has(.cm-block__pos):not(#nv-none) { flex-direction: column !important; align-items: flex-start !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 15px; font-weight: 500; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; margin-right: 12px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 3px; vertical-align: -1px; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="published"]::before { background: var(--b-teal-50); box-shadow: inset 0 0 0 1px var(--b-teal); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="draft"]::before { background: var(--b-quiet); box-shadow: inset 0 0 0 1px var(--b-field-edge); }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="open"]::before { background: #FFFFFF; box-shadow: none; outline: 1.5px dashed #E9A23B; outline-offset: -1.5px; }
+}
+@media (max-width: 767px) { :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: none; } }
+
+/* ---------- Schedule grid (review B5, NV-087): the person column at least 200px (names stay on one line more often; two at
+ * most), the days share the rest. ---------- */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-grid thead th.cm-grid__corner:not(#nv-none):not(#nv-none2) { width: 210px !important; min-width: 200px !important; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .cm-grid .cm-person__name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+}
+
+/* ---------- Timecard sheet (review B5, NV-245): AM and PM at full size in the Days list, as on every other phone screen;
+ * the Needs attention note takes the card radius. ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-tc-day .c-ampm { font-size: 1em; font-weight: inherit; letter-spacing: 0; color: inherit; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-tc-sheet__issue:not(#nv-none) { border-radius: 22px !important; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-tc-sheet__issue .c-tc-sheet__go { margin-top: 10px; }
+
+/* ---------- One panel header for Owner and Manager sheets and side panels (review B5, NV-221, NV-252): the title
+ * left-aligned at 20/26 700, Done a teal 600 text button with a 44px target at the top right, every width. ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child):not(#nv-none) { grid-template-columns: minmax(0, 1fr) auto !important; min-height: 60px; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav > span[aria-hidden="true"]:first-child { display: none !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title:not(#nv-none) { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em; color: var(--b-ink) !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done:not(#nv-none) { justify-self: end; min-height: 44px; min-width: 44px; padding: 0 4px; color: var(--b-teal) !important; font-weight: 600 !important; }
+
+/* ---------- Finder rows (review B5, NV-216, NV-218): each row leads with its kind in a 28px tinted circle (a bolt for
+ * actions, a page, initials for people, a pin for places); a cut-short group says so under the list. ---------- */
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-results li.command-finder-option { grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: 12px; min-height: 44px; }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico svg { width: 15px; height: 15px; }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="People"] { background: var(--b-quiet); color: var(--b-ink2); }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="Locations"] { background: var(--b-amber-50); color: var(--b-amber); }
+:is(#c-root, html) body .app-shell.nevora-portal .command-finder-more { margin: 0; padding: 8px 18px 0; font-size: 13px; line-height: 18px; color: var(--b-grey); }
+
+/* ---------- Account menu and workspace tile (review B5, NV-110): the name and "Owner · workspace" wrap to a second line
+ * instead of being cut; the sidebar tile shows the full name on hover (title). ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-b] #portal-account-menu :is(.portal-account-head__name, .portal-account-head__detail):not(#nv-none) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+
+/* ---------- Build and publish on phones (review B5, NV-015): the band runs on under the head as if a card came next, so
+ * the page's first line (the week) starts below that run-on instead of being clipped under it. ---------- */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .c-shift__head + .c-pub__body:not(#nv-none):not(#nv-none2) { margin-top: 56px !important; }
+}
+
+/* ---------- Row icons in tinted circles (review B5, NV-099, NV-082): every corporate row that leads with an icon (More,
+ * Settings, Pay history, Time tools) draws it as Direction B does: a 36px teal-50 circle, the bold glyph 18px. ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon:not(#nv-none) { width: 36px; height: 36px; border-radius: 18px; background: var(--b-teal-50); color: var(--b-teal); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon svg:not(#nv-none) { width: 18px; height: 18px; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row--danger > .c-row__icon:not(#nv-none) { background: var(--b-red-50); color: var(--b-red); }
+
+/* ---------- Punch photos (review B5, NV-083): with photos off, the moments are disabled and look it. ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-photos__events { margin: 0; padding: 0; border: 0; min-width: 0; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-photos__events[data-off] .c-row__title { color: var(--b-disabled-ink); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-photos__events[data-off] .c-switch:not(#nv-none) { opacity: 1; filter: grayscale(1); cursor: not-allowed; }
+
+/* ---------- One read-only field (review B5, NV-085): a grey value with no field edge, a 16px bold lock at the end, and the
+ * reason under it. ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-readonly { position: relative; display: block; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-readonly > .c-in:not(#nv-none):not(#nv-none2) { padding-right: 40px !important; background: var(--b-quiet) !important; border-color: transparent !important; box-shadow: none !important; color: var(--b-ink) !important; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-readonly__lock { position: absolute; right: 14px; top: 50%; translate: 0 -50%; color: var(--b-grey); pointer-events: none; }
+
+/* ---------- Features (review B5, NV-248, NV-260): a feature that can't be turned off now is drawn on (full teal) with a
+ * lock beside it, not a pale "maybe"; a single choice shows a radio circle (teal ring and dot when chosen). ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] li[data-locked] .q-tog:disabled:checked:not(#nv-none):not(#nv-none2) { opacity: 1 !important; filter: none !important; cursor: not-allowed; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] li[data-locked] .wc-switch-row:not(#nv-none) { opacity: 1 !important; }
+:is(#c-root, html) body .app-shell[data-nv-b] li[data-locked] .wc-switch-row .q-rt > b::after { content: ""; display: inline-block; width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; background: var(--b-grey);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56a52,52,0,0,0-104,0V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56a52,52,0,0,0-104,0V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(#c-root, html) body .app-shell[data-nv-b] .q-radio { flex: none; box-sizing: border-box; width: 22px; height: 22px; margin-left: auto; border-radius: 50%; border: 2px solid var(--b-field-edge); background: #FFFFFF; }
+:is(#c-root, html) body .app-shell[data-nv-b] .q-radio[data-on] { border-color: var(--b-teal); background: radial-gradient(circle, var(--b-teal) 0 5px, #FFFFFF 5.5px); }
+:is(#c-root, html) body .app-shell[data-nv-b] label:has(> input[type="radio"]:focus-visible) .q-radio { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
+
+/* ---------- Branding preview (review B5, NV-248, NV-260): framed as a preview (a dashed edge and a "Preview" tag), with the
+ * real pill shape, so it never reads as a live button. ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview:not(#nv-none) { position: relative; outline: 1.5px dashed var(--b-field-edge); outline-offset: 6px; }
+:is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: -16px; right: 12px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview .wc-preview__btn:not(#nv-none) { border-radius: 999px !important; }
+
+/* ---------- Things to do on desktop (review B5, NV-250): the More shortcuts stay in reach while the list scrolls. ---------- */
+@media (min-width: 1024px) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] #b-todo-more:not(#nv-none) { position: sticky; top: 84px; align-self: start; }
+}
+
+/* ---------- Timecards table on desktop (review B5, NV-132): the row under the pointer is tinted, so the eye keeps its row
+ * across the wide table. ---------- */
+@media (hover: hover) and (min-width: 768px) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-desk table tbody tr:hover > td { background: var(--b-hover); }
+}

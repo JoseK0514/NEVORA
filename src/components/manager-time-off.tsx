@@ -8,6 +8,7 @@ import { listPendingTimeOffRequests, listTeamTimeOffRequests } from "@/lib/data/
 import { reviewTimeOffAction } from "@/app/app/requests/actions";
 import { formatTime, weekStartFor } from "@/lib/date-utils";
 import { ActionForm } from "@/components/wave-a/action-form";
+import { CorpPill } from "@/components/corp/corp";
 import { agoLabel, dayLabel, initialsOf, QuietHeader, QuietList, QuietNav, QuietPage, QuietRow } from "@/components/quiet/quiet";
 import { ManagerIssueFocus } from './manager-issue-focus';
 import { CorpAvatar, CorpCard, CorpNav, CorpNote, CorpPage, CorpRow, CorpSegments, CorpTitle } from "@/components/corp/corp";
@@ -186,7 +187,9 @@ export async function ManagerTimeOff({ tab, error, reviewed, requestId, from, fi
       })}</ul> : <p className="q-empty q-first">You’re all caught up.</p>)
       : requests.length ? <QuietList label={`${selected.label} time off`} style={{ marginTop: 16 }}>{requests.map(request => (
           <QuietRow key={request.id} avatar={initialsOf(request.employeeName)} title={request.employeeName}
-            detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)} />
+            detail={decidedLine(request) ? <>{whenLabel(request)}<span className="q-rt__line">{decidedLine(request)}</span></> : whenLabel(request)}
+            // Review B5 (NV-268): a decided request carries its state as a chip (green approved, grey declined).
+            value={<CorpPill tone={selected.id === "approved" ? "green" : "neutral"}>{selected.id === "approved" ? "Approved" : "Declined"}</CorpPill>} />
         ))}</QuietList>
       : <p className="q-empty q-first">{`No ${selected.label.toLowerCase()} time off yet.`}</p>}
     </QuietPage>

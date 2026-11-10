@@ -16,7 +16,9 @@ export function ClockerPinInventory({statuses,details={}}:{statuses:OwnerPinStat
  const count=(filter:Filter)=>statuses.filter(p=>inFilter(p,filter)).length;
  const filters:Filter[]=count('Inactive')?['No PIN','PIN set','Inactive']:['No PIN','PIN set'];
  const [query,setQuery]=useState(''),[filter,setFilter]=useState<Filter>(()=>count('No PIN')||!count('PIN set')?'No PIN':'PIN set');
- const visible=statuses.filter(p=>inFilter(p,filter)&&`${p.firstName} ${p.lastName} ${p.employeeId} ${details[p.employeeId]??''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+ // Review B5 (NV-130): people in name order, as on Team.
+ const visible=statuses.filter(p=>inFilter(p,filter)&&`${p.firstName} ${p.lastName} ${p.employeeId} ${details[p.employeeId]??''}`.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
+  .sort((a,b)=>`${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`));
  return <div className="c-page c-embed c-pins c-page--narrow">
   <label className="c-in c-pins__search"><span className="c-sr">Search by name</span><MagnifyingGlass className="c-ic" aria-hidden="true"/>
    <input type="search" enterKeyHint="search" autoComplete="off" autoCorrect="off" value={query} placeholder="Search by name" onChange={e=>setQuery(e.target.value)}/></label>

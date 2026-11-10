@@ -2,7 +2,7 @@ import "./team-overview.css";
 import Link from "next/link";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { CorpAvatar, CorpCard, CorpLink, CorpNav, CorpPage, CorpRow, CorpRows, CorpStats, CorpTitle } from "@/components/corp/corp";
+import { CorpAvatar, CorpCard, CorpLink, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpStats, CorpTitle } from "@/components/corp/corp";
 
 export type TeamOverviewHour = {
   employeeId: string; employeeName: string; scheduledHours: number; targetHours?: number;
@@ -16,13 +16,18 @@ const hoursText = (value: number) => `${Math.round(Math.abs(value) * 10) / 10} h
  * "0 h of 32 h · 32 h under"); the off-target count stays in This week. */
 const hoursDetail = (item: TeamOverviewHour) => item.targetHours === undefined || item.status === "TARGET_MISSING"
   ? `${item.scheduledHours} h scheduled · No weekly target`
-  : `${item.scheduledHours} h of ${item.targetHours} h · ${item.status === "ON_TARGET" ? "On target" : `${hoursText(item.scheduledHours - item.targetHours)} ${item.status === "UNDER" ? "under" : "over"}`}`;
+  : `${item.scheduledHours} h of ${item.targetHours} h${item.status === "ON_TARGET" ? " · On target" : ""}`;
+/** Review B5 (NV-072): off target is a chip, amber over ("16 h over") and grey under ("8 h under"); on target stays a line. */
+const variance = (item: TeamOverviewHour) => item.targetHours === undefined || (item.status !== "OVER" && item.status !== "UNDER") ? undefined
+  : { text: `${hoursText(item.scheduledHours - item.targetHours)} ${item.status === "UNDER" ? "under" : "over"}`, tone: item.status === "OVER" ? "amber" as const : "neutral" as const };
 
 /** Hours this week (Team → Hours this week), on the kit: the week's facts, then each person's scheduled hours against their
  * weekly target, everyone listed (no hidden ninth person). Presentation only: the same dashboard read, the same week links. */
-export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek, hours, activeEmployees, availabilitySubmitted, availabilityEligible }: {
+export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek, hours, activeEmployees, availabilitySubmitted, availabilityEligible, viewerId }: {
   weekStart: string; weekLabel: string; previousWeek: string; nextWeek: string; hours: TeamOverviewHour[];
   activeEmployees: number; availabilitySubmitted: number; availabilityEligible: number;
+  /** The person looking (review B5, NV-138): their own row says "You". */
+  viewerId?: string;
 }) {
   const outside = hours.filter(item => item.status === "UNDER" || item.status === "OVER").length;
   return <CorpPage className="c-teamweek c-page--narrow" labelledBy="team-week-title">
@@ -42,10 +47,11 @@ export function TeamOverviewCorp({ weekStart, weekLabel, previousWeek, nextWeek,
       ]} />
     </CorpCard>
     <CorpCard id="team-hours" label="Scheduled hours" aside={<CorpLink href="/app/schedule/settings">Manage targets</CorpLink>}>
-      {hours.length ? <CorpRows label="Scheduled hours by person">{hours.map(item => <li key={item.employeeId}>
-        <CorpRow bold title={item.employeeName}
+      {/* Review B5 (NV-138): people in name order, as on Team. */}
+      {hours.length ? <CorpRows label="Scheduled hours by person">{[...hours].sort((a, b) => a.employeeName.localeCompare(b.employeeName)).map(item => <li key={item.employeeId}>
+        <CorpRow bold title={item.employeeId === viewerId ? <>{item.employeeName} <CorpPill>You</CorpPill></> : item.employeeName}
           avatar={<CorpAvatar name={item.employeeName} initials={initials(item.employeeName)} />}
-          detail={hoursDetail(item)}
+          detail={hoursDetail(item)} trail={variance(item) ? <CorpPill tone={variance(item)!.tone}>{variance(item)!.text}</CorpPill> : undefined}
           label={`${item.employeeName}, ${item.scheduledHours} hours scheduled${item.targetHours === undefined ? ", no weekly target" : ` of a ${item.targetHours} hour target`}`}
           chevron={false} />
       </li>)}</CorpRows> : <div className="c-empty c-empty--card"><b className="c-empty__title">No hours scheduled</b><span className="c-empty__body">Hours appear here as shifts are added.</span></div>}

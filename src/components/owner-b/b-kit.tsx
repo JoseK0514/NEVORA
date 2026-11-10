@@ -187,19 +187,21 @@ export function partOfDay(timeZone?: string, now = new Date()) {
 
 /** One state card (review B2, NV-075): a 48px icon circle (grey while loading or locked, amber offline or paused, red when
  * something failed), a 16/22 title, one line, and one teal recovery pill, left-aligned. Say the state once. */
-export type BStateKind = "failed" | "offline" | "paused" | "locked" | "loading";
+export type BStateKind = "failed" | "offline" | "paused" | "locked" | "loading" | "empty";
 const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
   failed: { tone: "red", icon: <WarningCircleIcon weight="bold" /> },
   offline: { tone: "amber", icon: <WifiSlashIcon weight="bold" /> },
   paused: { tone: "amber", icon: <PauseIcon weight="bold" /> },
   locked: { tone: "grey", icon: <LockSimpleIcon weight="bold" /> },
   loading: { tone: "grey", icon: <span className="b-spin" /> },
+  // Review B5 (NV-254): nothing here yet; pass the page's own glyph as `icon`.
+  empty: { tone: "grey", icon: <WarningCircleIcon weight="bold" /> },
 };
-export function BState({ kind, title, line, action, children }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
-  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode }) {
+export function BState({ kind, title, line, action, children, icon, alert }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
+  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode; icon?: ReactNode; alert?: boolean }) {
   const look = STATE_LOOK[kind];
-  return <div className="b-statecard" data-kind={kind} role="status" aria-busy={kind === "loading" || action?.busy || undefined}>
-    <BIcon tone={look.tone}>{look.icon}</BIcon>
+  return <div className="b-statecard" data-kind={kind} role={alert ? "alert" : "status"} aria-busy={kind === "loading" || action?.busy || undefined}>
+    <BIcon tone={look.tone}>{icon ?? look.icon}</BIcon>
     <div className="b-statecard__main">
       {title ? <p className="b-statecard__t">{title}</p> : null}
       {line ? <p className="b-statecard__s">{line}</p> : null}

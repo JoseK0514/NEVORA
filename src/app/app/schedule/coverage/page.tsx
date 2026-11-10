@@ -109,6 +109,8 @@ export default async function CoverageSuggestionsPage({
   const startTime = params.start ?? "";
   const endTime = params.end ?? "";
 
+  // Review B5 (NV-090): opened with no shift chosen (a bare link), it goes to the week's open shifts, not to an error.
+  if (!params.week && !params.date && !params.start && !params.end && !params.locationId) redirect("/app/schedule?view=open");
   try { businessDateStart(weekStart); shiftPeriod({ date, startTime, endTime }); } catch { redirect("/app/schedule?error=INVALID_SHIFT"); }
   if (
     !isValidWeekStart(weekStart) ||

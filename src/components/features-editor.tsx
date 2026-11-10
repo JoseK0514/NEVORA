@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckIcon } from "@phosphor-icons/react/dist/ssr/Check";
 import { toast } from "./toaster";
 import { MODULES, MODULE_IDS, blockerText, type ModuleBlockers, type ModuleId } from "@/lib/workspace-presentation/modules";
 import { WORD_PRESETS, type WordPresetId } from "@/lib/workspace-presentation/words";
@@ -85,7 +84,8 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
         {WORD_PRESETS.map(p => <li key={p.id}><label className="q-row" data-checked={words === p.id || undefined}>
           <input className="q-sr" type="radio" name="word-preset" value={p.id} checked={words === p.id} disabled={busy} onChange={() => { pending.current = null; setNotice(null); setWords(p.id); }} />
           <span className="q-rt"><b>{p.name}</b><i>{`${p.en.people}, ${p.en.locations.toLowerCase()}`}</i></span>
-          {words === p.id ? <CheckIcon className="q-check" aria-hidden="true" /> : null}
+          {/* Review B5 (NV-260): one choice of several shows a radio circle, filled teal when chosen. */}
+          <span className="q-radio" data-on={words === p.id || undefined} aria-hidden="true" />
         </label></li>)}
       </ul></div>
     </section>
@@ -101,7 +101,8 @@ export function FeaturesEditor({ revision, preset, disabled, blockers, payrollEn
           const noteId = `module-${m.id}-note`;
           const note = held ? "Coming in a later release." : unavailable ? "Available when payroll is on." : locked ? blockerText(m.id, waiting) : null;
           // A note belongs to its row: the row's divider moves under the note instead of striking through it.
-          return <li key={m.id} data-on={on && !unavailable} className={note ? "q-feature--note" : undefined}>
+          // Review B5 (NV-248): a feature that can't be turned off right now (requests still waiting) reads as on and locked.
+          return <li key={m.id} data-on={on && !unavailable} data-locked={locked || undefined} className={note ? "q-feature--note" : undefined}>
             <SwitchRow id={`module-${m.id}`} label={m.name} checked={on && !unavailable}
               disabled={busy || unavailable || locked} onChange={() => toggle(m.id)} describedBy={note ? noteId : undefined} />
             {note ? <p className="q-help q-feature__note" id={noteId}>{note}</p> : null}

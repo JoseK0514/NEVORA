@@ -180,11 +180,14 @@ function ActivityCorp(props: Props) {
         label: `${shown.title}, ${shown.detail.replace(/\u00a0/g, " ")}`, Icon: ACTIVITY_ICON[item.type] ?? CalendarBlankIcon };
     }),
   ];
-  const days = [...new Set(events.map(event => dayKey(event.at)))].sort().reverse();
+  // Review B5 (NV-109): what happened reads newest first with Today on top; anything dated after today (coverage gaps are
+  // things to do, not events) is one "Coming up" card at the end, amber, with one link to Things to do.
+  const days = [...new Set(events.map(event => dayKey(event.at)).filter(key => key <= today))].sort().reverse();
+  const upcoming = events.filter(event => dayKey(event.at) > today).sort((a, b) => a.at.localeCompare(b.at));
   const dayLabel = (key: string) => { const text = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(`${key}T12:00:00Z`)); return key === today ? `Today · ${text}` : text; };
   const row = (event: Event) => {
     const body = <>
-      <span className={event.tint ? "c-act__icon c-act__icon--tint" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
+      <span className={event.tint ? "c-act__icon c-act__icon--tint" : dayKey(event.at) > today ? "c-act__icon c-act__icon--amber" : "c-act__icon"} aria-hidden="true"><event.Icon className="c-ic c-ic--s" /></span>
       <span className="c-row__main"><span className="c-row__title c-row__title--b">{event.title}</span><span className="c-row__detail"><span>{event.detail}</span></span></span>
     </>;
     return <li key={event.key}>{event.href ? <Link className="c-row c-act__row" href={event.href} aria-label={event.label}>{body}</Link> : <div className="c-row c-act__row">{body}</div>}</li>;
@@ -202,7 +205,10 @@ function ActivityCorp(props: Props) {
     {days.length ? days.map((key, index) => <CorpCard key={key} id={`activity-${key}`} label={dayLabel(key)}
       footer={index === days.length - 1 && dated.length > ACTIVITY_SHOWN ? <CorpLink href="/app/inbox" large>{`Show ${dated.length - ACTIVITY_SHOWN} more in Things to do`}</CorpLink> : undefined}>
       <CorpRows label={dayLabel(key)}>{events.filter(event => dayKey(event.at) === key).sort((a, b) => b.at.localeCompare(a.at)).map(row)}</CorpRows>
-    </CorpCard>) : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+    </CorpCard>) : upcoming.length ? null : <CorpCard id="activity-list"><CorpBody><p className="c-act__empty">Schedule publications and requests show up here.</p></CorpBody></CorpCard>}
+    {upcoming.length ? <CorpCard id="activity-upcoming" label="Coming up" footer={<CorpLink href="/app/inbox" large>Open Things to do</CorpLink>}>
+      <CorpRows label="Coming up">{upcoming.map(row)}</CorpRows>
+    </CorpCard> : null}
   </CorpPage>;
 }
 
@@ -277,7 +283,7 @@ export function ManagerDashboard(props: Props) {
   if (props.view === 'overview') return <PremiumOverview {...props} />;
   // Release 1 (Team → Hours this week): the kit page, from the same read.
   if (props.view === 'team' && !props.overviewSlots) return <TeamOverviewCorp weekStart={props.weekStart} weekLabel={props.weekLabel} previousWeek={props.previousWeek}
-    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} />;
+    nextWeek={props.nextWeek} hours={props.hours} activeEmployees={props.activeEmployees} availabilitySubmitted={props.availabilitySubmitted} availabilityEligible={props.availabilityEligible} viewerId={props.actorId} />;
   // Release 1 (board O-OnShift): Who's working, then the attendance review and time corrections as before.
   if (props.view === 'attendance' && !props.overviewSlots) return <WhosWorkingCorp homeHref={`/app?week=${encodeURIComponent(props.weekStart)}`}>
     <ManagerAttendanceReview />

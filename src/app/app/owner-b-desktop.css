@@ -702,7 +702,7 @@
   /* Round 5 (Nov 7) D21: Punch photos is one card with one kind of divider: every block is separated by the 22px inset line
    * (switches, the label, the days field, the two closed rows and Review had full-bleed lines or none). */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-photos :is(.c-photos__fields > .c-photos__switch, .c-photos__label, .c-photos__keep, .c-photos__more, .c-photos__help, .c-card > .c-row, .c-card > a.c-row, .c-photos__helperror):not(#nvd-none):not(#nvd-none2) { box-shadow: none !important; border-top: 0 !important; background-image: linear-gradient(#ECEEEF, #ECEEEF) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-photos .c-photos__fields > .c-rows > li > .c-row:not(#nvd-none):not(#nvd-none2) { box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-photos .c-photos__fields .c-rows > li > .c-row:not(#nvd-none):not(#nvd-none2) { box-shadow: none !important; }
 
   /* Round 5 (Nov 7) D22: Profile's Edit is the band's white pill centred on the title (like Updates), not on the back
    * link's row, so the title no longer drops 10px. */

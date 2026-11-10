@@ -95,7 +95,7 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
         {(nativeSources !== null || data.capabilities.internalCalculatorAvailable) && <details className="c-pset__item" id="payroll-setup" open={openSetup || undefined}><SettingRow title="Payroll setup" detail="Wages, withholding and opening balances" /><div className="c-pset__body payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div></details>}
       </PayGroup>
       <CorpCard as="div" ariaLabel="Change history">
-        <details className="c-pset__item"><SettingRow title="Change history" detail={latest ? (actorName ? `${actorName.split(/\s+/)[0]} changed this ${shortDate(latest.createdAt)}` : `Changed ${shortDate(latest.createdAt)}`) : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
+        <details className="c-pset__item"><SettingRow title="Change history" detail={latest ? (actorName ? `${actorName.split(/\s+/)[0]} changed this ${shortDate(latest.createdAt, timeZone)}` : `Changed ${shortDate(latest.createdAt, timeZone)}`) : 'No changes saved yet'} /><div className="c-pset__body">{data.revisions.length ? <div className="c-pset__history">{[...data.revisions].sort((a, b) => b.revision - a.revision).map(item => <div key={item.revision}><strong>Revision {item.revision} · Effective {effectiveDate(item.effectiveFrom.slice(0, 10))}</strong><p>{item.reason}</p><small>Recorded {recordedAt(item.createdAt)}{data.employees.find(employee => employee.id === item.actorId) ? ` · ${data.employees.find(employee => employee.id === item.actorId)!.name}` : ''}</small></div>)}</div> : <p className="wb-note">No settings revisions have been saved.</p>}</div></details>
       </CorpCard>
     </>}
     {!data && !resource.loading && nativeSources !== null ? <div className="payroll-workflow"><NativePayrollConfig settings={data} sources={nativeSources} recoveryScope={recoveryScope}/></div> : null}
@@ -103,7 +103,8 @@ export function PayrollSettings({ recoveryScope, nativeSources = null, timeZone 
   </CorpPage>;
 }
 
-const shortDate = (at: string) => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(at));
+/** Review B5 (NV-024): change dates are the company's day, not the device's. */
+const shortDate = (at: string, timeZone?: string) => new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', ...(timeZone ? { timeZone } : {}) }).format(new Date(at));
 /** A setting's row (kit row in a summary): title, optional 13px detail, the value and a chevron that turns when open. */
 function SettingRow({ title, value, detail }: { title: string; value?: string; detail?: string }) {
   return <summary className={detail ? 'c-row' : 'c-row c-row--one'}><span className="c-row__main"><span className="c-row__title">{title}</span>{detail ? <span className="c-row__detail"><span>{detail}</span></span> : null}</span>{value ? <span className="c-row__value c-row__value--soft">{value}</span> : null}<CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" /></summary>;

@@ -9,7 +9,21 @@ import { listLocations } from "@/lib/data/employees";
 import { listPositions } from "@/lib/data/positions";
 import { listBreakTypes } from "@/lib/clocker/break-types.server";
 import { listClockerDevices } from "@/lib/clocker/devices.server";
-import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
+import { CorpCard, CorpNav, CorpPage, CorpPill, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
+import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
+import { MapPinIcon } from "@phosphor-icons/react/dist/ssr/MapPin";
+import { PaintBrushIcon } from "@phosphor-icons/react/dist/ssr/PaintBrush";
+import { ToggleRightIcon } from "@phosphor-icons/react/dist/ssr/ToggleRight";
+import { ScrollIcon } from "@phosphor-icons/react/dist/ssr/Scroll";
+import { BriefcaseIcon } from "@phosphor-icons/react/dist/ssr/Briefcase";
+import { CoffeeIcon } from "@phosphor-icons/react/dist/ssr/Coffee";
+import { CalendarCheckIcon } from "@phosphor-icons/react/dist/ssr/CalendarCheck";
+import { DeviceTabletIcon } from "@phosphor-icons/react/dist/ssr/DeviceTablet";
+import { PasswordIcon } from "@phosphor-icons/react/dist/ssr/Password";
+import { CameraIcon } from "@phosphor-icons/react/dist/ssr/Camera";
+import { ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowCounterClockwise";
+import { CurrencyDollarIcon } from "@phosphor-icons/react/dist/ssr/CurrencyDollar";
+import type { ReactNode } from "react";
 import "./settings-corp.css";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
@@ -41,8 +55,12 @@ export default async function SettingsPage() {
   const tablets = devices === null ? null : waiting ? `${waiting} not set up` : inUse || 0;
   const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
   // Review B1 (NV-247): something waiting ("1 not set up") reads amber; plain counts stay grey.
+  // Review B5 (NV-099): every navigation row leads with its Phosphor bold icon in a tinted circle, as on More, Team and Time.
+  const icons: Record<string, ReactNode> = { "/app/settings/workspace": <BuildingsIcon weight="bold" />, "/app/settings/locations": <MapPinIcon weight="bold" />, "/app/settings/branding": <PaintBrushIcon weight="bold" />, "/app/settings/features": <ToggleRightIcon weight="bold" />, "/app/settings/company-policies": <ScrollIcon weight="bold" />, "/app/settings/positions": <BriefcaseIcon weight="bold" />, "/app/settings/breaks": <CoffeeIcon weight="bold" />, "/app/schedule/settings": <CalendarCheckIcon weight="bold" />, "/app/settings/clocker": <DeviceTabletIcon weight="bold" />, "/app/settings/clocker/pins": <PasswordIcon weight="bold" />, "/app/settings/clocker/photos": <CameraIcon weight="bold" />, "/app/clocker-recovery?from=settings": <ArrowCounterClockwiseIcon weight="bold" />, "/app/settings/payroll": <CurrencyDollarIcon weight="bold" /> };
   const row = (href: string, title: string, value?: string | number | null, tone: "soft" | "amber" = "soft") => pathEnabled(href, presentation.modules)
-    ? <li key={href}><CorpRow href={href} title={title} one value={value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone={tone} chevron /></li> : null;
+    // Review B5 (NV-247, NV-260): something waiting is an amber chip, not grey or amber text.
+    ? <li key={href}><CorpRow href={href} title={title} icon={icons[href]} one value={tone === "amber" || value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft"
+      trail={tone === "amber" && value !== null && value !== undefined ? <CorpPill tone="amber">{String(value)}</CorpPill> : undefined} chevron /></li> : null;
   return (
     <CorpPage className="c-settings c-page--narrow" labelledBy="settings-title">
       <CorpNav back={{ href: "/app/more", label: "More" }} title="Settings" titleId="settings-nav-title" phoneOnly />

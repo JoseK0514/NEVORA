@@ -62,13 +62,29 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
         {connection === "unavailable" || connection === "ready" ? <BButton kind="ghost" onClick={onRefresh}>Try again</BButton> : connection === "access_lost" ? <BButtonLink href="/login" kind="ghost">Sign in</BButtonLink> : null}</div></BCard>
         : cards.length || waiting.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait (not due today) are listed after today's cards. */}
           {filter === "all" || filter === "review" ? waiting.map(group => <GroupCard key={group.id} group={{ ...group, title: `${group.title} · waiting` }} items={items} staffing={staffing} checked={checked} />) : null}</> : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
-      <BCard label="More">
+      {/* Review B5 (NV-250): on desktop the shortcuts stay in reach while the list scrolls (sticky), with one-line sub-lines. */}
+      <BCard label="More" id="b-todo-more">
         <BList label="More">
-          <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Every request, waiting and decided" href="/app/requests" />
-          <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers between teammates" href="/app/exchange" />
+          <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Waiting and decided" href="/app/requests" />
+          <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers" href="/app/exchange" />
           <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub="Plan ahead and earlier this week" href="/app/inbox?view=more" label="Later and done: plan ahead and earlier this week" />
         </BList>
       </BCard>
+    </BStack>
+  </BScreen>;
+}
+
+/** Review B5 (NV-031): Later and done is a Direction B page on phones too (the band with "‹ Things to do"), so the phone
+ * no longer shows the white header and a title straddling the band. The same groups as the desktop list. */
+export function LaterB({ ready, groups, statusLine, onRefresh }: { ready: boolean; groups: Group[]; statusLine: string; onRefresh: () => void }) {
+  const none = new Map<string, ActionItem>(), idle: StaffingState = { status: "loading" }, unchecked = new Set<string>();
+  return <BScreen back>
+    <BHero back={{ href: "/app/inbox", label: "Things to do" }} title="Later and done" titleId="b-later-title" />
+    <BStack>
+      {!ready ? <BCard label="Later and done"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{statusLine}</span></span>
+        <BButton kind="ghost" onClick={onRefresh}>Try again</BButton></div></BCard>
+        : groups.length ? groups.map(group => <GroupCard key={group.id} group={group} items={none} staffing={idle} checked={unchecked} />)
+        : <BCard label="Later and done"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">Nothing later or done</span><span className="b-notice__s">Planning items and earlier gaps appear here.</span></span></div></BCard>}
     </BStack>
   </BScreen>;
 }

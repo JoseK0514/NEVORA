@@ -79,9 +79,9 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
    <QuietNav back={{href: '/app/more', label: 'More'}} title="Updates" right={<Link className="q-nav__r updates-new" href="/app/updates/compose">New update</Link>} />
    <QuietHeader title="Updates" />
    <section className="updates-inbox" aria-label="Workplace updates" aria-busy={refreshing}>
-    <div className="q-seg" role="group" aria-label="Filter updates">
+    {/* Review B5 (NV-258): segment counts read "Needs reply 1", like "Waiting 7" and "All 16". */}<div className="q-seg" role="group" aria-label="Filter updates">
      <button type="button" aria-pressed={!needsReply} disabled={!current} onClick={() => setFilter('all')}>All</button>
-     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{current && toReview ? `Needs reply · ${toReview}` : 'Needs reply'}</button>
+     <button type="button" aria-pressed={needsReply} disabled={!current} onClick={() => setFilter('to-review')} aria-label={current ? `Needs reply, ${toReview}` : 'Needs reply'}>{current && toReview ? `Needs reply ${toReview}` : 'Needs reply'}</button>
     </div>
     <HoldHeight holding={!current} memory="updates-manager" className="cm-updates-hold">
     {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
@@ -116,7 +116,7 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
   <QuietNav back={{href: '/app/more', label: 'More'}} right={<Link className="q-nav__r q-nav__r--ink" href="/app/updates/compose" aria-label="Message today’s team"><PlusIcon className="q-ic" aria-hidden="true" /></Link>} />
   <QuietHeader title="Updates" sub={sub} />
   <section aria-label="Workplace updates" aria-busy={refreshing}>
-   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} · ${option.count}` : option.label}</button>)}</div>
+   <div className="q-seg" role="group" aria-label="Filter updates">{filters.map(option => <button key={option.id} type="button" aria-pressed={filter === option.id} disabled={!current} onClick={() => setFilter(option.id)}>{option.id !== 'all' && current && option.count ? `${option.label} ${option.count}` : option.label}</button>)}</div>
    {current?.state === 'partial' ? <p className="q-help" role="status">Some updates couldn’t load. Try again to check for the rest.</p> : null}
    {!current ? <div role="status" style={{marginTop: 24}}><p className="q-empty">{stateText}</p>
      {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused || refreshing} onClick={onRefresh}>{refreshing ? 'Checking…' : 'Try again'}</button> : null}</div>

@@ -14,6 +14,7 @@ import { phoneDisplay } from '@/components/team/phone';
 import { createPrivateSnapshotController, type PrivatePanelState } from '@/lib/private-snapshot-client';
 import { revealFeedback } from '@/lib/reveal-feedback';
 import { ALERT_TOPIC_SIZING, MANAGER_ALERTS_ENDPOINT, MANAGER_PROFILE_ENDPOINT, parseManagerProfile, type ManagerAlertTopic, type ManagerProfileSnapshot } from './contract';
+import { LockSimpleIcon } from '@phosphor-icons/react/dist/ssr/LockSimple';
 
 /** What the page already knows from today's session and workspace reads. */
 export type ManagerProfileIdentity = {
@@ -177,7 +178,11 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     <p className="q-sr" role="alert" id="profile-read-said">{said}</p>
     <p className="q-sr" role="status">{read.kind === 'paused' ? read.head : read.kind === 'ready' && retried === 'loaded' ? 'Your details loaded.' : ''}</p>
     <ul className="q-list" id="profile-details-list" tabIndex={-1} aria-label="Your details" style={{ marginTop: 24 }}>
-      <li data-row="phone" style={rowStyle('phone')}><div className="q-row q-row--one"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span></div></li>
+      {/* Review B5 (NV-259): Phone follows Email's pattern: an Owner edits it on their team page (a chevron); otherwise it is
+        read-only and says so with a lock. */}
+      <li data-row="phone" style={rowStyle('phone')}>{identity.owner
+        ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Phone, edit"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>Not added</span>)}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link>
+        : <div className="q-row q-row--one"><span className="q-rt"><b>Phone</b></span><span className="q-rv q-rv--l">{cell(snapshot => snapshot.contact.phone ? <Phone number={snapshot.contact.phone} /> : <span>None</span>)}</span><LockSimpleIcon className="q-chev" weight="bold" aria-label="Read-only" /></div>}</li>
       <li data-row="email" style={rowStyle('email')}>{shown && !shown.contact.email && identity.owner
         // Nov 1 upscale: one trailing pattern, label + grey value + chevron (no teal "Add").
         ? <Link className="q-row q-row--one" href={`/app/employees/${encodeURIComponent(identity.employeeId)}?edit=1`} aria-label="Email, not added. Add an email"><span className="q-rt"><b>Email</b></span><span className="q-rv q-rv--l">Not added</span><CaretRightIcon className="q-chev" aria-hidden="true" /></Link>

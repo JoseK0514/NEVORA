@@ -3,6 +3,9 @@ import { QuietNav } from '@/components/quiet/quiet';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { navigationForRole } from '@/lib/navigation';
 import { readNotificationConfig } from '@/lib/notifications/config';
+import { readNativeRegistrationConfig } from '@/lib/native-push/config';
+import { nativeContext } from '@/lib/native-shell/context';
+import { headers } from 'next/headers';
 import { payrollFeatureEnabled } from '@/lib/payroll/service';
 import type { SessionMutationProof } from '@/lib/shift-changes/types';
 import { timeZoneLabel } from '@/lib/time-zone-label';
@@ -18,6 +21,7 @@ import './manager-profile-upscale.css';
  * Name, role, company, time zone, My pay and device alerts come from today's reads. Contact, locations and
  * alert choices come from the management profile read in CODEX.md, which the client asks for. */
 export async function ManagerProfilePage({ proof }: { proof: SessionMutationProof }) {
+  const nativeApp = nativeContext((await headers()).get('user-agent'));
   const [workspace, brand, initial] = await Promise.all([
     getWorkspace(),
     currentBrand(),
@@ -42,7 +46,9 @@ export async function ManagerProfilePage({ proof }: { proof: SessionMutationProo
         company: workspace.name,
         timeZone: timeZoneLabel(workspace.timeZone),
         payHref: offersPay ? '/app/my-pay' : null,
-        deviceAlerts: readNotificationConfig(process.env).featureEnabled,
+        // Review B5 (NV-061): in the phone app the row opens the app's own alert settings, so it follows the app's
+        // registration config (as the shell's device popover does), not the browser's web-push switch.
+        deviceAlerts: nativeApp ? !!readNativeRegistrationConfig(process.env) : readNotificationConfig(process.env).featureEnabled,
         payrollAlerts: payrollFeatureEnabled(),
       }} accountCards={<>
         {/* Right column, after Notifications and before Sign out (Jose, Oct 20). Each renders nothing while its feature is off. */}

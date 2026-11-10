@@ -290,7 +290,8 @@ it.each(['EMPLOYEE','OWNER'] as const)('renders the %s shell with both sidebar c
  // The server cannot know the width: desktop follows the stored choice (full here), tablets open as a rail.
  expect(html).toContain('data-sidebar-desktop="full"');
  expect(html).toContain('data-sidebar-tablet="rail"');
- expect(html).toContain('<p class="cm-org"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span></p>');
+ // Review B5 (NV-110): the tile carries its full name as a title.
+ expect(html).toContain('<p class="cm-org" title="Northside Services"><span class="cm-org__mark" aria-hidden="true">NS</span><span class="cm-org__name">Northside Services</span></p>');
  const sidebar=html.split('aria-label="Primary navigation"')[1].split('</nav>')[0];
  expect(sidebar).not.toMatch(/class="nav-link[^"]*"[^>]*title=/);
  // One tooltip element for the rail, outside the sidebar, hidden from assistive technology (it repeats the entry's name).

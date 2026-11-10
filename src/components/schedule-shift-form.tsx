@@ -9,6 +9,7 @@ import type { Employee, Position } from "../lib/domain";
 import { CorpFormFooter } from "./corp/corp";
 import "./schedule-shift-form.css";
 import { UserIcon } from "@phosphor-icons/react/dist/ssr/User";
+import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 
 /* Add shift and Edit shift (Release 1, boards O-AddShift and O-EditShift): one sheet. Cancel · title · Save over a
  * hairline, then Person, Location and Position side by side, Date, Start and End, the Shift lead switch, Note, and the
@@ -134,8 +135,9 @@ export function ScheduleShiftForm(props: ScheduleShiftFormProps) {
           <label className="c-field__label" htmlFor={id("location")}>Location</label>
           {props.fixedLocation !== undefined
             ? <>
-              <input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={id("location-help")} />
-              <span className="c-sr" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
+              {/* Review B5 (NV-085): one read-only look (the Company profile pattern): a grey value with a lock and the reason. */}
+              <span className="c-readonly"><input id={id("location")} className="c-in c-shift__fixed" value={props.fixedLocation} readOnly tabIndex={-1} aria-describedby={id("location-help")} /><LockSimpleIcon className="c-readonly__lock" size={16} weight="bold" aria-hidden="true" /></span>
+              <span className="c-field__help" id={id("location-help")}>A shift keeps its location. To move it, delete it and add a new one.</span>
             </>
             : <><select id={id("location")} className={location ? "c-in" : "c-in c-shift__empty"} name="locationId" value={location} required onChange={event => { setLocation(event.target.value); }}>
               <option value="" disabled>Choose</option>

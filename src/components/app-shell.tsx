@@ -442,7 +442,7 @@ function AppShellView({
       // Employees joined Nov 6, 2026 (phones only; their desktop is unchanged, see owner-b-desktop.css). Leads joined Nov 8, 2026 with the Employee's screens (desktop included).
       data-nv-b=""
       data-offline={online ? undefined : ""}
-      data-nv-corp="" data-corp-root={(rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") && !(pathname === "/app/my-pay" && (search?.get("view") || search?.get("paycheck"))) ? "" : undefined}>
+      data-nv-corp="" data-corp-root={(rootChrome || mobileTabs.some(tab => tab.href === pathname)) && !(pathname === "/app" && search?.get("view")) && !(pathname === "/app/schedule" && search?.get("view") === "open") && !(pathname === "/app/inbox" && search?.get("view") === "more") && !(pathname === "/app/my-pay" && (search?.get("view") || search?.get("paycheck"))) ? "" : undefined}>
       {/* IS-P4-14: on desktop, the sidebar and header come first; this skips them. Shown only on focus, and only on desktop. */}
       <a className="portal-skip-link" href="#main-content">Skip to content</a>
       <aside className="sidebar" data-collapsed={railed} ref={sidebarRef}>
@@ -453,7 +453,7 @@ function AppShellView({
         {companyLogo}
         {/* v3: the workspace at the top of the sidebar (desktop only). Upscale B2: one desktop shell, so Employees have it too;
           in the rail it is the 32px initials avatar. */}
-        <p className="cm-org"><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : null}</p>
+        <p className="cm-org" title={workspaceName}><span className="cm-org__mark" aria-hidden="true">{workspaceName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()}</span><span className="cm-org__name">{workspaceName}</span>{/* A Lead's role line under the workspace (Direction B, Nov 8, 2026); the shell has no location in hand. */}{user.role === "LEAD" ? <span className="cm-org__role">Lead</span> : null}</p>
 
         <button className="sidebar-toggle" type="button" aria-label={railed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!railed} aria-controls="desktop-primary-navigation" onClick={toggleSidebar}><NavIcon name="sidebar" size={20} /></button>
         </div>

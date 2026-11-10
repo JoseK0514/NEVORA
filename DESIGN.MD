@@ -1742,3 +1742,27 @@ Source: `docs/product/review-2026-11-10/` (batch B2). No read, handler, authoriz
   (Request time off, Swap a shift, Set availability; Jose, Nov 10). Phone sheets sit on the bottom edge; scrims cover the
   whole window.
 - **Help** is in the account menu and above "Powered by" in the sidebar.
+
+## Owner and Manager polish (review batch B5, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B5). Presentation only; reads, handlers and contracts unchanged.
+- **Later and done** is a Direction B page on phones too (the band with "‹ Things to do"), no white header.
+- **Row icons:** every corporate row that leads with an icon (More, Settings, Pay history, Time tools) draws it in a 36px
+  teal-50 circle with an 18px bold glyph; Settings rows each have one.
+- **Status chips:** off-target hours are chips (amber "16 h over", grey "8 h under"); Insights' over-plan bar is teal to
+  the plan and amber past it, with an amber "+38 h over plan" chip; "not set up" is an amber chip; decided time off has a
+  green "Approved" or grey "Declined" chip; relative times always read "… ago".
+- **Desktop schedule grid:** published blocks teal-50 with teal text, drafts grey, open shifts an amber dashed outline, a
+  12px position line, and a three-chip legend beside the week's state; the person column is at least 200px.
+- **One read-only field:** a grey value with no field edge, a 16px bold lock and the reason under it (Edit shift's
+  Location; the Company profile pattern). Phone in an Owner's profile opens their team page (a chevron) like Email.
+- **Single choices** show a radio circle (teal ring and dot when chosen). A feature that can't be turned off now is drawn
+  on, with a lock. The Branding preview has a dashed edge and a "Preview" tag, and its button is a pill.
+- **Panels and sheets (Owner/Manager):** title left at 20/26 700, Done a teal 600 text button with a 44px target.
+- **Empty states** use the state card (icon circle, 16/22 title, line, pill), left-aligned (Payroll's "This payroll isn't
+  available").
+- **Payroll:** an overdue period's Prepare is the page's one filled action; the current period's button steps back.
+  Documents have one labelled Download pill beside View.
+- **Finder:** each row leads with its kind in a 28px circle (bolt, page, initials, pin); a typed query that matches more
+  than a group shows says "6 of 11 people · keep typing to narrow".
+- **Activity:** newest first with Today on top; anything dated after today is one "Coming up" card with amber icons.
+- **Punch photos off:** the moment switches are disabled and look it. Things to do's More shortcuts are sticky on desktop.
