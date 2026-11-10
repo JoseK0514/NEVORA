@@ -126,6 +126,53 @@ it('person hours reuse current directory scope and published snapshots, withhold
   await f.q("DELETE FROM employee_sessions WHERE employee_id='restricted'");expect((await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).state).toBe('unavailable');
  }finally{await f.db.dispose();}
 });
+async function partlyPublishedHoursFixture(){
+ const f=await fixture();
+ try{
+  const [{week}]=await f.q<{week:string}>("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  await f.q("UPDATE schedules SET week_start=$1,status=CASE id WHEN 'scope-a' THEN 'PUBLISHED' ELSE 'DRAFT' END WHERE id IN('scope-a','scope-b')",[week]);
+  await f.q("UPDATE shifts SET date=$1 WHERE id IN('shift-a','shift-b')",[week]);
+  await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('partial-hours-r',$1,1,'PUBLISH','owner')",[week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'partial-hours-a','partial-hours-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='shift-a'`);
+  return {...f,week};
+ }catch(error){await f.db.dispose();throw error;}
+}
+it.each(['draft','absent'] as const)('an unrelated publication cannot confirm zero person hours for a %s target schedule',async(state)=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  if(state==='absent')await f.q("DELETE FROM shifts WHERE schedule_id='scope-b'; DELETE FROM schedules WHERE id='scope-b'");
+  const context=await readOwnerOperationalScope(f.owner,'restricted',f.db.executor);if(context.state!=='ready')throw Error('Scope context');const c=context.data.current;
+  expect((await assignOperationalScope(f.owner,'restricted',{action:'ASSIGN',operationId:randomUUID(),expectedEmployeeVersion:c.employeeUpdatedAt,expectedRoleGeneration:c.roleGeneration,expectedScopeRevision:c.scopeRevision,scope:{mode:'LOCATIONS',locationIds:['loc-2']}},f.db.executor)).state).toBe('saved');
+  expect(await readOperationalEmployeeHours(f.restricted,'private-b',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('mixed published and draft person locations keep company totals unknown while restricted published coverage stays complete',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  expect(await readOperationalEmployeeHours(f.owner,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null,workedWeekMinutes:0}});
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledWeekMinutes:60,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('a genuinely published empty target schedule confirms zero without requiring unrelated or inactive locations',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  await f.q("UPDATE schedules SET status='PUBLISHED' WHERE id='scope-b'; UPDATE schedules SET status='DRAFT' WHERE id='scope-a'; INSERT INTO employee_location_eligibility VALUES('private-b','loc-3')");
+  expect(await readOperationalEmployeeHours(f.owner,'private-b',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:0,scheduledWeekMinutes:0,workedWeekMinutes:0}});
+ }finally{await f.db.dispose();}
+});
+it('a missing previous-week capture still withholds person totals until the overnight publication is captured',async()=>{
+ const f=await partlyPublishedHoursFixture();try{
+  const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
+  await f.q("INSERT INTO schedules(id,location_id,week_start,status,created_by) VALUES('hours-prior','loc-1',$1::date-7,'PUBLISHED','owner')",[f.week]);
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledTodayMinutes:null,scheduledWeekMinutes:null}});
+  await f.q("INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('hours-prior-r',$1::date-7,1,'PUBLISH','owner')",[f.week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   VALUES('hours-overnight','hours-prior-r','hours-overnight','hours-prior','loc-1','target',$1::date-1,'22:00','02:00')`,[f.week]);
+  expect(await readOperationalEmployeeHours(f.restricted,'target',f.db.executor)).toMatchObject({state:'ready',data:{scheduledWeekMinutes:180}});
+ }finally{await f.db.dispose();}
+});
 it('owner names expose active in-workspace owners only and refuse expired sessions',async()=>{
  const f=await fixture();try{
   const {readActiveOwnerNames}=await import('../../lib/data/owner-names.server');
