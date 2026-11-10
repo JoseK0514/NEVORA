@@ -6,8 +6,8 @@ import { V2, WORDS_V2, advance, approvalStamp, calendarDate, dateRange, dollars,
 
 /* Company payroll summary, template v2 (approved November 5, 2026). It follows the v2 pay statement: net pay to the
  * team leads, one strip reads "Employees · Gross pay – Employee deductions = Net pay", then pay by employee, what
- * the company pays on top, and references. Native runs that recorded pay statement template v2 get this summary;
- * every other run keeps the plain summary, so documents already issued re-render identically. */
+ * the company pays on top, and references. Native runs that recorded pay statement template v2 or v3 get this summary;
+ * runs recorded under v1 keep the plain summary, so documents already issued re-render identically. */
 export const NATIVE_COMPANY_SUMMARY_TEMPLATE_V1 = "NEVORA_NATIVE_COMPANY_SUMMARY_V1" as const;
 export const NATIVE_COMPANY_SUMMARY_TEMPLATE_V2 = "NEVORA_NATIVE_COMPANY_SUMMARY_V2" as const;
 export type NativeCompanySummaryTemplateVersion = typeof NATIVE_COMPANY_SUMMARY_TEMPLATE_V1 | typeof NATIVE_COMPANY_SUMMARY_TEMPLATE_V2;

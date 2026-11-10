@@ -4,7 +4,7 @@
  * allow worker retries to converge when those statements are committed.
  */
 import { nativeEmployeePresentation } from "./native/document-mapping";
-import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_V2, type NativePaystubTemplateVersion } from "./native/paystub-document";
+import { renderNativeEmployeePaystub, preflightNativePaystubGlyphs, NATIVE_PAYSTUB_TEMPLATE_V2, NATIVE_PAYSTUB_TEMPLATE_V3, type NativePaystubTemplateVersion } from "./native/paystub-document";
 import { renderNativeCompanySummary, NATIVE_COMPANY_SUMMARY_TEMPLATE_V1, type NativeCompanySummaryTemplateVersion } from "./native/company-summary-document";
 import { hash } from "./store";
 import { createHash } from "node:crypto";
@@ -227,9 +227,9 @@ export async function generatePdfs(run: PayrollRun, snapshot: Snapshot, progress
         result.push(stored(run, "EMPLOYEE_STATEMENT", row.employeeId, await pdf(lines, run.approvedAt)));
     }
     await progress?.();
-    // A native run that recorded pay statement template v2 gets the matching v2 summary; every other run keeps the
-    // plain summary byte for byte.
-    if (run.sourceAuthority === "NATIVE_RECORDED_TIME" && run.nativeCalculation?.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2) {
+    // Native runs that recorded pay statement v2 or v3 use the established v2 summary.
+    // Runs recorded under v1 keep their plain summary byte for byte.
+    if (run.sourceAuthority === "NATIVE_RECORDED_TIME" && (run.nativeCalculation?.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2 || run.nativeCalculation?.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V3)) {
         if (!snapshot.native || run.nativeCalculation.state !== "ready")
             throw new PayrollError("NATIVE_DOCUMENT_SNAPSHOT_CONFLICT", 409);
         const summary = await renderNativeCompanySummary({

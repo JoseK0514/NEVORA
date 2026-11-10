@@ -173,7 +173,7 @@ export type PayrollRun = {
         version: "NATIVE_RUN_V1";
         state: "ready" | "blocked";
         ruleRevision: number | null;
-        templateVersion: "NEVORA_NATIVE_PAYSTUB_PDF_V1" | "NEVORA_NATIVE_PAYSTUB_PDF_V2";
+        templateVersion: "NEVORA_NATIVE_PAYSTUB_PDF_V1" | "NEVORA_NATIVE_PAYSTUB_PDF_V2" | "NEVORA_NATIVE_PAYSTUB_PDF_V3";
         employees: import("./native/contracts").NativePayrollReady[];
     };
     importRevision: number;

@@ -6,7 +6,7 @@
 export const SUPPORT_EMAIL = "support@thevelani.com";
 export const POLICY_OPERATOR = "VELANI LLC";
 /** Bump when the published wording changes; deletion requests record the version they were accepted under. */
-export const POLICY_VERSION = "2026-11-04";
+export const POLICY_VERSION = "2026-11-10";
 
 /* Confirmed by Jose on October 20, 2026 (Neon and Vercel verified in the connected accounts). Backup expiry
  * follows the production database Codex set up on November 1, 2026: a seven-day restore history, independently
@@ -103,7 +103,7 @@ export const SUPPORT: PolicyDocument = {
       { p: ["Include the app version, your device and its operating system version, and what happened. Add your workspace name if we need it to find the problem. Remove personal information from screenshots. ", { strong: "Never email your password, a verification code, bank details or payroll documents." }] },
     ] },
     { heading: "Questions about your work", blocks: [{ p: ["Ask your manager or workplace administrator about shifts, time-off decisions, pay or corrections to your work records. Contact NEVORA support if a problem in the app stops you from reaching them."] }] },
-    { heading: "Signing in", blocks: [{ p: ["Use ", { href: "/forgot-access", text: "Forgot access" }, " on the sign-in page. If you no longer have the email address on your account, ask your manager or Owner: they can verify you and give you a recovery code. We will never ask for your password or a verification code by email."] }] },
+    { heading: "Signing in", blocks: [{ p: ["Use ", { href: "/forgot-access", text: "Forgot password?" }, " on the sign-in page. If you no longer have the email address on your account, ask your manager or Owner: they can verify you and give you a recovery code. We will never ask for your password or a verification code by email."] }] },
     { heading: "Privacy and account deletion", blocks: [{ p: ["Read our ", { href: "/privacy", text: "Privacy Policy" }, ", or see ", { href: "/account-deletion", text: "Account deletion" }, " to start a request. You can do it on the web without the app."] }] },
     { heading: "Reporting content", blocks: [{ p: ["Email ", mail, " with a short description of the item and where it appears, without unnecessary personal information."] }] },
   ],
@@ -115,7 +115,7 @@ export const ACCOUNT_DELETION: PolicyDocument = {
   sections: [
     { heading: "In the app or on the web", blocks: [
       { p: ["Open Profile, choose ", { strong: "Delete my account" }, ", read what happens, re-enter your password and confirm. If you’ve uninstalled the app, ", { href: "/login", text: "sign in to NEVORA on the web" }, " and do the same; the page opens after you sign in."] },
-      { p: ["If you can’t sign in, use ", { href: "/forgot-access", text: "Forgot access" }, " first, or email ", mail, " and we’ll help you confirm it’s you."] },
+      { p: ["If you can’t sign in, use ", { href: "/forgot-access", text: "Forgot password?" }, " first, or email ", mail, " and we’ll help you confirm it’s you."] },
     ] },
     { heading: "What happens next", blocks: [{ p: ["When you confirm, we save your request and show you a reference such as DEL-7KQ2M9XA. You’re signed out on every device and can’t sign in again. We aim to delete your account within ", f("DELETION_COMPLETION_PERIOD"), ", and we email you when it’s done if we have your email address. Quote your reference to ", mail, " to ask about it."] }] },
     { heading: "What is removed", blocks: [{ p: ["Your account and the information linked to it that can be deleted: your profile, sign-in details, sessions, notification subscriptions, calendar feed links and the content you contributed, including copies held by our service providers."] }] },

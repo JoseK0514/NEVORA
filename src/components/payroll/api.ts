@@ -139,7 +139,7 @@ function validRun(value: unknown) {
   if (value.reviewToken !== null && typeof value.reviewToken !== 'string') return false;
   if (value.sourceAuthority !== 'NATIVE_RECORDED_TIME') return value.status !== 'BLOCKED';
   const native = value.nativeCalculation;
-  if (!record(native) || native.version !== 'NATIVE_RUN_V1' || !['NEVORA_NATIVE_PAYSTUB_PDF_V1', 'NEVORA_NATIVE_PAYSTUB_PDF_V2'].includes(native.templateVersion as string) || !Array.isArray(native.employees)) return false;
+  if (!record(native) || native.version !== 'NATIVE_RUN_V1' || !['NEVORA_NATIVE_PAYSTUB_PDF_V1', 'NEVORA_NATIVE_PAYSTUB_PDF_V2', 'NEVORA_NATIVE_PAYSTUB_PDF_V3'].includes(native.templateVersion as string) || !Array.isArray(native.employees)) return false;
   if (value.status === 'BLOCKED') return native.state === 'blocked' && native.employees.length === 0 && value.rows === null && value.totals === null && value.reviewToken === null && value.exceptions.length > 0;
   return native.state === 'ready' && native.employees.every(validNativeEmployee) && value.rows !== null && value.totals !== null && typeof value.reviewToken === 'string' && record(value.coverage) && value.coverage.complete === true && strings(value.coverage.locationIds);
 }

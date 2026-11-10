@@ -47,6 +47,14 @@ describe('native payroll browser contract', () => {
     expect(readRuns(response(run)).runs[0].nativeCalculation?.employees[0].row.grossMinor).toBe('16000');
     expect(readRuns(response(run)).runs[0].reviewToken).toBe('opaque-source-review-token');
   });
+  it.each(['NEVORA_NATIVE_PAYSTUB_PDF_V1', 'NEVORA_NATIVE_PAYSTUB_PDF_V2', 'NEVORA_NATIVE_PAYSTUB_PDF_V3'] as const)('reads ready and blocked runs with recorded template %s without replacing it', templateVersion => {
+    const run = nativeRun();
+    run.nativeCalculation!.templateVersion = templateVersion;
+    expect(readRuns(response(run)).runs[0].nativeCalculation!.templateVersion).toBe(templateVersion);
+    const blocked = { ...run, status: 'BLOCKED' as const, exceptions: ['WAGE_PROFILE_REQUIRED:E1'], rows: null, totals: null, reviewToken: null, nativeCalculation: { ...run.nativeCalculation!, state: 'blocked' as const, employees: [] } };
+    expect(readRuns(response(blocked)).runs[0].nativeCalculation!.templateVersion).toBe(templateVersion);
+    expect(() => readRuns(response({ ...run, nativeCalculation: { ...run.nativeCalculation!, templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V4' as never } }))).toThrow();
+  });
   it('keeps a blocked run unavailable without displaying invented zero totals', () => {
     const run = nativeRun({ status: 'BLOCKED', rows: null, totals: null, reviewToken: null, exceptions: ['WAGE_PROFILE_REQUIRED:E1'], nativeCalculation: { version: 'NATIVE_RUN_V1', state: 'blocked', ruleRevision: 1, templateVersion: 'NEVORA_NATIVE_PAYSTUB_PDF_V1', employees: [] } });
     expect(readRuns(response(run)).runs[0].totals).toBeNull();

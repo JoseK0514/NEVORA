@@ -5,11 +5,12 @@ import { NATIVE_PAYSTUB_WORDMARK_PNG_BASE64 } from "./paystub-wordmark";
 export const NATIVE_PAYSTUB_PRESENTATION_VERSION = "NEVORA_NATIVE_PAYSTUB_PRESENTATION_V1";
 export const NATIVE_PAYSTUB_TEMPLATE_V1 = "NEVORA_NATIVE_PAYSTUB_PDF_V1" as const;
 export const NATIVE_PAYSTUB_TEMPLATE_V2 = "NEVORA_NATIVE_PAYSTUB_PDF_V2" as const;
-export type NativePaystubTemplateVersion = typeof NATIVE_PAYSTUB_TEMPLATE_V1 | typeof NATIVE_PAYSTUB_TEMPLATE_V2;
-export const isNativePaystubTemplateVersion = (value: unknown): value is NativePaystubTemplateVersion => value === NATIVE_PAYSTUB_TEMPLATE_V1 || value === NATIVE_PAYSTUB_TEMPLATE_V2;
+export const NATIVE_PAYSTUB_TEMPLATE_V3 = "NEVORA_NATIVE_PAYSTUB_PDF_V3" as const;
+export type NativePaystubTemplateVersion = typeof NATIVE_PAYSTUB_TEMPLATE_V1 | typeof NATIVE_PAYSTUB_TEMPLATE_V2 | typeof NATIVE_PAYSTUB_TEMPLATE_V3;
+export const isNativePaystubTemplateVersion = (value: unknown): value is NativePaystubTemplateVersion => value === NATIVE_PAYSTUB_TEMPLATE_V1 || value === NATIVE_PAYSTUB_TEMPLATE_V2 || value === NATIVE_PAYSTUB_TEMPLATE_V3;
 /** The template newly prepared runs record. A run always renders with the template it recorded, so statements
- * issued under v1 keep their exact bytes and fingerprints. */
-export const NATIVE_PAYSTUB_TEMPLATE_VERSION = NATIVE_PAYSTUB_TEMPLATE_V2;
+ * issued under v1/v2 keep their exact bytes and fingerprints. */
+export const NATIVE_PAYSTUB_TEMPLATE_VERSION = NATIVE_PAYSTUB_TEMPLATE_V3;
 export type NativePaystubRatio = { numerator: string; denominator: string };
 export type NativePaystubMoney = { currentMinor: string; ytdMinor: string };
 export type NativePaystubEarning = {
@@ -122,7 +123,7 @@ function deductions(value: unknown, path: string): NativePaystubDeduction[] {
 function presentation(value: unknown): NativePaystubPresentation {
   const p = record(value, "presentation");
   requireValue(p.version === NATIVE_PAYSTUB_PRESENTATION_VERSION, "version");
-  requireValue(p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V1 || p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2, "templateVersion");
+  requireValue(isNativePaystubTemplateVersion(p.templateVersion), "templateVersion");
   requireValue(p.sourceAuthority === "NATIVE_RECORDED_TIME", "sourceAuthority");
   requireValue(p.currency === "USD", "currency");
   requireValue(p.language === "en" || p.language === "es", "language");
@@ -306,7 +307,7 @@ const SURFACE = rgb(250 / 255, 250 / 255, 250 / 255), TABLE_HEAD = rgb(229 / 255
 export async function renderNativeEmployeePaystub(input: NativePaystubPresentation, options: NativePaystubRenderOptions = {}): Promise<NativePaystubPdf> {
   options.signal?.throwIfAborted();
   const p = presentation(input);
-  return p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V2 ? renderStatementV2(p, options) : renderStatementV1(p, options);
+  return p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V1 ? renderStatementV1(p, options) : renderStatementV2(p, options);
 }
 
 /** Template v1 (October 2026). Kept byte for byte: statements issued with it must re-render identically. */
@@ -504,7 +505,12 @@ export const WORDS_V2 = {
     months: ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"],
   },
 } as const;
-export type WordsV2 = (typeof WORDS_V2)["en" | "es"];
+/** V3 retains V2's layout and approved meaning; only the Spanish amount wording changes. */
+const WORDS_V3 = {
+  en: { ...WORDS_V2.en, template: "Template v3" },
+  es: { ...WORDS_V2.es, amount: "Monto", earningsHelp: `${WORDS_V2.es.earningsHelp} Montos de la nómina aprobada.`, template: "Plantilla v3" },
+} as const;
+export type WordsV2 = (typeof WORDS_V2 | typeof WORDS_V3)["en" | "es"];
 
 const hexV2 = (h: string) => rgb(parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255);
 export const V2 = {
@@ -544,7 +550,7 @@ export function approvalStamp(approvedAt: string, t: WordsV2, en: boolean): stri
 }
 
 async function renderStatementV2(p: NativePaystubPresentation, options: NativePaystubRenderOptions): Promise<NativePaystubPdf> {
-  const t = WORDS_V2[p.language], en = p.language === "en";
+  const t = (p.templateVersion === NATIVE_PAYSTUB_TEMPLATE_V3 ? WORDS_V3 : WORDS_V2)[p.language], en = p.language === "en";
   const checkpoint = async () => {
     options.signal?.throwIfAborted();
     await options.progress?.();
@@ -558,7 +564,7 @@ async function renderStatementV2(p: NativePaystubPresentation, options: NativePa
   const approved = new Date(p.approvedAt);
   pdf.setCreationDate(approved); pdf.setModificationDate(approved);
   pdf.setProducer("NEVORA"); pdf.setCreator("NEVORA"); pdf.setTitle(t.title);
-  pdf.setSubject(`${p.sourceAuthority} / ${NATIVE_PAYSTUB_TEMPLATE_V2}`);
+  pdf.setSubject(`${p.sourceAuthority} / ${p.templateVersion}`);
   const M = V2_MARGIN, CW = V2_WIDTH;
   let page!: PDFPage, y = 0;
   const pages: PDFPage[] = [];
@@ -778,5 +784,5 @@ async function renderStatementV2(p: NativePaystubPresentation, options: NativePa
   await checkpoint();
   const bytes = await pdf.save({ useObjectStreams: false, addDefaultPage: false });
   await checkpoint();
-  return { bytes, sha256: createHash("sha256").update(bytes).digest("hex"), pageCount: pages.length, templateVersion: NATIVE_PAYSTUB_TEMPLATE_V2 };
+  return { bytes, sha256: createHash("sha256").update(bytes).digest("hex"), pageCount: pages.length, templateVersion: p.templateVersion };
 }
