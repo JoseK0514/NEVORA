@@ -123,6 +123,11 @@ describe('complete pure typed ownership source observations',()=>{
  it('blocks employee-location conflict instead of replacing immutable employment ownership',()=>{const f=fixture(true,{},[],{workspaces:[{id:'second-workspace'}]});f.assignments.mappings[0].workspaceId='second-workspace';blocked(f,'CURRENT_REFERENCE_OWNER_CONFLICT');});
  it('blocks cross-owner current native-array location review',()=>{const f=fixture(true,{calendar_subscriptions:{allowed_location_ids:'{other-location}'}},[],{workspaces:[{id:'second-workspace'}],locations:[{id:'other-location',workspace_id:'second-workspace'}]});blocked(f,'CURRENT_REFERENCE_OWNER_CONFLICT');});
  it('resolves explicit WORKSPACE scope and rejects padded scope IDs exactly',()=>{const f=fixture(true,{clocker_pin_limits:{scope:'WORKSPACE'}});expect(resolved(f).rows.find(r=>r.table==='clocker_pin_limits')!.workspaceId).toBe('fixture-id');blocked(fixture(true,{clocker_pin_limits:{scope:'WORKSPACE',scope_id:' fixture-id '}}),'CURRENT_REFERENCE_MISSING_OR_AMBIGUOUS');});
+ it('resolves PERSON limiter ancestry from the exact retained employee identity',()=>{
+  const row=resolved(fixture(true,{clocker_pin_limits:{scope:'PERSON'}})).rows.find(r=>r.table==='clocker_pin_limits')!;
+  expect(row.workspaceId).toBe('fixture-id');expect(row.references).toContainEqual(expect.objectContaining({source:'TYPED_SCOPE',target:'employees',field:'scope_id'}));
+  blocked(fixture(true,{clocker_pin_limits:{scope:'PERSON',scope_id:' fixture-id '}}),'CURRENT_REFERENCE_MISSING_OR_AMBIGUOUS');
+ });
  it('does not use an unrelated installation record for an empty captured installation',()=>{const f=fixture(false);f.assignments.installation={workspaceId:'fixture-id',evidenceDigest:sha('f'),coveredRows:[]};blocked(f,'UNCONSUMED_INSTALLATION');});
  it('preserves empty text historical IDs without changing them to absence',()=>{const f=fixture(true,{calendar_removals:{source_shift_id:''}});expect(resolved(f).rows.find(r=>r.table==='calendar_removals')!.references.some(r=>r.key[0].kind==='TEXT'&&r.key[0].text==='')).toBe(true);});
  it('preserves a captured empty original workspace ID as a value instead of imposing new identity policy',()=>{const f=fixture(false,{workspaces:{id:''}});expect(resolved(f).rows[0].workspaceId).toBe('');});

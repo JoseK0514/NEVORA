@@ -31,6 +31,13 @@ it('returns the actual PIN wait in both body and Retry-After without restoring i
  const response=await pin({action:'verify',pin:'0123'});expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('47');expect(await response.json()).toMatchObject({state:'limited',code:'PIN_LIMITED',retryAfterSeconds:47});expect(cookies.get('nevora_clocker_identity')).toBe('');
 });
 it('returns only a stable unavailable code and existing safe message on PIN exceptions',async()=>{mocks.authenticate.mockRejectedValue(Error('private SQL'));const response=await pin({action:'verify',pin:'0123'});expect(response.status).toBe(503);expect(await response.json()).toEqual({state:'unavailable',code:'PIN_UNAVAILABLE',error:'PIN verification is unavailable. Check the connection and try again.'});});
+it('admits Employee ID plus PIN transport and returns the authoritative personal wait without identity data',async()=>{
+ mocks.authenticate.mockResolvedValue({proof:{}});mocks.verify.mockResolvedValue({state:'limited',retryAfterSeconds:47,limitScope:'person'});
+ const response=await pin({action:'verify',employeeId:' c2-a ',pin:'0123'});
+ expect(response.status).toBe(429);expect(response.headers.get('Retry-After')).toBe('47');
+ expect(await response.json()).toMatchObject({state:'limited',limitScope:'person',retryAfterSeconds:47});
+ expect(mocks.verify).toHaveBeenCalledWith({},'0123',expect.any(Buffer),executor,' c2-a ');
+});
 it.each([
  ['environment',{}, {},'2',{production:true},503,'SETUP_UNAVAILABLE'],
  ['origin',{}, {origin:'https://other.invalid'},'2',{production:false},403,'ORIGIN_REJECTED'],

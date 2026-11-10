@@ -7,7 +7,8 @@ import { getWorkspace, workspaceReadGuard } from '../data/workspaces';
 import { clockerDeviceWriteGuards, type ClockerDeviceWriteProof, type ClockerOwnerProof } from './devices.server';
 import { hashClockerPin, verifyClockerPin, burnUnknownPin, validatePin, pinFingerprint, pinKeyIdentity } from './pin-crypto.server';
 import { pinBatch, pinActorGuards, pinActorAssertion, pinKeyGuard, pinManagementAccess, ClockerPinError, assertPin, statement as s } from './pin-authority.server';
-import { reservePinAttempt, releasePinReservation } from './pin-limits.server';
+import { reservePinAttempt, releasePinReservation, pinCommitGuards, type PinLimitScope } from './pin-limits.server';
+import {normalizeEmployeeNumber} from '../tenancy/identity';
 import { pinSessionHash } from './pin-identity.server';
 export { readClockerIdentity, clearClockerIdentity, clockerIdentityWriteGuards } from './pin-identity.server';
 export { ClockerPinError } from './pin-authority.server';
@@ -57,22 +58,41 @@ export async function setEmployeeClockerPin(proof:ClockerOwnerProof,input:{emplo
  await pinBatch(executor,[...workspaceReadGuard(workspace),...pinActorGuards(proof,input.employeeId,workspace.id,true),...authority()]);
  return result.at(-1)![0] as EmployeePinView;
 }
-export type PinVerification = {state:'denied'} | {state:'limited';retryAfterSeconds:number} | {state:'verified';token:string;firstName:string;expiresAt:string};
+export type PinVerification = {state:'denied'} | {state:'limited';retryAfterSeconds:number;limitScope:PinLimitScope} | {state:'verified';token:string;firstName:string;expiresAt:string};
 type PinRow={employeeId:string;pinHash:string;version:number;employeeUpdatedAt:string;eligible:boolean};
 /** Reserve the shared/tablet attempt budget before slow hashing, then issue a
  * 60-second identity only if this remains the tablet’s latest attempt and current
  * device/PIN/employee eligibility still matches. Denials do not release failure credit. */
-export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pin:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor()):Promise<PinVerification>{
+export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pin:string,key:Buffer,executor:SqlExecutor=neonNotificationExecutor(),employeeId?:string):Promise<PinVerification>{
  try{validatePin(pin);}catch{throw new ClockerPinError('INVALID');}
  const workspace=await getWorkspace(executor);
  const fingerprint=pinFingerprint(pin,workspace.id,key);
- const reservation=await reservePinAttempt(device,workspace,key,executor);
- if('retryAfterSeconds' in reservation)return {state:'limited',retryAfterSeconds:reservation.retryAfterSeconds};
+ const identified=employeeId!==undefined;
+ let personId:string|undefined;
+ if(identified&&typeof employeeId==='string'&&employeeId.length<=128&&!/[\p{Cc}\p{Cf}]/u.test(employeeId)){
+  const number=normalizeEmployeeNumber(employeeId);
+  if(number){
+   // Existing Employee ID comparison is JavaScript trim+Unicode uppercase.
+   // Read only IDs inside this workspace; never SQL-UPPER or inspect a foreign
+   // employee row based on an unauthenticated submitted ID.
+   const local=await executor.query<{id:string}>(s(`SELECT e.id FROM employees e
+    JOIN locations l ON l.id=e.primary_location_id
+    WHERE (CASE WHEN to_jsonb(e) ? 'workspace_id' THEN to_jsonb(e)->>'workspace_id' ELSE l.workspace_id END)=$1
+    AND e.active`,[workspace.id]));
+   const matches=local.filter(e=>normalizeEmployeeNumber(e.id)===number);
+   if(matches.length===1)personId=matches[0].id;
+  }
+ }
+ const reservation=await reservePinAttempt(device,workspace,key,executor,{identified,employeeId:personId});
+ if('retryAfterSeconds' in reservation)return {state:'limited',...reservation};
+ if(identified&&(!personId||!reservation.windows.some(w=>w.scope==='PERSON'&&w.scopeId===personId))){
+  await burnUnknownPin(pin,workspace.id,key);return {state:'denied'};
+ }
  const [row]=await executor.query<PinRow>(s(`SELECT p.employee_id AS "employeeId",p.pin_hash AS "pinHash",p.version,
    e.updated_at::text AS "employeeUpdatedAt",e.active AND EXISTS(SELECT 1 FROM employee_location_eligibility
    WHERE employee_id=e.id AND location_id=$3) AS eligible
    FROM employee_clocker_pins p JOIN employees e ON e.id=p.employee_id
-   WHERE p.workspace_id=$1 AND p.lookup_hash=$2`,[workspace.id,fingerprint,device.locationId]));
+   WHERE p.workspace_id=$1 AND p.lookup_hash=$2 AND ($4::text IS NULL OR p.employee_id=$4)`,[workspace.id,fingerprint,device.locationId,personId??null]));
  if(!row){await burnUnknownPin(pin,workspace.id,key);return {state:'denied'};}
  const matches=await verifyClockerPin(pin,workspace.id,row.employeeId,key,row.pinHash);
  if(!matches||!row.eligible)return {state:'denied'};
@@ -80,6 +100,7 @@ export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pi
  try{
   const result=await pinBatch(executor,[
    ...workspaceReadGuard(workspace),
+   ...pinCommitGuards(workspace.id,identified?undefined:row.employeeId),
    s('SELECT id FROM employees WHERE id=$1 FOR SHARE',[row.employeeId]),
    s('SELECT employee_id FROM employee_location_eligibility WHERE employee_id=$1 AND location_id=$2 FOR SHARE',[row.employeeId,device.locationId]),
    s('SELECT employee_id FROM employee_clocker_pins WHERE employee_id=$1 FOR SHARE',[row.employeeId]),
