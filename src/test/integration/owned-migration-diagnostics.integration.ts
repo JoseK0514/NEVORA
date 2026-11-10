@@ -7,6 +7,7 @@ import type {MigrationFailureReceipt} from './owned-migration-diagnostics';
 
 it('retains an actual helper bootstrap lock failure and closes both clients before owned teardown',async()=>{
   const file=CURRENT_MIGRATIONS[1],migration=await readFile(`db/migrations/${file}`,'utf8');
+  const known=new Map(await Promise.all(CURRENT_MIGRATIONS.map(async name=>[await readFile(`db/migrations/${name}`,'utf8'),name] as const))),executed:string[]=[];
   const target=new URL(process.env.FUEL_TEST_DATABASE_URL!),adminTarget=new URL(target);adminTarget.pathname='/postgres';
   // Instrument only the existing pg transport boundary. The helper still owns
   // creation, exact migration execution, observation, publication and disposal.
@@ -16,6 +17,7 @@ it('retains an actual helper bootstrap lock failure and closes both clients befo
   let injected=false,bodyStarted=false,dropped=false,bootstrap:Client|undefined,observer:Client|undefined,original:unknown,caught:unknown;
   const endSpy=vi.spyOn(Client.prototype,'end').mockImplementation(async function(this:Client){await rawEnd.call(this);closed.add(this);});
   const intercept=async function(this:Client,text:string,values?:unknown[]):Promise<QueryResult>{
+    const migrationName=known.get(text);if(migrationName)executed.push(migrationName);
     if(text.startsWith('SELECT state,wait_event_type,wait_event,cardinality'))observer=this;
     if(text.startsWith('DROP DATABASE')){
       expect(bootstrap&&closed.has(bootstrap)).toBe(true);expect(observer&&closed.has(observer)).toBe(true);dropped=true;
@@ -33,6 +35,7 @@ it('retains an actual helper bootstrap lock failure and closes both clients befo
   try{
     try{const database=await createDisposableNotificationDatabase();bodyStarted=true;await database.dispose();}catch(error){caught=error;}
     expect(caught).toBe(original);expect(caught).toMatchObject({code:'57014'});expect(bodyStarted).toBe(false);expect(dropped).toBe(true);
+    expect(executed).toEqual(CURRENT_MIGRATIONS.slice(0,2));
     const diagnostics=lines.filter(line=>line.startsWith('[OWNED_MIGRATION_FAILURE] '));expect(diagnostics).toHaveLength(1);
     const receipt=JSON.parse(diagnostics[0].slice('[OWNED_MIGRATION_FAILURE] '.length)) as MigrationFailureReceipt;
     expect(receipt).toMatchObject({file,index:2,total:CURRENT_MIGRATIONS.length,sha256:createHash('sha256').update(migration).digest('hex'),sqlstate:'57014',statementTimeout:'5s',observerFailed:false});
