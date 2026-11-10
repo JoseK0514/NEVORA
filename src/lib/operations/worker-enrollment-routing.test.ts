@@ -41,6 +41,6 @@ it('F5 rejects mixed sibling custody in either order while retaining all-legacy 
  for(const profiles of [[profile(),legacy(otherScope)],[legacy(otherScope),profile()]])expect(()=>parseManagedHostConfig(host(profiles),sha,managedDestinations)).toThrow('managed_configuration_invalid');
  expect(parseManagedHostConfig(host([legacy(scope),legacy(otherScope)]),sha,managedDestinations).profiles).toHaveLength(2);
 });
-it.each(['NEVORA_PROVISIONER_API_KEY','NEVORA_PROVISIONER_CONTROL_DATABASE_URL','NEVORA_OPERATOR_CONTROL_DATABASE_URL','STRIPE_SECRET_KEY'])('F5 refuses ambient %s on an enrolled host',field=>{
- expect(()=>parseManagedHostConfig({...host([profile()]),[field]:'fictional-private-authority'},sha,managedDestinations)).toThrow('managed_configuration_invalid');
+it.each(['NEVORA_PROVISIONER_API_KEY','NEVORA_PROVISIONER_CONTROL_DATABASE_URL','NEVORA_OPERATOR_CONTROL_DATABASE_URL','STRIPE_SECRET_KEY','NEON_AI_GATEWAY_TOKEN','NEON_API_KEY'])('F5 refuses ambient %s on an enrolled host',field=>{
+ for(const value of ['', 'fictional-private-authority'])expect(()=>parseManagedHostConfig({...host([profile()]),[field]:value},sha,managedDestinations)).toThrow('managed_configuration_invalid');
 });

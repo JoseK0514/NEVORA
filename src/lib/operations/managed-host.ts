@@ -55,7 +55,7 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
   });
   if(custodyModes.has('WORKER_ENROLLED')){
    const hostFields=new Set(['NEVORA_WORKFORCE_ENABLED','NEVORA_WORKFORCE_SOURCE_SHA','NEVORA_WORKFORCE_STATE_DIR','NEVORA_WORKFORCE_HEALTH_KEY','NEVORA_WORKFORCE_PROFILES']);
-   if(Object.keys(env).some(k=>k.startsWith('NEVORA_')&&!hostFields.has(k)||/^(DATABASE_URL|POSTGRES_|PG(?:HOST|PORT|DATABASE|USER|PASSWORD|SERVICE|OPTIONS|SSLMODE)|AWS_|STRIPE_|OPENAI_|ANTHROPIC_|PUSH_|NOTIFICATION_WORKER_SECRET$|FUEL_PORTAL_ORIGIN$)/.test(k)))throw invalid();
+   if(Object.keys(env).some(k=>k.startsWith('NEVORA_')&&!hostFields.has(k)||/^(DATABASE_URL|POSTGRES_|PG(?:HOST|PORT|DATABASE|USER|PASSWORD|SERVICE|OPTIONS|SSLMODE)|AWS_|NEON_|STRIPE_|OPENAI_|ANTHROPIC_|PUSH_|NOTIFICATION_WORKER_SECRET$|FUEL_PORTAL_ORIGIN$)/.test(k)))throw invalid();
   }
   return Object.freeze({enabled:true,sourceSha,stateDirectory,healthKey,profiles:Object.freeze(parsed)});
  }catch{throw invalid();}
