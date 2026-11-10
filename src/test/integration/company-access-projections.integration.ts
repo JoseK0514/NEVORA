@@ -111,8 +111,13 @@ it('person hours reuse current directory scope and published snapshots, withhold
  const f=await fixture();try{
   const {readOperationalEmployeeHours}=await import('../../lib/company-access/operational-read.server');
   const [{week}]=await f.q<{week:string}>("SELECT date_trunc('week',clock_timestamp() AT TIME ZONE 'America/Puerto_Rico')::date::text AS week");
+  await f.q(`UPDATE schedules SET week_start=$1,status='PUBLISHED' WHERE id IN('scope-a','scope-b')`,[week]);
+  await f.q(`UPDATE shifts SET date=$1,start_time=CASE id WHEN 'shift-a' THEN time '08:00' ELSE time '10:00' END,
+   end_time=CASE id WHEN 'shift-a' THEN time '09:00' ELSE time '13:00' END WHERE id IN('shift-a','shift-b')`,[week]);
   await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by) VALUES('hours-r',$1,1,'PUBLISH','owner')`,[week]);
-  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,location_id,employee_id,date,start_time,end_time) VALUES('hours-a','hours-r','loc-1','target',$1,'08:00','09:00'),('hours-b','hours-r','loc-2','target',$1,'10:00','13:00')`,[week]);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'hours-'||sh.id,'hours-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id IN('shift-a','shift-b')`);
   const scoped=await readOperationalEmployeeHours(f.restricted,'target',f.db.executor);expect(scoped.state).toBe('ready');if(scoped.state!=='ready')throw Error(JSON.stringify(scoped));
   expect(scoped.data).toMatchObject({employeeId:'target',weekStart:week,scheduledWeekMinutes:60,workedWeekMinutes:0});
   expect(JSON.stringify(scoped.data)).not.toMatch(/sourceHash|entries|Private|phone|reason/);
@@ -132,11 +137,15 @@ it('owner names expose active in-workspace owners only and refuse expired sessio
 });
 it('the operational monitor adds canonical Today lateness for the matching open punch',async()=>{
  const f=await fixture();try{
+  await f.q(`UPDATE shifts SET date=((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,
+   start_time=((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::time,
+   end_time=((clock_timestamp()+interval '6 hours') AT TIME ZONE 'America/Puerto_Rico')::time WHERE id='shift-a'`);
+  await f.q(`UPDATE schedules SET week_start=(SELECT date_trunc('week',date::timestamp)::date FROM shifts WHERE id='shift-a'),status='PUBLISHED' WHERE id='scope-a'`);
   await f.q(`INSERT INTO schedule_publication_revisions(id,week_start,revision_number,source_type,created_by)
-   SELECT 'late-r',date_trunc('week',(clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,99,'PUBLISH','owner'`);
-  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,location_id,employee_id,date,start_time,end_time)
-   SELECT 'late-shift','late-r','loc-1','target',((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::date,
-    ((clock_timestamp()-interval '2 hours') AT TIME ZONE 'America/Puerto_Rico')::time,((clock_timestamp()+interval '6 hours') AT TIME ZONE 'America/Puerto_Rico')::time`);
+   SELECT 'late-r',week_start,99,'PUBLISH','owner' FROM schedules WHERE id='scope-a'`);
+  await f.q(`INSERT INTO schedule_publication_revision_shifts(id,revision_id,source_shift_id,schedule_id,location_id,employee_id,date,start_time,end_time)
+   SELECT 'late-shift','late-r',sh.id,sh.schedule_id,s.location_id,sh.employee_id,sh.date,sh.start_time,sh.end_time
+   FROM shifts sh JOIN schedules s ON s.id=sh.schedule_id WHERE sh.id='shift-a'`);
   await f.q(`INSERT INTO clocker_devices(id,location_id,name,active) VALUES('late-device','loc-1','Owned',true);
    INSERT INTO time_entries(id,employee_id,location_id,device_id,clock_in_at,status) VALUES('late-entry','target','loc-1','late-device',clock_timestamp()-interval '1 hour','CLOCKED_IN')`);
   const monitor=await readOperationalClockMonitor(f.restricted,f.db.executor);expect(monitor).toMatchObject({state:'ready',data:{employees:[{employeeId:'target',late:true}]}});
