@@ -1,7 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import { ArrowsClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowsClockwise';
-import { AuthBrand } from '@/components/auth-brand';
 import { BrandWordmark } from '@/components/brand-mark';
 import { AppErrorScreen } from '@/components/app-error-screen';
 import { focusAfterRetry } from '@/components/kit/focus-after-retry';
@@ -29,7 +28,8 @@ export function PublicErrorScreen({reset}: {reset: () => void}) {
           <a className="nf-cta pe-signin" href="/login">Go to sign in</a>
         </div>
       </div>
-      <footer className="nf-foot"><AuthBrand/><small>{NUVORA_BRAND.poweredBy}</small></footer>
+      {/* Review B4 (Nov 10, 2026, NV-206): the 404's footer without the old lockup and its sub-12px lines. */}
+      <footer className="nf-foot"><small>{NUVORA_BRAND.poweredBy}</small></footer>
     </section>
   </main>;
 }

@@ -72,7 +72,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
 describe('Sign-in pages in Spanish',()=>{
  it('shows the request and reset forms and their known messages in Spanish, keeping the English outcome logic',()=>{
   const request=renderToStaticMarkup(<AccountRecovery kind="request" lang="es"/>);
-  expect(request).toContain('Recuperar acceso');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
+  // Review B4 (copy audit S3): the page shares the link's name, "¿Olvidaste tu contraseña?".
+  expect(request).toContain('¿Olvidaste tu contraseña?');expect(request).toContain('Correo de recuperación');expect(request).toContain('Solicitar recuperación');
   const reset=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Passwords do not match." onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(reset).toContain('aria-invalid="true"');expect(reset).toContain('Revisa tus contraseñas');expect(reset).toContain('Las contraseñas no coinciden.');
   const unknown=renderToStaticMarkup(<RecoveryReset lang="es" hydrated busy={false} done={false} message="Something new from the server." onSubmit={()=>{}} proofRef={()=>{}}/>);

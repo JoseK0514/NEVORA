@@ -23,7 +23,8 @@ export function BrandLegal({ lang = "en" }: { lang?: "en" | "es" }) {
 /** Quiet (v4, approved Oct 23): one line under the sign-in pages, "© 2026 VELANI LLC · Privacy · Terms · Support". */
 export function QuietLegal({ lang = "en" }: { lang?: "en" | "es" }) {
   const t = LINKS[lang];
-  return <p className="q-legal">© 2026 VELANI LLC{policiesVisible() ? <>
-    {" · "}<Link href="/privacy">{t.privacy}</Link>{" · "}<Link href="/terms">{t.terms}</Link>{" · "}<Link href="/support">{t.support}</Link>
+  // Review B4 (Nov 10, 2026, NV-317): each link keeps its dot, so a narrow Spanish line never strands "·" or one word.
+  return <p className="q-legal"><span className="q-legal__item">© 2026 VELANI LLC</span>{policiesVisible() ? <>
+    {" "}<span className="q-legal__item">· <Link href="/privacy">{t.privacy}</Link></span>{" "}<span className="q-legal__item">· <Link href="/terms">{t.terms}</Link></span>{" "}<span className="q-legal__item">· <Link href="/support">{t.support}</Link></span>
   </> : null}<span className="q-sr">{` ${NUVORA_BRAND.ownership}`}</span></p>;
 }

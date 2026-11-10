@@ -1,13 +1,15 @@
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import "@/components/auth-premium/auth-b.css";
+import "@/components/quiet/quiet.css";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AuthBrand } from "@/components/auth-brand";
 import { BrandLegal } from "@/components/brand-legal";
 import { NUVORA_BRAND } from "@/lib/brand";
 import { POLICY_DOCUMENTS, POLICY_FACTS, POLICY_OPERATOR, SUPPORT_EMAIL, policiesVisible, type Block, type Inline, type PolicyDocument } from "@/lib/legal/policies";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
-import { QuietHeader, QuietNav } from "@/components/quiet/quiet";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
+import { AuthBackNav, DocBrand } from "@/components/auth-premium/auth-back-nav";
+import { OpenOnDesktop } from "./open-on-desktop";
 
 function Run({ run, context }: { run: Inline; context?: 'employee' }) {
   if (typeof run === "string") return <>{run}</>;
@@ -73,27 +75,33 @@ export function QuietLegalDocumentPage({ doc, action }: { doc: PolicyDocument; a
   if (!policiesVisible()) notFound();
   const effective = POLICY_FACTS.EFFECTIVE_DATE;
   const sub = doc.effective ? `Effective ${effective ?? "[CONFIRM_EFFECTIVE_DATE]"} · ${POLICY_OPERATOR}` : POLICY_OPERATOR;
+  // Review B4 (Nov 10, 2026): the white wordmark on the band (NV-200); one back control (NV-318); the action on the title
+  // row inside the band (NV-204); a contents list only where it saves scanning (more than six sections) and, from 1024px,
+  // the sections open as one reading card the list moves through (NV-201); the how-to on Account deletion opens first
+  // (NV-205); disclosures turn a down caret (NV-101 here).
+  const toc = doc.sections.length > 6;
   return (
     <main className="q-page q-auth q-doc" data-nv-page="">
       <div className="q-auth__col">
-        <QuietNav back={{ href: "/login", label: "Sign in" }} />
-        <QuietHeader title={doc.title} sub={sub} titleId="legal-title" />
+        <DocBrand />
+        <AuthBackNav href="/login" label="Sign in" />
+        <div className="q-hd q-doc__hd"><div><h1 id="legal-title">{doc.title}</h1><p>{sub}</p></div>{action ? <div className="q-doc__action">{action}</div> : null}</div>
         <p className="q-sr">{doc.summary}</p>
-        {/* Desktop (auth-b.css, 1024px and wider): the sections as a contents list on the left; a link opens its section where
-          * it reads (the browser opens a closed disclosure for the address it jumps to). Phones and tablets don't show it. */}
-        {doc.sections.length > 1 ? <nav className="q-doc__toc" aria-labelledby="legal-toc-title"><h2 id="legal-toc-title">{TOC_TITLE[doc.slug] ?? "On this page"}</h2>
+        {/* Desktop (auth-b.css, 1024px and wider): the sections as a contents list on the left; a link jumps to its open
+          * section. Phones and tablets don't show it. */}
+        {toc ? <nav className="q-doc__toc" aria-labelledby="legal-toc-title"><h2 id="legal-toc-title">{TOC_TITLE[doc.slug] ?? "On this page"}</h2>
           <ul>{doc.sections.map(section => <li key={section.heading}><a href={`#legal-${slug(section.heading)}-text`}>{section.heading}</a></li>)}</ul></nav> : null}
-        {action ? <div className="q-doc__action">{action}</div> : null}
-        <ul className="q-list q-doc__list" aria-labelledby="legal-title">
-          {doc.sections.map(section => <li key={section.heading}>
-            <details className="q-details" id={`legal-${slug(section.heading)}`}>
-              <summary className="q-row q-row--one"><span className="q-rt"><b>{section.heading}</b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
+        <ul className="q-list q-doc__list" id="legal-sections" aria-labelledby="legal-title">
+          {doc.sections.map((section, index) => <li key={section.heading}>
+            <details className="q-details" id={`legal-${slug(section.heading)}`} open={doc.slug === "account-deletion" && index === 0 ? true : undefined}>
+              <summary className="q-row q-row--one"><span className="q-rt"><b>{section.heading}</b></span><CaretDownIcon className="q-chev" weight="bold" aria-hidden="true" /></summary>
               <div className="q-doc__body" id={`legal-${slug(section.heading)}-text`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} />)}</div>
             </details>
           </li>)}
           {doc.slug === "privacy" ? <li><a className="q-row q-row--one" href={`mailto:${SUPPORT_EMAIL}`}><span className="q-rt"><b>Questions</b></span><span className="q-rv">{SUPPORT_EMAIL}</span></a></li> : null}
         </ul>
         <QuietPolicyLinks current={doc.slug} />
+        {toc ? <OpenOnDesktop list="legal-sections" /> : null}
       </div>
     </main>
   );
@@ -102,8 +110,9 @@ export function QuietLegalDocumentPage({ doc, action }: { doc: PolicyDocument; a
 /** Quiet (v4): the policy pages link each other (and Account deletion) in one line at the end. */
 export function QuietPolicyLinks({ current }: { current: PolicyDocument["slug"] }) {
   return <nav className="q-doc__links" aria-label="NEVORA policies and help">
-    {POLICY_DOCUMENTS.map((other, index) => <span key={other.slug}>{index ? " · " : null}{other.slug === current
+    {/* Each link keeps its dot, so a line never ends on "·" or splits a title (NV-317). */}
+    {POLICY_DOCUMENTS.map((other, index) => <Fragment key={other.slug}>{index ? " " : null}<span className="q-legal__item">{index ? "· " : null}{other.slug === current
       ? <span aria-current="page">{shortTitle(other)}</span>
-      : <Link href={`/${other.slug}`}>{shortTitle(other)}</Link>}</span>)}
+      : <Link href={`/${other.slug}`}>{shortTitle(other)}</Link>}</span></Fragment>)}
   </nav>;
 }

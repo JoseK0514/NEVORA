@@ -16,7 +16,10 @@ export const dynamic='force-dynamic';
 export default async function WelcomePage(){
  if(!mobileAccessEnabled())notFound();
  const lang=await readAuthLang(),t=MOBILE_ACCESS_COPY[lang];
- return <QuietAuthShell lang={lang} t={AUTH_COPY[lang]}><div className="ma-welcome"><Image sizes="(max-width: 430px) calc(100vw - 48px), 382px" className="ma-welcome-art" src="/assets/illustrations/mobile-access-welcome.png" width={1536} height={1024} alt=""/><div className="q-hd"><h1>{t.welcome}</h1><p>{t.welcomeSub}</p></div><div className="ma-actions"><Link className="q-btn" href="/login">{t.signIn}<ArrowRightIcon size={20} aria-hidden="true"/></Link><Link className="q-btn q-btn--sec" href="/activate">{t.activateAccount}</Link></div><p className="ma-note">{t.welcomeHelp}</p></div></QuietAuthShell>;
+ // Mock 7 (review B4, NV-197): the illustration lives in the teal band on phones and tablets and in the brand panel on a
+ // desktop (instead of the panel's product line, so one headline speaks); the card holds the slogan and the two ways in.
+ const art=(sizes:string)=><Image sizes={sizes} src="/assets/illustrations/mobile-access-welcome.png" width={1536} height={1024} alt=""/>;
+ return <QuietAuthShell lang={lang} t={AUTH_COPY[lang]} brandArt={art('440px')} hero={art('(max-width: 430px) calc(100vw - 32px), 360px')}><div className="ma-welcome"><div className="q-hd"><h1>{t.welcome}</h1><p>{t.welcomeSub}</p></div><div className="ma-actions"><Link className="q-btn" href="/login">{t.signIn}<ArrowRightIcon size={20} aria-hidden="true"/></Link><Link className="q-btn q-btn--sec" href="/activate">{t.activateAccount}</Link></div><p className="ma-note">{t.welcomeHelp}</p></div></QuietAuthShell>;
 }
 
 export const generateMetadata=()=>mobileAccessMetadata("welcome");

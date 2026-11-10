@@ -21,7 +21,7 @@ export default async function AccessHelpPage({params,searchParams}:{params:Promi
  if(topic==='support'&&!supportEmail)notFound();
  const from=query.from&&Object.hasOwn(origins,query.from)?query.from:'login';
  const parent=topic?`/access-help?from=${from}`:origins[from as keyof typeof origins];
- return <QuietAuthShell helpFrom={from as keyof typeof origins} lang={lang} t={AUTH_COPY[lang]} back={parent} backLabel={lang==='es'?'Volver':'Back'}><AccessHelpView topic={topic} lang={lang} from={from} supportEmail={supportEmail} ownerEmail={SUPPORT_EMAIL}/></QuietAuthShell>;
+ return <QuietAuthShell helpFrom={from as keyof typeof origins} lang={lang} t={AUTH_COPY[lang]} back={parent} backLabel={lang==='es'?'Volver':'Back'} footerHelp={false}><AccessHelpView topic={topic} lang={lang} from={from} supportEmail={supportEmail} ownerEmail={SUPPORT_EMAIL}/></QuietAuthShell>;
 }
 
 export const generateMetadata=()=>mobileAccessMetadata("help");

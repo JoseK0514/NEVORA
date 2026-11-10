@@ -2,7 +2,9 @@
 import {useMobilePresentation} from '@/components/mobile-access/use-mobile-presentation';
 
 import Link from 'next/link';
-import type {AuthLang} from '@/lib/auth-copy';
+import {AUTH_COPY,type AuthCopy,type AuthLang} from '@/lib/auth-copy';
+import {AuthValidation} from '@/components/auth-premium/auth-validation';
+import {WarningCircleIcon} from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import {MobileActivationView} from '@/components/mobile-access/activation-view';
 import {useLayoutEffect,useRef,useState,type FormEvent,type RefObject} from 'react';
 import type {ActivationResult} from '@/lib/auth/invitations/model';
@@ -68,11 +70,11 @@ export function ActivationInvitation({loginHref,workspaceName=null,lang='en',mob
  return <ActivationInvitationView lang={lang} mobileAccess={mobileAccess} key={formVersion} phase={phase} mismatch={mismatch} employeeId={employeeId} loginHref={loginHref} workspaceName={workspaceName} onSubmit={submit} formRef={formRef} successRef={success}/>;
 }
 /** Copies the confirmed sign-in ID; says so for two seconds. Selecting the field stays available as before. */
-function CopyId({value}:{value:string}) {
+function CopyId({value,a}:{value:string;a:AuthCopy['activation']}) {
  const [copied,setCopied]=useState(false);
  async function copy(){try{await navigator.clipboard.writeText(value);setCopied(true);setTimeout(()=>setCopied(false),2000);}catch{document.getElementById('activation-employee-id')?.focus();}}
- return <><button type="button" className="q-in__eye q-in__copy" onClick={()=>void copy()} aria-label={copied?"Copied":"Copy Employee ID"}>{copied?<CheckIcon size={17} weight="bold" aria-hidden="true"/>:<CopySimpleIcon size={17} weight="bold" aria-hidden="true"/>}</button>
-  <span className="q-sr" role="status" aria-live="polite">{copied?'Employee ID copied':''}</span></>;
+ return <><button type="button" className="q-in__eye q-in__copy" onClick={()=>void copy()} aria-label={copied?a.copied:a.copyId}>{copied?<CheckIcon size={17} weight="bold" aria-hidden="true"/>:<CopySimpleIcon size={17} weight="bold" aria-hidden="true"/>}</button>
+  <span className="q-sr" role="status" aria-live="polite">{copied?a.idCopied:''}</span></>;
 }
 /* Quiet (v4, approved Oct 23): Activate account with one line under the title. With no usable invitation: Back to sign in
  * and "No invitation? Ask your Owner." With one: the two passwords and Activate account. Activated: the Employee ID to keep.
@@ -82,30 +84,41 @@ export function ActivationInvitationView({phase,mismatch=false,employeeId,loginH
  if(mobile)return <MobileActivationView {...{phase,mismatch,employeeId,loginHref,workspaceName,onSubmit,formRef,successRef,lang}}/>;
  const canSubmit=['ready','pending','unavailable'].includes(phase);const error=mismatch||phase==='unavailable';
  const signInHref=loginHref.replace('?activated=1&','?').replace('?activated=1','');
- const workspace=workspaceName??'Workspace unavailable';
- if(phase==='activated'&&employeeId)return <div className="activation-success" role="status" ref={successRef} tabIndex={-1}>
-  <div className="q-hd"><h1>Account activated</h1><p>Keep your Employee ID. You will use it with the password you just created.</p></div>
-  <div className="q-fl"><label htmlFor="activation-employee-id">Employee ID for sign-in</label>
-   <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId}/></div></div>
-  <Link href={loginHref} className="q-btn">Continue to sign in</Link>
- </div>;
- const sub=phase==='checking'?`Opening your invitation… · ${workspace}`:canSubmit?`Invitation verified · ${workspace}`
-  :phase==='outcome_unknown'?'Activation could not be confirmed.':'Open the invitation link in your email.';
+ // Review B4 (Nov 10, 2026, NV-055): every word comes from AUTH_COPY, so a Spanish page stays Spanish. NV-196: without a
+ // usable invitation the page has one model at every width (the title and line, then one card with the next step and
+ // "Already activated? Sign in"); the way back is the page's own back control, so the second grey button is gone.
+ const t=AUTH_COPY[lang],a=t.activation;
+ const workspace=workspaceName??t.workspaceUnavailable;
+ if(phase==='activated'&&employeeId)return <>
+  <div className="q-hd"><h1>{a.activatedTitle}</h1><p>{a.activatedSub}</p></div>
+  <div className="activation-success q-card" role="status" ref={successRef} tabIndex={-1}>
+   <p className="q-sr">{a.activatedTitle}. {a.activatedSub}</p>
+   <div className="q-fl"><label htmlFor="activation-employee-id">{a.idForSignIn}</label>
+    <div className="q-in__wrap"><input id="activation-employee-id" className="q-in" value={employeeId} readOnly autoComplete="off" onFocus={event=>event.currentTarget.select()}/><CopyId value={employeeId} a={a}/></div></div>
+   <Link href={loginHref} className="q-btn">{a.continueSignIn}</Link>
+  </div>
+ </>;
+ const sub=phase==='checking'?`${a.opening} · ${workspace}`:canSubmit?`${a.verified} · ${workspace}`
+  :phase==='outcome_unknown'?a.notConfirmed:t.quiet.activateSub;
  return <>
-  <div className="q-hd"><h1>Activate account</h1><p role={phase==='checking'?'status':undefined}>{sub}</p></div>
-  <p className="q-sr" id="activation-intro">Open your email invitation, then choose a password.</p>
-  {phase==='invalid'?<p className="q-help q-auth__alert activation-invitation-state" role="status">This invitation link can’t be used. Ask your Owner for a new invitation. You can sign in if you have already activated.</p>:null}
-  {phase==='outcome_unknown'?<p className="q-help q-auth__alert activation-invitation-state" role="alert">Ask your Owner to confirm your account status and Employee ID. If you know your ID, try signing in before requesting a new invitation. Your account may already be activated.</p>:null}
-  {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">Open the invitation link from your email to activate your account.</span>:null}
+  <div className="q-hd"><h1>{t.activateTitle}</h1><p role={phase==='checking'?'status':undefined}>{sub}</p></div>
+  <p className="q-sr" id="activation-intro">{a.intro}</p>
+  {phase==='missing'?<span className="q-sr activation-invitation-state" role="status">{a.missing}</span>:null}
   {canSubmit&&<form ref={formRef} className="q-auth__form activation-form" onSubmit={onSubmit} aria-busy={phase==='pending'} aria-describedby="activation-intro">
+   <AuthValidation/>
+   {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unavailable}</span></p>:null}
    <fieldset className="q-auth__fields" disabled={phase==='pending'}>
-    <ActivationPasswords quiet mismatch={mismatch} errorId={error?'activation-error':undefined}/>
-    {phase==='unavailable'&&!mismatch?<p id="activation-error" className="q-error q-auth__alert" role="alert">Activation is temporarily unavailable. Your invitation was not confirmed. Try again later.</p>:null}
+    <ActivationPasswords quiet lang={lang} mismatch={mismatch} errorId={error?'activation-error':undefined}/>
    </fieldset>
-   <ActivationSubmit pending={phase==='pending'} className="q-btn"/>
+   <ActivationSubmit pending={phase==='pending'} idle={t.activateAccount} busy={t.activatingAccount} className="q-btn"/>
   </form>}
-  <noscript><p className="q-help q-auth__alert">JavaScript is required to open your secure email invitation. Use an enabled browser or contact your Owner.</p></noscript>
-  {canSubmit||phase==='checking'?<Link href={signInHref} className="q-btn q-btn--quiet">Already activated? Sign in</Link>
-   :<><Link href={signInHref} className="q-btn q-btn--sec">Back to sign in</Link><p className="q-help q-auth__center">No invitation? Ask your Owner.</p></>}
+  {!canSubmit&&phase!=='checking'?<div className="q-card q-auth__card">
+   {phase==='invalid'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="status"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.invalid}</span></p>:null}
+   {phase==='outcome_unknown'?<p className="q-auth__alert q-auth__alert--wait activation-invitation-state" role="alert"><WarningCircleIcon size={20} weight="bold" aria-hidden="true"/><span>{a.unknown}</span></p>:null}
+   {mobileAccess?<Link href="/access-help/invitation" className="q-btn">{a.inviteHelp}</Link>:null}
+   <p className="q-auth__note">{t.quiet.noInvitation}</p>
+   <Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>
+  </div>:<Link href={signInHref} className="q-btn q-btn--quiet">{t.alreadyActivated}</Link>}
+  <noscript><p className="q-help q-auth__alert">{a.noScript}</p></noscript>
  </>;
 }

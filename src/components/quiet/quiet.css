@@ -508,8 +508,10 @@ html:has(.q-auth), body:has(.q-auth) { background: var(--q-bg) !important; }
 :is(#q-root, html) .q-auth__links { display: flex; justify-content: space-between; margin: 8px 20px 0; }
 :is(#q-root, html) .q-auth__links a { display: flex; align-items: center; height: 44px; font-size: 17px; line-height: 22px; color: var(--q-teal); text-decoration: none; }
 :is(#q-root, html) .q-auth__foot { position: absolute; left: 0; right: 0; bottom: var(--q-safe-bottom, env(safe-area-inset-bottom)); padding: 0 20px; text-align: center; }
-:is(#q-root, html) .q-legal { margin: 0; font-size: 13px; line-height: 18px; color: var(--q-soft); letter-spacing: 0; }
-:is(#q-root, html) .q-legal a { color: var(--q-grey); text-decoration: none; }
+/* Review B4 (Nov 10, 2026, NV-059): the legal line reads at AA (#6A7176, 4.5:1 on the canvas) and its links are darker and
+ * bold, with a 44px tap band, so they differ by more than colour. Only the sign-in pages render .q-legal. */
+:is(#q-root, html) .q-legal { margin: 0; font-size: 13px; line-height: 18px; color: #6A7176; letter-spacing: 0; }
+:is(#q-root, html) .q-legal a { padding-block: 13px; color: #3F464B; font-weight: 600; text-decoration: none; }
 :is(#q-root, html) .q-in__eye { position: absolute; top: 50%; right: 4px; display: grid; place-items: center; width: 44px; height: 44px; min-height: 0; padding: 0; border: 0; background: none; color: var(--q-grey); transform: translateY(-50%); cursor: pointer; }
 :is(#q-root, html) .q-in__eye svg { width: 24px; height: 24px; }
 :is(#q-root, html) .q-in__wrap > .q-in { width: 100%; }
@@ -545,9 +547,10 @@ html:has(.q-auth), body:has(.q-auth) { background: var(--q-bg) !important; }
 /* Payroll (v4): the summary on phones; wider screens go straight to the review. */
 @media (min-width: 761px) { :is(#q-root, html) .q-payroll-phone, :is(#q-root, html) .q-payroll-back { display: none; } }
 @media (max-width: 760px) { :is(#q-root, html) .q-payroll-review[data-home] { display: none; } }
-:is(#q-root, html) .q-doc__links { margin: 32px 20px 24px; font-size: 13px; line-height: 18px; color: var(--q-soft); text-align: center; }
-:is(#q-root, html) .q-doc__links a { color: var(--q-grey); text-decoration: none; }
-:is(#q-root, html) .q-doc__links [aria-current] { color: var(--q-ink); }
+/* Review B4 (NV-059): the policy pages' link line, as the legal line above. Only the policy pages render .q-doc__links. */
+:is(#q-root, html) .q-doc__links { margin: 32px 20px 24px; font-size: 13px; line-height: 18px; color: #6A7176; text-align: center; }
+:is(#q-root, html) .q-doc__links a { padding-block: 13px; color: #3F464B; font-weight: 600; text-decoration: none; }
+:is(#q-root, html) .q-doc__links [aria-current] { color: #111517; font-weight: 600; }
 :is(#q-root, html) .q-hours__updated { margin: -4px 20px 12px 72px; }
 :is(#q-root, html) .q-rt__line { display: block; }
 /* New update (v4): Next in the bar checks the audience, so the card that only repeats it stays out of view. */
