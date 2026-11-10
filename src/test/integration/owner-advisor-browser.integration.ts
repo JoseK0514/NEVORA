@@ -18,13 +18,16 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
   const runtime = createRequire(
     resolve("tools/ci-browser-runtime/package.json"),
   )("playwright");
-  const { observeDocumentNavigation, observeWindowExceptions } = await import(
+  const { observeDocumentNavigation, observeWindowExceptions, verifyNavigationFetchDiagnostic } = await import(
     pathToFileURL(resolve("scripts/browser-navigation-diagnostic.mjs")).href
   );
+  const {observeBrowserCell}=await import(pathToFileURL(resolve('scripts/phase-e-browser-qa.mjs')).href);
+  const {verifyReloadFetchDiagnostic}=await import(pathToFileURL(resolve('scripts/browser-reload-diagnostic.mjs')).href);
   const app = await createOwnedNextApp(evidence, { ownerAdvisorEnabled: true });
   const checks: string[] = [],
     external: string[] = [],
     errors: string[] = [];
+  const runtimeErrors: unknown[] = [],browserDiagnostics: unknown[]=[];
   let complete = false;
   try {
     await seedOwnedApp(app.database.executor);
@@ -56,6 +59,9 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
     for (const engine of ["chromium", "webkit"]) {
       const browser = await runtime[engine].launch({ headless: true });
       try {
+        const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
+        const reloadProbe=engine==='webkit'?await verifyReloadFetchDiagnostic(browser):null;
+        browserDiagnostics.push({engine,navigationProbe,reloadProbe});
         for (const actor of ["QAOWNER", "OA-MANAGER", "OA-EMPLOYEE"]) {
           const context = await browser.newContext({
             viewport: { width: 1440, height: 1000 },
@@ -79,6 +85,9 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             },
           );
           await context.tracing.start({ screenshots: true, snapshots: true });
+          const execution={engine,actor,navigationDiagnostics:[]};browserDiagnostics.push(execution);
+          const cell=observeBrowserCell(execution,runtimeErrors,{navigationDiagnosticVerified:navigationProbe?.verified===true,reloadDiagnosticVerified:reloadProbe?.verified===true});
+          await cell.observeContext(context,actor==='QAOWNER'?'manager':'primary');
           const page = await context.newPage();
           let phase = "login";
           const diagnostics: {
@@ -96,7 +105,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
               url,
               message,
             });
-          const navigation = observeDocumentNavigation(page, () => origin);
+          const navigation = observeDocumentNavigation(page, () => origin,{allowSameUrlReload:reloadProbe?.verified===true});
           const knownPath = (value: string) => {
             try {
               const url = new URL(value);
@@ -104,9 +113,10 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
                 ? url.pathname : "other";
             } catch { return "unavailable"; }
           };
-          await observeWindowExceptions(context, (_page: unknown, kind: string) =>
-            record("window:" + kind, knownPath(page.url()), JSON.stringify(navigation.snapshot())),
-          );
+          if(navigationProbe?.verified!==true&&reloadProbe?.verified!==true)await observeWindowExceptions(context, (_page: unknown, kind: string) =>{
+            record("window:" + kind, knownPath(page.url()), JSON.stringify(navigation.snapshot()));
+            runtimeErrors.push({type:'window-javascript-error',engine,actor,kind});
+          });
           page.on("request", (request: { url(): string; method(): string; isNavigationRequest(): boolean; frame(): unknown; headers(): Record<string, string> }) => {
             const path = knownPath(request.url());
             if (request.isNavigationRequest() && request.frame() === page.mainFrame())
@@ -152,11 +162,11 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             record("pageerror-context", knownPath(page.url()), JSON.stringify({ name: error.name === "Fetch API cannot load http" ? "webkit-native-fetch" : error.name === "TypeError" ? "TypeError" : "other", loadFailed: error.name === "TypeError" && error.message === "Load failed", navigation: navigation.snapshot() })),
           );
           page.setDefaultTimeout(20000);
-          page.on("pageerror", (error: Error) =>
-            errors.push(
+          page.on("pageerror", (error: Error) =>{
+            if(!cell.isNavigationDiagnostic(error))errors.push(
               engine + ":" + actor + ":" + page.url() + ":" + error.message,
-            ),
-          );
+            );
+          });
           try {
             await page.goto(origin + "/login");
             await page.getByLabel("Employee ID", { exact: true }).fill(actor);
@@ -616,6 +626,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
             throw error;
           } finally {
             phase = "teardown";
+            cell.setPhase('context-close');
             await page.evaluate(() =>
               window.dispatchEvent(new Event("pagehide")),
             );
@@ -636,6 +647,7 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
     }
     expect(external).toEqual([]);
     expect(errors).toEqual([]);
+    expect(runtimeErrors).toEqual([]);
     complete = true;
   } finally {
     await app.close();
@@ -647,6 +659,8 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
           checks,
           external,
           errors,
+          runtimeErrors,
+          browserDiagnostics,
           source: app.sourceHashes,
           providerConfigured: false,
           fixtureScope:

@@ -3,14 +3,15 @@ import {resolve} from 'node:path';
 import {expect,it,vi} from 'vitest';
 const {observeBrowserCell}=await import(resolve('scripts/phase-e-browser-qa.mjs'));
 
-async function fixture({verified=true,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications'}={}){
+async function fixture({verified=true,reloadVerified=false,sameUrl=false,engine='webkit',phase='scenario',pending=true,host='127.0.0.1:43210',path='/api/notifications'}={}){
  let currentUrl='http://127.0.0.1:43210/app';
  const errors:unknown[]=[],execution={suite:'home',engine,width:390,status:'failed',navigationDiagnostics:[]},frame={url:()=>currentUrl};
  const binding=vi.fn();
  const context=Object.assign(new EventEmitter(),{exposeBinding:vi.fn(async(_name:string,fn:unknown)=>{binding.mockImplementation(fn as (...args:unknown[])=>unknown);}),addInitScript:vi.fn(async()=>{})});
  const page=Object.assign(new EventEmitter(),{url:()=>currentUrl,mainFrame:()=>frame});
- const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
- const request={isNavigationRequest:()=>true,frame:()=>frame,url:()=> 'http://127.0.0.1:43210/app/schedule'};
+ const cell=observeBrowserCell(execution,errors,{navigationDiagnosticVerified:verified,reloadDiagnosticVerified:reloadVerified});await cell.observeContext(context,'primary');context.emit('page',page);cell.setPhase(phase);
+ const destination=sameUrl?currentUrl:'http://127.0.0.1:43210/app/schedule';
+ const request={isNavigationRequest:()=>true,resourceType:()=> 'document',method:()=> 'GET',frame:()=>frame,url:()=>destination};
  if(pending)page.emit('request',request);
  const error={name:'Fetch API cannot load http',message:'/'+host+path+' due to access control checks.'};
  const commit=(url=request.url())=>{currentUrl=url;page.emit('framenavigated',frame);};
@@ -60,6 +61,45 @@ it('a finished navigation request cannot leave stale native-diagnostic eligibili
 });
 it('same-URL navigation ambiguity stays fatal',async()=>{
  const f=await fixture({pending:false});f.page.emit('request',{...f.request,url:f.page.url});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+});
+it.each([true,false])('requires independently proven reload behavior for an exact pending notification read (other navigation verified=%s)',async verified=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true,verified});f.page.emit('pageerror',f.error);f.cell.assertClean();
+ expect(f.execution.navigationDiagnostics).toHaveLength(1);expect(f.execution.navigationDiagnostics[0]).toMatchObject({documentNavigation:{phase:'reload-requested'}});
+});
+it.each(['frame','response','failed','finished'])('ends reload eligibility at the first %s boundary, including an unfinished streaming replacement',async boundary=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true});f.page.emit('pageerror',f.error);f.cell.assertClean();
+ if(boundary==='frame')f.page.emit('framenavigated',f.frame);
+ else if(boundary==='response')f.page.emit('response',{request:()=>f.request,status:()=>200});
+ else f.page.emit(boundary==='failed'?'requestfailed':'requestfinished',f.request);
+ f.page.emit('pageerror',{...f.error});expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(1);
+});
+it('a same-URL source history event makes reload attribution unproven instead of claiming a document commit',async()=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true});f.page.emit('framenavigated',f.frame);f.page.emit('pageerror',f.error);
+ expect(()=>f.cell.assertClean()).toThrow();expect(f.errors[0]).toMatchObject({documentNavigation:{phase:'reload-boundary'}});
+});
+it.each(['error','unhandledrejection'])('a genuine reload-window %s remains fatal even with the exact native error shape',async kind=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true,verified:false});f.page.emit('pageerror',f.error);f.binding({page:f.page},kind);
+ expect(()=>f.cell.assertClean()).toThrow();expect(f.errors).toContainEqual(expect.objectContaining({type:'window-javascript-error',kind}));
+});
+it.each(['/api/employee/home','/api/manager/today','/api/manager/action-center','/api/notifications?secret=PRIVATE_ACTOR_TOKEN'])('reload proof never admits an unverified read kind or query: %s',async path=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true,path});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+ expect(f.execution.navigationDiagnostics).toHaveLength(0);expect(JSON.stringify(f.errors)).not.toContain('PRIVATE_ACTOR_TOKEN');
+});
+it('a navigation flag without a document resource type does not prove a reload',async()=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true,pending:false});f.page.emit('request',{...f.request,resourceType:()=> 'fetch'});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+});
+it('GET reload proof never admits a form resubmission',async()=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true,pending:false});f.page.emit('request',{...f.request,method:()=> 'POST'});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+});
+it.each([302,403,503])('a known notification HTTP %s during reload remains fatal',async status=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true});const request={url:()=> 'http://127.0.0.1:43210/api/notifications',method:()=> 'GET'};
+ f.page.emit('response',{request:()=>request,status:()=>status});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();expect(f.execution.navigationDiagnostics).toHaveLength(0);
+});
+it('a known failed notification transport during reload remains fatal',async()=>{
+ const f=await fixture({sameUrl:true,reloadVerified:true});f.page.emit('requestfailed',{url:()=> 'http://127.0.0.1:43210/api/notifications',method:()=> 'GET'});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
+});
+it('reload proof never grants different-URL navigation proof',async()=>{
+ const f=await fixture({sameUrl:false,reloadVerified:true,verified:false});f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();
 });
 it('an uncorrelated main-frame destination stays fatal',async()=>{
  const f=await fixture();f.commit('http://127.0.0.1:43210/app/calendar');f.page.emit('pageerror',f.error);expect(()=>f.cell.assertClean()).toThrow();

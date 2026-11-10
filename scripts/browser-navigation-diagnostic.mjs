@@ -2,27 +2,39 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 
 const reads=new Set(['notification-read','home-read','recorded-time-read','requests-read','calendar-read','manager-today-read','action-center-read','clock-monitor-read']);
-export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin){
- let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0;
+export function observeDocumentNavigation(page,origin=()=>new URL(page.url()).origin,{allowSameUrlReload=false}={}){
+ let pending=null,phase='idle',startedAt=null,source=null,destination=null,sequence=0,sourceHistoryEvents=0,reload=false;
  const read=fn=>{try{return fn();}catch{return undefined;}};
  const documentUrl=value=>{const url=new URL(value);url.hash='';return url.href;};
  page.on('request',request=>{
   if(!read(()=>request.isNavigationRequest()&&request.frame()===page.mainFrame()))return;
-  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;
+  pending=null;phase='unproven';startedAt=Date.now();sequence++;sourceHistoryEvents=0;reload=false;
   source=read(()=>documentUrl(page.url()));destination=read(()=>documentUrl(request.url()));
   if(!source||!destination||!read(()=>new URL(destination).origin===origin()))return;
-  if(source===destination){phase='same-url';return;}
+  if(source===destination){
+   if(allowSameUrlReload===true&&read(()=>request.resourceType()==='document'&&request.method()==='GET')){pending=request;reload=true;phase='reload-requested';}
+   else phase='same-url';return;
+  }
   pending=request;phase='requested';
  });
  page.on('framenavigated',frame=>{
   if(!read(()=>frame===page.mainFrame())||!pending)return;
   const url=read(()=>documentUrl(frame.url()));
+  // A same-URL frame event could be source history or the successor document.
+  // End attribution conservatively; never wait for a streaming HTML body to finish.
+  if(reload){pending=null;phase='reload-boundary';return;}
   // A history update in the source document is not the pending destination's commit.
   if(url===source){sourceHistoryEvents++;return;}
   pending=null;phase=url===destination?'committed':'unproven';
  });
  page.on('domcontentloaded',()=>{if(phase==='committed')phase='dom-ready';});
- page.on('requestfailed',request=>{if(pending===request){pending=null;phase='failed';}});
+ const notificationRead=request=>read(()=>{const url=new URL(request.url());return request.method()==='GET'&&url.origin===origin()&&url.pathname==='/api/notifications'&&!url.username&&!url.password&&!url.search&&!url.hash;});
+ page.on('response',response=>{
+  if(!reload||!pending)return;const request=read(()=>response.request());
+  if(request===pending){pending=null;phase='reload-response';}
+  else if(notificationRead(request)&&read(()=>response.status()>=300)){pending=null;phase='reload-read-failure';}
+ });
+ page.on('requestfailed',request=>{if(pending===request){pending=null;phase='failed';}else if(reload&&pending&&notificationRead(request)){pending=null;phase='reload-read-failure';}});
  page.on('requestfinished',request=>{if(pending===request){pending=null;phase='finished';}});
  return {pending:()=>pending!==null,snapshot:()=>({phase,sequence,sourceHistoryEvents,ageMs:startedAt===null?null:Math.min(60000,Math.max(0,Date.now()-startedAt))})};
 }

@@ -64,7 +64,7 @@ function originalRuntimeDiagnostic(name, message, page) {
 }
 
 /** Window exceptions and unproven native events remain fatal. */
-export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false}={}) {
+export function observeBrowserCell(execution, errors, {navigationDiagnosticVerified=false,reloadDiagnosticVerified=false}={}) {
   const start = errors.length;
   const classified=new WeakSet(),pages=new WeakMap();
   let phase = 'scenario', readStage = () => null, pageIndex = 0;
@@ -76,7 +76,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
       assert(['primary', 'manager'].includes(role));
       context.on('page', page => {
         const index = pageIndex++;
-        const state={index,role,navigation:observeDocumentNavigation(page)};pages.set(page,state);
+        const state={index,role,navigation:observeDocumentNavigation(page,undefined,{allowSameUrlReload:reloadDiagnosticVerified===true})};pages.set(page,state);
         page.on('pageerror', error => {
           const originalMessage = readable(() => error?.message), name = readable(() => error?.name);
           const message = typeof originalMessage === 'string' ? originalMessage : '';
@@ -86,7 +86,9 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
               : /chunkloaderror|loading chunk/i.test(message) ? 'Module load failure'
                 : 'Unclassified page runtime error';
           const stage = readable(readStage);
-          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),navigationDiagnosticVerified,phase)){
+          const reload=state.navigation.snapshot().phase==='reload-requested';
+          const verified=reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified;
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)){
             classified.add(error);execution.navigationDiagnostics??=[];
             execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
@@ -94,7 +96,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
             failure: safeBrowserFailure({ name, message: summary }, execution, { stage: stages.has(stage) ? stage : null }) });
         });
       });
-      if(navigationDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
+      if(navigationDiagnosticVerified||reloadDiagnosticVerified)return observeWindowExceptions(context,(page,kind)=>{const state=pages.get(page);errors.push({type:'window-javascript-error',kind,role:state?.role??role,pageIndex:state?.index??null,phase});});
     },
     isNavigationDiagnostic(error) {return classified.has(error);},
     assertClean() { assert.equal(errors.length, start, 'Browser runtime/network errors recorded in current cell'); },
