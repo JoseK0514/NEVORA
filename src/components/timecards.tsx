@@ -1,5 +1,6 @@
 'use client';
 
+import {classifyTimecardReview,summarizeTimecardReview} from '@/lib/timecards/review-summary';
 import {keepWhole} from '@/lib/keep-whole';
 import Link from 'next/link';
 import {useSearchParams} from 'next/navigation';
@@ -88,9 +89,8 @@ function timecardSourceKey(cards:readonly TimecardItem[]){
 }
 
 /* ---------- Clean Manager and Owner (v3): presentation helpers for the manager view only ---------- */
-// The Inbox lists a timecard when it isn't finalized and has recorded time or history (combineManagerActions in
-// src/lib/action-center/project.ts). "Need review" counts the same cards for the same Monday to Sunday, so they agree.
-const needsReview=(item:TimecardItem)=>item.state!=='FINALIZED'&&(item.card.entries.length>0||item.history.length>0);
+// Review counts share the Action Center predicate for the same authorized population and period.
+const needsReview=(item:TimecardItem)=>{const review=classifyTimecardReview(item);return review==='awaiting_approval'||review==='awaiting_finalization';};
 const isApproved=(item:TimecardItem)=>item.state==='APPROVED'||item.state==='FINALIZED';
 // A row says why it needs review in a few words; the detail keeps every reason in full.
 const reasonNames:Partial<Record<TimecardIssue,string>>={open_entry:'Missing clock-out',open_break:'Check breaks',pending_correction:'Correction awaiting review',overlapping_time:'Overlapping recorded time'};
@@ -331,7 +331,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const thisWeek={startDate:thisWeekStart,endDate:addDays(thisWeekStart,6)},lastWeek=shiftPeriod(thisWeek,-1);
     const periodName=samePeriod(period,thisWeek)?'This week':samePeriod(period,lastWeek)?'Last week':null;
     const open=!!today&&period.endDate>=today;
-    const reviewItems=cards.filter(needsReview).sort(byName),approvedCount=cards.filter(isApproved).length;
+    const reviewSummary=summarizeTimecardReview({period,cards}),approvedCount=cards.filter(isApproved).length;
     const listed=[...cards].sort(reviewFirst).filter(item=>tab==='all'||(tab==='review'?needsReview(item):isApproved(item)));
     // UI-9: two or more people with no time yet share one row, opened in place; a link to one of them opens it.
     // It stays open while one of them is selected or open, and there's nothing to fold when no one has time yet.
@@ -446,6 +446,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // something is approved (no empty 0% bar). Once the period ends it offers "Approve N ready" (the same reviewed batch).
     const attention=cards.filter(item=>item.state!=='FINALIZED'&&item.card.issues.some(issue=>issue!=='period_open')).length;
     const inProgress=cards.some(item=>needsReview(item)&&item.card.issues.includes('period_open'));
+    const reviewLabel=reviewSummary.counts.awaitingFinalization?'Needs review':inProgress?'In progress':'Ready to approve';
     const percent=cards.length?Math.round(approvedCount/cards.length*100):0;
     const allApproved=cards.length>0&&approvedCount===cards.length;
     const sumOf=(pick:(item:TimecardItem)=>string)=>quietHours(cards.reduce((sum,item)=>sum+(/^\d+$/.test(pick(item))?BigInt(pick(item)):BigInt(0)),BigInt(0)).toString());
@@ -465,6 +466,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         {open?approvedCount?<p className="c-tc-note">{`You can approve the rest from ${approveFrom(period)}`}<span className="c-tc-note__total">{` · ${recordedTotal} so far`}</span></p>
           :<p className="c-tc-note c-tc-note__total">{`${recordedTotal} recorded so far`}</p>
           :<p className="c-tc-note">{`${eligible.length} ready`}{noTimeReady?noTimeReady===eligible.length?' · no time recorded':` · ${noTimeReady} with no time`:null}{attention?<span className="c-tc-note__warn">{` · ${attention} need${attention===1?'s':''} attention`}</span>:null}{noTimeReady&&noTimeReady===eligible.length?null:<span className="c-tc-note__total">{` · ${recordedTotal} recorded`}</span>}</p>}
+        <p className="c-tc-note">{`${reviewSummary.counts.awaitingApproval} awaiting approval · ${reviewSummary.counts.awaitingFinalization} awaiting finalization`}</p>
       </div>
     </CorpCard>:null;
     // One error card (P3): what failed, the one way forward.
@@ -574,8 +576,8 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </section>:null}
         {ready&&cards.length?<section className="c-card c-tc-tablecard" aria-label="Timecards">
           <div className="c-card__head c-tc-tabs" role="group" aria-label="Show">
-            {/* Copy table 37: "Ready to approve"; while the server still marks the period open, "In progress". */}
-            {([['all','All',cards.length],['review',inProgress?'In progress':'Ready to approve',reviewItems.length],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
+            {/* Review includes approved cards still awaiting finalization. */}
+            {([['all','All',cards.length],['review',reviewLabel,reviewSummary.counts.review],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
               <button key={value} type="button" aria-pressed={tab===value} aria-label={`${label}, ${count}`} onClick={()=>setTab(value)}>{label}<em aria-hidden="true">{count}</em></button>)}
           </div>
           {/* ↑/↓ move focus between people (the shell's row navigation); while the inspector is open it follows. */}
@@ -601,7 +603,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
                 <td data-col="breaks" className="c-tc-num c-tc-muted">{breaks==='0h'?<><span aria-hidden="true">—</span><span className="c-sr">None</span></>:breaks}</td>
                 <td data-col="status"><span className="c-tc-cue" data-act={row.act||undefined}>{row.text}</span></td>
               </tr>;
-            }):<tr><td colSpan={cols} className="c-tc-none">{tab==='review'?(inProgress?'No timecards in progress.':'No timecards to approve.'):'No approved timecards yet.'}</td></tr>}
+            }):<tr><td colSpan={cols} className="c-tc-none">{tab==='review'?'No recorded timecards need review.':'No approved timecards yet.'}</td></tr>}
             {fold?<tr className="c-tc-idle">{selecting?<td className="c-tc-check" aria-hidden="true"/>:null}<td colSpan={cols-(selecting?1:0)}>
               <button type="button" className="c-tc-idle__open" aria-expanded="false" onClick={()=>{setShowNoTime(true);const first=idle[0].card.employeeId;if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>document.getElementById(`timecard-${first}`)?.querySelector<HTMLElement>('.c-tc-person')?.focus());}}><span>{`${idle.length} people with no time yet`}</span><span className="c-tc-idle__hours" aria-hidden="true">0 h</span><CaretDownIcon className="c-ic c-ic--s" weight="bold" aria-hidden="true"/></button>
             </td></tr>:null}</tbody>

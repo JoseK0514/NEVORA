@@ -10,7 +10,7 @@ vi.mock('react',async()=>({...await vi.importActual<typeof import('react')>('rea
 import {PayrollExport} from './payroll-export';
 import {PayrollExportMapping} from './payroll-export-mapping';
 const period={startDate:'2026-09-21',endDate:'2026-09-27'};
-function card(id:string,finalized=true){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:[],corrections:[]};return {source,state:finalized?'FINALIZED':'DRAFT',revision:finalized?1:0,sourceHash:'a'.repeat(32),history:finalized?[{operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'FINALIZE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:source}]:[]};}
+function card(id:string,finalized=true,recorded=false){const source={...period,employeeId:id,employeeName:`PRIVATE ${id}`,timeZone:'America/Puerto_Rico',pendingCorrections:0,entries:recorded?[{id:'entry-'+id,locationId:'fixture-office',locationName:'Fixture office',positionId:null,positionName:null,sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:'2026-09-22T09:00:00Z',rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:'2026-09-22T09:00:00Z',breaks:[]}]:[],corrections:[]};return {source,state:finalized?'FINALIZED':'DRAFT',revision:finalized?1:0,sourceHash:'a'.repeat(32),history:finalized?[{operationId:'22222222-2222-4222-8222-222222222222',revision:1,action:'FINALIZE',occurredAt:'2026-09-28T12:00:00Z',actorName:'Fictional Reviewer',note:null,sourceHash:'a'.repeat(32),snapshot:source}]:[]};}
 let cleanup:void|(()=>void);
 function render(){host.cursor=0;return PayrollExport({initialPeriod:period,actorId:'OWNER'});}
 const html=()=>renderToStaticMarkup(render());
@@ -35,4 +35,15 @@ it('selects at most 100 visible finalized cards and explicitly reports overflow'
 it('refresh and expiry remove the convenience selection with protected private data',async()=>{
  await mount(undefined,1000);click('Select visible finalized timecards');window.dispatchEvent(new Event('pageshow'));await flush();expect(html()).toContain('0 selected');
  click('Select visible finalized timecards');vi.stubGlobal('fetch',()=>new Promise<Response>(()=>{}));await vi.advanceTimersByTimeAsync(1001);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Select visible finalized timecards');
+});
+
+it('guides recorded approval and reviewed zero-time finalization separately while preserving finalized-only selection',async()=>{
+ const approved=card('APPROVED');
+ await mount([card('FINALIZED'),card('DRAFT',false,true),{...approved,state:'APPROVED',history:approved.history.map(h=>({...h,action:'APPROVE'}))},card('BLANK',false)]);
+ const rendered=html();
+ expect(rendered).toContain('Approve 1 timecard and finalize 1 first');
+ expect(rendered).toContain('start=2026-09-21&amp;end=2026-09-27');
+ click('Select visible finalized timecards');expect(html()).toContain('1 selected');
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE APPROVED').disabled).toBe(true);
+ expect(control(n=>n.type==='input'&&n.props['aria-label']==='Export PRIVATE BLANK').checked).toBe(false);
 });
