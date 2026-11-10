@@ -34,7 +34,10 @@ async function fixture(options:{sourceActive?:boolean}={}){
  const admin=await f.pool.connect();try{await configureWorkerControlReader(admin,legacy);await configureWorkerEnrollmentIssuer(admin,issuer);}finally{admin.release();}
  function request(index=0,patch:Partial<WorkerEnrollmentRequest>={}):WorkerEnrollmentRequest{const s=source[index],now=Date.now(),recipient=recipients[index];return {schemaVersion:1,enrollmentId:randomUUID(),workspaceId:s.id,environment:'test',incarnation:'1',registryRevision:'1',sourceSecretRef:s.secretRef,loginRole:s.loginRole,canonicalOrigin:s.origin,providerProjectId:s.project,recipientPublicKey:recipient.publicKey,recipientFingerprint:workerRecipientFingerprint(recipient.publicKey),issuerSourceSha:sha,requestExpiresAt:new Date(now+600000).toISOString(),expiresAt:new Date(Math.floor(now/1000)*1000+3600123).toISOString(),...patch};}
  const old=await f.pool.query("SELECT md5(string_agg(id::text||ciphertext||active::text,',' ORDER BY id)) AS hash FROM nevora_onboarding.workspace_secrets");
- return {...f,source,issuer,issuerPool,login,request,async close(){
+ // Control-only fixture proof: the real company SQL adapter is qualified in
+ // onboarding-worker-enrollment-runtime.integration.ts, separately from this store suite.
+ const probe=async(identity:import('@/lib/operations/worker-enrollment').WorkerEnrollmentIdentity,material:import('@/lib/operations/worker-enrollment').WorkerEnrollmentMaterial)=>source.some(s=>s.id===identity.workspaceId&&s.databaseUrl===material.databaseUrl&&workspaceInstanceSecret(workerRoot,identity)===material.commerceWorkerSecret);
+ return {...f,source,issuer,issuerPool,login,request,probe,async close(){
   expect((await f.pool.query("SELECT md5(string_agg(id::text||ciphertext||active::text,',' ORDER BY id)) AS hash FROM nevora_onboarding.workspace_secrets")).rows).toEqual(old.rows);
   for(const p of pools)await p.end();const u=new URL(f.connectionUrl);u.pathname='/postgres';const cleanup=new Client({connectionString:u.href});await cleanup.connect();
   try{await f.close();for(const role of roles)await cleanup.query('DROP ROLE '+role);}finally{await cleanup.end();}
@@ -45,7 +48,7 @@ function identity(row:Record<string,unknown>){return parseWorkerEnrollmentIdenti
 it('issues one immutable company-bound result with real restricted issuer and readers, without changing original custody',async()=>{
  const f=await fixture();try{
   const requests=[f.request(),f.request(1)],bindings=[];for(const r of requests)bindings.push(await createWorkerEnrollmentRequest(f.pool,r));
-  expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot)).toEqual({state:'processed'});expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot)).toEqual({state:'processed'});expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot)).toEqual({state:'idle'});
+  expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot,f.probe)).toEqual({state:'processed'});expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot,f.probe)).toEqual({state:'processed'});expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot,f.probe)).toEqual({state:'idle'});
   for(let i=0;i<2;i++){
    const role=workerControlRole(f.source[i].id,'test'),reader=await f.login(role),admin=await f.pool.connect();try{await configureEnrolledWorkerControlReader(admin,role);}finally{admin.release();}
    const rows=(await reader.query('SELECT * FROM nevora_onboarding.worker_workspace_enrollment_secrets')).rows;expect(rows).toHaveLength(1);expect(rows[0].workspace_id).toBe(f.source[i].id);expect(identity(rows[0]).expiresAt).toBe(requests[i].expiresAt);
@@ -55,7 +58,7 @@ it('issues one immutable company-bound result with real restricted issuer and re
    expect((await reader.query('SELECT id FROM nevora_onboarding.worker_workspace_registry')).rows.map(r=>r.id)).toEqual([f.source[i].id]);
   }
   const original=(await f.pool.query('SELECT key_envelope,ciphertext,issued_at FROM nevora_onboarding.worker_runtime_enrollments ORDER BY id')).rows;
-  expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot)).toEqual({state:'idle'});expect((await f.pool.query('SELECT key_envelope,ciphertext,issued_at FROM nevora_onboarding.worker_runtime_enrollments ORDER BY id')).rows).toEqual(original);
+  expect(await processWorkerEnrollmentOnce(f.issuerPool,bindings,sha,root,workerRoot,f.probe)).toEqual({state:'idle'});expect((await f.pool.query('SELECT key_envelope,ciphertext,issued_at FROM nevora_onboarding.worker_runtime_enrollments ORDER BY id')).rows).toEqual(original);
   await expect(f.issuerPool.query('DELETE FROM nevora_onboarding.worker_runtime_enrollments')).rejects.toMatchObject({code:'42501'});
   await expect(f.issuerPool.query("UPDATE nevora_onboarding.worker_runtime_enrollments SET recipient_fingerprint=repeat('b',64)")).rejects.toMatchObject({code:'42501'});
   await expect(f.pool.query("UPDATE nevora_onboarding.worker_runtime_enrollments SET ciphertext='changed' WHERE id=$1",[requests[0].enrollmentId])).rejects.toMatchObject({code:'23514'});
@@ -63,7 +66,7 @@ it('issues one immutable company-bound result with real restricted issuer and re
 });
 it('serializes real concurrent claims and keeps completed ciphertext stable on repeated execution',async()=>{
  const f=await fixture();try{
-  const binding=await createWorkerEnrollmentRequest(f.pool,f.request()),results=await Promise.all([processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot),processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot)]);
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request()),results=await Promise.all([processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe),processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)]);
   expect(results.map(r=>r.state).sort()).toEqual(['idle','processed']);expect((await f.pool.query("SELECT count(*)::int AS n FROM nevora_onboarding.worker_runtime_enrollments WHERE status='COMPLETE'")).rows[0].n).toBe(1);
  }finally{await f.close();}
 });
@@ -73,7 +76,7 @@ it.each(['request-hash','issuer-source','registry-revision','registry-state','in
   const binding=await createWorkerEnrollmentRequest(f.pool,f.request(0,patches[kind]));if(kind==='request-expiry')await f.pool.query('SELECT pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (request_expires_at-clock_timestamp())))+0.05) FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[binding.id]);
   if(kind==='registry-state')await f.pool.query("UPDATE nevora_onboarding.workspace_registry SET lifecycle='SUSPENDED',revision=revision+1 WHERE id=$1",[f.source[0].id]);
   const selected=kind==='request-hash'?{...binding,requestHash:'b'.repeat(64)}:binding;
-  const attempt=processWorkerEnrollmentOnce(f.issuerPool,[selected],kind==='issuer-source'?'b'.repeat(40):sha,root,workerRoot);
+  const attempt=processWorkerEnrollmentOnce(f.issuerPool,[selected],kind==='issuer-source'?'b'.repeat(40):sha,root,workerRoot,f.probe);
   if(kind==='request-expiry')expect(await attempt).toEqual({state:'idle'});else await expect(attempt).rejects.toThrow('worker_enrollment_invalid');
   expect((await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING',key_envelope:null,ciphertext:null}]);
  }finally{await f.close();}
@@ -84,12 +87,12 @@ it('never substitutes a changed request or revives a revoked result',async()=>{
   await expect(createWorkerEnrollmentRequest(f.pool,{...request,recipientPublicKey:rsa().publicKey})).rejects.toThrow('worker_enrollment_invalid');
   await expect(createWorkerEnrollmentRequest(f.pool,{...request,recipientPublicKey:recipients[1].publicKey,recipientFingerprint:workerRecipientFingerprint(recipients[1].publicKey)})).rejects.toThrow('worker_enrollment_invalid');
   await expect(f.pool.query("UPDATE nevora_onboarding.worker_runtime_enrollments SET canonical_origin='https://other.portal-staging.nevora.team' WHERE id=$1",[binding.id])).rejects.toMatchObject({code:'23514'});
-  await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot);
+  await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe);
   const reader=await f.login(workerControlRole(f.source[0].id,'test')),admin=await f.pool.connect();try{await configureEnrolledWorkerControlReader(admin,workerControlRole(f.source[0].id,'test'));}finally{admin.release();}
   expect((await reader.query('SELECT count(*)::int n FROM nevora_onboarding.worker_workspace_enrollment_secrets')).rows[0].n).toBe(1);
   await f.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=clock_timestamp() WHERE id=$1',[binding.id]);expect((await reader.query('SELECT count(*)::int n FROM nevora_onboarding.worker_workspace_enrollment_secrets')).rows[0].n).toBe(0);
   await expect(f.pool.query('UPDATE nevora_onboarding.worker_runtime_enrollments SET revoked_at=NULL WHERE id=$1',[binding.id])).rejects.toMatchObject({code:'23514'});
-  expect(await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot)).toEqual({state:'idle'});
+  expect(await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)).toEqual({state:'idle'});
  }finally{await f.close();}
 });
 it('refuses one recipient key reused under another operation or company',async()=>{
@@ -102,14 +105,14 @@ it('refuses one recipient key reused under another operation or company',async()
 it('refuses an owner connection or later privileged issuer flags before processing',async()=>{
  const f=await fixture();try{
   const binding=await createWorkerEnrollmentRequest(f.pool,f.request());
-  await expect(processWorkerEnrollmentOnce(f.pool,[binding],sha,root,workerRoot)).rejects.toThrow('worker_enrollment_invalid');
-  await f.pool.query(`ALTER ROLE ${f.issuer} INHERIT`);await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot)).rejects.toThrow('worker_enrollment_invalid');
+  await expect(processWorkerEnrollmentOnce(f.pool,[binding],sha,root,workerRoot,f.probe)).rejects.toThrow('worker_enrollment_invalid');
+  await f.pool.query(`ALTER ROLE ${f.issuer} INHERIT`);await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)).rejects.toThrow('worker_enrollment_invalid');
   expect((await f.pool.query('SELECT status FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING'}]);
  }finally{await f.close();}
 });
 it('stops a reader with legacy secret grants and refuses inactive current source custody',async()=>{
  const f=await fixture({sourceActive:false});try{
-  const binding=await createWorkerEnrollmentRequest(f.pool,f.request());await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot)).rejects.toThrow('worker_enrollment_invalid');
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request());await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)).rejects.toThrow('worker_enrollment_invalid');
   const role=workerControlRole(f.source[0].id,'test');await f.login(role);const admin=await f.pool.connect();try{await configureEnrolledWorkerControlReader(admin,role);await f.pool.query('GRANT SELECT ON nevora_onboarding.worker_workspace_secrets TO '+role);await expect(configureEnrolledWorkerControlReader(admin,role)).rejects.toThrow('operations_reader_scope_invalid');}finally{admin.release();}
  }finally{await f.close();}
 });
@@ -120,8 +123,15 @@ it('retains the one committed result after actual issuer connection termination 
    on:(event:'error',listener:()=>void)=>client.on(event,listener),removeListener:(event:'error',listener:()=>void)=>client.removeListener(event,listener),release:(destroy?:boolean)=>client.release(destroy),
    query:async(text:string,values?:unknown[])=>{const result=await client.query(text,values);if(text==='COMMIT'&&!lost){lost=true;await f.pool.query('SELECT pg_terminate_backend($1)',[pid]);throw Error('owned_commit_acknowledgement_lost');}return result;},
   };}};
-  await expect(processWorkerEnrollmentOnce(interrupted,[binding],sha,root,workerRoot)).rejects.toThrow('worker_enrollment_invalid');expect(lost).toBe(true);
+  await expect(processWorkerEnrollmentOnce(interrupted,[binding],sha,root,workerRoot,f.probe)).rejects.toThrow('worker_enrollment_invalid');expect(lost).toBe(true);
   const original=(await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows;expect(original[0].status).toBe('COMPLETE');
-  expect(await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot)).toEqual({state:'idle'});expect((await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual(original);
+  expect(await processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,f.probe)).toEqual({state:'idle'});expect((await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual(original);
+ }finally{await f.close();}
+});
+it.each([false,undefined,'true',{valid:true}])('refuses unproved company-side worker authority (%s) before publishing a result',async result=>{
+ const f=await fixture();try{
+  const binding=await createWorkerEnrollmentRequest(f.pool,f.request());
+  await expect(processWorkerEnrollmentOnce(f.issuerPool,[binding],sha,root,workerRoot,async()=>result)).rejects.toThrow('worker_enrollment_invalid');
+  expect((await f.pool.query('SELECT status,key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments')).rows).toEqual([{status:'PENDING',key_envelope:null,ciphertext:null}]);
  }finally{await f.close();}
 });

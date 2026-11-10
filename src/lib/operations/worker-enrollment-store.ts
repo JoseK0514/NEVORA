@@ -4,13 +4,14 @@ import {isClosedRecord,isOperationId} from '../onboarding/contracts';
 import {openOnboardingValue,validOnboardingToken} from '../onboarding/crypto.server';
 import {parseWorkspaceRecord} from '../workspace-routing/contracts';
 import {workspaceInstanceSecret} from '../../../services/commerce/workspace-enrollment';
-import {parseWorkerEnrollmentIdentity,sealWorkerEnrollment,workerRecipientFingerprint,type WorkerEnrollmentIdentity} from './worker-enrollment';
+import {parseWorkerEnrollmentIdentity,parseWorkerEnrollmentMaterial,sealWorkerEnrollment,workerRecipientFingerprint,type WorkerEnrollmentIdentity,type WorkerEnrollmentMaterial} from './worker-enrollment';
 
 export type WorkerEnrollmentRequest=WorkerEnrollmentIdentity&Readonly<{registryRevision:string;recipientPublicKey:string;requestExpiresAt:string}>;
 export type WorkerEnrollmentRequestBinding=Readonly<{id:string;requestHash:string}>;
 export type EnrollmentQuery={query(text:string,values?:unknown[]):Promise<{rows:Record<string,unknown>[]}>};
 type EnrollmentClient=EnrollmentQuery&{on(event:'error',listener:()=>void):unknown;removeListener(event:'error',listener:()=>void):unknown;release(destroy?:boolean):void};
 export type EnrollmentDatabase={connect():Promise<EnrollmentClient>};
+export type WorkerEnrollmentCompanyProbe=(identity:WorkerEnrollmentIdentity,material:WorkerEnrollmentMaterial)=>Promise<unknown>;
 const invalid=()=>Error('worker_enrollment_invalid');
 const queryColumns='id::text,workspace_id::text,environment,incarnation::text,registry_revision::text,source_secret_ref::text,login_role::text,canonical_origin,provider_project_id,recipient_public_key,recipient_fingerprint,issuer_source_sha,request_hash,request_expires_at,expires_at';
 function timestamp(value:unknown):string{if(value instanceof Date)return value.toISOString();if(typeof value!=='string')throw invalid();return new Date(value).toISOString();}
@@ -67,8 +68,8 @@ function bindings(value:unknown):readonly WorkerEnrollmentRequestBinding[]{
 }
 /** One control transaction commits one sealed result. An uncertain commit is
  * never undone/reissued; the exact completed row survives subsequent retries. */
-export async function processWorkerEnrollmentOnce(pool:EnrollmentDatabase,selected:readonly WorkerEnrollmentRequestBinding[],issuerSourceSha:string,encryptionRoot:string,commerceWorkerRoot:string):Promise<{state:'idle'|'processed'}>{
- const requests=bindings(selected);if(! /^[a-f0-9]{40}$/.test(issuerSourceSha)||!validOnboardingToken(encryptionRoot)||!validOnboardingToken(commerceWorkerRoot)||encryptionRoot===commerceWorkerRoot)throw invalid();
+export async function processWorkerEnrollmentOnce(pool:EnrollmentDatabase,selected:readonly WorkerEnrollmentRequestBinding[],issuerSourceSha:string,encryptionRoot:string,commerceWorkerRoot:string,verifyCompany:WorkerEnrollmentCompanyProbe):Promise<{state:'idle'|'processed'}>{
+ const requests=bindings(selected);if(! /^[a-f0-9]{40}$/.test(issuerSourceSha)||!validOnboardingToken(encryptionRoot)||!validOnboardingToken(commerceWorkerRoot)||encryptionRoot===commerceWorkerRoot||typeof verifyCompany!=='function')throw invalid();
  const client=await pool.connect().catch(()=>{throw invalid();});let transaction=false,lost=false,clean=true;const loss=()=>{lost=true;};client.on('error',loss);
  try{
   await client.query('BEGIN');transaction=true;
@@ -87,7 +88,9 @@ export async function processWorkerEnrollmentOnce(pool:EnrollmentDatabase,select
   if(secrets.length!==1||secrets[0].login_role!==request.loginRole)throw invalid();
   const databaseUrl=openOnboardingValue(secrets[0].ciphertext,`workspace-secret:${request.environment}:${request.workspaceId}:${request.incarnation}:WORKER:${request.sourceSecretRef}`,encryptionRoot);if(!databaseUrl)throw invalid();
   const {registryRevision,recipientPublicKey,requestExpiresAt,...identity}=request;void registryRevision;void requestExpiresAt;
-  const envelope=sealWorkerEnrollment(identity,{databaseUrl,commerceWorkerSecret:workspaceInstanceSecret(commerceWorkerRoot,request)},recipientPublicKey);
+  const material=parseWorkerEnrollmentMaterial({databaseUrl,commerceWorkerSecret:workspaceInstanceSecret(commerceWorkerRoot,request)},identity);
+  if(await verifyCompany(identity,material)!==true)throw invalid();
+  const envelope=sealWorkerEnrollment(identity,material,recipientPublicKey);
   const changed=(await client.query("UPDATE nevora_onboarding.worker_runtime_enrollments SET status='COMPLETE',key_envelope=$2,ciphertext=$3,issued_at=clock_timestamp() WHERE id=$1 AND status='PENDING' AND revoked_at IS NULL AND request_expires_at>clock_timestamp() AND expires_at>clock_timestamp() RETURNING id",[request.enrollmentId,envelope.keyEnvelope,envelope.ciphertext])).rows;
   if(changed.length!==1)throw invalid();await client.query('COMMIT');transaction=false;return {state:'processed'};
  }catch{clean=false;throw invalid();}

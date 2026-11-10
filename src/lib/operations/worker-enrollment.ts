@@ -37,11 +37,12 @@ export function parseWorkerEnrollmentEnvelope(value:unknown):WorkerEnrollmentEnv
  if(!isClosedRecord(value,['schemaVersion','keyEnvelope','ciphertext'])||value.schemaVersion!==1||typeof value.keyEnvelope!=='string'||! /^[A-Za-z0-9_-]{512}$/.test(value.keyEnvelope)||Buffer.from(value.keyEnvelope,'base64url').length!==384||Buffer.from(value.keyEnvelope,'base64url').toString('base64url')!==value.keyEnvelope||typeof value.ciphertext!=='string'||value.ciphertext.length>12000||!/^v1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value.ciphertext))throw invalid();
  return Object.freeze({schemaVersion:1,keyEnvelope:value.keyEnvelope,ciphertext:value.ciphertext});
 }
-function parseMaterial(value:unknown,identity:WorkerEnrollmentIdentity):WorkerEnrollmentMaterial{
+export function parseWorkerEnrollmentMaterial(value:unknown,identity:unknown):WorkerEnrollmentMaterial{
  try{
+  const bound=parseWorkerEnrollmentIdentity(identity);
   if(!isClosedRecord(value,['databaseUrl','commerceWorkerSecret'])||typeof value.databaseUrl!=='string'||value.databaseUrl.length>2048||!validOnboardingToken(value.commerceWorkerSecret))throw invalid();
   const u=parsePostgresUrl(value.databaseUrl),options=[...u.searchParams];
-  if(decodeURIComponent(u.username)!==identity.loginRole||!u.password||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(u.hostname)||u.port&&u.port!=='5432'||decodeURIComponent(u.pathname.slice(1))!=='nv_app_'+identity.workspaceId.replaceAll('-','')||options.length!==1||u.searchParams.get('sslmode')!=='verify-full')throw invalid();
+  if(decodeURIComponent(u.username)!==bound.loginRole||!u.password||!/^ep-[a-z0-9.-]+\.neon\.tech$/.test(u.hostname)||u.port&&u.port!=='5432'||decodeURIComponent(u.pathname.slice(1))!=='nv_app_'+bound.workspaceId.replaceAll('-','')||options.length!==1||u.searchParams.get('sslmode')!=='verify-full')throw invalid();
   return Object.freeze({databaseUrl:value.databaseUrl,commerceWorkerSecret:value.commerceWorkerSecret});
  }catch{throw invalid();}
 }
@@ -50,7 +51,7 @@ function context(identity:WorkerEnrollmentIdentity){return 'worker-enrollment:'+
  * Neither shared root is an input or part of the serialized result. */
 export function sealWorkerEnrollment(identity:unknown,material:unknown,publicPem:string):WorkerEnrollmentEnvelope{
  try{
-  const bound=parseWorkerEnrollmentIdentity(identity),payload=JSON.stringify(parseMaterial(material,bound)),recipient=recipientKey(publicPem,'public');
+  const bound=parseWorkerEnrollmentIdentity(identity),payload=JSON.stringify(parseWorkerEnrollmentMaterial(material,bound)),recipient=recipientKey(publicPem,'public');
   if(fingerprint(recipient)!==bound.recipientFingerprint||Buffer.byteLength(payload)>8192)throw invalid();
   const key=randomBytes(32),purpose=context(bound);
   try{return Object.freeze({schemaVersion:1,keyEnvelope:publicEncrypt({key:recipient,padding:constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256',oaepLabel:Buffer.from(purpose)},key).toString('base64url'),ciphertext:sealOnboardingValue(payload,purpose,key.toString('base64url'))});}finally{key.fill(0);}
@@ -64,6 +65,6 @@ export function openWorkerEnrollment(identity:unknown,envelope:unknown,privatePe
   if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(bound.expiresAt))return null;
   const recipient=recipientKey(privatePem,'private');if(fingerprint(recipient)!==bound.recipientFingerprint)return null;
   const purpose=context(bound),key=privateDecrypt({key:recipient,padding:constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256',oaepLabel:Buffer.from(purpose)},Buffer.from(wire.keyEnvelope,'base64url'));
-  try{if(key.length!==32)return null;const text=openOnboardingValue(wire.ciphertext,purpose,key.toString('base64url'));if(!text||Buffer.byteLength(text)>8192)return null;return parseMaterial(JSON.parse(text),bound);}finally{key.fill(0);}
+  try{if(key.length!==32)return null;const text=openOnboardingValue(wire.ciphertext,purpose,key.toString('base64url'));if(!text||Buffer.byteLength(text)>8192)return null;return parseWorkerEnrollmentMaterial(JSON.parse(text),bound);}finally{key.fill(0);}
  }catch{return null;}
 }

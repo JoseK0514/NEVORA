@@ -15,7 +15,7 @@ const sha=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{40}$/.test(v)
 const uuid=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(v);
 const key=(v:unknown):v is string=>typeof v==='string'&&/^[A-Za-z0-9_-]{43}$/.test(v)&&Buffer.from(v,'base64url').toString('base64url')===v;
 const profileKeys=['scopeId','environment','commands','origin','portalBaseDomain','env'];
-const allowedEnv=new Set(['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_ENABLED','NEVORA_PAYROLL_ENABLED','PUSH_FEATURE_ENABLED','PUSH_VAPID_PUBLIC_KEY','PUSH_VAPID_PRIVATE_KEY','PUSH_SUBSCRIPTION_ENCRYPTION_KEY','PUSH_VAPID_SUBJECT','NOTIFICATION_WORKER_SECRET','PUSH_DELIVERY_ENABLED','PUSH_TEST_DELIVERY_ENABLED','PUSH_TEST_ACCOUNT_IDS']);
+const allowedEnv=new Set(['NEVORA_CONTROL_DATABASE_URL','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY','NEVORA_WORKER_ENROLLMENT_ID','NEVORA_WORKER_RECIPIENT_PRIVATE_KEY','NEVORA_COMMERCE_API_ORIGIN','NEVORA_COMMERCE_ENABLED','NEVORA_PAYROLL_ENABLED','PUSH_FEATURE_ENABLED','PUSH_VAPID_PUBLIC_KEY','PUSH_VAPID_PRIVATE_KEY','PUSH_SUBSCRIPTION_ENCRYPTION_KEY','PUSH_VAPID_SUBJECT','NOTIFICATION_WORKER_SECRET','PUSH_DELIVERY_ENABLED','PUSH_TEST_DELIVERY_ENABLED','PUSH_TEST_ACCOUNT_IDS']);
 const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
 
 /** A managed profile is operator custody, never a browser/request input. Only
@@ -30,7 +30,7 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
   if(!stateDirectory||stateDirectory.length>300||!isAbsolute(stateDirectory)||resolve(stateDirectory)!==stateDirectory||stateDirectory==='/'||!key(healthKey))throw invalid();
   const encoded=env.NEVORA_WORKFORCE_PROFILES;if(!encoded||Buffer.byteLength(encoded)>65536)throw invalid();
   const profiles:unknown=JSON.parse(encoded);if(!Array.isArray(profiles)||profiles.length<1||profiles.length>16)throw invalid();
-  const seen=new Set<string>();
+  const seen=new Set<string>(),recipients=new Set<string>();
   const parsed=profiles.map((p):ManagedProfile=>{
    if(!record(p)||Object.keys(p).some(k=>!profileKeys.includes(k))||!uuid(p.scopeId)||!['test','production'].includes(String(p.environment))||!Array.isArray(p.commands)||!p.commands.length||p.commands.length>3||new Set(p.commands).size!==p.commands.length||p.commands.some(c=>!WORKER_COMMANDS.includes(c))||!record(p.env))throw invalid();
    const environment=p.environment as Environment,scope=p.scopeId+'-'+environment;if(seen.has(scope))throw invalid();seen.add(scope);
@@ -41,7 +41,8 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
    const child={...e,NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:environment,NEVORA_PORTAL_BASE_DOMAIN:String(p.portalBaseDomain),NEVORA_WORKER_WORKSPACE_ORIGIN:String(p.origin),FUEL_PORTAL_ORIGIN:String(p.origin),PUSH_ENVIRONMENT:environment,NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_SOURCE_SHA:sourceSha,NEVORA_OPERATIONS_SCOPE_ID:p.scopeId,NEVORA_OPERATIONS_ENVIRONMENT:environment,NEVORA_OPERATIONS_STATE_DIR:state,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120',NEVORA_OPERATIONS_MAX_HEARTBEAT_GAP_SECONDS:'600',NEVORA_OPERATIONS_MAX_QUEUE_AGE_SECONDS:'900'};
    const routing=readWorkerRoutingConfig(child),control=new URL(routing.controlDatabaseUrl),role=decodeURIComponent(control.username);
    if(control.hostname!==approved.controlHostname||decodeURIComponent(control.pathname.slice(1))!==approved.controlDatabase||control.searchParams.get('sslmode')!=='verify-full'||control.port&&control.port!=='5432')throw invalid();
-   if(role!=='nv_control_worker_'+(environment==='test'?'t':'p')+'_'+p.scopeId.replaceAll('-','')||parseWorkspaceOrigin(p.origin,routing)!==p.origin||!key(e.NEVORA_COMMERCE_WORKER_BINDING_KEY)||e.NEVORA_COMMERCE_ENABLED!=='true')throw invalid();
+   if(role!=='nv_control_worker_'+(environment==='test'?'t':'p')+'_'+p.scopeId.replaceAll('-','')||parseWorkspaceOrigin(p.origin,routing)!==p.origin||e.NEVORA_COMMERCE_ENABLED!=='true')throw invalid();
+   if(routing.secretScope==='WORKER_ENROLLED'){if(recipients.has(routing.recipientFingerprint))throw invalid();recipients.add(routing.recipientFingerprint);}else if(!key(e.NEVORA_COMMERCE_WORKER_BINDING_KEY))throw invalid();
    const commerce=new URL(e.NEVORA_COMMERCE_API_ORIGIN);if(commerce.protocol!=='https:'||commerce.origin!==e.NEVORA_COMMERCE_API_ORIGIN||commerce.origin!==approved.commerceOrigin)throw invalid();
    if(p.commands.includes('payroll')&&e.NEVORA_PAYROLL_ENABLED!=='true')throw invalid();
    if(p.commands.some(c=>c!=='payroll')){

@@ -3,6 +3,7 @@ import {neon,type NeonQueryFunction} from '@neondatabase/serverless';
 import {createHash} from 'node:crypto';
 import type {SqlExecutor,SqlStatement} from '../notifications/types';
 import {openOnboardingValue} from '../onboarding/crypto.server';
+import {readWorkerEnrollmentMaterial} from '../operations/worker-enrollment-runtime.server';
 import {WorkspaceRoutingError} from './config.server';
 import {assertWorkspaceBindingCurrent,workspaceBindingFacts,type WorkspaceBinding} from './resolver.server';
 
@@ -11,10 +12,17 @@ async function driver(binding:WorkspaceBinding):Promise<NeonQueryFunction<false,
  const f=await assertWorkspaceBindingCurrent(binding),r=f.record;
  if(f.config.secretScope==='COMMERCE_APP_ONLY'&&f.role!=='APP')throw new WorkspaceRoutingError();
  if(f.config.secretScope==='WORKER_ONLY'&&f.role!=='WORKER')throw new WorkspaceRoutingError();
+ let raw:string;
+ if(f.config.secretScope==='WORKER_ENROLLED'){
+  if(f.role!=='WORKER')throw new WorkspaceRoutingError();
+  raw=(await readWorkerEnrollmentMaterial(binding)).databaseUrl;
+ }else{
  const relation=f.config.secretScope==='COMMERCE_APP_ONLY'?'nevora_onboarding.commerce_app_workspace_secrets':f.config.secretScope==='WORKER_ONLY'?'nevora_onboarding.worker_workspace_secrets':'nevora_onboarding.workspace_secrets';
  const secret=await f.store.query(`SELECT ciphertext,login_role::text FROM ${relation} WHERE id=$1 AND workspace_id=$2 AND environment=$3 AND incarnation=$4::bigint AND role_kind=$5 AND active`,[f.secretRef,r.id,r.environment,r.incarnation,f.role]);
  if(secret.rows.length!==1||secret.rows[0].login_role!==f.loginRole)throw new WorkspaceRoutingError();
- const raw=openOnboardingValue(secret.rows[0].ciphertext,'workspace-secret:'+r.environment+':'+r.id+':'+r.incarnation+':'+f.role+':'+f.secretRef,f.config.encryptionKey);if(!raw)throw new WorkspaceRoutingError();
+ const opened=openOnboardingValue(secret.rows[0].ciphertext,'workspace-secret:'+r.environment+':'+r.id+':'+r.incarnation+':'+f.role+':'+f.secretRef,f.config.encryptionKey);if(!opened)throw new WorkspaceRoutingError();
+  raw=opened;
+ }
  try{const url=new URL(raw);if(!['postgres:','postgresql:'].includes(url.protocol)||!url.hostname.endsWith('.neon.tech')||url.hash||decodeURIComponent(url.username)!==f.loginRole||!url.pathname.slice(1)||(r.environment==='production'&&url.searchParams.get('sslmode')!=='verify-full'))throw new WorkspaceRoutingError();}catch{throw new WorkspaceRoutingError();}
  const key=createHash('sha256').update(r.environment+'\0'+r.id+'\0'+r.incarnation+'\0'+f.role+'\0'+f.secretRef+'\0'+raw).digest('hex');const existing=transports.get(key);if(existing)return existing;
  // Bound memory without retaining bindings, request headers or actor/session state.
