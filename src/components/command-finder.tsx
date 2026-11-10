@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Fragment, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { MagnifyingGlassIcon, XCircleIcon } from "@phosphor-icons/react/ssr";
 import type { UserRole } from "@/lib/domain";
+import { B_WIDE } from "@/lib/b-viewport";
 import type { PayrollCapabilities } from "@/lib/payroll/contracts";
 import { finderItems, finderOverflow, rankFinder, type FinderData } from "@/lib/finder";
 import { LightningIcon } from "@phosphor-icons/react/dist/ssr/Lightning";
@@ -15,8 +16,8 @@ import type { NavContext } from "@/lib/navigation";
 type Remote = { state: "idle" | "loading" | "ready" | "unavailable" | "offline"; data: FinderData | null; at: number };
 const FRESH_MS = 60_000;
 const DESKTOP_PLACEHOLDER = "Search pages, people and places";
-/** The phone chrome query (portal-gusto.css): phones, and phones turned sideways. */
-const PHONE_QUERY = "(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)";
+/** The phone chrome query (portal-gusto.css). A phone turned sideways has the tablet layout since review B8 (NV-274). */
+const PHONE_QUERY = "(max-width: 760px)";
 
 /** Other entries (More › Search) open the one finder dialog through this event. */
 export const OPEN_FINDER_EVENT = "nevora:open-finder";
@@ -118,7 +119,7 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   function open(from?: HTMLElement | null) {
     const element = dialog.current;
     if (!element || element.open) return;
-    if (own && !window.matchMedia("(min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine)").matches) return;
+    if (own && !window.matchMedia(B_WIDE).matches) return;
     returnTo.current = from ?? (document.activeElement instanceof HTMLElement ? document.activeElement : null);
     setQuery(""); setActive(0); setKeyboard(false);
     setPlaceholder(window.matchMedia(PHONE_QUERY).matches ? "Search" : own ? "Search your pages" : DESKTOP_PLACEHOLDER);

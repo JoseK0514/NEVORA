@@ -3,211 +3,208 @@
  * group's screens add. Phones only (max-width 767px) under the shell's data-nv-b: tablets and desktop keep the corporate
  * pages. Two forms (Fix my time, Availability) stay the corporate form in a `b-keep` wrapper, so they exist once; here they
  * take the mock's card, fields and buttons. Everywhere else that wrapper is `display: contents` and adds nothing. */
-:is(#c-root, html) .c-page > .eb-fix { display: contents; }
-:is(#c-root, html) .c-page .eb-fix-send { display: none; }
-:is(#c-root, html) .c-page .eb-avail-lead { display: inline; }
-
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+/* Review B8 (NV-066): the !important declarations are in the nv-b cascade layer. A layered !important beats the older
+ * eras' unlayered !important rules whatever their specificity, so no fake-id ladder is needed; inside nv-b only Direction B
+ * rules compete (specificity, then load order). See DESIGN.MD "CSS layering (review batch B8)". */
+@layer nv-b {
   /* ---------- the shell around a pushed Time page ---------- */
   /* /app/my-time is a tab root for the shell even with ?view= or ?entry=, which hides a screen's back link and shows the
    * wordmark; a pushed Time page keeps its back link in the wordmark's place, as on every other pushed screen. */
-  :is(#c-root, html) .app-shell[data-nv-b][data-corp-root] .c-page.c-hours--sub > .b-screen .b-back { display: inline-flex; }
   /* Fix my time is a form: no bell, avatar or wordmark over its hero, and no tab bar (as on the mock and today's sheet). */
   /* Availability before the phone page takes over (the first paint): its own loading line steps aside for the screen's. */
-  :is(#c-root, html) .app-shell[data-nv-b] .page-frame:has(> .c-page > .b-screen) > .em-requests-mobile:not(:has(.c-page)) { display: none !important; }
+  html .app-shell[data-nv-b] .page-frame:has(> .c-page > .b-screen) > .em-requests-mobile:not(:has(.c-page)) { display: none !important; }
   /* The phone page sits in the planning wrapper, whose own canvas would show under the hero's cards. */
-  :is(#c-root, html) body .app-shell.nevora-portal[data-nv-b][data-employee-mobile] .page-frame:has(.em-requests-mobile > .c-page > .b-screen) { background: #F2F5F4 !important; }
+  html body .app-shell.nevora-portal[data-nv-b][data-employee-mobile] .page-frame:has(.em-requests-mobile > .c-page > .b-screen) { background: #F2F5F4 !important; }
   /* ---------- screens ---------- */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen h1[tabindex="-1"]:focus-visible, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt:focus-visible { outline: none; }
   /* Right now: the teal clock and where to clock in (or since when), inside the card. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now { align-items: flex-start; padding: 6px 18px 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now .b-notice__tx { gap: 2px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px 18px; font-size: 15px; line-height: 20px; color: var(--b-grey); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: #0B6E69; }
   /* A day's or a week's total: a 30px figure, then its line. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: 2px; padding: 2px 18px 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__big { font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__so { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--b-grey); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__line { font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__line--warn { color: var(--b-amber); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum + .b-list { box-shadow: inset 0 1px 0 #ECEEEF; }
   /* A punch's time or a fact on a row's right: 15px ink, tabular. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--b-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--soft { color: var(--b-ink2); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--teal { font-weight: 600; color: #0B6E69; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end:has(> .eb-val--wrap) { flex: 0 1 auto; min-width: 0; max-width: 62%; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--wrap { white-space: normal; overflow-wrap: anywhere; text-wrap: pretty; }
   /* Show earlier weeks: centred, teal, closing the Weeks card. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 52px; padding: 14px 18px; font-size: 15px; line-height: 20px; font-weight: 600; color: #0B6E69; text-align: center;
-    transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more svg { flex: none; width: 16px; height: 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more:active { background-color: rgb(16 24 32 / 0.04); }
   /* An empty list: a 48px grey icon, a 16px line and a quiet one under it. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 18px 20px; text-align: center; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico { width: 48px; height: 48px; margin-bottom: 4px; border-radius: 24px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico svg { width: 22px; height: 22px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none__t { font-size: 16px; line-height: 22px; font-weight: 600; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none__s { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
   /* A correction's notes. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said { padding: 2px 18px 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said--line { padding-top: 12px; box-shadow: inset 0 1px 0 #ECEEEF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__k { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--b-grey); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__k--gap { margin-top: 12px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__v { margin-top: 2px; font-size: 15px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ink { color: var(--b-ink2); }
   /* Receipts and read states. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-btn--full, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-stack > .b-btn--full { min-height: 48px; border-radius: 999px; font-size: 15.5px; font-weight: 700; }
   /* ---------- Fix my time: the corporate form as one white card over the hero ---------- */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .eb-fix {
-    position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: -40px 14px 22px; padding: 18px; border-radius: 22px; background: #FFFFFF;
-    box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
-  }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .b-screen:has(> .b-stack) ~ .eb-fix { margin-top: -10px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix :is(.c-form, .c-hours-fieldset) { gap: 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-one { display: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field { gap: 6px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__label { font-size: 13.5px; line-height: 18px; font-weight: 600; color: #6A7176; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__help { font-size: 13px; line-height: 18px; color: #6A7176; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__row { gap: 12px; }
   /* Fields: 48px, a 1px #8C9397 ring (3:1), 14px corners (16px type so iOS doesn't zoom). */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in { height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: #111517; font-size: 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix select.c-in { padding-right: 40px; background-position: right 14px center; }
   /* An unchosen select reads as a placeholder (grey), like the empty time fields beside it. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix select.c-in:has(option[value=""]:checked) { color: var(--b-grey, #6A7176) !important; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix textarea.c-in { height: 96px; padding: 12px 14px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in::placeholder { color: #6A7176; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in:focus { box-shadow: inset 0 0 0 2px #0B6E69; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px #B42318; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in:disabled { background-color: #F7F8F8; color: #6A7176; }
+  html .app-shell[data-nv-b] .c-page > .eb-fix select.c-in:has(option[value=""]:checked) { color: var(--b-grey, #6A7176) !important; }
   /* What to fix (when there is a choice): selectable rows in a ringed group. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices { overflow: hidden; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row { min-height: 56px; padding: 10px 14px; gap: 12px; cursor: pointer; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row + .c-row { box-shadow: inset 0 1px 0 #ECEEEF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices .c-row__title { font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices .c-row__detail { font-size: 13.5px; line-height: 18px; color: #6A7176; }
   /* Notices inside the card: a soft tint with 14px corners; their buttons are pills. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-callout { padding: 12px 14px; border-radius: 14px; font-size: 13.5px; line-height: 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-callout .c-btns { margin-top: 4px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-btn { border-radius: 999px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-error { margin: -4px 0 0; font-size: 13.5px; line-height: 18px; }
   /* Send at the foot of the card (grey until the fix is complete), then the review line, centred. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send {
-    display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; margin: 2px 0 0; padding: 0 16px; border: 0; border-radius: 16px; background: #0B6E69; color: #FFFFFF;
-    font: 700 15.5px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent;
-    transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out;
-  }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3; color: #A3A9AE; cursor: default; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-form > .c-note { justify-content: center; margin-top: -4px; font-size: 13px; line-height: 18px; color: #6A7176; text-align: center; text-wrap: balance; }
   /* ---------- Availability: the corporate page's content as one white card over the hero ---------- */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone.b-keep { position: relative; z-index: 2; gap: 12px; margin: -40px 14px 22px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-card, :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form {
-    overflow: hidden; border: 0; border-radius: 22px; background: #FFFFFF; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
-  }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg { gap: 8px; padding: 16px 18px 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg h2 { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #111517; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg p { font-size: 13.5px; line-height: 18px; color: #6A7176; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-note { padding: 0 6px; font-size: 13px; line-height: 18px; color: #6A7176; }
   /* The form is the card: the week's rows, then Save and the line under it (in that order, whatever the source order). */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form { gap: 0; padding: 0 0 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > :not(dialog) { order: 3; margin: 12px 18px 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-card { order: 0; margin: 0; border: 0; border-radius: 0; background: none; box-shadow: inset 0 -1px 0 #ECEEEF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__check { order: 1; margin-top: 14px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn { order: 2; margin-top: 14px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__note { order: 4; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > :is(.c-avail__link, .c-error, .em-planning-feedback) { order: 3; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > [hidden] { display: none; }
   /* The usual week has no card title (Change one week is in the hero); a chosen week keeps its title, state and arrows. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone[data-availability-status="Usual hours"] > .c-avail__form > .c-card > .c-card__head { display: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-card__head { min-height: 48px; padding: 14px 18px 2px; border: 0; box-shadow: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-card__label { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #111517; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-pill { height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; font-weight: 600; }
   /* One 56px row per day: the day, its hours on the right (grey when not available), a chevron. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day { height: auto; min-height: 56px; gap: 12px; padding: 12px 18px; border-radius: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__days > li + li > .c-avail__day { box-shadow: inset 0 1px 0 #ECEEEF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day:active { background: rgb(16 24 32 / 0.04); }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day:focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; border-radius: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: 1 0 auto; width: auto; font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 0 1 auto; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; text-align: right; font-variant-numeric: tabular-nums; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours--off { color: #6A7176; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day > .c-chev { flex: none; width: 18px; height: 18px; color: #B5BBBF; }
   /* Save: full width, grey until something changes; the line under it is centred. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn {
-    display: flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #0B6E69; color: #FFFFFF; box-shadow: none;
-    font: 700 15.5px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page.c-hours--sub > .b-screen--back) .mobile-header .brand.compact { visibility: hidden !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .c-hours-sheet):has(.c-page > .b-screen) .mobile-header { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .c-hours-sheet):has(.c-page > .b-screen) .mobile-nav { display: none !important; }
   }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3; color: #A3A9AE; opacity: 1; cursor: default; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__note { display: block; font-size: 13px; line-height: 18px; color: #6A7176; text-align: center; text-wrap: balance; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .eb-avail-lead { display: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__link { align-self: center; margin-top: 4px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__check { min-height: 52px; padding: 0 14px; border-radius: 14px; box-shadow: inset 0 0 0 1px #D5DADC; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .em-planning-feedback { font-size: 13.5px; line-height: 18px; color: #3F464B; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone :is(.c-btn--secondary, .c-btn--neutral) { border-radius: 16px; }
+
+  /* Inspection round 2 (Time). */
+  /* Fix my time: grey 600 labels and the mock's bold caret on selects (the Owner page layer darkens labels with ids). */
+  html body .app-shell[data-nv-b] .c-page > .eb-fix .c-field__label { color: #6A7176 !important; }
+  html body .app-shell[data-nv-b] .c-page > .eb-fix select.c-in { -webkit-appearance: none !important; appearance: none !important; padding-right: 44px !important;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") right 16px center / 18px no-repeat !important; }
+  html body .app-shell[data-nv-b] .c-page > .eb-fix, html body .app-shell[data-nv-b] .c-page > .c-avail--phone > .c-avail__form { border: 1px solid transparent !important; }
+  html body .app-shell[data-nv-b] .c-page > .eb-fix .c-form > .c-note { text-wrap: pretty !important; }
+
+  /* Round 4. Availability on narrow phones: the day keeps its width and a long range takes two lines (never cut to "…").
+   * Fix my time: the chosen option is tinted with a teal ring, as on the board. */
+
+  /* ---------- Review B6 (Nov 10, 2026): Fix my time ---------- */
+  /* NV-040: the form is one lifted white card 40px over the hero, so "What to fix" never lands on teal (the older page
+   * layers cleared the card's fill with ids; this matches their weight). */
+  html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-fix {
+    background: #FFFFFF !important; border-radius: 22px !important; box-shadow: var(--b-elev-1) !important; }
+  @media (max-width: 767px) {
+    /* …on a phone, 14px in from the screen's edges with an 18px inside, like every card (the kept-form wrapper rule in
+     * account.css made it a bare full-width block). */
+    html body .app-shell[data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-fix { margin: -40px 14px 22px !important; padding: 18px !important; }
+    html body .app-shell[data-nv-b] .c-page > .b-screen:has(> .b-stack) ~ .b-keep.eb-fix { margin-top: -10px !important; }
+  }
+  /* NV-277: Start and End carry the clock glyph the time-off fields have; the chosen row's ring follows the group's corners. */
+  html body .app-shell[data-nv-b] .c-page > .eb-fix input.c-in:is([name="startTime"], [name="endTime"]) {
+    padding-right: 42px !important;
+    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm68-84a12,12,0,0,1-12,12H128a12,12,0,0,1-12-12V72a12,12,0,0,1,24,0v44h44A12,12,0,0,1,196,128Z'/%3E%3C/svg%3E") right 14px center / 18px no-repeat !important; }
 }
-@media (max-width: 767px) {
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page.c-hours--sub > .b-screen--back) .mobile-header .brand.compact { visibility: hidden !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-nv-b]:has(.c-page > .c-hours-sheet):has(.c-page > .b-screen) .mobile-header { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b][data-nv-b]:has(.c-page > .c-hours-sheet):has(.c-page > .b-screen) .mobile-nav { display: none !important; }
+
+/* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
+ * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
+:is(#c-root, html) .c-page > .eb-fix { display: contents; }
+:is(#c-root, html) .c-page .eb-fix-send { display: none; }
+:is(#c-root, html) .c-page .eb-avail-lead { display: inline; }
+:is(#c-root, html) .app-shell[data-nv-b][data-corp-root] .c-page.c-hours--sub > .b-screen .b-back { display: inline-flex; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen h1[tabindex="-1"]:focus-visible, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt:focus-visible { outline: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now { align-items: flex-start; padding: 6px 18px 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-now .b-notice__tx { gap: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-flat { align-items: flex-start; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-quiet { padding: 14px 18px; font-size: 15px; line-height: 20px; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-teal { color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum { display: flex; flex-direction: column; gap: 2px; padding: 2px 18px 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__big { font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__so { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__line { font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum__line--warn { color: var(--b-amber); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-sum + .b-list { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--b-ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--soft { color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--teal { font-weight: 600; color: #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end:has(> .eb-val--wrap) { flex: 0 1 auto; min-width: 0; max-width: 62%; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .eb-val--wrap { white-space: normal; overflow-wrap: anywhere; text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; min-height: 52px; padding: 14px 18px; font-size: 15px; line-height: 20px; font-weight: 600; color: #0B6E69; text-align: center;
+  transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more svg { flex: none; width: 16px; height: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-more:active { background-color: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 18px 20px; text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico { width: 48px; height: 48px; margin-bottom: 4px; border-radius: 24px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none .b-ico svg { width: 22px; height: 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none__t { font-size: 16px; line-height: 22px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-none__s { max-width: 30ch; font-size: 13.5px; line-height: 18px; color: var(--b-grey); text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said { padding: 2px 18px 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said--line { padding-top: 12px; box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__k { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__k--gap { margin-top: 12px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-said__v { margin-top: 2px; font-size: 15px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ink { color: var(--b-ink2); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-btn--full, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-stack > .b-btn--full { min-height: 48px; border-radius: 999px; font-size: 15.5px; font-weight: 700; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .eb-fix {
+  position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: -40px 14px 22px; padding: 18px; border-radius: 22px; background: #FFFFFF;
+  box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
 }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .b-screen:has(> .b-stack) ~ .eb-fix { margin-top: -10px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix :is(.c-form, .c-hours-fieldset) { gap: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-one { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field { gap: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__label { font-size: 13.5px; line-height: 18px; font-weight: 600; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__help { font-size: 13px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__row { gap: 12px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in { height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: #111517; font-size: 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix select.c-in { padding-right: 40px; background-position: right 14px center; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix textarea.c-in { height: 96px; padding: 12px 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in::placeholder { color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in:focus { box-shadow: inset 0 0 0 2px #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px #B42318; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in:disabled { background-color: #F7F8F8; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices { overflow: hidden; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row { min-height: 56px; padding: 10px 14px; gap: 12px; cursor: pointer; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row + .c-row { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices .c-row__title { font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices .c-row__detail { font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-callout { padding: 12px 14px; border-radius: 14px; font-size: 13.5px; line-height: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-callout .c-btns { margin-top: 4px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-btn { border-radius: 999px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-error { margin: -4px 0 0; font-size: 13.5px; line-height: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send {
+  display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; margin: 2px 0 0; padding: 0 16px; border: 0; border-radius: 16px; background: #0B6E69; color: #FFFFFF;
+  font: 700 15.5px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out;
+}
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3; color: #A3A9AE; cursor: default; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:focus-visible { outline: 2px solid #0B6E69; outline-offset: 2px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-form > .c-note { justify-content: center; margin-top: -4px; font-size: 13px; line-height: 18px; color: #6A7176; text-align: center; text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone.b-keep { position: relative; z-index: 2; gap: 12px; margin: -40px 14px 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-card, :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form {
+  overflow: hidden; border: 0; border-radius: 22px; background: #FFFFFF; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
+}
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg { gap: 8px; padding: 16px 18px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg h2 { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__msg p { font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-note { padding: 0 6px; font-size: 13px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form { gap: 0; padding: 0 0 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > :not(dialog) { order: 3; margin: 12px 18px 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-card { order: 0; margin: 0; border: 0; border-radius: 0; background: none; box-shadow: inset 0 -1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__check { order: 1; margin-top: 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn { order: 2; margin-top: 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__note { order: 4; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > :is(.c-avail__link, .c-error, .em-planning-feedback) { order: 3; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > [hidden] { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone[data-availability-status="Usual hours"] > .c-avail__form > .c-card > .c-card__head { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-card__head { min-height: 48px; padding: 14px 18px 2px; border: 0; box-shadow: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-card__label { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-pill { height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; font-weight: 600; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day { height: auto; min-height: 56px; gap: 12px; padding: 12px 18px; border-radius: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__days > li + li > .c-avail__day { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day:active { background: rgb(16 24 32 / 0.04); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day:focus-visible { outline: 2px solid #0B6E69; outline-offset: -2px; border-radius: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: 1 0 auto; width: auto; font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 0 1 auto; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; text-align: right; font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours--off { color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day > .c-chev { flex: none; width: 18px; height: 18px; color: #B5BBBF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn {
+  display: flex; align-items: center; justify-content: center; width: auto; height: auto; min-height: 48px; padding: 0 16px; border: 0; border-radius: 16px; background: #0B6E69; color: #FFFFFF; box-shadow: none;
+  font: 700 15.5px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:is(:disabled, [aria-disabled="true"]) { background: #F0F2F3; color: #A3A9AE; opacity: 1; cursor: default; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__note { display: block; font-size: 13px; line-height: 18px; color: #6A7176; text-align: center; text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .eb-avail-lead { display: none; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-avail__link { align-self: center; margin-top: 4px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__check { min-height: 52px; padding: 0 14px; border-radius: 14px; box-shadow: inset 0 0 0 1px #D5DADC; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .em-planning-feedback { font-size: 13.5px; line-height: 18px; color: #3F464B; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone :is(.c-btn--secondary, .c-btn--neutral) { border-radius: 16px; }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-wide { display: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-nowrap { white-space: nowrap; }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep) { animation: b-enter 300ms ease-out 100ms both; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .eb-fix-send:not(:disabled):not([aria-disabled="true"]):active,
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone > .c-avail__form > .c-btn:not(:disabled):active { scale: 0.96; }
 }
-@media (max-width: 767px) and (prefers-reduced-motion: reduce), (min-width: 1024px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: reduce), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > :is(.eb-fix, .c-avail--phone.b-keep) { animation: b-fade 200ms linear both; }
 }
-
-/* Inspection round 2 (Time). */
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-now { align-items: center; }
-  /* Fix my time: grey 600 labels and the mock's bold caret on selects (the Owner page layer darkens labels with ids). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix .c-field__label { color: #6A7176 !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix select.c-in { -webkit-appearance: none !important; appearance: none !important; padding-right: 44px !important;
-    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") right 16px center / 18px no-repeat !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix, :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .c-avail--phone > .c-avail__form { border: 1px solid transparent !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix .c-form > .c-note { text-wrap: pretty !important; }
-}
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-now { align-items: center; }
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen.b-screen .eb-now { align-items: flex-start; }
 }
-
-/* Round 4. Availability on narrow phones: the day keeps its width and a long range takes two lines (never cut to "…").
- * Fix my time: the chosen option is tinted with a teal ring, as on the board. */
 @media (max-width: 359px) {
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__day { gap: 8px; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__name { flex: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .c-avail--phone .c-avail__hours { flex: 1 1 0; white-space: normal; overflow: visible; text-overflow: clip; text-wrap: balance; }
 }
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:has(input:checked) { background: #E8F3F1; box-shadow: inset 0 0 0 1.5px #0B6E69; }
-}
-
-/* ---------- Review B6 (Nov 10, 2026): Fix my time ---------- */
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  /* NV-040: the form is one lifted white card 40px over the hero, so "What to fix" never lands on teal (the older page
-   * layers cleared the card's fill with ids; this matches their weight). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-fix:not(#e-none):not(#e-none2) {
-    background: #FFFFFF !important; border-radius: 22px !important; box-shadow: var(--b-elev-1) !important; }
-}
-@media (max-width: 767px) {
-  /* …on a phone, 14px in from the screen's edges with an 18px inside, like every card (the kept-form wrapper rule in
-   * account.css made it a bare full-width block). */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep.eb-fix:not(#e-none):not(#e-none2) { margin: -40px 14px 22px !important; padding: 18px !important; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .b-screen:has(> .b-stack) ~ .b-keep.eb-fix:not(#e-none):not(#e-none2) { margin-top: -10px !important; }
-}
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  /* NV-277: Start and End carry the clock glyph the time-off fields have; the chosen row's ring follows the group's corners. */
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page > .eb-fix input.c-in:is([name="startTime"], [name="endTime"]):not(#e-none) {
-    padding-right: 42px !important;
-    background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm68-84a12,12,0,0,1-12,12H128a12,12,0,0,1-12-12V72a12,12,0,0,1,24,0v44h44A12,12,0,0,1,196,128Z'/%3E%3C/svg%3E") right 14px center / 18px no-repeat !important; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:first-child { border-radius: 14px 14px 0 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:last-child { border-radius: 0 0 14px 14px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:only-child { border-radius: 14px; }
-}
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:has(input:checked) { background: #E8F3F1; box-shadow: inset 0 0 0 1.5px #0B6E69; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:first-child { border-radius: 14px 14px 0 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:last-child { border-radius: 0 0 14px 14px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row:only-child { border-radius: 14px; }

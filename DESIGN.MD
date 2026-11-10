@@ -1795,4 +1795,83 @@ native needs are listed for Codex.
   one wordmark.
 - **Motion:** the hero never fades in; the cards' entrance plays on a session's first page only (`b-entrance.tsx`).
 - **Not done here:** landscape phones (NV-274) still keep the corporate phone page: moving them needs the B layers'
-  phone media queries rewritten as one alias (B8's layering work); recommended target is the tablet layout.
+  phone media queries rewritten as one alias (B8's layering work); recommended target is the tablet layout. Done in review B8 (below).
+
+## CSS layering (review batch B8, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B8: NV-066, NV-234, NV-235, NV-236, NV-274). Presentation only; no read,
+handler or contract changed. Proved with a before/after pixel diff of every Owner, Manager, Employee, Lead and public route at
+390, 768, 900, 1024, 1440 and 844×390 (touch), and a computed-style comparison of every element (interactive states forced).
+- **One layer for Direction B (the rule for new CSS).** The Direction B app stylesheets (`owner-b-shell.css`,
+  `owner-b-pages.css`, `owner-b-desktop.css`, `employee-b-desktop.css`, `b-foundation.css`, `components/owner-b/owner-b.css`
+  and `components/employee-b/*.css`) put every `!important` declaration in `@layer nv-b { }`. A layered `!important` beats
+  every unlayered `!important` (globals, Signature, Clean, Corp, Quiet) whatever its specificity, so a Direction B rule needs
+  no fake-id ladder (`:is(#c-root, html)`, `:not(#nvd-none)`, repeated attributes) to win; inside `nv-b` only Direction B rules
+  compete, by specificity, then load order. New Direction B CSS:
+  - goes in the file's `@layer nv-b { }` block with plain selectors (`html body .app-shell[data-nv-b] …`), `!important` when it
+    must beat an older era's rule; no new fake ids;
+  - keeps normal declarations outside the layer (a layered normal declaration loses to every unlayered one), in the file's
+    "Unlayered" tail;
+  - never adds another layer name and never puts an older era's file in a layer: its `!important` rules would then beat
+    Direction B (for `!important`, the earlier layer wins and layered beats unlayered). Wrapping only some eras is how
+    precedence flips silently;
+  - never moves an `nv-b` declaration out of the layer without a check: outside, it loses to every layered one.
+  The unlayered tail of each file also keeps 42 `!important` declarations whose older competitor must keep winning
+  (the phone bell's count, which renders as a teal numbered badge, not the coral dot the B1 spec describes; a few sidebar
+  and avatar colours; see the files). Where a fake id is still in a layered selector it orders two Direction B rules
+  (206 rules); remove it only with a computed-style check.
+- **Counts (whole B set, comments excluded):** `!important` 4,003 → 3,982 (3,940 of them now inside `nv-b`); fake ids
+  `:not(#…)` 1,193 → 282 and `:is(#c-root, …)` 4,993 → 2,009. Of what is left, 47 `:not(#…)` and 1,391 `:is(#c-root, …)` sit in
+  the unlayered tails on normal declarations, which keep their original selectors (they still compete with the older eras by
+  specificity); inside the layer 235 and 596 remain, each one ordering two Direction B rules.
+- **One phone (NV-274).** `src/lib/b-viewport.ts` defines the B breakpoints once: phone `(max-width: 767px)`, wide
+  `(min-width: 768px)` (tablet `and (max-width: 1023px)`, desktop from 1024px). The B stylesheets use only these (and 359px,
+  819px, 1279/1280px refinements, `(pointer: coarse)`, `(hover: hover)`, reduced motion); never height or orientation
+  (`src/app/app/b-viewport.test.ts`). The Employee viewport hooks, the finder, Timecards and the top-bar slot read the same
+  alias. **A phone held sideways (844×390, 932×430) gets the tablet layout** (icon rail, flat teal top bar, the band) for
+  every role, as the B6 agent recommended: at 390px tall the phone layout's floating header and tab bar left too little page.
+  `kit.css` tablet tokens follow, and the older app stylesheets lost their "phone held sideways" alternatives (every media
+  alternative that needs `max-height` ≤ 500px with `pointer: coarse`, and every "except a phone held sideways" condition;
+  `src/app/globals.css`, `corp-shell.css`, `portal-*.css`, `premium-*.css`, `clean-manager/*`, `quiet.css`,
+  `employee-mobile/*` and a few page files), so their phone shell no longer bleeds under the tablet layout; the five
+  `globals.css` "short window" phone-shell queries (`(max-width: 1000px) and (max-height: 500px)`) now add
+  `(pointer: fine)`, so a short desktop window keeps them and a phone held sideways doesn't. Nothing changed for any
+  viewport that is not a touch screen 500px tall or less. Public pages (sign-in, recovery, Mobile Access) and the
+  Clocker keep their own landscape rules.
+- **One B screen on wide screens (NV-234).** `owner-b-desktop.css` opens with one block keyed on `[data-nv-b] .b-screen` (every
+  Employee and Lead screen, and Owner and Manager Home and Things to do, the only Owner screens shown wide) holding the 37
+  declarations both roles repeated; `employee-b-desktop.css` keeps only what differs. The 13 conflicts were decided once there:
+  
+  | Piece | Owner | Employee | Decided | Why |
+  |---|---|---|---|---|
+  | Band action (white/glass pill) height | 48px (kit) | 42px | 48px, pill | 48px targets; pills (B1) |
+  | Figure label (`.b-live__l`) | 13/16 | 13.5/19 | 13.5/18 | meta type role (B1) |
+  | Figure strip max width | 920px | none | none (spans the grid) | B6 "the glass figure strip spans the grid" |
+  | Tab with a count (`.b-seg` item) | grid, no gap | flex, 6px gap | inline-flex, 6px gap | B6 "counts on tabs are a small pill beside the label" |
+  | Cards' bottom padding (`.b-stack`) | 24px | 32px | 24px | Owner value |
+  | Hero row top padding (`.b-hrow`, `.b-hpad`) | 20px | 18px | 20px | Owner value |
+  | Tabs' top margin (`.b-seg`) | 22px | 20px | 22px | Owner value |
+  | Tab item padding | 0 16px | 0 18px | 0 16px | Owner value |
+  | Tab item size | 14px | 14.5px | 14px | Owner value |
+  | Eyebrow bottom margin | 0 | 2px | 0 | Owner value |
+  | Sub-line top margin | 2px | 3px | 2px | Owner value |
+  | Figure's small unit (`.b-live__v small`) | 14px | 15px | 14px | Owner value |
+  | Back link on the screen | hidden (Home, Things to do are root pages) | shown on pushed pages | unchanged | not a conflict: root pages have no way back |
+- **Folded and split (NV-235).** Same-file duplicates folded into the declaration that won (25 declarations in the B files (for example Owner desktop Home's max width 1104px, then 1152px, now 1152px once), 5 in
+  `corp-shell.css`, 7 in `auth-b.css`). 24 selector branches
+  that nested `:has()` inside `:has()` (never valid, so they never matched) were removed from `owner-b-pages.css`: its
+  "teal runs on under the hero" rules were 3,040–3,050 characters and are now about 1,100; selector lists over 400 characters
+  were split into one rule per selector (each keeps its own specificity). Note for a later round: those dead branches meant
+  the teal never ran under a card wrapped in a `div`, `section`, `form` or `.wc-content`; reviving it is a visible change.
+- **What Direction B still takes from the older stylesheets (NV-236 audit).** `data-nv-clean` stays on Owner and Manager:
+  removing it changes 280–1,630 elements on every Owner page checked. Direction B depends on:
+  - tokens declared under `[data-nv-clean]` in `premium-clean-manager.css` (`--cm-tint`, `--cm-tint-press`, `--cm-label`,
+    `--cm-label-2/3`, `--cm-sep`, `--cm-fill`, `--cm-grouped`, `--cm-sys`, `--cm-green/amber/orange/red`, `--nv-accent`,
+    `--nv-accent-strong/-hover`, `--font-family-apple`), read by Corp and B rules through `var()`;
+  - the Clean Manager schedule grid (`clean-manager/schedule.css`, `schedule/schedule-corp.css`: `.cm-block`, `.cm-add`, the
+    week table cells), Timecards, Insights, Notifications and Updates layouts, all scoped to `[data-nv-clean]`;
+  - type and spacing for shared rows and times (`.c-row__title`, `.c-time`, `.c-ampm`, `.c-num`), the sidebar (`.nav-link`,
+    `.nav-label`, `.nav-icon`), the finder options and the account menu items, and `.sr-only`;
+  - `portal-premium.css` and `globals.css` for the shell grid, base type and the legacy page components B restyles.
+  Retiring them is page-by-page work: move each dependency into `b-tokens.css` or an `nv-b` rule, then check the page with
+  the computed-style comparison before dropping the older rule. Don't delete the large files wholesale.
+

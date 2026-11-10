@@ -139,7 +139,8 @@ const minutesIn=(nanoseconds:string)=>/^\d+$/.test(nanoseconds)?Number(BigInt(na
 const compactHours=(nanoseconds:string)=>{const minutes=minutesIn(nanoseconds);if(minutes===null)return '—';const h=Math.floor(minutes/60),m=minutes%60;return h?`${h} h ${String(m).padStart(2,'0')}`:`${m} min`;};
 const wholeHours=(nanoseconds:string)=>{const minutes=minutesIn(nanoseconds);return minutes===null?'—':minutes<60?`${minutes} min`:`${Math.floor(minutes/60)} h`;};
 const quietHours=(nanoseconds:string)=>{if(!/^\d+$/.test(nanoseconds))return '—';const minutes=Number(BigInt(nanoseconds)/BigInt(60_000_000_000)),h=Math.floor(minutes/60),m=minutes%60;return h&&m?`${h} h ${m} min`:h?`${h} h`:`${m} min`;};
-const PHONE_QUERY='(max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse)';
+// Review B8 (NV-274): a phone turned sideways has the tablet layout, so only an upright phone is a phone here.
+const PHONE_QUERY='(max-width: 760px)';
 const INSPECTOR_QUERY='(min-width: 1024px)';
 
 /** While there is no current snapshot (paused, offline, expired, failed or signed out), say so where the cards were, with the

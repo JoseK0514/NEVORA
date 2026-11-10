@@ -43,7 +43,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* ============================ Phones ============================ */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] {
     border-radius: 8px; background: var(--cm-fill); color: var(--cm-tint); font: 600 .9375rem/1.25rem var(--cm-sys); letter-spacing: -.24px;
   }
@@ -58,7 +58,7 @@ html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:n
 }
 
 /* ============================ Desktop ============================ */
-@media (min-width: 761px) and (not ((max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .cm-updates .premium-employee-content > .updates-compose.nv-btn[data-kind] {
     border-radius: 7px; background: #EAF3F2; color: #0B6B67; font: 500 .8125rem/1.125rem var(--cm-sys); letter-spacing: -.05px;
   }

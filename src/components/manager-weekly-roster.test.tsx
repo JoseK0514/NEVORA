@@ -117,7 +117,8 @@ it("keeps the people × days grid desktop-only with its own styling hook, and th
   expect(output).toContain('class="cm-sched-phone"');
   const { readFileSync } = await import("node:fs");
   const css = readFileSync(new URL("./quiet/quiet.css", import.meta.url), "utf8").replace(/\s+/g, " ");
-  expect(css).toContain("@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) { :is(#q-root, html) .q-schedule .cm-sched-desk { display: none; }");
+  // Review B8 (NV-274): a phone held sideways has the tablet layout, so only an upright phone hides the desk grid.
+  expect(css).toContain("@media (max-width: 760px) { :is(#q-root, html) .q-schedule .cm-sched-desk { display: none; }");
   expect(css).toMatch(/@media \(min-width: 761px\) \{ :is\(#q-root, html\) \.q-schedule \.cm-sched-phone \{ display: none; \}/);
 });
 

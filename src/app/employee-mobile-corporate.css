@@ -2,7 +2,7 @@
 .employee-time-overview { display: contents; }
 .employee-corporate-mobile-copy, .employee-corporate-caret, .employee-corporate-freshness, .employee-corporate-record-details { display: none; }
 
-@media screen and (max-width: 760px), screen and (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media screen and (max-width: 760px) {
   .app-shell[data-employee-corporate="true"] {
     --corporate-accent: #0756d9;
     --corporate-accent-hover: #003aae;
@@ -225,6 +225,6 @@
   html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame .employee-corporate-period-form { grid-template-columns: minmax(0,1fr); }
   html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame :is(.employee-time-metrics,.employee-corporate-timecard-metrics) dd { font-size: var(--corporate-type-metric-small); }
 }
-@media screen and (max-width: 760px) and (prefers-reduced-motion: reduce), screen and (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
+@media screen and (max-width: 760px) and (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal[data-mobile-workforce="true"][data-employee-corporate="true"] .page-frame :is(button, a, summary) { transition: none; }
 }

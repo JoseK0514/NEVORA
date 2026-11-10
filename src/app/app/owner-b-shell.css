@@ -3,68 +3,84 @@
  * frosted glass (40px circles inside 44px targets). A pushed screen ("‹ Home") draws its own back link in the wordmark's
  * place. The tab bar is frosted white with a soft teal pill behind the current tab and a visible count. Tablets and desktop
  * keep the corporate shell. !important follows corp-shell.css, whose phone rules use it for the same properties. */
+/* Review B8 (NV-066): the !important declarations are in the nv-b cascade layer. A layered !important beats the older
+ * eras' unlayered !important rules whatever their specificity, so no fake-id ladder is needed; inside nv-b only Direction B
+ * rules compete (specificity, then load order). See DESIGN.MD "CSS layering (review batch B8)". */
+@layer nv-b {
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .app-main { position: relative !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header {
+      position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 30 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important;
+      width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px) 12px 0 20px !important;
+      border: 0 !important; border-radius: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    }
+    /* Offline (Round 4): one dark pill floating over the page above the tab bar, so it never splits the hero under the header. */
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .c-offline {
+      position: fixed !important; top: auto !important; bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 76px) !important; left: 50% !important; z-index: 40 !important; padding: 8px 16px !important; background: rgb(16 24 32 / 0.88) !important;
+      box-shadow: 0 10px 24px -10px rgb(16 24 32 / 0.5) !important; color: #FFFFFF !important; font: 500 13.5px/19px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .brand.compact {
+      display: inline-flex !important; align-items: center !important; order: 0 !important; height: 44px !important; min-height: 44px !important; width: auto !important; margin: 0 !important; padding: 0 !important;
+      background: none !important; box-shadow: none !important; border: 0 !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:not([data-corp-root]):has(.c-page > .b-screen--back) .mobile-header .brand.compact { visibility: hidden !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup { display: inline-flex !important; margin: 0 !important; color: #FFFFFF !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 13px !important; max-width: none !important; filter: brightness(0) invert(1) !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-module { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 !important; padding: 0 !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar) {
+      position: relative !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important; margin: 0 !important; padding: 0 !important;
+      border: 0 !important; border-radius: 22px !important; color: #FFFFFF !important; text-decoration: none !important;
+      background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 19px, rgb(255 255 255 / 0.24) 19.5px 20px, transparent 20.5px) !important; box-shadow: none !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell svg { position: static !important; width: 21px !important; height: 21px !important; color: #FFFFFF !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
+    /* Unread: a coral dot ringed in teal (the count stays in the bell's label). */
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-count {
+      position: absolute !important; margin: 0 !important;
+    }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen--ink) .mobile-header .portal-notification-count { box-shadow: 0 0 0 2px #152A28 !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-unavailable { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: #FFFFFF !important; font: 700 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: -2px !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: 2px !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .c-progress { z-index: 32 !important; }
+
+    /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible red count. */
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.9) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: 8px !important; color: #6A7176 !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: 15px !important; background: transparent !important; z-index: 0 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: #E8F3F1 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active, html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .mobile-nav-link.active span:not(.b-tab-badge) { color: #0B6E69 !important; font-weight: 600 !important; }
+    html body .app-shell[data-nv-corp][data-nv-b] .mobile-nav .b-tab-badge {
+      position: absolute !important; top: 2px !important; left: calc(50% + 4px) !important; z-index: 2 !important; display: grid !important; place-items: center !important; min-width: 18px !important; height: 18px !important; padding: 0 5px !important;
+      border-radius: 9px !important; background: #B42318 !important; color: #FFFFFF !important; font: 700 12px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 0 0 2px #FFFFFF !important;
+    }
+  }
+  /* The badge is a phone piece; the sidebar keeps its own count. */
+  @media (max-width: 767px) { .app-shell:not([data-nv-b]) .b-tab-badge { display: none !important; } }
+
+  /* The bell: the outline glyph everywhere; on a Direction B phone screen the bold one (the mock's Phosphor Bell). */
+  .portal-notification-bell .nb-bold { display: none !important; }
+  @media (max-width: 767px) {
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-simple { display: none !important; }
+    html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-bold { display: block !important; }
+  }
+}
+
+/* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
+ * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
 @media (max-width: 767px) {
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .app-main { position: relative !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header {
-    position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 30 !important; display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important;
-    width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px) 12px 0 20px !important;
-    border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; pointer-events: none;
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header { background: transparent !important; pointer-events: none;
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header > * { pointer-events: auto; }
-  /* Offline (Round 4): one dark pill floating over the page above the tab bar, so it never splits the hero under the header. */
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-offline {
-    position: fixed !important; top: auto !important; bottom: calc(var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) + 76px) !important; left: 50% !important; translate: -50% 0; z-index: 40 !important;
-    width: max-content; max-width: calc(100% - 28px); min-height: 36px; padding: 8px 16px !important; border-radius: 18px; background: rgb(16 24 32 / 0.88) !important;
-    box-shadow: 0 10px 24px -10px rgb(16 24 32 / 0.5) !important; color: #FFFFFF !important; font: 500 13.5px/19px Inter, "Inter Fallback", -apple-system, sans-serif !important; text-wrap: balance; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .brand.compact {
-    display: inline-flex !important; align-items: center !important; order: 0 !important; height: 44px !important; min-height: 44px !important; width: auto !important; margin: 0 !important; padding: 0 !important;
-    background: none !important; box-shadow: none !important; border: 0 !important;
-  }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:not([data-corp-root]):has(.c-page > .b-screen--back) .mobile-header .brand.compact { visibility: hidden !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup { display: inline-flex !important; margin: 0 !important; color: #FFFFFF !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 13px !important; max-width: none !important; filter: brightness(0) invert(1) !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .login-brand-module { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 !important; padding: 0 !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar) {
-    position: relative !important; display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important; margin: 0 !important; padding: 0 !important;
-    border: 0 !important; border-radius: 22px !important; color: #FFFFFF !important; text-decoration: none !important;
-    background: radial-gradient(circle closest-side, rgb(255 255 255 / 0.12) 19px, rgb(255 255 255 / 0.24) 19.5px 20px, transparent 20.5px) !important; box-shadow: none !important;
-  }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell svg { position: static !important; width: 21px !important; height: 21px !important; color: #FFFFFF !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::before, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell::after { content: none !important; display: none !important; }
-  /* Unread: a coral dot ringed in teal (the count stays in the bell's label). */
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-count {
-    position: absolute !important; top: 11px !important; right: 12px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important;
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-offline { translate: -50% 0;
+    width: max-content; max-width: calc(100% - 28px); min-height: 36px; border-radius: 18px; text-wrap: balance; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-count { top: 11px !important; right: 12px !important; left: auto !important; display: block !important; width: 8px !important; height: 8px !important; min-width: 0 !important; padding: 0 !important;
     border-radius: 4px !important; background: #FF6B5E !important; box-shadow: 0 0 0 2px #0B6E69 !important; font-size: 0 !important; line-height: 0 !important; color: transparent !important; overflow: hidden !important;
   }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen--ink) .mobile-header .portal-notification-count { box-shadow: 0 0 0 2px #152A28 !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-unavailable { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .c-top-avatar > span { display: contents !important; background: none !important; color: #FFFFFF !important; font: 700 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.portal-notification-bell, .c-top-avatar):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: -2px !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { outline: 2px solid #FFFFFF !important; outline-offset: 2px !important; border-radius: 6px; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .c-progress { z-index: 32 !important; }
-
-  /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible red count. */
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.9) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: 8px !important; color: #6A7176 !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: 15px !important; background: transparent !important; z-index: 0 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: #E8F3F1 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active, :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active span:not(.b-tab-badge) { color: #0B6E69 !important; font-weight: 600 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .b-tab-badge {
-    position: absolute !important; top: 2px !important; left: calc(50% + 4px) !important; z-index: 2 !important; display: grid !important; place-items: center !important; min-width: 18px !important; height: 18px !important; padding: 0 5px !important;
-    border-radius: 9px !important; background: #B42318 !important; color: #FFFFFF !important; font: 700 12px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 0 0 2px #FFFFFF !important;
-  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header :is(.brand, .login-brand-lockup):focus-visible { border-radius: 6px; }
 }
-/* The badge is a phone piece; the sidebar keeps its own count. */
 .b-tab-badge { display: none; }
-@media (max-width: 767px) { .app-shell:not([data-nv-b]) .b-tab-badge { display: none !important; } }
-
-/* The bell: the outline glyph everywhere; on a Direction B phone screen the bold one (the mock's Phosphor Bell). */
-.portal-notification-bell .nb-bold { display: none !important; }
-@media (max-width: 767px) {
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-simple { display: none !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-nv-b][data-nv-b]:has(.c-page > .b-screen) .mobile-header .portal-notification-bell .nb-bold { display: block !important; }
-}

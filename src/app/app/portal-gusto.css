@@ -85,7 +85,7 @@ html body .app-shell.nevora-portal {
  * desktop type in px, and 1/16rem in the phone chrome, so each size there is n/16 rem and
  * computes to the same pixel at the default 16px root. Phone-only rules use rem directly.
  * Spacing, icons, borders and the 44px targets stay in px. The root is never set. */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal { --type-unit: 0.0625rem; }
 }
 html body .app-shell.nevora-portal :is(.app-main,.page-frame) { background: var(--g-canvas); }
@@ -146,7 +146,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"]:not([data-emplo
  * Not here: tab bar items, section tabs, segmented controls, chips, the next-shift pass,
  * the "Close actions" pill, swipe backdrops and the Clocker. Doubled classes outrank the
  * legacy phone pills (mobile-workforce, employee corporate). */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .ncc-button, .nto-button, .av-button, .request-hub-action, .request-hub-schedule, .locations-search button, .shift-action, .employee-action, .positions-button, .workspace-button, .schedule-generation-action, .assisted-submit, .inbox-refresh, .employee-corporate-button:is(.employee-corporate-button--primary, .employee-corporate-button--secondary), .employee-time-correction-trigger, .employee-time-correction-submit, [class*="employee-directory-module"]:is([class*="primaryAction"], [class*="applyAction"]), :is(button, a)[class*="payroll-export-module"][class*="__button"], :is(button, a):is([class*="__primary"], [class*="__secondary"]), [class*="callout-view-module"][class$="__actions"] button, button[class*="notification-inbox-module__"][class*="__refresh"]) {
     align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 16px;
     border-radius: var(--g-control-radius); font-size: 1.0625rem; font-weight: 600; line-height: 1.25; text-align: center; text-wrap: balance;
@@ -158,7 +158,7 @@ html body .app-shell.nevora-portal[data-mobile-workforce="true"]:not([data-emplo
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary) svg { flex: none; width: 20px; height: 20px; }
   html body .app-shell.nevora-portal.nevora-portal .page-frame.page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary):focus-visible { outline: 2px solid var(--g-accent); outline-offset: 2px; }
 }
-@media (max-width: 760px) and (prefers-reduced-motion: no-preference), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
   html body .app-shell.nevora-portal .page-frame :is(.button.primary, .button.secondary, .pw-button, .nto-button, .av-button, .employee-action, .employee-corporate-button--primary, .employee-corporate-button--secondary):active:not(:disabled) { transform: scale(.98); }
 }
 
@@ -218,7 +218,7 @@ html body .app-shell.nevora-portal .page-frame .status-pill { font-weight: 500; 
 }
 
 /* Phones (and landscape phones, H5 QA: they showed the old blue accent): the account menu stays in the existing menus; dark-teal mastheads. */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal .portal-account-menu { display: none; }
   html body .app-shell.nevora-portal.nevora-portal[data-mobile-workforce="true"] {
     --mobile-masthead: var(--g-masthead);
@@ -337,7 +337,7 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
 
 /* Phone tab bar (U1): four destinations and More for every role. The manager
  * More menu lives in the bar; its wrapper steps aside so the button is a grid cell. */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal .mobile-nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   html body .app-shell.nevora-portal .mobile-nav > .nevora-action-menu { display: contents; }
   html body .app-shell.nevora-portal .mobile-nav button.mobile-nav-link {
@@ -367,7 +367,7 @@ html body .app-shell.nevora-portal .section-tab:focus-visible { outline: 2px sol
 }
 /* Short screens (400% zoom, phones in landscape): the header scrolls away so the
  * sticky chrome stays to the tab bar instead of covering half the screen (WCAG 1.4.10). */
-@media (max-width: 760px) and (max-height: 500px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) and (max-height: 500px) {
   html body .app-shell.nevora-portal .mobile-header { position: relative; }
   html:has(body .app-shell.nevora-portal .mobile-nav) { scroll-padding-top: 12px; scroll-padding-bottom: calc(var(--nv-tabbar-height, 68px) + 16px); } /* H5 QA: focus never lands under the tab bar */
 }
@@ -411,7 +411,7 @@ html body .app-shell.nevora-portal :is(.command-finder-close, .command-finder-cl
 
 /* Search on phones (phone search, slice 1): an icon button beside the bell opens the
  * same dialog as a full-screen sheet. Type is in rem (phone foundations, slice 1). */
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal .portal-account-menu { display: none; }
   /* One row at 320 with a logo: the chip shrinks (to 40px) instead of the actions wrapping. */
   html body .app-shell.nevora-portal .mobile-header { flex-wrap: nowrap; column-gap: 0; }
@@ -486,13 +486,13 @@ html body .app-shell.nevora-portal :is(.command-finder-close, .command-finder-cl
   html body .app-shell.nevora-portal #manager-more-navigation .nevora-more-search svg { flex: none; }
   html body .app-shell.nevora-portal #manager-more-navigation .nevora-more-search-divider { margin: 0 2px 4px; background: var(--g-hairline); }
 }
-@media (max-width: 760px) and (hover: hover), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (hover: hover) {
+@media (max-width: 760px) and (hover: hover) {
   html body .app-shell.nevora-portal .mobile-header .command-finder-trigger.command-finder-trigger:hover { background: color-mix(in srgb, currentColor 10%, transparent); }
 }
-@media (max-width: 760px) and (prefers-reduced-motion: reduce), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
   html body .app-shell.nevora-portal .mobile-header .command-finder-trigger { transition: none; }
 }
-@media (max-width: 760px) and (prefers-contrast: more), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) and (prefers-contrast: more) {
+@media (max-width: 760px) and (prefers-contrast: more) {
   html body .app-shell.nevora-portal .command-finder-field { border-color: var(--g-ink); }
   html body .app-shell.nevora-portal :is(.command-finder-search, .command-finder-status) { border-bottom-color: var(--g-ink); }
 }
@@ -513,7 +513,7 @@ html body .app-shell.nevora-portal .sidebar-heading .company-logo-chip { margin-
 html body .app-shell.nevora-portal .sidebar[data-collapsed="true"] .company-logo-chip { display: none; }
 /* The desktop top bar carries no wordmark (the sidebar does), so its chip only shows with the phone chrome. */
 html body .app-shell.nevora-portal .mobile-header .company-logo-chip { display: none; }
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   html body .app-shell.nevora-portal .mobile-header .company-logo-chip { display: inline-flex; height: 30px; max-width: 88px; margin-right: auto; margin-left: 18px; border-color: transparent; }
   html body .app-shell.nevora-portal .mobile-header .company-logo-chip img { max-height: 22px; }
 }

@@ -1,5 +1,5 @@
 .em-message-return { display:none; }
-@media (max-width:767px), (max-height:500px) and (orientation:landscape) and (pointer:coarse) {
+@media (max-width:767px) {
  html body #employee-mobile.app-shell.nevora-portal[data-employee-mobile="true"] .page-frame:has(>.em-requests-mobile)>:is(.q-page,.cm-page,.sig-page) { display:none; }
   /* UI-COM-003: a short page fills the canvas down to the navigation in both themes. */
  /* The frame's bottom padding was unpainted below the page (a black band in dark mode, at every text size); the

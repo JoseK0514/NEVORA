@@ -3,54 +3,184 @@
  * layout. Selectors are only as strong as the rule they correct (an :is(#c-root, html) id step like the kit's own); a
  * few keep !important where the desktop layer they correct is all !important (see DESIGN.MD, "CSS layering").
  * Values come from src/app/b-tokens.css. Light only. Nothing here changes layout. */
+/* Review B8 (NV-066): the !important declarations are in the nv-b cascade layer. A layered !important beats the older
+ * eras' unlayered !important rules whatever their specificity, so no fake-id ladder is needed; inside nv-b only Direction B
+ * rules compete (specificity, then load order). See DESIGN.MD "CSS layering (review batch B8)". */
+@layer nv-b {
+  /* ---------- Focus (NV-170, NV-026, NV-145): teal on cards and the canvas, white on the band ---------- */
+  /* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
+  /* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
+  /* A card's first and last rows: the inside ring follows the card's corners. */
 
-/* ---------- Focus (NV-170, NV-026, NV-145): teal on cards and the canvas, white on the band ---------- */
+  /* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
+  /* Filter chips that scroll sideways: room at the end and a fade, so a cut chip reads as "more". */
+  /* Decision pairs (Decline / Approve) in the request lists: 44px, at least 96px wide, right-aligned on wide screens (NV-014). */
+  /* Touch tablets (the desktop layer starts at 768px with fine-pointer sizes): a 44px floor on controls, 48px on the
+   * primary form and footer actions, and 48px schedule blocks. */
+  @media (min-width: 768px) and (pointer: coarse) {
+    :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.c-icon-btn, header.mobile-header .portal-notification-bell) { min-width: 44px !important; }
+    :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn--full, .b-btn--big, form button[type="submit"].c-btn) { min-height: 48px !important; }
+    html body .app-shell[data-nv-b] .cm-grid :is(a, button) { min-height: 44px !important; }
+    /* The rail on touch: 48×48 links, and the labels show under the icons. */
+    html body .app-shell[data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link { width: 48px !important; min-width: 48px !important; min-height: 48px !important; }
+  }
+
+  /* ---------- Press and disabled (NV-172, NV-232): one press, one disabled look ---------- */
+
+  /* ---------- One select (NV-099/D1 spec, NV-019): 48px, radius 14, 16px text, 1px field edge, one bold caret ---------- */
+
+  /* ---------- Contrast on grey and tinted fills (NV-106, NV-128) ---------- */
+
+  /* ---------- Disclosures (NV-101): a down caret in readable grey; right chevrons only navigate ---------- */
+
+  /* ---------- Status tones (NV-071, NV-327) ---------- */
+  /* Finished setup steps are done, so green (they were teal). */
+
+  /* ---------- Numbers (NV-116, NV-246): normal figures on the page, tabular only on numbers ---------- */
+
+  /* ---------- The Home date on the band is a fact, not a button (NV-117) ---------- */
+
+  /* ---------- Motion (NV-329): the B entrances live at the top level so every file can use them ---------- */
+
+  /* ---------- Home live figures as a list (NV-005): the spans stack as the old term and value did ---------- */
+
+  /* ---------- Kit additions: the red action (Decline confirm), one row-action size (NV-078, NV-125) ---------- */
+
+  /* ---------- This week chart (NV-107): caption and per-day values ---------- */
+
+  /* ---------- Date and time fields (NV-065): from the keyboard, the real segments show instead of "Choose date" ---------- */
+  html body .app-shell[data-nv-b] .tof-pick:has(> input:focus-visible) > span:not(.tof-pick__err) { visibility: hidden !important; }
+  html body .app-shell[data-nv-b] .tof-pick > input:focus-visible { opacity: 1 !important; color: var(--b-ink) !important; background: #FFFFFF !important; }
+
+  /* ---------- The shift sheet's actions on phones too (NV-153): bold glyphs in tinted circles, red for "I can't work" ---------- */
+
+  /* ---------- Week strip legend (NV-089) ---------- */
+
+  /* ---------- One palette under Direction B (NV-229, NV-106, C10): the corporate and Quiet layers read B's values ----------
+   * The older kits keep their own token names; under the B shell they point at the B tokens, so an element B doesn't repaint
+   * shows B's ink, grey, line and canvas (not Quiet's warm greys or corp's slightly different ink). Fills and chevrons that
+   * carried meaning get readable greys (the chevron was 1.9:1). */
+
+  /* ---------- Help (NV-129, NV-101, NV-269): white question rows with a down caret that turns; answers 15/22 #3F464B;
+     inline links reach a 44px line box ---------- */
+
+  /* ---------- Offline (review B2, NV-001; Jose, Nov 10, 2026) ----------
+   * The page keeps what the person loaded, read-only: the line says "Offline · updated 9:24 PM" with an amber dot, and the
+   * page's action pills take the one disabled look (app-shell.tsx blocks their presses and form submits). */
+  html body .app-shell[data-nv-b][data-offline] #main-content :is(button.b-btn, button.c-btn, button.q-btn, button.q-bs, button.button, button[type="submit"], input[type="submit"]) {
+    background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; border-color: transparent !important; cursor: not-allowed !important; }
+  html body .app-shell[data-nv-b][data-offline] #main-content :is(button.b-btn, button.c-btn, button.q-btn, button.q-bs, button.button) :is(svg, span, b) { color: inherit !important; }
+
+  /* ---------- One state card (review B2, NV-075): icon circle, 16/22 title, one line, one teal pill, left-aligned ---------- */
+
+  /* ---------- Home's shift card follows the clock state (review B2, NV-039): green when clocked in, amber when not yet ---------- */
+
+  /* ---------- A shift on a day of approved time off (review B2, NV-027): amber ring, warning glyph, "Needs cover" ---------- */
+  html body .app-shell[data-nv-b] .cm-block.conflict { box-shadow: inset 0 0 0 2px #E9A23B !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
+  html body .app-shell[data-nv-b] .cm-block.conflict { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 0 4px !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+
+  /* ---------- Help in the sidebar (review B2, NV-011): a quiet row above "Powered by", 44px, grey until hovered or current ---------- */
+
+  /* ---------- The finder under Direction B (review B2, NV-322): 22px radius, no border, the popover elevation, the B scrim ---------- */
+
+  /* ---------- Phone sheets sit on the bottom edge (review B2, NV-223): pinned to the bottom of the viewport whatever the page
+   * scroll, so a sheet opened from a scrolled list never stops mid-screen with its flat bottom edge showing. ---------- */
+
+  /* ---------- "What changed in your schedule" (review B2, NV-226): a chip per change and 12px between rows ---------- */
+
+  /* ---------- Desktop schedule blocks (review B5, NV-131): published teal-50 with teal text, draft grey, open shifts an amber
+   * dashed outline; a 12px position line; the legend beside the week's state. ---------- */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .cm-block:not(.draft):not(.open):not(.conflict) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
+    html body .app-shell[data-nv-b] .cm-block.draft { background: var(--b-quiet) !important; color: var(--b-ink2) !important; }
+    html body .app-shell[data-nv-b] .cm-block.open { background: #FFFFFF !important; box-shadow: none !important; border: 1.5px dashed #E9A23B !important; color: var(--b-amber) !important; }
+    html body .app-shell[data-nv-b] .cm-block:has(.cm-block__pos) { flex-direction: column !important; align-items: flex-start !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
+  }
+
+  /* ---------- Schedule grid (review B5, NV-087): the person column at least 200px (names stay on one line more often; two at
+   * most), the days share the rest. ---------- */
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .cm-grid thead th.cm-grid__corner { width: 210px !important; min-width: 200px !important; }
+  }
+
+  /* ---------- Timecard sheet (review B5, NV-245): AM and PM at full size in the Days list, as on every other phone screen;
+   * the Needs attention note takes the card radius. ---------- */
+  html body .app-shell[data-nv-b] .c-tc-sheet__issue { border-radius: 22px !important; }
+
+  /* ---------- One panel header for Owner and Manager sheets and side panels (review B5, NV-221, NV-252): the title
+   * left-aligned at 20/26 700, Done a teal 600 text button with a 44px target at the top right, every width. ---------- */
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) { grid-template-columns: minmax(0, 1fr) auto !important; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav > span[aria-hidden="true"]:first-child { display: none !important; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; color: var(--b-ink) !important; }
+  html body .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done { color: var(--b-teal) !important; font-weight: 600 !important; }
+
+  /* ---------- Finder rows (review B5, NV-216, NV-218): each row leads with its kind in a 28px tinted circle (a bolt for
+   * actions, a page, initials for people, a pin for places); a cut-short group says so under the list. ---------- */
+
+  /* ---------- Account menu and workspace tile (review B5, NV-110): the name and "Owner · workspace" wrap to a second line
+   * instead of being cut; the sidebar tile shows the full name on hover (title). ---------- */
+  html body .app-shell.nevora-portal[data-nv-b] #portal-account-menu :is(.portal-account-head__name, .portal-account-head__detail) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+
+  /* ---------- Build and publish on phones (review B5, NV-015): the band runs on under the head as if a card came next, so
+   * the page's first line (the week) starts below that run-on instead of being clipped under it. ---------- */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] .c-shift__head + .c-pub__body { margin-top: 56px !important; }
+  }
+
+  /* ---------- Row icons in tinted circles (review B5, NV-099, NV-082): every corporate row that leads with an icon (More,
+   * Settings, Pay history, Time tools) draws it as Direction B does: a 36px teal-50 circle, the bold glyph 18px. ---------- */
+
+  /* ---------- Punch photos (review B5, NV-083): with photos off, the moments are disabled and look it. ---------- */
+
+  /* ---------- One read-only field (review B5, NV-085): a grey value with no field edge, a 16px bold lock at the end, and the
+   * reason under it. ---------- */
+  html body .app-shell[data-nv-b] .c-readonly > .c-in { padding-right: 40px !important; background: var(--b-quiet) !important; border-color: transparent !important; box-shadow: none !important; color: var(--b-ink) !important; }
+
+  /* ---------- Features (review B5, NV-248, NV-260): a feature that can't be turned off now is drawn on (full teal) with a
+   * lock beside it, not a pale "maybe"; a single choice shows a radio circle (teal ring and dot when chosen). ---------- */
+  html body .app-shell[data-nv-b] li[data-locked] .q-tog:disabled:checked { opacity: 1 !important; filter: none !important; }
+  html body .app-shell[data-nv-b] li[data-locked] .wc-switch-row { opacity: 1 !important; }
+
+  /* ---------- Branding preview (review B5, NV-248, NV-260): framed as a preview (a dashed edge and a "Preview" tag), with the
+   * real pill shape, so it never reads as a live button. ---------- */
+  html body .app-shell[data-nv-b] .wc-preview .wc-preview__btn { border-radius: 999px !important; }
+
+  /* ---------- Things to do on desktop (review B5, NV-250): the More shortcuts stay in reach while the list scrolls. ---------- */
+
+  /* ---------- Timecards table on desktop (review B5, NV-132): the row under the pointer is tinted, so the eye keeps its row
+   * across the wide table. ---------- */
+}
+
+/* Unlayered: normal declarations (they keep the cascade they had) and the !important declarations that must stay outside
+ * nv-b. See DESIGN.MD "CSS layering (review batch B8)". */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(input:not([type=checkbox], [type=radio], [type=hidden]), select, textarea):not(.b-search input, .q-search input):focus-visible {
   outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset);
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-hero, .c-title, .q-hd) :is(input:not([type=checkbox], [type=radio]), select):focus-visible { outline-color: var(--b-focus-on-band); }
-/* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d:is([aria-current="date"], [aria-pressed="true"]):focus-visible { outline-color: var(--b-focus); outline-offset: -3px; }
-/* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline: none; position: relative; z-index: 1; box-shadow: inset 0 0 0 2px var(--b-focus-on-band); }
-/* A card's first and last rows: the inside ring follows the card's corners. */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:first-child > li:first-child :is(.b-row--link, .b-row__hit):focus-visible { border-top-left-radius: 21px; border-top-right-radius: 21px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:last-child > li:last-child :is(.b-row--link, .b-row__hit):focus-visible { border-bottom-left-radius: 21px; border-bottom-right-radius: 21px; }
-
-/* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-week__arrow, .b-seg > *, .b-filters button, .b-ib) { position: relative; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__arrow::after { content: ""; position: absolute; inset: -4px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-seg > *, .b-filters button)::after { content: ""; position: absolute; inset: -6px 0; }
-/* Filter chips that scroll sideways: room at the end and a fade, so a cut chip reads as "more". */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { padding-inline-end: 18px; scroll-padding-inline-end: 18px; }
 @supports (mask-image: linear-gradient(#000, #000)) {
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
 }
-/* Decision pairs (Decline / Approve) in the request lists: 44px, at least 96px wide, right-aligned on wide screens (NV-014). */
 :is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { height: auto; min-height: 44px; min-width: 96px; border-radius: 999px; }
 @media (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .q-acts { justify-content: flex-end; }
   :is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { flex: 0 0 auto; }
 }
-/* Touch tablets (the desktop layer starts at 768px with fine-pointer sizes): a 44px floor on controls, 48px on the
- * primary form and footer actions, and 48px schedule blocks. */
 @media (min-width: 768px) and (pointer: coarse) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .cm-kbtn, .c-select-btn, .c-icon-btn, .q-nav__l, .q-nav__r, .c-nav__back, header.mobile-header :is(button, a)) { min-height: 44px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.c-icon-btn, header.mobile-header .portal-notification-bell) { min-width: 44px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn--full, .b-btn--big, form button[type="submit"].c-btn) { min-height: 48px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .cm-grid :is(a, button) { min-height: 44px !important; }
-  /* The rail on touch: 48×48 links, and the labels show under the icons. */
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link { width: 48px !important; min-width: 48px !important; min-height: 48px !important; }
 }
-
-/* ---------- Press and disabled (NV-172, NV-232): one press, one disabled look ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn) { transition-property: scale, background-color, color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); transform: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]) {
   opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
 }
-
-/* ---------- One select (NV-099/D1 spec, NV-019): 48px, radius 14, 16px text, 1px field edge, one bold caret ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]) {
   min-height: 48px; border-radius: var(--b-radius-field); font-size: 16px; color: var(--b-ink);
   -webkit-appearance: none; appearance: none; padding-inline-end: 40px;
@@ -59,62 +189,30 @@
   background-repeat: no-repeat; background-size: 16px 16px; background-position: right 14px center;
 }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]):disabled { background-color: var(--b-disabled-bg); color: var(--b-disabled-ink); cursor: not-allowed; }
-
-/* ---------- Contrast on grey and tinted fills (NV-106, NV-128) ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.q-rt i, .q-rv, .c-row__value--soft, .c-row__detail) { color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.b-notice, .b-quiet, .eb-callout, .b-cardnote--fill) :is(.b-notice__s, small) { color: var(--b-grey-on-fill); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-stat__value--none { color: var(--b-grey); }
-
-/* ---------- Disclosures (NV-101): a down caret in readable grey; right chevrons only navigate ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(details > summary, .q-details > summary) :is(.b-chev, .q-chev, .c-chev) { color: var(--b-grey); }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(details, .q-details)[open] > summary :is(.b-chev--down, .q-chev--down) { transform: rotate(180deg); }
-
-/* ---------- Status tones (NV-071, NV-327) ---------- */
-/* Finished setup steps are done, so green (they were teal). */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step[data-done] .b-step__n, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
-
-/* ---------- Numbers (NV-116, NV-246): normal figures on the page, tabular only on numbers ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
 :is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
-
-/* ---------- The Home date on the band is a fact, not a button (NV-117) ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
-
-/* ---------- Motion (NV-329): the B entrances live at the top level so every file can use them ---------- */
 @keyframes b-enter { from { opacity: 0; transform: translateY(8px); } }
 @keyframes b-fade { from { opacity: 0; } }
-
-/* ---------- Home live figures as a list (NV-005): the spans stack as the old term and value did ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live { list-style: none; padding: 0; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live :is(.b-live__v, .b-live__m) { display: block; }
-
-/* ---------- Kit additions: the red action (Decline confirm), one row-action size (NV-078, NV-125) ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-btn--danger { background: var(--b-red); color: #FFFFFF; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__trail > .b-btn { min-width: 96px; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-decide > .b-btn { min-height: 44px; }
-
-/* ---------- This week chart (NV-107): caption and per-day values ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-cap { margin: 0; padding: 0 18px 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-v { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--b-ink2); text-align: center; }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-l { text-align: center; }
-
-/* ---------- Date and time fields (NV-065): from the keyboard, the real segments show instead of "Choose date" ---------- */
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .tof-pick:has(> input:focus-visible) > span:not(.tof-pick__err) { visibility: hidden !important; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .tof-pick > input:focus-visible { opacity: 1 !important; color: var(--b-ink) !important; background: #FFFFFF !important; }
-
-/* ---------- The shift sheet's actions on phones too (NV-153): bold glyphs in tinted circles, red for "I can't work" ---------- */
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--b-quiet); color: var(--b-ink2); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row--danger .c-row__icon { background: var(--b-red-50); color: var(--b-red); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon svg { width: 18px; height: 18px; }
-
-/* ---------- Week strip legend (NV-089) ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend { display: flex; align-items: center; gap: 6px; margin: 6px 6px 0; font-size: 12.5px; line-height: 16px; color: var(--b-on-band); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend i { width: 6px; height: 6px; border-radius: 3px; background: #FFC46B; }
-
-/* ---------- One palette under Direction B (NV-229, NV-106, C10): the corporate and Quiet layers read B's values ----------
- * The older kits keep their own token names; under the B shell they point at the B tokens, so an element B doesn't repaint
- * shows B's ink, grey, line and canvas (not Quiet's warm greys or corp's slightly different ink). Fills and chevrons that
- * carried meaning get readable greys (the chevron was 1.9:1). */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-page {
   --c-ink: var(--b-ink); --c-ink2: var(--b-ink2); --c-grey: var(--b-grey); --c-line: var(--b-line); --c-bg: var(--b-canvas);
   --c-teal: var(--b-teal); --c-tint: var(--b-teal-50); --c-amber: var(--b-amber); --c-amber-bg: var(--b-amber-50); --c-red: var(--b-red); --c-red-bg: var(--b-red-50);
@@ -125,25 +223,13 @@
   --q-teal: var(--b-teal); --q-red: var(--b-red); --q-body: var(--b-ink2); --q-tab: var(--b-grey); --q-tint: var(--b-teal-50); --q-tint-ink: var(--b-teal);
   --q-tog-off: var(--b-field-edge);
 }
-
-/* ---------- Help (NV-129, NV-101, NV-269): white question rows with a down caret that turns; answers 15/22 #3F464B;
-   inline links reach a 44px line box ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary { background: #FFFFFF; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { color: var(--b-grey); transition: rotate var(--b-dur-press) var(--b-ease-out); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q[open] > summary .c-chev--down { rotate: 180deg; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a, :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a :is(p, li) { font-size: 15px; line-height: 22px; color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a a { display: inline-block; padding-block: 11px; margin-block: -11px; font-size: inherit; }
 @media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { transition: none; } }
-
-/* ---------- Offline (review B2, NV-001; Jose, Nov 10, 2026) ----------
- * The page keeps what the person loaded, read-only: the line says "Offline · updated 9:24 PM" with an amber dot, and the
- * page's action pills take the one disabled look (app-shell.tsx blocks their presses and form submits). */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-offline[data-held]::before { content: ""; flex: none; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 4px; background: #E9A23B; vertical-align: 1px; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-offline] #main-content :is(button.b-btn, button.c-btn, button.q-btn, button.q-bs, button.button, button[type="submit"], input[type="submit"]):not(#nv-none):not(#nv-none2) {
-  background: var(--b-disabled-bg) !important; color: var(--b-disabled-ink) !important; box-shadow: none !important; border-color: transparent !important; cursor: not-allowed !important; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-offline] #main-content :is(button.b-btn, button.c-btn, button.q-btn, button.q-bs, button.button) :is(svg, span, b):not(#nv-none) { color: inherit !important; }
-
-/* ---------- One state card (review B2, NV-075): icon circle, 16/22 title, one line, one teal pill, left-aligned ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 14px; align-items: start; padding: 16px; text-align: left; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico { width: 48px; height: 48px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard > .b-ico svg { width: 22px; height: 22px; }
@@ -153,45 +239,24 @@
 :is(#c-root, html) body .app-shell[data-nv-b] .b-statecard__main > .b-btn { margin-top: 10px; min-height: 44px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { display: block; width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; }
 @media (prefers-reduced-motion: no-preference) { :is(#c-root, html) body .app-shell[data-nv-b] .b-spin { animation: b-spin 800ms linear infinite; } @keyframes b-spin { to { rotate: 360deg; } } }
-
-/* ---------- Home's shift card follows the clock state (review B2, NV-039): green when clocked in, amber when not yet ---------- */
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="green"] { background: var(--b-green-50); }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint[data-tone="amber"] { background: var(--b-amber-50); }
-
-/* ---------- A shift on a day of approved time off (review B2, NV-027): amber ring, warning glyph, "Needs cover" ---------- */
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.conflict:not(#nv-none):not(#nv-none2) { box-shadow: inset 0 0 0 2px #E9A23B !important; background: var(--b-amber-50) !important; color: var(--b-amber) !important; }
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__warn { flex: none; color: var(--b-amber); }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.conflict:not(#nv-none) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; gap: 0 4px !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; white-space: nowrap; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.conflict:not(#nv-none) { white-space: nowrap; }
 :is(#c-root, html) body .app-shell[data-nv-b] .cm-block.conflict .cm-block__need { flex-basis: 100%; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); font-weight: 600; }
-
-/* ---------- Help in the sidebar (review B2, NV-011): a quiet row above "Powered by", 44px, grey until hovered or current ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link { display: flex; align-items: center; gap: 10px; min-height: 44px; margin: 4px 12px 0; padding: 0 12px; border-radius: 10px; color: var(--b-ink2); font-size: 14.5px; font-weight: 500; text-decoration: none; }
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link[aria-current="page"] { background: var(--b-teal-50); color: var(--b-teal); }
 @media (hover: hover) { :is(#c-root, html) body .app-shell[data-nv-b] .sidebar .sidebar-help-link:hover { background: var(--b-hover); } }
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar[data-collapsed="true"] .sidebar-help-link { justify-content: center; margin: 4px auto 0; width: 48px; padding: 0; }
 :is(#c-root, html) body .app-shell[data-nv-b] .sidebar[data-collapsed="true"] .sidebar-help-link .nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-
-/* ---------- The finder under Direction B (review B2, NV-322): 22px radius, no border, the popover elevation, the B scrim ---------- */
 :is(#c-root, html) body .app-shell.nevora-portal[data-nv-b] .command-finder { border: 0; border-radius: 22px; box-shadow: var(--b-elev-2); overflow: hidden; }
 :is(#c-root, html) body .app-shell.nevora-portal[data-nv-b] .command-finder::backdrop { background: rgb(10 24 23 / .32); }
-
-/* ---------- Phone sheets sit on the bottom edge (review B2, NV-223): pinned to the bottom of the viewport whatever the page
- * scroll, so a sheet opened from a scrolled list never stops mid-screen with its flat bottom edge showing. ---------- */
 @media (max-width: 767px) {
   :is(#c-root, html) body .app-shell[data-nv-b] dialog.q-sheet[open] { position: fixed; top: auto; bottom: 0; margin-bottom: 0; }
 }
-
-/* ---------- "What changed in your schedule" (review B2, NV-226): a chip per change and 12px between rows ---------- */
 :is(#c-root, html) body .app-shell .schedule-publication-change li { padding-top: 12px; padding-bottom: 12px; }
 :is(#c-root, html) body .app-shell .schedule-publication-change .spc-chip { margin-right: 8px; vertical-align: 1px; }
-
-/* ---------- Desktop schedule blocks (review B5, NV-131): published teal-50 with teal text, draft grey, open shifts an amber
- * dashed outline; a 12px position line; the legend beside the week's state. ---------- */
 @media (min-width: 768px) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block:not(.draft):not(.open):not(.conflict):not(#nv-none):not(#nv-none2) { background: var(--b-teal-50) !important; color: var(--b-teal) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.draft:not(#nv-none):not(#nv-none2) { background: var(--b-quiet) !important; color: var(--b-ink2) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block.open:not(#nv-none):not(#nv-none2) { background: #FFFFFF !important; box-shadow: none !important; border: 1.5px dashed #E9A23B !important; color: var(--b-amber) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-block:has(.cm-block__pos):not(#nv-none) { flex-direction: column !important; align-items: flex-start !important; height: auto !important; padding-top: 4px !important; padding-bottom: 4px !important; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-block__pos { display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; line-height: 15px; font-weight: 500; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: inline-flex; align-items: center; gap: 12px; margin-left: auto; margin-right: 12px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 5px; border-radius: 3px; vertical-align: -1px; }
@@ -200,87 +265,41 @@
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend > [data-k="open"]::before { background: #FFFFFF; box-shadow: none; outline: 1.5px dashed #E9A23B; outline-offset: -1.5px; }
 }
 @media (max-width: 767px) { :is(#c-root, html) body .app-shell[data-nv-b] .cm-legend { display: none; } }
-
-/* ---------- Schedule grid (review B5, NV-087): the person column at least 200px (names stay on one line more often; two at
- * most), the days share the rest. ---------- */
 @media (min-width: 768px) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .cm-grid thead th.cm-grid__corner:not(#nv-none):not(#nv-none2) { width: 210px !important; min-width: 200px !important; }
   :is(#c-root, html) body .app-shell[data-nv-b] .cm-grid .cm-person__name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 }
-
-/* ---------- Timecard sheet (review B5, NV-245): AM and PM at full size in the Days list, as on every other phone screen;
- * the Needs attention note takes the card radius. ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-day .c-ampm { font-size: 1em; font-weight: inherit; letter-spacing: 0; color: inherit; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-tc-sheet__issue:not(#nv-none) { border-radius: 22px !important; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-sheet__issue .c-tc-sheet__go { margin-top: 10px; }
-
-/* ---------- One panel header for Owner and Manager sheets and side panels (review B5, NV-221, NV-252): the title
- * left-aligned at 20/26 700, Done a teal 600 text button with a 44px target at the top right, every width. ---------- */
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child):not(#nv-none) { grid-template-columns: minmax(0, 1fr) auto !important; min-height: 60px; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav > span[aria-hidden="true"]:first-child { display: none !important; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title:not(#nv-none) { justify-self: start !important; text-align: left !important; font: 700 20px/26px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.01em; color: var(--b-ink) !important; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done:not(#nv-none) { justify-self: end; min-height: 44px; min-width: 44px; padding: 0 4px; color: var(--b-teal) !important; font-weight: 600 !important; }
-
-/* ---------- Finder rows (review B5, NV-216, NV-218): each row leads with its kind in a 28px tinted circle (a bolt for
- * actions, a page, initials for people, a pin for places); a cut-short group says so under the list. ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child):not(#nv-none) { min-height: 60px; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav:has(> span[aria-hidden="true"]:first-child) .c-sheet__title:not(#nv-none) { letter-spacing: -0.01em; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-sheet .c-sheet__nav .c-sheet__done:not(#nv-none) { justify-self: end; min-height: 44px; min-width: 44px; padding: 0 4px; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-results li.command-finder-option { grid-template-columns: 28px minmax(0, 1fr) auto; column-gap: 12px; min-height: 44px; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--b-teal-50); color: var(--b-teal); font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico svg { width: 15px; height: 15px; }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="People"] { background: var(--b-quiet); color: var(--b-ink2); }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-ico[data-group="Locations"] { background: var(--b-amber-50); color: var(--b-amber); }
 :is(#c-root, html) body .app-shell.nevora-portal .command-finder-more { margin: 0; padding: 8px 18px 0; font-size: 13px; line-height: 18px; color: var(--b-grey); }
-
-/* ---------- Account menu and workspace tile (review B5, NV-110): the name and "Owner · workspace" wrap to a second line
- * instead of being cut; the sidebar tile shows the full name on hover (title). ---------- */
-:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-b] #portal-account-menu :is(.portal-account-head__name, .portal-account-head__detail):not(#nv-none) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
-
-/* ---------- Build and publish on phones (review B5, NV-015): the band runs on under the head as if a card came next, so
- * the page's first line (the week) starts below that run-on instead of being clipped under it. ---------- */
-@media (max-width: 767px) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .c-shift__head + .c-pub__body:not(#nv-none):not(#nv-none2) { margin-top: 56px !important; }
-}
-
-/* ---------- Row icons in tinted circles (review B5, NV-099, NV-082): every corporate row that leads with an icon (More,
- * Settings, Pay history, Time tools) draws it as Direction B does: a 36px teal-50 circle, the bold glyph 18px. ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-b] #portal-account-menu :is(.portal-account-head__name, .portal-account-head__detail):not(#nv-none) { overflow-wrap: anywhere; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon:not(#nv-none) { width: 36px; height: 36px; border-radius: 18px; background: var(--b-teal-50); color: var(--b-teal); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row > .c-row__icon svg:not(#nv-none) { width: 18px; height: 18px; }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b]:not([data-employee-mobile]) .c-row--danger > .c-row__icon:not(#nv-none) { background: var(--b-red-50); color: var(--b-red); }
-
-/* ---------- Punch photos (review B5, NV-083): with photos off, the moments are disabled and look it. ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-photos__events { margin: 0; padding: 0; border: 0; min-width: 0; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-photos__events[data-off] .c-row__title { color: var(--b-disabled-ink); }
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-photos__events[data-off] .c-switch:not(#nv-none) { opacity: 1; filter: grayscale(1); cursor: not-allowed; }
-
-/* ---------- One read-only field (review B5, NV-085): a grey value with no field edge, a 16px bold lock at the end, and the
- * reason under it. ---------- */
 :is(#c-root, html) body .app-shell[data-nv-b] .c-readonly { position: relative; display: block; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .c-readonly > .c-in:not(#nv-none):not(#nv-none2) { padding-right: 40px !important; background: var(--b-quiet) !important; border-color: transparent !important; box-shadow: none !important; color: var(--b-ink) !important; }
 :is(#c-root, html) body .app-shell[data-nv-b] .c-readonly__lock { position: absolute; right: 14px; top: 50%; translate: 0 -50%; color: var(--b-grey); pointer-events: none; }
-
-/* ---------- Features (review B5, NV-248, NV-260): a feature that can't be turned off now is drawn on (full teal) with a
- * lock beside it, not a pale "maybe"; a single choice shows a radio circle (teal ring and dot when chosen). ---------- */
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] li[data-locked] .q-tog:disabled:checked:not(#nv-none):not(#nv-none2) { opacity: 1 !important; filter: none !important; cursor: not-allowed; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] li[data-locked] .wc-switch-row:not(#nv-none) { opacity: 1 !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] li[data-locked] .q-tog:disabled:checked:not(#nv-none):not(#nv-none2) { cursor: not-allowed; }
 :is(#c-root, html) body .app-shell[data-nv-b] li[data-locked] .wc-switch-row .q-rt > b::after { content: ""; display: inline-block; width: 14px; height: 14px; margin-left: 6px; vertical-align: -2px; background: var(--b-grey);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56a52,52,0,0,0-104,0V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M208,76H180V56a52,52,0,0,0-104,0V76H48A20,20,0,0,0,28,96V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V96A20,20,0,0,0,208,76ZM100,56a28,28,0,0,1,56,0V76H100ZM204,204H52V100H204Z'/%3E%3C/svg%3E") center / contain no-repeat; }
 :is(#c-root, html) body .app-shell[data-nv-b] .q-radio { flex: none; box-sizing: border-box; width: 22px; height: 22px; margin-left: auto; border-radius: 50%; border: 2px solid var(--b-field-edge); background: #FFFFFF; }
 :is(#c-root, html) body .app-shell[data-nv-b] .q-radio[data-on] { border-color: var(--b-teal); background: radial-gradient(circle, var(--b-teal) 0 5px, #FFFFFF 5.5px); }
 :is(#c-root, html) body .app-shell[data-nv-b] label:has(> input[type="radio"]:focus-visible) .q-radio { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); }
-
-/* ---------- Branding preview (review B5, NV-248, NV-260): framed as a preview (a dashed edge and a "Preview" tag), with the
- * real pill shape, so it never reads as a live button. ---------- */
 :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview:not(#nv-none) { position: relative; outline: 1.5px dashed var(--b-field-edge); outline-offset: 6px; }
 :is(#c-root, html) body .app-shell[data-nv-b] .wc-preview::before { content: "Preview"; position: absolute; top: -16px; right: 12px; z-index: 1; padding: 2px 8px; border-radius: 999px; background: var(--b-quiet); color: var(--b-grey-on-fill); font-size: 12px; line-height: 16px; font-weight: 600; }
-:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .wc-preview .wc-preview__btn:not(#nv-none) { border-radius: 999px !important; }
-
-/* ---------- Things to do on desktop (review B5, NV-250): the More shortcuts stay in reach while the list scrolls. ---------- */
 @media (min-width: 1024px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] #b-todo-more:not(#nv-none) { position: sticky; top: 84px; align-self: start; }
 }
-
-/* ---------- Timecards table on desktop (review B5, NV-132): the row under the pointer is tinted, so the eye keeps its row
- * across the wide table. ---------- */
 @media (hover: hover) and (min-width: 768px) {
   :is(#c-root, html) body .app-shell[data-nv-b] .c-tc-desk table tbody tr:hover > td { background: var(--b-hover); }
 }

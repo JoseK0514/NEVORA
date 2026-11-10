@@ -11,4 +11,5 @@
 :is(#c-root, html) .c-more--employee .c-more__signout .c-btn--secondary { background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; color: var(--c-ink); }
 /* Review F2 (NV-105): the Owner's or Manager's own face is drawn as in the header (a white circle with teal initials, with a
  * hairline on the white card), the same on More and Profile. Other people keep their face tint. */
-:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .c-more:not(.c-more--employee) .c-row .c-av:not(#nvd-none):not(#nvd-none2) { background: #FFFFFF !important; color: #0B6E69 !important; box-shadow: inset 0 0 0 1px rgb(16 40 38 / 0.14) !important; font-weight: 700 !important; }
+@layer nv-b {
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .c-more:not(.c-more--employee) .c-row .c-av:not(#nvd-none):not(#nvd-none2) { background: #FFFFFF !important; color: #0B6E69 !important; box-shadow: inset 0 0 0 1px rgb(16 40 38 / 0.14) !important; font-weight: 700 !important; } }

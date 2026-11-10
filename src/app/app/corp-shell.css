@@ -39,7 +39,7 @@
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-unavailable { display: none !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar { display: grid !important; place-items: center; width: 44px; height: 44px; border-radius: 22px; text-decoration: none; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar > span {
-    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; background: #E6F1EF; color: #0B6E69; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif;
+    display: grid; place-items: center; width: 32px; height: 32px; border-radius: 16px; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif;
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .c-top-avatar:focus-visible, html:is(:root, [data-theme]) body .app-shell[data-nv-corp][data-corp-root] .mobile-header .portal-notification-bell:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
   /* A page not yet on the corporate kit draws its own Quiet bar; on a tab's own page the shell header replaces it. */
@@ -85,7 +85,7 @@ html:has(.app-shell[data-nv-corp]) { color-scheme: light; }
   }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link .nav-icon, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link .nav-icon svg { color: #4A4F54 !important; width: 20px !important; height: 20px !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link:hover { background: #F5F6F6 !important; }
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active { background: #E6F1EF !important; color: #0B6E69 !important; font-weight: 600 !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active { background: #E6F1EF !important; color: #0B6E69 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active .nav-icon, html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link.active .nav-icon svg { color: #0B6E69 !important; }
   html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .nav-link:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: -2px !important; }
   /* The menu scrolls inside the sidebar instead of clipping its last entries on shorter screens. */
@@ -210,8 +210,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow :is
   /* Round 2 (R1): the page title at 28/34 in a 40px title row, level with the kit's. */
   :is(#q-root, html) .app-shell[data-nv-corp] .page-frame .q-page .q-hd h1 { margin: 3px 0; font-size: 28px; line-height: 34px; font-weight: 600; letter-spacing: -.56px; }
   /* The workspace badge at the top of the sidebar: the same teal circle with two initials as More's company row. */
-  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .cm-org__mark { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; border-radius: 16px !important;
-    background: #E6F1EF !important; color: #0B6E69 !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; box-shadow: none !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .sidebar .cm-org__mark { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; border-radius: 16px !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; box-shadow: none !important; }
 }
 
 /* Device settings (Owner and Manager, desktop sidebar profile): an on-brand white card with outline buttons only (the
@@ -695,7 +694,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] { background: #E6F1EF !important; box-shadow: inset 3px 0 0 #0B6E69 !important; } /* Review B1 (NV-063): the leading bar is the position cue (6.09:1). */
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-results > li.command-finder-option[aria-selected="true"] .command-finder-label { color: #0B6E69 !important; font-weight: 600 !important; }
 :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-match { color: inherit; font-weight: 600; }
-@media (max-width: 760px), (max-width: 900px) and (max-height: 430px) and (orientation: landscape) and (pointer: coarse) {
+@media (max-width: 760px) {
   /* Phone: 16px gutters, a white 44px field with a 1px ring, 48px rows on hairlines, labels 13/600 with 24px above. */
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-search { padding: 8px 8px 8px 16px !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-field, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp] .command-finder-field:has(input:focus) { box-sizing: border-box !important; min-height: 44px !important; border: 0 !important; border-radius: 8px !important; background: #FFFFFF !important;
@@ -739,56 +738,5 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .portal-device-settin
  * less is a phone, whatever its width: the phone header (wordmark with WORKFORCE, bell, avatar) in a 44px row, a 49px tab
  * bar with the labels beside the icons, titles at 22/28, and the page as a 640px column centred between the safe areas.
  * The tablet shell (sidebar, desktop top bar) therefore applies from 768px wide only on screens taller than that. */
-@media (pointer: coarse) and (max-height: 500px) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] { display: grid !important; grid-template-columns: minmax(0, 1fr) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .sidebar, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .c-rail-tip { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop][data-corp-root] .mobile-header { display: flex !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header {
-    position: sticky !important; top: 0 !important; z-index: 30 !important; align-items: center !important; justify-content: space-between !important; gap: 12px !important;
-    box-sizing: content-box !important; width: auto !important; height: 44px !important; min-height: 44px !important; margin: 0 !important;
-    padding: var(--q-safe-top, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)) !important;
-    border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header > :is(.portal-workspace-name, .portal-location-nav, .company-logo-chip) { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header > .brand.compact { display: inline-flex !important; order: 0 !important; align-items: center !important; width: auto !important; min-width: 0 !important; max-width: none !important;
-    height: 44px !important; min-height: 44px !important; margin: 0 !important; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-lockup { display: inline-flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important;
-    width: auto !important; max-width: none !important; margin: 0 !important; color: #0E1A3A !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-lockup .brand-wordmark { display: block !important; width: auto !important; height: 14px !important; max-width: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .login-brand-module { display: block !important; margin: 0 -2.4px 0 0 !important; padding: 0 !important; color: #6B7075 !important; opacity: 1 !important;
-    font: 600 9px/12px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 2.4px !important; text-transform: uppercase !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .mobile-header-actions { display: flex !important; align-items: center !important; gap: 4px !important; margin: 0 0 0 auto !important; padding: 0 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .mobile-header-actions > :is(.cm-add-shift, .command-finder-trigger, .e5-new, .portal-account-menu) { display: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .portal-notification-bell { display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; min-width: 44px !important;
-    margin: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 8px !important; background: none !important; box-shadow: none !important; color: #1A1C1E !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .portal-notification-bell svg { position: static !important; width: 22px !important; height: 22px !important; color: #1A1C1E !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .c-top-avatar { display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; border-radius: 22px !important; text-decoration: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header .c-top-avatar > span { display: grid !important; place-items: center !important; width: 32px !important; height: 32px !important; border-radius: 16px !important;
-    background: #EDEEEF !important; color: #4A4F54 !important; font: 600 13px/1 Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav { position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 40 !important; display: grid !important;
-    grid-auto-flow: column !important; grid-auto-columns: minmax(0, 1fr) !important; align-items: stretch !important; gap: 0 !important; box-sizing: content-box !important; height: 49px !important; min-height: 0 !important; margin: 0 !important;
-    padding: 0 max(16px, env(safe-area-inset-right, 0px)) var(--q-safe-bottom, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)) !important;
-    border: 0 !important; border-radius: 0 !important; background: #FFFFFF !important; box-shadow: 0 -1px 0 #E3E5E6 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link { display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: center !important; gap: 6px !important;
-    width: auto !important; min-width: 0 !important; max-width: none !important; height: 49px !important; min-height: 49px !important; margin: 0 !important; padding: 0 4px !important; border: 0 !important; border-radius: 0 !important;
-    background: none !important; box-shadow: none !important; color: #6B7075 !important; font: 500 11px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: 0 !important; text-decoration: none !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link svg { flex: none !important; width: 22px !important; height: 22px !important; margin: 0 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link span { display: block !important; margin: 0 !important; color: inherit !important; font: inherit !important; white-space: nowrap !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link.active, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav .mobile-nav-link:has(> .mobile-nav-pending) { color: #0B6E69 !important; font-weight: 600 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-nav:has(.mobile-nav-pending) .mobile-nav-link.active:not(:has(> .mobile-nav-pending)) { color: #6B7075 !important; font-weight: 500 !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame { box-sizing: content-box !important; width: auto !important; max-width: 672px !important; margin: 0 auto !important;
-    padding: 0 max(0px, calc(env(safe-area-inset-right, 0px) - 16px)) calc(49px + 16px + var(--q-safe-bottom, env(safe-area-inset-bottom, 0px))) max(0px, calc(env(safe-area-inset-left, 0px) - 16px)) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame :is(.c-title h1, .c-skel__title, .q-hd h1, .nv-pageband h1, .nv-masthead__title) { font-size: 22px !important; line-height: 28px !important; letter-spacing: -.3px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-title__row { min-height: 28px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-title__actions { margin-block: -8px !important; }
-}
 /* Sideways phones 768px wide or more: the tablet frame's page rules step back to the phone's 16px insets, a 12px gap above
  * a tab page's title, and the shell's header on pushed pages too (the page's own "‹ Section" link leads back). */
-@media (pointer: coarse) and (max-height: 500px) and (min-width: 768px) {
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .mobile-header { display: flex !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel) { width: auto !important; max-width: none !important; margin: 0 !important; padding-left: 16px !important; padding-right: 16px !important; padding-bottom: 24px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .q-page:not(.q-sheet) { width: auto !important; max-width: none !important; margin: 0 !important; padding-left: 0 !important; padding-right: 0 !important; padding-bottom: 24px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop][data-corp-root] .page-frame :is(.c-page:not(.c-embed), .c-page.c-skel, .q-page:not(.q-sheet)) { padding-top: 12px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame > .section-tabs { max-width: none !important; margin: 0 !important; padding-left: 16px !important; padding-right: 16px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav:not(.c-nav--phone) > .c-nav__title { font-size: 22px !important; line-height: 28px !important; letter-spacing: -.3px !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav:not(.c-nav--phone) > .c-nav__back, :is(#c-root, html) :is(#c-root, body) .app-shell.nevora-portal[data-nv-corp][data-sidebar-tablet][data-sidebar-desktop] .page-frame .c-page > .c-nav--phone:has(> .c-nav__back) { left: 8px !important; }
-}

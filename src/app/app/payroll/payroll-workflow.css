@@ -190,7 +190,7 @@ html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-document st
 html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-statements header p { font: var(--nv-t-callout); }
 
 /* TC-RC-PAYROLL-01: desktop next-step guidance follows the kit's readable, scalable roles. */
-@media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
+@media (min-width: 761px) {
   html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance { font: var(--nv-t-callout); }
   html body .app-shell.nevora-portal .page-frame .payroll-workflow .pw-workflow-guidance strong { font: var(--nv-t-label); }
 }

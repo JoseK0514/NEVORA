@@ -1,30 +1,28 @@
 /* Employee Pay on the phone, Direction B (dark ink hero). Values are the approved mock's. */
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  /* The next payday on the hero: "Next payday · Tomorrow", the date large, then the period chip and See your hours. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: var(--b-on-band-2); }
-  /* Review B6 (NV-154): the date is a 28/34 figure under its label, so the page title "Pay" (30px) leads. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: 2px 0 10px; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-chip { height: 24px; padding: 0 9px; border-radius: 12px; font-size: 12.5px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 12px; border-radius: 16px; font-size: 13.5px; }
-  /* A paycheck's date, large, with its work week under it. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big { padding: 2px 18px 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__k { font-size: 13px; line-height: 18px; color: var(--b-grey); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__v { font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.025em; color: var(--b-ink); font-variant-numeric: tabular-nums; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__s { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
-  /* The PDF row: the teal file icon, the words, and an "opens separately" glyph at the end. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf { box-shadow: inset 0 1px 0 #ECEEEF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf__t { flex: 1; min-width: 0; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf__out { flex: none; color: #B5BBBF; }
-  /* States: a short headline and one sentence, then the one way forward. */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status, .ep-empty) { padding: 16px 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card__h + :is(.ep-status, .ep-empty) { padding-top: 6px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__t, .ep-empty__t) { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); text-wrap: balance; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__s, .ep-empty__s) { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-status__act { padding: 0 18px 18px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-notice { padding: 14px 18px; outline-offset: -2px; }
-}
+/* The next payday on the hero: "Next payday · Tomorrow", the date large, then the period chip and See your hours. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next { padding-top: 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__k { font-size: 14px; line-height: 19px; font-weight: 500; color: var(--b-on-band-2); }
+/* Review B6 (NV-154): the date is a 28/34 figure under its label, so the page title "Pay" (30px) leads. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__v { margin: 2px 0 10px; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-chip { height: 24px; padding: 0 9px; border-radius: 12px; font-size: 12.5px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-next__row .b-btn { min-height: 32px; padding: 0 12px; border-radius: 16px; font-size: 13.5px; }
+/* A paycheck's date, large, with its work week under it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big { padding: 2px 18px 16px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__k { font-size: 13px; line-height: 18px; color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__v { font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.025em; color: var(--b-ink); font-variant-numeric: tabular-nums; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-big__s { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+/* The PDF row: the teal file icon, the words, and an "opens separately" glyph at the end. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf { box-shadow: inset 0 1px 0 #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf__t { flex: 1; min-width: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-pdf__out { flex: none; color: #B5BBBF; }
+/* States: a short headline and one sentence, then the one way forward. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status, .ep-empty) { padding: 16px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card__h + :is(.ep-status, .ep-empty) { padding-top: 6px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__t, .ep-empty__t) { font-size: 16px; line-height: 21px; font-weight: 600; color: var(--b-ink); text-wrap: balance; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.ep-status__s, .ep-empty__s) { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-status__act { padding: 0 18px 18px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-notice { padding: 14px 18px; outline-offset: -2px; }
 
 /* Narrow phones: the period chip and See your hours stay on one line. */
 @media (max-width: 359px) {
@@ -33,6 +31,4 @@
 }
 
 /* Review B6 (NV-155): a statement a correction replaced reads muted; the correction is the current one. */
-@media (max-width: 767px), (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-muted { color: var(--b-grey); font-weight: 600; }
-}
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .ep-muted { color: var(--b-grey); font-weight: 600; }
