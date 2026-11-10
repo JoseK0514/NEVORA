@@ -3,7 +3,7 @@
   "repository": "JoseK0514/NEVORA",
   "target": "development",
   "assemblyBranch": "claude-codex-collab-nevora",
-  "observedAt": "2026-11-09",
+  "observedAt": "2026-11-10",
   "sources": [
     {
       "branch": "Claude-UI-Fix",
@@ -364,9 +364,9 @@
     },
     {
       "branch": "development",
-      "sha": "3446982085c32b238b4d329c98639f3978c6e8b2",
+      "sha": "baf26fc4861a21bc7ddd634f058c8d8f470293d7",
       "disposition": "target",
-      "reason": "Freshly fetched development base for the November 9 Rondo integration. The scoped adoption is tested Rondo application commits 537e4eb8 and 41d5706c, with their independent QA and replay handoffs through a395ca83. Existing onboarding, operating-authority and approved-leave backend work is inherited. No production or whole collaboration-branch adoption is implied."
+      "reason": "Freshly fetched November 10 development baseline baf26fc4, with independently qualified company-specific worker enrollment and bounded SQL/D2 diagnostic work. This closeout adds the independently reviewed SMTP acknowledgement deadline code9bd76d86 and its operational handoff d75b7d74. Source-specific evidence and historical unknown CI causes remain retained; no Production or native adoption is implied."
     },
     {
       "branch": "fix/ci-preview-33",
@@ -488,9 +488,9 @@
     },
     {
       "branch": "claude-codex-collab-nevora",
-      "sha": "e561e97cf35b9707ca5a7621d3ae8e9b63b52399",
+      "sha": "00560614f6fac61eae4d616fba1d5dad03dfcf4f",
       "disposition": "held",
-      "reason": "HELD under Claude/native UI ownership. Reconciled from recorded c0a24ef7 to e561e97c: 41 changed paths add leave-staffing repair, canonical coverage presentation and failure-recovery UI/helpers. No Owner advisor chat/API contract or Rondo provider file changed in that delta. The complete collaboration branch still contains held UI/navigation/copy/native work and is not imported by this scoped Rondo integration. Existing development contains the earlier approved backend contracts. Rondo is qualified against the development UI; separate Claude/UI acceptance is required before adopting held collaboration work. See docs/qa/2026-11-09-rondo-development-integration.md."
+      "reason": "HELD under Claude/native UI ownership. Reconciled from recorded c0a24ef7 to e561e97c: 41 changed paths add leave-staffing repair, canonical coverage presentation and failure-recovery UI/helpers. No Owner advisor chat/API contract or Rondo provider file changed in that delta. The complete collaboration branch still contains held UI/navigation/copy/native work and is not imported by this scoped Rondo integration. Existing development contains the earlier approved backend contracts. Rondo is qualified against the development UI; separate Claude/UI acceptance is required before adopting held collaboration work. See docs/qa/2026-11-09-rondo-development-integration.md. November 10 reconciliation: e561e97c to00560614 changes exactly15paths, all under docs/product/review-2026-11-10, adding the329finding/sevenbatch review corpus. No application, API, Rondo, worker, schema or dependency file changed in this delta. The review documents and prior held UI/native work remain HELD, not imported or certified by this backend closeout."
     },
     {
       "branch": "claude/employee-mobile-phase2-20261027",
