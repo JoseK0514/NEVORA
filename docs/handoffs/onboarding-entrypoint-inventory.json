@@ -1133,6 +1133,24 @@
       "isolatedBehavior": "BOUND_APPLICATION"
     },
     {
+      "path": "src/app/api/manager/reminders/operations/[id]/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Session-bound reminder recovery uses current Owner/Manager Company authority, mutation proof and the shared host-bound notification SQL executor. Workspace/session fences and original operation authority are revalidated; public results omit target/content and no provider is called.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
+      "path": "src/app/api/manager/reminders/route.ts",
+      "tags": [
+        "request-entrypoint"
+      ],
+      "status": "CONVERTED",
+      "reason": "Bounded same-origin reminder command uses current Owner/Manager Company authority and the shared host-bound notification SQL executor. Current source/recipient checks, workspace/session fences, atomic audit/operation/queue writes, idempotency and daily budgets remain enforced. Existing development activation hold is retained; no direct provider send or caller-selected database.",
+      "isolatedBehavior": "BOUND_APPLICATION"
+    },
+    {
       "path": "src/app/api/manager/time-corrections/route.ts",
       "tags": [
         "request-entrypoint"
