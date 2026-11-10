@@ -84,7 +84,7 @@ try{
      const scrolls=printed.locator('.wb-table-scroll[role="region"]');assert.deepEqual(await scrolls.evaluateAll(nodes=>nodes.map(e=>e.getAttribute('aria-label'))),['Scheduled vs recorded columns','Hours by employee columns','Hours by location columns','Hours by position columns']);
      // Print expands the report's disclosures on the media change; wait for each table's rows to show.
      for(let index=0;index<2;index++)await scrolls.nth(index).locator('tbody th,tbody td').filter({hasText:'LongReportEmployee'.repeat(4)+' QA'}).first().waitFor({timeout:5000});
-     for(let index=0;index<4;index++)await scrolls.nth(index).locator('.wb-cell-value').filter({hasText:/^8h$/}).first().waitFor({timeout:5000});}
+     for(let index=0;index<4;index++)await scrolls.nth(index).locator('.wb-cell-value').filter({hasText:/^8 h$/}).first().waitFor({timeout:5000});}
     finally{await page.emulateMedia({media:'screen'});}
     report.keyPaths.push({engine,viewportWidth:width,order,forwardAndReverseKeyboard:true,reverseEngineSkips:engineSkips,countedDisclosure:true,exportMenu:exportShown,printedTables:true});
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+2),'No page overflow');
