@@ -11,7 +11,7 @@ const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
 const pw=await import(pathToFileURL(runtime.resolve('playwright')).href);const playwright=pw.default??pw;
-const report={checks:[],errors:[],screenshots:[],limits:['Owned disposable SQL and scratch Next, not hosted/physical iPad.','Browser plugin not listed; existing Playwright runtime used.']};
+const report={checks:[],errors:[],screenshots:[],diagnostics:[],limits:['Owned disposable SQL and scratch Next, not hosted/physical iPad.','Browser plugin not listed; existing Playwright runtime used.']};
 let app;const browsers=[];
 const checked=name=>{report.checks.push(name);console.log('[C2 browser] PASS '+name);};
 async function context(browser,viewport={width:1440,height:1000}){
@@ -24,6 +24,22 @@ async function login(c){const p=await c.newPage();await goto(p,'/login');await p
 async function geometry(page,name){const r=await page.evaluate(()=>{const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height;});return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).length};});assert.equal(r.overflow,false);assert.equal(r.small,0);checked(name);}
 async function save(page,pin){await page.getByLabel('New PIN',{exact:true}).fill(pin);await page.getByLabel('Confirm PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Save',exact:true}).filter({visible:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function verify(page,pin){await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();}
+async function failureDiagnostics(){
+ for(const browser of browsers)for(const c of browser.contexts())for(const page of c.pages()){
+  if(page.isClosed())continue;
+  try{
+   const url=new URL(page.url());if(url.origin!==app?.url)continue;
+   // Fictional owned pages only. Never serialize field values, cookies, requests, or full HTML.
+   const controls=await page.evaluate(()=>[...document.querySelectorAll('button,a,input,textarea,select,label,h1,h2,[role=alert]')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height;}).slice(0,150).map(e=>{
+    const r=e.getBoundingClientRect();const field=e.matches('input,textarea,select');
+    return {tag:e.tagName,role:e.getAttribute('role'),label:e.getAttribute('aria-label'),text:field?null:e.textContent?.trim().slice(0,160),width:r.width,height:r.height};
+   }));
+   report.diagnostics.push({path:url.pathname,controls});
+   const file=join(evidence,`failure-${report.diagnostics.length}.png`);
+   await page.screenshot({path:file,fullPage:true,mask:[page.locator('input,textarea,select')]});report.screenshots.push(file);
+  }catch(error){report.diagnostics.push({captureError:String(error.message??error)});}
+ }
+}
 try{
  app=await createOwnedNextApp(evidence,{clockerPinKey:randomBytes(32).toString('hex')});
  const q=(text,values=[])=>app.database.executor.query({text,values});
@@ -35,9 +51,9 @@ try{
   await goto(p,'/app/employees/C2-EMPLOYEE/clocker-pin');await save(p,'0246');
   assert.equal(await p.getByLabel('New PIN',{exact:true}).inputValue(),'');
   assert.equal(await p.getByLabel('Confirm PIN',{exact:true}).inputValue(),'');checked(engine+': secure PIN setup clears the inputs');
-  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add device',exact:true}).click();
-  const d=p.getByRole('dialog');await d.getByLabel('Device name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Create setup code',exact:true}).click();await d.waitFor({state:'hidden'});
-  const code=await p.getByRole('textbox',{name:'Setup code',exact:true}).inputValue();
+  await goto(p,'/app/settings/clocker');await p.getByRole('button',{name:'Add tablet',exact:true}).click();
+  const d=p.getByRole('dialog');await d.getByLabel('Tablet name',{exact:true}).fill(engine+' PIN tablet');await d.getByRole('combobox',{name:'Location',exact:true}).selectOption('loc-1');await d.getByRole('button',{name:'Get setup code',exact:true}).click();await d.waitFor({state:'hidden'});
+  const code=await p.getByRole('textbox',{name:/^Setup code · expires /}).inputValue();
   const tablet=await context(browser,{width:1024,height:768});const t=await tablet.newPage();await t.clock.install();t.setDefaultTimeout(15000);t.on('pageerror',e=>errors.push(e.message));
   await goto(t,'/clocker/2');await t.getByRole('textbox',{name:'Setup code',exact:true}).fill(code);await t.getByRole('button',{name:'Connect tablet',exact:true}).click();await t.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();
   await verify(t,'9999');await t.locator('main [role=alert]').filter({hasText:'PIN not recognized'}).waitFor();checked(engine+': wrong PIN does not reveal identity');
@@ -109,5 +125,5 @@ try{
    const file=join(evidence,engine+'-pin-tablet-'+viewport.width+'x'+viewport.height+'.png');await t.screenshot({path:file,fullPage:true});report.screenshots.push(file);}
   assert.deepEqual(errors,[]);checked(engine+': no runtime/hydration errors');await tablet.close();await owner.close();await browser.close();
  }
-}catch(error){report.errors.push(String(error.stack??error));process.exitCode=1;}
+}catch(error){report.errors.push(String(error.stack??error));process.exitCode=1;await failureDiagnostics();}
 finally{for(const b of browsers)await b.close().catch(()=>{});if(app)await app.close().catch(e=>{report.errors.push(String(e));process.exitCode=1;});await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({checks:report.checks.length,errors:report.errors,evidence},null,2));}
