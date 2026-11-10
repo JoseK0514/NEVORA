@@ -17,6 +17,41 @@ import {sendMonitorNotice,type MonitorConfig} from '@/lib/operations/monitor';
 import {ownedSmtpLostAcknowledgement} from './owned-smtp-ack-fixture';
 import {assertMachinePrincipal} from '@/lib/operations/principal-policy';
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();});
+it.each(['PUBLIC-function','named-relation','PUBLIC-relation','named-column','PUBLIC-column','catalog-grant-option','information-schema-write','information-schema-grant-option','information-schema-definer','information-schema-private-table','unregistered-catalog-function'] as const)('compares effective %s catalog access to the shipped PUBLIC baseline',async capability=>{
+ const f=await freshOnboardingControl(),monitor='nv_ops_monitor_'+randomBytes(12).toString('hex'),worker=workerControlRole(randomUUID(),'test'),roles=[monitor,worker],pools:Pool[]=[];
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);
+  for(const role of roles){const password=randomBytes(32).toString('base64url');await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);const u=new URL(f.connectionUrl);u.username=role;u.password=password;pools.push(new Pool({connectionString:u.href}));}
+  const setup=await f.pool.connect();try{
+   await configureMonitorPrincipal(setup,monitor);await configureWorkerControlReader(setup,worker);
+   for(const pool of pools){expect((await pool.query("SELECT count(*)::int n FROM pg_catalog.pg_roles")).rows[0].n).toBeGreaterThan(0);expect((await pool.query('SELECT count(*)::int n FROM information_schema.columns')).rows[0].n).toBeGreaterThan(0);await expect(pool.query('SELECT rolpassword IS NOT NULL FROM pg_catalog.pg_authid')).rejects.toMatchObject({code:'42501'});}
+   if(capability==='PUBLIC-function')await f.pool.query('GRANT EXECUTE ON FUNCTION pg_catalog.pg_read_file(text) TO PUBLIC');
+   else if(capability==='information-schema-definer')await f.pool.query("CREATE FUNCTION information_schema.fictional_private_read() RETURNS boolean LANGUAGE SQL SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT rolpassword IS NOT NULL FROM pg_catalog.pg_authid WHERE rolname=session_user'");
+   else if(capability==='unregistered-catalog-function')await f.pool.query("CREATE FUNCTION pg_catalog.fictional_private_read() RETURNS boolean LANGUAGE SQL SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT rolpassword IS NOT NULL FROM pg_catalog.pg_authid WHERE rolname=session_user'");
+   else if(capability==='information-schema-private-table'){await f.pool.query('CREATE TABLE information_schema.fictional_private AS SELECT rolpassword IS NOT NULL AS available FROM pg_catalog.pg_authid WHERE rolname=$1',[monitor]);await f.pool.query('GRANT SELECT ON information_schema.fictional_private TO PUBLIC');}
+   else for(const grantee of capability.startsWith('PUBLIC')?['PUBLIC']:roles){
+    if(capability.endsWith('relation'))await f.pool.query(`GRANT SELECT ON pg_catalog.pg_authid TO ${grantee}`);
+    if(capability.endsWith('column'))await f.pool.query(`GRANT SELECT(rolname,rolpassword) ON pg_catalog.pg_authid TO ${grantee}`);
+    if(capability==='catalog-grant-option')await f.pool.query(`GRANT SELECT ON pg_catalog.pg_roles TO ${grantee} WITH GRANT OPTION`);
+    if(capability==='information-schema-write')await f.pool.query(`GRANT UPDATE ON information_schema.sql_features TO ${grantee}`);
+    if(capability==='information-schema-grant-option')await f.pool.query(`GRANT SELECT ON information_schema.sql_features TO ${grantee} WITH GRANT OPTION`);
+   }
+   for(const pool of pools){
+    if(capability==='PUBLIC-function')expect((await pool.query("SELECT pg_catalog.pg_read_file('PG_VERSION') AS version")).rows[0].version).toMatch(/^\d/);
+    else if(capability==='information-schema-definer')expect((await pool.query('SELECT information_schema.fictional_private_read() AS available')).rows[0].available).toBe(true);
+    else if(capability==='unregistered-catalog-function')expect((await pool.query('SELECT pg_catalog.fictional_private_read() AS available')).rows[0].available).toBe(true);
+    else if(capability==='information-schema-private-table')expect((await pool.query('SELECT available FROM information_schema.fictional_private')).rows[0].available).toBe(true);
+    else if(!capability.includes('grant-option')&&!capability.startsWith('information-schema'))expect((await pool.query('SELECT rolpassword IS NOT NULL AS available FROM pg_catalog.pg_authid WHERE rolname=current_user')).rows[0].available).toBe(true);
+   }
+   await expect(configureMonitorPrincipal(setup,monitor)).rejects.toThrow('monitor_principal_invalid');await expect(configureWorkerControlReader(setup,worker)).rejects.toThrow('operations_reader_scope_invalid');
+   let sampled=false;await expect(processMonitorObservation(pools[0],monitor,async()=>{sampled=true;return 'ok';},false,async()=>'accepted')).rejects.toThrow('monitor_principal_invalid');expect(sampled).toBe(false);
+  }finally{setup.release();}
+ }finally{
+  // Restore only these synthetic catalog grants before dropping the owned DB.
+  await f.pool.query('REVOKE EXECUTE ON FUNCTION pg_catalog.pg_read_file(text) FROM PUBLIC').catch(()=>{});await f.pool.query('REVOKE SELECT ON pg_catalog.pg_authid FROM PUBLIC').catch(()=>{});await f.pool.query('REVOKE SELECT(rolname,rolpassword) ON pg_catalog.pg_authid FROM PUBLIC').catch(()=>{});
+  for(const pool of pools)await pool.end();for(const role of roles){await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});}await f.close();
+ }
+});
 it.each(['tablespace','parameter','routine','foreign-wrapper','foreign-server','grant-option'] as const)('rejects non-journal %s authority for both machine principals',async capability=>{
  const f=await freshOnboardingControl(),monitor='nv_ops_monitor_'+randomBytes(12).toString('hex'),worker=workerControlRole(randomUUID(),'test'),roles=[monitor,worker],pools:Pool[]=[];
  try{
