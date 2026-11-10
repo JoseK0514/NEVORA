@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
-import {observeDocumentNavigation,observeWindowExceptions} from './browser-navigation-diagnostic.mjs';
+import {observeDocumentNavigation} from './browser-navigation-diagnostic.mjs';
+import {observeBrowserCell} from './phase-e-browser-qa.mjs';
 
 const deferred=()=>{let resolve;const promise=new Promise(done=>{resolve=done;});return {promise,resolve};};
 async function bounded(promise){let timer;try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Reload diagnostic control did not settle')),5000);})]);}finally{clearTimeout(timer);}}
@@ -10,7 +11,12 @@ async function bounded(promise){let timer;try{return await Promise.race([promise
 export async function verifyReloadFetchDiagnostic(browser){
  const cells=[];
  for(const mode of ['idle','reload','goto-same','source-history','stream-redirect','window-exceptions']){
-  const context=await browser.newContext({serviceWorkers:'block'}),page=await context.newPage();page.setDefaultNavigationTimeout(10000);
+  const context=await browser.newContext({serviceWorkers:'block'}),candidateErrors=[];
+  // Enable the candidate only inside this fictional control, then verify its
+  // positives AND its fatal negatives before returning an app eligibility bit.
+  const candidate=observeBrowserCell({engine:'webkit',navigationDiagnostics:[]},candidateErrors,{reloadDiagnosticVerified:true});
+  await candidate.observeContext(context,'primary');
+  const page=await context.newPage();page.setDefaultNavigationTimeout(10000);
   const requested=deferred(),successorRead=deferred(),exceptionsSeen=deferred(),nativeSeen=deferred();
   let documents=0,serverReads=0,held,mainRequest,mainOpen=false,navigationResult;
   const windows=[],native=[];
@@ -28,7 +34,8 @@ export async function verifyReloadFetchDiagnostic(browser){
   const state=observeDocumentNavigation(page,()=>origin,{allowSameUrlReload:true});
   try{
    await context.route('**/*',route=>{assert.equal(new URL(route.request().url()).origin,origin);return route.continue();});
-   await observeWindowExceptions(context,(_page,kind)=>{windows.push(kind);if(windows.length===2)exceptionsSeen.resolve();});
+   await context.exposeBinding('__nevoraReloadControlWindowEvent',(_source,kind)=>{windows.push(kind);if(windows.length===2)exceptionsSeen.resolve();});
+   await context.addInitScript(()=>{for(const kind of ['error','unhandledrejection'])addEventListener(kind,event=>{if(kind==='error'&&!(event instanceof ErrorEvent))return;void globalThis.__nevoraReloadControlWindowEvent(kind).catch(()=>{});});});
    await context.exposeBinding('__nevoraReloadControlDone',(_source,result,id)=>successorRead.resolve({result,id}));
    await context.addInitScript(()=>{globalThis.__nevoraReloadDocumentId=crypto.randomUUID();});
    const top=request=>request.isNavigationRequest()&&request.frame()===page.mainFrame();
@@ -36,7 +43,7 @@ export async function verifyReloadFetchDiagnostic(browser){
    for(const event of ['requestfinished','requestfailed'])page.on(event,request=>{if(request===mainRequest)mainOpen=false;});
    page.on('pageerror',error=>{
     if(error.name==='Fetch API cannot load http'&&error.message==='/'+origin.slice('http://'.length)+'/api/notifications due to access control checks.'){
-     native.push({eligible:state.pending(),documentRequestOpen:mainOpen,documentNavigation:state.snapshot()});nativeSeen.resolve();
+     native.push({eligible:state.pending(),classified:candidate.isNavigationDiagnostic(error),documentRequestOpen:mainOpen,documentNavigation:state.snapshot()});nativeSeen.resolve();
     }
    });
    await page.goto(url);
@@ -66,17 +73,18 @@ export async function verifyReloadFetchDiagnostic(browser){
    if(held){if(held.headersSent)held.end('</body></html>');else{held.writeHead(200,{'content-type':'text/html','cache-control':'no-store'});held.end('<!doctype html><h1>Replacement</h1>');}}
    if(navigationResult)assert.equal(await bounded(navigationResult),200);
    const distinctReplacement=mode!=='idle'&&(await page.evaluate(()=>globalThis.__nevoraReloadDocumentId))!==sourceId;
+   let candidateClean=true;try{candidate.assertClean();}catch{candidateClean=false;}
    cells.push({mode,serverReads,sourceIdentityRetained:sourceRead?.id===sourceId,sourceStatus:sourceRead?.status??null,sourceHandled:sourceRead?.handled??null,
-    distinctReplacement,successorStatus:successor?.result??null,native:[...native],windowExceptions:[...windows]});
+    distinctReplacement,successorStatus:successor?.result??null,candidateClean,candidateWindowErrors:candidateErrors.filter(event=>event.type==='window-javascript-error').length,native:[...native],windowExceptions:[...windows]});
   }finally{held?.end();await context.close();if(navigationResult)await navigationResult.catch(()=>{});server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
  }
- const cell=mode=>cells.find(value=>value.mode===mode),oneNative=(value,eligible)=>value.native.length===1&&value.native[0].eligible===eligible;
+ const cell=mode=>cells.find(value=>value.mode===mode),oneNative=(value,eligible)=>value.native.length===1&&value.native[0].eligible===eligible&&value.native[0].classified===eligible;
  const idle=cell('idle'),history=cell('source-history'),successor=cell('stream-redirect'),exceptions=cell('window-exceptions');
- const positives=['reload','goto-same'].every(mode=>{const value=cell(mode);return value.sourceIdentityRetained&&value.sourceHandled&&value.sourceStatus===0&&value.serverReads===0&&value.distinctReplacement&&value.windowExceptions.length===0&&oneNative(value,true)&&value.native[0].documentNavigation.phase==='reload-requested';});
- const negatives=idle.sourceIdentityRetained&&idle.sourceStatus===200&&idle.serverReads===1&&idle.native.length===0&&idle.windowExceptions.length===0
-  &&history.sourceIdentityRetained&&history.sourceHandled&&history.serverReads===0&&history.windowExceptions.length===0&&oneNative(history,false)&&history.native[0].documentNavigation.phase==='reload-boundary'
-  &&successor.distinctReplacement&&successor.successorStatus===0&&successor.serverReads===1&&successor.windowExceptions.length===0&&oneNative(successor,false)&&successor.native[0].documentRequestOpen
-  &&exceptions.serverReads===0&&oneNative(exceptions,true)&&[...exceptions.windowExceptions].sort().join(',')==='error,unhandledrejection';
+ const positives=['reload','goto-same'].every(mode=>{const value=cell(mode);return value.sourceIdentityRetained&&value.sourceHandled&&value.sourceStatus===0&&value.serverReads===0&&value.distinctReplacement&&value.candidateClean&&value.windowExceptions.length===0&&oneNative(value,true)&&value.native[0].documentNavigation.phase==='reload-requested';});
+ const negatives=idle.sourceIdentityRetained&&idle.sourceStatus===200&&idle.serverReads===1&&idle.candidateClean&&idle.native.length===0&&idle.windowExceptions.length===0
+  &&history.sourceIdentityRetained&&history.sourceHandled&&history.serverReads===0&&!history.candidateClean&&history.windowExceptions.length===0&&oneNative(history,false)&&history.native[0].documentNavigation.phase==='reload-boundary'
+  &&successor.distinctReplacement&&successor.successorStatus===0&&successor.serverReads===1&&!successor.candidateClean&&successor.windowExceptions.length===0&&oneNative(successor,false)&&successor.native[0].documentRequestOpen
+  &&exceptions.serverReads===0&&!exceptions.candidateClean&&exceptions.candidateWindowErrors===2&&oneNative(exceptions,true)&&[...exceptions.windowExceptions].sort().join(',')==='error,unhandledrejection';
  const verified=positives&&negatives;
  return {status:verified?'mechanism-reproduced':'not-reproduced',verified,cells};
 }

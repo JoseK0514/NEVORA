@@ -53,7 +53,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
    const entry={role,phase,stage,atMs:Math.round(performance.now()-startedAt),text:clean(message.text()),reactBoundary:message.text().includes('The above error occurred in the <'),extractionFailed:false,errors:[]};observations.console.push(entry);
    consoleDetails.push(Promise.all(message.args().map(arg=>arg.evaluate(value=>value instanceof Error?{name:value.name,message:value.message,stack:value.stack}:null).then(error=>{if(error)entry.errors.push(safeD2Error(error));},()=>{entry.extractionFailed=true;}))));
   }});
-  page.on('pageerror',error=>{if(!cell.isNavigationDiagnostic(error))observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)});});
+  page.on('pageerror',error=>{if(phase!=='normal'||!cell.isNavigationDiagnostic(error))observations.runtime.push({role,phase,stage,atMs:Math.round(performance.now()-startedAt),...safeD2Error(error)});});
   page.on('request',request=>{
    const url=new URL(request.url());if(url.origin!==app.url||!(url.pathname==='/app'||url.pathname.startsWith('/api/')||url.pathname==='/__nextjs_original-stack-frames'))return;
    if(role==='manager'&&url.pathname==='/app'&&request.headers().rsc==='1'){managerRscRequests.add(request);managerRscVersion++;}
