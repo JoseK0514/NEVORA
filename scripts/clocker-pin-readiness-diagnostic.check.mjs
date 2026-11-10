@@ -93,3 +93,20 @@ test('late page and writer rejections cannot mutate disposed evidence',async()=>
  f.page.evaluate=()=>new Promise((_,reject)=>{rejectView=reject;});f.page.emit('crash');await f.observer.captureFailure();await f.observer.close();
  const before=f.observer.snapshot();rejectWrite(Error('private-value'));rejectView(Error('Page crashed private-value'));await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(f.observer.snapshot(),before);assert.equal(before.writeFailure,'timeout');assert(!JSON.stringify(before).includes('private-value'));
 });
+
+test('expired installation cannot register init script or accept late binding evidence',async()=>{
+ const f=fixture();let releaseBinding,binding,initCalls=0;
+ f.context.exposeBinding=async(name,receive)=>{binding=receive;await new Promise(resolve=>{releaseBinding=resolve;});};
+ f.context.addInitScript=async()=>{initCalls++;};
+ await f.observer.install();const expired=f.observer.snapshot();assert.equal(initCalls,0);assert.deepEqual(expired.events.map(x=>[x.operation,x.category]),[['install','timeout']]);
+ releaseBinding();await new Promise(resolve=>setTimeout(resolve,0));
+ binding({page:f.page,frame:f.frame},{kind:'focus',focused:true});binding({page:{},frame:{}},{kind:'private-value'});
+ assert.equal(initCalls,0);assert.deepEqual(f.observer.snapshot(),expired);await f.observer.close();
+});
+
+test('cleanup retires a pending installation before its binding resolves',async()=>{
+ const f=fixture();let releaseBinding,binding,initCalls=0;
+ f.context.exposeBinding=async(name,receive)=>{binding=receive;await new Promise(resolve=>{releaseBinding=resolve;});};f.context.addInitScript=async()=>{initCalls++;};
+ const installing=f.observer.install();await new Promise(resolve=>setTimeout(resolve,0));await f.observer.close();const disposed=f.observer.snapshot();releaseBinding();await installing;
+ binding({page:f.page,frame:f.frame},{kind:'focus',focused:true});assert.equal(initCalls,0);assert.deepEqual(f.observer.snapshot(),disposed);
+});

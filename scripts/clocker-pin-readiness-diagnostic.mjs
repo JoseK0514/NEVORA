@@ -48,12 +48,12 @@ export function readPinReadinessState(){
 export async function runPinDiagnosticObservation(task){
  return bounded(task);
 }
-async function bounded(task,budget=1000){
- let timer;try{return await Promise.race([Promise.resolve().then(task),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('diagnostic deadline')),budget);})]);}finally{clearTimeout(timer);}
+async function bounded(task,budget=1000,onExpired=()=>{}){
+ let timer;try{return await Promise.race([Promise.resolve().then(task),new Promise((_,reject)=>{timer=setTimeout(()=>{onExpired();reject(new Error('diagnostic deadline'));},budget);})]);}finally{clearTimeout(timer);}
 }
 export function observePinReadiness({browser,context,page,origin,engine,source,artifactBase,now=()=>performance.now(),persist}){
  const started=now(),events=[],listeners=[],requests=new WeakMap();let requestSequence=0,sequence=0,omittedEvents=0,rejectedInputs=0,closed=false,queue=Promise.resolve(),writeFailure=null,disposed=false;
- const writes=new AbortController();
+ const writes=new AbortController();let installation;
  const counts={network:0,browser:0,phase:0},limits={network:128,browser:64,phase:64};
  const binding={engine:['chromium','webkit'].includes(engine)?engine:'other',checkpoint:/^[a-f0-9]{40}$/.test(source?.checkpoint)?source.checkpoint:null,tree:/^[a-f0-9]{40}$/.test(source?.tree)?source.tree:null,sourceClean:source?.sourceClean===true};
  const snapshot=()=>({...binding,events:events.map(event=>({...event})),omittedEvents,rejectedInputs,writeFailure});
@@ -92,12 +92,25 @@ export function observePinReadiness({browser,context,page,origin,engine,source,a
   snapshot,record,failure,
   phase:(phase,stage,flags={})=>record({kind:'phase',phase,stage,...state(flags)}),
   async install(){
-   try{await bounded(async()=>{await context.exposeBinding('__nevoraPinDiagnostic',(source,value)=>{
-    if(closed)return;
-    if(source.page!==page||source.frame!==page.mainFrame()||!value||!['visibilitychange','focus','blur','pagehide','pageshow','submit'].includes(value.kind)){rejectedInputs++;return;}
-    if(value.kind==='submit'&&typeof value.defaultPrevented!=='boolean'){rejectedInputs++;return;}
-    record({kind:value.kind,...(['before','after'].includes(value.stage)?{stage:value.stage}:{}),...state(value)});
-   });if(!closed)await context.addInitScript(installPinReadinessObserver);});}catch(error){failure('install',error);}
+   if(closed||installation)return;
+   const token={active:true,installing:true,deadline:performance.now()+1000};installation=token;
+   const live=()=>{if(token.installing&&performance.now()>=token.deadline)token.active=false;return token.active&&!closed;};
+   // Playwright work already dispatched cannot be cancelled. Retire its token
+   // at the deadline so a late resolution cannot schedule further mutations,
+   // and any binding installed by that work remains inert.
+   try{await bounded(async()=>{
+    if(!live())return;
+    await context.exposeBinding('__nevoraPinDiagnostic',(source,value)=>{
+     if(!live())return;
+     if(source.page!==page||source.frame!==page.mainFrame()||!value||!['visibilitychange','focus','blur','pagehide','pageshow','submit'].includes(value.kind)){rejectedInputs++;return;}
+     if(value.kind==='submit'&&typeof value.defaultPrevented!=='boolean'){rejectedInputs++;return;}
+     record({kind:value.kind,...(['before','after'].includes(value.stage)?{stage:value.stage}:{}),...state(value)});
+    });
+    if(!live())return;
+    await context.addInitScript(installPinReadinessObserver);
+    if(!live())return;
+    token.installing=false;
+   },1000,()=>{token.active=false;});}catch(error){token.active=false;failure('install',error);}
   },
   async captureFailure(screenshot){
    // Only after the original scenario has failed. Retained events are independent
@@ -108,7 +121,7 @@ export function observePinReadiness({browser,context,page,origin,engine,source,a
    ]);
   },
   async close(){
-   if(closed)return;for(const remove of listeners)remove();
+   if(closed)return;if(installation)installation.active=false;for(const remove of listeners)remove();
    if(!page.isClosed())try{await bounded(()=>page.evaluate(()=>window.__nevoraPinDiagnosticCleanup?.()));}catch(error){failure('cleanup',error);}
    closed=true;try{await bounded(()=>queue);}catch(error){writeFailure=pinFailureCategory(error);}
    // Includes omissions/write categories after the last accepted event.
