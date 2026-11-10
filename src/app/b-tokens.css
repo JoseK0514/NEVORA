@@ -1,0 +1,43 @@
+/* Direction B shared tokens (review B1, Nov 10, 2026). Defined on :root so the shell, the desktop and tablet layers, the
+ * Clocker and the public pages can all read them; the B screens (owner-b.css) keep their own copy with the same values.
+ * Light only. Values are DESIGN.MD's: one band, one ink and grey family, one elevation set, one focus, one disabled pair,
+ * one press. Only colours, sizes and timings live here; no selector here paints anything. */
+:root {
+  /* palette */
+  --b-teal: #0B6E69; --b-teal-50: #E8F3F1; --b-ink: #111517; --b-ink2: #3F464B; --b-grey: #6A7176; --b-line: #ECEEEF; --b-canvas: #F2F5F4;
+  --b-amber: #8A4B00; --b-amber-50: #FDF3E4; --b-red: #B42318; --b-red-50: #FDECEA; --b-green: #1D6B45; --b-green-50: #E7F4EC; --b-quiet: #F0F2F3;
+  --b-coral: #FF6B5E;
+  /* grey text on a tinted or grey fill (#F0F2F3, #E8F3F1, #ECEEEF): 5.2:1, where --b-grey falls to 4.3–4.4:1 */
+  --b-grey-on-fill: #5E666B;
+  /* field and switch edges at 3:1 on white (WCAG 1.4.11) */
+  --b-field-edge: #8C9397;
+  /* the band: one gradient (#0C726C to #08504C), and the ink band; text on it is white (titles, figures, labels on glass)
+   * or white .86 (sub-lines on the solid band only: 4.7:1 at the band's lightest stop) */
+  --b-band: linear-gradient(160deg, #0C726C 0%, #0B6E69 40%, #08504C 100%);
+  --b-band-solid: #0C726C;
+  --b-band-ink: linear-gradient(150deg, #17302D 0%, #0C1918 100%);
+  --b-on-band: #FFFFFF;
+  --b-on-band-2: rgb(255 255 255 / 0.86);
+  --b-glass: rgb(255 255 255 / 0.12); --b-glass-edge: rgb(255 255 255 / 0.16);
+  /* elevation: one shadow colour */
+  --b-shadow-rgb: 16 40 38;
+  --b-elev-1: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18);
+  --b-elev-2: 0 0 0 1px rgb(16 40 38 / 0.06), 0 2px 4px rgb(16 40 38 / 0.08), 0 24px 48px -16px rgb(16 40 38 / 0.32);
+  --b-elev-glow: 0 6px 14px -6px rgb(11 110 105 / 0.6);
+  /* focus: teal on white and tinted surfaces, white on the band */
+  --b-focus: #0B6E69; --b-focus-on-band: #FFFFFF; --b-focus-width: 2px; --b-focus-offset: 2px;
+  /* interaction */
+  --b-hover: #F7F9F9;
+  --b-disabled-bg: #F0F2F3; --b-disabled-ink: #8C9397;
+  --b-press-scale: 0.96; --b-dur-press: 150ms; --b-ease-out: ease-out;
+  /* shape and targets */
+  --b-radius-card: 22px; --b-radius-pill: 999px; --b-radius-field: 14px;
+  --b-target: 44px; --b-target-touch: 48px;
+  /* type roles (size / line-height pairs) */
+  --b-fs-caption: 12.5px; --b-lh-caption: 16px;
+  --b-fs-meta: 13.5px; --b-lh-meta: 18px;
+  --b-fs-body-sm: 14.5px; --b-lh-body-sm: 20px;
+  --b-fs-body: 15.5px; --b-lh-body: 22px;
+  --b-fs-title-sm: 17px; --b-lh-title-sm: 22px;
+  --b-fs-count: 12px;
+}

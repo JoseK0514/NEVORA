@@ -6,11 +6,11 @@ import { NUVORA_BRAND } from "../lib/brand";
 import { THEME_SCRIPT } from "../lib/theme";
 import "../components/signature/tokens.css";
 import "./globals.css";
+import "./b-tokens.css";
 import "./typeface-theme.css";
 import "./mobile-workforce.css";
 import "./employee-mobile-corporate.css";
 import "../components/signature/components.css";
-import "../components/signature/dark.css";
 
 export const metadata: Metadata = {
   title: NUVORA_BRAND.metadataTitle,

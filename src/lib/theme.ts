@@ -5,19 +5,15 @@ export type ThemeChoice = 'system' | 'light' | 'dark';
 export const THEME_KEY = 'nv-theme';
 export const DEFAULT_THEME: ThemeChoice = 'light';
 
-export const THEME_SCRIPT = `(function(){var d=document.documentElement,k='${THEME_KEY}',m=null;try{m=window.matchMedia('(prefers-color-scheme: dark)');}catch(e){}function c(){try{var v=localStorage.getItem(k);return v==='light'||v==='dark'||v==='system'?v:'${DEFAULT_THEME}';}catch(e){return '${DEFAULT_THEME}';}}function a(){var v=c(),dark=v==='dark'||(v==='system'&&!!(m&&m.matches));d.setAttribute('data-theme',dark?'dark':'light');d.setAttribute('data-theme-choice',v);}a();try{m&&m.addEventListener('change',a);}catch(e){}window.addEventListener('storage',function(e){if(e.key===k)a();});window.__nvApplyTheme=a;})();`;
+/** Review B1 (NV-067): Direction B is light only. The script fixes Light before first paint and clears a stored
+ * choice, so a device that once saved Dark (or System on a dark phone) no longer gets data-theme="dark". */
+export const THEME_SCRIPT = `(function(){var d=document.documentElement;try{localStorage.removeItem('${THEME_KEY}');}catch(e){}d.setAttribute('data-theme','light');d.setAttribute('data-theme-choice','light');window.__nvApplyTheme=function(){d.setAttribute('data-theme','light');};})();`;
 
-export function readThemeChoice(): ThemeChoice {
-  try { const value = window.localStorage.getItem(THEME_KEY); return value === 'light' || value === 'dark' || value === 'system' ? value : DEFAULT_THEME; } catch { return DEFAULT_THEME; }
-}
+/** Light only: there is no stored choice to read any more. */
+export function readThemeChoice(): ThemeChoice { return DEFAULT_THEME; }
 
-export function writeThemeChoice(choice: ThemeChoice) {
-  try { window.localStorage.setItem(THEME_KEY, choice); } catch { /* storage blocked: persistence is unavailable */ }
-  const apply = (window as Window & { __nvApplyTheme?: () => void }).__nvApplyTheme;
-  if (apply) {
-    apply();
-    // Native media changes can coalesce around selecting System. Reconcile once
-    // before paint; the existing owner reads the latest choice, not this click.
-    window.requestAnimationFrame(() => apply());
-  } else document.documentElement.setAttribute('data-theme', choice === 'dark' ? 'dark' : 'light');
+/** Light only: any request applies Light and forgets an old stored choice. */
+export function writeThemeChoice(_choice: ThemeChoice) {
+  try { window.localStorage.removeItem(THEME_KEY); } catch { /* storage blocked: nothing stored */ }
+  document.documentElement.setAttribute('data-theme', 'light');
 }

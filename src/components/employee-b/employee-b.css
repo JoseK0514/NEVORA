@@ -14,7 +14,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift__where { margin-top: -12px; font-size: 14px; line-height: 19px; color: var(--b-grey); text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #F4F7F6; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-tint .b-notice__t { font-size: 14.5px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: 48px; border-radius: 16px; font-size: 15.5px; font-weight: 700; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-shift .b-btn--full { min-height: 48px; border-radius: 999px; font-size: 15.5px; font-weight: 700; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-state { padding: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .eb-status:first-child { padding-top: 18px; }
@@ -198,5 +198,5 @@
   /* "Shift lead · Barista" sits beside the time when it fits, under it when it doesn't. */
   :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child > .b-live__a { flex-direction: row; flex-wrap: wrap; column-gap: 12px; row-gap: 2px; align-items: baseline; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child .b-live__l { flex: 1 0 100%; }
-  :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child .b-live__m { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; line-height: 18px; color: rgb(255 255 255 / 0.74); }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-ehome > .b-screen .b-live:has(> .b-live__i:nth-child(3)) > .b-live__i:first-child .b-live__m { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; line-height: 18px; color: var(--b-on-band); }
 }

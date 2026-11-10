@@ -423,11 +423,11 @@ export default async function SchedulePage({
       {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
         <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
         {updatesOn ? <BButtonLink href="/app/updates/compose" kind="ghost">Send an update</BButtonLink> : null}</div> : null}
-      {params.changesPublished ? <CorpNote>Changes published. Each person with a change has been notified.</CorpNote> : null}
-      {params.updated ? <CorpNote>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
-      {params.deleted ? <CorpNote>Shift deleted.</CorpNote> : null}
-      {params.deadlineSaved ? <CorpNote>Availability deadline updated.</CorpNote> : null}
-      {params.copied !== undefined ? <CorpNote>{`Copied ${params.copied} shift${params.copied === "1" ? "" : "s"} from the previous week.${Number(params.skipped ?? 0) > 0 ? ` ${params.skipped} skipped because of scheduling conflicts.` : ""}`}</CorpNote> : null}
+      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
+      {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
+      {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}
+      {params.copied !== undefined ? <CorpNote announce>{`Copied ${params.copied} shift${params.copied === "1" ? "" : "s"} from the previous week.${Number(params.skipped ?? 0) > 0 ? ` ${params.skipped} skipped because of scheduling conflicts.` : ""}`}</CorpNote> : null}
     </>,
   };
   return withRepair(
@@ -467,10 +467,10 @@ export default async function SchedulePage({
           </CorpBody>
         </CorpCard>
       ) : null}
-      {params.changesPublished ? <CorpNote>Changes published. Each person with a change has been notified.</CorpNote> : null}
-      {params.updated ? <CorpNote>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
-      {params.deleted ? <CorpNote>Shift deleted.</CorpNote> : null}
-      {params.deadlineSaved ? <CorpNote>Availability deadline updated.</CorpNote> : null}
+      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
+      {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
+      {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}
       {params.copied !== undefined ? (
         <p role="status" className={Number(params.skipped ?? 0) > 0 ? "c-note c-note--warn" : "c-note"}><span>
           Copied {params.copied} shift{params.copied === "1" ? "" : "s"} from the previous week.

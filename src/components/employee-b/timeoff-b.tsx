@@ -6,7 +6,7 @@ import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
-import {BAddRow, BCardNote, Dotted} from './parts';
+import {BCardNote, Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
 import {sentDay, timeOffDates, timeOffDecision, timeOffLength, type TimeOffView} from '../employee-mobile/timeoff-parts';
@@ -43,9 +43,9 @@ const listHref = (filter: string) => filter === 'decided' ? '/app/requests?filte
 /** The hero: the list has Waiting and Decided on glass; the form closes with Cancel; a request goes back to Requests. */
 function TimeOffHero({page, filter, tabs}: {page: TimeOffPage; filter: string; tabs: boolean}) {
   if (page === 'new') return <BHero back={{href: listHref(filter), label: 'Cancel', close: true}} title="Request time off" titleId="b-timeoff-title"/>;
-  // Desktop: Request time off is the band's white action (the list's own row is the phone's).
+  // Review B1 (NV-164): Request time off is the band's white action at every width, so it stays even when the list fails.
   return <BHero back={{href: '/app/requests/hub', label: 'Requests'}} title="Time off" titleId="b-timeoff-title"
-    right={page === 'list' ? <span className="eb-desk"><BButtonLink href="/app/requests?tab=new" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink></span> : undefined}>
+    right={page === 'list' ? <BButtonLink href="/app/requests?tab=new" kind="white"><PlusIcon size={17} weight="bold" aria-hidden="true"/>Request time off</BButtonLink> : undefined}>
     {page === 'list' && tabs ? <BSeg label="Time-off requests" items={[
       {key: 'waiting', label: 'Waiting', href: '/app/requests', current: filter !== 'decided'},
       {key: 'decided', label: 'Decided', href: '/app/requests?filter=decided', current: filter === 'decided'},
@@ -57,7 +57,8 @@ function TimeOffRowB({request, filter}: {request: TimeOffView; filter: string}) 
   const pill = timeOffPill(request.status);
   return <BRow href={`/app/requests?requestId=${encodeURIComponent(request.id)}${filter === 'decided' ? '&filter=decided' : ''}`}
     lead={<BIcon tone="grey"><SunIcon weight="bold"/></BIcon>} title={keepWhole(timeOffRange(request))} sub={<Dotted text={timeOffSpan(request)}/>}
-    end={<BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
+    // Review B1 (NV-280): on the Waiting tab every row is waiting, so the row shows no chip.
+    end={filter !== 'decided' && request.status === 'PENDING' ? undefined : <BChip tone={bTone(pill.tone)}>{pill.text}</BChip>} chevron label={`${timeOffDates(request)}, ${timeOffLength(request)}, ${pill.text}`}/>;
 }
 
 /** One request: when it was sent, its dates and length (with the person's note), then who it waits on or who decided it. */
@@ -95,7 +96,6 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
         sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
         {requests.map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
-        <BAddRow href="/app/requests?tab=new" icon={<PlusIcon weight="bold"/>}>Request time off</BAddRow>
       </BList>
       {requests.length && filter !== 'decided' ? <BCardNote>Open a request to see its details or withdraw it.</BCardNote> : null}
     </BCard>

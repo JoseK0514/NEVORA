@@ -17,7 +17,7 @@ export { RANGE_DASH, periodRange, payDay, daysBetween, hoursText, minutesText } 
  * authorized, formatted data and keep their own actions. Each piece reproduces one element of the approved boards. */
 
 /** `blue` is retired (Nov 1 upscale: blue is not in the NEVORA palette); a pill passed it reads as grey text. */
-type Tone = "teal" | "amber" | "blue" | "red" | "neutral";
+type Tone = "teal" | "amber" | "blue" | "red" | "neutral" | "green";
 
 /* Nov 1 upscale (kit consistency 1): one count style, "Label N" with N at 13/600 #6B7075 and never in parentheses. A label
  * written the old way ("Team (9)", "Waiting (2)") is split here, so every caller of CorpCard, CorpSection and
@@ -217,8 +217,9 @@ export function CorpField({ label, htmlFor, help, error, errorId, children }: { 
   </div>;
 }
 
-export function CorpNote({ children, center, icon }: { children: ReactNode; center?: boolean; icon?: ReactNode }) {
-  return <p className={center ? "c-note c-note--center" : "c-note"}>{icon ?? null}<span>{children}</span></p>;
+/** `announce`: the note reports what just happened ("Shift deleted."), so screen readers hear it (review B1, NV-023). */
+export function CorpNote({ children, center, icon, announce }: { children: ReactNode; center?: boolean; icon?: ReactNode; announce?: boolean }) {
+  return <p className={center ? "c-note c-note--center" : "c-note"} role={announce ? "status" : undefined}>{icon ?? null}<span>{children}</span></p>;
 }
 
 /** A pushed page's white header: "‹ Back" left, the title centred, an optional action right. */

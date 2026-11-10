@@ -4,6 +4,7 @@ import type {ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
+import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
 import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, compactRange, type BLiveItem} from '../owner-b/b-kit';
@@ -98,7 +99,7 @@ function startsIn(shift: PublishedAssignment, snapshot: HomeSnapshot) {
 /** A Lead's Today's team: message everyone on today's published team, through the existing Updates compose. */
 function TeamCard({place}: {place?: string}) {
   return <BCard title="Today’s team" id="b-home-team" meta={place}>
-    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><MegaphoneSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
+    <BList><BRow href="/app/updates/compose" lead={<BIcon tone="teal"><PencilSimpleIcon weight="bold"/></BIcon>} title="Message today’s team" sub="Everyone on shift today"
       label="Message today’s team, everyone on shift today" trail={<BButtonLink href="/app/updates/compose" kind="ghost" label="Write to today’s team" prefetch={false}>Write</BButtonLink>}/></BList>
     <p className="eb-cardnote eb-desk">Your message goes to today’s published team. Reading it is optional for them.</p>
   </BCard>;
@@ -187,7 +188,8 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
   };
   return <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
-    <BHero big right={team && snapshot ? <span className="eb-desk"><BButtonLink href="/app/updates/compose" kind="white"><MegaphoneSimpleIcon size={17} weight="bold" aria-hidden="true"/>Message today’s team</BButtonLink></span> : undefined} eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
+    {/* Review B1 (NV-160): one way to message the team, in the Today’s team card (the band’s copy is gone). */}
+    <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
       {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday} onShift={onShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift}/> : null}
     </BHero>
     <BStack>

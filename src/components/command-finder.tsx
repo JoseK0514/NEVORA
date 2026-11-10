@@ -21,6 +21,8 @@ export type OpenFinderDetail = { returnFocusTo?: HTMLElement | null };
 
 /** Status line, checked in this order: a query that couldn't be checked against
  * people never reads "No matches.". */
+const groupKey = (group: string) => group.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
 export function finderStatus(state: Remote["state"], query: string, resultCount: number): string {
   if (state === "offline") return "People and places unavailable offline";
   if (state === "unavailable") return "People and places are unavailable right now.";
@@ -186,8 +188,9 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
           option, so the selection tint covers one result only. The options keep their own names. */}
         <ul id="command-finder-results" role="listbox" aria-label="Results" className="command-finder-results" data-keyboard={keyboard || undefined}>
           {results.map((item, index) => <Fragment key={item.id}>
-            {index === 0 || results[index - 1].group !== item.group ? <li role="presentation" aria-hidden="true" className="command-finder-group">{item.group}</li> : null}
-            <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option"
+            {index === 0 || results[index - 1].group !== item.group ? <li role="presentation" aria-hidden="true" className="command-finder-group" id={`command-finder-group-${groupKey(item.group)}`}>{item.group}</li> : null}
+            {/* Review B1 (NV-217): each option is described by its group ("Schedule, Actions" vs "Schedule, Pages"). */}
+            <li id={`command-finder-${index}`} role="option" aria-selected={index === current} className="command-finder-option" aria-describedby={`command-finder-group-${groupKey(item.group)}`}
               data-group={item.group} onMouseMove={() => { setActive(index); setKeyboard(false); }} onClick={() => go(index)}>
               <span className="command-finder-label"><span className="command-finder-text">{emphasise(item.label, query)}</span></span>{item.detail ? <span className="command-finder-detail">{item.detail}</span> : null}
             </li>

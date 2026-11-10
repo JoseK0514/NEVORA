@@ -146,10 +146,10 @@ export function ActionMenu({
         }}
       >
         {triggerContent ?? <>{triggerIcon}
-        {!iconOnly ? <DotsThreeIcon className="mobile-workforce-action-symbol" size={24} weight="regular" aria-hidden="true"/> : null}
+        {!iconOnly ? <DotsThreeIcon className="mobile-workforce-action-symbol" size={24} weight="bold" aria-hidden="true"/> : null}
         <span className={iconOnly ? "sr-only" : undefined}>{label}</span>
         {/* Owner premium (visual-craft M): the Phosphor caret, 16px, like every other inline chevron. */}
-        {!iconOnly ? <CaretDownIcon className="nevora-action-menu-chevron" size={16} aria-hidden="true" /> : null}</>}
+        {!iconOnly ? <CaretDownIcon className="nevora-action-menu-chevron" size={16} weight="bold" aria-hidden="true" /> : null}</>}
       </button>
       <div
         ref={menuRef}

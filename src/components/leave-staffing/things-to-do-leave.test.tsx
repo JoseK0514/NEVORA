@@ -19,7 +19,8 @@ it('lists a staffing repair under Shifts to fill, counted, with the schedule lin
  const grouped=groupThingsToDo(snapshot([repair,pending]),null,'America/Puerto_Rico',true);
  const open=grouped.families.find(f=>f.id==='card-open');
  expect(open?.groups.map(g=>g.id)).toEqual(['repair']);
- expect(open?.groups[0].rows[0]).toMatchObject({title:'Fill Maria Rivera’s shift',value:'Needs an Owner'});
+ // Review B1 (NV-009): a repair nobody has taken reads amber "Not assigned" (waiting), not red.
+ expect(open?.groups[0].rows[0]).toMatchObject({title:'Fill Maria Rivera’s shift',value:'Not assigned',valueTone:'amber'});
  expect(grouped.value.count).toBe(2);
  const html=renderToStaticMarkup(createElement(ThingsToDoPage,{snapshot:snapshot([repair,pending]),connection:'ready',onRefresh:()=>{},timeZone:'America/Puerto_Rico',coverageFirst:true}));
  expect(html).toContain('id="todo-repair"');

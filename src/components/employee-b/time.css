@@ -58,7 +58,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-ink { color: var(--b-ink2); }
   /* Receipts and read states. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-receipt { font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: -0.02em; text-wrap: balance; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-btn--full, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-stack > .b-btn--full { min-height: 48px; border-radius: 16px; font-size: 15.5px; font-weight: 700; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status .b-btn--full, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-stack > .b-btn--full { min-height: 48px; border-radius: 999px; font-size: 15.5px; font-weight: 700; }
   /* ---------- Fix my time: the corporate form as one white card over the hero ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .c-page:has(> .b-screen) > .eb-fix {
     position: relative; z-index: 2; display: flex; flex-direction: column; gap: 16px; min-width: 0; margin: -40px 14px 22px; padding: 18px; border-radius: 22px; background: #FFFFFF;

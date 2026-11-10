@@ -8,6 +8,9 @@ import { SettingsFrame } from "../wave-c-kit";
 import { listLocations } from "@/lib/data/locations";
 import { listPositions } from "@/lib/data/positions";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Branding" };
+
 export const dynamic = "force-dynamic";
 
 export default async function BrandingPage() {

@@ -8,6 +8,9 @@ import { currentPayPeriod } from '@/lib/payroll/pay-calendar.server';
 import { getWorkspace } from '@/lib/data/workspaces';
 import { businessDate } from '@/lib/business-time';
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "My pay" };
+
 const STATEMENT = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 /** `statement`: the exact statement a notification named. `document`: why opening a PDF came back here. Both only

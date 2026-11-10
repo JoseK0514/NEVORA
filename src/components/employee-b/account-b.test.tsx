@@ -38,11 +38,12 @@ describe('Notifications', () => {
     {id: 'n3', label: 'Pay statement update', at: '2026-10-30T13:00:00Z', href: '/app/my-pay', reviewState: 'read' as const, actionState: 'none' as const},
   ];
   const list = (patch: Partial<NotificationsBList> = {}): NotificationsBList => ({items, partial: false, tab: 'all', onTab: noop, timeZone: zone, onOpen: noop, opening: null, more: false, now, ...patch});
-  it('All and Unread on glass, grouped by day, a grey icon per kind (amber for an update that needs you), time and a teal dot', () => {
+  // Review B1 (NV-142): every notification that needs an action has an amber icon, whatever its kind.
+  it('All and Unread on glass, grouped by day, a grey icon per kind (amber for one that needs you), time and a teal dot', () => {
     const html = renderToStaticMarkup(<EmployeeNotificationsB list={list()} settingsHref="/app/profile/device-alerts" />), plain = text(html);
     for (const value of ['Notifications', 'All', 'Unread 2', 'Today', 'Yesterday', 'Earlier', 'Schedule update', 'Action needed', 'Team update', 'Pay statement update', 'Settings']) expect(plain).toContain(value);
     expect(html).toContain('href="/app/profile/device-alerts"');expect(html).toContain('class="eb-noacts"');
-    expect(html.match(/class="eb-unread"/g)).toHaveLength(2);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(1);
+    expect(html.match(/class="eb-unread"/g)).toHaveLength(2);expect(html.match(/b-ico b-ico--amber/g)).toHaveLength(2);
     expect(html).toContain('id="b-message-n1"');expect(html).toContain('href="/app/schedule"');expect(plain).toContain('Oct 30');
     expect(plain.indexOf('Today')).toBeLessThan(plain.indexOf('Yesterday'));expect(plain.indexOf('Yesterday')).toBeLessThan(plain.indexOf('Earlier'));
     const unique = ids(html);expect(new Set(unique).size).toBe(unique.length);

@@ -15,6 +15,9 @@ import { payrollFeatureEnabled, readPayrollCapabilities } from "@/lib/payroll/se
 import { currentBrand } from "@/lib/workspace-presentation/current.server";
 import { mobileTabsForRole } from "@/lib/navigation";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "My time" };
+
 export default async function MyTimePage({searchParams}:{searchParams:Promise<{view?:string;start?:string;end?:string;entry?:string;requestId?:string;edit?:string;filter?:string;from?:string}>}={searchParams:Promise.resolve({})}) {
   const session = await requireSession();
 

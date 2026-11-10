@@ -12,6 +12,9 @@ import "./company-profile.css";
 import { Field, SettingsForm } from "../wave-c-form";
 import { ReturnToNext } from "@/components/team/return-to-next";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Company profile" };
+
 export default async function WorkspacePage() {
   await requireRoles(["OWNER"]);
   const [workspace, locked] = await Promise.all([

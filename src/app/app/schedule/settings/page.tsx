@@ -30,6 +30,9 @@ import { businessDate, formatBusinessDateTimeInput } from "@/lib/business-time";
 import { formatWeekRange, isValidWeekStart, weekStartFor } from "@/lib/date-utils";
 import "../../settings/settings-corp.css";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Scheduling rules" };
+
 const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 /** Quiet (v4): a rule's row; it opens the rule's settings under it. */

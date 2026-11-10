@@ -107,7 +107,8 @@ export function EmployeeNotificationsB({settingsHref, list, recovery, returnHref
         {groups.length ? groups.map(group => <BCard key={group.name} title={group.name} id={'b-notifications-' + group.name.toLowerCase()}>
           <ul className="b-list" aria-label={group.name + ' notifications'}>{group.rows.map(item => {
             const isUnread = item.reviewState === 'unread', required = item.actionState === 'required', busy = list.opening === item.id, kind = notificationKind(item.label);
-            const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = kind === 'COMMUNICATION' && required ? 'amber' : 'grey';
+            // Review B1 (NV-142): every item that needs an action is amber, whatever its kind.
+            const Icon = kind ? KIND_ICON[kind] : BellIcon, tone: BTone = required ? 'amber' : 'grey';
             const earlier = group.name === 'Earlier', time = clock(item.at, zone);
             const sub = [required ? 'Action needed' : null, earlier ? `${longDay(item.at, zone)} · ${time}` : null].filter(Boolean).join(' · ');
             return <li className="b-li" key={item.id}><Link id={'b-message-' + item.id} className={`b-row b-row--link eb-notif${busy ? ' eb-notif--busy' : ''}`} href={item.href} prefetch={false}

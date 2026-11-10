@@ -23,6 +23,9 @@ import {
   updateShiftAction,
 } from "@/app/app/schedule/actions";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Edit shift" };
+
 const ERROR_MESSAGES: Record<string, string> = {
   LOCATION_NOT_ELIGIBLE: "That person can’t work at this location.",
   SHIFT_OVERLAP: "That person already has a shift at this time.",

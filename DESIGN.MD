@@ -1664,3 +1664,49 @@ Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now th
   response contract. Keyboard: the PIN field has focus, digits type in, Enter submits, Escape clears; Tab starts at Skip to
   time clock, then the keys, Continue and Español; each new state focuses its heading.
 
+
+## Direction B foundation: tokens and shared specs (review batch B1, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B1). These settle values the review found drifting between layers. They
+change no flow, read, handler or contract.
+- **Tokens:** `src/app/b-tokens.css` defines the `--b-*` set on `:root` (imported in the root layout), so the shell, the
+  desktop and tablet layers, the Clocker and the public pages can read it; `owner-b.css` keeps its own copy with the same
+  values. Only colours, sizes and timings live there; it paints nothing. `src/app/app/b-foundation.css` (imported last in
+  the app layout) holds the shared rules below.
+- **Band:** one gradient, `--b-band` = 160deg #0C726C 0% / #0B6E69 40% / #08504C 100% (no lighter start, no highlight under
+  text); `--b-band-solid` #0C726C is painted beneath wherever the band is a border-image, so contrast tools read the real
+  pair. Text on the band: `--b-on-band` #FFFFFF for titles, figures, labels and anything on glass; `--b-on-band-2`
+  rgb(255 255 255 / .86) for sub-lines on the solid band only (4.7:1 at the lightest stop). No other white alphas.
+- **Greys:** `--b-grey` #6A7176 on white (inactive tab labels too, 10.5px stays); `--b-grey-on-fill` #5E666B on grey and
+  tinted fills; `--b-field-edge` #8C9397 for field and switch edges (3:1). Counts are 12px/700; nothing else below 12px
+  except the 10.5px tab labels; `.c-ampm` is .85em.
+- **Status colours:** red stop, amber wait or check (an unassigned repair is amber "Not assigned"; a call-out, an
+  update that needs you, "not set up" counts, Needs reply), green done (Published, finished setup steps), teal
+  information. The bell's unread mark is a coral dot (`--b-coral` #FF6B5E) at every width; sidebar counts are teal.
+- **Elevation:** `--b-elev-1` (cards), `--b-elev-2` (sheets and menus), `--b-elev-glow` (the teal primary), one shadow
+  colour rgb(16 40 38).
+- **Pills:** every button, chip and segment thumb on B surfaces is a pill (999px), including `.b-btn--full`, `--big`
+  and the ink tile's button. One teal primary per screen; rows in a list share one kind (ghost), 44px tall, 96px min.
+- **Targets:** 44px hit areas (the kit's `::after`) on week arrows, sheet Save/Edit, segments, glass buttons and row
+  buttons; 48px footer actions. Touch tablets (`pointer: coarse`, 768px and up) get a 44px control floor and a 48×48
+  rail with labels.
+- **Focus:** one ring, `--b-focus-width` 2px at a 2px offset: teal #0B6E69 on cards and the canvas, white on the band;
+  inside rings where a card or strip clips (first/last rows, live tiles, the selected day).
+- **Hover, press, disabled:** hover only inside `@media (hover: hover)`, `--b-hover` #F7F9F9 in white cards; press is
+  scale .96 over 150ms ease-out (none under reduced motion); disabled is #F0F2F3 with #8C9397 text, no opacity fades.
+- **One select:** 48px, radius 14, 16px text, 1px `--b-field-edge`, a bold 16px CaretDown in #6A7176.
+- **Disclosures:** CaretDown (rotates when open) for anything that expands; CaretRight only for rows that navigate;
+  timecard rows always show their chevron.
+- **Icons:** Phosphor bold in the shell (tab bar, sidebar, rail, desktop bell, menus); the current tab is filled.
+- **Theme:** light only. `nv-theme` is cleared and dark rules are gone from the B layers.
+- **Type roles (defined, adopt page by page):** caption 12.5/16, meta 13.5/18, body-sm 14.5/20, body 15.5/22,
+  title-sm 17/22.
+- **CSS layering plan (NV-066, NV-234, NV-235, NV-236; not done in B1):** move each era into `@layer base, signature,
+  clean, corp, quiet, b` imported from the app layout, then remove `!important` and the fake-id `:not()` steps file by file,
+  starting with `owner-b-shell.css`; fold the shared B-screen desktop rules of `owner-b-desktop.css` and
+  `employee-b-desktop.css` into one block keyed on `[data-nv-b] .b-screen` and decide their 13 conflicts once; fold
+  same-file duplicate rules and split mega-selectors per page pattern; only then audit what B still takes from
+  `premium-clean-manager.css`, `portal-premium.css` and `globals.css` and stop setting `data-nv-clean`. Each step needs a
+  full-route visual diff, so it is a batch of its own. B1 did the safe part: `:not([data-nv-b-off])` became `[data-nv-b]`,
+  the dead `employee-style.css` / `data-nv-e5` rules and the dark blocks were removed.
+- **Still to adopt elsewhere:** the Clocker ("TIME CLOCK" label) and the sign-in and public pages (band text, auth
+  buttons) should read `--b-on-band`/`--b-on-band-2`, `--b-band`, the pill radius and the focus pair from `b-tokens.css`.

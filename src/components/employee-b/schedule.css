@@ -5,7 +5,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__h > span { gap: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__h .b-chip--ok { margin-left: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d { text-decoration: none; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) { background: transparent; color: rgb(255 255 255 / 0.7); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.45); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) { background: transparent; color: var(--b-on-band); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.45); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) b { color: #FFFFFF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d[aria-current="date"]:not(.is-on) i.has { background: rgb(255 255 255 / 0.55); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d.is-on { background: #FFFFFF; color: #0B6E69; }

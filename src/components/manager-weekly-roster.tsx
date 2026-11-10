@@ -446,6 +446,8 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
             <span aria-hidden="true">{day.weekday}</span><b aria-hidden="true" className="c-num">{Number(date.slice(8))}</b><i aria-hidden="true" className={open ? "gap" : shifts ? "has" : undefined} />
           </button>;
         })}</div>
+        {/* Review B1 (NV-089): the amber dot is explained once. */}
+        {openShifts.some(row => !ended(row)) ? <p className="b-week__legend"><i aria-hidden="true" />Open shifts</p> : null}
         {/* Nov 9, 2026: required minutes covered this week (staffing, positions and lead apart), replacing the day bar that
           divided assigned rows by assigned-plus-open rows. Open shifts keep their own count on each day. */}
         {b.coverage !== undefined ? b.coverage ? <CoverageFigures coverage={b.coverage} variant="glass" label="Covered this week" />

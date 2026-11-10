@@ -21,14 +21,14 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__me { display: flex; align-items: center; gap: 12px; padding: 14px 14px 12px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx { display: flex; flex-direction: column; flex: 1; min-width: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx b { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF; overflow-wrap: anywhere; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span { font-size: 13.5px; line-height: 18px; color: rgb(255 255 255 / 0.75); text-wrap: pretty; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__tx > span { font-size: 13.5px; line-height: 18px; color: var(--b-on-band-2); text-wrap: pretty; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 48px; padding: 0 14px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
     font-size: 15px; font-weight: 600; color: #FFFFFF; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:active { background-color: rgb(255 255 255 / 0.08); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-id__link:focus-visible { outline: 2px solid #FFFFFF; outline-offset: -2px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__end .q-count { display: inline-grid; place-items: center; min-width: 24px; height: 22px; padding: 0 8px; border-radius: 11px; background: #E8F3F1; color: #0B6E69; font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout form { display: block; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; padding: 0 18px; color: #B42318; font-size: 15.5px; font-weight: 600; text-align: center;
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 56px; padding: 0 18px; color: #111517; font-size: 15.5px; font-weight: 600; text-align: center;
     transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:active { background-color: rgb(16 24 32 / 0.04); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-signout__btn:focus-visible { outline-offset: -3px; }
@@ -201,7 +201,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card { border: 0; border-radius: 22px; box-shadow: 0 0 0 1px rgb(16 40 38 / 0.05), 0 1px 2px rgb(16 40 38 / 0.06), 0 12px 28px -12px rgb(16 40 38 / 0.18); }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__head { min-height: 44px; padding: 12px 18px 2px; box-shadow: none; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-card__label { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.01em; color: #111517; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: 16px; background: #0B6E69; color: #FFFFFF; font-size: 16px; font-weight: 600; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:not(.c-btn--secondary):not(.c-btn--danger) { min-height: 52px; border-radius: 999px; background: #0B6E69; color: #FFFFFF; font-size: 16px; font-weight: 600; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep .c-btn:is(.c-btn--secondary, .c-btn--danger) { border-radius: 22px; background: #F0F2F3; box-shadow: none; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .b-keep.eb-keep > .em-account-stack > .c-note { padding: 0 6px; font-size: 13px; line-height: 18px; color: #6A7176; }
 }

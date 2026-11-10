@@ -13,6 +13,13 @@ import { Suspense, type ReactNode } from "react";
 import { Temporal } from "@js-temporal/polyfill";
 import { readReports } from "@/lib/reports/service";
 import type { SessionMutationProof } from "@/lib/shift-changes/types";
+import { ChartBarIcon } from "@phosphor-icons/react/dist/ssr/ChartBar";
+import { MegaphoneSimpleIcon } from "@phosphor-icons/react/dist/ssr/MegaphoneSimple";
+import { WalletIcon } from "@phosphor-icons/react/dist/ssr/Wallet";
+import { SparkleIcon } from "@phosphor-icons/react/dist/ssr/Sparkle";
+import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
+import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/ssr/SlidersHorizontal";
+import { QuestionIcon } from "@phosphor-icons/react/dist/ssr/Question";
 import { CorpAvatar, CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { PortalSignout } from "@/components/portal-signout";
 import { getWorkspace } from "@/lib/data/workspaces";
@@ -100,9 +107,13 @@ export default async function MorePage() {
   const has = (href: string) => navigation.some(entry => entry.href === href);
   const label = (href: string, fallback: string) => navigation.find(entry => entry.href === href)?.label ?? fallback;
   const owner = session.role === "OWNER";
-  // Nov 1 upscale (board O-More): no row icons; a row may end in a grey value before its chevron ("24 h this week").
+  // Review B1 (NV-099): every navigation row leads with its Phosphor bold icon (a tinted circle, as Team and Timecards rows
+  // do) and ends with its chevron; a row may end in a grey value before the chevron ("24 h this week").
+  const rowIcons: Record<string, ReactNode> = { "/app/reports": <ChartBarIcon weight="bold" />, "/app/updates": <MegaphoneSimpleIcon weight="bold" />,
+    "/app/my-pay": <WalletIcon weight="bold" />, "/app/ai-manager": <SparkleIcon weight="bold" />, "/app/settings": <GearSixIcon weight="bold" />,
+    "/app/schedule/settings": <SlidersHorizontalIcon weight="bold" />, "/app/help": <QuestionIcon weight="bold" /> };
   const row = (href: string, title: string, value?: ReactNode) =>
-    <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" one chevron /></li>;
+    <li key={href}><CorpRow href={href} title={title} value={value} valueTone="soft" icon={rowIcons[href]} one chevron /></li>;
   const settings = owner && pathEnabled("/app/settings", brand.modules);
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
@@ -135,7 +146,7 @@ export default async function MorePage() {
       </CorpRows>
     </CorpCard></CorpSection>
     <CorpSection ariaLabel="Sign out"><CorpCard as="div">
-      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-row--danger c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
+      <PortalSignout className="c-more__signout"><button type="submit" className="c-row c-row--one c-more__signout-row"><span className="c-row__main"><span className="c-row__title">Sign out</span></span></button></PortalSignout>
     </CorpCard></CorpSection>
   </CorpPage>;
 }

@@ -568,7 +568,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
                 extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}
-                end={hours?<><b className="c-num">{hours}</b><span>Recorded</span></>:undefined} chevron={!hours}/>;
+                end={hours?<><b className="c-num">{hours}</b><span>Recorded</span></>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}
           <BCard label="Time tools"><BList label="Time tools">

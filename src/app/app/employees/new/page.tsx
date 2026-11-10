@@ -12,6 +12,9 @@ import { createEmployeeFormAction } from "@/app/app/employees/actions";
 
 import {NewEmployeeForm} from "@/components/company-access/new-employee-form";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Add employee" };
+
 const errors: Record<string, string> = {
   permission: "Only an Owner can add another Owner.",
   save: "Couldn’t add this person. Check that the employee ID and email aren’t already in use.",

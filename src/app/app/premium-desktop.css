@@ -253,7 +253,13 @@ html body .app-shell.nevora-portal.nevora-portal:not(.employee-shell) .page-fram
 
 /* Round 1, interaction fixes. */
 /* IS-P4-14: a skip link to the page, the first Tab stop on desktop; shown only while focused. Phones don't need it. */
-.app-shell.nevora-portal .portal-skip-link { display: none; }
+/* Review B1 (NV-017): the skip link shows on focus at every width, phones included (it was hidden under 761px). */
+html body .app-shell.nevora-portal.nevora-portal .portal-skip-link {
+  display: inline-flex; align-items: center; position: fixed; z-index: 100; top: 12px; left: 12px; min-height: 44px; padding: 0 16px;
+  border-radius: 999px; background: #FFFFFF; color: #0B6E69; font: 600 15px/1 Inter, "Inter Fallback", -apple-system, sans-serif; text-decoration: none;
+  box-shadow: var(--b-elev-2); transform: translateY(-200%);
+}
+html body .app-shell.nevora-portal.nevora-portal .portal-skip-link:focus-visible { transform: none; outline: 2px solid #0B6E69; outline-offset: 2px; }
 @media (min-width: 761px) and (not ((max-height: 430px) and (orientation: landscape) and (pointer: coarse))) {
   html body .app-shell.nevora-portal.nevora-portal .portal-skip-link {
     display: inline-flex; align-items: center; position: fixed; z-index: 100; top: 12px; left: 12px; min-height: 44px; padding: 0 var(--nv-s-4);

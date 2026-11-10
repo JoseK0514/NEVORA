@@ -49,7 +49,9 @@ it('draws Time off’s list on the phone with the same rows, links and empty wor
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: [request(PENDING, 'PENDING', '2026-11-12', '2026-11-14')]}};
   const html = plain(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>)), b = onlyB(html);
   expect(b).toContain('>Time off</h1>');expect(b).toContain('aria-current="page" href="/app/requests"');expect(b).toContain(`href="/app/requests?requestId=${PENDING}"`);
-  expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('b-chip--amber">Waiting<');expect(b).toContain('href="/app/requests?tab=new"');
+  expect(b).toContain('aria-hidden="true">·</span>Thu – Sat</span>');expect(b).toContain('<span class="b-sr">, </span>3 days</span>');expect(b).toContain('href="/app/requests?tab=new"');
+  // Review B1 (NV-280): the Waiting tab shows no Waiting chip on its rows; the row's name still ends ", Waiting".
+  expect(b).not.toContain('b-chip--amber">Waiting<');expect(b).toContain('3 days, Waiting"');
   expect(b).toContain('Open a request to see its details or withdraw it.');
   expect(withoutB(html)).toContain('c-meta">Waiting<');
   fixture.read = {view: 'timeoff', enabled: true, timeZone: 'America/New_York', data: {requests: []}};

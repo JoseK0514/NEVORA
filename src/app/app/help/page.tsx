@@ -3,7 +3,7 @@ import { requireSession } from "@/lib/auth/session";
 import { isManagerRole } from "@/lib/auth/permissions";
 import { POLICY_FACTS, SUPPORT, SUPPORT_EMAIL, policiesVisible, type Block } from "@/lib/legal/policies";
 import { BlockView } from "@/components/legal/legal-document";
-import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import { EmployeeHelpB } from "@/components/employee-b/account-b";
 import "./help.css";
@@ -17,7 +17,7 @@ function Question({ title, detail, blocks, employee }: { title: string; detail?:
   return <li><details className="c-help__q">
     <summary className={detail ? "c-row" : "c-row c-row--one"}>
       <span className="c-row__main"><span className="c-row__title">{title}</span>{detail ? <span className="c-row__detail"><span>{detail}</span></span> : null}</span>
-      <CaretRightIcon className="c-chev" weight="bold" aria-hidden="true" />
+      <CaretDownIcon className="c-chev c-chev--down" weight="bold" size={16} aria-hidden="true" />
     </summary>
     <div className="c-help__a">{blocks.map((block, index) => <BlockView key={index} block={block} context={employee ? "employee" : undefined} />)}</div>
   </details></li>;

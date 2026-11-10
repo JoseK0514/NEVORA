@@ -12,6 +12,13 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 const SheetClose = createContext<(() => void) | null>(null);
 
 /** Inside a sheet, closes it; on a full page, null. */
+/** The last input was a key press (Enter/Space) rather than a pointer: decides where an inspector panel puts focus. */
+let lastKeyboard = false;
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') lastKeyboard = true; }, true);
+  window.addEventListener('pointerdown', () => { lastKeyboard = false; }, true);
+}
+
 export function useSheetClose() {
   return useContext(SheetClose);
 }
@@ -48,7 +55,11 @@ export function QuietSheet({open, onClose, label, labelledBy, children, modal = 
         // non-modal inspector leaves focus where it was, e.g. on the person's row, so give it back when show() took it.
         const before = document.activeElement;
         node.setAttribute('data-inspector', ''); node.show();
-        if (before instanceof HTMLElement && before !== document.body && before.isConnected && !node.contains(before) && document.activeElement !== before) before.focus({preventScroll: true});
+        // Review B1 (NV-224): opened from the keyboard (Enter on the row), focus moves to the panel's heading, so its
+        // controls are next instead of after the whole table; a pointer open keeps focus on the row as before.
+        const heading = lastKeyboard ? node.querySelector<HTMLElement>('h1, h2, h3') : null;
+        if (heading) { if (!heading.hasAttribute('tabindex')) heading.tabIndex = -1; heading.focus({preventScroll: true}); }
+        else if (before instanceof HTMLElement && before !== document.body && before.isConnected && !node.contains(before) && document.activeElement !== before) before.focus({preventScroll: true});
       }
     }
     if (!open && node.open) node.close();

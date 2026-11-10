@@ -11,6 +11,9 @@ import { payrollTabs } from '@/components/payroll/payroll-tabs';
 import '../../payroll-export/payroll-page.css';
 import '../../payroll/payroll-workflow.css';
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Payroll settings" };
+
 export default async function PayrollSettingsPage({ searchParams }: { searchParams: Promise<{ open?: string | string[] }> }) {
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();

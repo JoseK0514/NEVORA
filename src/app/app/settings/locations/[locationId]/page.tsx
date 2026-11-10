@@ -9,6 +9,9 @@ import { wordPreset } from "@/lib/workspace-presentation/words";
 import { listLocationStaffingSettings } from "@/lib/data/schedule-health";
 import { listEmployees } from "@/lib/data/employees";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Location" };
+
 export default async function EditLocationPage({
   params,
 }: {

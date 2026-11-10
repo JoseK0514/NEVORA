@@ -71,12 +71,13 @@ export function HomeB(props: HomeBProps) {
 
   return <BScreen>
     <BHero big eyebrow={eyebrow} title={title} sub={<><span role="status" className="b-sr">{props.summary}</span></>}>
-      <div className="b-hrow"><span className="b-btn b-btn--glass" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
+      {/* Review B1 (NV-117): the date is a fact on the band, not a glass button. */}
+      <div className="b-hrow"><span className="b-date" aria-hidden="true"><CalendarBlankIcon size={15} weight="bold" />{props.dateLabel}</span></div>
       <BLive label="Right now" items={[
         { label: "Clocked in", dot: "live", value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
-        { label: "Late", dot: "warn", value: late ?? CORP_NO_VALUE, href: late === null ? undefined : "/app/inbox#todo-missed", aria: late === null ? undefined : `Late: ${late}. Missed clock-ins` },
-        { label: "Open shifts", value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
+        { label: "Late", dot: late ? "warn" : undefined, value: late ?? CORP_NO_VALUE, href: late === null ? undefined : "/app/inbox#todo-missed", aria: late === null ? undefined : `Late: ${late}. Missed clock-ins` },
+        { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
       ]} />
     </BHero>
     <BStack>
@@ -165,10 +166,13 @@ function ThisWeek({ week, today }: { week: HomeBWeek; today?: string }) {
     </div>
     {week.coverage ? <CoverageFigures coverage={week.coverage} label="Covered this week" /> : null}
     {week.days.length === 7 ? <>
+      {/* Review B1 (NV-107): a caption and each day's count above its bar, so the bars carry values. */}
+      <p className="b-days-cap">Shifts by day</p>
+      <div className="b-days-v" aria-hidden="true">{week.days.map(day => <span key={day.date} className="c-num">{day.shiftCount}</span>)}</div>
       <div className="b-days" role="img" aria-label={`Shifts per day: ${week.days.map(day => `${day.weekday} ${day.shiftCount}`).join(", ")}`}>
         {week.days.map(day => <i key={day.date} className={day.date === today ? "today" : undefined} style={{ height: `${Math.max(6, Math.round(day.shiftCount / max * 100))}%` }} />)}
       </div>
-      <div className="b-days-l" aria-hidden="true">{week.days.map(day => <span key={day.date}>{day.weekday.slice(0, 1)}</span>)}</div>
+      <div className="b-days-l" aria-hidden="true">{week.days.map(day => <span key={day.date}>{day.weekday.slice(0, 3)}</span>)}</div>
     </> : null}
   </BCard>;
 }

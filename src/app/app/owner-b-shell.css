@@ -48,14 +48,14 @@
 
   /* Tab bar: frosted white, a 56×30 teal pill behind the current tab's icon, 10.5px labels, a visible red count. */
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav { background: rgb(255 255 255 / 0.9) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; box-shadow: 0 -1px 0 rgb(0 0 0 / 0.06) !important; }
-  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: 8px !important; color: #7D868B !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link { position: relative !important; gap: 3px !important; padding-top: 8px !important; color: #6A7176 !important; font: 500 10.5px/13px Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link::before { content: "" !important; display: block !important; position: absolute !important; top: 5px !important; left: 50% !important; width: 56px !important; height: 30px !important; margin-left: -28px !important; border-radius: 15px !important; background: transparent !important; z-index: 0 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active::before { background: #E8F3F1 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link > :not(.b-tab-badge) { position: relative !important; z-index: 1 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active, :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .mobile-nav-link.active span:not(.b-tab-badge) { color: #0B6E69 !important; font-weight: 600 !important; }
   :is(#c-root, html) :is(#c-root, body) .app-shell.app-shell[data-nv-corp][data-nv-b][data-nv-b] .mobile-nav .b-tab-badge {
     position: absolute !important; top: 2px !important; left: calc(50% + 4px) !important; z-index: 2 !important; display: grid !important; place-items: center !important; min-width: 18px !important; height: 18px !important; padding: 0 5px !important;
-    border-radius: 9px !important; background: #B42318 !important; color: #FFFFFF !important; font: 700 11px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 0 0 2px #FFFFFF !important;
+    border-radius: 9px !important; background: #B42318 !important; color: #FFFFFF !important; font: 700 12px/1 Inter, "Inter Fallback", sans-serif !important; box-shadow: 0 0 0 2px #FFFFFF !important;
   }
 }
 /* The badge is a phone piece; the sidebar keeps its own count. */

@@ -47,7 +47,7 @@ export function NewEmployeeForm({actorRole,locations:activeLocations,positions,a
       {actorRole==="OWNER"?<option value="OWNER">Owner</option>:null}
      </select></CorpField>
      <CorpField label="Location" htmlFor="new-location"><select id="new-location" className="c-in" name="primaryLocationId" required value={primary} onChange={event=>setPrimary(event.target.value)}>
-      <option value="" disabled>Choose one</option>
+      <option value="" disabled>Choose</option>
       {activeLocations.map(location=><option key={location.id} value={location.id}>{location.shortName}</option>)}
      </select></CorpField>
     </div>

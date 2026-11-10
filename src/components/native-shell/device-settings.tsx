@@ -30,7 +30,7 @@ function describe(p: Props) {
     const s = p.snapshot, busy = ['pending', 'loading'].includes(s.state), review = !!p.review && p.review === s.generation && !busy && !p.paused;
     const title = p.paused ? 'Device settings paused' : s.state === 'enabled' ? 'Alerts are on' : s.state === 'denied' ? 'Permission is blocked' : s.state === 'revoked' ? 'Device setup changed' : s.state === 'error' ? 'Setup needs a check' : s.state === 'unavailable' ? 'Alerts are unavailable' : busy ? 'Checking this device…' : 'Alerts are off';
     const text = p.paused ? 'Return to NEVORA to check this account and device.' : s.state === 'enabled' ? 'The NEVORA app is set up for this account. Alerts also depend on workplace and phone settings.' : s.state === 'denied' ? 'Allow NEVORA notifications in your phone settings, then check again.' : s.state === 'revoked' ? 'The server and this app could not confirm the same setup. Review app setup or turn off the previous setup.' : busy ? 'Checking permission and this app’s enrollment…' : 'Get schedule changes, request answers and updates in the NEVORA app. Your phone may ask for notification permission.';
-    const acts = !busy && !p.paused, enable = s.state === 'ready', off = !!s.generation && !review, setup = ['error', 'revoked'].includes(s.state) && !p.recover;
+    const acts = !busy && !p.paused, enable = s.state === 'ready', off = !!s.generation && !review && !p.recover, setup = ['error', 'revoked'].includes(s.state) && !p.recover;
     return { s, busy, review, title, text, acts, enable, off, setup, recover: !!p.recover && !busy && !p.paused };
 }
 /** The card view: the Owner's device popover and, in the Employee app, the presentation a phone held sideways keeps. */
@@ -67,7 +67,8 @@ function Ring({ tone, children }: { tone: 'teal' | 'red' | 'amber' | 'grey'; chi
 function ring(p: Props, busy: boolean) {
     const state = p.snapshot.state;
     if (p.paused) return <Ring tone="grey"><PauseIcon size={28} weight="bold"/></Ring>;
-    if (busy) return <Ring tone="teal"><HourglassMediumIcon size={28} weight="bold"/></Ring>;
+    // Review B1 (NV-208): checking is grey (teal means alerts are on).
+    if (busy) return <Ring tone="grey"><HourglassMediumIcon size={28} weight="bold"/></Ring>;
     if (state === 'enabled') return <Ring tone="teal"><BellRingingIcon size={28} weight="bold"/></Ring>;
     if (state === 'denied') return <Ring tone="red"><ProhibitIcon size={28} weight="bold"/></Ring>;
     if (state === 'revoked' || state === 'error') return <Ring tone="amber"><WarningIcon size={28} weight="bold"/></Ring>;
@@ -89,18 +90,21 @@ export function NativeDeviceSettingsB(p: Props) {
           <p className="nd-text">{d.text}</p>
         </div>
         {d.acts ? <div className="nd-acts">
+          {/* Review B1 (NV-320, Jose: follow the report): one primary, the red action last. */}
           {d.enable ? <BButton kind="teal" big full onClick={p.onEnable}>Turn on alerts</BButton> : null}
-          <BButton kind="quiet" big full onClick={p.onRefresh}>Check again</BButton>
-          {d.off ? <button type="button" className="b-btn b-btn--big b-btn--full eb-btn-outline-danger" data-native-review-off onClick={p.onReview}>Turn off alerts</button> : null}
+          <BButton kind={d.enable ? "quiet" : "teal"} big full onClick={p.onRefresh}>Check again</BButton>
           {d.setup ? <button type="button" className="b-btn b-btn--quiet b-btn--big b-btn--full" data-native-review-setup onClick={p.onReviewSetup}>Review app setup</button> : null}
+          {d.off ? <button type="button" className="b-btn b-btn--big b-btn--full eb-btn-outline-danger" data-native-review-off onClick={p.onReview}>Turn off alerts</button> : null}
         </div> : null}
         <BCardNote center>Your notifications always stay in NEVORA. Your phone’s settings can block app alerts.</BCardNote>
       </section>
-      {d.recover ? <div className="b-card nd-confirm" role="group" aria-label="Use this app for this account?" tabIndex={-1} data-native-confirm>
+      {d.recover ? <div className="b-card nd-confirm" role="group" aria-labelledby="nd-confirm-recover" tabIndex={-1} data-native-confirm>
+        <h2 className="nd-confirm__t" id="nd-confirm-recover">Use alerts for this account?</h2>
         <p className="nd-text">Turn on app alerts for the account you are signed in to now? This replaces any previous account’s alert setup in this app. Your other devices stay the same.</p>
         <div className="nd-acts"><BButton kind="quiet" big full onClick={p.onKeep}>Keep current setup</BButton><BButton kind="teal" big full onClick={p.onRecover}>Turn on for this account</BButton></div>
       </div> : null}
-      {d.review ? <div className="b-card nd-confirm" role="group" aria-label="Turn off alerts here?" tabIndex={-1} data-native-confirm>
+      {d.review ? <div className="b-card nd-confirm" role="group" aria-labelledby="nd-confirm-off" tabIndex={-1} data-native-confirm>
+        <h2 className="nd-confirm__t" id="nd-confirm-off">Turn off alerts here?</h2>
         <p className="nd-text">Turn off alerts for this account in this app? Your phone permission and other devices stay the same. An alert already queued by your phone may still appear.</p>
         <div className="nd-acts"><BButton kind="quiet" big full onClick={p.onKeep}>Keep current setup</BButton><button type="button" className="b-btn b-btn--big b-btn--full eb-btn-danger" onClick={p.onTurnOff}>Turn off alerts</button></div>
       </div> : null}
@@ -152,7 +156,7 @@ export function NativeDeviceSettings({ page = false }: { page?: boolean }) {
     }, []);
     const reviewing = review && review === snapshot.generation;
     useEffect(() => { if (reviewing || recover)
-        find('[data-native-confirm]')?.focus(); }, [reviewing, recover]); // eslint-disable-line react-hooks/exhaustive-deps -- find reads the current DOM
+        { const confirm = find('[data-native-confirm]'); confirm?.focus(); confirm?.scrollIntoView({ block: 'center' }); } }, [reviewing, recover]); // eslint-disable-line react-hooks/exhaustive-deps -- find reads the current DOM
     useEffect(()=>{
         if(!actionPending.current||paused||['pending','loading'].includes(snapshot.state))return;
         actionPending.current=false;

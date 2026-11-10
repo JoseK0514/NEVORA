@@ -421,7 +421,7 @@ function AppShellView({
                 aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
               >
                 <span className="nav-icon">
-                  <NavIcon name={item.icon} employee={employee} size={employee ? 20 : 18} />
+                  <NavIcon name={item.icon} employee={employee} size={20} />
                 </span>
                 <span className="nav-label">{item.label}</span>
                 <NavPending />
@@ -523,7 +523,7 @@ function AppShellView({
                   >
                     {/* Corporate (boards C-Owner, C-Employee): outline glyphs; the current tab is teal and filled (upscale S1: every
                       tab, not Home alone). Team is two people, Pay and Payroll a card, Requests a page. A Lead has the Employee's tab bar. */}
-                    <NavIcon name={tabIcon(item.icon, employee)} size={24} weight={active ? "fill" : "regular"} />
+                    <NavIcon name={tabIcon(item.icon, employee)} size={24} weight={active ? "fill" : "bold"} />
                     <span>{item.label}</span>
                     {/* Direction B: the count is visible on the tab too (phones, Owner and Manager); the label above reads it. */}
                     {needsYou !== null && !employee ? <span className="b-tab-badge" aria-hidden="true">{needsYou > 99 ? "99+" : needsYou}</span> : null}

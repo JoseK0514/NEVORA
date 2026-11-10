@@ -34,27 +34,27 @@
   /* ---------- hero: the brand teal is a place ---------- */
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero {
     position: relative; isolation: isolate; color: #FFFFFF; padding: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 60px) 0 60px;
-    background: radial-gradient(120% 90% at 100% 0%, rgb(63 179 168 / 0.45) 0%, transparent 55%), radial-gradient(90% 70% at 0% 100%, rgb(5 48 46 / 0.9) 0%, transparent 70%),
-      linear-gradient(160deg, #0E7A74 0%, #0B6E69 40%, #06403C 100%);
+    /* Review B1 (NV-003, C8): the one band, DESIGN's stops; the lighter #0E7A74 start and its highlight pushed text under AA. */
+    background: var(--b-band);
   }
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background-image: linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px);
     background-size: 100% 28px; mask-image: linear-gradient(transparent, #000 40%, transparent); -webkit-mask-image: linear-gradient(transparent, #000 40%, transparent); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen--ink .b-hero { background: radial-gradient(80% 120% at 100% 0%, rgb(63 179 168 / 0.35), transparent 60%), linear-gradient(150deg, #17302D 0%, #0C1918 100%); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen--ink .b-hero { background: var(--b-band-ink); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-glass { background: rgb(255 255 255 / 0.12); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-back { position: absolute; top: calc(var(--q-safe-top, env(safe-area-inset-top, 0px)) + 4px); left: 12px; z-index: 31; display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
-    font-size: 15px; font-weight: 600; color: rgb(255 255 255 / 0.85); }
+    font-size: 15px; font-weight: 600; color: var(--b-on-band); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-back__ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 20px; color: #FFFFFF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 14px 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-title__text { min-width: 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-title h1 { font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.03em; color: #FFFFFF; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-title--big h1 { font-size: 34px; line-height: 40px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: 15px; line-height: 20px; font-weight: 500; color: rgb(255 255 255 / 0.78); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: 2px; font-size: 14px; line-height: 19px; color: rgb(255 255 255 / 0.75); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-eyebrow { font-size: 15px; line-height: 20px; font-weight: 500; color: var(--b-on-band-2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-sub { margin-top: 2px; font-size: 14px; line-height: 19px; color: var(--b-on-band-2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-title__right { display: flex; gap: 8px; align-items: center; flex: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-hrow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 14px 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-hpad { padding: 16px 20px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-hbig { margin: 4px 0 0; font-size: 34px; line-height: 40px; font-weight: 700; letter-spacing: -0.03em; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-hkicker { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; color: rgb(255 255 255 / 0.72); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-hkicker { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; color: var(--b-on-band-2); }
 
   /* live figures on glass */
   :is(#c-root, html) .app-shell[data-nv-b] .b-live { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 16px 20px 0; border-radius: 18px; overflow: hidden; }
@@ -62,34 +62,34 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__i > :is(.b-live__a), :is(#c-root, html) .app-shell[data-nv-b] .b-live__i:not(:has(> .b-live__a)) { display: flex; flex-direction: column; gap: 2px; min-width: 0; min-height: 64px; padding: 12px 14px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__a { transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__a:active { background-color: rgb(255 255 255 / 0.08); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-live__l { display: flex; align-items: center; gap: 6px; font-size: 12.5px; line-height: 16px; color: rgb(255 255 255 / 0.72); white-space: nowrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-live__l { display: flex; align-items: center; gap: 6px; font-size: 12.5px; line-height: 16px; color: var(--b-on-band); white-space: nowrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__v { font-size: 24px; line-height: 30px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; color: #FFFFFF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { font-size: 14px; font-weight: 500; color: rgb(255 255 255 / 0.6); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { font-size: 14px; font-weight: 500; color: var(--b-on-band); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-dot { flex: none; width: 7px; height: 7px; border-radius: 4px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-dot--live { background: #7EF0C7; box-shadow: 0 0 0 3px rgb(126 240 199 / 0.25); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-dot--warn { background: #FFC46B; }
 
   /* glass controls in the hero */
   :is(#c-root, html) .app-shell[data-nv-b] .b-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); margin: 16px 20px 0; padding: 4px; border-radius: 14px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: 10px; font-size: 14px; font-weight: 600; color: rgb(255 255 255 / 0.8); white-space: nowrap; text-align: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-seg > * { display: grid; place-items: center; min-height: 36px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--b-on-band); white-space: nowrap; text-align: center; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-seg > :is([aria-current="page"], [aria-pressed="true"]) { background: #FFFFFF; color: #0B3B38; box-shadow: 0 2px 6px rgb(0 0 0 / 0.18); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-search { display: flex; align-items: center; gap: 10px; margin: 16px 20px 0; height: 46px; padding: 0 14px; border-radius: 14px; color: rgb(255 255 255 / 0.72); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-search { display: flex; align-items: center; gap: 10px; margin: 16px 20px 0; height: 46px; padding: 0 14px; border-radius: 14px; color: var(--b-on-band); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: #FFFFFF; font: 400 16px/1 Inter, "Inter Fallback", sans-serif; -webkit-appearance: none; appearance: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-search input::placeholder { color: rgb(255 255 255 / 0.72); opacity: 1; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-search input::placeholder { color: var(--b-on-band); opacity: 1; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-search:focus-within { box-shadow: inset 0 0 0 2px rgb(255 255 255 / 0.6); }
 
   /* ---------- buttons ---------- */
-  :is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-height: 36px; padding: 0 14px; border-radius: 18px;
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-height: 36px; padding: 0 14px; border-radius: 999px;
     font-size: 14px; line-height: 1; font-weight: 600; white-space: nowrap; transition-property: scale, background-color; transition-duration: 150ms; transition-timing-function: ease-out; position: relative; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn::after { content: ""; position: absolute; inset: -4px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn--teal { background: #0B6E69; color: #FFFFFF; box-shadow: 0 6px 14px -6px rgb(11 110 105 / 0.6); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn--ghost { background: #E8F3F1; color: #0B6E69; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn--quiet { background: #F0F2F3; color: #111517; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--white { min-height: 40px; padding: 0 16px; border-radius: 20px; background: #FFFFFF; color: #0B3B38; font-size: 14.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--white { min-height: 40px; padding: 0 16px; border-radius: 999px; background: #FFFFFF; color: #0B3B38; font-size: 14.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(0 0 0 / 0.45); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-btn--glass { color: #FFFFFF; background: rgb(255 255 255 / 0.12); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: 52px; border-radius: 16px; font-size: 16px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: 56px; border-radius: 18px; font-size: 17px; font-weight: 700; box-shadow: 0 12px 24px -10px rgb(11 110 105 / 0.7); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-btn:disabled { opacity: 0.55; cursor: default; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--full { display: flex; width: 100%; min-height: 52px; border-radius: 999px; font-size: 16px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn--big { min-height: 56px; border-radius: 999px; font-size: 17px; font-weight: 700; box-shadow: 0 12px 24px -10px rgb(11 110 105 / 0.7); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-btn:is(:disabled, [aria-disabled="true"]) { opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; cursor: not-allowed; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ib { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 22px; color: #FFFFFF; }
 
   /* ---------- cards lift over the hero ---------- */
@@ -157,15 +157,16 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico--red { background: #FDECEA; color: #B42318; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico--green { background: #E7F4EC; color: #1D6B45; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ico--grey { background: #F0F2F3; color: #3F464B; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-chip { display: inline-flex; align-items: center; gap: 5px; flex: none; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px; line-height: 1; font-weight: 600; white-space: nowrap; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-chip { display: inline-flex; align-items: center; gap: 5px; flex: none; height: 22px; padding: 0 8px; border-radius: 999px; font-size: 12px; line-height: 1; font-weight: 600; white-space: nowrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chip--grey { background: #F0F2F3; color: #3F464B; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chip--amber { background: #FDF3E4; color: #8A4B00; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chip--red { background: #FDECEA; color: #B42318; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chip--green { background: #E7F4EC; color: #1D6B45; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-chip--teal { background: #E8F3F1; color: #0B6E69; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--glass { background: rgb(255 255 255 / 0.16); color: #FFFFFF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--due { background: rgb(255 196 107 / 0.16); color: #FFD596; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--ok { background: rgb(126 240 199 / 0.14); color: #9BF0D6; }
+  /* Review B1 (NV-003): on the band a status chip is solid white with its status ink (glass chips read 3.6–4.4:1). */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--glass { background: #FFFFFF; color: #0B6E69; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--due { background: #FFFFFF; color: #8A4B00; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--ok { background: #FFFFFF; color: #1D6B45; }
 
   /* filter chips */
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters { display: flex; gap: 6px; padding: 14px 18px 4px; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
@@ -173,23 +174,23 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters button { display: inline-flex; align-items: center; gap: 6px; flex: none; height: 32px; padding: 0 12px; border-radius: 16px; background: #F0F2F3; color: #3F464B; font-size: 13.5px; font-weight: 600; position: relative; transition-property: background-color, color; transition-duration: 150ms; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters button::after { content: ""; position: absolute; inset: -6px 0; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters button b { font-weight: 700; opacity: 0.7; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-filters button[aria-pressed="true"] { background: #111517; color: #FFFFFF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-filters button[aria-pressed="true"] { background: #E8F3F1; color: #0B6E69; box-shadow: inset 0 0 0 1.5px #0B6E69; } /* Review B1 (NV-266): selected is teal-50 with teal, never black. */
 
   /* the ink tile (Home's Payday) */
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 18px; border-radius: 22px; color: #FFFFFF;
     background: radial-gradient(80% 120% at 100% 0%, rgb(63 179 168 / 0.35), transparent 60%), linear-gradient(150deg, #152A28 0%, #0C1918 100%);
     box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06), 0 18px 36px -18px rgb(5 30 28 / 0.7); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__k { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgb(255 255 255 / 0.7); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__k { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--b-on-band-2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__due { padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; color: #FFD596; background: rgb(255 196 107 / 0.14); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__due--ok { color: #9BF0D6; background: rgb(126 240 199 / 0.12); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__big { font-size: 30px; line-height: 34px; font-weight: 700; letter-spacing: -0.025em; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__m { margin-top: -8px; font-size: 13.5px; color: rgb(255 255 255 / 0.66); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__m { margin-top: -8px; font-size: 13.5px; color: var(--b-on-band-2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__segs { display: flex; gap: 4px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__segs i { flex: 1; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.14); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-ink__segs i.on { background: #6FE0CF; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__r2 { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: rgb(255 255 255 / 0.75); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__btn { display: grid; place-items: center; min-height: 48px; border-radius: 14px; background: #FFFFFF; color: #0C1918; font-size: 15.5px; font-weight: 700; transition-property: scale; transition-duration: 150ms; transition-timing-function: ease-out; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__r2 { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: var(--b-on-band-2); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-ink__btn { display: grid; place-items: center; min-height: 48px; border-radius: 999px; background: #FFFFFF; color: #0C1918; font-size: 15.5px; font-weight: 700; transition-property: scale; transition-duration: 150ms; transition-timing-function: ease-out; }
 
   /* figures in a card */
   :is(#c-root, html) .app-shell[data-nv-b] .b-kv { display: flex; gap: 22px; padding: 4px 18px 16px; }
@@ -199,7 +200,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: end; gap: 6px; height: 64px; padding: 0 18px 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-days i { display: block; border-radius: 4px 4px 2px 2px; background: #D3E9E5; min-height: 4px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-days i.today { background: #0B6E69; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-days-l { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 14px; margin-top: -10px; font-size: 11.5px; color: var(--b-grey); text-align: center; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-days-l { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 14px; margin-top: -10px; font-size: 12px; color: var(--b-grey); text-align: center; }
 
   /* steps (Payroll) */
   :is(#c-root, html) .app-shell[data-nv-b] .b-steps { display: flex; flex-direction: column; padding: 4px 18px 16px; }
@@ -227,7 +228,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h > span { display: flex; align-items: center; gap: 6px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; color: #FFFFFF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); text-align: center; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 44px; padding: 6px 0; border-radius: 12px; font-size: 12px; font-weight: 500; color: rgb(255 255 255 / 0.7); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-week__d { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 44px; padding: 6px 0; border-radius: 12px; font-size: 12px; font-weight: 500; color: var(--b-on-band); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__d b { font-size: 17px; font-weight: 600; color: #FFFFFF; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i { width: 5px; height: 5px; border-radius: 3px; background: transparent; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__d i.has { background: rgb(255 255 255 / 0.55); }
@@ -244,7 +245,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-sched-done { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-sched-done b { font-size: 15px; color: var(--b-ink); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h .b-chip { margin-left: 4px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-hero .b-chip--glass { background: rgb(255 255 255 / 0.16); color: #FFFFFF; }
+  /* (white chip on the band: see above) */
   :is(#c-root, html) .app-shell[data-nv-b] .b-setup { padding: 0 2px 4px; }
   /* Setup finished: the slot renders nothing, so its card goes too. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-card:has(> .b-setup:empty) { display: none; }
@@ -253,7 +254,7 @@
 
   /* Inspection fixes (Nov 5). Tabular figures only on numbers: in Inter they also widen the hyphen ("clock - ins"). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-live__v, .b-kv b, .b-row__end b, .c-num, .b-week__d b, .b-day b, .b-pill, .b-ink__big, .b-hbig, .b-days-l, .b-step__n, .b-tab-badge) { font-variant-numeric: tabular-nums; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { color: rgb(255 255 255 / 0.74); }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-live__v small { color: var(--b-on-band); }
   /* Rows: a title stays on one line beside its chip (an ellipsis if it must), lines wrap without orphans. */
   /* A name never ends in "…": when the chip doesn't fit beside it, the chip drops under it. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
@@ -303,7 +304,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h { gap: 4px; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-week__h .b-chip { font-size: 11px; padding: 0 7px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-week__h .b-chip { font-size: 12px; padding: 0 7px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__arrow { width: 32px; height: 36px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-filters button { padding: 0 10px; font-size: 13px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-live__i > :is(.b-live__a), :is(#c-root, html) .app-shell[data-nv-b] .b-live__i:not(:has(> .b-live__a)) { padding: 12px 10px; }
@@ -330,7 +331,7 @@
   :is(#c-root, html) .app-shell[data-nv-b]:not([data-employee-mobile]) .b-seg:has(> :nth-child(4)) > * { padding: 0 4px; font-size: 13px; letter-spacing: -0.01em; }
 }
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference), (min-width: 1024px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (min-height: 501px) and (prefers-reduced-motion: no-preference), (min-width: 768px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-btn, .b-ink__btn, .b-live__a, .b-back):not(:disabled):active { scale: 0.96; }
+  :is(#c-root, html) .app-shell[data-nv-b] :is(.b-btn, .b-ink__btn, .b-live__a, .b-back):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); }
   /* A view's first load: the hero, then each card, 100ms apart (opacity, 4px blur, 12px rise over 300ms). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-hero > .b-title, :is(#c-root, html) .app-shell[data-nv-b] .b-stack > * { animation: b-enter 300ms ease-out both; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-stack > :nth-child(1) { animation-delay: 100ms; }

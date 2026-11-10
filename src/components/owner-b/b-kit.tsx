@@ -40,17 +40,18 @@ export function BHero({ title, titleId, eyebrow, sub, right, back, children, big
 export type BLiveItem = { label: ReactNode; value: ReactNode; small?: ReactNode; dot?: "live" | "warn"; href?: string; aria?: string;
   /** A short line under the figure; Employee desktop shows it (employee-b-desktop.css), phones don't. */
   meta?: ReactNode };
-/** Live figures on frosted glass (two to three columns). A figure with `href` opens its list. */
+/** Live figures on frosted glass (two to three columns). A figure with `href` opens its list. Review B1 (NV-005): a list
+ * of tiles (a link may not sit between a <dl>'s group and its term), each label read before its value. */
 export function BLive({ items, label }: { items: BLiveItem[]; label: string }) {
-  return <dl className="b-live b-glass" aria-label={label}>{items.map((item, index) => {
+  return <ul className="b-live b-glass" aria-label={label}>{items.map((item, index) => {
     const body = <>
-      <dt className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</dt>
-      <dd className="b-live__v">{item.value}{item.small ? <small>{item.small}</small> : null}</dd>
-      {item.meta ? <dd className="b-live__m">{item.meta}</dd> : null}
+      <span className="b-live__l">{item.dot ? <span className={`b-dot b-dot--${item.dot}`} aria-hidden="true" /> : null}{item.label}</span>
+      <span className="b-live__v">{item.value}{item.small ? <small>{item.small}</small> : null}</span>
+      {item.meta ? <span className="b-live__m">{item.meta}</span> : null}
     </>;
-    return item.href ? <div key={index} className="b-live__i"><Link className="b-live__a" href={item.href} aria-label={item.aria}>{body}</Link></div>
-      : <div key={index} className="b-live__i">{body}</div>;
-  })}</dl>;
+    return item.href ? <li key={index} className="b-live__i"><Link className="b-live__a" href={item.href} aria-label={item.aria}>{body}</Link></li>
+      : <li key={index} className="b-live__i">{body}</li>;
+  })}</ul>;
 }
 
 /** A segmented control on glass: links or buttons, one white thumb. */
@@ -106,12 +107,14 @@ export function BRow({ lead, title, chip, sub, end, trail, href, onClick, chevro
   </div></li>;
   if (href) return <li className="b-li"><Link className={`${cls} b-row--link`} href={href} aria-label={label}>{body}</Link></li>;
   if (onClick) return <li className="b-li"><button type="button" className={`${cls} b-row--link`} aria-label={label} onClick={onClick}>{body}</button></li>;
-  return <li className="b-li"><div className={cls} aria-label={label}>{body}</div></li>;
+  return <li className="b-li"><div className={cls} role={label ? "group" : undefined} aria-label={label}>{body}</div></li>;
 }
 
 export type BTone = "grey" | "amber" | "red" | "green" | "teal";
 export function BChip({ tone = "grey", children, label }: { tone?: BTone; children: ReactNode; label?: string }) {
-  return <span className={`b-chip b-chip--${tone}`} aria-label={label}>{children}</span>;
+  // Review B1 (NV-111): aria-label on a plain span is ignored, so a longer meaning is screen-reader text.
+  return label ? <span className={`b-chip b-chip--${tone}`}><span aria-hidden="true">{children}</span><span className="b-sr">{label}</span></span>
+    : <span className={`b-chip b-chip--${tone}`}>{children}</span>;
 }
 
 /* Faces: initials on one of six soft tints, picked from the name so a person keeps their colour on every screen. */
@@ -134,7 +137,7 @@ export function BIcon({ tone = "teal", children }: { tone?: BTone; children: Rea
   return <span className={`b-ico b-ico--${tone}`} aria-hidden="true">{children}</span>;
 }
 
-type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass";
+type BtnKind = "teal" | "ghost" | "quiet" | "white" | "glass" | "danger";
 const btn = (kind: BtnKind, full?: boolean, big?: boolean) => `b-btn b-btn--${kind}${full ? " b-btn--full" : ""}${big ? " b-btn--big" : ""}`;
 export function BButtonLink({ href, kind = "teal", full, big, children, label, prefetch }: { href: string; kind?: BtnKind; full?: boolean; big?: boolean; children: ReactNode; label?: string; prefetch?: boolean }) {
   return <Link className={btn(kind, full, big)} href={href} aria-label={label} prefetch={prefetch}>{children}</Link>;

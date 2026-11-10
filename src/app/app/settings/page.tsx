@@ -12,6 +12,9 @@ import { listClockerDevices } from "@/lib/clocker/devices.server";
 import { CorpCard, CorpNav, CorpPage, CorpRow, CorpRows, CorpSection, CorpTitle } from "@/components/corp/corp";
 import "./settings-corp.css";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Settings" };
+
 /** The one place for the company's settings (Owner premium A9). Corporate cards with their group's label above them (R5), one-line
  * 15/400 rows, each with its current value. A count of zero says "None yet" instead of a bare 0. Your profile and the
  * notification feed live in More and the top bar, so they are not repeated here. */
@@ -37,8 +40,9 @@ export default async function SettingsPage() {
   const inUse = devices?.filter(device => device.state === "ACTIVE").length ?? 0;
   const tablets = devices === null ? null : waiting ? `${waiting} not set up` : inUse || 0;
   const count = (value: number | null | undefined) => value === null || value === undefined ? undefined : value === 0 ? "None yet" : String(value);
-  const row = (href: string, title: string, value?: string | number | null) => pathEnabled(href, presentation.modules)
-    ? <li key={href}><CorpRow href={href} title={title} one value={value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone="soft" chevron /></li> : null;
+  // Review B1 (NV-247): something waiting ("1 not set up") reads amber; plain counts stay grey.
+  const row = (href: string, title: string, value?: string | number | null, tone: "soft" | "amber" = "soft") => pathEnabled(href, presentation.modules)
+    ? <li key={href}><CorpRow href={href} title={title} one value={value === null || value === undefined ? undefined : typeof value === "number" ? count(value) : value} valueTone={tone} chevron /></li> : null;
   return (
     <CorpPage className="c-settings c-page--narrow" labelledBy="settings-title">
       <CorpNav back={{ href: "/app/more", label: "More" }} title="Settings" titleId="settings-nav-title" phoneOnly />
@@ -61,7 +65,7 @@ export default async function SettingsPage() {
       </CorpCard></CorpSection>
       <CorpSection id="settings-clocker" label="Clocker"><CorpCard as="div">
         <CorpRows label="Clocker">
-          {row("/app/settings/clocker", "Clocker tablets", tablets)}
+          {row("/app/settings/clocker", "Clocker tablets", tablets, waiting ? "amber" : "soft")}
           {row("/app/settings/clocker/pins", "Clocker PINs")}
           {row("/app/settings/clocker/photos", "Punch photos")}
           {/* Team's "Clocker PIN" row used to open this by mistake (A2); its place is with the other Clocker tools. */}

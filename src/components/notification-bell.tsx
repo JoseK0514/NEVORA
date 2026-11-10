@@ -43,7 +43,7 @@ export function NotificationBell({authority}:{authority:string}) {
  const state={refreshing};
  const label=ready?`Notifications, ${partial?'at least ':''}${count} unread in your recent inbox`:state.refreshing?'Notifications, checking updates':'Notifications, current count unavailable';
  return <Link href="/app/notifications" className="portal-notification-bell" aria-current={pathname==='/app/notifications'?'page':undefined} aria-label={label} title={label} data-state={ready?'ready':state.refreshing?'loading':'unavailable'}>
-  <BellSimpleIcon className="nb-simple" size={22} weight="regular" aria-hidden="true" focusable="false"/>
+  <BellSimpleIcon className="nb-simple" size={22} weight="bold" aria-hidden="true" focusable="false"/>
   {/* Direction B phones draw the bold bell on the teal hero (owner-b-shell.css); everywhere else it stays hidden. */}
   <BellIcon className="nb-bold" size={22} weight="bold" aria-hidden="true" focusable="false"/>
   {typeof count==='number'&&count>0?<span className="portal-notification-count" aria-hidden="true">{count}{partial?'+':''}</span>:!ready&&!state.refreshing?<span className="portal-notification-unavailable" aria-hidden="true">—</span>:null}

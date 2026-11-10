@@ -326,12 +326,13 @@ it.each([['EMPLOYEE','Employee'],['OWNER','Owner'],['MANAGER','Manager']] as con
  expect(menu.indexOf('portal-account-signout')).toBeGreaterThan(menu.lastIndexOf('nevora-action-menu-divider'));
 });
 
-it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','clock']] as const)('fills the current %s tab icon and keeps the others regular',(role,pathname,icon)=>{
+// Review B1 (NV-118): inactive tabs are Phosphor bold (the one weight), the current tab is filled.
+it.each([['EMPLOYEE','/app/schedule','schedule'],['OWNER','/app/timecards','clock']] as const)('fills the current %s tab icon and keeps the others bold',(role,pathname,icon)=>{
  const {mobile}=render(role,pathname);
  const active=mobile.split('class="mobile-nav-link active"')[1].split('</a>')[0];
  expect(active).toContain(renderToStaticMarkup(<NavIcon name={icon} size={24} weight="fill" />));
  const home=mobile.split('href="/app"')[1].split('</a>')[0];
- expect(home).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={24} weight="regular" />));
+ expect(home).toContain(renderToStaticMarkup(<NavIcon name="dashboard" size={24} weight="bold" />));
 });
 
 // Upscale (Nov 1): the in-app Help page and the signed-in "not found" page belong to no tab or sidebar entry.

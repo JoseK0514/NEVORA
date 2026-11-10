@@ -76,7 +76,7 @@ export function EmployeeDirectory({ employees, visibleEmployees, locations, filt
         actions={<CorpButtonLink href="/app/employees/new" size="md"><Plus className="c-ic c-ic--s" weight="bold" aria-hidden="true" />{`Add ${person}`}</CorpButtonLink>} />
       <EmployeeDirectoryFilters className="c-team-search">
         {/* Without scripts, Enter and this button apply the search; with scripts it applies as you type (IS-35). */}
-        <button type="submit" name="status" value={filters.status} className="c-sr" data-apply="">Apply search</button>
+        <button type="submit" name="status" value={filters.status} className="c-sr" data-apply="" tabIndex={-1}>Apply search</button>
         {filters.role ? <input type="hidden" name="role" value={filters.role} /> : null}
         {filters.location ? <input type="hidden" name="location" value={filters.location} /> : null}
         <label className="c-in c-team-search__field">

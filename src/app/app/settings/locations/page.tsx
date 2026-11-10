@@ -10,6 +10,9 @@ import { listLocationStaffingSettings, listCoverageWindows } from "@/lib/data/sc
 import { evaluateLocationReadiness, type LocationSetupIssueCode } from "@/lib/scheduling/location-readiness";
 import { EmptyState, SettingsFrame } from "../wave-c-kit";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Locations" };
+
 type Search = { q?: string | string[]; status?: string | string[] };
 type Filter = "all" | "setup" | "ready" | "inactive";
 const directoryPath = "/app/settings/locations";

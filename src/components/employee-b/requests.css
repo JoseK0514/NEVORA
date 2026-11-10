@@ -53,7 +53,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-inline__b:disabled { opacity: 0.55; cursor: default; }
   /* Open shifts: a pickup's outcome under its row, its buttons full width. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__acts > .eb-pickup, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-status > .eb-pickup { display: flex; flex-direction: column; gap: 8px; font-size: 13.5px; line-height: 18px; color: var(--b-ink2); }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--full { min-height: 44px; border-radius: 14px; font-size: 15px; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--full { min-height: 44px; border-radius: 999px; font-size: 15px; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-pickup .b-btn--teal { align-self: flex-start; }
   /* A row that opens a list in place (why other shifts aren't available, a request's history). */
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .eb-why > summary { list-style: none; cursor: pointer; transition-property: background-color; transition-duration: 150ms; transition-timing-function: ease-out; }

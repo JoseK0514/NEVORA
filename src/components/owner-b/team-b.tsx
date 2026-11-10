@@ -46,7 +46,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   return <BScreen>
     <BHero title="Team" titleId="b-team-title" sub={sub} right={<BButtonLink href="/app/employees/new" kind="white" label={`Add ${person_word}`}><PlusIcon size={17} weight="bold" aria-hidden="true" />Add</BButtonLink>}>
       <EmployeeDirectoryFilters className="b-search b-glass">
-        <button type="submit" name="status" value={status} className="b-sr" data-apply="">Apply search</button>
+        <button type="submit" name="status" value={status} className="b-sr" data-apply="" tabIndex={-1}>Apply search</button>
         {searchHidden}
         <MagnifyingGlassIcon size={19} aria-hidden="true" />
         <label className="b-search__in"><span className="b-sr">{`Search ${lowerPeople}`}</span><EmployeeSearchInput query={query} placeholder="Search by name or position" /></label>

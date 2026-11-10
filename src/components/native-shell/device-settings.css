@@ -37,3 +37,5 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm .nd-acts { grid-auto-flow: column; grid-auto-columns: minmax(200px, max-content); justify-content: end; }
 }
 :is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-card > .nd-state:last-child { padding-bottom: 22px; }
+/* Review B1 (NV-210): each confirmation has a visible heading that names it. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .nd-confirm__t { margin: 0 0 6px; font-size: 17px; line-height: 22px; font-weight: 700; color: #111517; }

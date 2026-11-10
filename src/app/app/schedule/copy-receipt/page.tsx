@@ -15,6 +15,9 @@ import { Notice } from "@/components/wave-a/parts";
 import { formatDayLabel, formatTime, formatWeekRange } from "@/lib/date-utils";
 import { keepWhole } from "@/lib/keep-whole";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Copied schedule" };
+
 /* Why a shift wasn't copied. The server gives codes only; the row's person, day and time are a Codex read (CODEX.md). */
 const SKIP_REASONS: Record<string, string> = {
   TEMPLATE_UNAVAILABLE: "The template isn’t available anymore",

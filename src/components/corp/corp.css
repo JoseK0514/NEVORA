@@ -11,7 +11,7 @@
   --c-badge-neutral-bg: #EDEEEF; --c-badge-neutral-ink: #1A1C1E; --c-av-bg: #EDEEEF; --c-av-ink: #4A4F54;
   display: flex; flex-direction: column; gap: 12px; min-height: 100%; margin: 0; padding: 16px 16px 24px; box-sizing: border-box;
   background: var(--c-bg); color: var(--c-ink); font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; font-optical-sizing: auto; font-variant-numeric: tabular-nums;
+  font-size: 15px; line-height: 20px; font-weight: 400; letter-spacing: 0; font-optical-sizing: auto; font-variant-numeric: normal; /* Review B1 (NV-116): figures only on numbers (.c-num and the count classes) */
   -webkit-font-smoothing: antialiased; text-align: left;
 }
 :is(#c-root, html) .c-page *, :is(#c-root, html) .c-page *::before, :is(#c-root, html) .c-page *::after { box-sizing: border-box; }
@@ -53,7 +53,7 @@
 
 /* Links: teal 13/500 in card headers, 15/500 as a row action (R1: 600 is for titles and key figures only). */
 :is(#c-root, html) .c-link { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; margin: -13px 0; padding: 0; border: 0; background: none; color: var(--c-teal); font-size: 13px; line-height: 18px; font-weight: 500; cursor: pointer; white-space: nowrap; }
-:is(#c-root, html) .c-link:hover { color: var(--c-teal-hover); }
+@media (hover: hover) { :is(#c-root, html) .c-link:hover { color: var(--c-teal-hover); } }
 :is(#c-root, html) .c-link--l { font-size: 15px; line-height: 20px; margin: 0; }
 
 /* Rows (Nov 1 upscale, kit consistency 3): 60px for two lines, 52px for one; a divider above every row after the first.
@@ -92,6 +92,8 @@
 :is(#c-root, html) .c-pill { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 13px; line-height: 18px; font-weight: 500; white-space: nowrap; }
 :is(#c-root, html) .c-pill--teal { background: var(--c-tint); color: var(--c-teal); }
 :is(#c-root, html) .c-pill--amber { background: var(--c-amber-bg); color: var(--c-amber); }
+/* Review B1 (NV-071): done and published are green. */
+:is(#c-root, html) .c-pill--green { background: #E7F4EC; color: #1D6B45; }
 :is(#c-root, html) .c-pill--blue { height: auto; padding: 0; border-radius: 0; background: none; color: var(--c-grey); font-weight: 500; }
 :is(#c-root, html) .c-pill--blue .c-pill__dot { display: none; }
 :is(#c-root, html) .c-pill--red { background: var(--c-red-bg); color: var(--c-red); }
@@ -111,7 +113,7 @@
  * style: white, a 1px #D5D8DA inset ring, ink 15/500, radius 8. No teal outline buttons. */
 :is(#c-root, html) .c-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; min-width: 0; margin: 0; padding: 0 16px; border: 0; border-radius: 8px;
   background: var(--c-teal); color: #FFFFFF !important; font-size: 15px; line-height: 20px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; }
-:is(#c-root, html) .c-btn:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-teal-hover); }
+@media (hover: hover) { :is(#c-root, html) .c-btn:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--c-teal-hover); } }
 :is(#c-root, html) .c-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: scale(.98); }
 :is(#c-root, html) .c-btn--full { display: flex; width: 100%; }
 /* The size props (md, sm, xs) no longer change the size; they stay so callers need no change. */
@@ -119,7 +121,7 @@
 /* Secondary, neutral and danger are one secondary style; danger keeps red words (the screen's one red, a destructive act). */
 :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger) { height: 44px; padding: 0 16px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--c-field); color: var(--c-ink) !important; font-size: 15px; line-height: 20px; font-weight: 500; }
 :is(#c-root, html) .c-btn.c-btn--danger { color: var(--c-red) !important; }
-:is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F8F8; }
+@media (hover: hover) { :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):hover:not(:disabled):not([aria-disabled="true"]) { background: #F7F8F8; } }
 :is(#c-root, html) .c-btn:is(.c-btn--secondary, .c-btn--neutral, .c-btn--danger):active:not(:disabled):not([aria-disabled="true"]) { background: #EDEEEF; }
 :is(#c-root, html) .c-btn:disabled, :is(#c-root, html) .c-btn[aria-disabled="true"] { background: var(--c-neutral-bg); box-shadow: none; color: var(--c-faint) !important; cursor: default; }
 :is(#c-root, html) .c-btns { display: flex; gap: 8px; }
@@ -183,7 +185,7 @@
 :is(#c-root, html) .c-in__btn { position: absolute; right: 4px; top: 2px; height: 44px; padding: 0 10px; border: 0; background: none; color: var(--c-teal); font-size: 13px; font-weight: 600; cursor: pointer; }
 
 /* Switch 51×31 */
-:is(#c-root, html) .c-switch { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border: 0; border-radius: 16px; background: var(--c-field); appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color var(--c-dur-ui, 200ms) ease-out; }
+:is(#c-root, html) .c-switch { flex: none; position: relative; width: 51px; height: 31px; margin: 0; border: 0; border-radius: 16px; background: #8C9397; appearance: none; -webkit-appearance: none; cursor: pointer; transition: background-color var(--c-dur-ui, 200ms) ease-out; }
 :is(#c-root, html) .c-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 14px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.16); transition: transform var(--c-dur-ui, 200ms) var(--c-ease, cubic-bezier(.32, .72, 0, 1)); }
 :is(#c-root, html) .c-switch:checked, :is(#c-root, html) .c-switch[aria-checked="true"] { background: var(--c-teal); }
 :is(#c-root, html) .c-switch:checked::after, :is(#c-root, html) .c-switch[aria-checked="true"]::after { transform: translateX(20px); }
@@ -246,7 +248,7 @@
 
 /* Controls in a title row: a 44px icon button ("…") and the neutral select-like control ("All locations ▾"). */
 :is(#c-root, html) .c-page .c-icon-btn { display: grid; place-items: center; width: 44px; height: 44px; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 8px; background: none; box-shadow: none; color: var(--c-ink2); cursor: pointer; }
-:is(#c-root, html) .c-page .c-icon-btn:hover { background: var(--c-neutral-bg); }
+@media (hover: hover) { :is(#c-root, html) .c-page .c-icon-btn:hover { background: var(--c-neutral-bg); } }
 :is(#c-root, html) .c-page .c-select-btn { display: inline-flex; align-items: center; gap: 4px; height: 32px; min-height: 0; margin: 0; padding: 0 10px; border: 0; border-radius: 8px; background: #FFFFFF; box-shadow: 0 0 0 1px var(--c-field); color: var(--c-ink); font-size: 13px; line-height: 18px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 :is(#c-root, html) .c-page .c-select-btn .c-ic { width: 14px; height: 14px; }
 :is(#c-root, html) .c-note--warn { color: var(--c-amber); }
@@ -341,7 +343,7 @@
 :is(#c-root, html) .c-clickable:active > :is(td, th) { background: var(--c-row-press); transition: none; }
 /* Grey text keeps 4.5:1 on those fills and on every frame of their fade (#6B7075 is only 4.3:1 on #EDEEEF): while a row is
  * hovered or pressed its grey is one step deeper, #63686D (4.8:1 on #EDEEEF, 5.1:1 on #F2F4F4). */
-:is(#c-root, html) :is(a, button, label, summary).c-row:is(:hover, :active), :is(#c-root, html) .c-clickable:is(:hover, :active) { --c-grey: #63686D; --c-meta: #63686D; }
+@media (hover: hover) { :is(#c-root, html) :is(a, button, label, summary).c-row:is(:hover, :active), :is(#c-root, html) .c-clickable:is(:hover, :active) { --c-grey: #63686D; --c-meta: #63686D; } }
 :is(#c-root, html) .c-clickable > :is(td, th) { transition: background-color var(--c-dur-row) ease-out; }
 @media (prefers-reduced-motion: reduce) {
   :is(#c-root, html) :is(a, button, label, summary).c-row, :is(#c-root, html) .c-clickable, :is(#c-root, html) .c-clickable > :is(td, th) { transition: none; }
@@ -514,7 +516,7 @@
  * the en dash. .c-unit is a duration's unit ("8 h 2 min": h and min at 0.85em grey). */
 :is(#c-root, html) .c-num, :is(#c-root, html) .c-time { font-variant-numeric: tabular-nums; font-feature-settings: var(--c-num-features); }
 :is(#c-root, html) :is(.c-num, .c-time) { white-space: nowrap; }
-:is(#c-root, html) .c-ampm { font-size: 0.8em; font-weight: 500; letter-spacing: 0.02em; color: var(--c-ampm); }
+:is(#c-root, html) .c-ampm { font-size: 0.85em; font-weight: 500; letter-spacing: 0.02em; color: var(--c-ampm); }
 :is(#c-root, html) .c-unit { font-size: 0.85em; font-weight: 500; color: var(--c-grey); }
 /* Inside a grey or coloured line the AM/PM follows its line's colour instead of turning darker than it. */
 :is(#c-root, html) :is(.c-row__detail, .c-title__sub, .c-meta, .c-line3, .c-note, .c-stat__label, .c-row__value--soft) .c-ampm { color: inherit; }
@@ -654,3 +656,6 @@
 /* Round 5 (Nov 7, 2026): on Owner and Manager Direction B pages a person's corporate avatar takes the same tint as their
  * Direction B face (BAvatar), so they keep one colour on every screen. Other shells keep the kit's teal. */
 :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b]:not([data-employee-mobile]) .c-av.c-av--tint:not(#nvd-none):not(#nvd-none2) { background: var(--av-bg) !important; color: var(--av-fg) !important; }
+
+/* Review B1 (NV-228): the off track is #8C9397 (3.12:1 on white, it was 1.43:1), and the switch takes a 44px hit area. */
+:is(#c-root, html) .c-switch::before { content: ""; position: absolute; inset: -7px -2px; }

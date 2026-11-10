@@ -7,6 +7,9 @@ import { getWorkspace } from "@/lib/data/workspaces";
 import {ResponsiveEmployeeRequests} from "@/components/employee-mobile/requests";
 import {employeeViewAuthority} from "@/lib/employee-view-authority.server";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Requests" };
+
 export default async function RequestsHubPage() {
   const proof = await requireSessionMutationProof();
   const { employee } = proof;

@@ -12,6 +12,9 @@ import { getEmployeeManagementProfile } from '@/lib/data/employees';
 import { readEmployeeClockerPin, type EmployeePinView } from '@/lib/clocker/pins.server';
 import { readPinKey } from '@/lib/clocker/pin-crypto.server';
 import { saveClockerPinAction,checkClockerPinSaveAction } from './actions';
+
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Clocker PIN" };
 export const dynamic='force-dynamic';
 
 /** Phase 3.5 Wave A: Clocker PIN on the kit. Back names the person; a closed state says why and where to go. */

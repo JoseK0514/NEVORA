@@ -18,8 +18,7 @@ import "./clean-manager/timecards.css";
 import "./clean-manager/insights.css";
 import "./clean-manager/updates.css";
 import "./clean-manager/notifications.css";
-// Employee app, new style (Withings-inspired, Jose approved Oct 20): scoped to the shell's data-nv-e5.
-import "./employee-style.css";
+// Review B1 (NV-233): employee-style.css (data-nv-e5, retired) is no longer loaded here; only ui-preview/signature keeps it.
 // Quiet (v4, Jose approved Oct 23): the Owner and Manager phone shell. Loaded last.
 import "./quiet-shell.css";
 // Corporate (Release 1, approved Oct 26): the Owner and Manager phone header and tab bar. Loaded last.
@@ -42,6 +41,8 @@ import "@/components/employee-b/employee-b.css";
 import "./owner-b-desktop.css";
 // Employee desktop, Direction B (Jose approved Nov 8, 2026): the Employee screens on desktop. After the desktop layer.
 import "./employee-b-desktop.css";
+// Review B1 (Nov 10, 2026): shared Direction B foundation fixes (focus, targets, press, disabled, contrast). Loaded last.
+import "./b-foundation.css";
 import {communicationAuthority} from "@/lib/communications/service.server";
 import {cookies, headers} from "next/headers";
 import {createHash} from "node:crypto";

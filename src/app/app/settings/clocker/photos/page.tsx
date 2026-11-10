@@ -11,6 +11,9 @@ import {CorpCard,CorpErrorCard,CorpRow} from '@/components/corp/corp';
 import {CorpRetryButton} from '@/components/corp/corp-client';
 import '@/components/clocker-photo/photo-settings.css';
 import {readClockerPhotoPolicyAction,saveClockerPhotoPolicyAction,readClockerPhotoNoticeAction,saveClockerPhotoNoticeAction} from './actions';
+
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Punch photos" };
 export const dynamic='force-dynamic';
 export default async function ClockerPhotosPage(){
  await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();

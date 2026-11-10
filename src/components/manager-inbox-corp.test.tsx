@@ -182,9 +182,11 @@ it('Direction B (phones): glass filters with counts, Find cover on each open shi
   expect(html).toContain('<h1 id="b-todo-title" tabindex="-1">Things to do</h1>');
   expect(html).toMatch(/aria-pressed="true">All \d+<\/button>/);
   expect(html).toContain('>Shifts 1</button>');
-  expect(html).toMatch(/class="b-btn b-btn--teal"[^>]*>Find cover<\/a>/);
+  // Review B1 (NV-078): one teal primary per screen, so a row's Find cover is a ghost pill.
+  expect(html).toMatch(/class="b-btn b-btn--ghost"[^>]*>Find cover<\/a>/);
   expect(html).toContain('<input type="hidden" name="requestId" value="r1"/><input type="hidden" name="returnTo" value="inbox"/><input type="hidden" name="returnFilter" value="all"/>');
-  expect(html).toContain('aria-label="Decline time off for Ana Colon" value="DENIED" name="decision">Decline</button>');
+  // Review B1 (NV-125): Decline first asks once (Keep or Decline); the confirming Decline posts the same DENIED review.
+  expect(html).toContain('type="button" aria-label="Decline time off for Ana Colon">Decline</button>');
   // Nov 9, 2026 (leave staffing): the row offers Approve only after its published-shift check comes back clear; with no
   // check here (no browser read), its teal button is Review, the request's page that shows the overlapping shifts first.
   expect(html).not.toContain('aria-label="Approve time off for Ana Colon"');

@@ -19,7 +19,7 @@ import { isStaffingRepair, repairTitle, repairWhen } from "@/lib/time-off-staffi
  * the Inbox before it, the same review links and the same count as Home and the sidebar badge. One card per kind with its
  * count; each row opens the full review, where the decision is made (no Approve or Decline in the list). */
 
-type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" };
+type Row = { key: string; href: string; label: string; title: string; detail?: string; value?: string; valueTone?: "red" | "soft" | "amber" };
 type Group = { id: string; title: string; rows: Row[]; count?: number; aside?: { href: string; label: string; text: string } };
 type Family = { id: string; title: string; groups: Group[] };
 
@@ -133,7 +133,7 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
   // Approved leave over a published shift (Nov 9, 2026): the schedule's job, next to open shifts. "Fill Maria Rivera’s
   // shift" over its day, time and place; an older approval with no reviewer says an Owner needs to take it. No decision.
   const repair: Group = { id: "repair", title: "Shifts to fill", rows: urgent.filter(isStaffingRepair).map(item => ({ ...itemRow(item, timeZone),
-    title: repairTitle(item), detail: plain(midnight(repairWhen(item))), ...(item.ownerEmployeeId === null ? { value: "Needs an Owner", valueTone: "red" as const } : {}) })) };
+    title: repairTitle(item), detail: plain(midnight(repairWhen(item))), ...(item.ownerEmployeeId === null ? { value: "Not assigned", valueTone: "amber" as const } : {}) })) };
   const open: Group = { id: "open", title: "Open shifts", rows: of(["COVERAGE_GAP"], urgent).map(item => gapRow(item, timeZone, day))
     .map(row => ({ ...row, detail: row.detail?.replace(/ (\d+) open$/, " $1\u00a0open") })) };
   const time: Group[] = [

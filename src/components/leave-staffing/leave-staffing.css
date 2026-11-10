@@ -6,7 +6,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring svg { width: 20px; height: 20px; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=amber] { background: #FDF3E4; color: #8A4B00; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=red] { background: #FDECEA; color: #B42318; }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=green] { background: #E7F5EC; color: #1F7A45; }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=green] { background: var(--b-green-50); color: var(--b-green); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-ring[data-tone=teal] { background: #E8F3F1; color: #0B6E69; }
 
 /* The request's page: published shifts before Approve (a corporate card, which the Owner/Manager Direction B layer draws). */
@@ -33,7 +33,7 @@
   box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 10px 24px -14px rgb(16 40 38 / .22); font-family: Inter, "Inter Fallback", -apple-system, sans-serif; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair:focus { outline: none; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair:focus-visible { outline: 2px solid #0B6E69; outline-offset: 3px; }
-:is(#c-root, html) .app-shell[data-nv-b] .ls-repair[data-tone=amber] { box-shadow: inset 4px 0 0 #D98A1B, 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 10px 24px -14px rgb(16 40 38 / .22); }
+:is(#c-root, html) .app-shell[data-nv-b] .ls-repair[data-tone=amber] { box-shadow: inset 4px 0 0 var(--b-amber), 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 10px 24px -14px rgb(16 40 38 / .22); }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair__tx { display: grid; gap: 4px; min-width: 0; font-size: 14.5px; line-height: 20px; color: #3F464B; text-wrap: pretty; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair__tx b { font-size: 17px; line-height: 23px; font-weight: 700; letter-spacing: -.01em; color: #111517; }
 :is(#c-root, html) .app-shell[data-nv-b] .ls-repair__fact { color: #111517; }
@@ -52,7 +52,7 @@
 :is(#c-root, html) .app-shell[data-nv-b] .ls-own__note { margin: 0; padding: 4px 18px 16px; font-size: 14px; line-height: 20px; color: #6A7176; }
 
 /* Desktop schedule grid: the repair's person, marked (not recoloured). */
-:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__row--repair > :first-child { box-shadow: inset 3px 0 0 #D98A1B; }
+:is(#c-root, html) .app-shell[data-nv-b] .cm-grid__row--repair > :first-child { box-shadow: inset 3px 0 0 var(--b-amber); }
 
 /* X-Nevora-Failure: one notice for the page, above the tab bar on phones, at the bottom right on desktop. */
 :is(#c-root, html) .ls-failure { position: fixed; z-index: 60; left: 12px; right: 12px; bottom: calc(88px + env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;

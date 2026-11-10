@@ -33,6 +33,9 @@ import {
   isValidWeekStart, weekStartFor,
 } from "@/lib/date-utils";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Add shift" };
+
 
 const CREATE_SHIFT_FORM_ID = "create-shift-form";
 

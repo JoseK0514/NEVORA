@@ -9,6 +9,9 @@ import {SettingsFrame} from '../../../wave-c-kit';
 import {CorpButtonLink,CorpErrorCard} from '@/components/corp/corp';
 import '@/components/clocker-photo/photo-settings.css';
 import {listClockerPunchPhotosAction,readClockerPunchPhotoDetailAction,removeClockerPunchPhotoAction} from './actions';
+
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Review punch photos" };
 export const dynamic='force-dynamic';
 export default async function ClockerPunchPhotoReviewPage(){
  await requireRoles(['OWNER']);const proof=await requireSessionMutationProof();

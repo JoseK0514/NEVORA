@@ -1,0 +1,136 @@
+/* Review B1, foundation (Nov 10, 2026). Shared Direction B rules that every layer needs and that were missing or
+ * inconsistent: focus rings, touch targets, press, disabled, select spec, small contrast fixes. Loaded last in the /app
+ * layout. Selectors are only as strong as the rule they correct (an :is(#c-root, html) id step like the kit's own); a
+ * few keep !important where the desktop layer they correct is all !important (see DESIGN.MD, "CSS layering").
+ * Values come from src/app/b-tokens.css. Light only. Nothing here changes layout. */
+
+/* ---------- Focus (NV-170, NV-026, NV-145): teal on cards and the canvas, white on the band ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(input:not([type=checkbox], [type=radio], [type=hidden]), select, textarea):not(.b-search input, .q-search input):focus-visible {
+  outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset);
+}
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-hero, .c-title, .q-hd) :is(input:not([type=checkbox], [type=radio]), select):focus-visible { outline-color: var(--b-focus-on-band); }
+/* The selected day on the week strip is a white tile: its ring is teal, inside the tile. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__d:is([aria-current="date"], [aria-pressed="true"]):focus-visible { outline-color: var(--b-focus); outline-offset: -3px; }
+/* Live tiles sit in a clipped strip: the ring is an inset shadow above the neighbours, so all four edges show. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-live__a:focus-visible { outline: none; position: relative; z-index: 1; box-shadow: inset 0 0 0 2px var(--b-focus-on-band); }
+/* A card's first and last rows: the inside ring follows the card's corners. */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:first-child > li:first-child :is(.b-row--link, .b-row__hit):focus-visible { border-top-left-radius: 21px; border-top-right-radius: 21px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-card > .b-list:last-child > li:last-child :is(.b-row--link, .b-row__hit):focus-visible { border-bottom-left-radius: 21px; border-bottom-right-radius: 21px; }
+
+/* ---------- Touch targets (NV-008, NV-127, NV-265): 44px hit areas without changing the drawn size ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-week__arrow, .b-seg > *, .b-filters button, .b-ib) { position: relative; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__arrow::after { content: ""; position: absolute; inset: -4px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.b-seg > *, .b-filters button)::after { content: ""; position: absolute; inset: -6px 0; }
+/* Filter chips that scroll sideways: room at the end and a fade, so a cut chip reads as "more". */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { padding-inline-end: 18px; scroll-padding-inline-end: 18px; }
+@supports (mask-image: linear-gradient(#000, #000)) {
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-filters { mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+}
+/* Decision pairs (Decline / Approve) in the request lists: 44px, at least 96px wide, right-aligned on wide screens (NV-014). */
+:is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { height: auto; min-height: 44px; min-width: 96px; border-radius: 999px; }
+@media (min-width: 768px) {
+  :is(#c-root, html) body .app-shell[data-nv-b] .q-acts { justify-content: flex-end; }
+  :is(#c-root, html) body .app-shell[data-nv-b] .q-acts .q-bs { flex: 0 0 auto; }
+}
+/* Touch tablets (the desktop layer starts at 768px with fine-pointer sizes): a 44px floor on controls, 48px on the
+ * primary form and footer actions, and 48px schedule blocks. */
+@media (min-width: 768px) and (pointer: coarse) {
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn, .cm-kbtn, .c-select-btn, .c-icon-btn, .q-nav__l, .q-nav__r, .c-nav__back, header.mobile-header :is(button, a)) { min-height: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.c-icon-btn, header.mobile-header .portal-notification-bell) { min-width: 44px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] :is(.b-btn--full, .b-btn--big, form button[type="submit"].c-btn) { min-height: 48px !important; }
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .cm-grid :is(a, button) { min-height: 44px !important; }
+  /* The rail on touch: 48×48 links, and the labels show under the icons. */
+  :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b][data-sidebar-tablet="rail"] aside.sidebar #desktop-primary-navigation .nav-link { width: 48px !important; min-width: 48px !important; min-height: 48px !important; }
+}
+
+/* ---------- Press and disabled (NV-172, NV-232): one press, one disabled look ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn) { transition-property: scale, background-color, color; transition-duration: var(--b-dur-press); transition-timing-function: var(--b-ease-out); }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-btn, .c-btn, .q-btn, .q-bs, .wc-btn):not(:disabled, [aria-disabled="true"]):active { scale: var(--b-press-scale); transform: none; }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-btn, .q-btn, .q-bs, .wc-btn):is(:disabled, [aria-disabled="true"]) {
+  opacity: 1; background: var(--b-disabled-bg); color: var(--b-disabled-ink); box-shadow: none; scale: 1; transform: none; cursor: not-allowed;
+}
+
+/* ---------- One select (NV-099/D1 spec, NV-019): 48px, radius 14, 16px text, 1px field edge, one bold caret ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]) {
+  min-height: 48px; border-radius: var(--b-radius-field); font-size: 16px; color: var(--b-ink);
+  -webkit-appearance: none; appearance: none; padding-inline-end: 40px;
+  background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-size: 16px 16px; background-position: right 14px center;
+}
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-page, .q-page, .b-screen) select:not([multiple]):disabled { background-color: var(--b-disabled-bg); color: var(--b-disabled-ink); cursor: not-allowed; }
+
+/* ---------- Contrast on grey and tinted fills (NV-106, NV-128) ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.q-rt i, .q-rv, .c-row__value--soft, .c-row__detail) { color: var(--b-grey); }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.b-notice, .b-quiet, .eb-callout, .b-cardnote--fill) :is(.b-notice__s, small) { color: var(--b-grey-on-fill); }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-stat__value--none { color: var(--b-grey); }
+
+/* ---------- Disclosures (NV-101): a down caret in readable grey; right chevrons only navigate ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(details > summary, .q-details > summary) :is(.b-chev, .q-chev, .c-chev) { color: var(--b-grey); }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(details, .q-details)[open] > summary :is(.b-chev--down, .q-chev--down) { transform: rotate(180deg); }
+
+/* ---------- Status tones (NV-071, NV-327) ---------- */
+/* Finished setup steps are done, so green (they were teal). */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step[data-done] .b-step__n, :is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-step--done .b-step__n { background: var(--b-green-50); color: var(--b-green); }
+
+/* ---------- Numbers (NV-116, NV-246): normal figures on the page, tabular only on numbers ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] :is(main.page-frame, .c-page, .q-page) { font-variant-numeric: normal; }
+:is(#c-root, html) body .app-shell[data-nv-b] :is(.c-num, .b-live__v, .b-kv b, td, time, .b-pill, .nav-count, .q-count, .b-tab-badge, .c-count, .b-week__d b, .b-step__n) { font-variant-numeric: tabular-nums; }
+
+/* ---------- The Home date on the band is a fact, not a button (NV-117) ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-hero .b-date { display: inline-flex; align-items: center; gap: 6px; min-height: 0; padding: 0; background: none; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; font-size: 14px; font-weight: 600; color: var(--b-on-band); scale: 1; }
+
+/* ---------- Motion (NV-329): the B entrances live at the top level so every file can use them ---------- */
+@keyframes b-enter { from { opacity: 0; transform: translateY(8px); } }
+@keyframes b-fade { from { opacity: 0; } }
+
+/* ---------- Home live figures as a list (NV-005): the spans stack as the old term and value did ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live { list-style: none; padding: 0; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-live :is(.b-live__v, .b-live__m) { display: block; }
+
+/* ---------- Kit additions: the red action (Decline confirm), one row-action size (NV-078, NV-125) ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-btn--danger { background: var(--b-red); color: #FFFFFF; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-row__trail > .b-btn { min-width: 96px; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-decide > .b-btn { min-height: 44px; }
+
+/* ---------- This week chart (NV-107): caption and per-day values ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-cap { margin: 0; padding: 0 18px 6px; font-size: var(--b-fs-caption); line-height: var(--b-lh-caption); color: var(--b-grey); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-v { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; padding: 0 18px 4px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--b-ink2); text-align: center; }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-days-l { text-align: center; }
+
+/* ---------- Date and time fields (NV-065): from the keyboard, the real segments show instead of "Choose date" ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .tof-pick:has(> input:focus-visible) > span:not(.tof-pick__err) { visibility: hidden !important; }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b] .tof-pick > input:focus-visible { opacity: 1 !important; color: var(--b-ink) !important; background: #FFFFFF !important; }
+
+/* ---------- The shift sheet's actions on phones too (NV-153): bold glyphs in tinted circles, red for "I can't work" ---------- */
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 18px; background: var(--b-quiet); color: var(--b-ink2); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row--danger .c-row__icon { background: var(--b-red-50); color: var(--b-red); }
+:is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] dialog.q-sheet .c-sheet__actions .c-row__icon svg { width: 18px; height: 18px; }
+
+/* ---------- Week strip legend (NV-089) ---------- */
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend { display: flex; align-items: center; gap: 6px; margin: 6px 6px 0; font-size: 12.5px; line-height: 16px; color: var(--b-on-band); }
+:is(#c-root, html) .app-shell[data-nv-b] .b-screen .b-week__legend i { width: 6px; height: 6px; border-radius: 3px; background: #FFC46B; }
+
+/* ---------- One palette under Direction B (NV-229, NV-106, C10): the corporate and Quiet layers read B's values ----------
+ * The older kits keep their own token names; under the B shell they point at the B tokens, so an element B doesn't repaint
+ * shows B's ink, grey, line and canvas (not Quiet's warm greys or corp's slightly different ink). Fills and chevrons that
+ * carried meaning get readable greys (the chevron was 1.9:1). */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-page {
+  --c-ink: var(--b-ink); --c-ink2: var(--b-ink2); --c-grey: var(--b-grey); --c-line: var(--b-line); --c-bg: var(--b-canvas);
+  --c-teal: var(--b-teal); --c-tint: var(--b-teal-50); --c-amber: var(--b-amber); --c-amber-bg: var(--b-amber-50); --c-red: var(--b-red); --c-red-bg: var(--b-red-50);
+  --c-field: var(--b-field-edge);
+}
+:is(#c-root, html) body .app-shell[data-nv-b] .q-page {
+  --q-ink: var(--b-ink); --q-grey: var(--b-grey); --q-soft: var(--b-grey); --q-chev: var(--b-grey); --q-line: var(--b-line); --q-fill: var(--b-quiet);
+  --q-teal: var(--b-teal); --q-red: var(--b-red); --q-body: var(--b-ink2); --q-tab: var(--b-grey); --q-tint: var(--b-teal-50); --q-tint-ink: var(--b-teal);
+  --q-tog-off: var(--b-field-edge);
+}
+
+/* ---------- Help (NV-129, NV-101, NV-269): white question rows with a down caret that turns; answers 15/22 #3F464B;
+   inline links reach a 44px line box ---------- */
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary { background: #FFFFFF; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { color: var(--b-grey); transition: rotate var(--b-dur-press) var(--b-ease-out); }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__q[open] > summary .c-chev--down { rotate: 180deg; }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__a, :is(#c-root, html) body .app-shell[data-nv-b] .c-help__a :is(p, li) { font-size: 15px; line-height: 22px; color: var(--b-ink2); }
+:is(#c-root, html) body .app-shell[data-nv-b] .c-help__a a { display: inline-block; padding-block: 11px; margin-block: -11px; font-size: inherit; }
+@media (prefers-reduced-motion: reduce) { :is(#c-root, html) body .app-shell[data-nv-b] .c-help__q > summary .c-chev--down { transition: none; } }

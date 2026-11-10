@@ -20,6 +20,9 @@ import {
   saveTemplateAction,
 } from "@/app/app/schedule/templates/actions";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Templates" };
+
 export default async function ScheduleTemplatesPage({
   searchParams,
 }: {
@@ -46,7 +49,7 @@ export default async function ScheduleTemplatesPage({
   const hasFeedback = Boolean(params.error || params.saved || params.archived || params.applied !== undefined);
 
   // Release 1 (board O-Templates): "‹ Schedule  Week templates", how many weeks are saved, then a card per template (its
-  // name, how many shifts, Archive and Apply to this week), then Save this week. The first Apply is the page's one primary.
+  // name, how many shifts, Archive and Apply to this week), then New template (Review B1, NV-084: a teal Save template, not the grey that reads as disabled).
   const shortWeek = compactWeek(weekStart);
   return (<ScopedReadFrame observation={source}>
     <QuietPage className="q-templates">
@@ -82,8 +85,8 @@ export default async function ScheduleTemplatesPage({
       </ul> : null}
 
       <section className="q-list wc-tcard" aria-labelledby="st-save-title" id="st-save">
-        <div className="wc-cardhead"><h2 id="st-save-title">Save this week</h2><span className="wc-meta" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>{shortWeek}</span></div>
-        <ActionForm action={saveTemplateAction} className="q-template-form wc-tcard__body" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save this week", pendingLabel: "Saving…", className: "wc-btn wc-btn--sec wc-btn--full" }}>
+        <div className="wc-cardhead"><h2 id="st-save-title">New template</h2><span className="wc-meta" aria-label={`Week of ${keepWhole(`${weekLabel}, ${weekStart.slice(0, 4)}`)}`}>{shortWeek}</span></div>
+        <ActionForm action={saveTemplateAction} className="q-template-form wc-tcard__body" failure="Template not saved. Check your connection and try again; your name is kept." submit={{ label: "Save template", pendingLabel: "Saving…", className: "wc-btn wc-btn--full" }}>
           <input type="hidden" name="weekStart" value={weekStart} />
           <div className="q-fl">
             <label htmlFor="st-template-name">Name</label>

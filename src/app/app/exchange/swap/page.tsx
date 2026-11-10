@@ -17,6 +17,9 @@ import {
   listSwapTargets,
 } from "@/lib/data/exchanges";
 
+/** Review B1 (NV-022): the page title in the tab and for screen readers. */
+export const metadata = { title: "Swap or offer a shift" };
+
 
 export default async function SwapPage({
   searchParams,

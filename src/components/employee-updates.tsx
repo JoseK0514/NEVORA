@@ -89,6 +89,8 @@ export function EmployeeUpdatesView({list, mode, paused, refreshing, unavailable
       {signedOut ? <Link className="q-btn q-btn--sec" href="/login">Sign in</Link> : unavailableReason ? <button type="button" className="q-btn q-btn--sec" disabled={paused} aria-disabled={busy || undefined} onClick={() => { if (!busy) onRefresh(); }}>Try again</button> : null}</div>
      : visible.length ? <ul className="q-list updates-list" style={{ marginTop: 16 }}>{visible.map(item => <li key={item.id}><Link className="q-row" href={'/app/updates/' + item.id} prefetch={false}>
        <span className="q-rt"><b>{item.title}</b><i><time dateTime={item.publishedAt}>{day(item)}</time>{` · ${readLine(item)}`}</i></span>
+       {/* Review B1 (NV-097): the update that needs a reply says so in amber, as the segment's count does. */}
+       {inReviewGroup(item) ? <span className="c-pill c-pill--amber">Needs reply</span> : null}
        <CaretRightIcon className="q-chev" aria-hidden="true" />
       </Link></li>)}</ul>
      : <div className="c-page c-embed updates-empty" role="status"><CorpEmpty title={filter === 'all' ? 'No updates yet' : 'Nothing needs a reply'}

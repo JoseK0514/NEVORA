@@ -588,6 +588,9 @@ html body .app-shell[data-nv-quiet] .route-skeleton > :not(.q-skel-page):not(.sr
 html body .app-shell[data-nv-quiet] .route-skeleton { display: block !important; max-width: none !important; margin: 0 !important; padding: 0 !important; gap: 0 !important; }
 html body .app-shell[data-nv-quiet] .portal-route-state[data-checking] { max-width: none; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 html body .app-shell[data-nv-quiet] .portal-route-state[data-checking] > :not(.q-skel-page) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* Review B1 (NV-010): while the check runs the phone shows only the skeleton, so its refresh button leaves the tab order too
+ * (it was clipped to 1px but still focusable). The button is back once the view is paused or stuck. */
+html body .app-shell[data-nv-quiet] .portal-route-state[data-checking] > .button { display: none; }
 :is(#q-root, html) .q-skel__nav { height: 44px; margin-top: var(--q-safe-top, env(safe-area-inset-top, 0px)); }
 :is(#q-root, html) .q-skel__title { padding: 4px 20px 0; }
 :is(#q-root, html) .q-skel__title i { display: block; width: 46%; height: 34px; border-radius: 8px; background: var(--q-fill); }
@@ -603,24 +606,12 @@ html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) { m
 html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) h2 { margin: 0; font-size: 20px; line-height: 25px; font-weight: 600; letter-spacing: -.4px; }
 html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { margin: 4px 0 0; font-size: 15px; line-height: 20px; color: #6B6B6B; }
 html body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { display: flex; align-items: center; justify-content: center; width: 100%; height: 50px; margin-top: 16px; border: 0; border-radius: 12px; background: #F2F2F0; box-shadow: none; color: #111413; font-size: 17px; font-weight: 600; }
-html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) .button { background: #1C1C1E; color: #F2F2F0; }
-html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) p { color: #9A9A96; }
-html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([data-checking]) h2 { color: #F2F2F0; }
 :is(#q-root, html) .q-skel__rows i + i { width: 74%; height: 12px; background: var(--q-skel2); }
 
 /* Dark (v5 "One look", approved Oct 24, 2026): every role follows the phone. True black, lifted greys and one lifted
  * teal for text and the active tab; teal fills keep white text (5.9:1); a selected segment sits lighter than its track.
  * Only tokens change here; the id weight in :is() matches the kit's own selectors. */
-:is(#q-root, html)[data-theme="dark"] .q-page {
-  --q-bg: #000000; --q-ink: #F2F2F0; --q-grey: #9A9A96; --q-soft: #8E8E93; --q-faint: #5A5A5E; --q-chev: #5A5A5E;
-  --q-line: #262628; --q-fill: #1C1C1E; --q-teal: #5CC8BE; --q-teal-fill: #0B6E69; --q-red: #FF6B5E; --q-av: #D6D6D3;
-  --q-press: #1C1C1E; --q-seg-on: #3A3A3C; --q-tog-off: #39393D; --q-body: #D6D6D3; --q-tab: #8E8E93; --q-border: #3A3A3C;
-  --q-skel2: #161618; --q-tint: #123C3A; --q-tint-ink: #5CC8BE;
-  color-scheme: dark;
-}
-:is(#q-root, html)[data-theme="dark"] .q-seg > [aria-current="page"], :is(#q-root, html)[data-theme="dark"] .q-seg > [aria-pressed="true"] { box-shadow: none; }
 :is(#q-root, html)[data-theme="dark"]:has(.q-auth), :is(#q-root, html)[data-theme="dark"] body:has(.q-auth) { background: #000000 !important; }
-:is(#q-root, html)[data-theme="dark"] .q-unavailable + .scoped-unavailable__refresh { color: #5CC8BE; }
 
 /* v5 One look: icon rows, tinted avatars for rows that need you, the red row, and counts. */
 :is(#q-root, html) .q-row__ic { flex: none; display: grid; color: var(--q-av); }
@@ -638,7 +629,6 @@ html[data-theme="dark"] body .app-shell[data-nv-quiet] .portal-route-state:not([
 :is(#q-root, html) .q-hello h1 { margin: 2px 0 0; color: var(--q-ink); font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: -.6px; }
 :is(#q-root, html) .q-next { display: block; margin: 24px 20px 0; padding: 20px 20px 16px; border-radius: 20px; color: #FFFFFF; text-decoration: none; background-color: #0B6E69;
   background-image: linear-gradient(160deg, #0F7C75 0%, #0B6E69 52%, #08605B 100%); box-shadow: 0 14px 28px -16px rgba(8, 96, 91, .6), 0 2px 6px -2px rgba(8, 96, 91, .25); }
-:is(#q-root, html)[data-theme="dark"] .q-page .q-next { box-shadow: none; }
 :is(#q-root, html) .q-next:focus-visible { outline: 2px solid var(--q-teal); outline-offset: 3px; }
 :is(#q-root, html) .q-next__top { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; line-height: 20px; color: rgba(255, 255, 255, .78); letter-spacing: -.1px; }
 :is(#q-root, html) .q-next__top > :last-child { color: #FFFFFF; font-weight: 600; }
@@ -680,7 +670,6 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-sheet .q-nav { position: sticky; top: 11px; z-index: 1; height: 44px; padding: 2px 20px 0; background: var(--q-bg); touch-action: none; }
 :is(#q-root, html) .q-sheet .q-nav__l { padding: 0; border: 0; background: none; font: inherit; font-size: 17px; line-height: 22px; cursor: pointer; }
 :is(#q-root, html) .q-sheet .q-hd h1 { font-size: 28px; line-height: 34px; letter-spacing: -.5px; }
-:is(#q-root, html)[data-theme="dark"] .q-page.q-sheet { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-press: #2C2C2E; --q-line: #38383A; --q-border: #48484A; --q-seg-on: #48484A; }
 @media (min-width: 768px) {
   :is(#q-root, html) dialog.q-sheet { inset: 0; width: min(540px, calc(100% - 48px)); height: auto; max-height: min(86dvh, 820px); margin: auto; border-radius: 14px; }
   :is(#q-root, html) dialog.q-sheet[data-closing], :is(#q-root, html) dialog.q-sheet { transform: none; }
@@ -728,7 +717,6 @@ html[data-q-sheet] { overflow: hidden; }
 :is(#q-root, html) .q-changes li strong { font-size: 17px; line-height: 22px; font-weight: 400; color: var(--q-ink); }
 
 /* v5 shift-change sheets (E04, E05): forms whose bar holds Send; the form's own result lines in the kit's voice. */
-:is(#q-root, html)[data-theme="dark"] .q-sheet .q-page { --q-bg: #1C1C1E; --q-fill: #2C2C2E; --q-press: #2C2C2E; --q-line: #38383A; --q-border: #48484A; --q-seg-on: #48484A; }
 :is(#q-root, html) .q-sheet .q-page { min-height: 0; padding-bottom: 0; }
 :is(#q-root, html) .q-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 :is(#q-root, html) .q-fieldset > legend.q-grp { display: block; float: left; width: calc(100% - 40px); margin-bottom: 0; padding: 0; }
@@ -861,13 +849,6 @@ html[data-q-sheet] { overflow: hidden; }
 
 /* Mobile Access v1 is light-only (frozen October 26 design). An explicit Dark choice in Profile keeps these screens
  * on the light Quiet tokens instead of mixing dark tokens into the light Access sheet (Jose approved October 27). */
-:is(#q-root, html)[data-theme="dark"]:has(#mobile-access-page), :is(#q-root, html)[data-theme="dark"] body:has(#mobile-access-page) { background: #FFFFFF !important; color-scheme: light; }
-html[data-theme="dark"] #mobile-access-page.q-page {
-  --q-ink: #111413; --q-grey: #6B6B6B; --q-soft: #8A8A87; --q-faint: #A3A3A0; --q-chev: #B8B8B5; --q-line: #EDEDEB;
-  --q-fill: #F2F2F0; --q-teal: #0B6E69; --q-bg: #FFFFFF; --q-teal-fill: #0B6E69; --q-press: #F7F7F6; --q-seg-on: #FFFFFF;
-  --q-border: #D6D6D3; --q-body: #3A3A38;
-  background: #FFFFFF !important; color-scheme: light;
-}
 
 /* Round 5 (Nov 7, 2026): an unread notification shows a teal dot before its chevron; read rows keep a quieter title. */
 :is(#q-root, html) .q-notif-list .q-row .q-notif-dot { flex: none; width: 9px; height: 9px; margin-left: 8px; border-radius: 5px; background: #0B6E69; }
