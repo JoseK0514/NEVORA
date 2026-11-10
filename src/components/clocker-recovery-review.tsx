@@ -116,7 +116,8 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
   // Quiet (v4, approved Oct 23): the reference, Check, the receipt when there is one, and one row to Timecards.
   const content = <SettingsFrame back={back} settingsCrumb={false} className="wc-recovery" title="Clocker recovery" summary="Check a clock-in or clock-out someone made on a tablet.">
     <ClockerOwnerRequests actorId={actorId} timeZone={timeZone} onSelect={value=>{setReference(value);setHasSelection(true);setInvalid('');selected.current=value;submitted.current=true;controller.current?.refresh();}}/>
-    <form noValidate className="wc-form" aria-label="Check a tablet code" data-guard={hydrated ? undefined : ''}
+    {/* Review F4 (NV-102): on tablets and desktop the form is one card and Check code is in its footer (phones unchanged). */}
+    <form noValidate className="wc-form wc-savecard" aria-label="Check a tablet code" data-guard={hydrated ? undefined : ''}
       onInvalidCapture={event => { event.preventDefault(); setInvalid((event.target as HTMLInputElement).validity.valueMissing ? 'Enter the code from the tablet.' : 'Enter the whole code from the tablet, with its dashes.'); (event.target as HTMLInputElement).focus(); }}
       onSubmit={event => {
         event.preventDefault();
@@ -144,7 +145,7 @@ export function ClockerRecoveryReview({actorId, timeZone, from, observation}: {a
           <p id={helpId} className="q-sr">The code on the tablet screen.</p>
         </div>
       </fieldset>
-      <button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check code" busy="Checking…"/></button>
+      <div className="wc-savefoot"><button className="q-btn" type="submit" disabled={!hydrated || pending}><ButtonLabel pending={pending} idle="Check code" busy="Checking…"/></button></div>
       <noscript><Notice tone="info">Turn on JavaScript to check a code.</Notice></noscript>
     </form>
 

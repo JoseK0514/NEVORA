@@ -81,6 +81,9 @@ export function NewLocationForm({
     <form ref={form} id="new-location-form" noValidate onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Add ${place}`} {...handlers}>
       {/* P9: Return moves to the next field and never submits; the page's Add submits. */}
       <ReturnToNext />
+      {/* Review F4 (NV-102): on tablets and desktop the fields are one card with Cancel and Add in its footer, as Add employee
+        * (phones keep them in the top bar). */}
+      <div className="wc-savecard">
       <fieldset disabled={pending || success} className="q-fieldset">
         <FieldErrors errors={errors}>
           {/* Quiet (v4, approved Oct 23): three fields and one line under them. The page's Add (top right) submits. */}
@@ -94,6 +97,11 @@ export function NewLocationForm({
             placeholder="Created for you" autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done" />
         </FieldErrors>
       </fieldset>
+      {success ? null : <div className="wc-savefoot wc-savefoot--wide">
+        <Link className="q-btn q-btn--sec" href="/app/settings/locations">Cancel</Link>
+        <button type="submit" className="q-btn" disabled={pending}>Add</button>
+      </div>}
+      </div>
       <p className="nv-sr" role="status">{pending ? `Saving your ${place}.` : ""}</p>
       {result.error ? (
         <div ref={feedback} className="wc-feedback" role="alert" tabIndex={-1}>

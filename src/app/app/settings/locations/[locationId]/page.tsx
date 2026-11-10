@@ -29,7 +29,8 @@ export default async function EditLocationPage({
   const minimum = staffing.find(setting => setting.locationId === location.id)?.minimumStaffPerShift ?? null;
   const eligible = employees ? employees.filter(employee => employee.active && employee.eligibleLocationIds.includes(location.id)).length : undefined;
   return (
-    <SettingsFrame back={{ href: "/app/settings/locations", label: words.locations }} title={location.shortName} save={{ form: "edit-location-form" }}>
+    // Review F4 (NV-102): on tablets and desktop Save is in the form card's footer; phones keep it in the top bar.
+    <SettingsFrame back={{ href: "/app/settings/locations", label: words.locations }} title={location.shortName} save={{ form: "edit-location-form", card: true }}>
       <EditLocationForm key={`${location.id}:${location.updatedAt ?? ""}`} location={location} action={updateLocationAction} words={{ location: words.location, locations: words.locations }}
         staffing={minimum === null ? undefined : `${minimum} per shift`} eligible={eligible} />
     </SettingsFrame>

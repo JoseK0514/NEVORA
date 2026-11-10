@@ -911,10 +911,10 @@
  {
   "id": "NV-102",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "decision",
-  "by": "F3",
-  "note": "Save shows only after a change; Settings Save placement and tablet bar widths need Jose.",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F4",
+  "note": "Save is a right-aligned 48px pill in its card footer on tablets and desktop (phones keep the band); Availability saves only after a change. Company policies (long page) keeps Save on the band.",
   "inCodexHandoff": false
  },
  {
@@ -1019,10 +1019,10 @@
  {
   "id": "NV-114",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "decision",
-  "by": "F2/F3",
-  "note": "Employee fields at #8C9397; Owner/Manager fields still #D5D8DA (darkening every Owner form needs Jose).",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F4",
+  "note": "Owner/Manager fields use --b-field-edge (#8C9397, 3:1); one select spec (48px, radius 14, 16px, one caret). Jose approved.",
   "inCodexHandoff": false
  },
  {
@@ -1550,10 +1550,10 @@
  {
   "id": "NV-173",
   "severity": "Medium",
-  "status": "partly",
-  "remainder": "decision",
-  "by": "B1-B7",
-  "note": "Spanish \"marcaci\u00f3n\", \"\u00bfTodo listo para la foto?\", \"Suggested:\", one \"Saved {time}.\" string, \"Connect tablet\"/\"Tablet connected\" one verb (clocker-copy.ts:6-139, clocker-receipt.tsx, clocker-setup.tsx:89-106). Kiosk buttons/headings stay Title Case (\"Check Action Status\", \"Retry Same Action\", \"Return to PIN\", \"Refresh Clock State\", \"Verify Your PIN Again\") \u2014 DESIGN.MD:751 and :1637 record keeping kiosk Title Case",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "F4",
+  "note": "Clocker buttons and headings in sentence case outside the exempt words; Spanish fixes from B3.",
   "inCodexHandoff": false
  },
  {

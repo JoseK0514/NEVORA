@@ -748,7 +748,7 @@ Verified on an owned, disposable local PostgreSQL runtime with fictional account
 #### Phase 2: language, dates and empty states (2026-10-15)
 
 The portal follows `docs/design/voice.md`.
-- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk itself is unchanged. QA scripts and tests follow the new labels.
+- **Labels:** about 80 Title Case labels moved to sentence case. Exceptions are proper nouns and acronyms (NEVORA, Clocker, PIN, ID, Apple/Google Calendar), "Sign In", and the status words shared with the public Clocker kiosk ("Clock In", "Clock Out", "On Break", "Clocked In", "Off Clock", "Try Again"). The kiosk's buttons and headings are sentence case too (NV-173, Jose, Nov 10, 2026: "Check action status", "Retry same action", "Refresh clock state", "Verify your PIN again", "Clock In recorded"); only these exempt words keep their Title Case there. QA scripts and tests follow the new labels.
 - **Links:** in-app links use a caret; the external arrow only marks links that leave NEVORA or open the Clocker URL.
 - **Dates:** people see `formatDisplayDate` ("Tue, Oct 6") and `formatDateRange` ("Sep 28 – Oct 4, 2026") from `src/lib/date-utils.ts`. Payroll runs, backlog, settings and My pay no longer show ISO dates. Freshness lines read "Updated 7:31 PM"; the employee record-details disclosure keeps exact seconds.
 - **Empty states:** `src/components/empty-state.tsx` (structure adapted from the 21st "Empty" block) is the empty-state pattern. Older full-panel variants share its look through `portal-gusto.css`.
@@ -1634,7 +1634,9 @@ Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now th
 - **Retired:** the `NEVORA_CLOCKER_UI_V2` switch (no longer read; harmless if still set) and the Signature deep-teal
   Clocker look with its Spanish second lines. Removed: `clocker-shell/setup/pin/punch/v2.module.css`, `clocker-motion.ts`,
   `CLOCKER_ES`/`<Es>`, and the Clocker's dark-mode rules. Kept from the light presentation: the complete English/Spanish
-  switch remembered per tablet, "Stay on break", and the Title Case headings and status words the scripts press.
+  switch remembered per tablet, "Stay on break", and the status words the scripts press. Kiosk buttons and headings are
+  sentence case apart from the exempt words (Clock In, Clock Out, On Break, Clocked In, Off Clock, Try Again, PIN, NEVORA,
+  Clocker; NV-173, Nov 10, 2026).
 - **Layout:** a teal band (landscape: a left panel, 320–480px; portrait and phones: across the top) with the wordmark and
   "Time clock", the company logo chip when a logo is set or else the workspace name chip, the live clock as the large
   figure (about 120px landscape) with the location pill and date under it, and the tablet status in glass at the foot.
@@ -1645,12 +1647,12 @@ Mock: scratchpad mock-clocker (37 frames, sections 1–6). Direction B is now th
   teal, a pressed key takes a teal tint. A wrong PIN: the field turns red and shakes once (220ms), the digits are already
   cleared (as before), and the message sits under the field with an icon. Too many attempts (amber hourglass) and PIN
   check unavailable or no connection (red Wi-Fi-off; red tablet for "Reconnect this tablet"; red for "could not clear")
-  replace the keypad with one state card and the existing Check Connection. No lockout countdown: the server's
+  replace the keypad with one state card and the existing Check connection. No lockout countdown: the server's
   `retryAfterSeconds` is a fixed 300, not the time left. A browser-level failure ("Failed to fetch") now reads as the
   server's own "PIN verification is unavailable. Check the connection and try again."
 - **Clock state:** the person's initial in their face tint (from the first name, the only name the kiosk has) beside
   "Hi, James."; the state chip (Off clock grey, Clocked in green, On break amber); the likeliest action leads in teal. Done
-  is a full-width 56px secondary button; Refresh Clock State and, when the tablet holds saved references, Help with a
+  is a full-width 56px secondary button; Refresh clock state and, when the tablet holds saved references, Help with a
   saved action are teal links under it. No scheduled-shift line (the clock-state read has no schedule).
 - **Recorded:** a 96px green check that draws in, the recorded time as the hero figure, and a new line (approved copy):
   "Have a good shift, {first}." / "See you next time, {first}." / "Enjoy your break." / "Welcome back." (Spanish in

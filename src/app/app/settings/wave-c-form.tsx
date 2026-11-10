@@ -182,11 +182,14 @@ export function FormActions({ children, sticky = false }: { children: ReactNode;
 /** The settings save form: the browser posts once per tap, entries stay on failure,
  * and the outcome appears just above the buttons and takes focus. */
 export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {}, submitLabel, pendingLabel = "Saving…",
-  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false }: {
+  secondary, successTitle = "Saved", showServerSuccess = true, errorTitle = "Not saved", onResult, className, sticky = false, disabled = false, label, id, topSave = false, cardSave = false }: {
   /** Quiet (v4): the form's id, so the page's top-right Save can submit it. */
   id?: string;
   /** Quiet (v4): Save lives in the page's top bar; the form shows no button of its own. */
   topSave?: boolean;
+  /** With topSave (review F4, NV-102): the fields are one card whose footer holds Save on tablets and desktop; phones keep
+   * the top bar's Save. Same form, same submit. */
+  cardSave?: boolean;
   action: (data: FormData) => Promise<ConfigurationResult>;
   children: ReactNode;
   reviewedUpdatedAt?: string;
@@ -242,10 +245,15 @@ export function SettingsForm({ action, children, reviewedUpdatedAt, messages = {
   return (
     <form noValidate id={id} onSubmit={submit} className={className ? `wc-form ${className}` : "wc-form"} aria-busy={pending} aria-label={label} data-guard={disabled ? "" : undefined} {...handlers}
       onInput={() => { if (result.error || result.success) setResult({}); }}>
-      <fieldset disabled={pending || disabled} className="q-fieldset wc-fieldset">
-        {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
-        <FieldErrors errors={errors}>{children}</FieldErrors>
-      </fieldset>
+      {(() => {
+        const fields = <fieldset disabled={pending || disabled} className="q-fieldset wc-fieldset">
+          {draftUpdatedAt !== undefined ? <input type="hidden" name="expectedUpdatedAt" value={draftUpdatedAt} /> : null}
+          <FieldErrors errors={errors}>{children}</FieldErrors>
+        </fieldset>;
+        return topSave && cardSave ? <div className="wc-savecard">{fields}
+          <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending || disabled}><ButtonLabel pending={pending} idle={submitLabel} busy={pendingLabel} /></button></div>
+        </div> : fields;
+      })()}
       <p className="nv-sr" role="status" aria-live="polite">{pending ? pendingLabel : ""}</p>
       {result.error || result.success ? (
         <div ref={feedback} tabIndex={-1} className="wc-feedback" role={result.error ? "alert" : "status"}>

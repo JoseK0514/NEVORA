@@ -13,7 +13,8 @@ export default async function NewLocationPage() {
   const words = wordPreset((await currentPresentation()).words).en;
   const place = lower(words.location);
   return (
-    <SettingsFrame title={`New ${place}`} modal={{ cancelHref: "/app/settings/locations", form: "new-location-form", submitLabel: "Add" }}>
+    // Review F4 (NV-102): on tablets and desktop Cancel and Add are in the card's footer; phones keep them in the top bar.
+    <SettingsFrame title={`New ${place}`} modal={{ cancelHref: "/app/settings/locations", form: "new-location-form", submitLabel: "Add", card: true }}>
       <NewLocationForm action={createLocationAction} words={{ location: words.location, locations: words.locations }} />
     </SettingsFrame>
   );

@@ -418,3 +418,86 @@ html body .app-shell[data-nv-b] .c-route-note__icon svg { width: 20px; height: 2
 html body .app-shell[data-nv-b] .c-route-note__text { flex: 1; min-width: 0; margin: 0; font-size: 15px; line-height: 21px; color: var(--b-ink); text-wrap: pretty; }
 html body .app-shell[data-nv-b] .c-route-note__dismiss { flex: none; display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; color: var(--b-teal); font-size: 15px; font-weight: 600; text-decoration: none; }
 html body .app-shell[data-nv-b] .c-route-note__dismiss:focus-visible { outline: var(--b-focus-width) solid var(--b-focus); outline-offset: var(--b-focus-offset); border-radius: 8px; }
+
+/* ---------- Review fix pass F4 (Nov 10, 2026; Jose approved NV-114 and NV-102). Every declaration here is !important, so
+ * the whole block is in nv-b; nothing new is unlayered. ---------- */
+@layer nv-b {
+  /* NV-114: Owner and Manager form fields take the one field edge, --b-field-edge #8C9397 (3:1 on white), drawn as a 1px
+   * border, as Employee fields already do. Focus keeps the 2px teal edge (border + 1px inset), invalid keeps the 2px red
+   * edge; the focus outline is unchanged. Only form controls: card hairlines, dividers, secondary buttons and the search
+   * fields on the band keep their own edges. Read-only and disabled fields keep their look (B5's read-only field has no
+   * edge). */
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"]), select:not([multiple]), textarea, span.c-in, label.c-in, button.c-in):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .c-in, .q-input-row, .q-select-row, .tof-pick, .c-pay__date, label[class*="earch"]) *, .c-team-search__field, .c-pins__search, .tof-pick, .q-select-row__control, .q-sr, [readonly], :disabled, [aria-disabled="true"]):not(:focus, :focus-within, [aria-invalid="true"], :has(input[aria-invalid="true"])) {
+    border: 1px solid var(--b-field-edge) !important; box-shadow: none !important; background-color: #FFFFFF !important;
+  }
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"]), select:not([multiple]), textarea, span.c-in, label.c-in, button.c-in):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .c-in, .q-input-row, .q-select-row, .tof-pick, .c-pay__date, label[class*="earch"]) *, .c-team-search__field, .c-pins__search, .tof-pick, .q-select-row__control, .q-sr, [readonly], :disabled, [aria-disabled="true"]):is(:focus, :focus-within):not([aria-invalid="true"], :has(input[aria-invalid="true"])) {
+    border: 1px solid var(--b-teal) !important; box-shadow: inset 0 0 0 1px var(--b-teal) !important; background-color: #FFFFFF !important;
+  }
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"]), select:not([multiple]), textarea, span.c-in, label.c-in, button.c-in):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .c-in, .q-input-row, .q-select-row, .tof-pick, .c-pay__date, label[class*="earch"]) *, .c-team-search__field, .c-pins__search, .tof-pick, .q-select-row__control, .q-sr, [readonly], :disabled, [aria-disabled="true"]):is([aria-invalid="true"], :has(input[aria-invalid="true"])) {
+    border: 1px solid var(--b-red) !important; box-shadow: inset 0 0 0 1px var(--b-red) !important;
+  }
+  /* The one select (B1): 48px, radius 14, 16px text (also under pointer: coarse, so iPad never zooms), one bold 16px
+   * CaretDown in #6A7176. A wrapper's own caret (.q-in__caret) steps aside so the select keeps one. */
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) select:not([multiple]):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .q-select-row) *, .q-select-row__control, .q-sr) {
+    height: 48px !important; min-height: 48px !important; box-sizing: border-box !important; border-radius: var(--b-radius-field) !important;
+    font-size: 16px !important; line-height: 20px !important; padding-inline-end: 40px !important; -webkit-appearance: none !important; appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%236A7176' d='M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important; background-size: 16px 16px !important; background-position: right 14px center !important;
+  }
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) .q-in__wrap--select > .q-in__caret { display: none !important; }
+  /* Text and date inputs share the select's 14px corner (the date input missed it). */
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) :is(input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"]), textarea, span.c-in, label.c-in, button.c-in):not(:is(header.c-title, .b-hero, .q-hd, .q-nav, .b-search, .q-search, form.c-team-search, .c-pins__search, .command-finder, .c-in, .q-input-row, .q-select-row, .tof-pick, .c-pay__date, label[class*="earch"]) *, .c-team-search__field, .c-pins__search, .tof-pick, .q-sr) {
+    border-radius: var(--b-radius-field) !important;
+  }
+  /* A select that is a row's value (How you checked) is not a field: the row's chevron is its one caret, so the select
+   * draws no edge, box or caret of its own. */
+  html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page, dialog) .q-select-row select.q-select-row__control:not([multiple]) {
+    min-height: 44px !important; height: 44px !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+    background: transparent none !important; padding: 0 4px 0 0 !important; text-align: right !important; text-align-last: right !important;
+  }
+
+  /* NV-102 (Jose: "Save at the bottom of the card"): on tablets and desktop a single-card settings tool's Save is a
+   * right-aligned 48px pill in that card's footer, under one inset divider; nothing floats on the canvas under a card, and
+   * the band keeps no second Save. .wc-savecard is the one card (the blocks inside it lose their own card look),
+   * .wc-savefoot its footer. Phones keep their own placement: there both wrappers are display: contents, and a footer
+   * marked --wide (whose phone Save is in the top bar) is hidden. */
+  @media (max-width: 767px) {
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.wc-savecard, .wc-savefoot) { display: contents !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) .wc-savefoot--wide { display: none !important; }
+  }
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b] .q-page[data-wc-save="card"] > .q-nav .q-nav__r--b,
+    html body .app-shell[data-nv-b] .q-page[data-wc-save="card"][data-q-sheet] > .q-nav .q-nav__l { display: none !important; }
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard {
+      display: block !important; margin-left: 0 !important; margin-right: 0 !important; margin-bottom: 0 !important; padding: 0 !important; border: 0 !important; border-radius: var(--b-radius-card) !important;
+      background: #FFFFFF !important; box-shadow: var(--nvd-card, var(--b-elev-1)) !important;
+    }
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard :is(.q-list, .c-card, .q-card, .c-coprof, .q-fl, fieldset) {
+      margin-left: 0 !important; margin-right: 0 !important; border: 0 !important; border-radius: 0 !important; background-color: transparent !important; box-shadow: none !important;
+    }
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard :is(.q-list, .c-card, .q-card, .c-coprof) { margin-top: 0 !important; margin-bottom: 0 !important; overflow: visible !important; }
+    /* Blocks that were cards of their own are sections of the one card; a list after a field starts under an inset divider. */
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard .q-fl + .q-list {
+      background-image: linear-gradient(var(--b-line), var(--b-line)) !important; background-position: 22px 0 !important; background-size: calc(100% - 22px) 1px !important; background-repeat: no-repeat !important;
+    }
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) .wc-savecard .wc-savefoot {
+      display: flex !important; flex-wrap: wrap !important; align-items: center !important; justify-content: flex-end !important; gap: 12px !important;
+      margin: 0 !important; padding: 14px 22px 18px !important; border: 0 !important; background: linear-gradient(var(--b-line), var(--b-line)) 22px 0 / calc(100% - 22px) 1px no-repeat !important;
+    }
+    /* One footer button: a 48px pill sized to its label, never a bar; also in the footers that already sat in their card
+     * (Punch photos, Clocker tablets), so no footer stretches to 726px on a tablet. */
+    html body .app-shell[data-nv-b][data-nv-clean] :is(.c-page, .q-page) :is(.wc-savecard .wc-savefoot, .wc-page .c-card__foot, .c-photos__foot) > :is(button, a):is(.q-btn, .c-btn, .wc-btn) {
+      flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; margin: 0 !important;
+      padding: 0 24px !important; border-radius: var(--b-radius-pill) !important; font-size: 15px !important; line-height: 20px !important;
+    }
+    /* Employee single-card forms (TB-031, EM-038): Send request and Create or Copy calendar link were full-width bars (734px
+     * on a 900px tablet, 1042px on desktop); they are right-aligned 48px pills at the card's foot. */
+    html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot { display: flex !important; flex-direction: row !important; justify-content: flex-end !important; }
+    html body .app-shell[data-nv-b] .c-page > .tof-form.b-keep .tof-foot > .c-btn {
+      flex: none !important; width: auto !important; min-width: 96px !important; height: 48px !important; min-height: 48px !important; padding: 0 24px !important; border-radius: var(--b-radius-pill) !important;
+    }
+    html body .app-shell[data-nv-b] .b-screen section.b-card[aria-labelledby="b-calendar-heading"] .eb-body > .b-btn--full {
+      display: flex !important; width: fit-content !important; min-width: 96px !important; min-height: 48px !important; margin-left: auto !important; padding: 0 24px !important;
+    }
+  }
+}

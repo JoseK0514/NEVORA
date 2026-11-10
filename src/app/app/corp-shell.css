@@ -115,7 +115,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-phone-sub { displa
  * white cards with a 1px ring and radius 12, 48px fields with radius 8, 15px body, 13px labels and Inter. */
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] {
   --nv-ink: #1A1C1E; --nv-ink-2: #4A4F54; --nv-muted: #6B7075; --nv-icon: #A7ACB1;
-  --nv-border: #E3E5E6; --nv-field-border: #D5D8DA; --nv-hairline: #EDEEEF; --nv-track: #EDEEEF; --nv-inset: #F5F6F6;
+  --nv-border: #E3E5E6; --nv-field-border: var(--b-field-edge, #8C9397); --nv-hairline: #EDEEEF; --nv-track: #EDEEEF; --nv-inset: #F5F6F6;
   --nv-bg: #F5F6F6; --nv-canvas: #FFFFFF;
   --nv-accent: #0B6E69; --nv-accent-hover: #084F4B; --nv-accent-strong: #0B6E69; --nv-accent-wash: #E6F1EF; --nv-accent-pressed: #D3EAE8;
   --nv-neutral-ink: #4A4F54; --nv-neutral-fill: #EDEEEF; --nv-review-ink: #8A4B00; --nv-review-fill: #FEF4E6;
@@ -130,7 +130,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] {
 /* Fields and buttons on the older forms, at the board's sizes. */
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select), .wa-select select, .nevora-select-shell select) {
   height: 48px !important; min-height: 48px !important; border: 0 !important; border-radius: 8px !important; background: #FFFFFF !important;
-  box-shadow: inset 0 0 0 1px #D5D8DA !important; color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important;
+  box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397) !important; color: #1A1C1E !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important;
 }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page :is(.wa-field__control > :is(input, select, textarea), .wa-select select):focus { box-shadow: inset 0 0 0 2px #0B6E69 !important; outline: none !important; }
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .c-page.wa-page .nv-btn { min-height: 44px !important; height: 44px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
@@ -164,7 +164,7 @@ html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button { min-height: 44px !important; padding: 0 16px !important; border-radius: 8px !important; font: 600 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
 /* Round 2 (R4): the one secondary style (no teal outline). */
 html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow .pw-button.pw-secondary { background: #FFFFFF !important; color: #1A1C1E !important; border: 0 !important; box-shadow: inset 0 0 0 1px #D5D8DA !important; font-weight: 500 !important; }
-html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow :is(input, select) { min-height: 48px !important; border-radius: 8px !important; border: 1px solid #D5D8DA !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
+html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .payroll-workflow :is(input, select) { min-height: 48px !important; border-radius: 8px !important; border: 1px solid var(--b-field-edge, #8C9397) !important; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; }
 
 /* ---------------------------------------------------------------------------------------------------------------------
  * Release 1 fixes (B4, Oct 31): global rules every page gets.

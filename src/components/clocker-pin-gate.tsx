@@ -123,11 +123,11 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   :<span className={styles.ring} data-tone="red"><ClockerIcon name={tone==='device'?'tablet':'offline'} size={28}/></span>;
  /* One primary action that fits the cause (Nov 10 review, NV-051, NV-052). The lockout is per tablet on the server, so the
   * screen says the tablet is paused and offers a way to still get time recorded; a tablet that must be set up again says
-  * who can do that; no connection keeps Check Connection. Every button still clears and re-checks, as before. */
+  * who can do that; no connection keeps Check connection. Every button still clears and re-checks, as before. */
  const blockedCard=error&&blocked?<div className={styles.blocked} data-clocker-blocked={tone}>{ring}
   <p role="alert" className={styles.smsg}>{paused?t('Too many wrong PINs were entered on this tablet. Wait about five minutes, or ask a manager to record your time.'):<ClockerText text={error}/>}</p>
   {tone==='device'?<p className={styles.blockedHint}>{t('Ask a manager to set up this tablet again (Settings → Clocker tablets).')}</p>:null}
-  <button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reset()}>{t(tone==='wait'?'Try Again':tone==='device'?'Check again':'Check Connection')}</button></div>:null;
+  <button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reset()}>{t(tone==='wait'?'Try Again':tone==='device'?'Check again':'Check connection')}</button></div>:null;
  // The visible count changes every second; screen readers hear the reminder twice, at 10 and 3 seconds (NV-182).
  const seconds=Math.ceil(remaining/1000),warning=Boolean(identity&&remaining<=10000&&remaining>0);
  const milestone=warning?seconds<=3?3:10:null;
@@ -141,7 +141,7 @@ export function ClockerPinGate({locationKey,timeZone='UTC',punchEnabled=false}:{
   </>:<>
    <h1 className={styles.title}>{t(paused?'This tablet is paused':'Enter your PIN')}</h1>
    {blockedCard}
-   {/* While blocked, the state card above replaces the keypad (Direction B); the form returns on Check Connection. */}
+   {/* While blocked, the state card above replaces the keypad (Direction B); the form returns on Check connection. */}
    {!blocked?<form onSubmit={submit} className={styles.pinForm}>
     <fieldset disabled={pending}>
      <label className={styles.sr} htmlFor="clocker-pin">{t("Employee PIN")}</label>

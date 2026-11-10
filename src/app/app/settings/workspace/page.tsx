@@ -26,8 +26,9 @@ export default async function WorkspacePage() {
   // with one line under the card saying why.
   const lock = <LockSimpleIcon className="c-coprof__lock" aria-hidden="true" />;
   return (
-    <SettingsFrame title="Company profile" save={{ form: "company-profile-form" }}>
-      <SettingsForm id="company-profile-form" topSave action={saveWorkspaceProfileAction} label="Company profile" submitLabel="Save" successTitle="Company profile saved" showServerSuccess={false}
+    // Review F4 (NV-102): on tablets and desktop Save is in the card's footer; phones keep it in the top bar.
+    <SettingsFrame title="Company profile" save={{ form: "company-profile-form", card: true }}>
+      <SettingsForm id="company-profile-form" topSave cardSave action={saveWorkspaceProfileAction} label="Company profile" submitLabel="Save" successTitle="Company profile saved" showServerSuccess={false}
         messages={{ name: { missing: "Enter your business name." }, timeZone: { missing: "Enter a timezone, such as America/New_York." } }}>
         {/* P9 (F9): the business name is one line; Return moves on (or closes the keyboard) and never saves. */}
         <ReturnToNext />

@@ -66,7 +66,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    </div>
    <button className="q-btn q-btn--sec" type="button" onClick={onStartAgain}>Prepare another code</button>
    <p className="q-help">Issuing another code retires any unused earlier code. The code hides when you leave this page.</p>
-  </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
+  </section>:<form noValidate onSubmit={event=>{if(!event.currentTarget.checkValidity()){event.preventDefault();return;}onSubmit(event);}} aria-busy={busy} className="wc-form wc-savecard" aria-label="Verify the employee" data-guard={hydrated?undefined:''} {...handlers}>
    <noscript><Notice tone="info">Enable JavaScript to issue a recovery code. You can still go back with the link above.</Notice></noscript>
    <ReturnToNext/>
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
@@ -99,8 +99,9 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
     action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
    {/* Review F2 (NV-249): the button stays enabled and the form checks on submit, as Add employee does. The confirmation
-     * is still required: without it nothing is sent, the switch is marked and focused, and its error shows under it. */}
-   <button className="q-btn" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
+     * is still required: without it nothing is sent, the switch is marked and focused, and its error shows under it.
+     * Review F4 (NV-102): on tablets and desktop the form is one card and this is its footer action (phones unchanged). */}
+   <div className="wc-savefoot"><button className="q-btn" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button></div>
   </form>}
   {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
    <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>

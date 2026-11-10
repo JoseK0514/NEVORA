@@ -93,9 +93,11 @@ export function EditLocationForm({ location, action, words = { location: "Locati
   }
 
   // Quiet (v4, approved Oct 23): Name and Short name, then Active, the Clocker link, staffing and who can work here as rows.
-  // The page's Save (top right) submits this form; it stays off until something changes.
+  // The page's Save (top right) submits this form; it stays off until something changes. Review F4 (NV-102): on tablets
+  // and desktop the fields and rows are one card and its footer holds the same Save (phones keep the top bar's).
   return (
     <form noValidate id="edit-location-form" onSubmit={submit} aria-busy={pending} className="wc-form" aria-label={`Edit ${place}`} data-dirty={dirty || undefined} {...handlers}>
+      <div className="wc-savecard">
       <fieldset disabled={pending} className="q-fieldset">
         <input type="hidden" name="id" value={location.id} />
         <input type="hidden" name="expectedUpdatedAt" value={location.updatedAt ?? ""} />
@@ -116,6 +118,8 @@ export function EditLocationForm({ location, action, words = { location: "Locati
           <p className="q-sr" id="edit-location-active-help">{draft.active ? "Turning this off keeps history. The Clocker stops working here." : "Inactive: new assignments and the Clocker are unavailable."}</p>
         </FieldErrors>
       </fieldset>
+      <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn" disabled={pending}>{pending ? "Saving…" : "Save"}</button></div>
+      </div>
       {result.error || result.success ? (
         <div ref={feedback} tabIndex={-1} role={result.error ? "alert" : "status"} className="wc-feedback">
           <Notice tone={result.error ? "urgent" : "done"} title={result.error ? (unconfirmed ? "Not saved yet" : "Changes not saved") : `${words.location} updated`}

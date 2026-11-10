@@ -6,7 +6,7 @@ import styles from './clocker.module.css';
 import {ClockerIcon} from './clocker-icon';
 /** Opaque references are assistance evidence, never permission to replay time. */
 /** Direction B: a small teal link ("Help with a saved action") that opens the saved references below it. Inline, it sits
- * in the ready screen's link row beside Refresh Clock State; otherwise under the state's actions.
+ * in the ready screen's link row beside Refresh clock state; otherwise under the state's actions.
  * Nov 10 review (NV-185): the panel scrolls inside itself, so opening it never stretches the page or moves the band's
  * clock; the current person's reference leads and the tablet's others wait behind "Show N more"; a locked kiosk has no app
  * to paste into, so there is no Copy reference. Ask Owner to review and its request are unchanged. */

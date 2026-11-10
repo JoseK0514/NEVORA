@@ -19,7 +19,7 @@ import {ClockerText,useClockerCopy,useClockerIntlLocale} from './clocker-languag
 import {FACE_TINTS} from '../lib/face-tint';
 import {ClockerReceipt,receiptTitles,shortTime} from './clocker-receipt';
 import {useReportTabletHealth} from './clocker-shell';
-const labels:Record<PunchAction,string>={CLOCK_IN:'Clock In',START_BREAK:'Start Break',END_BREAK:'End Break',CLOCK_OUT:'Clock Out'};
+const labels:Record<PunchAction,string>={CLOCK_IN:'Clock In',START_BREAK:'Start break',END_BREAK:'End break',CLOCK_OUT:'Clock Out'};
 const actionIcons:Record<PunchAction,ClockerIconName>={CLOCK_IN:'clock-in',START_BREAK:'break',END_BREAK:'resume',CLOCK_OUT:'clock-out'};
 /* Direction B (approved Nov 8, 2026): what the recording card says, by action. The receipt is clocker-receipt.tsx. */
 const recording:Record<PunchAction,string>={CLOCK_IN:'Clocking in {first}…',CLOCK_OUT:'Clocking out {first}…',START_BREAK:'Starting {first}’s break…',END_BREAK:'Ending {first}’s break…'};
@@ -140,7 +140,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    if(canRetirePendingPunch(pending.command,fresh)){
     reviewProof.current={commandId:pending.command.commandId,subject:fresh.subject,verificationId:fresh.verificationId};setMode('review-current');
     setMessage('No confirmation was found. This earlier request can no longer be applied. Review your current status before choosing a new action.');
-   }else{setMode('retry');setMessage('We haven’t confirmed your last punch yet. Tap Retry Same Action; it won’t punch twice.');}
+   }else{setMode('retry');setMessage('We haven’t confirmed your last punch yet. Tap Retry same action; it won’t punch twice.');}
   }catch(error){if(alive.current)failed(error,Boolean(pending));}
   finally{busy.current=false;}
  }
@@ -163,15 +163,15 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   onDone();
  }}/>;
  const entry=view?.snapshot.entry,pause=view?.snapshot.break,allowed=view?punchActions(view):[];
- // One teal action for the likeliest next step: End Break on a break, otherwise Clock Out once clocked in.
+ // One teal action for the likeliest next step: End break on a break, otherwise Clock Out once clocked in.
  const lead=(['END_BREAK','CLOCK_OUT','CLOCK_IN'] as PunchAction[]).find(action=>allowed.includes(action));
  const actions=lead?[lead,...allowed.filter(action=>action!==lead)]:allowed;
  const status=entry?.status==='ON_BREAK'?'On Break':entry?'Clocked In':'Off Clock';
  const cancelLabel=entry?.status==='ON_BREAK'?'Stay on break':'Cancel clock-out';
- const title=mode==='review-current'?'Review your current status':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock Out?':mode==='select-break'?'Choose a Break':mode==='sending'?'Recording Your Action…'
-  :mode==='recovery'||mode==='retry'?'Check Your Last Action':mode==='other-person'?'Previous Action Needs Review'
-  :mode==='auth'?'Verify Your PIN Again':mode==='loading'?'Checking Your Clock…':mode==='storage'?'Browser Storage Needed'
-  :mode==='unavailable'?'Clock State Unavailable':t('Hi, {name}.',{name:view?.firstName??''});
+ const title=mode==='review-current'?'Review your current status':mode==='success'&&receipt?receiptTitles[receipt.action]:mode==='confirm-out'?'Clock Out?':mode==='select-break'?'Choose a break':mode==='sending'?'Recording your action…'
+  :mode==='recovery'||mode==='retry'?'Check your last action':mode==='other-person'?'Previous action needs review'
+  :mode==='auth'?'Verify your PIN again':mode==='loading'?'Checking your clock…':mode==='storage'?'Browser storage needed'
+  :mode==='unavailable'?'Clock state unavailable':t('Hi, {name}.',{name:view?.firstName??''});
  const waiting=mode==='loading'||mode==='sending';
  const since=entry?(entry.status==='ON_BREAK'?pause!.breakStartAt:entry.clockInAt):null;
  // Direction B: one 64px ring per state (red stop, amber wait or check, green done, teal information).
@@ -216,14 +216,14 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    <div className={styles.panelFoot}>
     <button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={onDone}>{t("Done")}</button>
     <div className={styles.links}>
-     <button tabIndex={0} className={styles.link} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>{t("Refresh Clock State")}</button>
+     <button tabIndex={0} className={styles.link} type="button" onClick={()=>void refresh()}><ClockerIcon name="refresh" size={18}/>{t("Refresh clock state")}</button>
      {handoff(true)}
     </div>
     <p className={styles.clears}>{t("This screen clears after 30 seconds.")}</p>
    </div>
   </>:null}
   {mode==='select-break'&&view?<>
-   <p className={styles.lead}>{t("Your break doesn’t end on its own. Tap End Break when you’re back.")}</p>
+   <p className={styles.lead}>{t("Your break doesn’t end on its own. Tap End break when you’re back.")}</p>
    <div className={styles.acts}>{view.breakTypes.map(type=><button tabIndex={0} key={type.id} className={styles.act} data-kind="secondary" type="button" aria-label={t('Start {name}',{name:type.name})} onClick={()=>act('START_BREAK',type)}>
     <span className={styles.actIcon}><ClockerIcon name={breakIcon(type.category)} size={28}/></span>
     <span className={styles.actText}>{type.name}<small>{t(type.category==='REST'?'Rest':type.category==='MEAL'?'Meal':'Other')}{type.targetMinutes!==null?' · '+t('Suggested: {minutes} min',{minutes:type.targetMinutes}):''}</small></span>
@@ -248,8 +248,8 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   {mode==='storage'?<p className={styles.smsg}>{t("Don’t clear this tablet’s browser data while a punch is unconfirmed. Your manager can help check it.")}</p>:null}
   {mode==='review-current'?<div className={styles.stack}><button type="button" className={styles.btn} data-kind="primary" onClick={()=>void reviewCurrent()}>{t('Review current status')}</button>{leave}</div>:null}
   {mode==='recovery'||mode==='retry'?<div className={styles.stack}>
-   <button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Check Action Status")}</button>
-   {mode==='retry'&&pending&&view?<button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={()=>void send(pending,view)}>{t("Retry Same Action")}</button>:null}
+   <button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Check action status")}</button>
+   {mode==='retry'&&pending&&view?<button tabIndex={0} className={styles.btn} data-kind="secondary" type="button" onClick={()=>void send(pending,view)}>{t("Retry same action")}</button>:null}
    {leave}
   </div>:null}
   {mode==='unavailable'?<div className={styles.stack}><button tabIndex={0} className={styles.btn} data-kind="primary" type="button" onClick={()=>void refresh()}>{t("Try Again")}</button>{leave}</div>:null}

@@ -69,7 +69,7 @@
 /* Fields: 13/600 label, 48px white input with a 1px ring, teal focus. */
 :is(#q-root, html) .app-shell[data-nv-corp] .q-fl { margin: 16px 16px 0; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-fl > :is(label, .q-fl__label) { margin-bottom: 6px; font-size: 13px; line-height: 16px; font-weight: 600; color: #4A4F54; letter-spacing: 0; }
-:is(#q-root, html) .app-shell[data-nv-corp] .q-in { height: 48px; padding: 0 12px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5D8DA; font-size: 15px; line-height: 20px; letter-spacing: 0; }
+:is(#q-root, html) .app-shell[data-nv-corp] .q-in { height: 48px; padding: 0 12px; border-radius: 8px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); font-size: 15px; line-height: 20px; letter-spacing: 0; }
 :is(#q-root, html) .app-shell[data-nv-corp] :is(textarea.q-in, .q-in--area) { height: 112px; padding-top: 12px; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-in:is(:focus, :focus-within) { box-shadow: inset 0 0 0 2px #0B6E69; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-help { margin: 6px 16px 0; font-size: 13px; line-height: 18px; color: #6B7075; }

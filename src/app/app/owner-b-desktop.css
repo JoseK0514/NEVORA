@@ -102,8 +102,8 @@
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame :is(.c-page, .q-page).c-page--narrow { max-width: 860px !important; width: 100% !important; margin-left: 0 !important; }
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] main.page-frame :is(.c-page, .q-page) > :not(header.c-title, .q-hd, .q-nav, nav.c-pay-tabs, nav.c-week, nav.c-seg, form.c-team-search) { max-width: none !important; }
 
-    /* ---------- cards: white, 22px corners, layered shadows; a titled section is one card with its label as the head ---------- */
-    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-card, .q-list, .q-card, .wc-card, .q-group-card) {
+    /* ---------- cards: white, 22px corners, layered shadows; a titled section is one card with its label as the head; inside a review F4 save card (.wc-savecard) the lists are sections of that card ---------- */
+    :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-card, .q-list, .q-card, .wc-card, .q-group-card):not(.wc-savecard *) {
       border: 1px solid transparent !important; border-radius: 22px !important; background-color: #fff !important; box-shadow: var(--nvd-card) !important;
     }
     html body .app-shell[data-nv-b] .c-page .c-section:has(> :is(.c-section__label, .c-section__head)) {
@@ -148,7 +148,7 @@
     /* Round 5 (Nov 7) D6: Approve (.q-bs--go) keeps its teal; only plain .q-bs is the grey secondary. */
     :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(.c-btn--secondary, .c-btn--neutral, .q-btn--sec, .q-btn--quiet, .q-bs:not(.q-bs--go), .wc-btn--sec, .button.secondary):not(header.c-title *) { border-color: transparent !important; background: #EDF0F0 !important; color: var(--b-ink) !important; box-shadow: none !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(button, .c-btn, .q-btn, .wc-btn):is(:disabled, [aria-disabled="true"]) { box-shadow: none !important; }
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-in, .q-in, input[type="text"], input[type="search"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], input[type="date"], input[type="time"], select, textarea):not([type="checkbox"], [type="radio"]):not(header.c-title *, form.c-team-search *) { min-height: 46px !important; border-radius: 14px !important; border-color: #D5DADC !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.c-in, .q-in, input[type="text"], input[type="search"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], input[type="date"], input[type="time"], select, textarea):not([type="checkbox"], [type="radio"]):not(header.c-title *, form.c-team-search *) { min-height: 48px !important; border-radius: 14px !important; border-color: var(--b-field-edge) !important; }
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-fl__label, .c-field__label) { font-size: 13.5px !important; font-weight: 600 !important; color: var(--b-ink2) !important; }
     /* Segmented controls in content: a soft track and a white thumb. */
     html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(.q-seg, .c-seg):not(.c-page > header.c-title + *, .q-page > .q-hd + *) { border-radius: 14px !important; padding: 4px !important; background: #EBEEEE !important; box-shadow: inset 0 0 0 1px #E3E6E7 !important; border: 0 !important; }
@@ -162,7 +162,7 @@
     /* Fields that are rows (Company profile) keep their inline look: label left, value right, no box. */
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child .q-fl { display: block !important; padding: 16px 22px 18px !important; }
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child :is(.q-fl__row, .q-fl__label) { display: block !important; width: auto !important; text-align: left !important; margin: 0 0 6px !important; }
-    html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child .q-fl .q-in { display: block !important; width: 100% !important; height: 46px !important; padding: 0 14px !important; border: 1px solid #D5DADC !important; border-radius: 14px !important; background: #fff !important; text-align: left !important; }
+    html body .app-shell[data-nv-b] .c-coprof .c-coprof__field:first-child .q-fl .q-in { display: block !important; width: 100% !important; height: 48px !important; padding: 0 14px !important; border: 1px solid var(--b-field-edge) !important; border-radius: 14px !important; background: #fff !important; text-align: left !important; }
     html body .app-shell[data-nv-b] .c-coprof .c-coprof__note { padding: 0 22px 16px !important; margin: 0 !important; }
     /* Text that sits directly in a section card lines up with the rows. */
     html body .app-shell[data-nv-b] .c-page .c-section:has(> :is(.c-section__label, .c-section__head)) > p { margin: 0 !important; padding: 4px 22px 18px !important; font-size: 13.5px !important; line-height: 20px !important; color: var(--b-grey) !important; }
@@ -422,7 +422,7 @@
     /* Hover reads on white. */
     @media (hover: hover) { :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] :is(.c-page, .q-page) :is(a.c-row, a.q-row, button.c-row, button.q-row, label.q-row, summary.c-row):hover:not(#nvd-none), .b-screen :is(a.b-row, .b-row--link):hover:not(#nvd-none) { background-color: var(--b-hover) !important; } }
     /* One field height. */
-    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(input.c-in, input.q-in, select.c-in, select.q-in, .q-in__wrap > select):not(header.c-title *, form.c-team-search *, .c-coprof .c-coprof__field:not(:first-child) *) { height: 46px !important; min-height: 46px !important; box-sizing: border-box !important; }
+    html body .app-shell[data-nv-b] :is(.c-page, .q-page) :is(input.c-in, input.q-in, select.c-in, select.q-in, .q-in__wrap > select):not(header.c-title *, form.c-team-search *, .c-coprof .c-coprof__field:not(:first-child) *) { height: 48px !important; min-height: 48px !important; box-sizing: border-box !important; }
     /* Figures and text inside Insights, Hours this week and payroll cards line up with the card header (22px). */
     html body .app-shell[data-nv-b] :is(.c-pay, .c-exp) .c-card:not(.c-pay__unpaid, .c-card--alert) > :not(.c-card__head, .c-rows, ul, table, details, .c-card__foot, .c-row, a.c-row, .c-card) { padding-left: 22px !important; padding-right: 22px !important; }
     html body .app-shell[data-nv-b] .c-ins .c-card > :is(p, .c-note), .c-ins .c-card details > summary { padding-left: 22px !important; padding-right: 22px !important; }

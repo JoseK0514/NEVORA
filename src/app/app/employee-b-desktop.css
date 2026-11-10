@@ -662,3 +662,12 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-person__act:not(#nvd-none):not(#e-b6)::before { border-radius: 50%; }
 }
 :is(#c-root, html) .q-av[style*="--fa"] { background: var(--fa); color: var(--fc); }
+
+/* Fix (Nov 10, closing): requests.css's phone card rules (a 14px side inset and the 40px lift over a form page's hero)
+ * also matched on tablets and desktop and pulled kept forms (Request time off, swap, cover, can't work) up over the band
+ * title. On wide screens a kept form is the screen's card 24px under the band (DESIGN B6). Fix my time keeps its lift. */
+@layer nv-b {
+  @media (min-width: 768px) {
+    html body .app-shell[data-nv-b][data-employee-mobile] .c-page > .b-screen ~ .b-keep.b-keep.b-keep:not(.eb-fix, .c-avail--phone, .eb-delete-keep) { margin: 24px 0 32px !important; }
+  }
+}

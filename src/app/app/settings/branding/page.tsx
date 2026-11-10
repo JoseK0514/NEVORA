@@ -21,7 +21,8 @@ export default async function BrandingPage() {
   const latest = history[0];
   const current = storedBrand(latest?.settings);
   return (
-    <SettingsFrame title="Branding" save={{ form: "brand-form" }}>
+    // Review F4 (NV-102): on tablets and desktop Save is in the settings card's footer; phones keep it in the top bar.
+    <SettingsFrame title="Branding" save={{ form: "brand-form", card: true }}>
       <BrandEditor key={latest?.revision ?? 0}
         workspaceName={workspace.name}
         revision={latest?.revision ?? 0}

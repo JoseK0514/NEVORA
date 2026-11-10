@@ -60,7 +60,7 @@ try{
   });
   await verify(t,'1357');await t.locator('main [role=alert]').waitFor();assert(dropped,'Response-loss injection ran');
   assert(await t.getByLabel('Employee PIN',{exact:true}).isDisabled(),'Ambiguous verification must block blind PIN resubmission');
-  await t.unroute('**/api/clocker/2/pin');await t.getByRole('button',{name:'Check Connection',exact:true}).click();
+  await t.unroute('**/api/clocker/2/pin');await t.getByRole('button',{name:'Check connection',exact:true}).click();
   await t.waitForFunction(()=>{const input=document.querySelector('input[name=pin]');return input&&!input.matches(':disabled');});
   assert.equal((await q('SELECT count(*)::int AS n FROM clocker_pin_sessions'))[0].n,0);
   checked(engine+': lost-response recovery clears ambiguous verification without replaying the PIN');

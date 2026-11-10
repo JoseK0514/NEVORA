@@ -111,6 +111,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
   // Quiet (v4, approved Oct 23): Color and Logo as rows, then what the team sees. The page's Save (top right) submits.
   const colourName = PRESETS.find(p => p.hex === effectiveSeed)?.name.replace("NEVORA teal", "Teal") ?? "Custom";
   return <form id="brand-form" className="wc-brand" data-guard={hydrated ? undefined : ""} onSubmit={event => { event.preventDefault(); if (dirty) void save(); }}>
+    {/* Review F4 (NV-102): Color and Logo are one card whose footer holds Save on tablets and desktop (phones: the top bar). */}
+    <div className="wc-savecard" style={{ marginTop: 16 }}>
     <ul className="q-list" style={{ marginTop: 16 }}>
       <li><button type="button" className="q-row q-row--one" disabled={!hydrated} onClick={() => setPicking(true)} aria-label={`Color, ${colourName}, change`}>
         <span className="q-rt"><b>Color</b></span><span className="q-rv q-rv--l">{colourName}</span>
@@ -126,6 +128,8 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       </div></li>
       {logo ? <li><button type="button" className="q-row q-row--one" onClick={() => { retry.current = null; setLogo(null); }} disabled={busy !== null}><span className="q-rt"><b style={{ color: "#C42B1C" }}>Remove logo</b></span></button></li> : null}
     </ul>
+    <div className="wc-savefoot wc-savefoot--wide"><button type="submit" className="q-btn">Save</button></div>
+    </div>
     <div className="q-grp"><h2>What your team sees</h2></div>
     {/* Release 1: the preview is a card like the employee's Today's shift; clocking in happens on the location's tablet. */}
     <div className="q-list wc-preview" style={previewStyle} aria-hidden="true" inert>

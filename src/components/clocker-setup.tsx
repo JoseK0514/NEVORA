@@ -22,7 +22,7 @@ async function send(locationKey: string, body: object, signal?: AbortSignal): Pr
   if (!response.ok) throw new SetupFailure(typeof data?.error === 'string' ? data.error : 'Tablet setup could not be confirmed.', response.status >= 500);
   if (data.state === 'connected' && typeof data.deviceName === 'string') return { state: 'connected', deviceName: data.deviceName };
   if (data.state === 'prepared' || data.state === 'unregistered') return { state: data.state };
-  throw new SetupFailure('Tablet setup could not be confirmed. Choose Check Setup before trying again.', true);
+  throw new SetupFailure('Tablet setup could not be confirmed. Choose Check setup before trying again.', true);
 }
 
 function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = false, punchEnabled = false, brand, workspaceName }: { locationKey: string; locationLabel: string; timeZone: string; pinEnabled?: boolean; punchEnabled?: boolean; brand?: { style?: Record<string, string>; logoUrl?: string | null }; workspaceName?: string }) {
@@ -33,7 +33,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
   const busy = useRef(false);
   const input = useRef<HTMLTextAreaElement>(null);
   const failed = (error: unknown) => setFeedback(error instanceof SetupFailure ? { message: error.message, uncertain: error.uncertain }
-    : { message: 'We could not confirm tablet setup. Check the connection, then choose Check Setup before trying again.', uncertain: true });
+    : { message: 'We could not confirm tablet setup. Check the connection, then choose Check setup before trying again.', uncertain: true });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -67,7 +67,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
       if (prepared.state !== 'connected') await send(locationKey, { step: 'redeem', enrollmentToken: code });
       // Read back through the browser cookie before showing success.
       const confirmed = await send(locationKey, { step: 'status' });
-      if (confirmed.state !== 'connected') throw new SetupFailure('Setup could not be verified. Allow cookies and choose Check Setup.', true);
+      if (confirmed.state !== 'connected') throw new SetupFailure('Setup could not be verified. Allow cookies and choose Check setup.', true);
       if (input.current) input.current.value = '';
       setState(confirmed);
     } catch (error) { failed(error); }
@@ -91,7 +91,7 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
         <p className={styles.lead}>{deviceBefore}<strong>{state.deviceName}</strong>{deviceAfter}</p>
         <div className={styles.note} data-tone="amber"><ClockerIcon name="warning" size={20}/><p><strong>{t("Timekeeping is not available yet.")}</strong>{t("Punching in isn’t turned on yet. Don’t use this tablet to record time.")}</p></div>
         <p className={styles.clears}>{t("Owner access has been signed out on this tablet.")}</p>
-        <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" disabled={pending} onClick={check}>{t("Check Connection")}</button></div>
+        <div className={styles.stack}><button className={styles.btn} data-kind="secondary" type="button" disabled={pending} onClick={check}>{t("Check connection")}</button></div>
       </> : <>
         <span className={styles.ring}><ClockerIcon name="lock" size={28}/></span>
         <p className={styles.eyebrow}>{t("One-time setup")}</p>
@@ -110,12 +110,12 @@ function ClockerSetupBody({ locationKey, locationLabel, timeZone, pinEnabled = f
       {/* The busy state shows in the button; this line is for screen readers only (Nov 10 review, NV-298). */}
       <p role="status" className={styles.sr}>{pending ? t("Checking this tablet…") : ''}</p>
       {/* A definite answer from the server: its message under the field (on the form) or under the card's content. On the
-        * form it is about the pasted code, so Check Setup (which can't fix it) shows only for a connected tablet or an
+        * form it is about the pasted code, so Check setup (which can't fix it) shows only for a connected tablet or an
         * uncertain result (Nov 10 review, NV-298). */}
       {feedback && !feedback.uncertain && state.state === 'connected' ? <><p role="alert" className={styles.msg}><ClockerIcon name="warning" size={18}/><span><ClockerText text={feedback.message}/></span></p>
-        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={check}><ClockerIcon name="refresh" size={18}/>{t("Check Setup")}</button></div></> : null}
+        <div className={styles.links}><button className={styles.link} type="button" disabled={pending} onClick={check}><ClockerIcon name="refresh" size={18}/>{t("Check setup")}</button></div></> : null}
       {feedback?.uncertain ? <><p role="alert" className={styles.smsg}><ClockerText text={feedback.message}/></p>
-        <div className={styles.stack}><button className={styles.btn} data-kind="primary" type="button" disabled={pending} onClick={check}>{t("Check Setup")}</button></div></> : null}
+        <div className={styles.stack}><button className={styles.btn} data-kind="primary" type="button" disabled={pending} onClick={check}>{t("Check setup")}</button></div></> : null}
       <div className={styles.meta} data-align="center"><ClockerLanguageToggle/></div>
     </div>}
   </ClockerShell>;

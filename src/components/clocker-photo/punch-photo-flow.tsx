@@ -10,7 +10,7 @@ import styles from './photo.module.css';
 import {ClockerIcon,type ClockerIconName} from '../clocker-icon';
 import {ClockerReceipt,clockTime,receiptTitles} from '../clocker-receipt';
 import ck from '../clocker.module.css';
-const actionNames={CLOCK_IN:'Clock In',CLOCK_OUT:'Clock Out',START_BREAK:'Start Break',END_BREAK:'End Break'};
+const actionNames={CLOCK_IN:'Clock In',CLOCK_OUT:'Clock Out',START_BREAK:'Start break',END_BREAK:'End break'};
 const titles:Record<PhotoPhase,string>={setup_required:'Photo capture is unavailable',ready:'Photo for {action}',camera_starting:'Opening the camera…',camera_live:'Ready for your photo?',photo_review:'Use this photo?',camera_error:'The camera needs attention',intent_unavailable:'This tablet can’t save punches',punch_sending:'Checking your time…',punch_unknown:'Check your clock action',punch_retry_allowed:'Check your clock action',photo_saving:'Saving your punch photo…',photo_unknown:'Time recorded. Check the photo.',complete:'Time recorded',expired:'Enter your PIN again',cancelled:'Camera closed'};
 /* Direction B (Nov 8, 2026): the same 64px status rings as the rest of the kiosk. */
 const rings:Partial<Record<PhotoPhase,[ClockerIconName,'teal'|'amber'|'red'|'green']>>={setup_required:['stop','red'],ready:['camera','teal'],camera_error:['warning','red'],intent_unavailable:['stop','red'],
@@ -45,7 +45,7 @@ function ActivePhotoFlow({session,timeZone,firstName,onExit}:{session:PunchPhoto
  useEffect(()=>{if(state.phase!=='complete')return;const timer=setTimeout(()=>{session.cancel();exitRef.current(session.getSnapshot());},CLOCKER_RECEIPT_CLEAR_MS);return()=>clearTimeout(timer);},[session,state.phase]);
  const error=state.cameraError==='CAMERA_DENIED'?'Camera access was declined. You can allow it in Safari settings or continue without a photo.':state.cameraError==='CAMERA_TIMEOUT'?'Camera permission was not completed in time. Try again while your PIN session is active.':state.cameraError==='CAPTURE_FAILED'?'A photo could not be captured. Check the camera and try again.':'The camera is unavailable. Continue without a photo or ask your Owner for help.';
  const intl=locale==='es'?'es-PR':'en-US';
- /* The photo path's receipt is the normal receipt (Nov 10 review, NV-054): the filled check, "Clock Out Recorded", the hero
+ /* The photo path's receipt is the normal receipt (Nov 10 review, NV-054): the filled check, "Clock Out recorded", the hero
   * time, the approved line, "Saved …" and the eight-second bar (the same CLOCKER_RECEIPT_CLEAR_MS exit). A missing photo
   * is an amber note the employee can act on; Done leaves, as on the normal receipt. */
  const receipt=state.phase==='complete'&&state.receipt?state.receipt:null;

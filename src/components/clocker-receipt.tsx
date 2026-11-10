@@ -8,7 +8,7 @@ import styles from './clocker.module.css';
 
 /* The one Clocker receipt (Direction B, Nov 8, 2026; shared by the normal and photo paths since the Nov 10 review, NV-054):
  * the recorded time as the hero figure, the approved line, "Saved …", the eight-second bar and the action reference. */
-export const receiptTitles: Record<PunchAction, string> = { CLOCK_IN: 'Clock In Recorded', START_BREAK: 'Break Start Recorded', END_BREAK: 'Break End Recorded', CLOCK_OUT: 'Clock Out Recorded' };
+export const receiptTitles: Record<PunchAction, string> = { CLOCK_IN: 'Clock In recorded', START_BREAK: 'Break start recorded', END_BREAK: 'Break end recorded', CLOCK_OUT: 'Clock Out recorded' };
 const goodbyes: Record<PunchAction, string> = { CLOCK_IN: 'Have a good shift, {first}.', CLOCK_OUT: 'See you next time, {first}.', START_BREAK: 'Enjoy your break.', END_BREAK: 'Welcome back.' };
 
 /** "Nov 9 · 10:47 PM"; in Spanish "9 nov · 10:47 p. m.". Intl orders the date for each language (Nov 10 review, NV-183). */
