@@ -190,3 +190,10 @@ it("keeps every closed review card with its own canonical period link across mul
   expect(out).not.toContain("Review 3 timecards");
   expect(out).not.toContain('href="/app/timecards"');
 });
+
+it.each(['overdue', 'reviewRequired'] as const)('marks only the %s payroll fact for complete cross-year date wrapping', field => {
+  const out = html({payrollStatus: {state: 'ready', [field]: {payday: '2027-01-05', period: {startDate: '2026-12-28', endDate: '2027-01-03'}}}});
+  expect(out.match(/<li class="c-home__payroll-fact">/g)).toHaveLength(1);
+  expect(out).toMatch(/<li class="c-home__payroll-fact"><a href="\/app\/payroll"[^>]*>.*?Payday Tue, Jan 5, 2027 · Pay period Dec 28, 2026 – Jan 3, 2027/);
+  expect(out).toContain('<li><div class="c-row"><span class="c-row__main"><span class="c-row__title c-row__title--b">Tue, Nov 3');
+});

@@ -28,6 +28,8 @@
 @media (min-width: 768px) { :is(#c-root, html) .c-home .c-home__more { display: block; } }
 /* The setup line, Payday's step and the open shift's place and need; on a narrow phone they take a second line instead of being cut. */
 :is(#c-root, html) .c-home :is(.c-home__setup, .c-home__payday, .c-home__gap) .c-row__detail > span:first-child { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+/* Payroll preparation/review requires the full payday and period, including both years, at phone widths. */
+:is(#c-root, html) .c-home .c-home__payroll-fact .c-row__detail > span:first-child { white-space: normal; overflow: visible; text-overflow: clip; }
 /* Payday's rows follow each other with the kit's divider. */
 :is(#c-root, html) .c-home #home-payday .c-rows > li + li > .c-row { box-shadow: inset 0 1px 0 var(--c-line); }
 /* Small phones: tighter figure columns, and Find cover moves under the open shift so its time and place stay whole. */

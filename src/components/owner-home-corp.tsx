@@ -186,7 +186,7 @@ function PaydayCard({ nextPay, payrollStatus, timecards, ready, connection, busi
   const payrollFact = (title: string, fact: {payday: string; period: {startDate: string; endDate: string}}) => {
     const fullDate = (date: string) => new Intl.DateTimeFormat("en-US", {timeZone: "UTC", month: "short", day: "numeric", year: "numeric"}).format(new Date(`${date}T12:00:00Z`));
     const detail = `Payday ${dayName(fact.payday, "short")}, ${fact.payday.slice(0, 4)} · Pay period ${fullDate(fact.period.startDate)} – ${fullDate(fact.period.endDate)}`;
-    return <li><CorpRow title={title} detail={detail} href="/app/payroll" chevron label={`${title}. ${detail}. Opens Payroll`} /></li>;
+    return <li className="c-home__payroll-fact"><CorpRow title={title} detail={detail} href="/app/payroll" chevron label={`${title}. ${detail}. Opens Payroll`} /></li>;
   };
   return <CorpCard id="home-payday" label={label}>
     <CorpRows label={label}>
