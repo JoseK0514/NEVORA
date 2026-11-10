@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "runtimeCandidate": "4ff2dee0b6908eca45b84bbba57ce1820d1891a2",
+  "scope": "non-native web backend; production not authorized",
+  "defaultSuite": {
+    "passed": 11602,
+    "failed": 0,
+    "skipped": 857,
+    "pendingAssertionRecords": 55
+  },
+  "ownedSuites": {
+    "onboarding": 163,
+    "companyAccessFoundation": 505,
+    "companyAccessExchange": 36,
+    "workforceOperationsIncludedInOnboarding": 26
+  },
+  "independentFindings": {
+    "important": 6,
+    "closed": 6,
+    "finalClosure": "independent-closure-4ff2dee0-addendum.md"
+  },
+  "evidenceRoot": "/Users/josek0514/.codex/backend-completion-20261109",
+  "rawEvidence": {
+    "managed-catalog-baseline-red.log": "c62728c5aaa6577187ddecc25cbb5be05f6638f1b7ff88679fa3781ad861a6ba",
+    "managed-information-schema-red2.log": "e457c379f1d9d9386ba0003de2fec99fbf6d833553d48b26f1cf7090138fe8e6",
+    "managed-catalog-origin-red.log": "92d404a90d0a4c89a41bcab0bedc5b3051ca1952bbb4ad0de7145f752e83ca8d",
+    "managed-catalog-origin-green.log": "e530eb054cf55bbf4bd909e0fa3ce52d9457594be974bde23b872261f3f3fd22",
+    "managed-origin-unit.json": "231324454f3c98493d5734af089a4557ce5b4831c2a8879919ed0eb54b972565",
+    "managed-origin-typecheck.log": "a12318be798fbfe982f3307107c280a32f686008ee2f55b5636d8d8ae7a769ec",
+    "managed-origin-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "managed-origin-inventory.log": "72a75237e2f902306a8bdcec1dc7296b2826e6c84f5c906eedddf08ab86864cd",
+    "managed-origin-owned-acceptance.log": "a93a7fc6cac6eb956f53cf8a27ef287d29f492f9d07c3c93d3353a48b667af22",
+    "managed-final-source-inventory.log": "7e44b8f8663ecf707e98349e33e83064cc16a84cd0084cd41cb8f84718031dc8"
+  },
+  "independentCopiedFiles": {
+    "independent-review.md": "01cfef3aa172c5572cc0f478768c650bbd7efd50020895f18f1dd9546f0c1425",
+    "independent-closure-05582bac-addendum.md": "45778aa37569cfe2dc1ebf0038bd5dea0a351222a4f267e6e8f25284dc9e9da1",
+    "independent-closure-4e8a00a4-addendum.md": "b277723d7b2c3d58ebaf4d096dabe2e2ae9608d1dcf2e548cb8968ce4a8f20e8",
+    "independent-closure-4ff2dee0-addendum.md": "9b0104770c4ba71822b0a19976922f7ac61852fa64bbd3f427882376bceefd60"
+  },
+  "hostedState": {
+    "newServiceCreated": false,
+    "monitorSchemaApplied": false,
+    "credentialsCreated": false,
+    "workerActivated": false,
+    "realMailApprovedOrSent": false,
+    "nativeServiceChanged": false
+  },
+  "futureGates": [
+    "exact integrated-head CI",
+    "recoverable worker custody",
+    "reviewed Render plan and application approval",
+    "hosted privilege/trigger/disk/workload qualification",
+    "staffed responder and approved finite alert exercise",
+    "combined isolated Claude UI acceptance",
+    "business/deletion/2027 policies",
+    "production authorization"
+  ]
+}
