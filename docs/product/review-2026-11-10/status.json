@@ -2315,10 +2315,10 @@
  {
   "id": "NV-258",
   "severity": "Low",
-  "status": "partly",
-  "remainder": "ui",
-  "by": "B1-B7",
-  "note": "employee-updates.tsx:82-85 \"Needs reply 1\" (B5). Detail unchanged: Read by is a separate list (communication-detail.tsx:139), Withdraw is a full-width q-btn--danger (:152)",
+  "status": "fixed",
+  "remainder": "none",
+  "by": "B5/closing",
+  "note": "\"Needs reply 1\" (B5); Withdraw update is a red text button with a 44px target (corp-quiet-bridge.css). Read by stays its own card, under the message.",
   "inCodexHandoff": false
  },
  {

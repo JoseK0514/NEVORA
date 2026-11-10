@@ -139,3 +139,16 @@
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page :is(.wb-record__title, .wb-setting__name > .wb-record__title) { font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.13px; color: #1A1C1E; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wb-record__meta { font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: 0; color: #6B7075; }
 :is(#q-root, html) .app-shell[data-nv-corp] .q-page .wb-summary-text { display: flex; flex-direction: column; min-width: 0; font: 400 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; }
+
+/* Review NV-258: on an update's detail, Withdraw is a red text button (44px target), not a full-width outlined pill that
+ * reads like a card. The confirm step keeps its filled red button. Layered so the B button rules don't repaint it. */
+@layer nv-b {
+  :is(#c-root, html) :is(#c-root, body) .app-shell article[data-update-revision] > .q-btn.q-btn--danger {
+    display: inline-flex !important; width: auto !important; min-height: 44px !important; margin: 16px 0 0 -12px !important; padding: 0 12px !important;
+    border: 0 !important; border-radius: 22px !important; background: transparent !important; box-shadow: none !important;
+    color: #B42318 !important; font-weight: 600 !important; justify-content: flex-start !important;
+  }
+}
+@media (hover: hover) {
+  @layer nv-b { :is(#c-root, html) :is(#c-root, body) .app-shell article[data-update-revision] > .q-btn.q-btn--danger:hover { background: #FDECEA !important; } }
+}
