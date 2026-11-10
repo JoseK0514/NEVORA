@@ -6,22 +6,23 @@ export async function observeNotificationReadWitness(context,onUnproved){
  const documents=new WeakMap();
  const snapshot=page=>{
   const state=documents.get(page);
-  return {verified:!!state&&state.attempts>0&&state.unproved===0,attempts:state?.attempts??0,unproved:state?.unproved??0};
+  return {verified:!!state&&state.pending.size===1&&state.unproved===0,attempts:state?.attempts??0,unproved:state?.unproved??0,pending:state?.pending.size??0};
  };
  context.on('page',page=>page.on('request',request=>{
   try{if(request.isNavigationRequest()&&request.frame()===page.mainFrame()){
-   const state=documents.get(page);if(state)state.attempts=0;
+   const state=documents.get(page);if(state){state.attempts=0;state.pending.clear();}
   }}catch{/* A missing frame cannot establish a new witness interval. */}
  }));
- await context.exposeBinding('__nevoraQaNotificationAttempt',(source,kind,token)=>{
+ await context.exposeBinding('__nevoraQaNotificationAttempt',(source,kind,token,attempt)=>{
   const page=source.page;
   if(source.frame!==page.mainFrame()){if(kind!=='document')onUnproved(page);return null;}
   if(kind==='document'){
-   const id=randomUUID();documents.set(page,{id,attempts:0,unproved:0});return id;
+   const id=randomUUID();documents.set(page,{id,attempts:0,unproved:0,next:0,pending:new Set()});return id;
   }
   const state=documents.get(page);
+  if(kind==='settled'){if(state?.id===token)state.pending.delete(attempt);return null;}
   if(!state||state.id!==token){onUnproved(page);return null;}
-  if(kind==='notification-get')state.attempts++;
+  if(kind==='notification-get'){state.attempts++;const id=++state.next;state.pending.add(id);return id;}
   else{state.unproved++;onUnproved(page);}
   return null;
  });
@@ -39,7 +40,7 @@ export async function observeNotificationReadWitness(context,onUnproved){
     let href;
     if(typeof input==='string')href=input;
     else{try{href=apply(urlHref,input,[]);}catch{try{href=apply(requestUrl,input,[]);}catch{return 'unproved';}}}
-    const url=new URL(href,location.href);
+    const url=new URL(href,document.baseURI);
     if(url.pathname!=='/api/notifications')return 'other';
     if(typeof input!=='string'||url.origin!==location.origin||url.search||url.hash||url.username||url.password)return 'unproved';
     if(options===undefined)return fields.some(key=>descriptor(objectPrototype,key))?'unproved':'notification-get';
@@ -64,16 +65,17 @@ export async function observeNotificationReadWitness(context,onUnproved){
    // Native conversion fixes the actual method/body before yielding. Descriptor
    // inspection alone cannot prove what a Proxy will return to native fetch.
    if(kind==='notification-get'){
-    try{request=new NativeRequest(input,options);if(apply(requestMethod,request,[])!=='GET'||apply(requestBody,request,[])!==null)kind='unproved';}
+    try{request=new NativeRequest(input,options);const url=new URL(apply(requestUrl,request,[]));if(url.origin!==location.origin||url.pathname!=='/api/notifications'||url.search||url.hash||apply(requestMethod,request,[])!=='GET'||apply(requestBody,request,[])!==null)kind='unproved';}
     catch{kind='unproved';}
    }
    const token=await documentToken;
-   await report(kind,token);
+   const attempt=await report(kind,token);
    // The original options remain observable to their caller while IPC awaits.
    // Recheck synchronously, then dispatch without yielding if still proven.
    if(kind==='notification-get'&&classify(input,options)!=='notification-get')await report('unproved',token);
-   return request?apply(nativeFetch,this,[request]):apply(nativeFetch,this,[input,options]);
+   try{return await (request?apply(nativeFetch,this,[request]):apply(nativeFetch,this,[input,options]));}
+   finally{if(attempt!==null)await report('settled',token,attempt);}
   };
  });
- return {snapshot};
+ return {snapshot,consume(page){if(!snapshot(page).verified)return false;const state=documents.get(page);state.pending.clear();return true;}};
 }

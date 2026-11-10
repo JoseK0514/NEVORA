@@ -10,7 +10,7 @@ async function bounded(promise){let timer;try{return await Promise.race([promise
  * cancellation: the streaming successor deliberately emits the same message. */
 export async function verifyReloadFetchDiagnostic(browser){
  const cells=[];
- for(const mode of ['idle','reload','goto-same','source-history','stream-redirect','window-exceptions','different-get','idle-post','reload-post','different-post','unrelated-get','unrelated-post','request-input','accessor-method','mutated-method']){
+ for(const mode of ['idle','reload','goto-same','source-history','stream-redirect','window-exceptions','different-get','idle-post','reload-post','different-post','unrelated-get','unrelated-post','request-input','accessor-method','mutated-method','base-post-idle','base-post-after-get']){
   const context=await browser.newContext({serviceWorkers:'block'}),candidateErrors=[];
   // Enable the candidate only inside this fictional control, then verify its
   // positives AND its fatal negatives before returning an app eligibility bit.
@@ -26,7 +26,7 @@ export async function verifyReloadFetchDiagnostic(browser){
    }
    if(!['/app/ai-manager','/replacement'].includes(request.url)){response.writeHead(404);response.end();return;}
    documents++;
-   if(documents===1){response.writeHead(200,{'content-type':'text/html','cache-control':'no-store'});response.end('<!doctype html><h1>Source</h1>');return;}
+   if(documents===1){response.writeHead(200,{'content-type':'text/html','cache-control':'no-store'});response.end('<!doctype html><base href="/api/"><h1>Source</h1>');return;}
    held=response;requested.resolve();
   });
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -49,15 +49,15 @@ export async function verifyReloadFetchDiagnostic(browser){
    await page.goto(url);
    const handle=await page.evaluateHandle(()=>({id:globalThis.__nevoraReloadDocumentId,async read(mode){
     const options={credentials:'same-origin',cache:'no-store',redirect:'error',headers:{'X-Nevora-Employee-View':'fictional'},signal:new AbortController().signal};
-    const path=mode.startsWith('unrelated-')?'/api/employee/home':'/api/notifications';
-    if(mode.endsWith('-post'))options.method='POST';
+    const path=mode.startsWith('base-post-')?'notifications':mode.startsWith('unrelated-')?'/api/employee/home':'/api/notifications';
+    if(mode.endsWith('-post')||mode.startsWith('base-post-'))options.method='POST';
     if(mode==='accessor-method')Object.defineProperty(options,'method',{get:()=> 'POST'});
     if(mode==='mutated-method'){options.method='GET';queueMicrotask(()=>{options.method='POST';});}
     try{const response=await fetch(mode==='request-input'?new Request(location.origin+path):path,options);await response.json();return {id:this.id,status:response.status,handled:false};}
     catch{return {id:this.id,status:0,handled:true};}
    }}));
    const sourceId=await handle.evaluate(value=>value.id);let sourceRead,successor;
-   if(!['idle','idle-post'].includes(mode)){
+   if(!['idle','idle-post','base-post-idle'].includes(mode)){
     navigationResult=(mode==='goto-same'?page.goto(url):['different-get','different-post','unrelated-get','unrelated-post'].includes(mode)?page.goto(origin+'/replacement'):page.reload()).then(response=>response.status());await bounded(requested.promise);
    }
    if(mode==='source-history'){
@@ -74,10 +74,10 @@ export async function verifyReloadFetchDiagnostic(browser){
      setTimeout(()=>{const error=new Error('/'+host+'/api/notifications due to access control checks.');error.name='Fetch API cannot load http';throw error;},0);
      void Promise.reject(Error('Fictional reload rejection'));
     },origin.slice('http://'.length));await bounded(Promise.all([exceptionsSeen.promise,nativeSeen.promise]));
-   }else sourceRead=await bounded(handle.evaluate((value,mode)=>value.read(mode),mode));
+   }else{if(mode==='base-post-after-get')await bounded(handle.evaluate(value=>value.read('reload')));sourceRead=await bounded(handle.evaluate((value,mode)=>value.read(mode),mode));}
    if(held){if(held.headersSent)held.end('</body></html>');else{held.writeHead(200,{'content-type':'text/html','cache-control':'no-store'});held.end('<!doctype html><h1>Replacement</h1>');}}
    if(navigationResult)assert.equal(await bounded(navigationResult),200);
-   const distinctReplacement=!['idle','idle-post'].includes(mode)&&(await page.evaluate(()=>globalThis.__nevoraReloadDocumentId))!==sourceId;
+   const distinctReplacement=!['idle','idle-post','base-post-idle'].includes(mode)&&(await page.evaluate(()=>globalThis.__nevoraReloadDocumentId))!==sourceId;
    let candidateClean=true;try{candidate.assertClean();}catch{candidateClean=false;}
    cells.push({mode,serverReads,sourceIdentityRetained:sourceRead?.id===sourceId,sourceStatus:sourceRead?.status??null,sourceHandled:sourceRead?.handled??null,
     distinctReplacement,successorStatus:successor?.result??null,candidateClean,candidateUnproved:candidateErrors.filter(event=>event.type==='unproven-notification-read').length,candidateWindowErrors:candidateErrors.filter(event=>event.type==='window-javascript-error').length,native:[...native],windowExceptions:[...windows]});
@@ -94,6 +94,9 @@ export async function verifyReloadFetchDiagnostic(browser){
  const unsupported=postIdle.serverReads===1&&postIdle.sourceStatus===405&&!postIdle.candidateClean&&postIdle.candidateUnproved===1&&postIdle.native.length===0
   &&['reload-post','different-post','request-input','accessor-method','mutated-method'].every(mode=>{const value=cell(mode);return value.serverReads===0&&value.sourceHandled&&!value.candidateClean&&value.candidateUnproved>0&&value.native.length===1&&!value.native[0].classified;})
   &&['unrelated-get','unrelated-post'].every(mode=>{const value=cell(mode);return value.serverReads===0&&value.sourceHandled&&!value.candidateClean&&value.candidateUnproved===0&&value.native.length===1&&!value.native[0].classified;});
- const verified=positives&&negatives&&unsupported;
+ const baseIdle=cell('base-post-idle'),basePair=cell('base-post-after-get');
+ const paired=baseIdle.serverReads===1&&baseIdle.sourceStatus===405&&!baseIdle.candidateClean&&baseIdle.candidateUnproved===1
+  &&basePair.serverReads===0&&!basePair.candidateClean&&basePair.candidateUnproved===1&&basePair.native.length===2&&basePair.native[0].classified&&!basePair.native[1].classified;
+ const verified=positives&&negatives&&unsupported&&paired;
  return {status:verified?'mechanism-reproduced':'not-reproduced',verified,cells};
 }

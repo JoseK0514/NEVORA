@@ -93,7 +93,7 @@ export function observeBrowserCell(execution, errors, {navigationDiagnosticVerif
           const scoped=navigationReadKinds===undefined||navigationReadKinds.includes(diagnostic.resourceKind);
           const methodProven=!requireNotificationGetWitness||(diagnostic.resourceKind==='notification-read'&&methodWitness?.verified===true);
           const verified=scoped&&methodProven&&(reload?reloadDiagnosticVerified===true&&diagnostic.resourceKind==='notification-read':navigationDiagnosticVerified);
-          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)){
+          if(navigationFetchDiagnostic(execution,diagnostic,state.navigation.pending(),verified,phase)&&(!requireNotificationGetWitness||witness.consume(page))){
             classified.add(error);execution.navigationDiagnostics??=[];
             execution.navigationDiagnostics.push({type:'navigation-fetch-diagnostic',role,pageIndex:index,phase,diagnostic,...(requireNotificationGetWitness?{methodWitness}:{}),pendingMainFrameNavigation:true,documentNavigation:state.navigation.snapshot(),stage:stages.has(stage)?stage:null});return;
           }
