@@ -1,47 +1,45 @@
 import {readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {Client} from 'pg';
-import {afterEach,expect,it,vi} from 'vitest';
-import {createDisposableFoundationDatabase,CURRENT_MIGRATIONS} from './local-postgres';
-import {ownedMigrationObserver,traceOwnedMigration,type MigrationFailureReceipt} from './owned-migration-diagnostics';
-afterEach(()=>vi.unstubAllEnvs());
+import {Client,type QueryResult} from 'pg';
+import {expect,it,vi} from 'vitest';
+import {createDisposableNotificationDatabase,CURRENT_MIGRATIONS} from './local-postgres';
+import type {MigrationFailureReceipt} from './owned-migration-diagnostics';
 
-it('records a real owned migration lock timeout before teardown without executing later work',async()=>{
-  const target=new URL(process.env.FUEL_TEST_DATABASE_URL!);
-  // Only select a new name; createOwnedDatabase still enforces loopback,
-  // absence, marker/OID ownership and explicit destructive-teardown permission.
-  target.pathname='/nevora_foundation_test_migration_diagnostics';
-  vi.stubEnv('FUEL_TEST_DATABASE_URL',target.href);
-  const database=await createDisposableFoundationDatabase({mode:'empty'});
-  const bootstrap=new Client({connectionString:database.connectionString,statement_timeout:5000,connectionTimeoutMillis:3000});
-  const blocker=new Client({connectionString:database.connectionString,connectionTimeoutMillis:3000});
-  let observer:ReturnType<typeof ownedMigrationObserver>|undefined,bodyStarted=false;
-  const receipts:MigrationFailureReceipt[]=[];
-  try{
-    await bootstrap.connect();await blocker.connect();
-    await bootstrap.query(await readFile(`db/migrations/${CURRENT_MIGRATIONS[0]}`,'utf8'),[]);
-    const [{pid,statement_timeout:statementTimeout}]=(await bootstrap.query("SELECT pg_backend_pid() AS pid,current_setting('statement_timeout') AS statement_timeout")).rows;
-    expect(statementTimeout).toBe('5s');
-    observer=ownedMigrationObserver(database.connectionString,pid);
-    await blocker.query('BEGIN');await blocker.query('LOCK TABLE locations IN ACCESS EXCLUSIVE MODE');
-    const file=CURRENT_MIGRATIONS[1],sql=await readFile(`db/migrations/${file}`,'utf8');
-    let original:unknown,caught:unknown;
-    try{
-      await traceOwnedMigration({file,index:2,total:CURRENT_MIGRATIONS.length,sql,pid,statementTimeout,sample:()=>observer!.sample(),publish:r=>receipts.push(r),execute:async()=>{
-        try{return await bootstrap.query(sql,[]);}catch(error){original=error;throw error;}
-      }});
-      bodyStarted=true;
-    }catch(error){caught=error;}
-    expect(caught).toBe(original);expect(caught).toMatchObject({code:'57014'});expect(bodyStarted).toBe(false);
-    expect(receipts).toHaveLength(1);
-    expect(receipts[0]).toMatchObject({file,index:2,total:60,sha256:createHash('sha256').update(sql).digest('hex'),sqlstate:'57014',statementTimeout:'5s',observerFailed:false});
-    expect(receipts[0].elapsedMs).toBeGreaterThanOrEqual(4900);
-    expect(receipts[0].samples.length).toBeGreaterThan(0);expect(receipts[0].samples.length).toBeLessThanOrEqual(4);
-    expect(receipts[0].samples.some(sample=>sample.waitEventType==='Lock'&&sample.waitEvent==='relation'&&sample.blockers===1)).toBe(true);
-    for(const privateInput of [database.connectionString,sql,target.username])expect(JSON.stringify(receipts)).not.toContain(privateInput);
-  }finally{
-    try{await blocker.query('ROLLBACK');}finally{
-      await observer?.close();await blocker.end();await bootstrap.end();await database.dispose();
+it('retains an actual helper bootstrap lock failure and closes both clients before owned teardown',async()=>{
+  const file=CURRENT_MIGRATIONS[1],migration=await readFile(`db/migrations/${file}`,'utf8');
+  const target=new URL(process.env.FUEL_TEST_DATABASE_URL!),adminTarget=new URL(target);adminTarget.pathname='/postgres';
+  // Instrument only the existing pg transport boundary. The helper still owns
+  // creation, exact migration execution, observation, publication and disposal.
+  const raw=Client.prototype.query as (this:Client,text:string,values?:unknown[])=>Promise<QueryResult>;
+  const rawEnd=Client.prototype.end as (this:Client)=>Promise<void>;
+  const closed=new Set<Client>(),lines:string[]=[];
+  let injected=false,bodyStarted=false,dropped=false,bootstrap:Client|undefined,observer:Client|undefined,original:unknown,caught:unknown;
+  const endSpy=vi.spyOn(Client.prototype,'end').mockImplementation(async function(this:Client){await rawEnd.call(this);closed.add(this);});
+  const intercept=async function(this:Client,text:string,values?:unknown[]):Promise<QueryResult>{
+    if(text.startsWith('SELECT state,wait_event_type,wait_event,cardinality'))observer=this;
+    if(text.startsWith('DROP DATABASE')){
+      expect(bootstrap&&closed.has(bootstrap)).toBe(true);expect(observer&&closed.has(observer)).toBe(true);dropped=true;
     }
-  }
+    if(text!==migration||injected)return raw.call(this,text,values);
+    injected=true;bootstrap=this;
+    const blocker=new Client({connectionString:target.href,connectionTimeoutMillis:3000});
+    try{
+      await blocker.connect();await raw.call(blocker,'BEGIN');await raw.call(blocker,'LOCK TABLE locations IN ACCESS EXCLUSIVE MODE');
+      try{return await raw.call(this,text,values);}catch(error){original=error;throw error;}
+    }finally{try{await raw.call(blocker,'ROLLBACK');}finally{await blocker.end();}}
+  };
+  const querySpy=vi.spyOn(Client.prototype,'query').mockImplementation(intercept as typeof Client.prototype.query);
+  const writeSpy=vi.spyOn(process.stderr,'write').mockImplementation((chunk)=>{lines.push(String(chunk));return true;});
+  try{
+    try{const database=await createDisposableNotificationDatabase();bodyStarted=true;await database.dispose();}catch(error){caught=error;}
+    expect(caught).toBe(original);expect(caught).toMatchObject({code:'57014'});expect(bodyStarted).toBe(false);expect(dropped).toBe(true);
+    const diagnostics=lines.filter(line=>line.startsWith('[OWNED_MIGRATION_FAILURE] '));expect(diagnostics).toHaveLength(1);
+    const receipt=JSON.parse(diagnostics[0].slice('[OWNED_MIGRATION_FAILURE] '.length)) as MigrationFailureReceipt;
+    expect(receipt).toMatchObject({file,index:2,total:CURRENT_MIGRATIONS.length,sha256:createHash('sha256').update(migration).digest('hex'),sqlstate:'57014',statementTimeout:'5s',observerFailed:false});
+    expect(receipt.elapsedMs).toBeGreaterThanOrEqual(4900);expect(receipt.samples.length).toBeGreaterThan(0);expect(receipt.samples.length).toBeLessThanOrEqual(4);
+    expect(receipt.samples.some(sample=>sample.waitEventType==='Lock'&&sample.waitEvent==='relation'&&sample.blockers===1)).toBe(true);
+    for(const privateInput of [target.href,migration,target.username])expect(JSON.stringify(receipt)).not.toContain(privateInput);
+  }finally{writeSpy.mockRestore();querySpy.mockRestore();endSpy.mockRestore();}
+  const admin=new Client({connectionString:adminTarget.href,connectionTimeoutMillis:3000});
+  try{await admin.connect();expect((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1',[target.pathname.slice(1)])).rowCount).toBe(0);}finally{await admin.end();}
 },15000);

@@ -51,3 +51,26 @@ it('sanitizes unsupported wait metadata and waits for an in-flight sample before
   expect(receipts[0]).toMatchObject({sqlstate:null,samples:[{state:'other',waitEventType:'other',waitEvent:'other',blockers:null}]});
   expect(JSON.stringify(receipts)).not.toContain('PRIVATE');
 });
+
+it('bounds a never-settling observer and still propagates the same SQL failure',async()=>{
+  vi.useFakeTimers();let fail!:(error:unknown)=>void;
+  const failure=Object.assign(Error('PRIVATE'),{code:'57014'}),receipts:MigrationFailureReceipt[]=[];
+  const sample=vi.fn(()=>new Promise<never>(()=>{}));
+  const pending=traceOwnedMigration({...identity,execute:()=>new Promise<never>((_,reject)=>{fail=reject;}),sample,publish:r=>receipts.push(r)});
+  const rejected=expect(pending).rejects.toBe(failure);
+  await vi.advanceTimersByTimeAsync(1100);fail(failure);
+  await vi.advanceTimersByTimeAsync(1500);await rejected;
+  expect(sample).toHaveBeenCalledTimes(1);expect(receipts[0]).toMatchObject({observerFailed:true,samples:[],sqlstate:'57014'});
+  await vi.advanceTimersByTimeAsync(10000);expect(sample).toHaveBeenCalledTimes(1);
+});
+
+it('does not mutate published metadata when an observation arrives after its deadline',async()=>{
+  vi.useFakeTimers();let fail!:(error:unknown)=>void,finish!:(value:unknown)=>void;
+  const failure=Object.assign(Error('PRIVATE'),{code:'57014'}),receipts:MigrationFailureReceipt[]=[];
+  const pending=traceOwnedMigration({...identity,execute:()=>new Promise<never>((_,reject)=>{fail=reject;}),sample:()=>new Promise(resolve=>{finish=resolve;}),publish:r=>receipts.push(r)});
+  const rejected=expect(pending).rejects.toBe(failure);
+  await vi.advanceTimersByTimeAsync(1100);fail(failure);await vi.advanceTimersByTimeAsync(1500);await rejected;
+  const retained=JSON.stringify(receipts);
+  finish({state:'active',wait_event_type:'Lock',wait_event:'relation',blockers:1});await vi.advanceTimersByTimeAsync(10000);
+  expect(JSON.stringify(receipts)).toBe(retained);expect(receipts[0]).toMatchObject({observerFailed:true,samples:[]});
+});

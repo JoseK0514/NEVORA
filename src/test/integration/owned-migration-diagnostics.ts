@@ -16,11 +16,14 @@ export async function traceOwnedMigration<T>(options:{file:string;index:number;t
   const schedule=()=>{timer=setTimeout(()=>{
     const elapsedMs=elapsed();
     pending=(async()=>{
+      let sampleDeadline:ReturnType<typeof setTimeout>|undefined;
       try{
-        const raw=await options.sample();
+        // The tracer has its own bound as well as the pg transport bounds.
+        // A late observer result cannot append to a published failure receipt.
+        const raw=await Promise.race([options.sample(),new Promise<never>((_,reject)=>{sampleDeadline=setTimeout(()=>reject(Error('Owned migration observation deadline.')),1500);})]);
         const row=raw!==null&&typeof raw==='object'?raw as Record<string,unknown>:{};
         samples.push({elapsedMs,state:label(row.state,states)??'other',waitEventType:label(row.wait_event_type,waitTypes),waitEvent:label(row.wait_event,waitEvents),blockers:typeof row.blockers==='number'&&Number.isInteger(row.blockers)&&row.blockers>=0&&row.blockers<=10000?row.blockers:null});
-      }catch{observerFailed=true;}
+      }catch{observerFailed=true;}finally{clearTimeout(sampleDeadline);}
       if(!stopped&&!observerFailed&&samples.length<4)schedule();
     })();
   },1000);};
