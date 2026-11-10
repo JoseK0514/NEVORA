@@ -22,6 +22,8 @@ Local qualification: cold typecheck exit0; 200 release controls passed; full lin
 
 The first inventory check detected Claude collaboration drift from00560614 to`d0412b4f401e7ec579a665968f45fdac5d41ec2d`: three B1/B3/B4 commits affecting151paths. Exact changed paths/commit metadata are retained in `collaboration-drift.json`. The source inventory records the new head as HELD under Claude/native ownership, without adopting or certifying it. The reconciled inventory passed73classified sources/three active branches. Development remains36811bfd and main46d6dc76. This inventory update is documentation; none of the new UI changes enters this candidate. Re-fetch/check again immediately before coordinator integration if either source advances.
 
+Final fetch after the repair review observed collaboration `334dabd8f012cd3fb6a304165bb160e4b7068d1c`. Relative to d0412b4f, three further commits cover B2 flows/states, B7 app voice and review assignments across 202 changed paths, including further src/lib helpers. They remain HELD; no behavior is accepted or imported. The inventory records this later head in a separate documentation commit; the repair code/configuration is identical to reviewed commit `933331699d8a55ca0a08e8dc26af750066e59bf0`. Raw scope metadata is in `collaboration-drift-final.json`. The final reconciled check is `source-inventory-final.log`. UI ownership continues independently, so the coordinator must re-fetch before publication.
+
 ## Leadership/control positions
 
 - CTO: smallest configuration repair at the actual failing process; no broad source/type-system refactor.
