@@ -37,7 +37,11 @@ describe("role navigation", () => {
     expect(activeNavigationHref('MANAGER','/app/payroll',{...payroll,canReview:true})).toBe('/app/payroll');
     expect(activeNavigationHref('EMPLOYEE','/app/my-pay',payroll)).toBe('/app/my-pay');
     expect(activeNavigationHref('EMPLOYEE','/app/my-pay',{...payroll,enabled:false})).toBeUndefined();
-    expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/requests/hub');
+    // Review F2 (NV-070): every shift request page goes back to Schedule, so Schedule lights at every width.
+    expect(activeNavigationHref('EMPLOYEE','/app/exchange?tab=mine',payroll)).toBe('/app/schedule');
+    expect(activeNavigationHref('EMPLOYEE','/app/requests',payroll)).toBe('/app/requests/hub');
+    // NV-294: More lights Home for Owners and Managers (tablet rail, desktop sidebar).
+    expect(activeNavigationHref('OWNER','/app/more',payroll)).toBe('/app');
   });
 });
 

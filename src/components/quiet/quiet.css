@@ -90,6 +90,10 @@ a.q-row:active, button.q-row:active { background: var(--q-press); }
 :is(#q-root, html) .q-tog:checked, :is(#q-root, html) .q-tog[aria-checked="true"] { background: var(--q-teal-fill); }
 :is(#q-root, html) .q-tog:checked::after, :is(#q-root, html) .q-tog[aria-checked="true"]::after { transform: translateX(20px); }
 :is(#q-root, html) .q-tog:disabled { opacity: .5; cursor: default; }
+/* Review F2 (NV-228): the switch is 51x31, so its target grows to 49px tall (::after is the knob, ::before the hit area),
+ * and a row that is the switch's label is at least 48px tall. */
+:is(#q-root, html) .q-tog::before { content: ""; position: absolute; inset: -9px -2px; }
+:is(#q-root, html) label:has(> .q-tog), :is(#q-root, html) .wc-switch-row { min-height: 48px; }
 
 /* Fields */
 :is(#q-root, html) .q-fl { display: block; margin: 24px 20px 0; }

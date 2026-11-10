@@ -40,9 +40,12 @@ export function PickField({id,name,type,label,value,min,onChange,invalid,describ
 export function EmployeeTimeOff({authority,selection,filter}:{authority:string;selection:string;filter:string}){
  const panel=usePlanning(authority,'timeoff',selection),read=panel.read?.view==='timeoff'?panel.read:null;
  const [draft,setDraft]=useState<Draft>(empty),[operation,setOperation]=useState(()=>new PlanningOperation()),id=useRef<string|null>(null),[withdrawals]=useState(()=>new PlanningOperations());
- const [error,setError]=useState<{message:string;field:string}|null>(null),errorId=useId(),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
+ const [errors,setErrors]=useState<{message:string;field:string}[]>([]),errorId=useId(),form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null);
  const {pending,uncertain,complete}=usePlanningOperation(operation),locked=pending||uncertain||complete;
- const fieldError=(name:string)=>({invalid:error?.field===name,describedBy:error?.field===name?errorId:undefined,error:error?.field===name?error.message:undefined});
+ // Review F2 (NV-112): each problem sits under its own field (From and To each get theirs), all marked at once.
+ const setError=(value:{message:string;field:string}|null)=>setErrors(value?[value]:[]);
+ const errorFor=(name:string)=>errors.find(item=>item.field===name);
+ const fieldError=(name:string)=>{const found=errorFor(name);return {invalid:!!found,describedBy:found?errorId+'-'+name:undefined,error:found?.message};};
  const listHref='/app/requests'+(filter==='decided'?'?filter=decided':''),isNew=selection==='new',isList=selection==='list';
  const row=read?.data.requests[0];
  useEffect(()=>{if(complete&&isNew&&read?.enabled)receipt.current?.focus();},[complete,isNew,read?.enabled]);
@@ -65,7 +68,14 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
     :<form ref={form} className="tof-form b-keep" noValidate aria-busy={pending} onSubmit={event=>{
      event.preventDefault();if(locked||!panel.allowed())return;
      id.current??=crypto.randomUUID();const command=parsePlanningCommand({kind:'request',requestId:id.current,startDate:draft.startDate,endDate:draft.partial?draft.startDate:draft.endDate,startTime:draft.partial?draft.startTime:null,endTime:draft.partial?draft.endTime:null,note:draft.note.trim()});
-     if(!command){const field=!isValidIsoDate(draft.startDate)?'startDate':!draft.partial&&(!isValidIsoDate(draft.endDate)||draft.endDate<draft.startDate)?'endDate':draft.partial&&!draft.startTime?'startTime':draft.partial?'endTime':'note';const message=field==='startDate'?'Choose a valid start date.':field==='endDate'?'Choose an end date on or after the start date.':field==='startTime'?'Choose a start time.':field==='endTime'?'Choose an end time after the start time.':'Keep your note within 250 characters.';setError({message,field});form.current?.querySelector<HTMLElement>('[name="'+field+'"]')?.focus();return;}
+     if(!command){const found:{field:string;message:string}[]=[];
+      if(!isValidIsoDate(draft.startDate))found.push({field:'startDate',message:draft.startDate?'Choose a valid date.':draft.partial?'Choose a date.':'Choose a start date.'});
+      if(!draft.partial&&!isValidIsoDate(draft.endDate))found.push({field:'endDate',message:draft.endDate?'Choose a valid date.':'Choose an end date.'});
+      else if(!draft.partial&&isValidIsoDate(draft.startDate)&&draft.endDate<draft.startDate)found.push({field:'endDate',message:'Choose an end date on or after the start date.'});
+      if(draft.partial&&!draft.startTime)found.push({field:'startTime',message:'Choose a start time.'});
+      else if(draft.partial&&!found.length)found.push({field:'endTime',message:'Choose an end time after the start time.'});
+      if(!found.length)found.push({field:'note',message:'Keep your note within 250 characters.'});
+      setErrors(found);form.current?.querySelector<HTMLElement>('[name="'+found[0].field+'"]')?.focus();return;}
      setError(null);void operation.submit(command,send,panel.allowed);
     }}><fieldset disabled={locked} className="tof-fields"><legend className="nv-sr">Time away</legend>
      <div className="c-seg tof-seg" role="group" aria-label="How long"><button type="button" aria-pressed={!draft.partial} onClick={()=>{setDraft(d=>({...d,partial:false}));setError(null);}}>All day</button><button type="button" aria-pressed={draft.partial} onClick={()=>{setDraft(d=>({...d,partial:true}));setError(null);}}>Part of day</button></div>
@@ -81,9 +91,9 @@ export function EmployeeTimeOff({authority,selection,filter}:{authority:string;s
       <PickField id="tof-from" name="startDate" type="date" label="From" value={draft.startDate} {...fieldError('startDate')} onChange={v=>{setDraft(d=>({...d,startDate:v,endDate:!d.endDate||d.endDate<v?v:d.endDate}));setError(null);}}/>
       <PickField id="tof-to" name="endDate" type="date" label="To" value={draft.endDate} min={draft.startDate||undefined} {...fieldError('endDate')} onChange={v=>{setDraft(d=>({...d,endDate:v}));setError(null);}}/>
      </div>}
-     <div className="c-field"><label className="c-field__label" htmlFor="tof-note">Reason (optional)</label><textarea id="tof-note" className="c-in tof-note" name="note" rows={3} maxLength={250} autoComplete="off" aria-invalid={error?.field==='note'||undefined} aria-describedby={error?.field==='note'?errorId:undefined} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/></div>
+     <div className="c-field"><label className="c-field__label" htmlFor="tof-note">Reason (optional)</label><textarea id="tof-note" className="c-in tof-note" name="note" rows={3} maxLength={250} autoComplete="off" aria-invalid={!!errorFor('note')||undefined} aria-describedby={errorFor('note')?errorId+'-note':undefined} value={draft.note} onChange={e=>setDraft(d=>({...d,note:e.target.value}))}/></div>
     </fieldset>
-    {error?.field==='note'?<p id={errorId} className="c-error" role="alert">{error.message}</p>:null}
+    {errorFor('note')?<p id={errorId+'-note'} className="c-error" role="alert">{errorFor('note')?.message}</p>:null}
     <p className="c-note tof-approve">Your manager needs to approve this request. Keep your scheduled shifts until it is approved.</p>
     {/* Direction B (phones): the same words as a soft notice; hidden elsewhere. */}
     <div className="eb-tof-approve"><BIcon tone="grey"><HourglassIcon weight="bold"/></BIcon><span><b>Your manager approves it</b><span>Keep your scheduled shifts until it is approved.</span></span></div>

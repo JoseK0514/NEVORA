@@ -198,7 +198,14 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  if(!observation&&unavailable)return <div className="scoped-unavailable">{unavailable}<button className="button secondary scoped-unavailable__refresh" type="button" onClick={refreshCurrent}>Refresh current view</button></div>;
  const checking=body.phase!=='paused'&&!stuck;
  const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
- if(checking)return stateSection;
+ // Review F2 (NV-074): under Direction B the brief check draws the page's band and 22px card placeholders (the same top
+ // bar as the loaded page, which floats over the band), so nothing jumps when the page lands. Where no B screen shows
+ // (Owner and Manager tablets and desktop) the quiet placeholder below stays as before.
+ if(checking)return <div className="c-page c-page--narrow c-route-state c-route-state--checking" data-corp="">
+  <BScreen><BHero title={<><span className="b-skel b-skel--title" aria-hidden="true"/><span className="b-sr">Loading…</span></>}/>
+   <BStack>{[0,1].map(card=><BCard key={card}><div className="b-skel-card" aria-hidden="true"><span className="b-skel b-skel--head"/><span className="b-skel"/><span className="b-skel"/><span className="b-skel b-skel--short"/></div></BCard>)}</BStack></BScreen>
+  {stateSection}
+ </div>;
  // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
  // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
  // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.

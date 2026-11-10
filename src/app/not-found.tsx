@@ -25,7 +25,7 @@ export default async function NotFound() {
     <section className="nf-sheet" aria-labelledby="not-found-title">
       <div className="nf-card">
         <p className="not-found-text">{words.body}</p>
-        <NotFoundHint/>
+        <NotFoundHint title={words.hintTitle} body={words.hintBody}/>
         <Link href="/login" className="nf-cta">{words.cta}</Link>
       </div>
       <footer className="nf-foot"><small>{NUVORA_BRAND.poweredBy}</small><QuietLegal lang={lang}/></footer>

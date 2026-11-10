@@ -211,3 +211,31 @@
 @media (max-width: 359px) {
   :is(#c-root, html) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b] .b-screen .eb-shift__time { font-size: 22px; line-height: 28px; }
 }
+
+/* ---------- Review F2 (Nov 10, 2026): shared shell and navigation ---------- */
+/* NV-099: the header avatar opens More, so it carries a small visible cue (a white 16px badge with a bold caret) on phones,
+ * every role. Tablets and desktop hide the avatar (the account menu is there). */
+@media (max-width: 767px), (max-width: 1023px) and (max-height: 500px) and (pointer: coarse) {
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar { position: relative !important; }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar > .c-top-avatar__more {
+    position: absolute; right: -2px; bottom: 0; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 8px;
+    background: #FFFFFF; color: #0B6E69; box-shadow: 0 1px 3px rgb(16 40 38 / 0.28); pointer-events: none;
+  }
+  html:is(:root, [data-theme]) body .app-shell[data-nv-corp] .mobile-header .c-top-avatar > .c-top-avatar__more svg { position: static !important; width: 10px !important; height: 10px !important; color: #0B6E69 !important; }
+}
+/* NV-011, NV-070: on tablets and desktop More is not a sidebar or rail entry (it opens from the account menu), so a
+ * "‹ More" back link on the band names a place the sidebar doesn't have; the sidebar entry the page lights is the way back. */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-employee-mobile] .b-screen .b-back[href="/app/more"]:not(#e-none):not(#e-none2):not(#e-none3) { display: none !important; }
+  /* Owner and Manager pages on the Quiet kit (Updates, Profile): the same, and the bar's action keeps its place at the right. */
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-nav > .q-nav__l[href="/app/more"]:not(#e-none):not(#e-none2):not(#e-none3) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page > .q-nav:has(> .q-nav__l[href="/app/more"]) > .q-nav__r:not(#e-none):not(#e-none2) { margin-left: auto !important; }
+}
+
+/* Review F2 (NV-074): the access check's placeholder in Direction B: the band with a title bar, then 22px cards holding
+ * #ECEEEF bars (static; no shimmer), in place of the old white header and warm Quiet skeleton. */
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel { display: block; height: 14px; border-radius: 7px; background: #ECEEEF; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-hero .b-skel--title { width: min(220px, 60%); height: 30px; margin: 3px 0; border-radius: 15px; background: rgb(255 255 255 / 0.18); }
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel-card { display: grid; gap: 14px; padding: 20px 18px 22px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--head { width: 40%; height: 18px; border-radius: 9px; }
+:is(#c-root, html) .app-shell[data-nv-b] .c-route-state--checking .b-skel--short { width: 55%; }

@@ -10,7 +10,7 @@ import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {ClockCounterClockwiseIcon} from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {WarningIcon} from '@phosphor-icons/react/dist/ssr/Warning';
-import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack} from '../owner-b/b-kit';
+import {BButton,BButtonLink,BCard,BChip,BHero,BIcon,BList,BLive,BNote,BRow,BScreen,BSeg,BStack,BState,type BStateKind} from '../owner-b/b-kit';
 import {BAddRow,BCardNote,BDay,BValue} from './parts';
 import {useHours} from '../employee-mobile/use-hours';
 import {addDays,weekStartFor} from '@/lib/date-utils';
@@ -45,18 +45,20 @@ export function HoursBScreen({hero,children,sub,backLabel,right}:{hero?:ReactNod
  </BScreen>;
 }
 
-/** A read state or a message with its one way forward, as a card. */
-export function HoursStatusB({message,action,label='Time status'}:{message:ReactNode;action?:ReactNode;label?:string}){
- return <BCard label={label}><div className="eb-status"><p className="b-state" role="status">{message}</p>{action??null}</div></BCard>;
+/** A read state or a message with its one way forward, as a card. Review F2 (NV-075): the shared state card (icon circle,
+ * one line, one teal pill). */
+export function HoursStatusB({message,action,label='Time status',kind='locked'}:{message:ReactNode;action?:{label:ReactNode;onClick?:()=>void;href?:string;busy?:boolean};label?:string;kind?:BStateKind}){
+ return <BCard label={label}><BState kind={kind} line={message} action={action}/></BCard>;
 }
 export function HoursUnavailableB({message,onRefresh}:{message:string;onRefresh:()=>void}){
- return <HoursBScreen><HoursStatusB message={message} action={<BButton kind="quiet" full onClick={onRefresh}>Try again</BButton>}/></HoursBScreen>;
+ return <HoursBScreen><HoursStatusB kind="failed" message={message} action={{label:'Try again',onClick:onRefresh}}/></HoursBScreen>;
 }
 /** The frame's own states (paused, denied, loading, failed) on the page's hero. */
 export function HoursFrameStatusB({paused,denied,refreshing,refresh}:{paused:boolean;denied:boolean;refreshing:boolean;refresh:()=>void}){
- return <HoursBScreen><HoursStatusB label="Time access"
+ const offline=typeof navigator!=='undefined'&&navigator.onLine===false;
+ return <HoursBScreen><HoursStatusB label="Time access" kind={paused?(offline?'offline':'paused'):denied?'locked':refreshing?'loading':'failed'}
   message={paused?'Your time records are paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':refreshing?'Checking your current time records…':'Your records couldn’t be checked.'}
-  action={denied?<BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>:<BButton kind="quiet" full disabled={paused||refreshing} onClick={refresh}>{refreshing?'Checking…':'Try again'}</BButton>}/></HoursBScreen>;
+  action={denied?{label:'Sign in',href:'/login'}:paused||refreshing?undefined:{label:'Try again',onClick:refresh}}/></HoursBScreen>;
 }
 /** An earlier fix is still being checked: the way back to it, first on every Time page. */
 export function HoursRecoveryB({href}:{href:string}){
@@ -99,8 +101,9 @@ export function TimeTabB({data}:{data:Ready}){
    <BCardNote>Hours include breaks.</BCardNote>
   </BCard>
   {context?<LastWeekB authority={context.authority} date={data.date}/>:null}
-  {/* Desktop: the corrections sit under last week in the right column (the phone reaches them from Past timecards). */}
-  <div className="eb-desk"><BCard label="Your correction requests"><BList>
+  {/* The corrections sit under last week (the right column on desktop). Review F2 (NV-135): phones show them too, so
+    * both widths hold the same content. */}
+  <div className="eb-corrections"><BCard label="Your correction requests"><BList>
    <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
   </BList></BCard></div>
  </HoursBScreen>;

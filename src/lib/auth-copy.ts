@@ -59,7 +59,7 @@ const en = {
   recoveryEmailHint: "Use the email registered with your account.",
   requestRecovery: "Request recovery",
   requestingRecovery: "Requesting recovery…",
-  requestingRecoveryStatus: "Requesting recovery. Please wait.",
+  requestingRecoveryStatus: "Requesting recovery…",
   requestReceived: "Request received",
   haveRecoveryCode: "I already have a recovery code",
   cantUseEmail: "Can’t use your recovery email?",
@@ -79,7 +79,7 @@ const en = {
   enterItAgain: "Enter it again",
   resetPassword: "Reset password",
   resettingPassword: "Resetting password…",
-  resettingStatus: "Resetting password. Please wait.",
+  resettingStatus: "Resetting your password…",
   checkPasswords: "Check your passwords",
   useNewCode: "Use a new recovery code",
   checkSignInFirst: "Check your sign-in first",
@@ -138,6 +138,11 @@ const en = {
   notFound: {
     title: "Page not found", eyebrow: "Error 404",
     body: "This link doesn’t go anywhere in NEVORA. Check the address, or sign in to find what you need.", cta: "Go to sign in",
+    /** Review F2 (NV-316): the time clock hint, in the page's language. */
+    hintTitle: "Is this a time clock tablet?",
+    hintBody: "Set up this tablet again. A manager or Owner can get the current link in Settings, under Clocker tablets.",
+    clockerHintBody: "Ask a manager to set up this tablet again. They can get the current link in Settings, under Clocker tablets.",
+    notClocker: "Not a time clock?",
   },
 };
 
@@ -195,7 +200,7 @@ const es: AuthCopy = {
   recoveryEmailHint: "Usa el correo registrado en tu cuenta.",
   requestRecovery: "Solicitar recuperación",
   requestingRecovery: "Solicitando recuperación…",
-  requestingRecoveryStatus: "Solicitando recuperación. Espera un momento.",
+  requestingRecoveryStatus: "Solicitando recuperación…",
   requestReceived: "Solicitud recibida",
   haveRecoveryCode: "Ya tengo un código de recuperación",
   cantUseEmail: "¿No puedes usar tu correo de recuperación?",
@@ -215,7 +220,7 @@ const es: AuthCopy = {
   enterItAgain: "Escríbela otra vez",
   resetPassword: "Restablecer contraseña",
   resettingPassword: "Restableciendo contraseña…",
-  resettingStatus: "Restableciendo contraseña. Espera un momento.",
+  resettingStatus: "Restableciendo tu contraseña…",
   checkPasswords: "Revisa tus contraseñas",
   useNewCode: "Usa un código de recuperación nuevo",
   checkSignInFirst: "Primero intenta iniciar sesión",
@@ -271,6 +276,10 @@ const es: AuthCopy = {
   notFound: {
     title: "Página no encontrada", eyebrow: "Error 404",
     body: "Este enlace no lleva a ninguna parte de NEVORA. Revisa la dirección o inicia sesión para encontrar lo que necesitas.", cta: "Ir a iniciar sesión",
+    hintTitle: "¿Es una tableta de reloj de asistencia?",
+    hintBody: "Vuelve a configurar esta tableta. Un gerente o el dueño puede obtener el enlace actual en Settings, en Clocker tablets.",
+    clockerHintBody: "Pide a un gerente que vuelva a configurar esta tableta. Puede obtener el enlace actual en Settings, en Clocker tablets.",
+    notClocker: "¿No es un reloj de asistencia?",
   },
 };
 

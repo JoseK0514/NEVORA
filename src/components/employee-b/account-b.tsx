@@ -130,6 +130,8 @@ export function EmployeeDocumentB({doc, sub, back, documents}: {doc: PolicyDocum
           <summary><h2>{first.heading}</h2><CaretDownIcon className="eb-doc__caret" size={18} weight="bold" aria-hidden="true" /></summary>
           <div className="eb-read" id="b-doc-s0">{first.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
         </details> : null}
+        {/* Review F2 (NV-144): the page's one action is a white pill in the reading card's footer, not a grey slab on the canvas. */}
+        {doc.slug === 'account-deletion' ? <div className="eb-doc__foot"><BButtonLink href="/app/account/delete" kind="white">Review deletion request</BButtonLink></div> : null}
       </article>
       {rest.length ? <BCard title={SECTIONS_TITLE[doc.slug] ?? 'On this page'} id="b-doc-sections">
         <ul className="b-list">{rest.map((section, index) => <li className="b-li" key={section.heading}><details className="eb-doc__sec">
@@ -138,7 +140,6 @@ export function EmployeeDocumentB({doc, sub, back, documents}: {doc: PolicyDocum
           <div className="eb-read eb-doc__body" id={`b-doc-s${index + 1}`}>{section.blocks.map((block, index) => <BlockView key={index} block={block} context="employee" />)}</div>
         </details></li>)}</ul>
       </BCard> : null}
-      {doc.slug === 'account-deletion' ? <BButtonLink href="/app/account/delete" kind="quiet" full>Review deletion request</BButtonLink> : null}
       <nav className="eb-doc__links" aria-label="NEVORA policies and help">{documents.map(other => other.slug === doc.slug
         ? <span key={other.slug} aria-current="page">{shortTitle(other)}</span>
         : <Link key={other.slug} href={'/app/profile/' + other.slug}>{shortTitle(other)}</Link>)}</nav>

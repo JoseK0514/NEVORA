@@ -1,5 +1,6 @@
 // Approved frozen mobile Access v1 presentation copy; actual43-character proof contract retained.
 import type {AuthLang} from '@/lib/auth-copy';
+import {NUVORA_BRAND} from '@/lib/brand';
 const en={
   "activateAccount": "Activate account",
   "activateSub": "Open the invitation link your workplace sent to your email to set up your account.",
@@ -210,7 +211,7 @@ const en={
   "supportTitle": "Contact NEVORA support",
   "trySignIn": "Try signing in",
   "useDifferentCode": "Use a different code",
-  "welcome": "Brighter work ahead",
+  "welcome": NUVORA_BRAND.slogan,
   "welcomeHelp": "Your workplace creates your account first.",
   "welcomeSub": "Your schedule, your time, your team. Together in one place.",
   "workspaceUnavailable": "Workplace unavailable"
@@ -426,7 +427,7 @@ const es:MobileAccessCopy={
   "supportTitle": "Contacta al soporte de NEVORA",
   "trySignIn": "Intentar iniciar sesión",
   "useDifferentCode": "Usar otro código",
-  "welcome": "Un trabajo más brillante por delante",
+  "welcome": NUVORA_BRAND.sloganEs,
   "welcomeHelp": "Tu trabajo crea tu cuenta primero.",
   "welcomeSub": "Tu horario, tus horas y tu equipo. Juntos en un solo lugar.",
   "workspaceUnavailable": "No pudimos cargar tu lugar de trabajo"

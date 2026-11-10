@@ -11812,30 +11812,6 @@ body {
 }
 
 /* The employee trade picker keeps native form validation and a calm, readable menu. */
-.employee-shift-picker { position: relative; min-width: 0; display: grid; gap: 8px; }
-.employee-shift-picker-control { position: relative; min-width: 0; }
-.employee-shift-picker > label { color: var(--muted); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.4; }
-.employee-shift-picker-trigger { width: 100%; min-height: 64px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--color-border-subtle); border-radius: 12px; background: var(--color-bg-main); color: var(--color-brand-primary); font: inherit; text-align: left; cursor: pointer; }
-.employee-shift-picker-trigger:hover { background: var(--color-bg-surface); }
-.employee-shift-picker-trigger[aria-expanded="true"] { background: var(--color-bg-surface); border-color: var(--color-brand-accent); }
-.employee-shift-picker-trigger[aria-invalid="true"] { border-color: var(--color-state-danger); }
-.employee-shift-picker-trigger > svg { flex: 0 0 16px; color: var(--muted); }
-.employee-shift-picker-value { min-width: 0; display: grid; gap: 4px; }
-.employee-shift-picker-value > span { font-size: calc(16 * var(--type-unit, 1px)); line-height: 1.4; }
-.employee-shift-picker-value > strong { font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.35; font-variant-numeric: tabular-nums; }
-.employee-shift-picker-value > small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.4; }
-.employee-shift-picker-menu { position: absolute; z-index: 35; inset: calc(100% + 8px) 0 auto; padding: 6px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--color-border-subtle); border-radius: 12px; background: var(--color-bg-surface); box-shadow: var(--shadow-premium), 0 12px 32px rgba(0, 0, 0, .1); }
-.employee-shift-picker-menu.above { inset-block: auto calc(100% + 8px); }
-.employee-shift-picker-option { min-height: 76px; padding: 12px; display: grid; grid-template-columns: minmax(0, 1fr) 16px; align-items: center; gap: 12px; border-radius: 7px; cursor: pointer; }
-.employee-shift-picker-option.active { background: var(--color-bg-main); }
-.employee-shift-picker-option > svg { color: var(--color-brand-accent); }
-.employee-shift-picker-option-copy { min-width: 0; display: grid; gap: 4px; }
-.employee-shift-picker-option-copy > small { color: var(--muted); font-size: calc(10 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.4; letter-spacing: .05em; text-transform: uppercase; }
-.employee-shift-picker-option-copy > strong { color: var(--color-brand-primary); font-size: calc(14 * var(--type-unit, 1px)); font-weight: 500; line-height: 1.35; font-variant-numeric: tabular-nums; }
-.employee-shift-picker-option-copy > span { color: var(--muted); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.5; overflow-wrap: anywhere; }
-.employee-shift-picker-error { margin: 0; color: var(--color-state-danger); font-size: calc(12 * var(--type-unit, 1px)); line-height: 1.4; }
-.employee-exchange-detail-view .employee-shift-picker select:not(.sr-only) { height: 64px; padding-inline: 16px; border: 1px solid var(--color-border-subtle); border-radius: 12px; }
-.employee-exchange-detail-view .employee-shift-picker select.sr-only { width: 1px; height: 1px; min-height: 1px; padding: 0; border: 0; }
 
 /* Final Employee / Lead treatment. Fuel tokens stay local to this shell;
    Manager and Clocker retain their existing palette and approved geometry. */
@@ -11930,7 +11906,6 @@ body {
 .employee-shell .employee-timeoff-view .timeoff-tabs > a.selected,
 .employee-shell .employee-view-tabs > a.selected,
 .employee-shell .employee-timeoff-form .timeoff-setting-segmented button.selected,
-.employee-shell .employee-shift-picker-option.active { background: var(--employee-brand-soft); color: var(--color-brand-accent); }
 .employee-shell .employee-timeoff-view .timeoff-tabs > a:not(.selected):hover,
 .employee-shell .employee-view-tabs > a:not(.selected):hover { color: var(--color-brand-primary); }
 .employee-shell .employee-time-readiness-icon { background: var(--employee-brand-soft); color: var(--color-brand-accent); }
@@ -11943,7 +11918,7 @@ body {
 .employee-shell .timeoff-empty-state .employee-empty-icon { display: grid; }
 
 /* Quiet 140ms feedback throughout, with explicit keyboard focus. */
-.employee-shell :is(.employee-action, .employee-week-control > a, .mobile-nav-link, .employee-more-link, .timeoff-tabs > a, .employee-view-tabs > a, .employee-shift-picker-trigger, .employee-shift-picker-option, .availability-preferences-button, .timeoff-settings-cancel, .timeoff-settings-submit) { transition: background-color 140ms ease, color 140ms ease, opacity 140ms ease; }
+.employee-shell :is(.employee-action, .employee-week-control > a, .mobile-nav-link, .employee-more-link, .timeoff-tabs > a, .employee-view-tabs > a, .availability-preferences-button, .timeoff-settings-cancel, .timeoff-settings-submit) { transition: background-color 140ms ease, color 140ms ease, opacity 140ms ease; }
 .employee-shell :is(input:not([type="hidden"]), select, textarea):focus-visible { outline: 2px solid var(--color-brand-accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   /* The system preference must override component transition specificity. */
@@ -11952,8 +11927,6 @@ body {
 .employee-shell .employee-timeoff-form :is(.timeoff-settings-cancel, .timeoff-settings-submit):hover:not(:disabled) { transform: none; opacity: 1; }
 .employee-shell .employee-timeoff-form .timeoff-settings-submit:hover:not(:disabled) { background: var(--fuel-coffee); }
 .employee-shell .employee-timeoff-form .timeoff-settings-cancel:hover { background: var(--color-bg-main); }
-.employee-shell .employee-shift-picker-option.active .employee-shift-picker-option-copy > :is(small, span) { color: var(--fuel-coffee); }
-.employee-shell .employee-shift-picker-option-copy > :is(small, span) { color: color-mix(in srgb, var(--muted) 80%, var(--fuel-coffee)); }
 
 
 /* Phase 0 action geometry. Variants keep their existing portal colors. */
@@ -12744,7 +12717,6 @@ body {
  .shift-policy-disclosure { margin-bottom: 32px; }
 }
 .shift-slot > strong { font-size: calc(14 * var(--type-unit, 1px)); font-weight: 600; line-height: 1.35; font-variant-numeric: tabular-nums; }
-.employee-exchange-detail-view .employee-shift-picker-value > small { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
 /* Override the legacy settings page's 40px important minimum only for new review controls. */
 .schedule-settings-page .shift-policy-disclosure .policy-save-form input:not([type="hidden"]),
 .schedule-settings-page .shift-policy-disclosure .policy-save-form select { min-height: 44px !important; }

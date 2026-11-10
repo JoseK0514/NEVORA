@@ -60,7 +60,7 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).toContain('aria-invalid="true"');expect(html).toContain('Check your passwords');
   const pending=renderToStaticMarkup(<RecoveryReset hydrated busy done={false} message="" onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(pending).toMatch(/<fieldset[^>]*disabled=""/);expect(pending).toContain('aria-busy="true"');
-  expect(pending).toContain('Resetting password. Please wait.');
+  expect(pending).toContain('Resetting your password…');
  });
  it('keeps assisted identity attestation rather than exposing the employee request form',()=>{
   const html=renderToStaticMarkup(<AccountRecovery kind="assisted" actorId="QAOWNER"/>);

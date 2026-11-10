@@ -65,6 +65,6 @@ describe('Employee read failure notices without draft evidence',()=>{
  });
  it('keeps Planning failure truthful without exposing an unauthorized form',()=>{
   const html=renderToStaticMarkup(<PlanningFrame title="Time off" sub="Your requests" back="/app/requests" selection="time-off" state={{snapshot:null,refreshing:false,paused:false}} ready={false} refresh={()=>{}}>Private request form</PlanningFrame>);
-  expect(plain(html)).toContain('Your planning couldn’t be checked.');expect(plain(html)).toContain('Try again');expect(plain(html)).not.toContain('unsent entries');expect(plain(html)).not.toContain('Private request form');expect(html).toContain('href="/app/requests"');
+  expect(plain(html)).toContain('Your time off didn’t load.');expect(plain(html)).toContain('Try again');expect(plain(html)).not.toContain('unsent entries');expect(plain(html)).not.toContain('Private request form');expect(html).toContain('href="/app/requests"');
  });
 });

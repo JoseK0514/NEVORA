@@ -68,7 +68,8 @@ function ProfileBody({authority,lang,passkeys,policies,security,ending,lead,name
   {ending?<p className="c-note" role="status">Signing out…</p>:<>
    <EmployeeAccountView kind="profile" state={state} onRetry={refresh} quiet employeeMobile/>
    <EmployeeProfilePreferences lang={lang}/>
-   {security?<CorpCard id="profile-security" label="Security">
+   {/* Review F2 (NV-100): "Security" only while it holds passkeys; with deletion alone it is "Account" (as on the B screen). */}
+   {security?<CorpCard id="profile-security" label={passkeys?'Security':'Account'}>
     <CorpRows>
      {passkeys?<li><CorpRow id="profile-passkeys" href="/app/profile/passkeys" title="Passkeys" bold one/></li>:null}
      {policies?<li><CorpRow id="profile-account-deletion" href="/app/account/delete" title="Delete my account" bold one danger/></li>:null}

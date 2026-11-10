@@ -16,7 +16,8 @@ export async function generateMetadata({params}:{params:Promise<{document:string
 export default async function EmployeePolicyPage({params}:{params:Promise<{document:string}>}){
  if(!policiesVisible())notFound();
  const {document}=await params,doc=POLICY_DOCUMENTS.find(item=>item.slug===document);if(!doc)notFound();
- const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app/profile');
+ // Review F2 (NV-100): an Owner's or Manager's Profile holds the policies under "Privacy and terms", so the link opens it there.
+ const proof=await requireSessionMutationProof();if(!['EMPLOYEE','LEAD'].includes(proof.employee.role))redirect('/app/profile#profile-privacy');
  const sub=doc.effective?`Effective ${POLICY_FACTS.EFFECTIVE_DATE??'[CONFIRM_EFFECTIVE_DATE]'} · ${POLICY_OPERATOR}`:POLICY_OPERATOR;
  const back='/app/profile#profile-'+(doc.slug==='account-deletion'?'privacy':doc.slug);
  // Direction B on an Employee's phone (mock e-privacy, e-terms): the same text and links, before the Quiet page it replaces there.

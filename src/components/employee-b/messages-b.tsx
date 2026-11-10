@@ -17,7 +17,7 @@ import {CaretDownIcon} from '@phosphor-icons/react/dist/ssr/CaretDown';
 import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BSeg, BStack, type BTone} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BScreen, BSeg, BStack, BState, type BStateKind, type BTone} from '../owner-b/b-kit';
 import type {EmployeeNotificationItem} from '../../lib/employee-view';
 import {notificationKind, type NotificationKind} from '../../lib/notification-labels';
 import type {CommunicationRecoveryState} from '../../lib/communications/recovery';
@@ -31,22 +31,22 @@ import './account.css';
  * e-updates). The phone page (employee-mobile/messages.tsx) owns the reads, the session and every command; these screens
  * draw what it passes. */
 
-/** A read that hasn't arrived, or a notice with its own Try again. */
-export type BStatus = {copy: string; signIn?: boolean; retry?: {label: string; onClick: () => void; disabled?: boolean}};
+/** A read that hasn't arrived, or a notice with its own Try again. Review F2 (NV-075): the shared state card (icon circle,
+ * one line, one teal pill); without `kind`, signed out is locked, an available retry means it failed, else it is checking. */
+export type BStatus = {copy: string; signIn?: boolean; retry?: {label: string; onClick: () => void; disabled?: boolean}; kind?: BStateKind};
 export function BStatusCard({status, title}: {status: BStatus; title?: string}) {
+  const kind: BStateKind = status.kind ?? (status.signIn ? 'locked' : status.retry && !status.retry.disabled ? 'failed' : 'loading');
+  const waiting = kind === 'paused' || kind === 'offline';
   return <BCard title={title}>
-    <div className="eb-status">
-      <p className="b-state" role="status">{status.copy}</p>
-      {status.signIn ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>
-        : status.retry ? <BButton kind="quiet" full onClick={status.retry.onClick} disabled={status.retry.disabled}>{status.retry.label}</BButton> : null}
-    </div>
+    <BState kind={kind} line={status.copy} action={status.signIn ? {label: 'Sign in', href: '/login'}
+      : status.retry && !waiting ? {label: status.retry.label, onClick: status.retry.onClick, busy: status.retry.disabled} : undefined}/>
   </BCard>;
 }
 
 /** The submission status (MessageRecovery's copy and actions). */
 export function BMessageRecovery({state, allowed, onLookup, onRetry}: {state: CommunicationRecoveryState; allowed: boolean; onLookup: () => void; onRetry: () => void}) {
   if (!state.pending && !state.notice && !state.hasUnknown) return null;
-  const copy = state.pending ? 'Checking your submission…' : state.hasUnknown ? 'The result hasn’t been confirmed. Check the original submission before trying anything new.' : state.notice === 'committed' ? 'Sent. Refresh to see its status.' : state.notice === 'conflict' ? 'This update or its audience changed. Review the current details before submitting again.' : state.notice === 'signed-out' ? 'Your session ended. Sign in again to continue.' : state.notice === 'blocked' ? 'This update changed. Refresh to see the latest.' : 'Your submission couldn’t be checked. Refresh to continue.';
+  const copy = state.pending ? 'Checking…' : state.hasUnknown ? 'We couldn’t confirm it was sent. Check its status before sending anything new.' : state.notice === 'committed' ? 'Sent. Refresh to see its status.' : state.notice === 'conflict' ? 'This update or its audience changed. Review the current details before submitting again.' : state.notice === 'signed-out' ? 'Your session ended. Sign in again to continue.' : state.notice === 'blocked' ? 'This update changed. Refresh to see the latest.' : 'We couldn’t check it. Refresh to continue.';
   return <section className="b-card" aria-label="Submission status"><div className="eb-status">
     <p className="b-state" role="status">{copy}</p>
     {state.hasUnknown ? <div className="eb-btns">

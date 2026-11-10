@@ -71,8 +71,8 @@
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__label { font-size: 13.5px; line-height: 18px; font-weight: 600; color: #6A7176; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__help { font-size: 13px; line-height: 18px; color: #6A7176; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-field__row { gap: 12px; }
-  /* Fields: 48px, a 1px #D5DADC ring, 14px corners (16px type so iOS doesn't zoom). */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in { height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background-color: #FFFFFF; box-shadow: inset 0 0 0 1px #D5DADC; color: #111517; font-size: 16px; }
+  /* Fields: 48px, a 1px #8C9397 ring (3:1), 14px corners (16px type so iOS doesn't zoom). */
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in { height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background-color: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: #111517; font-size: 16px; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix select.c-in { padding-right: 40px; background-position: right 14px center; }
   /* An unchosen select reads as a placeholder (grey), like the empty time fields beside it. */
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix select.c-in:has(option[value=""]:checked) { color: var(--b-grey, #6A7176) !important; }
@@ -82,7 +82,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in[aria-invalid="true"] { box-shadow: inset 0 0 0 2px #B42318; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-in:disabled { background-color: #F7F8F8; color: #6A7176; }
   /* What to fix (when there is a choice): selectable rows in a ringed group. */
-  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices { overflow: hidden; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5DADC; }
+  :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices { overflow: hidden; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row { min-height: 56px; padding: 10px 14px; gap: 12px; cursor: pointer; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices > .c-row + .c-row { box-shadow: inset 0 1px 0 #ECEEEF; }
   :is(#c-root, html) .app-shell[data-nv-b] .c-page > .eb-fix .c-hours-choices .c-row__title { font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }

@@ -73,9 +73,9 @@ html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-
   html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .pfx-lang-row .ap-lang:not(#pfx) { margin-left: 0; max-width: 100%; flex-wrap: wrap; border-radius: 1.25rem; }
 }
 
-/* Sign out: a calm full-width row in red. */
-html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row:not(#pfx) { justify-content: center; color: #B42318; }
-html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row svg:not(#pfx) { color: #B42318; }
+/* Sign out: a calm full-width row in ink (review NV-098: red is for Delete and Turn off). */
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row:not(#pfx) { justify-content: center; color: #111517; }
+html body .app-shell.nevora-portal.nevora-portal.nevora-portal .page-frame.page-frame .pfx .profile-signout-row svg:not(#pfx) { color: #111517; }
 
 @media (forced-colors: active) {
   html body .app-shell.nevora-portal .page-frame .pfx :is(.pk-section > .pk-body, .employee-profile-panel > .employee-profile-details, .profile-settings-list, .profile-signout) { border: 1px solid CanvasText; }

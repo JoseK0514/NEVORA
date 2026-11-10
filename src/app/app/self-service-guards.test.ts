@@ -33,7 +33,6 @@ vi.mock("@/components/nav-icon", () => import("../../components/nav-icon"));
 vi.mock("@/components/page-header", () => import("../../components/page-header"));
 vi.mock("@/components/status-pill", () => import("../../components/status-pill"));
 vi.mock("@/components/employee-submit-button", () => import("../../components/employee-submit-button"));
-vi.mock("@/components/employee-shift-picker", () => import("../../components/employee-shift-picker"));
 vi.mock("@/app/app/exchange/actions", () => import("./exchange/actions"));
 vi.mock("@/app/app/exchange/callout/actions", () => import("./exchange/callout/actions"));
 vi.mock("next/navigation", () => ({ redirect: (path: string) => { throw new Error(`redirect:${path}`); } }));

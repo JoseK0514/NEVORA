@@ -288,7 +288,7 @@ const blocked:Record<string,string>={stale_source:'Your time records changed. Re
 export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActive,otherPending,onSubmit,onRetry,onReset,onRefresh,onEdit,cancel}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;basis:string;edit:string;draft:HoursDraft|undefined;onDraft:(draft:HoursDraft)=>void;operation:HoursCorrectionOperation;isActive:boolean;otherPending:boolean;onSubmit:(payload:HoursCorrectionPayload)=>void;onRetry:()=>void;onReset:()=>void;onRefresh:()=>void;onEdit:(edit:string)=>void;cancel:string}){
  useSyncExternalStore(operation.subscribe,operation.snapshot,operation.snapshot);
  const zone=snapshot.timeZone,info=resolveHoursEdit(snapshot,edit),readyDraft=draft??(info?initialHoursDraft(info,basis,zone,snapshot.locations):null);
- const [error,setError]=useState<{field:keyof HoursDraft;message:string}|null>(null),uid=useId(),errorId=uid+'error',formId=uid+'form',whatId=uid+'what',form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null),receiptB=useRef<HTMLHeadingElement>(null);
+ const [error,setError]=useState<{field:keyof HoursDraft;message:string}|null>(null),[blank,setBlank]=useState<(keyof HoursDraft)[]>([]),uid=useId(),errorId=uid+'error',formId=uid+'form',whatId=uid+'what',form=useRef<HTMLFormElement>(null),receipt=useRef<HTMLHeadingElement>(null),receiptB=useRef<HTMLHeadingElement>(null);
  const pending=operation.pending,uncertain=operation.uncertain,recorded=isActive&&operation.result?.status==='recorded',locked=pending||uncertain||recorded||otherPending,stale=!!readyDraft&&readyDraft.basis!==basis;
  // The receipt's heading takes focus: the phone screen's when it shows, else the corporate one.
  useEffect(()=>{if(recorded)(receiptB.current?.getClientRects().length?receiptB.current:receipt.current)?.focus();},[recorded]);
@@ -311,14 +311,19 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
  </>;
  if(!info||!readyDraft)return <><CorpHoursSheetHead cancel={cancel}/><CorpHoursUnavailable message="This time can’t be fixed from here right now. Go back to your time or refresh to check again." onRefresh={onRefresh}/></>;
  const missing=info.kind==='MISSING_ENTRY',unconfirmed=!missing&&info.context.state!=='confirmed';
- const change=(patch:Partial<HoursDraft>)=>{setError(null);const next={...readyDraft,...patch};
+ const change=(patch:Partial<HoursDraft>)=>{setError(null);setBlank(current=>current.filter(field=>!(field in patch)));const next={...readyDraft,...patch};
   // One Day field: an end earlier than the start is the next morning (overnight on the start day).
   if('startDate' in patch||'startTime' in patch||'endTime' in patch)next.endDate=next.startDate&&next.startTime&&next.endTime&&next.endTime<next.startTime?addDays(next.startDate,1):next.startDate;
   onDraft(next);};
- const shown=(field:keyof HoursDraft)=>error?.field===field||(field==='endTime'&&error?.field==='endDate');
- const attr=(field:keyof HoursDraft)=>({'aria-invalid':shown(field)||undefined,'aria-describedby':shown(field)?errorId:undefined});
+ // Review F2 (NV-112): pressing Send marks every empty field at once, each with its own message under it (the first is
+ // focused); the first rule the proposal breaks keeps its own message as before.
+ const BLANK:Partial<Record<keyof HoursDraft,string>>={locationId:'Choose the location where you worked.',startDate:'Choose a day.',startTime:'Choose a start time.',endTime:'Choose an end time.',reason:'Add a short note for your manager.'};
+ const ownError=(field:keyof HoursDraft)=>error?.field===field||(field==='endTime'&&error?.field==='endDate');
+ const shown=(field:keyof HoursDraft)=>ownError(field)||blank.includes(field);
+ const idFor=(field:keyof HoursDraft)=>ownError(field)?errorId:errorId+'-'+field;
+ const attr=(field:keyof HoursDraft)=>({'aria-invalid':shown(field)||undefined,'aria-describedby':shown(field)?idFor(field):undefined});
  // Round 4: an error sits right under the field it names (the form-level line is only for anything else).
- const under=(field:keyof HoursDraft)=>shown(field)?{error:message,errorId}:{};
+ const under=(field:keyof HoursDraft)=>ownError(field)?{error:message,errorId}:blank.includes(field)?{error:BLANK[field],errorId:idFor(field)}:{};
  const focus=(field:keyof HoursDraft|undefined)=>form.current?.querySelector<HTMLElement>('[name="'+(field==='endDate'?'endTime':field)+'"]')?.focus();
  // What to fix: a shift with no punches, the latest recorded days, and the breaks of the day being fixed.
  const key=(t:{kind:string;timeEntryId:string;breakEntryId:string|null})=>t.kind==='ENTRY_BOUNDARY'?'entry:'+t.timeEntryId:'break:'+t.timeEntryId+':'+t.breakEntryId;
@@ -346,8 +351,9 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
    <div className="c-btns"><CorpButton kind="secondary" size="sm" disabled={locked} onClick={()=>onDraft({...readyDraft,basis})}>Review updated records</CorpButton><CorpButton kind="secondary" size="sm" disabled={locked} onClick={()=>onDraft({...initialHoursDraft(info,basis,zone,snapshot.locations),reason:readyDraft.reason})}>Use current times</CorpButton></div></div>:null}
   {unconfirmed?<div className="c-callout c-hours-stack" role="status"><span>Your current times couldn’t be confirmed. Refresh before sending a fix.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRefresh}>Refresh</CorpButton></div></div>:null}
   <form id={formId} className="c-form" ref={form} noValidate aria-busy={pending} aria-labelledby="hours-title" onSubmit={event=>{event.preventDefault();if(disabled)return;
-   if(missing&&!snapshot.locations.some(l=>l.id===readyDraft.locationId)){setError({field:'locationId',message:'Choose a currently available work location.'});focus('locationId');return;}
-   const result=buildHoursProposal(readyDraft,info,crypto.randomUUID(),zone);if(!result.payload){setError(result.error);focus(result.error?.field);return;}setError(null);onSubmit(result.payload);}}>
+   const empty=(['locationId','startDate','startTime','endTime','reason'] as const).filter(field=>(field!=='locationId'||missing)&&!readyDraft[field].trim());
+   if(missing&&!snapshot.locations.some(l=>l.id===readyDraft.locationId)){setError({field:'locationId',message:'Choose a currently available work location.'});setBlank(empty.filter(field=>field!=='locationId'));focus('locationId');return;}
+   const result=buildHoursProposal(readyDraft,info,crypto.randomUUID(),zone);if(!result.payload){setError(result.error);setBlank(empty.filter(field=>field!==result.error?.field));focus(empty[0]??result.error?.field);return;}setError(null);setBlank([]);onSubmit(result.payload);}}>
    <fieldset className="c-hours-fieldset" disabled={locked}>
     <div className={options.length>1?'c-field':'c-field eb-fix-one'}><span className="c-field__label" id={whatId}>What to fix</span>
      <div className="c-card c-hours-choices" role="radiogroup" aria-labelledby={whatId}>
@@ -362,8 +368,8 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
     <CorpField label="Day" htmlFor={uid+'day'} help={recordedHelp} {...under('startDate')}><select id={uid+'day'} name="startDate" className="c-in" value={readyDraft.startDate} {...attr('startDate')} onChange={e=>change({startDate:e.target.value})}>
      {readyDraft.startDate?null:<option value="">Choose a day</option>}{dates.map(date=><option key={date} value={date}>{date===today?`Today, ${dayMedium(date).split(', ')[1]}`:dayMedium(date)}</option>)}</select></CorpField>
     <div className="c-field__row">
-     <CorpField label="Start" htmlFor={uid+'start'} {...under('startTime')}><TimeInput id={uid+'start'} name="startTime" placeholder="Choose" value={readyDraft.startTime} invalid={shown('startTime')} describedBy={shown('startTime')?errorId:undefined} onValue={value=>change({startTime:value})}/></CorpField>
-     <CorpField label="End" htmlFor={uid+'end'} {...under('endTime')}><TimeInput id={uid+'end'} name="endTime" placeholder="Choose" value={readyDraft.endTime} invalid={shown('endTime')} describedBy={shown('endTime')?errorId:undefined} onValue={value=>change({endTime:value})}/></CorpField>
+     <CorpField label="Start" htmlFor={uid+'start'} {...under('startTime')}><TimeInput id={uid+'start'} name="startTime" placeholder="Choose" value={readyDraft.startTime} invalid={shown('startTime')} describedBy={shown('startTime')?idFor('startTime'):undefined} onValue={value=>change({startTime:value})}/></CorpField>
+     <CorpField label="End" htmlFor={uid+'end'} {...under('endTime')}><TimeInput id={uid+'end'} name="endTime" placeholder="Choose" value={readyDraft.endTime} invalid={shown('endTime')} describedBy={shown('endTime')?idFor('endTime'):undefined} onValue={value=>change({endTime:value})}/></CorpField>
     </div>
     <CorpField label="Note (required)" htmlFor={uid+'note'} {...under('reason')}><textarea id={uid+'note'} name="reason" className="c-in" rows={3} maxLength={500} value={readyDraft.reason} {...attr('reason')} onChange={e=>change({reason:e.target.value})}/></CorpField>
    </fieldset>

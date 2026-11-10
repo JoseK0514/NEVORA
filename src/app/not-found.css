@@ -35,6 +35,9 @@ html:has(body .nf-page), body:has(.nf-page) { background: #F2F5F4; }
 .nf-card { padding: 22px; border-radius: 22px; box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 12px 28px -12px rgb(16 40 38 / .18); }
 .not-found-text { font-size: 15.5px; line-height: 23px; color: #3F464B; }
 .not-found-hint { background: #FDF3E4; color: #6E3C00; }
+/* Review F2 (NV-316): the hint leads with a 20px bold tablet glyph. */
+.not-found-hint { display: flex; align-items: flex-start; gap: 10px; }
+.not-found-hint > svg { flex: none; margin-top: 1px; color: #6E3C00; }
 .nf-cta { width: fit-content; min-height: 48px; margin: 20px 0 0; padding: 0 24px; border-radius: 24px; background: #0C726C; font-size: 15.5px; font-weight: 700; box-shadow: 0 8px 18px -8px rgb(11 110 105 / .6); }
 .nf-cta:hover { background: #0B6E69; }
 .nf-cta:focus-visible { outline: 2px solid #0B6E69; }

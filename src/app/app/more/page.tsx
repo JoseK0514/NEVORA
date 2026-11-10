@@ -71,7 +71,7 @@ async function EmployeeMoreCorp({ firstName, lastName, workspaceName }: { firstN
         <li><CorpRow href="/privacy" title="Privacy and terms" one /></li>
       </CorpRows>
     </CorpCard>
-    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--danger c-btn--full">Sign out</button></PortalSignout>
+    <PortalSignout className="c-more__signout"><button type="submit" className="c-btn c-btn--secondary c-btn--full">Sign out</button></PortalSignout>
   </CorpPage>;
 }
 
@@ -117,6 +117,7 @@ export default async function MorePage() {
   const settings = owner && pathEnabled("/app/settings", brand.modules);
   const name = `${session.firstName} ${session.lastName}`;
   const company = workspace.name;
+  // Review F2 (NV-105): "you" is drawn as in the header (white circle, teal initials, more-corp.css), as on Profile.
   // Owner premium A9 (structure-experience 2.5): one clean list, opened from the header avatar. You, then Insights and
   // Updates, then Settings (every business setting lives there, once) and Help, then Sign out as a quiet red row. More is
   // an ordinary pushed page: "‹ Home" on a phone, no Done. Only destinations the role has. Notifications is the bell.
@@ -125,7 +126,7 @@ export default async function MorePage() {
     <CorpTitle id="more-title" title="More" wide />
     <CorpSection ariaLabel="You"><CorpCard as="div">
       <CorpRows label="You"><li><CorpRow href="/app/profile" bold title={name} detail={`${owner ? "Owner" : "Manager"} · ${company}`}
-        label={`Your profile, ${name}`} avatar={<CorpAvatar name={name} initials={initialsOf(name)} />} chevron /></li></CorpRows>
+        label={`Your profile, ${name}`} avatar={<CorpAvatar initials={initialsOf(name)} />} chevron /></li></CorpRows>
     </CorpCard></CorpSection>
     {/* Owner premium R5: each group is a section, 32px from the next (12px inside one); More's groups need no visible label. */}
     {has("/app/reports") || has("/app/updates") || has("/app/my-pay") || has("/app/ai-manager") ? <CorpSection ariaLabel="Work"><CorpCard as="div">

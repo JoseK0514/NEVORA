@@ -20,6 +20,8 @@ export function PlanningFrame({title,sub,back,backLabel='Requests',selection,sta
  // eslint-disable-next-line react-hooks/exhaustive-deps -- focus moves once per selection, as before; `b` is the screen, not a trigger.
  },[ready,selection]);
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
+ // Review F2 (NV-148): the state names the page's own subject, not "planning" (the two planning pages).
+ const noun=title==='Availability'?'availability':'time off';
  return <div className={'c-page c-page--narrow tof-frame em-planning'+(sheet?' tof-frame--sheet':'')} data-corp="" data-planning-selection={selection} data-planning-state={state.paused?'paused':ready?'ready':denied?'denied':state.refreshing?'loading':'unavailable'}>
   {b??null}
   {/* Upscale M2: Request time off reads as a sheet on a phone (grabber, 16px top corners, no tab bar). */}
@@ -30,7 +32,7 @@ export function PlanningFrame({title,sub,back,backLabel='Requests',selection,sta
   </div>
   {sub?<p className="tof-sub">{sub}</p>:null}
   {ready?children:<section className="c-card" aria-label="Planning access"><div className="c-card__body">
-   <p className="tof-state" role="status">{state.paused?'Your planning is paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current planning…':'Your planning couldn’t be checked.'}</p>
+   <p className="tof-state" role="status">{state.paused?`${noun[0].toUpperCase()+noun.slice(1)} is paused. Return to this page or reconnect to refresh.`:denied?'Your access changed. Sign in again to continue.':state.refreshing?`Loading your ${noun}…`:`Your ${noun} didn’t load.`}</p>
    {denied?<Link href="/login" className="c-btn c-btn--secondary c-btn--md c-btn--full">Sign in</Link>:state.refreshing||state.paused?null:<button className="c-btn c-btn--secondary c-btn--md c-btn--full" type="button" onClick={refresh}>Try again</button>}
   </div></section>}
  </div>;

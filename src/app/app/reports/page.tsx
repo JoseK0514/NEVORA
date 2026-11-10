@@ -9,12 +9,13 @@ import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {Reports} from '@/components/reports';
 import {ReportsEntrance} from '@/components/reports-entrance';
-import {redirect} from 'next/navigation';
+import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 export const metadata = { title: "Insights" };
 
 export default async function ReportsPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
-  if(!isManagerRole(session.role))redirect('/app');
+  // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice title="Insights" reason="Insights is for Owners and Managers." help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
   const access=await withOperationalCompany(await requireSessionMutationProof(),async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Insights unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();

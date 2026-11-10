@@ -12,3 +12,35 @@
   :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-phone { display: none; }
   :is(#q-root, html) .app-shell[data-nv-corp] .premium-manager-profile .pmp-device-other { display: inline; }
 }
+
+/* ---------- Review F2 (Nov 10, 2026) ---------- */
+/* NV-096: on a phone the person is the page's title, so it sits in the band like every other secondary page (title 28/34
+ * white, "Owner · company" as the band's sub-line) and the details card lifts over the teal. Desktop already does this
+ * (owner-b-desktop.css). NV-105: your own face is drawn as in the header, a white circle with teal initials. */
+@media (max-width: 767px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who:not(#nvd-none) {
+    position: relative !important; z-index: 1 !important; gap: 14px !important; margin: -16px 0 0 !important; padding: 18px 20px 62px !important; box-shadow: 0 -2px 0 #08504C !important;
+    background: #08504C !important; color: #FFFFFF !important;
+  }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who h1:not(#nvd-none) { font: 700 28px/34px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: -0.03em !important; color: #FFFFFF !important; overflow-wrap: anywhere; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who p:not(#nvd-none) { margin: 2px 0 0 !important; font-size: 14px !important; line-height: 19px !important; color: var(--b-on-band-2, rgb(255 255 255 / .86)) !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who .q-av:not(#nvd-none) { width: 52px !important; height: 52px !important; border-radius: 26px !important; background: #FFFFFF !important; color: #0B6E69 !important; font-size: 18px !important; font-weight: 700 !important; box-shadow: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who ~ #profile-details-list:not(#nvd-none) { position: relative !important; z-index: 2 !important; margin-top: -44px !important; }
+}
+/* NV-105 on tablets and desktop, where the avatar shows: the same white circle and teal initials. */
+@media (min-width: 768px) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .pmp-content > .q-who .q-av:not(#nvd-none) { background: #FFFFFF !important; color: #0B6E69 !important; font-weight: 700 !important; }
+}
+/* NV-011: on tablets and desktop More is not a sidebar or rail entry (it opens from the account menu), so Profile's band
+ * has no "‹ More"; Edit keeps its place at the right. */
+@media (min-width: 1024px), (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .q-nav > .q-nav__l[href="/app/more"]:not(#nvd-none) { display: none !important; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .q-page.premium-manager-profile > .q-nav > .q-nav__r:not(#nvd-none) { margin-left: auto !important; }
+}
+/* NV-225: an open disclosure keeps its summary's divider and its rows sit in an inset block (the q-disclose__body look:
+ * 12px radius, #F2F5F4 fill, 16px in), so they read as its children, not siblings. A switch row is two columns, the
+ * switch beside its label, centred, at least 64px tall. */
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile .q-details[open] > summary.q-row:not(#nvd-none)::after { display: block !important; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile .q-details[open] > ul.q-list:not(#nvd-none) { margin: 0 16px 12px !important; padding: 0 !important; border-radius: 12px !important; background: #F2F5F4 !important; box-shadow: none !important; overflow: hidden; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile .q-details[open] > ul.q-list > li > :is(a, button, div).q-row:not(#nvd-none) { padding-left: 16px !important; background: transparent; }
+:is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell) .q-page.premium-manager-profile button.q-row.pmp-switch-row:not(#nvd-none) { display: grid !important; grid-template-columns: minmax(0, 1fr) auto !important; align-items: center !important; column-gap: 16px !important; min-height: 64px !important; }

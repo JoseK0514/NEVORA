@@ -120,10 +120,10 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btn:focus-visible { outline: 2px solid #0B6E69 !important; outline-offset: 2px !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns { display: flex; gap: 8px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep:not(.c-avail--phone) .c-btns > .c-btn { flex: 1; min-width: 0; }
-  /* Fields: 13.5px grey labels 6px above 48px fields (1px #D5DADC, 14px corners); a 96px reason; 13px grey hints. */
+  /* Fields: 13.5px grey labels 6px above 48px fields (1px #8C9397, 3:1, 14px corners); a 96px reason; 13px grey hints. */
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-field__label, .c-xs-group > legend) { font-size: 13.5px !important; line-height: 18px !important; font-weight: 600 !important; color: #6A7176 !important; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep .c-in {
-    height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5DADC; color: #111517; font-size: 15.5px; line-height: 20px;
+    height: 48px; padding: 0 14px; border: 0; border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); color: #111517; font-size: 15.5px; line-height: 20px;
   }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep textarea.c-in { display: block; height: 96px; padding: 13px 14px; font-size: 16px; resize: none; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page:has(> .b-screen) > .b-keep :is(.c-in:focus, .c-in:focus-within, .tof-pick:has(> input:focus)) { box-shadow: inset 0 0 0 2px #0B6E69; outline: none; }
@@ -174,7 +174,7 @@
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__label { font-size: 13px; line-height: 18px; font-weight: 600; color: #6A7176; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-shift__time { font-size: 15.5px; line-height: 21px; font-weight: 600; color: #111517; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep :is(.c-xs-shift__place, .c-xs-option__main span) { font-size: 13.5px; line-height: 18px; color: #6A7176; }
-  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options { border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px #D5DADC; overflow: hidden; }
+  :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options { border-radius: 14px; background: #FFFFFF; box-shadow: inset 0 0 0 1px var(--b-field-edge, #8C9397); overflow: hidden; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option { min-height: 56px; padding: 10px 14px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-option--one { min-height: 48px; padding-top: 4px; padding-bottom: 4px; }
   :is(#c-root, html) :is(#c-root, body) :is(#c-root, .app-shell)[data-nv-b][data-nv-b][data-nv-b] .c-page.em-creation:has(> .b-screen) > .b-keep .c-xs-options > li + li > .c-xs-option { box-shadow: inset 0 1px 0 #ECEEEF; }

@@ -8,6 +8,7 @@ import { ReceiptIcon } from '@phosphor-icons/react/dist/ssr/Receipt';
 import { SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
 import { PauseCircleIcon } from '@phosphor-icons/react/dist/ssr/PauseCircle';
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr/CaretRight';
 import { Card, KitLink, Row, Rows, Tile } from '@/components/kit/kit';
 import { phoneDisplay } from '@/components/team/phone';
@@ -193,7 +194,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
     {read.kind === 'denied' ? <Link className="q-btn q-btn--quiet" href="/login">Sign in</Link> : null}
     <ul className="q-list" style={{ marginTop: 32 }} aria-label="Notifications and account">
       <li><details className="q-details" id="profile-notifications"><summary className="q-row q-row--one"><span className="q-rt"><b>Notifications</b></span>
-        <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
+        <span className="q-rv q-rv--l">{onCount === null ? read.head ?? '' : onCount ? 'On' : 'Off'}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
         <ul className="q-list" id="profile-alerts-list" tabIndex={-1} aria-label="You’re told about">
           {shown ? shown.alerts.map(topic => <TopicRow key={topic.id} topic={topic} save={saves[topic.id]} on={overrides[topic.id] ?? topic.on} onToggle={ready ? onToggle : undefined} />)
             : <li><p className="q-help" style={{ margin: '0 20px 12px 36px' }}>{read.kind === 'loading' ? 'Checking…' : note}</p>
@@ -205,7 +206,7 @@ export function ManagerProfileView({ identity, state, onRetry, saves = {}, overr
       {identity.deviceAlerts
         // Nov 1 upscale: a row like its neighbours (label and chevron; the settings it opens say whether they're on), named
         // for the device in hand: "this phone" on a phone, "this device" on tablets and desktop.
-        ? <li><button type="button" className="q-row q-row--one" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></button></li>
+        ? <li><button type="button" className="q-row q-row--one" id="profile-device-alerts" popoverTarget="portal-device-settings"><span className="q-rt"><b>Alerts on this <span className="pmp-device-phone">phone</span><span className="pmp-device-other">device</span></b></span><CaretRightIcon className="q-chev" aria-hidden="true" /></button></li>
         : null}
       {accountCards}
     </ul>
@@ -235,6 +236,21 @@ export function ManagerProfileLive({ identity, initial = null, accountCards = nu
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const inFlight = useRef(new Set<string>());
   const control = useRef<ReturnType<typeof createPrivateSnapshotController<ManagerProfileSnapshot>> | null>(null);
+
+  useEffect(() => {
+    // Review F2 (NV-100): a deep link (/app/profile/privacy, /passkeys, /device-alerts) lands here with the section's id
+    // as the hash; open that section (or bring its row into view) instead of the bare page.
+    const reveal = () => {
+      const target = window.location.hash.length > 1 ? document.getElementById(decodeURIComponent(window.location.hash.slice(1))) : null;
+      if (!target || !target.closest('.premium-manager-profile')) return;
+      if (target instanceof HTMLDetailsElement) target.open = true;
+      target.scrollIntoView({ block: 'nearest' });
+      (target instanceof HTMLDetailsElement ? target.querySelector<HTMLElement>(':scope > summary') : target)?.focus({ preventScroll: true });
+    };
+    const frame = requestAnimationFrame(reveal);
+    window.addEventListener('hashchange', reveal);
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('hashchange', reveal); };
+  }, []);
 
   useEffect(() => {
     // Same privacy rhythm as the employee Profile: details clear when the window is left, and re-read on return.

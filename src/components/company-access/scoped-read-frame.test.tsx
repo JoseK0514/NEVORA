@@ -31,7 +31,10 @@ let dispose:void|(()=>void);
 let view:ReturnType<typeof ScopedReadFrame>;
 function activateRecovery(){
  if(!isValidElement<{children:ReactNode}>(view))throw Error('Recovery view unavailable');
- const button=Children.toArray(view.props.children).find(child=>isValidElement(child)&&child.type==='button');
+ // Review F2 (NV-074): while checking, the state section sits beside the Direction B placeholder in a page wrapper.
+ const section=view.type==='section'?view:Children.toArray(view.props.children).find(child=>isValidElement(child)&&child.type==='section');
+ if(!isValidElement<{children:ReactNode}>(section))throw Error('Recovery view unavailable');
+ const button=Children.toArray(section.props.children).find(child=>isValidElement(child)&&child.type==='button');
  if(!isValidElement<{onClick?:()=>void}>(button)||typeof button.props.onClick!=='function')throw Error('Recovery action unavailable');
  button.props.onClick();
 }

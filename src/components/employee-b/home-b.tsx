@@ -7,7 +7,7 @@ import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimpl
 import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
 import {ArrowsLeftRightIcon} from '@phosphor-icons/react/dist/ssr/ArrowsLeftRight';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, compactRange, type BLiveItem} from '../owner-b/b-kit';
+import {BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BNote, BRow, BScreen, BStack, BState, compactRange, type BLiveItem} from '../owner-b/b-kit';
 import {HOME_SOURCES} from '../../lib/employee-home/project';
 import type {AttentionItem, HomeSnapshot, PublishedAssignment} from '../../lib/employee-home/types';
 import {unpublishedNote} from '../../lib/publication-note';
@@ -206,10 +206,15 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
   const todoRow = ({key, item, week: confirm}: HomeTodo) => {
     const title = keepWhole(confirm ? weekTodo(item).title : todoTitle(item));
     const sub = confirm ? weekTodo(item).detail : item.deadlineAt && snapshot ? `Respond by ${keepWhole(fmt(snapshot.timeZone, {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'}).format(new Date(item.deadlineAt)))}` : undefined;
+    // Review F2 (NV-078): every required to-do is a row with an amber "Action needed" chip and a chevron; only the most
+    // urgent (the first required one) keeps the teal Review pill, so the card has one primary action.
     return item.required
-      ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub} label={`${title}, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+      ? key === firstRequired
+        ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} label={`${title}, action needed, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
+        : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} chip={<BChip tone="amber">Action needed</BChip>} sub={sub} chevron label={`${title}, action needed`}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
   };
+  const firstRequired = todos.find(todo => todo.item.required)?.key;
   const screen = <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
     {/* Review B1 (NV-160): one way to message the team, in the Today’s team card (the band’s copy is gone). */}
@@ -244,11 +249,9 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
         </div> : weekShown ? <ComingUp week={weekShown} snapshot={snapshot} lead={lead} note={note}/> : note ? <BNote>{note}</BNote> : null}
         {!todos.length && !partial ? <BNote>You’re all set. Nothing needs you right now.</BNote> : null}
       </> : <BCard title="Next shift" id="b-home-shift">
-        <div className="eb-status">
-          <p className="b-state" role="status">{waiting}</p>
-          {!loading && !paused ? denied ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>
-            : <BButton kind="quiet" full onClick={onRetry} disabled={refreshing}>{refreshing ? 'Checking…' : 'Try again'}<span className="b-sr"> to load Home</span></BButton> : null}
-        </div>
+        {/* Review F2 (NV-075): the shared state card (icon circle, one line, one teal pill), not a full grey button. */}
+        <BState kind={loading ? 'loading' : paused ? (typeof navigator !== 'undefined' && navigator.onLine === false ? 'offline' : 'paused') : denied ? 'locked' : 'failed'} line={waiting}
+          action={loading || paused ? undefined : denied ? {label: 'Sign in', href: '/login'} : {label: <>Try again<span className="b-sr"> to load Home</span></>, onClick: onRetry, busy: refreshing}}/>
       </BCard>}
     </BStack>
   </BScreen>;

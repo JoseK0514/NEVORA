@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { PASSKEY_COPY } from "@/lib/passkeys/copy";
 import {PasskeyDesktopView} from "./passkey-desktop-view";
+import { CaretDownIcon } from "@phosphor-icons/react/dist/ssr/CaretDown";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { deviceName, isPhoneLike, listPasskeys, passkeysAvailable, passkeysFlagOn, registerPasskey, removePasskey, type Passkey } from "@/lib/passkeys/client";
 import "./passkeys.css";
@@ -72,7 +73,7 @@ export function PasskeySection({ asRow = false }: { asRow?: boolean } = {}) {
   const value = load.state !== "ready" ? "" : passkeys.length ? `${passkeys.length} set up` : "Not set up";
   return <details className="q-details pmp-passkeys__row" id="profile-passkeys">
     <summary className="q-row q-row--one"><span className="q-rt"><b>{phone ? "Face ID" : "Passkeys"}</b></span>
-      <span className="q-rv q-rv--l">{value}</span><CaretRightIcon className="q-chev" aria-hidden="true" /></summary>
+      <span className="q-rv q-rv--l">{value}</span><CaretDownIcon className="q-chev q-chev--down" weight="bold" aria-hidden="true" /></summary>
     {view}
   </details>;
 }

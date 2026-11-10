@@ -122,7 +122,8 @@ const TEAM_TOOL_HOLDERS: Record<string, string> = {
   "/app?view=attendance": "/app",
   "/app?view=team": "/app/employees",
   "/app?view=activity": "/app/schedule",
-  "/app/clocker-recovery": "/app/employees",
+  // Review F2 (NV-070): Clocker recovery opens from Settings (its back link says "‹ Settings"), so Settings lights.
+  "/app/clocker-recovery": "/app/settings",
   "/app/account-recovery": "/app/employees",
 };
 export function teamToolHolder(href: string): string | undefined { return TEAM_TOOL_HOLDERS[href]; }
@@ -174,10 +175,12 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
   // Release 1 (boards E-Availability, E-SwapSheet, E-CoverSheet, E-CantWorkSheet, E-OpenShifts): an Employee opens these
   // from Schedule, so Schedule stays current on them. A Lead too (Direction B, Nov 8, 2026).
   const query = new URLSearchParams(path.split("?")[1]?.split("#")[0] ?? "");
-  if ((role === "EMPLOYEE" || role === "LEAD") && (matches("/app/availability") || matches("/app/exchange/swap") || matches("/app/exchange/callout") ||
-      (pathname === "/app/exchange" && query.get("tab") === "available"))) return "/app/schedule";
-  if ((role === "EMPLOYEE" || role === "LEAD") &&
-      (matches("/app/requests") || matches("/app/exchange"))) return "/app/requests/hub";
+  // Review F2 (NV-070): every shift request page (Pick up and swap and each of its tabs) goes back to Schedule, so the
+  // sidebar and rail light Schedule, as the phone's tab bar does: one parent for the back label and the lit entry.
+  if ((role === "EMPLOYEE" || role === "LEAD") && (matches("/app/availability") || matches("/app/exchange"))) return "/app/schedule";
+  if ((role === "EMPLOYEE" || role === "LEAD") && matches("/app/requests")) return "/app/requests/hub";
+  // Review F2 (NV-294): More opens from the avatar and goes back to Home, so the rail and sidebar light Home while it is open.
+  if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app/more") return "/app";
   // Release 1 (board O-Activity): Schedule activity is a view of Home's data opened from Schedule.
   if (role !== "EMPLOYEE" && role !== "LEAD" && pathname === "/app" && query.get("view") === "activity" &&
       navigationForRole(role, payroll, context).some(item => item.href === "/app/schedule")) return "/app/schedule";
@@ -267,7 +270,8 @@ export function mobileTabsForRole(role: UserRole, payroll?: PayrollCapabilities,
     payrollTab
       ? { href: "/app/payroll", label: "Payroll", icon: "payroll", owns: ["/app/payroll", "/app/payroll-export", "/app/settings/payroll"] }
       : { href: "/app/inbox", label: "To do", icon: "inbox", owns: inboxPages },
-    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery", "/app/clocker-recovery"] },
+    // Review F2 (NV-070): Clocker recovery belongs to Settings (its back link), which lights Home on a phone (MORE_FAMILY).
+    { href: "/app/employees", label: "Team", icon: "employees", owns: ["/app/employees", "/app/account-recovery"] },
   ];
   return tabs.filter(tab=>authorized.has(tab.href));
 }
@@ -279,7 +283,7 @@ export function mobileMoreForRole(role: UserRole, payroll?: PayrollCapabilities,
 }
 
 /** Pages opened from More (or the avatar and bell): on phones without a More tab they light Home. */
-export const MORE_FAMILY = /^\/app\/(more|profile|help|account|notifications|updates|settings|reports|my-pay|ai-manager)(\/|$)/;
+export const MORE_FAMILY = /^\/app\/(more|profile|help|account|notifications|updates|settings|reports|my-pay|ai-manager|clocker-recovery)(\/|$)/;
 
 /** The tab that owns the current page: a tab href, "more", or none. */
 export function activeMobileTab(role: UserRole, path: string, payroll?: PayrollCapabilities, context: NavContext = {}): string | undefined {

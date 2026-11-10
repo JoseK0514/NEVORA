@@ -8,7 +8,7 @@ import {isManagerRole} from '@/lib/auth/permissions';
 import {getWorkspace} from '@/lib/data/workspaces';
 import {parsePeriod} from '@/lib/timecards/project';
 import {PayrollExport} from '@/components/payroll-export';
-import {redirect} from 'next/navigation';
+import {OwnerOnlyNotice} from '@/components/owner-only-notice';
 import {payrollFeatureEnabled,readPayrollCapabilities} from '@/lib/payroll/service';
 import {payrollTabs} from '@/components/payroll/payroll-tabs';
 import './payroll-page.css';
@@ -17,7 +17,8 @@ import './payroll-page.css';
 export const metadata = { title: "Time exports" };
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
-  if(!isManagerRole(session.role))redirect('/app');
+  // Review F2 (NV-136): a closed page says why, never a silent redirect to Home.
+  if(!isManagerRole(session.role))return <OwnerOnlyNotice title="Time exports" reason="Time exports are for Owners and Managers." help="Your own hours are on Time." next={{href:'/app/my-time',label:'Open Time'}}/>;
   const proof=await requireSessionMutationProof();
   const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Time exports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
@@ -26,7 +27,7 @@ export default async function PayrollExportPage({searchParams}:{searchParams:Pro
   const monday=today.subtract({days:today.dayOfWeek-1});
   let period={startDate:monday.toString(),endDate:monday.add({days:6}).toString()};
   try{if(params.start&&params.end)period=parsePeriod(params.start,params.end);}catch{/* Invalid navigation falls back to the current period. */}
-  // Managers and Owners only (redirect above). Corporate (Release 1, board O-TimeExports): the page draws its own kit frame.
+  // Managers and Owners only (the notice above). Corporate (Release 1, board O-TimeExports): the page draws its own kit frame.
   // Owner premium: Payroll's tabs under the title; the same access read the shell makes for its section tabs.
   const payroll=payrollFeatureEnabled()?await readPayrollCapabilities(proof).catch(()=>undefined):undefined;
   return <ScopedReadFrame observation={access}><PayrollExport key={session.id} initialPeriod={period} actorId={session.id} tabs={payrollTabs(session.role,payroll)}/></ScopedReadFrame>;

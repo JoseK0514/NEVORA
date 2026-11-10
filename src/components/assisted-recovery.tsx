@@ -72,7 +72,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <fieldset disabled={!hydrated||busy} className="wc-fieldset">
     <FieldErrors errors={errors}>
      <h2 className="q-sr" id="assisted-verify-title">Verify the employee</h2>
-     <Field label="Employee ID" inputRef={employee} placeholder="e.g. 10482"
+     <Field label="Employee ID" inputRef={employee} placeholder="As shown on their Team page"
       id="assisted-employee" required maxLength={200} name="employeeId" defaultValue={employeeId} autoComplete="off" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="done"/>
      <ul className="q-list" style={{ marginTop: 24 }}>
       <li><label className="q-row q-row--one q-select-row">
@@ -84,7 +84,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
       </label></li>
       <li><label className="q-row q-row--one" data-invalid={errors.confirm?'true':undefined}>
        <span className="q-rt"><b>I confirmed who they are</b></span>
-       <input type="checkbox" role="switch" className="q-tog" required name="confirm" checked={confirmed} onChange={event=>setConfirmed(event.target.checked)} aria-describedby={errors.confirm?'assisted-confirm-error':'assisted-confirm-hint'}/>
+       <input type="checkbox" role="switch" className="q-tog" required name="confirm" checked={confirmed} onChange={event=>setConfirmed(event.target.checked)} aria-invalid={errors.confirm?true:undefined} aria-describedby={errors.confirm?'assisted-confirm-error':'assisted-confirm-hint'}/>
       </label></li>
      </ul>
      <p className="q-sr" id="assisted-confirm-hint">I independently confirmed this employee’s identity and can transfer this code securely.</p>
@@ -98,8 +98,9 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
    <p className="nv-sr" role="status">{busy?'Issuing recovery code. Checking your access and preparing a single-use code.':''}</p>
    {message?<div className="wc-feedback" ref={feedback} tabIndex={-1} role="alert"><Notice tone="urgent" title={message.includes('session ended')?'Your session ended':message.includes('expired')?'Recovery code expired':'Code not issued'}
     action={message.includes('session ended')?<Link className="q-btn q-btn--quiet" href="/login">Sign in</Link>:undefined}>{message}</Notice></div>:null}
-   <button className="q-btn" type="submit" disabled={!hydrated||busy||!confirmed} aria-describedby={confirmed?undefined:'assisted-confirm-needed'}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
-   {confirmed?null:<p className="q-sr" id="assisted-confirm-needed">Turn on “I confirmed who they are” first.</p>}
+   {/* Review F2 (NV-249): the button stays enabled and the form checks on submit, as Add employee does. The confirmation
+     * is still required: without it nothing is sent, the switch is marked and focused, and its error shows under it. */}
+   <button className="q-btn" type="submit" disabled={!hydrated||busy}><ButtonLabel pending={busy} idle="Issue recovery code" busy="Issuing code…"/></button>
   </form>}
   {pins&&!issued?<section className="wc-recovery__pins" aria-labelledby="assisted-pins-title">
    <h2 className="q-sr" id="assisted-pins-title">Clocker PIN</h2>

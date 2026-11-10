@@ -15,7 +15,7 @@ import { shiftBoundaryInstants } from '../lib/business-time';
 import { emptyScheduleLabel } from '../lib/data/employee-schedule';
 import { dayFmt, hasNotEnded, hours, hoursLabel, overnight, shiftMinutes, swappable, weekRange, type EmployeeMyScheduleProps, type OpenShift, type Shift } from './employee-my-schedule';
 import { OpenShiftsB, ScheduleB, type OpenB } from './employee-b/schedule-b';
-import { BChip, compactRange } from './owner-b/b-kit';
+import { BChip } from './owner-b/b-kit';
 import { BDay, Dotted } from './employee-b/parts';
 import { NotPhone, PhoneOnly } from './employee-b/viewport';
 
@@ -85,7 +85,6 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
   const shifts = [...(state === 'unavailable' ? [] : props.shifts)].sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
   const dates = weekDates(weekStart);
   const currentWeek = weekStartFor(today);
-  const zoneName = timeZone.split('/').at(-1)?.replaceAll('_', ' ') ?? timeZone;
   const swapIntent = props.intent === 'swap' && modules.marketplace && view === 'mine';
   const swapCount = swapIntent ? shifts.filter(shift => swappable(shift, today, observedAt, timeZone)).length : 0;
   // Review B6 (NV-290): opened from "Can't work a shift" with no shift chosen, the week asks for one the same way.
@@ -195,13 +194,14 @@ export function EmployeeScheduleCorp(props: EmployeeMyScheduleProps) {
             // block keeps the chip.
             const leads = props.lead === true && shift.isDesignatedLead === true && (!allLed || shift.date === today);
             const chip = kind === 'past' ? null : bChip(shift) ?? null;
-            // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8 AM –" / "4 PM") on a narrow day.
-            return { key: shift.id, time: keepWhole(compactRange(hours(shift))), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
+            // Review B6 (NV-044, NV-169): a range breaks only after its dash ("8:00 AM –" / "4:00 PM") on a narrow day.
+            // Review F2 (NV-169): the same time format as Coming up and the list beside it (one format per page).
+            return { key: shift.id, time: keepWhole(hours(shift)), tomorrow: !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) === 'Tomorrow', position: shift.positionName ?? null, place: keepWhole(`${nameOf(shift.locationId) || 'Location unavailable'} · ${hoursLabel(shiftMinutes(shift))}`),
               kind, chip: leads && !shift.isCalloutApproved && !startsIn(shift, today, observedAt, timeZone) && when(shift, today) !== 'Tomorrow' ? null : chip,
               label: props.lead === true && shift.isDesignatedLead === true ? `${rowLabel(shift)}, shift lead` : rowLabel(shift), lead: leads };
           }) })) }} />
     <CorpTitle title="Schedule" sub={state === 'unavailable' ? 'Your schedule couldn’t be checked'
-      : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}<span className="nv-sr">, {zoneName} time</span></>}
+      : <>{shifts.length ? `${shifts.length} ${shifts.length === 1 ? 'shift' : 'shifts'} · ${hoursLabel(total)}` : 'No published shifts'}{weekStart === currentWeek ? ' this week' : ''}</>}
       actions={<CorpButtonLink href="/app/availability" kind="neutral" size="sm">Availability</CorpButtonLink>} />
 
     <CorpCard as="div" ariaLabel="Week">

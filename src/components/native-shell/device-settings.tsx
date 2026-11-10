@@ -40,8 +40,9 @@ export function NativeDeviceSettingsView(p: Props) {
     return <section className="c-card native-device-card" aria-label="App alerts" aria-busy={d.busy}>
   <div className="c-card__head"><h2 className="c-card__label">This device</h2></div>
   <div className="c-card__body">
-   <h3 tabIndex={-1} data-native-status>{d.title}</h3>
-   <p>{d.text}</p>
+   {/* Review F2 (NV-213): the same state block as the Alerts page (ring, title, explanation). */}
+   <div className="nd-state">{ring(p, d.busy)}<h3 className="nd-title" tabIndex={-1} data-native-status>{d.title}</h3><p className="nd-text">{d.text}</p></div>
+   {p.paused ? <div className="c-btns c-btns--stack"><button type="button" className="c-btn" onClick={p.onRefresh}>Check now</button></div> : null}
    {d.acts ? <div className="c-btns c-btns--stack">
     {d.enable ? <button type="button" className="c-btn" onClick={p.onEnable}>Turn on alerts</button> : null}
     <button type="button" className="c-btn c-btn--secondary" onClick={p.onRefresh}>Check again</button>
@@ -94,6 +95,8 @@ export function NativeDeviceSettingsB(p: Props) {
           <p className="nd-text">{d.text}</p>
           {message ? <p className="nd-msg" data-tone={['error', 'revoked', 'denied'].includes(s.state) ? 'amber' : undefined} role="status">{message}</p> : null}
         </div>
+        {/* Review F2 (NV-209): paused has one way forward, Check now (it also ends the pause). */}
+        {p.paused ? <div className="nd-acts"><BButton kind="teal" big full onClick={p.onRefresh}>Check now</BButton></div> : null}
         {d.acts ? <div className="nd-acts">
           {/* Review B1 (NV-320, Jose: follow the report): one primary, the red action last. */}
           {d.enable ? <BButton kind="teal" big full onClick={p.onEnable}>Turn on alerts</BButton> : null}
@@ -139,6 +142,9 @@ export function NativeDeviceSettings({ page = false }: { page?: boolean }) {
         client.current = owner;
         let ended = false;
         const pause = () => { owner.pause(); setPaused(true); setReview(null); setRecover(false); };
+        // Review F2 (NV-209): the phone's permission prompt takes focus while Turn on alerts is in flight; that blur is not
+        // the person leaving, so it doesn't pause the check (hidden, pagehide and offline still do).
+        const blurred = () => { if (!actionPending.current) pause(); };
         const refresh = () => { if (!ended && document.visibilityState !== 'hidden' && document.hasFocus() && navigator.onLine !== false) {
             setPaused(false);
             void owner.start();
@@ -148,14 +154,14 @@ export function NativeDeviceSettings({ page = false }: { page?: boolean }) {
         window.addEventListener('nevora:native-ready', refresh);
         window.addEventListener('focus', refresh);
         window.addEventListener('pageshow', refresh);
-        window.addEventListener('blur', pause);
+        window.addEventListener('blur', blurred);
         window.addEventListener('pagehide', pause);
         window.addEventListener('offline', pause);
         window.addEventListener('online', refresh);
         window.addEventListener('nevora:signout', end);
         document.addEventListener('visibilitychange', visibility);
         refresh();
-        return () => { owner.dispose(); client.current = null; window.removeEventListener('nevora:native-ready', refresh); window.removeEventListener('focus', refresh); window.removeEventListener('pageshow', refresh); window.removeEventListener('blur', pause); window.removeEventListener('pagehide', pause); window.removeEventListener('offline', pause); window.removeEventListener('online', refresh); window.removeEventListener('nevora:signout', end); document.removeEventListener('visibilitychange', visibility); };
+        return () => { owner.dispose(); client.current = null; window.removeEventListener('nevora:native-ready', refresh); window.removeEventListener('focus', refresh); window.removeEventListener('pageshow', refresh); window.removeEventListener('blur', blurred); window.removeEventListener('pagehide', pause); window.removeEventListener('offline', pause); window.removeEventListener('online', refresh); window.removeEventListener('nevora:signout', end); document.removeEventListener('visibilitychange', visibility); };
     }, []);
     const reviewing = review && review === snapshot.generation;
     useEffect(() => { if (reviewing || recover)
@@ -168,7 +174,7 @@ export function NativeDeviceSettings({ page = false }: { page?: boolean }) {
     },[snapshot.state,paused]); // eslint-disable-line react-hooks/exhaustive-deps -- find reads the current DOM
     const view = { snapshot, paused, review, recover,
         onEnable: () => { actionPending.current = true; void client.current?.enable(); },
-        onRefresh: () => { void client.current?.start(); },
+        onRefresh: () => { setPaused(false); void client.current?.start(); },
         onReview: () => { reviewOpener.current = 'off'; setRecover(false); setReview(snapshot.generation ?? null); },
         onReviewSetup: () => { reviewOpener.current = 'setup'; setReview(null); setRecover(true); },
         onRecover: () => { if (!recover || paused) return; actionPending.current = true; setRecover(false); void client.current?.enable(true); },

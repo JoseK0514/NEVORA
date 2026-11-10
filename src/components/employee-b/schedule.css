@@ -36,7 +36,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 12px 18px;
     font-size: 15.5px; font-weight: 600; color: var(--b-ink); list-style: none; cursor: pointer; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary::-webkit-details-marker { display: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary svg { flex: none; color: #B5BBBF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes summary svg { flex: none; color: #6A7176; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-changes ul { margin: 0; padding: 0 18px 14px; list-style: none; font-size: 14px; line-height: 19px; color: var(--b-ink2); }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-error { padding: 14px 18px; font-size: 14px; line-height: 19px; color: #B42318; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen :is(.es-state) { display: flex; flex-direction: column; gap: 12px; padding: 6px 18px 18px; }
@@ -54,7 +54,7 @@
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked .blocked-open-shifts { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 36px; font-size: 15.5px; font-weight: 600; color: var(--b-ink); list-style: none; cursor: pointer; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary::-webkit-details-marker { display: none; }
-  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary svg { flex: none; color: #B5BBBF; }
+  :is(#c-root, html) .app-shell[data-nv-b] .b-screen .es-blocked summary svg { flex: none; color: #6A7176; }
 }
 
 /* Narrow phones (320–359px): the Confirm button drops under its words, aligned with the text, so nothing is cut. */

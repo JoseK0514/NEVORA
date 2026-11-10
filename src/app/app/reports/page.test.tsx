@@ -42,9 +42,13 @@ it('denied company authority withholds the report body and avoids workspace load
  expect(fixture.reports).not.toHaveBeenCalled();
  expect(fixture.workspace).not.toHaveBeenCalled();
 });
-it.each(['EMPLOYEE','LEAD'])('redirects %s before rendering management reports',async role=>{
+// Review F2 (NV-136): a closed page explains itself instead of a silent redirect, and still reads nothing.
+it.each(['EMPLOYEE','LEAD'])('closes management reports to %s with a notice',async role=>{
  fixture.role=role;
- await expect(ReportsPage({searchParams:Promise.resolve({})})).rejects.toThrow('redirect:/app');
+ const output=renderToStaticMarkup(await ReportsPage({searchParams:Promise.resolve({})}));
+ expect(output).toContain('Insights is for Owners and Managers.');
+ expect(output).toContain('href="/app/my-time"');
+ expect(output).not.toContain('Protected period reports');
  expect(fixture.reports).not.toHaveBeenCalled();
  expect(fixture.workspace).not.toHaveBeenCalled();
 });

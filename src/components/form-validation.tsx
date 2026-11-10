@@ -64,8 +64,25 @@ function show(field: Field) {
     field.insertAdjacentElement("afterend", node);
     field.setAttribute("aria-describedby", [field.getAttribute("aria-describedby"), id].filter(Boolean).join(" "));
   }
-  node.textContent = message(field);
+  // Review F2 (NV-112): every message leads with the 16px bold warning glyph (Phosphor WarningCircle), so an error never
+  // relies on its red colour alone.
+  const text = message(field);
+  if (node.textContent !== text || !node.querySelector("svg")) {
+    node.replaceChildren(warningGlyph(), document.createTextNode(text));
+  }
   field.setAttribute("aria-invalid", "true");
+}
+
+const SVG = "http://www.w3.org/2000/svg";
+function warningGlyph() {
+  const svg = document.createElementNS(SVG, "svg");
+  svg.setAttribute("viewBox", "0 0 256 256"); svg.setAttribute("width", "16"); svg.setAttribute("height", "16");
+  svg.setAttribute("fill", "currentColor"); svg.setAttribute("aria-hidden", "true"); svg.setAttribute("focusable", "false");
+  svg.setAttribute("style", "display:inline-block;flex:none;vertical-align:-3px;margin-right:6px");
+  const path = document.createElementNS(SVG, "path");
+  path.setAttribute("d", "M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm-12-80V80a12,12,0,0,1,24,0v52a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,172Z");
+  svg.append(path);
+  return svg;
 }
 
 function clear(field: Field) {

@@ -10,7 +10,7 @@ import type {CommunicationRead} from '@/lib/communications/types';
 import type {CommunicationRecoveryState} from '@/lib/communications/recovery';
 export type MessageFilter='all'|'unread'|'action';
 export type ReadyUpdate=Extract<CommunicationRead,{state:'ready'}>;
-export const messageTime=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(new Date(at));
+export const messageTime=(at:string,zone:string)=>new Intl.DateTimeFormat('en-US',{timeZone:zone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
 const ACTIONS:Partial<Record<NotificationKind,string>>={SCHEDULE:'Review schedule',AVAILABILITY:'View availability',PAYROLL_STATEMENT:'View statement',COMMUNICATION:'Read update'};
 function noticeAction(item:EmployeeNotificationItem){const kind=notificationKind(item.label);return (kind&&ACTIONS[kind])??'View details';}
 export function MessageInbox({kind,items,partial,search,filter,timeZone,onSearch,onFilter,onOpen,more=false}:{more?:boolean;kind:'notifications'|'updates';items:EmployeeNotificationItem[]|ReadyUpdate[];partial:boolean;search:string;filter:MessageFilter;timeZone:string;onSearch:(v:string)=>void;onFilter:(v:MessageFilter)=>void;onOpen:(event:MouseEvent<HTMLAnchorElement>,id:string,href:string)=>void}){
@@ -37,6 +37,6 @@ export function MessageDetail({item,busy,onAction,confirm:held,onConfirm}:{item:
 }
 export function MessageRecovery({state,allowed,onLookup,onRetry}:{state:CommunicationRecoveryState;allowed:boolean;onLookup:()=>void;onRetry:()=>void}){
  if(!state.pending&&!state.notice&&!state.hasUnknown)return null;
- const copy=state.pending?'Checking your submission…':state.hasUnknown?'The result hasn’t been confirmed. Check the original submission before trying anything new.':state.notice==='committed'?'Submission recorded. Refresh to check its current status.':state.notice==='conflict'?'This update or its audience changed. Review the current details before submitting again.':state.notice==='signed-out'?'Your session ended. Sign in again to continue.':state.notice==='blocked'?'Your current access or this source changed. Refresh before continuing.':'Your submission couldn’t be checked. Refresh to continue.';
+ const copy=state.pending?'Checking…':state.hasUnknown?'We couldn’t confirm it was sent. Check its status before sending anything new.':state.notice==='committed'?'Sent. Refresh to see its status.':state.notice==='conflict'?'This update or its audience changed. Review the current details before submitting again.':state.notice==='signed-out'?'Your session ended. Sign in again to continue.':state.notice==='blocked'?'This update changed. Refresh to see the latest.':'We couldn’t check it. Refresh to continue.';
  return <section className="em-request-notice em-message-recovery" aria-label="Submission status"><p role="status">{copy}</p>{state.hasUnknown?<><button type="button" className="em-request-secondary" disabled={!allowed||state.pending} onClick={onLookup}>Check submission status</button>{state.canRetry?<button type="button" className="em-request-secondary" disabled={!allowed||state.pending} onClick={onRetry}>Retry original submission</button>:null}</>:null}</section>;
 }
