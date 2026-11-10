@@ -10,6 +10,7 @@ import {openPeriodReports,reportNavigationStage,reportNavigationObservation} fro
 import {verifyReportRecoveryNavigation} from './scoped-navigation-browser-check.mjs';
 import {finishResponseByDeadline,runBeforeRecoveryDeadline} from './browser-response-deadline.mjs';
 import {parseCurrentTimecards} from '../src/lib/timecards/client.ts';
+import {observeEmployeeHoursReturn} from './employee-hours-return-diagnostic.mjs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -33,7 +34,7 @@ const runtimeStarted=performance.now();
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
-let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[],pinDiagnostics=[];
+let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[],pinDiagnostics=[],hoursReturnDiagnostics=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 async function issueAssistedRecovery(page,employeeId,attestation){
  await page.getByLabel('Employee ID',{exact:true}).fill(employeeId);
@@ -163,10 +164,15 @@ try{
       assert(geometry.scroll<=geometry.width+2,`${engine} ${width} manager overflow`);checked(`${engine}: manager geometry ${width}`);
     }
     const screen=join(evidence,`${engine}-timecards-390.png`);await mp.setViewportSize({width:390,height:1000});await mp.screenshot({path:screen,fullPage:true});report.screenshots.push(screen);
+    // Failure capture must follow the asserted Employee, not the Manager created last.
+    currentPage=ep;
+    const hoursReturn=observeEmployeeHoursReturn({page:ep,origin:app.url,selection:'2026-09-21_2026-09-27',engine,source:report,artifactPath:join(evidence,`${engine}-employee-hours-return.json`)});
+    hoursReturnDiagnostics.push({page:ep,observer:hoursReturn});await hoursReturn.install();
     await periodCard.waitFor();await employee.setOffline(true);await ep.evaluate(()=>window.dispatchEvent(new Event('offline')));await ep.getByRole('status').filter({hasText:'Your time records are paused.'}).waitFor();assert.equal(await periodCard.count(),0);assert.equal(await ep.locator('.c-hours').getByText(/^8\s*h$/).count(),0);checked(engine+': offline clears private period data');
     // The hours read restarts on 'online' only when navigator.onLine already says so; WebKit can still report offline just
     // after the context reconnects, which left the page paused. Announce the reconnection once the page itself is online.
     await employee.setOffline(false);await ep.waitForFunction(()=>navigator.onLine);await ep.evaluate(()=>window.dispatchEvent(new Event('online')));await pastCards();
+    await hoursReturn.close('success');
     // The ready Past timecards page has no manual refresh (its only Try again belongs to the unavailable state), so the
     // failed read is the page's own scheduled renewal (at most 30 s away) while the period totals are on screen.
     const cardsRead=u=>new URL(u).pathname==='/api/employee/hours/cards/2026-09-21_2026-09-27';
@@ -493,6 +499,7 @@ try{
   report.scenarioComplete=true;
 }catch(error){
   if(currentPage){
+    await hoursReturnDiagnostics.find(entry=>entry.page===currentPage)?.observer.close('failure');
     const activePinDiagnostic=pinDiagnostics.find(entry=>entry.page===currentPage)?.observer;
     if(activePinDiagnostic)await activePinDiagnostic.captureFailure();
     report.failurePage=await runPinDiagnosticObservation(()=>currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length}))).catch(error=>({state:'unavailable',category:pinFailureCategory(error)}));
@@ -516,6 +523,8 @@ try{
   report.errors.push(error instanceof Error?error.stack:String(error));process.exitCode=1;console.error(error);
 }
 finally{
+  for(const entry of hoursReturnDiagnostics)await entry.observer.close('unreached');
+  report.employeeHoursReturn=hoursReturnDiagnostics.map(entry=>entry.observer.snapshot());
   lifecycle='browser-close';
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
   for(const entry of pinDiagnostics)await entry.observer.close();
