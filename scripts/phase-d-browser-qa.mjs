@@ -1,5 +1,6 @@
 import {publishScheduleWithRevision} from '../src/test/integration/management-api.ts';
 import {boundCorrectionPost} from './phase-d-correction-http-fixture.mjs';
+import {observePinReadiness,pinFailureCategory,runPinDiagnosticObservation} from './clocker-pin-readiness-diagnostic.mjs';
 import {safeBrowserFailure} from './release-browser-diagnostics.mjs';
 import {observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {observeRscCaughtErrors} from './rsc-caught-error-observer.mjs';
@@ -32,7 +33,7 @@ const runtimeStarted=performance.now();
 async function waitUntil(test){const deadline=Date.now()+15000;while(!test()){if(Date.now()>deadline)throw Error('Expected browser request did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 async function waitUntilAsync(test){const deadline=Date.now()+15000;while(!await test()){if(Date.now()>deadline)throw Error('Expected UI state did not arrive');await new Promise(resolve=>setTimeout(resolve,10));}}
 const checked=name=>{report.checks.push(name);console.log('[Phase D browser] PASS '+name);};
-let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[];
+let app,smtp,currentPage,recoveryEmployee,lifecycle='setup';const browsers=[],pinDiagnostics=[];
 const url='/app/timecards?start=2026-09-21&end=2026-09-27';
 async function issueAssistedRecovery(page,employeeId,attestation){
  await page.getByLabel('Employee ID',{exact:true}).fill(employeeId);
@@ -380,6 +381,7 @@ try{
     await ep.goto(app.url+'/app');await ep.getByText(/published this week yet\. Shifts shown are published\.$|shifts are published\.|^No upcoming shift\. New shifts show here once they’re published\.$/).first().waitFor();assert.equal(await ep.getByText(/^Day off\b/).count(),0);assert.equal(await ep.getByText("You're all set.",{exact:true}).count(),0);assert.equal(await ep.getByText('You’re all caught up',{exact:true}).count(),0);checked(engine+': UX-03 Home unpublished stays unconfirmed');
     const {context:ownerContext,page:op}=await context(browser,'QAOWNER');
     const clockContext=await browser.newContext({viewport:{width:390,height:1000},serviceWorkers:'block'});await clockContext.route('**/*',route=>new URL(route.request().url()).origin===app.url?route.continue():route.abort());const cp=await clockContext.newPage();cp.setDefaultTimeout(15000);
+    const pinDiagnostic=observePinReadiness({browser,context:clockContext,page:cp,origin:app.url,engine,source:report,artifactBase:join(evidence,engine+'-clocker-pin-readiness')});pinDiagnostics.push({page:cp,observer:pinDiagnostic});await pinDiagnostic.install();
     const pinA=engine==='chromium'?'2468':'6812',pinB=engine==='chromium'?'3579':'7935';
     for(const [id,first,pin] of [['UX5-A-'+engine,'Fictional Avery',pinA],['UX5-B-'+engine,'Fictional Blair',pinB]]){
       await q("INSERT INTO employees(id,first_name,last_name,phone,role,primary_location_id) VALUES($1,$2,'Recovery QA','555-0500','EMPLOYEE','loc-1')",[id,first]);await q("INSERT INTO employee_location_eligibility VALUES($1,'loc-1')",[id]);
@@ -390,12 +392,13 @@ try{
     cp.on('response',response=>{if(new URL(response.url()).pathname!=='/api/clocker/2/pin')return;let action;try{action=response.request().postDataJSON()?.action;}catch{}if(clockerEvidence.responses.length===50)clockerEvidence.responses.shift();clockerEvidence.responses.push({action:['clear','verify','status'].includes(action)?action:'other',status:response.status()});});
     const displayedSetup=op.getByRole('textbox',{name:/^Setup code · expires /});assert.equal(await displayedSetup.getAttribute('readonly'),'');const setupCode=await displayedSetup.inputValue();assert(setupCode);currentPage=cp;await cp.goto(app.url+'/clocker/2');await cp.getByRole('textbox',{name:'Setup code',exact:true}).fill(setupCode);await cp.getByRole('button',{name:'Connect tablet',exact:true}).click();
     async function pin(value){
-      currentPage=cp;await cp.bringToFront();await cp.waitForFunction(()=>document.hasFocus()&&document.visibilityState==='visible'&&navigator.onLine);
+      currentPage=cp;pinDiagnostic.phase('readiness','before');await cp.bringToFront();await cp.waitForFunction(()=>document.hasFocus()&&document.visibilityState==='visible'&&navigator.onLine);
       await cp.getByRole('heading',{name:'Enter your PIN',exact:true}).waitFor();await cp.waitForFunction(()=>{const i=document.querySelector('input[name=pin]');return i&&!i.matches(':disabled');});
-      const attempt=await cp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));clockerEvidence.pinAttempts.push(attempt);
+      const attempt=await cp.evaluate(()=>({focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine}));clockerEvidence.pinAttempts.push(attempt);pinDiagnostic.phase('readiness','after',attempt);
+      pinDiagnostic.phase('keypad','before');
       for(const digit of value)await cp.getByRole('button',{name:'Number '+digit,exact:true}).click();
-      attempt.enteredDigits=await cp.locator('input[name=pin]').evaluate(input=>input.value.length);assert.equal(attempt.enteredDigits,4);
-      await cp.getByRole('button',{name:'Continue',exact:true}).click();attempt.submitted=true;
+      attempt.enteredDigits=await cp.locator('input[name=pin]').evaluate(input=>input.value.length);assert.equal(attempt.enteredDigits,4);pinDiagnostic.phase('keypad','after',{enteredDigits:attempt.enteredDigits});
+      pinDiagnostic.phase('continue','before');await cp.getByRole('button',{name:'Continue',exact:true}).click();attempt.submitted=true;pinDiagnostic.phase('continue','after');
     }
     let clockWrites=0;const observeClockWrite=request=>{if(request.method()==='POST'&&/^\/api\/clocker\/[^/]+\/punch$/.test(new URL(request.url()).pathname))clockWrites++;};cp.on('request',observeClockWrite);
     await pin(pinA);await cp.getByRole('button',{name:'Clock In',exact:true}).waitFor();let dropped=false;
@@ -490,9 +493,11 @@ try{
   report.scenarioComplete=true;
 }catch(error){
   if(currentPage){
-    report.failurePage=await currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length})).catch(()=>({state:'unavailable'}));
-    report.failureLifecycle=await currentPage.evaluate(()=>window.__nevoraLifecycle?.slice(-120)??null).catch(()=>null);console.log(JSON.stringify({failureLifecycle:report.failureLifecycle}));
-    await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true,mask:[currentPage.locator('input,textarea')]}).catch(()=>{});
+    const activePinDiagnostic=pinDiagnostics.find(entry=>entry.page===currentPage)?.observer;
+    if(activePinDiagnostic)await activePinDiagnostic.captureFailure();
+    report.failurePage=await runPinDiagnosticObservation(()=>currentPage.evaluate(()=>({path:location.pathname.replace(/[A-Za-z0-9_-]{32,}/g,'[opaque]'),focused:document.hasFocus(),visibility:document.visibilityState,online:navigator.onLine,clockerPin:document.querySelector('[data-clocker-pin]')?.getAttribute('data-clocker-pin'),alerts:document.querySelectorAll('[role=alert]').length}))).catch(error=>({state:'unavailable',category:pinFailureCategory(error)}));
+    report.failureLifecycle=await runPinDiagnosticObservation(()=>currentPage.evaluate(()=>window.__nevoraLifecycle?.slice(-120)??null)).catch(error=>({state:'unavailable',category:pinFailureCategory(error)}));console.log(JSON.stringify({failureLifecycle:report.failureLifecycle}));
+    await currentPage.screenshot({path:join(evidence,'recovery-failure.png'),fullPage:true,timeout:1000,mask:[currentPage.locator('input,textarea')]}).catch(error=>{report.failureScreenshot={state:'unavailable',category:pinFailureCategory(error)};activePinDiagnostic?.failure('screenshot',error);});
   }
   if(app){
     try{
@@ -513,6 +518,8 @@ try{
 finally{
   lifecycle='browser-close';
   for(const browser of browsers)await browser.close();if(app)await app.close();if(smtp)await smtp.close();
+  for(const entry of pinDiagnostics)await entry.observer.close();
+  report.clockerPinReadiness=pinDiagnostics.map(entry=>entry.observer.snapshot());
   report.runtimeClosed=true;
   Object.assign(report,finalizeRoleRedirectDiagnostics(report,'D3-M'));
   await writeFile(join(evidence,'report.json'),JSON.stringify(report,null,2));

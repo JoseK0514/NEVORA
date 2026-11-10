@@ -11,7 +11,8 @@ import {
 } from "./owned-app-fixture";
 import { hashPassword } from "../../lib/auth/password";
 import { fictionalProfile } from "../fixtures/shift-changes";
-it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and WebKit", async () => {
+// Each engine owns its fixture and the unchanged per-test budget, including cleanup.
+it.each(["chromium", "webkit"] as const)("checks Owner AI manager against owned PostgreSQL and Next in %s", { concurrent: false }, async (engine) => {
   const evidence = process.env.NEVORA_OWNER_ADVISOR_BROWSER_EVIDENCE;
   if (!evidence) throw Error("Explicit external evidence directory required");
   await mkdir(evidence, { recursive: true });
@@ -56,7 +57,8 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
       INSERT INTO weekly_availability_submissions(employee_id,week_start,uses_normal_availability) VALUES('OA-EMPLOYEE','2030-10-07',true),('OA-EMPLOYEE','2030-10-14',true),('OA-EMPLOYEE','2030-10-21',true),('OA-EMPLOYEE','2030-10-28',true);`, values: [] });
     await app.database.executor.query({ text: "INSERT INTO employee_scheduling_settings(employee_id,target_weekly_hours,maximum_weekly_hours,operational_rule_profile) VALUES('OA-EMPLOYEE',20,80,$1::jsonb)", values: [JSON.stringify(fictionalProfile())] });
     const origin = app.url.replace("127.0.0.1", "localhost");
-    for (const engine of ["chromium", "webkit"]) {
+    // Keep browser teardown inside application teardown for this engine.
+    {
       const browser = await runtime[engine].launch({ headless: true });
       try {
         const navigationProbe=engine==='webkit'?await verifyNavigationFetchDiagnostic(browser):null;
@@ -652,10 +654,12 @@ it("checks Owner AI manager against owned PostgreSQL and Next in Chromium and We
   } finally {
     await app.close();
     await writeFile(
-      resolve(evidence, "report.json"),
+      resolve(evidence, `report-${engine}.json`),
       JSON.stringify(
         {
           complete,
+          engine,
+          runtimeRoot: app.root,
           checks,
           external,
           errors,
