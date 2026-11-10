@@ -2,7 +2,8 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFileSync, readdirSync, writeFileSync} from 'node:fs';
 import {join, resolve} from 'node:path';
-import {captureSource, assertSourceUnchanged, safeEnvironment, externalEvidence} from './phase-e-owned.mjs';
+import {captureSource, assertSourceUnchanged, externalEvidence} from './phase-e-owned.mjs';
+import {releaseBuildEnvironment} from './release-build-environment.mjs';
 
 // Directly invoked build verification, using the existing E custody guard.
 // This script does not publish, promote, deploy or coordinate other work.
@@ -12,7 +13,7 @@ const receiptPath=resolve(process.env.NEVORA_BUILD_RECEIPT??'../build-source.jso
 externalEvidence(source,resolve(receiptPath,'..'));
 const portalGeneratedInput=await import('./portal-generated-installation-input.mjs');
 portalGeneratedInput.assertPortalGeneratedInstallationBuildInput();
-const env={...safeEnvironment(),NEXT_TELEMETRY_DISABLED:'1'};
+const env=releaseBuildEnvironment();
 const npmVersion=spawnSync('npm',['--version'],{env,encoding:'utf8'});
 if(npmVersion.status!==0)throw Error('Cannot identify build package manager');
 const result=spawnSync('npm',['run','build'],{env,stdio:'inherit'});
