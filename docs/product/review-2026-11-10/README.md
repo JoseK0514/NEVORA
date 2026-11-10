@@ -24,4 +24,11 @@ review passes, merged into **329 findings (67 High, 169 Medium, 93 Low)**.
 - The other eight decision items follow the report's recommendations (NV-052, 161, 186, 274, 289, 308, 320,
   323).
 
+- **Time off list (NV-077, Nov 10, closing pass):** waiting requests keep Decline (asks once, red confirm) and
+  Approve in the list, as in Things to do. Approve shows only when the staffing check finds no conflict;
+  otherwise the button is Review and opens the request. This replaces the Release 1 "no decisions in the list"
+  rule for Time off.
+- **Timecards Attention (NV-006, Nov 10, closing pass):** the Attention count and "N need attention" count only
+  rows with an amber issue chip, never people who are simply clocked in.
+
 Screenshots for the review were captured with `tools/ui-scan/` on fictional data.
