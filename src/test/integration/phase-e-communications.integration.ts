@@ -10,7 +10,7 @@ import type {CommunicationDraft,CommunicationCommand} from '../../lib/communicat
 import type {SessionMutationProof} from '../../lib/shift-changes/types';
 import type {SqlExecutor} from '../../lib/notifications/types';
 import {currentShiftFingerprintSql,currentShiftTermsSql} from '../../lib/data/shift-change-release';
-import {runReminders} from '../../lib/notifications/reminders';
+import {runReminders,planSourceReminders} from '../../lib/notifications/reminders';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
 import {readNotificationConfig,bindWorkspaceNotificationConfig} from '../../lib/notifications/config';
 import {getWorkspace} from '../../lib/data/workspaces';
@@ -323,7 +323,14 @@ it('scanner and manual availability reminder races spend only one shared deliver
  }};
  const workspace=await getWorkspace(executor),base=readNotificationConfig({PUSH_ENVIRONMENT:'test'});
  const config={...bindWorkspaceNotificationConfig(base,workspace),featureEnabled:true};
- const [manual]=await Promise.all([executeManagerReminder(owner,command,executor),runReminders({executor,state:sqlNotificationStateRepository(executor,workspace),config,clock:()=>new Date()})]);
+ const state=sqlNotificationStateRepository(executor,workspace),now=new Date();
+ const candidate=(await state.listReminderCandidates(now,100)).find(source=>source.kind==='AVAILABILITY'&&source.source.id===command.weekStart);
+ const recipient=await state.recipientAccess('employee');
+ expect(candidate,'The real scanner must discover this availability source').toBeDefined();
+ expect(recipient,'The real scanner must admit the target employee').toMatchObject({employeeId:'employee',active:true,role:'EMPLOYEE'});
+ if(!candidate||!recipient)throw Error('Scanner race fixture is not eligible');
+ expect(planSourceReminders(candidate,[recipient],now,config.environment,config.policy),'The real planner must produce the target reminder').toHaveLength(1);
+ const [manual]=await Promise.all([executeManagerReminder(owner,command,executor),runReminders({executor,state,config,clock:()=>new Date()})]);
  expect(arrivals).toBe(2);expect(manual).toMatchObject({status:'committed'});
  expect(await q("SELECT count(*)::int count FROM notifications WHERE purpose='REMINDER' AND source_kind='AVAILABILITY' AND source_id=$1 AND employee_id='employee'",[command.weekStart])).toEqual([{count:1}]);
  expect(await findManagerReminderOperation(owner,command.operationId,command.authority,db.executor)).toEqual(manual);
