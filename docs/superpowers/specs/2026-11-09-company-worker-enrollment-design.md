@@ -1,0 +1,45 @@
+# Company-specific worker enrollment
+
+## Authority and intent
+
+Jose selected “Handle company-specific access and continue” for implementation and independent local testing on November 9, 2026. He delegated the design choice and opted out of another design-approval conversation. This document records engineering choices, not a claim that he individually specified them. Hosted credential changes, schema/grant changes, trigger activation, real delivery and applying the Render plan still require their concrete action-time approval. Production/native remain excluded. Existing live-model ledgers remain closed.
+
+Baseline is development `0cf26329f3021dbd9744f2427e1c114ccfa62637`. Its host/monitor source findings are independently closed; preserve that evidence. Work in a separate detached worktree. The current Render Blueprint is planned but unapplied. Billing is now verified; Jose is the initial human responder. The original two worker roots remain usable only inside the existing private provisioner. No approved recoverable originals were found.
+
+Goal: run the canonical workforce commands with credentials limited to one selected staging company, without exporting or resetting shared signup/encryption/commerce roots. No Owner/browser token, APP password, provider API credential, SMTP or model key reaches the host.
+
+## Approaches
+
+1. Company-specific enrollment, selected by Jose: retain the old roots inside the privileged issuer and seal only the existing company's WORKER database connection and derived commerce WORKER secret to a new recipient key. Adds enrollment code and tests but limits each host profile to one company.
+2. Coordinated shared-root rotation: retains the existing host configuration, but requires updating ciphertext/bindings and current consumers together. Not selected.
+3. Recover an original approved backup: usable if found, but currently no such source is identified. Do not repeat the backup question or invent an export/debug route.
+
+## Boundaries and data flow
+
+Use Node's standard RSA-OAEP SHA-256 to wrap a fresh 32-byte AES key and the existing AES-256-GCM helper to seal a strict small JSON payload. A recipient is an RSA3072 PKCS8 private key; its canonical SPKI SHA-256 fingerprint binds the public request. AAD binds schema version, enrollment UUID, workspace/environment/incarnation, original WORKER secret reference/login, origin, provider project, issuer source and runtime expiry. Test environment only. No new dependency or custom cryptographic primitive.
+
+The operator prepares a public request and separately held private recipient key. The request contains no password: exact expected registry revision/identity, public key/fingerprint, expected issuer source SHA, request expiry (at most 30 minutes) and runtime expiry (at most 24 hours). Real recipient-key generation/persistence is part of the later approved hosted procedure; implementation tests use synthetic keys only.
+
+An operator-only control migration adds `worker_runtime_enrollments`. It records immutable request metadata and one encrypted result. Requests are restricted to test; completed results never get regenerated under the same operation ID. A source/role/environment-bound private issuer locks the request and workspace, opens only the current active WORKER secret, derives that same company's commerce WORKER secret, seals them, and commits atomically. It does not change the original secret rows, company roles/passwords, catalog hashes, bootstrap receipts, APP access or shared roots. Lost acknowledgement is recovered from the exact immutable completed row. Revocation preserves ciphertext/receipts and cannot be reversed by the issuer.
+
+Extend the existing private provisioner scheduled callback with an explicit enrollment-only mode. No new public route or selectors. Normal provisioning/provider/onboarding processing must be closed when enrollment mode is enabled. Native schedule/branch/source checks remain. The operator pins at most two exact enrollment request IDs and their canonical SHA-256 request hashes through non-secret configuration; the issuer recomputes the hash before unsealing anything, so changing a database request cannot substitute another recipient. Enrollment mode initially defaults closed; normal mode remains compatible. Updating the code and non-secret source label must preserve existing environment secrets: the official Neon CLI documents merge semantics for `functions deploy --env`; validate the actual supported CLI contract before hosted use, never assume another endpoint has those semantics.
+
+The issuer receives explicitly granted access only to the new request/result table in addition to its existing provisioning authority. The new table has forced RLS, immutable completed results and no PUBLIC grants. Its owner/operator and named issuer policies are explicit. A security-barrier enrolled-secret view projects only complete, unrevoked, unexpired results whose original secret reference/login/incarnation/origin/project still match the current ACTIVE registry. Its session-user scope uses the canonical company-specific control role. Readers receive only the existing fixed registry view and this new encrypted-result view, never the legacy shared-root ciphertext view or base tables. Add a fixed enrolled-reader policy to the already reviewed machine-principal audit; all existing effective-privilege checks remain.
+
+An enrolled host profile carries a new enrollment ID, recipient private key and its dedicated control-reader DSN. It carries neither old root. `readWorkerRoutingConfig` admits one explicit custody mode and rejects mixed, incomplete or browser/Owner fields. Enrolled routing can resolve only WORKER purpose. The normal transport revalidates the registry and role admission before reading/unsealing a result. The company-side binding guard and canonical CLI's job/lease/feature/role checks remain. Commerce uses only the unsealed derived WORKER secret and current company hash; it cannot issue Owner billing authority. Profile destination pins still apply. Recipient keys cannot be reused across different company profiles.
+
+No plaintext material is returned by a scheduled response, written to a receipt, logged or placed in a public request. Operator tooling consumes key/file paths, enforces private modes/no symlinks/bounded input, and emits only public fingerprints and output paths. Production/private-key export and cloud changes are not performed by local acceptance.
+
+## Revocation and limitations
+
+Normal runtime refuses a revoked/expired enrollment and rechecks before each operation, including cached transports. This is runtime admission, not cryptographic recall of a PostgreSQL password already obtained by a compromised host. The existing per-company WORKER login is reused; revocation does not silently reset it. Actual compromise requires a separately approved rotation of that affected company's credential. State this limitation plainly; do not advertise database-enforced credential expiry or universal revocation. Company source/lifecycle/role checks still apply to normal commands.
+
+No customer/Production data, new companies, public root-export endpoints, automatic global revokes, paid host, native feature, real email/push or new model call is included. Shared database defaults that prevent restricted-role admission remain an explicit operator review gate.
+
+## Evidence and release gates
+
+TDD: real encryption/decryption and tamper/wrong-recipient/scope/expiry cases; actual owned PostgreSQL RLS, concurrent claims, immutable replay, current-source guards and privilege drift; canonical WORKER transport/commerce behavior with no shared roots; scheduled authentication and enrollment-only isolation; actual private-file/compiled archive acceptance. Include a regression showing runtime revocation without pretending the underlying login password was reset.
+
+Run full default tests, relevant real SQL, typecheck/lint, clean source-qualified onboarding/compiled artifacts. One fresh whole-change independent review for this new phase, then the executor's focused Important fix pass and independent closure required by NEVORA oversight. Preserve original reports; defer Minors visibly. Integration only on development after fresh source reconciliation. Final hosted approval packet enumerates exact A/B requests/roles/grants, snapshots, source/deployment/trigger identities, key custody, drain/rollback and finite expiry. Refresh the unapplied Render plan to the final source before requesting its application.
+
+Reference: [Neon Functions environment variables](https://github.com/neondatabase/website/blob/main/content/docs/compute/functions/environment-variables.md), checked November 9, 2026. Documentation supports preserving unmentioned variables during CLI updates; it is not evidence that a hosted update or secure transfer has occurred.
