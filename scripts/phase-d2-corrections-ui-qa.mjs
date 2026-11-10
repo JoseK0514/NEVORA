@@ -176,7 +176,7 @@ try{
   assert.equal((await fixValues(ep)).endTime,clockText(proposedEnd),'The typed proposal survives every width');
   await sendFix(ep).click();
   await recordedReceipt(ep).waitFor();
-  await ep.getByRole('link',{name:'View my correction',exact:true}).click();
+  await ep.getByRole('link',{name:'View my request',exact:true}).click();
   await hoursPage(ep,'corrections').locator('#hours-correction').getByText('Waiting',{exact:true}).waitFor();
   checked(engine+': employee submits correction through real D2 API');
 
@@ -197,7 +197,7 @@ try{
   await mp.goto(app.url+'/app?view=attendance#review',{waitUntil:'networkidle'});
   await mp.getByRole('heading',{name:'Correction requests',exact:true}).waitFor();
   await mp.getByText('Avery Correction QA',{exact:true}).waitFor();
-  await mp.getByText('Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.',{exact:true}).waitFor();
+  /* B7 wording (NV-020) */await mp.getByText('Approving changes the timecard. The original clock times stay in the history.',{exact:true}).waitFor();
   assert.equal(await mp.getByRole('button',{name:'Approve correction for Avery Correction QA'}).isEnabled(),true);
   checked(engine+': populated manager correction review state');
 

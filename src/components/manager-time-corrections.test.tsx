@@ -76,13 +76,15 @@ describe('D2 manager correction surface',()=>{
     expect(html).toContain('Decline');
     expect(html).toContain('aria-label="Approve correction for Avery QA"');
     expect(html).toContain('aria-label="Decline correction for Avery QA"');
-    expect(html).toContain('Original recorded punches stay unchanged');
+    // B7 wording (NV-020): the provenance line is plain language.
+    expect(html).toContain('The original clock times stay in the history.');
   });
 
   it('disables self-review and explains that another reviewer is required',()=>{
     const snapshot={...ready,requests:[{...ready.requests[0],isSelf:true,employeeName:'Owner QA'}]};
     const html=renderToStaticMarkup(<ManagerTimeCorrectionsSurface snapshot={snapshot} loading={false} busyId={null} notice={null} onDecision={vi.fn()} onRetry={vi.fn()} retry={null}/>);
-    expect(html).toContain('Another manager or owner must review your request.');
+    // B7 wording (NV-020): plain self-review note, Owner capitalised as a role.
+    expect(html).toContain('Another manager or an Owner reviews your own request.');
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Approve<\/button>/);
     expect(html).toMatch(/<button[^>]*disabled[^>]*>Decline<\/button>/);
   });

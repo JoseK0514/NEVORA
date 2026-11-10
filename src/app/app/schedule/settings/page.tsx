@@ -103,7 +103,7 @@ export default async function ScheduleSettingsPage({ searchParams }: {
       <ManagerIssueFocus prefix="target-" /><ManagerIssueFocus prefix="staffing-" /><ManagerIssueFocus prefix="coverage-" /><KeepFocusClear />
       {params.error ? <p className="q-error q-first form-error" role="alert">{
         params.error === "INVALID_DEADLINE" ? "Enter a valid availability deadline."
-          : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Workspace settings changed. Review the deadline and try again."
+          : params.error === "DEADLINE_WORKSPACE_CHANGED" ? "Company settings changed. Check the deadline and try again."
           : params.error === "INVALID_SHIFT" ? "Choose a valid Monday for the schedule week."
           : params.error === "invalid_staffing" ? "Minimum staff must be a whole number from 1 to 100, and each new location needs a lead choice."
           : params.error === "invalid_hours" ? "Targets and maximums must be from 0 to 168 hours."

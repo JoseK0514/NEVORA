@@ -1,4 +1,5 @@
 import {addDays,weekStartFor} from '@/lib/date-utils';
+import {durationRow,durationSentence} from '@/lib/duration-format';
 import type {EmployeeTime,EmployeeTimeEntry} from '@/lib/employee-time';
 import type {Period,TimecardIssue} from '@/lib/timecards/project';
 import type {PublicCorrectionItem} from '@/lib/time-corrections/read-model';
@@ -13,14 +14,12 @@ export const fmt=(zone:string,options:Intl.DateTimeFormatOptions)=>new Intl.Date
 /** The boards' duration: "7 h 32 min", "32 h", "45 min". */
 export function boardDuration(seconds:number){
  const minutes=Math.floor(Math.max(0,seconds)/60);if(seconds>0&&minutes===0)return '<1 min';
- const hours=Math.floor(minutes/60),rest=minutes%60;
- return !hours?`${rest} min`:rest?`${hours} h ${rest} min`:`${hours} h`;
+ return durationSentence(minutes);
 }
 /** The Direction B figure for the same duration: "8 h 02", "32 h", "45 min" (tabular, as in the approved mock). */
 export function compactDuration(seconds:number){
  const minutes=Math.floor(Math.max(0,seconds)/60);if(seconds>0&&minutes===0)return '<1 min';
- const hours=Math.floor(minutes/60),rest=minutes%60;
- return !hours?`${rest} min`:rest?`${hours} h ${String(rest).padStart(2,'0')}`:`${hours} h`;
+ return durationRow(minutes);
 }
 export const clockAt=(at:string,zone:string)=>fmt(zone,{hour:'numeric',minute:'2-digit'}).format(new Date(at));
 /** "7:59 AM – 4:01 PM", or "12:00 – 12:30 PM" when both halves share AM or PM; an open end reads "now". */

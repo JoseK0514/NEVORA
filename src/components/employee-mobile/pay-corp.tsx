@@ -118,8 +118,8 @@ export function CorpPayView({statements,loading,error,errorCode,nextPay,statemen
  if(view==='paycheck'){
   const item=paycheck?byId.get(paycheck):undefined;
   return frame(<>
-   <PayNav back={{href:'/app/my-pay',label:'Pay'}} title="Paycheck"/>
-   {state!=='ready'?status:!item?<CorpCard ariaLabel="Paycheck"><CorpBody><div role="status"><h2 className="c-big">That statement isn’t available</h2><p className="c-line2">It may have been replaced, or your access changed.</p></div></CorpBody></CorpCard>:<>
+   <PayNav back={{href:'/app/my-pay',label:'Pay'}} title="Pay statement"/>
+   {state!=='ready'?status:!item?<CorpCard ariaLabel="Pay statement"><CorpBody><div role="status"><h2 className="c-big">That statement isn’t available</h2><p className="c-line2">It may have been replaced, or your access changed.</p></div></CorpBody></CorpCard>:<>
     <CorpCard id="pay-paycheck" label={`Pay period ${period(item.period.startDate,item.period.endDate)}`} aside={pill(item)}>
      <CorpBody><span className="c-line3">Payday</span><b className="c-big">{fmt({weekday:'short',month:'short',day:'numeric',...(item.payday.slice(0,4)===thisYear?{}:{year:'numeric'})}).format(utc(item.payday))}</b>
       {item.correctedBy?<span className="c-line3 c-pay-gap">A corrected statement replaced this one. Use the corrected statement for this period.</span>

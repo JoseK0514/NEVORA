@@ -13,7 +13,7 @@ const full=(policies=true)=>renderToStaticMarkup(<EmployeeProfilePage authority=
 const page=(policies=true)=>withoutB(full(policies)),phone=(policies=true)=>onlyB(full(policies));
 it('Display offers the sign-in language as a segmented choice and no appearance choice (Release 1 is light only)',()=>{
  const html=renderToStaticMarkup(<EmployeeProfilePreferences lang="es"/>);
- expect(html).toContain('Display');expect(html).toContain('Language');expect(html).toContain('For the sign-in pages');
+ expect(html).toContain('Display');expect(html).toContain('Language');/* B7 wording (NV-149): the hint says only the sign-in pages change */expect(html).toContain('Sign-in pages only. The rest of NEVORA is in English for now.');
  expect(html).toMatch(/lang="es" aria-pressed="true"[^>]*>Español/);expect(html).toMatch(/lang="en" aria-pressed="false"[^>]*>English/);
  expect(html).not.toContain('Appearance');expect(html).not.toContain('<select');
 });
@@ -30,7 +30,7 @@ it('Security shows only what exists: no passkey row when passkeys are off, no de
 });
 it('Direction B phone screen: Personal info as label-over-value rows, the language switch, Security with a red Delete my account',()=>{
  const html=phone(),text=html.replace(/<[^>]+>/g,' ');
- for(const value of ['Profile and settings','Personal info','Name','Locations','Time zone','Checking your current work details','Display','Language','For the sign-in pages','Security','Passkeys','Delete my account'])expect(text).toContain(value);
+ for(const value of ['Profile and settings','Personal info','Name','Locations','Time zone','Checking your current work details','Display','Language',/* B7 wording (NV-149) */'Sign-in pages only','Security','Passkeys','Delete my account'])expect(text).toContain(value);
  expect(html).toContain('href="/app/more"');expect(html).toContain('href="/app/profile/passkeys"');expect(html).toContain('href="/app/account/delete"');expect(html).toContain('id="b-profile-account-deletion"');
  expect(html).toMatch(/lang="en" aria-pressed="true"[^>]*>English/);expect(html).toMatch(/lang="es" aria-pressed="false"[^>]*>Español/);
  expect(html).toContain('b-ico b-ico--red');expect(html.indexOf('Personal info')).toBeLessThan(html.indexOf('Display'));expect(html.indexOf('Display')).toBeLessThan(html.indexOf('Security'));

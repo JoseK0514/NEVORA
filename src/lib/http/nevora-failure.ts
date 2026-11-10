@@ -38,10 +38,10 @@ export const clearsProtectedData = (recovery: FailureRecovery) => recovery === '
  * read is (its own card), so they have no page-level line. */
 export const FAILURE_MESSAGES: Record<Exclude<FailureRecovery, 'unavailable' | 'reread'>, {title: string; body: string}> = {
   sign_in: {title: 'Your session ended', body: 'Sign in again to keep working.'},
-  access_ended: {title: 'Your access changed', body: 'This information was cleared from the screen. Ask an Owner if you still need it.'},
+  access_ended: {title: 'Your access changed', body: 'This information was cleared from the screen. Ask your manager if you still need it.'},
   refresh_view: {title: 'This page was out of date', body: 'It was cleared and is being refreshed with your current access.'},
-  origin: {title: 'NEVORA can’t confirm this connection', body: 'This information was cleared. Signing in again won’t fix this; ask your administrator to check NEVORA’s address.'},
-  contract: {title: 'That request didn’t go through', body: 'Nothing was sent as a different request. Reload the page and try once more.'},
+  origin: {title: 'This connection isn’t secure', body: 'We cleared this page to protect your information. Signing in again won’t fix this. Ask your Owner to check the NEVORA web address you’re using.'},
+  contract: {title: 'That didn’t go through', body: 'Nothing was saved. Reload the page and try again.'},
 };
 
 export const FAILURE_EVENT = 'nevora:failure';

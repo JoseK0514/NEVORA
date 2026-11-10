@@ -12,9 +12,9 @@ export const fixForm=page=>page.locator('.c-hours form.c-form');
 /** Send, in the sheet's header (it submits the form above). */
 export const sendFix=page=>page.locator('.c-hours-sheet').getByRole('button',{name:/^(Send|Sending…)$/});
 /** The one retry the sheet offers while an original submission is unconfirmed. */
-export const checkSubmission=page=>page.getByRole('button',{name:'Check submission status',exact:true});
+export const checkSubmission=page=>page.getByRole('button',{name:'Check request status',exact:true});
 /** The sheet's receipt after a recorded correction. */
-export const recordedReceipt=page=>page.getByRole('heading',{name:'Correction recorded',exact:true});
+export const recordedReceipt=page=>page.getByRole('heading',{name:'Correction request sent',exact:true});
 /** The frame's status when the current account no longer owns the page's read. */
 export const accessChanged=page=>page.locator('.c-hours').getByRole('status').filter({hasText:'Your access changed. Sign in again to continue.'});
 /** The frame's status while the page is paused (hidden, away or offline). */

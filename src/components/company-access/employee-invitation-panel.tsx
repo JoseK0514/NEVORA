@@ -73,16 +73,16 @@ function InvitationPanel({employeeId,initialStatus,actorId}:{employeeId:string;i
    {status.registeredEmailMasked&&<p>Registered email: {status.registeredEmailMasked}</p>}
    {status.eligibility==='NO_EMAIL'&&<p>Add a registered email in employee details before sending an invitation. An employee record can still be saved without email.</p>}
    {status.eligibility==='INACTIVE'&&<p>This employee is inactive. Review their employee details before inviting them.</p>}
-   {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another authorized Owner to manage your invitation.</p>}
+   {status.eligibility==='SELF_ISSUE_DENIED'&&<p>Ask another Owner to manage your invitation.</p>}
    {status.invitation&&<p>{deliveryText[status.delivery]}</p>}
-  </div>:<p role="status">{deniedAccess?'Invitation management is unavailable for your current access.':'Current invitation information is unavailable. Refresh before taking an action.'}</p>}
-  {receipt&&<div className={styles.receipt}><strong>Confirmed action: {receipt.action==='ISSUE'?'Invitation issued':'Invitation revoked'}</strong><p>{deliveryText[receipt.delivery]}</p><small>This receipt records the completed action. Refresh for current employee and invitation status.</small></div>}
+  </div>:<p role="status">{deniedAccess?'Your access changed, so you can’t manage invitations.':'The invitation didn’t load. Refresh to try again.'}</p>}
+  {receipt&&<div className={styles.receipt}><strong>{receipt.action==='ISSUE'?'Invitation sent':'Invitation canceled'}</strong><p>{deliveryText[receipt.delivery]}</p><small>Refresh to see the current invitation status.</small></div>}
   {message&&<p role={uncertain?'alert':'status'} aria-live="polite">{message}</p>}
-  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Revoke this invitation? The employee will need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Revoke invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>Cancel</button></div></div>}
+  {confirm&&<div className={styles.receipt} role="group" aria-label="Confirm invitation action"><p>{confirm==='REVOKE'?'Cancel this invitation? The link in their email stops working, and they’ll need a new invitation to activate.':status.state==='ready'&&status.invitation?'Send a new invitation to the registered email? The previous invitation will no longer be usable.':'Send an invitation to the registered employee email?'}</p><div className={styles.actions}><button type="button" className="button primary" disabled={pending} onClick={()=>void run()}>{confirm==='REVOKE'?'Cancel invitation':'Send invitation'}</button><button type="button" className="button secondary" disabled={pending} onClick={()=>setConfirm(null)}>{confirm==='REVOKE'?'Keep invitation':'Don’t send'}</button></div></div>}
   <div className={styles.actions}>
-   {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking action…':'Check action outcome'}</button>:<>
+   {uncertain?<button type="button" className="button secondary" disabled={pending} onClick={()=>void run(true)}>{pending?'Checking…':'Check what happened'}</button>:<>
     {available&&status.allowedCommands.includes('ISSUE')&&<button type="button" className="button primary" disabled={pending||!!confirm} onClick={()=>setConfirm('ISSUE')}>{status.invitation?'Send new invitation':'Send invitation'}</button>}
-    {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Revoke invitation</button>}
+    {available&&status.allowedCommands.includes('REVOKE')&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>setConfirm('REVOKE')}>Cancel invitation</button>}
     {!deniedAccess&&<button type="button" className="button secondary" disabled={pending||!!confirm} onClick={()=>void refresh()}>{pending?'Checking invitation…':'Refresh invitation'}</button>}
    </>}
    {deniedAccess&&<Link href="/login" className="button secondary">Sign in again</Link>}

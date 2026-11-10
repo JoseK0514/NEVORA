@@ -29,7 +29,7 @@ export function readableDates(text: string) {
     .replace(/Resolve recorded-time exceptions before finalizing\./g, 'Fix recorded-time issues before finalizing.');
 }
 
-const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Unable to work'};
+const requestKind: Partial<Record<ActionItem['type'], string>> = {TIME_OFF: 'Time off', EXCHANGE: 'Shift request', CALLOUT: 'Can’t work'};
 
 const sentDate = (iso: string | undefined, timeZone: string) => {
   if (!iso) return '';
@@ -55,7 +55,7 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
   const person = itemPerson(item);
   let title = item.title, detail = item.detail;
   // Approved leave over a published shift (Nov 9, 2026): scheduling work named for the person, never a request to decide.
-  if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved leave', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
+  if (isStaffingRepair(item)) return {title: repairTitle(item), detail: spacedRanges(['Approved time off', repairWhen(item)].filter(Boolean).join(' · ')), person, action: actionLabel};
   switch (item.type) {
     case 'TIME_OFF': case 'EXCHANGE': case 'CALLOUT':
       title = person ?? title;
@@ -78,6 +78,8 @@ export function presentItem(item: ActionItem, actionLabel: string, timeZone = 'U
       detail = detail.replace(/: (\d+) missing/g, ': $1 open');
       break;
   }
+  // Review B7 (NV-262): a detail that ends in a bare date range ("Casey · Nov 2 – Nov 8.") is a label, not a sentence.
+  if (item.type === 'TIMECARD') detail = detail.replace(/(\d)\.$/, '$1');
   const action = actionLabel === 'Set hour target' ? 'Set weekly hour target' : actionLabel;
   return {title, detail: spacedRanges(readableDates(detail)), person, action};
 }

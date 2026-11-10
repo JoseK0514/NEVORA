@@ -88,8 +88,9 @@ it('verifies the combined auth, policy, employee and passkey UI in owned browser
         await page.locator('.pk-list').getByRole('button',{name:/^Remove /}).click();
         const confirmation = page.getByRole('dialog');
         await confirmation.waitFor();
-        expect(await confirmation.getByRole('button',{name:'Keep',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
-        await confirmation.getByRole('button',{name:'Remove',exact:true}).click();
+        // B7 wording (NV-241): confirm buttons are verb plus object.
+        expect(await confirmation.getByRole('button',{name:'Keep passkey',exact:true}).evaluate((element:HTMLElement)=>element===document.activeElement)).toBe(true);
+        await confirmation.getByRole('button',{name:'Remove passkey',exact:true}).click();
         await page.locator('.pk-list').waitFor({state:'detached'});
         await page.getByRole('button',{name:'Add a passkey',exact:true}).click();
         await page.locator('.pk-list .pk-item').waitFor();

@@ -78,7 +78,7 @@ export function BrandEditor({ workspaceName, revision, seed, logoAssetId, histor
       if (!response.ok) throw Error();
       retry.current = null;
       setNotice({ tone: "success", text: "Everyone sees it the next time a page loads." });
-      toast("Brand saved");
+      toast("Branding saved");
       router.refresh();
     } catch {
       setNotice({ tone: "error", text: "It may not have saved. Save again to retry safely, or reload to check." });

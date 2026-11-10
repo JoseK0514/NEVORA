@@ -71,10 +71,10 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
 /** Toast copy for a receipt-confirmed command; never shown before the receipt. */
 function confirmedMessage(command: { action?: string }) {
   switch (command.action) {
-    case 'APPROVE': return 'Payroll revision approved';
-    case 'PUBLISH': return 'Statements published to employees';
-    case 'PAYMENT_EXPORT': return 'Payment instructions prepared';
-    default: return 'Action recorded';
+    case 'APPROVE': return 'Payroll approved';
+    case 'PUBLISH': return 'Pay statements published';
+    case 'PAYMENT_EXPORT': return 'Payment file ready';
+    default: return 'Saved';
   }
 }
 
@@ -113,7 +113,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
       const receipt = readReceipt(await payrollRequest(`/api/payroll/receipts?operationId=${encodeURIComponent(id)}`));
       if (receipt && receipt.operationId !== id) throw new Error('The returned receipt does not match this action reference. Check the same reference again.');
       if (receipt && receipt.operationId === id) {
-        setReceipt(receipt); finish(id); setMessage('Action recorded. Review the current status below.'); toast('Action recorded'); await reload();
+        setReceipt(receipt); finish(id); setMessage('Saved. Check the status below.'); toast('Saved'); await reload();
       } else {
         setUnconfirmed(true);
         setMessage('No receipt is available yet. Check this same reference again; the action has not been confirmed.');
@@ -140,7 +140,7 @@ export function usePayrollOperation(path: '/api/payroll/settings' | '/api/payrol
     try {
       const receipt = readReceipt(await payrollRequest(path, next));
       if (!receipt || receipt.operationId !== next.operationId) throw new Error('The action response is unconfirmed. Check its saved reference.');
-      setReceipt(receipt); finish(next.operationId); setMessage('Action recorded. Review the current status below.'); toast(confirmedMessage(next)); await reload();
+      setReceipt(receipt); finish(next.operationId); setMessage('Saved. Check the status below.'); toast(confirmedMessage(next)); await reload();
     } catch (failure) {
       if (failure instanceof PayrollRequestError && (failure.code === 'OPERATION_CONFLICT' || (reconstructed && [400, 409].includes(failure.status)))) {
         command.current = null; setRetryAvailable(false);

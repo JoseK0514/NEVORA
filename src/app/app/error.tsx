@@ -13,17 +13,17 @@ export default function Error({reset,retry:refetch}:{error:Error & {digest?:stri
  return <>
   <div className="sg-sys-employee"><SignatureError action={<SigButton className="sg-cta" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</SigButton>}/></div>
   <div className="sg-sys-generic nv-page premium-error" data-nv-page="">
-   <PageBand title="This page could not be loaded" summary="Your current information is unavailable." />
+   <PageBand title="This page didn’t load" summary="Nothing was changed." />
    {/* IS-49: one live region with the whole message; the buttons sit outside it. */}
-   <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
+   <p className="nv-sr" role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>
    <KitStack>
     <Card>
      <CardBody>
       <div className="premium-error__body">
-       <p className="premium-error__text">Try loading the page again before taking an action.</p>
+       <p className="premium-error__text">Check your connection, then try again.</p>
        <div className="premium-error__actions">
         <button type="button" className="nv-btn" data-kind="primary" onClick={retry}><ArrowsClockwiseIcon size={18} aria-hidden="true" />Try again</button>
-        <Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>
+        <Link className="nv-btn" data-kind="secondary" href="/app">Go to Home</Link>
        </div>
       </div>
      </CardBody>

@@ -23,5 +23,5 @@ export function AvailabilityB({sub,change,children}:{sub:string;/** Change one w
 
 /** The planning read's state (or the first paint's), with its one way forward. */
 export function AvailabilityStatusB({message,action}:{message:ReactNode;action?:ReactNode}){
- return <BCard label="Planning access"><div className="eb-status"><p className="b-state" role="status">{message}</p>{action??null}</div></BCard>;
+ return <BCard label="Availability"><div className="eb-status"><p className="b-state" role="status">{message}</p>{action??null}</div></BCard>;
 }

@@ -54,7 +54,7 @@ function actionMessage(result:CorrectionActionResponse|null){
   if(!result)return null;
   if(result.state==='pending')return 'Correction request sent for manager review.';
   if(result.state==='conflict')return 'This record changed or already has a pending correction. Refresh before trying again.';
-  if(result.state==='outcome_unknown')return 'The server outcome could not be confirmed. Retry the same request safely.';
+  if(result.state==='outcome_unknown')return 'We couldn’t confirm your request was sent. Check it before you send another.';
   if(result.state==='unavailable'&&result.httpStatus===401)return 'Your session ended. Sign in again to send your correction.';
   if(result.state==='unavailable'&&result.httpStatus===403)return 'Your access changed. Sign in again to check your current access.';
   if(result.state==='unavailable')return 'We couldn’t send your correction. Try again. If this keeps happening, sign in again.';
@@ -63,9 +63,9 @@ function actionMessage(result:CorrectionActionResponse|null){
     if(result.reason==='finalized_period')return 'Ask a manager to reopen the finalized timecard period before requesting a correction.';
     if(result.reason==='live_state')return 'Close the live entry in Clocker before requesting a correction.';
     if(result.reason==='overlap')return 'The proposed time overlaps another recorded entry.';
-    if(result.reason==='stale_source')return 'The recorded source changed. Refresh before trying again.';
-    if(result.reason==='invalid_interval')return 'The proposed interval is not valid.';
-    return 'This request cannot be completed by the current account.';
+    if(result.reason==='stale_source')return 'The recorded times changed. Refresh before trying again.';
+    if(result.reason==='invalid_interval')return 'The end time must be after the start time.';
+    return 'You can’t send this request from this account.';
   }
   return null;
 }
@@ -323,7 +323,7 @@ export function EmployeeCorrectionCenter({zone}:{zone:string}){
             <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={zone}/>
             <p className="employee-time-correction-note">{item.status==='PENDING'?'Pending proposal':item.status==='APPROVED'?'Approved proposal':'Declined proposal'} · {stamp(item.proposedStartAt,zone)} → {stamp(item.proposedEndAt,zone)}{item.status==='REJECTED'?' · does not change effective time':''}</p>
             <PriorCorrectionDecisions context={item.context} zone={zone}/>
-            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">The source or approved baseline changed since this request.</p>:null}
+            {item.status==='PENDING'&&item.baseChanged?<p className="employee-time-correction-note">Your timecard changed after this request.</p>:null}
           {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId?<button className="employee-time-correction-trigger" type="button" disabled={busy||Boolean(retry)} aria-controls="employee-missing-time-correction" onClick={()=>{
             setReplacementTarget({id:item.currentAdjustmentId!,revision:item.revision});setLocation(item.locationId);
             setStart(localValue(item.proposedStartAt,zone));setEnd(localValue(item.proposedEndAt,zone));setReason('');setResult(null);setOpen(true);

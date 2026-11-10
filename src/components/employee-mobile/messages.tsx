@@ -52,7 +52,7 @@ function EmployeeMessagesPage({authority,view,id,settingsHref}:Props){
  const noticeB=(copy:string):BStatus=>({copy,retry:{label:panel.state.refreshing?'Checking…':'Try again',onClick:panel.refresh,disabled:panel.state.paused||panel.state.refreshing}});
  let content:ReactNode=null,nextCursor:string|null=null,bNotice:BStatus|null=null,bNotifications:NotificationsBList|null=null,bUpdates:UpdatesBList|null=null,bDetail:ReadyUpdate|null=null;
  if(read){
-  if(view!=='notifications'&&read.updates!=='on'){const copy=read.updates==='off'?'Updates are turned off for your workspace. Your other employee tools remain available.':'Updates access couldn’t be checked. Refresh to continue.';content=notice(copy);bNotice=noticeB(copy);}
+  if(view!=='notifications'&&read.updates!=='on'){const copy=read.updates==='off'?'Your workplace doesn’t use updates in NEVORA. Everything else still works.':'Updates access couldn’t be checked. Refresh to continue.';content=notice(copy);bNotice=noticeB(copy);}
   else if(read.view==='notifications'){
    const data=read.data.value;nextCursor=read.data.nextCursor;
    if(data.state==='ready'&&data.kind==='notifications')bNotifications={items:data.items,partial:data.coverage==='partial',tab:memory?.filter==='unread'?'unread':'all',timeZone:read.timeZone,onTab:filter=>session.setList('notifications',{filter}),onOpen:open,opening,more:Boolean(nextCursor)};else bNotice=noticeB('Your current notices couldn’t be checked. Refresh before continuing.');

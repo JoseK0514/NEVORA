@@ -12,7 +12,7 @@ import { requireSelfService } from "@/lib/auth/permissions";
 import { getCalloutShift } from "@/lib/data/exchanges";
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "I can’t work this shift" };
+export const metadata = { title: "Can’t work this shift" };
 
 
 export default async function CalloutPage({

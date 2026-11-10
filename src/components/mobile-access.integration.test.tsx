@@ -40,7 +40,7 @@ describe('Frozen mobile access integration',()=>{
  });
  it('localizes activation without calling a syntactically valid invitation verified',()=>{
   const html=renderToStaticMarkup(<MobileActivationView lang="es" phase="ready" workspaceName="Actual configured workplace" loginHref="/login?activated=1" onSubmit={()=>{}}/>);
-  expect(html).toContain('Crear contraseña');expect(html).toContain('Actual configured workplace');
+  /* B7 wording (NV-187) */expect(html).toContain('Crea tu contraseña');expect(html).toContain('Actual configured workplace');
   expect(html).not.toMatch(/Invitation verified|invitación verificada/i);
   expect(html.match(/maxLength="1024"/g)).toHaveLength(2);
   expect(html).not.toContain('activation-employee-id');

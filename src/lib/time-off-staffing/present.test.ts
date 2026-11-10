@@ -19,7 +19,7 @@ it('reads a staffing repair as the person’s shift to fill, never as a time-off
  expect(repairWhen(repair)).toBe('Tue, Oct 8 · 7:00\u00a0AM\u00a0– 3:00\u00a0PM · Main Office');
  const shown=presentItem(repair,'Fill shift');
  expect(shown).toMatchObject({title:'Fill Maria Rivera’s shift',person:'Maria Rivera',action:'Fill shift'});
- expect(shown.detail).toMatch(/^Approved leave · Tue, Oct 8/);
+ expect(shown.detail).toMatch(/^Approved time off · Tue, Oct 8/);// B7 wording (NV-119)
  const nav=actionCenterNavigation(repair);
  expect(nav.label).toBe('Fill shift');
  // Week, location, person and repair stay in the destination; nothing points at Approve or Decline.
@@ -27,9 +27,10 @@ it('reads a staffing repair as the person’s shift to fill, never as a time-off
  expect(JSON.stringify({shown,nav})).not.toMatch(/\bApprove\b|Decline|Review time off|dismiss/i);
 });
 it('says who fixes it: the approving reviewer, or an Owner for older approvals without one',()=>{
- expect(repairOwnerLine(repair,'owner-1')).toBe('You approved this leave, so this is yours to fix.');
- expect(repairOwnerLine(repair,'someone')).toBe('Assigned to the manager who approved the leave.');
- expect(repairOwnerLine({...repair,ownerEmployeeId:null})).toBe('No one is assigned. An Owner needs to take this.');
+ // B7 wording (NV-119 glossary): "time off", not "leave", and no blame in "to fix".
+ expect(repairOwnerLine(repair,'owner-1')).toBe('You approved this time off, so this shift is yours to fill.');
+ expect(repairOwnerLine(repair,'someone')).toBe('Assigned to the manager who approved the time off.');
+ expect(repairOwnerLine({...repair,ownerEmployeeId:null})).toBe('No one is assigned yet. An Owner can take it.');
 });
 it('states the coverage consequence of a pending conflict from overlapMinutes',()=>{
  expect(conflictConsequence({...conflict,state:'approval_conflict'})).toBe('The whole shift (8\u00a0h) would need someone else');

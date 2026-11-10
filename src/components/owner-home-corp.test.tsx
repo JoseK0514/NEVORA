@@ -153,9 +153,11 @@ describe("Direction B phone screen (Owner and Manager Home)", () => {
     const out = phone();
     expect(out).toMatch(/<h1>5 things need you<\/h1>/);
     expect(out).toContain('<a href="/app?view=attendance" class="b-live__a" aria-label="Clocked in: 1 of 3. Who’s working">');
-    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Late: 1. Missed clock-ins">');
+    // B7 wording (NV-123): the stat and the row use one name ("Missed", as on the corporate Home).
+    expect(out).toContain('<a href="/app/inbox#todo-missed" class="b-live__a" aria-label="Missed clock-ins: 1">');
     expect(out).toContain('aria-label="Find cover: Barista 1:00 PM – 3:00 PM">Find cover</a>');
-    expect(out).toContain(">Next: today, Barista 1–3\u00a0PM<");
+    // B7 wording (NV-068): outside the dense week grid, ranges keep full times with a spaced en dash.
+    expect(out).toMatch(/>Next: today, Barista 1:00\s?PM\s–\s3:00\s?PM</);
     expect(out).toContain(">1 missed clock-in<");
   });
   it("shows Payday as the ink tile, opening Payroll only when the page names it and Timecards otherwise", () => {

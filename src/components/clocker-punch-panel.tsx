@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { durationSentence } from '../lib/duration-format';
 import { canRetirePendingPunch, makePunchCommand, parseClockView, parseReceiptReply,
  postPunch, punchActions, PunchRequestError, type ClockView, type PendingPunch } from '../lib/clocker/punch-client';
 import {openClockerJournal} from '../lib/clocker/recovery-journal.browser';
@@ -24,11 +25,11 @@ const actionIcons:Record<PunchAction,ClockerIconName>={CLOCK_IN:'clock-in',START
 const recording:Record<PunchAction,string>={CLOCK_IN:'Clocking in {first}…',CLOCK_OUT:'Clocking out {first}…',START_BREAK:'Starting {first}’s break…',END_BREAK:'Ending {first}’s break…'};
 type Mode='photo'|'review-current'|'select-break'|'loading'|'ready'|'confirm-out'|'sending'|'recovery'|'retry'|'other-person'|'auth'|'unavailable'|'storage'|'success';
 const shown:Record<string,string>={'Clocked In':'Clocked in','On Break':'On break','Off Clock':'Off clock'};
-/** Time since a recorded moment, for orientation only: "6h 26m", "12m", "under a minute". */
+/** Time since a recorded moment, for orientation only: "6 h 26 min", "12 min", "under a minute". */
 function elapsed(value:string,now:number):string {
  const minutes=Math.max(0,Math.floor((now-new Date(value).getTime())/60000));
  if(minutes<1)return 'under a minute';
- const h=Math.floor(minutes/60),m=minutes%60;return h?`${h}h ${m}m`:`${m}m`;
+ return durationSentence(minutes);
 }
 const breakIcon=(category:string):ClockerIconName=>category==='REST'?'rest':category==='MEAL'?'meal':'break';
 /* Face tints on the kiosk leave out the red and amber families, which mean stop and wait here (Nov 10 review, NV-301).

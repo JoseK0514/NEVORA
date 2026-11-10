@@ -26,7 +26,7 @@ export function CoverageActionPanel({ view, actions }: { view: CoverageActionVie
       <p className="oa-draft-context">{r.date} <span>· {r.timeZone}</span></p>
       <ul className="oa-draft-list">{r.assignments.map((a, i) => <li key={i}>
         <div className="oa-draft-person"><strong>{a.employeeName}</strong><span>{a.startTime}–{a.endTime}</span></div>
-        <p>{a.locationName} · {a.positionName ?? "Team member"}{a.isDesignatedLead ? " · Designated lead" : ""}</p>
+        <p>{a.locationName} · {a.positionName ?? "Team member"}{a.isDesignatedLead ? " · Shift lead" : ""}</p>
       </li>)}</ul>
       {review && <>
         <p>These {r.assignments.length} additions preserve existing assignments. They remain drafts; publishing is a separate decision.</p>

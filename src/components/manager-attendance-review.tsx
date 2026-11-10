@@ -1,6 +1,7 @@
 'use client';
 
 import { keepWhole } from "@/lib/keep-whole";
+import { durationSentence } from "@/lib/duration-format";
 import Link from 'next/link';
 import {ConfiguredAttendancePolicies} from './configured-attendance-policies';
 import {usePrivateFragmentFocus} from './private-fragment-focus';
@@ -51,10 +52,7 @@ function differenceLabel(value?: string) {
     const ns = BigInt(value);
     const minutes = Number(ns / BigInt(60_000_000_000));
     if (!Number.isSafeInteger(minutes) || minutes < 1) return '<1 min';
-    if (minutes < 60) return `${minutes} min`;
-    const hours = Math.floor(minutes / 60);
-    const remainder = minutes % 60;
-    return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
+    return durationSentence(minutes);
   } catch {
     return null;
   }
@@ -63,9 +61,9 @@ function differenceLabel(value?: string) {
 function observationDetail(item: Observation) {
   const delta = differenceLabel(item.evidence.differenceNanoseconds);
   if (delta) return delta;
-  if (item.kind === 'SCHEDULE_UNMATCHED') return 'Recorded punch has no saved schedule match.';
-  if (item.kind === 'SCHEDULE_AMBIGUOUS') return 'Saved schedule context could not resolve one shift.';
-  if (item.kind === 'TIME_HISTORY_INCONSISTENT') return 'Recorded time history is internally inconsistent.';
+  if (item.kind === 'SCHEDULE_UNMATCHED') return 'This clock-in doesn’t match a scheduled shift.';
+  if (item.kind === 'SCHEDULE_AMBIGUOUS') return 'We couldn’t tell which shift this clock-in belongs to.';
+  if (item.kind === 'TIME_HISTORY_INCONSISTENT') return 'These clock times don’t add up. Check the timecard.';
   return item.message;
 }
 

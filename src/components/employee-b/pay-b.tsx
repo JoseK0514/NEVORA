@@ -75,9 +75,9 @@ export function PayB(props: PayBProps) {
   if (view === 'paycheck') {
     const item = paycheck ? byId.get(paycheck) : undefined;
     return <BScreen ink back>
-      <BHero back={{href: '/app/my-pay', label: 'Pay'}} title="Paycheck" titleId="b-pay-page-title" sub={item ? `For work ${period(item.period.startDate, item.period.endDate)}` : undefined}/>
+      <BHero back={{href: '/app/my-pay', label: 'Pay'}} title="Pay statement" titleId="b-pay-page-title" sub={item ? `For work ${period(item.period.startDate, item.period.endDate)}` : undefined}/>
       <BStack>
-        {!ready ? fallback : !item ? <BCard label="Paycheck"><div className="ep-status" role="status"><h2 className="ep-status__t">That statement isn’t available</h2><p className="ep-status__s">It may have been replaced, or your access changed.</p></div></BCard> : <>
+        {!ready ? fallback : !item ? <BCard label="Pay statement"><div className="ep-status" role="status"><h2 className="ep-status__t">That statement isn’t available</h2><p className="ep-status__s">It may have been replaced, or your access changed.</p></div></BCard> : <>
           <BCard id="b-pay-paycheck" title={`Pay period ${period(item.period.startDate, item.period.endDate)}`} chip={tag(item) ?? undefined}>
             <div className="ep-big"><p className="ep-big__k">Payday</p>
               <p className="ep-big__v">{fmt({weekday: 'short', month: 'short', day: 'numeric', ...(item.payday.slice(0, 4) === thisYear ? {} : {year: 'numeric'})}).format(utc(item.payday))}</p>
@@ -141,7 +141,7 @@ export function PayB(props: PayBProps) {
       {notice && listed && !loading ? <div ref={noticeRef} tabIndex={-1} className="b-card ep-notice" role="alert" aria-labelledby="b-pay-notice-title">
         <p className="ep-status__t" id="b-pay-notice-title">{notice.title}</p><p className="ep-status__s">{notice.body}</p>
       </div> : null}
-      {latest ? <BCard id="b-pay-last" title="Last paycheck" chip={tag(latest) ?? undefined}>
+      {latest ? <BCard id="b-pay-last" title="Last pay statement" chip={tag(latest) ?? undefined}>
         <div className="ep-big"><p className="ep-big__v">{payday(latest.payday)}</p><p className="ep-big__s">For work {period(latest.period.startDate, latest.period.endDate)}</p></div>
         <BList><BAddRow href={paycheckHref(latest.id)} icon={<FileTextIcon weight="bold"/>} label={`View statement, ${paydayLong(latest.payday)}`}>View statement</BAddRow></BList>
       </BCard> : fallback}

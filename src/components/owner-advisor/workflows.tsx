@@ -40,7 +40,7 @@ export function WorkflowResults({ answer, reviewCoverage, lastSavedAt }: { answe
       {!answer.proposals.length && <p>No eligible proposal is available from this review. Open the schedule to check requirements and missing inputs.</p>}
       {answer.proposals.map((c, i) => <article key={i} className="oa-priority-item">
         <h4>{c.employeeName} · {c.locationName}</h4>
-        <p>{c.date} · {c.startTime}–{c.endTime} · {c.positionName ?? "Staffing"}{c.isDesignatedLead ? " · Designated lead" : ""}</p>
+        <p>{c.date} · {c.startTime}–{c.endTime} · {c.positionName ?? "Staffing"}{c.isDesignatedLead ? " · Shift lead" : ""}</p>
         <p>Eligible under current scheduling rules. Scheduled hours: {c.scheduledHours}; target: {c.targetHours ?? "not set"}.</p>
         <p>{c.publication === "DRAFT" ? "Draft assignment. Publication and employee notifications require a later publishing decision." : "Published schedule. A separate publication and notification consent is required before saving."}</p>
         <a className="nv-btn" data-kind="secondary" href={`/app/schedule/new?review=${encodeURIComponent(c.review)}`}>Review exact replacement</a>

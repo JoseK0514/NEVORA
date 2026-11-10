@@ -16,7 +16,8 @@ beforeEach(() => { fixture.role = "OWNER"; });
 // Nov 1 upscale (kit consistency 9): a signed-in 404 stays in the shell, in the kit.
 it("tells a signed-in person the page doesn't exist and takes them Home", () => {
   const out = renderToStaticMarkup(createElement(NotFound));
-  expect(out).toContain('<h1 id="not-found-title">This page doesn’t exist</h1>');
+  // B7 wording (NV-120): one 404 heading everywhere.
+  expect(out).toContain('<h1 id="not-found-title">Page not found</h1>');
   expect(out).toContain('<a href="/app" class="c-btn">Go to Home</a>');
   expect(out).not.toMatch(/sign in|404/i);
 });

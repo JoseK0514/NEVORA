@@ -1,7 +1,7 @@
 import {schedulingIssueMessage} from '@/lib/scheduling/validate-shift';
 
 const scheduleErrors:Record<string,string>={
- DEADLINE_WORKSPACE_CHANGED:'Workspace settings changed while saving. Your deadline was not saved. Review the business timezone and submit again.',
+ DEADLINE_WORKSPACE_CHANGED:'Company settings changed while saving, so your deadline wasn’t saved. Check the business time zone and save again.',
  INVALID_DEADLINE:'Enter a valid business-local deadline. Daylight saving times that are skipped or occur twice cannot be used.',
  INVALID_SHIFT:'Couldn’t open that shift. Pick it again from this week.',
  EMPLOYEE_NOT_FOUND:'The selected employee could not be found.',

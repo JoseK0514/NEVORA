@@ -57,16 +57,16 @@ export function ShiftSheetRow({shift, href, closeHref, title, detail, initiallyO
         <li><div className="q-row q-row--one"><span className="q-rt"><b>Location</b></span><span className="q-rv q-rv--l">{shift.location}</span></div></li>
         {shift.position ? <li><div className="q-row q-row--one"><span className="q-rt"><b>Position</b></span><span className="q-rv q-rv--l">{shift.position}</span></div></li> : null}
         {shift.lead ? <li><div className="q-row q-row--one"><span className="q-rt"><b>Shift lead</b></span><span className="q-rv q-rv--l">You</span></div></li> : null}
-        {shift.calloutApproved ? <li><div className="q-row q-row--one"><span className="q-rt"><b>Unable to work</b></span><span className="q-rv q-rv--l">Approved</span></div></li> : null}
+        {shift.calloutApproved ? <li><div className="q-row q-row--one"><span className="q-rt"><b>Can’t work</b></span><span className="q-rv q-rv--l">Approved</span></div></li> : null}
       </ul>
       {shift.canSwap || shift.canReport ? <>
         <div className="q-grp"><h2>Change this shift</h2></div>
         <ul className="q-list" onClick={event => { if ((event.target as HTMLElement).closest('a')) setOpen(false); }}>
           {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><ArrowsLeftRightIcon className="q-ic"/></span><span className="q-rt"><b>Swap with a teammate</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
           {shift.canSwap ? <li><Link className="q-row q-row--one" href={`/app/exchange/swap?sourceShiftId=${id}&mode=cover`}><span className="q-row__ic" aria-hidden="true"><HandCoinsIcon className="q-ic"/></span><span className="q-rt"><b>Offer it for cover</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
-          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><CalendarXIcon className="q-ic"/></span><span className="q-rt"><b>Unable to work this shift</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
+          {shift.canReport ? <li><Link className="q-row q-row--one q-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="q-row__ic" aria-hidden="true"><CalendarXIcon className="q-ic"/></span><span className="q-rt"><b>Can’t work this shift</b></span><CaretRightIcon className="q-chev" aria-hidden="true"/></Link></li> : null}
         </ul>
-        <p className="q-help">It stays your shift until a swap completes or your manager approves Unable to work.</p>
+        <p className="q-help">It stays your shift until a swap completes or your manager approves your request.</p>
       </> : null}
     </QuietSheet>
   </li>;
@@ -80,7 +80,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
   const [open, setOpen] = useState(initiallyOpen);
   const id = encodeURIComponent(shift.id);
   // Upscale S5/S12: the details on one line ("Barista · Condado · 8 h"), in a white card under the "Tomorrow, Nov 2" title.
-  const facts = [shift.position, shift.location, shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re the shift lead' : null, shift.calloutApproved ? 'Unable to work approved' : null].filter(Boolean).join(' · ');
+  const facts = [shift.position, shift.location, shift.length, shift.ends ? `ends ${shift.ends}` : null, shift.lead ? 'You’re shift lead' : null, shift.calloutApproved ? 'Can’t work · approved' : null].filter(Boolean).join(' · ');
   const opener = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     event.preventDefault();
@@ -114,7 +114,7 @@ export function ShiftSheetCorpRow({shift, href, closeHref, lead, title, detail, 
             {shift.canReport ? <li><Link className="c-row c-row--danger" href={`/app/exchange/callout?shiftId=${id}`}><span className="c-row__icon" aria-hidden="true"><ProhibitIcon className="c-ic" weight="bold"/></span><span className="c-row__main"><span className="c-row__title">I can’t work this shift</span><span className="c-row__detail"><span>Tells your manager right away</span></span></span><CaretRightIcon className="c-chev" weight="bold" aria-hidden="true"/></Link></li> : null}
           </ul>
           {/* Employee desktop (Nov 8, 2026): the panel says what changing it means; shown only there (employee-b-desktop.css). */}
-          <p className="c-esheet__note">It stays your shift until a swap completes or your manager approves Unable to work.</p>
+          <p className="c-esheet__note">It stays your shift until a swap completes or your manager approves your request.</p>
         </> : null}
       </div>
     </QuietSheet>

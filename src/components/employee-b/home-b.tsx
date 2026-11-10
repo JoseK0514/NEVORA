@@ -128,7 +128,7 @@ function ShiftCard({snapshot, lead}: {snapshot: HomeSnapshot; lead?: boolean}) {
     <div className="eb-shift">
       <p className="eb-shift__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
-      {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{now || today ? 'You’re the shift lead today' : 'You’re the shift lead'}</p> : null}
+      {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{now || today ? 'You’re shift lead today' : 'You’re shift lead'}</p> : null}
       {/* Review B2 (NV-039): the instruction follows Time's clock state, so Home never sends someone who is clocked in back
         to the tablet to clock in. */}
       {clockIn ? <div className="eb-tint" data-tone="green"><BIcon tone="green"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
@@ -136,7 +136,7 @@ function ShiftCard({snapshot, lead}: {snapshot: HomeSnapshot; lead?: boolean}) {
         : now && hours ? <div className="eb-tint" data-tone="amber"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
         <span className="b-notice__t">Not clocked in yet</span><span className="b-notice__s">Clock in on the {shift.locationLabel} tablet</span></span></div>
         : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>}
+        <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Take breaks and clock out there too</span></span></div>}
       {/* On desktop the button sits in the card's footer beside the day and length (eb-desk is desktop only). */}
       <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{keepWhole([longDay(shift.date), lengthOf(shift)].filter(Boolean).join(' · '))}</span>
         <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink></div>

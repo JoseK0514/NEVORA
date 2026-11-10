@@ -29,8 +29,8 @@ type Props = {
  * (it showed the "off" text under "Setup needs a check"). */
 function describe(p: Props) {
     const s = p.snapshot, busy = ['pending', 'loading'].includes(s.state), review = !!p.review && p.review === s.generation && !busy && !p.paused;
-    const title = p.paused ? 'Device settings paused' : s.state === 'enabled' ? 'Alerts are on' : s.state === 'denied' ? 'Permission is blocked' : s.state === 'revoked' ? 'Device setup changed' : s.state === 'error' ? 'Setup needs a check' : s.state === 'unavailable' ? 'Alerts are unavailable' : busy ? 'Checking this device…' : 'Alerts are off';
-    const text = p.paused ? 'Return to NEVORA to check this account and device.' : s.state === 'enabled' ? 'The NEVORA app is set up for this account. Alerts also depend on workplace and phone settings.' : s.state === 'denied' ? 'Allow NEVORA notifications in your phone settings, then check again.' : s.state === 'revoked' ? 'The server and this app could not confirm the same setup. Review app setup or turn off the previous setup.' : s.state === 'error' ? 'NEVORA couldn’t confirm this phone’s alert setup. Check again, or review the app’s setup.' : busy ? 'Checking permission and this app’s enrollment…' : 'Get schedule changes, request answers and updates in the NEVORA app. Your phone may ask for notification permission.';
+    const title = p.paused ? 'Alerts check paused' : s.state === 'enabled' ? 'Alerts are on' : s.state === 'denied' ? 'Permission is blocked' : s.state === 'revoked' ? 'Device setup changed' : s.state === 'error' ? 'Setup needs a check' : s.state === 'unavailable' ? 'Alerts are unavailable' : busy ? 'Checking this device…' : 'Alerts are off';
+    const text = p.paused ? 'Checking will continue when you come back to this screen.' : s.state === 'enabled' ? 'The NEVORA app is set up for this account. Alerts also depend on workplace and phone settings.' : s.state === 'denied' ? 'Allow NEVORA notifications in your phone settings, then check again.' : s.state === 'revoked' ? 'The server and this app could not confirm the same setup. Review app setup or turn off the previous setup.' : s.state === 'error' ? 'NEVORA couldn’t confirm this phone’s alert setup. Check again, or review the app’s setup.' : busy ? 'Checking permission and this app’s enrollment…' : 'Get schedule changes, request answers and updates in the NEVORA app. Your phone may ask for notification permission.';
     const acts = !busy && !p.paused, enable = s.state === 'ready', off = !!s.generation && !review && !p.recover, setup = ['error', 'revoked'].includes(s.state) && !p.recover;
     return { s, busy, review, title, text, acts, enable, off, setup, recover: !!p.recover && !busy && !p.paused };
 }
@@ -57,7 +57,7 @@ export function NativeDeviceSettingsView(p: Props) {
     <div className="c-btns c-btns--stack"><button type="button" className="c-btn c-btn--secondary" onClick={p.onKeep}>Keep current setup</button><button type="button" className="c-btn c-btn--danger" onClick={p.onTurnOff}>Turn off alerts</button></div>
    </div> : null}
    <p className="c-note">Your notifications always stay in NEVORA. Your phone’s settings can block app alerts.</p>
-   {s.message ? <p role="status">{s.message}</p> : null}
+   {s.message && !p.paused ? <p role="status">{s.message}</p> : null}
   </div>
  </section>;
 }
@@ -109,7 +109,7 @@ export function NativeDeviceSettingsB(p: Props) {
         <p className="nd-text">Turn off alerts for this account in this app? Your phone permission and other devices stay the same. An alert already queued by your phone may still appear.</p>
         <div className="nd-acts"><BButton kind="quiet" big full onClick={p.onKeep}>Keep current setup</BButton><button type="button" className="b-btn b-btn--big b-btn--full eb-btn-danger" onClick={p.onTurnOff}>Turn off alerts</button></div>
       </div> : null}
-      {s.message ? <p className="b-note eb-callout" role="status">{s.message}</p> : null}
+      {s.message && !p.paused ? <p className="b-note eb-callout" role="status">{s.message}</p> : null}
     </BStack>
   </BScreen>;
 }

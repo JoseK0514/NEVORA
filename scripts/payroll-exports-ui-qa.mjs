@@ -184,13 +184,14 @@ try {
     assert(await generate.isDisabled());
     assert(await page.getByLabel('Period start', {exact: true}).isDisabled());
     assert.equal(await page.getByRole('button', {name: /Download mapped CSV/}).count(), 0);
-    await page.getByText('The export outcome is unconfirmed. Retry this same generation to retrieve its receipt.', {exact: true}).waitFor();
+    // B7 wording (NV-020): plain unknown-outcome notice.
+    await page.getByText('We couldn’t confirm the export. Try again; it won’t create a second file.', {exact: true}).waitFor();
     assert(await generate.isDisabled());
     await page.getByRole('button', {name: 'Retry same export', exact: true}).click();
     await page.getByRole('heading', {name: 'Your files are ready', exact: true}).waitFor();
     assert.equal(commands.length, 2); assert.deepEqual(commands[0], commands[1]);
     pass(engine + ': actual completed export with dropped response replays same operation and verified receipt');
-    for (const [name, button] of [['mapped.csv', 'Download mapped CSV'], ['canonical.json', 'Download canonical time record']]) {
+    for (const [name, button] of [['mapped.csv', 'Download mapped CSV'], ['canonical.json', 'Download time record (JSON)']]) {
       const download = page.waitForEvent('download'); await page.getByRole('button', {name: new RegExp(button)}).click();
       const d = await download; const path = join(evidence, engine + '-' + name); await d.saveAs(path);
       if (name.endsWith('.csv')) assert.match(await readFile(path, 'utf8'), /QA001/);
@@ -205,7 +206,7 @@ try {
     await page.getByRole('button', {name: 'Refresh export data', exact: true}).click(); await ready(page); assert(await generate.isDisabled());
     await page.getByRole('button', {name: 'Select finalized', exact: true}).click();
     await page.route('**/api/payroll-export', route => route.fulfill({status: 409, json: {state: 'conflict'}}));
-    await generate.click(); await page.getByText('The finalized revision or mapping changed. Refresh and review again.', {exact: true}).waitFor();
+    await generate.click(); await page.getByText('The timecards or the file format changed. Refresh and check again.', {exact: true}).waitFor();
     assert.equal(await page.getByRole('button', {name: 'Retry same export', exact: true}).count(), 0);
     assert.equal(await page.getByRole('button', {name: /Download mapped CSV/}).count(), 0);
     await page.unroute('**/api/payroll-export');

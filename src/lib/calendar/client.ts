@@ -58,7 +58,7 @@ export function createCalendarClient(authority:string,changed:(state:CalendarCli
    else{
     pending=null;
     if(result.status==='created')created=result;
-    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link revoked. Future access through this link has stopped.':result.status==='active_url_unavailable'?'The original request finished. Its private URL cannot be retrieved. Reset the link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
+    publish({notice:result.status==='created'?'Checking the new link…':result.status==='revoked'?'Link turned off. Calendar apps can’t get your shifts through it anymore.':result.status==='active_url_unavailable'?'Your earlier request went through, but the private link can’t be shown again. Get a new link if you still need to copy it.':'The link or your access changed. Review the current status before continuing.'});
    }
   }catch(error){if(!current(at))return;if(error instanceof AccessDenied){publish({status:{state:'unauthorized',reason:'access_denied'},notice:'Your access could not be confirmed. Sign in again to check your calendar settings.',busy:false});return;}publish({notice:unknown});}
   if(!current(at))return;publish({busy:false});await refresh(created);

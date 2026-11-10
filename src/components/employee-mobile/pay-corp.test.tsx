@@ -72,7 +72,7 @@ describe('Pay history and Paycheck (E-PayHistory, E-Paycheck)',()=>{
  it('opens one statement with one PDF row, and the year only outside the current year',()=>{
   // The corporate layout (tablets and desktop); the phone screen (Direction B) is checked after it.
   const full=render({},`paycheck=${ids.correction}`),html=withoutB(full),plain=text(html);
-  expect(plain).toContain('Paycheck');expect(plain).toContain('Pay period Jan 6 – 19');expect(plain).toContain('Thu, Jan 24, 2030');
+  /* B7 wording (NV-119 glossary): the document is a "Pay statement" */expect(plain).toContain('Pay statement');expect(plain).toContain('Pay period Jan 6 – 19');expect(plain).toContain('Thu, Jan 24, 2030');
   expect(plain).toContain('This corrects your earlier statement for the same period.');
   // Upscale S8: one "Pay statement (PDF)" row that opens the document separately.
   expect(html).toContain(`href="/api/payroll/documents/${ids.correction}/view" target="_blank" rel="noopener" aria-label="Pay statement (PDF), corrected statement, payday Thursday, January 24, 2030 (opens separately)"`);

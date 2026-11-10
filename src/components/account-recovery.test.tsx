@@ -35,7 +35,8 @@ describe('Recovery presentation preserves its workflow boundaries',()=>{
   expect(html).not.toContain('href="/reset-access"');
  });
  it('shows success only after confirmation and supplies the next sign-in action',()=>{
-  const message='Password reset. All portal sessions have ended. Sign in with your new password.';
+  // B7 wording (NV-188): no "portal sessions" jargon.
+  const message='Password reset. You’re signed out on every device. Sign in with your new password.';
   const html=renderToStaticMarkup(<RecoveryReset hydrated busy={false} done message={message} onSubmit={()=>{}} proofRef={()=>{}}/>);
   expect(html).toContain('Password updated');expect(html).toContain(message);
   expect(html).toContain('role="status"');expect(html).toContain('Sign in with new password');

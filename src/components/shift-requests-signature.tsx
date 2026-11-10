@@ -18,7 +18,7 @@ const range = (shift: ExchangeShift) => `${keepWhole(formatTime(shift.startTime)
 /** "Customer Support · Main Office", with Lead and a time zone note when the shift's zone isn't the workspace's. */
 export function shiftPlace(shift: ExchangeShift, zone?: string) {
   const position = shift.positionName ?? (shift.positionId ? `Position ${shift.positionId}` : null);
-  return [position, shift.locationName, shift.isDesignatedLead ? "Designated lead" : null, shift.timeZone && zone && shift.timeZone !== zone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(" · ");
+  return [position, shift.locationName, shift.isDesignatedLead ? "Shift lead" : null, shift.timeZone && zone && shift.timeZone !== zone ? `Times in ${timeZoneLabel(shift.timeZone)}` : null].filter(Boolean).join(" · ");
 }
 
 export function ShiftDay({ shift }: { shift: ExchangeShift }) {

@@ -14,12 +14,12 @@ import {payrollTabs} from '@/components/payroll/payroll-tabs';
 import './payroll-page.css';
 
 /** Review B1 (NV-022): the page title in the tab and for screen readers. */
-export const metadata = { title: "Payroll export" };
+export const metadata = { title: "Time exports" };
 export default async function PayrollExportPage({searchParams}:{searchParams:Promise<{start?:string;end?:string}>}){
   const session=await requireSession();
   if(!isManagerRole(session.role))redirect('/app');
   const proof=await requireSessionMutationProof();
-  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Payroll exports unavailable" reason={access.reason}/>;
+  const access=await withOperationalCompany(proof,async()=>null);if(access.state==='unavailable')return <OperationalUnavailable title="Time exports unavailable" reason={access.reason}/>;
   const workspace=await getWorkspace(),params=await searchParams;
   const today=Temporal.Now.zonedDateTimeISO(workspace.timeZone).toPlainDate();
   // Quiet (v4): the default is this week, Monday to Sunday (the period Timecards and Payroll show).

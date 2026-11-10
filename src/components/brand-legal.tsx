@@ -4,7 +4,7 @@ import { policiesVisible } from "../lib/legal/policies";
 
 const LINKS = {
   en: { label: "Policies and help", privacy: "Privacy", terms: "Terms", support: "Support", copyright: NUVORA_BRAND.copyright },
-  es: { label: "Políticas y ayuda", privacy: "Privacidad", terms: "Términos", support: "Ayuda", copyright: "© 2026 VELANI LLC. Todos los derechos reservados." },
+  es: { label: "Políticas y ayuda", privacy: "Privacidad (en inglés)", terms: "Términos (en inglés)", support: "Ayuda", copyright: "© 2026 VELANI LLC. Todos los derechos reservados." },
 } as const;
 
 /** Sign-in pages' footer: VELANI LLC ownership, and the policy links once they're published. Server-only.

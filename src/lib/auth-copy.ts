@@ -151,11 +151,11 @@ const es: AuthCopy = {
   signInSubtitle: "Inicia sesión para ver tu horario, tus horas y tu pago.",
   bandLine: "Tu semana, en un solo lugar.",
   panelEyebrow: "NEVORA Workforce",
-  panelSupport: "Turnos, horas, tiempo libre y pago, listos al iniciar sesión.",
+  panelSupport: "Turnos, horas, días libres y pago, listos al iniciar sesión.",
   device: { date: "Martes, 20 de octubre", greeting: "Buenos días, Alex", nextShift: "Próximo turno", inMinutes: "En 22 min", time: "8:00 AM – 4:00 PM",
     place: "Recepción · Oficina principal", clockIn: "Marcar entrada", thisWeek: "Esta semana", scheduled: "Programadas", worked: "Trabajadas", nextPayday: "Próximo pago",
     payday: "vie, 23 oct", timeOff: "Tiempo libre · 26 oct", approvedBy: "Aprobado por Morgan", approved: "Aprobado", tabs: ["Inicio", "Horario", "Solicitudes", "Pago"] },
-  workspaceUnavailable: "Espacio de trabajo no disponible",
+  workspaceUnavailable: "No pudimos cargar tu lugar de trabajo",
   employeeId: "ID de empleado",
   employeeIdPlaceholder: "Escribe tu ID de empleado",
   password: "Contraseña",
@@ -279,13 +279,16 @@ export const AUTH_COPY: Record<AuthLang, AuthCopy> = { en, es };
 /** Messages that come from the recovery request/reset flow (AccountRecovery and /api/auth/recovery), in Spanish.
  * Matched exactly; anything unknown is shown as it arrives. */
 const MESSAGES_ES: Record<string, string> = {
+  // Review B7 (NV-188): the plain-language recovery reply, ready for the server change (codex-B7). The old key stays until then.
+  "If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.":
+    "Si los datos coinciden con una cuenta activa, te enviaremos por correo los pasos para recuperarla. ¿No puedes usar ese correo? Pide ayuda a tu gerente o al dueño.",
   "If these details match an active account and its registered recovery channel is available, recovery instructions will be sent. If you cannot use that channel, contact your manager or Owner for assisted recovery.":
     "Si estos datos coinciden con una cuenta activa y su canal de recuperación registrado está disponible, enviaremos instrucciones de recuperación. Si no puedes usar ese canal, comunícate con tu gerente o con el dueño para una recuperación asistida.",
   "Recovery could not be confirmed. Keep your current access and try again.": "No pudimos confirmar la recuperación. Conserva tu acceso actual e inténtalo de nuevo.",
   "Recovery is unavailable. Try again or contact your manager for assisted recovery.": "La recuperación no está disponible. Inténtalo de nuevo o comunícate con tu gerente para una recuperación asistida.",
   "Your access ended. Sign in again.": "Tu sesión terminó. Inicia sesión de nuevo.",
   "Passwords do not match.": "Las contraseñas no coinciden.",
-  "Password reset. All portal sessions have ended. Sign in with your new password.": "Contraseña restablecida. Se cerraron todas las sesiones del portal. Inicia sesión con tu contraseña nueva.",
+  "Password reset. You’re signed out on every device. Sign in with your new password.": "Contraseña restablecida. Se cerró tu sesión en todos los dispositivos. Inicia sesión con tu contraseña nueva.",
   "This recovery code has expired, was already used, or cannot be verified. Request a new code or contact your manager.": "Este código de recuperación venció, ya se usó o no se puede verificar. Solicita un código nuevo o comunícate con tu gerente.",
   "The reset outcome could not be confirmed. Try signing in with your new password before requesting another code.": "No pudimos confirmar el restablecimiento. Intenta iniciar sesión con tu contraseña nueva antes de solicitar otro código.",
 };

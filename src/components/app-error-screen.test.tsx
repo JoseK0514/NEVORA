@@ -14,10 +14,11 @@ vi.mock("./public-error-screen.css", () => ({}));
 
 it("uses the portal's own error words, with a retry and a full-load link home", () => {
   const html = renderToStaticMarkup(createElement(AppErrorScreen, { reset: () => {} }));
-  expect(html).toContain('<p class="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>');
+  // B7 wording (NV-120): one failure message, "This page didn’t load", with the connection as the next step.
+  expect(html).toContain('<p class="nv-sr" role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>');
   expect(html.match(/role="alert"/g)).toHaveLength(1);
-  expect(html).toContain("This page could not be loaded");
-  expect(html).toContain("Try loading the page again before taking an action.");
+  expect(html).toContain("This page didn’t load");
+  expect(html).toContain("Check your connection, then try again.");
   expect(html).toMatch(/<button type="button" class="nv-btn" data-kind="primary"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
   expect(html).toContain('aria-label="NEVORA"');
   expect(html).toContain('href="/app"');
@@ -28,9 +29,9 @@ it("the root boundary and the global boundary render the same screen", () => {
   const error = Object.assign(new Error("statement timeout"), { digest: "4074344408" });
   const root = renderToStaticMarkup(createElement(RootError, { error, reset: () => {} }));
   const global = renderToStaticMarkup(createElement(GlobalError, { error, reset: () => {} }));
-  expect(root).toContain("This page could not be loaded");
+  expect(root).toContain("This page didn’t load");
   expect(global).toMatch(/^<html lang="en">(<head><\/head>)?<body/);
-  expect(global).toContain("This page could not be loaded");
+  expect(global).toContain("This page didn’t load");
   for (const html of [root, global]) expect(html).not.toContain("4074344408");
 });
 
@@ -41,9 +42,9 @@ it("signed-out and public addresses get the public screen: same words, Try again
       router.path = path;
       for (const html of [renderToStaticMarkup(createElement(RootError, { error, reset: () => {} })), renderToStaticMarkup(createElement(GlobalError, { error, reset: () => {} }))]) {
         expect(html).toContain('class="nf-page pe-page"');
-        expect(html).toContain("This page could not be loaded");
+        expect(html).toContain("This page didn’t load");
         expect(html).toContain("Something went wrong");
-        expect(html).toContain('role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>');
+        expect(html).toContain('role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>');
         expect(html).toMatch(/<button type="button" class="nf-cta pe-retry"><svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>Try again<\/button>/);
         expect(html).toContain('href="/login">Go to sign in</a>');
         expect(html).not.toContain('href="/app"');

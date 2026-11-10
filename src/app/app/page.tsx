@@ -1,6 +1,5 @@
 import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {MobileOnboardingGuide} from "@/components/mobile-access/onboarding-guide";
-import {readAuthLang} from "@/lib/auth-lang.server";
 import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr/ArrowsClockwise";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
 import Link from 'next/link';
@@ -78,7 +77,7 @@ export default async function DashboardPage({
     const teamMessage=session.role==='LEAD'&&presentation.modules.updates;
     // Direction B: hours worked this week (the Time tab's own read) and the next payday (pay schedule), Employees and Leads.
     const b=session.role==='EMPLOYEE'||session.role==='LEAD'?{lead:session.role==='LEAD',hoursAuthority:employeeViewAuthority(proof,'hours'),payday:payrollFeatureEnabled()&&presentation.modules.payStatements?(await readNextPay(workspace.timeZone).catch(()=>null))?.payday??null:null}:undefined;
-    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang={await readAuthLang()} timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
+    return <EmployeeDashboard b={b} intro={mobileAccessEnabled()?<MobileOnboardingGuide employeeId={session.id} lang="en" timeOffEnabled={(await currentPresentation()).modules.timeOff}/>:null} authority={homeAuthority(proof)} timeAuthority={correctionAuthority(proof)} displayName={session.firstName} timeZone={workspace.timeZone} workspaceName={workspace.name} week={week} teamMessage={teamMessage} corporate={session.role==='EMPLOYEE'||session.role==='LEAD'}/>;
   }
 
   const proof=await requireSessionMutationProof();
@@ -101,9 +100,9 @@ export default async function DashboardPage({
   // IS-51: only the view's own context; one-time flags (decided=…) stay out so a toast never repeats.
   const retry=new URLSearchParams((['view','week','day','location','employee'] as const).flatMap(key=>{const value=params[key];return typeof value==='string'&&value?[[key,value]]:[];})).toString();
   if(!dashboardData)return <ManagerCorrectionRecoveryBoundary key={recoveryKey}><div className="nv-page premium-error" data-nv-page="">
-    <PageBand title="This page could not be loaded" summary="Your current information is unavailable."/>
+    <PageBand title="This page didn’t load" summary="Nothing was changed."/>
     <KitStack><Card><CardBody><div className="premium-error__body">
-      <p className="premium-error__text">Try loading the page again before taking an action.</p>
+      <p className="premium-error__text">Check your connection, then try again.</p>
       <div className="premium-error__actions">
         <Link className="nv-btn" data-kind="primary" href={retry?`/app?${retry}`:'/app'}><ArrowsClockwiseIcon size={18} aria-hidden="true"/>Try again</Link>
         {view!=='overview'?<Link className="nv-btn" data-kind="secondary" href="/app">Back to Home</Link>:null}

@@ -89,7 +89,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
   zone: string;
 }) {
   // The form's page: its card is the form itself, kept once in the page (b-keep) and lifted over this hero.
-  const stack = state ?? (enabled === false ? <BCard><BText status>Time off is turned off for your company.</BText></BCard> : page === 'new' ? null : <>
+  const stack = state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use time off in NEVORA.</BText></BCard> : page === 'new' ? null : <>
     {earlier ? <BCard><div className="eb-status"><p className="b-state">An earlier time-off submission still needs to be checked.</p><Link className="b-link" href="/app/requests?tab=new">Return to my submission</Link></div></BCard> : null}
     {page === 'list' ? <BCard label={filter === 'decided' ? 'Decided requests' : 'Waiting requests'}>
       {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
@@ -113,7 +113,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
 
 /** The planning read's state, said in a card: paused, denied (Sign in), checking, or failed (Try again). */
 export function TimeOffStateB({paused, denied, refreshing, onRetry}: {paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void}) {
-  return <BStateCard label="Planning access" text={paused ? 'Your planning is paused. Return to this page or reconnect to refresh.' : denied ? 'Your access changed. Sign in again to continue.' : refreshing ? 'Checking your current planning…' : 'Your planning couldn’t be checked.'}
+  return <BStateCard label="Time off" text={paused ? 'Time off is paused. Come back to this page or reconnect to refresh.' : denied ? 'Your access changed. Sign in again to continue.' : refreshing ? 'Loading your time off…' : 'Your time off didn’t load.'}
     denied={denied} retry={refreshing || paused ? null : onRetry} kind={paused ? 'paused' : undefined}/>;
 }
 
@@ -123,6 +123,6 @@ export function TimeOffWaitB({selection, filter}: {selection: string; filter: st
   return <BScreen back>
     {page === 'new' ? <FormMark/> : null}
     <TimeOffHero page={page} filter={filter} tabs/>
-    <BStack><BCard><p className="b-state" role="status">Checking your current planning…</p></BCard></BStack>
+    <BStack><BCard><p className="b-state" role="status">Loading your time off…</p></BCard></BStack>
   </BScreen>;
 }

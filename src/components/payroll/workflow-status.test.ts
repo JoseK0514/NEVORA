@@ -49,6 +49,6 @@ describe('payroll operational status', () => {
   it('turns native missing YTD and recorded-source prerequisites into recovery actions', () => {
     expect(payrollExceptionMessage('ATTESTED_YTD_REQUIRED:fictional-a')).toContain('year-to-date');
     expect(payrollExceptionMessage('RECORDED_SOURCE_STALE:fictional-a')).toContain('timecards');
-    expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('verification');
+    /* B7 wording (NV-124) */expect(payrollExceptionMessage('ROUNDING_POLICY_ACCEPTANCE_REQUIRED:fictional-a')).toContain('confirm the payroll rounding rules');
   });
 });

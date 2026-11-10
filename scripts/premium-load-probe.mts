@@ -54,7 +54,7 @@ try {
     try {
       const response = await fetch(app.url + target.path, { method: target.body ? 'POST' : 'GET', redirect: 'manual', headers: { Cookie: target.cookie, Origin: app.url, 'Sec-Fetch-Site': 'same-origin', 'x-nevora-actor': target.cookie === manager ? 'LOAD-0' : 'LOAD-1', ...('authority' in target ? { 'x-nevora-employee-view': target.authority! } : {}), ...(target.header ? { [target.header]: '1' } : {}), ...(target.body ? { 'Content-Type': 'application/json' } : {}) }, ...(target.body ? { body: JSON.stringify(target.body) } : {}), signal: AbortSignal.timeout(60000) });
       const body = await response.text();
-      const state = response.headers.get('content-type')?.includes('application/json') ? JSON.parse(body).state : /This page could not be loaded|Workspace configuration is unavailable/.test(body) ? 'rendered-failure' : 'html';
+      const state = response.headers.get('content-type')?.includes('application/json') ? JSON.parse(body).state : /This page didn’t load|This page could not be loaded|Workspace configuration is unavailable/.test(body) ? 'rendered-failure' : 'html';
       return { ms: performance.now() - start, status: response.status, state };
     } catch (error) { return { ms: performance.now() - start, status: 0, state: error instanceof Error ? error.name : 'error' }; }
   };

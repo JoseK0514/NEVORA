@@ -55,7 +55,7 @@ function WhyNot({refused}: {refused: OpenEmployeeShift[]}) {
   return <BCard label="Why other shifts aren’t available">
     <details className="eb-why">
       <summary className="b-row"><BIcon tone="grey"><InfoIcon weight="bold"/></BIcon>
-        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Why other shifts aren’t available</span></span><span className="b-row__s">Date, location and the reason for each</span></span>
+        <span className="b-row__tx"><span className="b-row__t"><span className="b-row__tt">Why other shifts aren’t available</span></span><span className="b-row__s">{`${refused.length} ${refused.length === 1 ? 'shift' : 'shifts'} · date, location and the reason for each`}</span></span>
         <CaretDownIcon className="b-chev eb-why__chev" size={18} weight="bold" aria-hidden="true"/></summary>
       <ul className="eb-why__list">{refused.map(row => <li key={row.id}><strong>{keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}</strong><span>{row.location}</span>{row.notice ? <p>{row.notice}</p> : null}</li>)}</ul>
     </details>
@@ -81,16 +81,16 @@ export function OpenShiftsB({state, enabled, failed, refreshing, onRefresh, resu
   return <BScreen back>
     <ExchangeHeroB tab="open" tabs={enabled !== false} counts={{open: failed ? null : rows.length, foryou: forYou}}/>
     <BStack>
-      {state ?? (enabled === false ? <BCard><BText status>Shift pickup is turned off for your company.</BText></BCard> : <>
+      {state ?? (enabled === false ? <BCard><BText status>Your workplace doesn’t use shift pickup in NEVORA.</BText></BCard> : <>
         {results}
         {failed ? <BCard><div className="eb-status"><p className="b-state" role="status">Open shifts couldn’t be checked.</p><BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Try again</BButton></div></BCard> : <>
           {rows.length ? <BCard id="b-open-eligible" title="You can pick up" count={rows.length}>
             <BList>{rows.map(row => <OpenShiftRow key={row.shift.id} row={row}/>)}</BList>
             {note ? <BCardNote>{note}</BCardNote> : null}
-          </BCard> : unconfirmed.length ? <BCard><div className="eb-status"><p className="b-state" role="status">Some shifts still need an eligibility check. Refresh to try again.</p>
+          </BCard> : unconfirmed.length ? <BCard><div className="eb-status"><p className="b-state" role="status">We’re still checking whether you can take some shifts. Refresh to try again.</p>
             <BButton kind="quiet" full disabled={refreshing} onClick={onRefresh}>Refresh</BButton></div></BCard>
             : <BCard><OpenShiftsEmptyB/></BCard>}
-          {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="Eligibility unavailable"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
+          {unconfirmed.length ? <BCard id="b-open-unconfirmed" title="We couldn’t check these shifts"><BList>{unconfirmed.map(row => <BRow key={row.id} title={keepWhole(`${dayB(row.date)} · ${formatTime(row.startTime)}`)}
             sub={row.notice ? `${row.location} · ${row.notice}` : row.location}/>)}</BList></BCard> : null}
           {refused.length ? <WhyNot refused={refused}/> : null}
           {/* Desktop: the way to more shifts sits beside them (eb-desk). */}
@@ -161,7 +161,7 @@ function BRowLink({item, split}: {item: ExchangeRowB; split?: ExchangeSplitB | n
 
 function SlotCard({slot, title}: {slot: RequestSlot | null; title: string}) {
   if (!slot) return <BCard title={title}><p className="b-state">Recorded shift details are unavailable.</p></BCard>;
-  const lines = [[slot.location, slot.position].filter(Boolean).join(' · '), slot.lead ? 'Designated shift lead' : null,
+  const lines = [[slot.location, slot.position].filter(Boolean).join(' · '), slot.lead ? 'Shift lead' : null,
     slot.endTime <= slot.startTime ? `Ends ${dayB(addDays(slot.date, 1))} at ${formatTime(slot.endTime)}.` : null].filter(Boolean) as string[];
   return <BCard title={title}><BList><BRow lead={<BDay date={slot.date}/>} title={range(slot)} sub={<>{lines.map(line => <span key={line} className="eb-line">{line}</span>)}</>}/></BList></BCard>;
 }

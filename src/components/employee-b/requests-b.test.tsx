@@ -78,11 +78,11 @@ it('draws one request with its decision, and keeps the withdraw step once in the
 
 it('shows each planning read state in the phone screen with its own action, and no private rows', () => {
   const loading = onlyB(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>));
-  expect(loading).toContain('Checking your current planning…');expect(loading).not.toContain('Try again');expect(loading).not.toContain('requestId=');
+  /* B7 wording (NV-148): plain loading and paused lines */expect(loading).toContain('Loading your time off…');expect(loading).not.toContain('Try again');expect(loading).not.toContain('requestId=');
   fixture.paused = true;
-  expect(onlyB(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="new" filter="waiting"/>))).toContain('Your planning is paused.');
+  expect(onlyB(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="new" filter="waiting"/>))).toContain('Time off is paused.');
   fixture.paused = false;
   fixture.read = {view: 'timeoff', enabled: false, timeZone: 'America/New_York', data: {requests: []}};
   const off = onlyB(renderToStaticMarkup(<EmployeeTimeOff authority="a" selection="list" filter="waiting"/>));
-  expect(off).toContain('Time off is turned off for your company.');expect(off).not.toContain('b-seg');
+  expect(off).toContain('Your workplace doesn’t use time off in NEVORA.');expect(off).not.toContain('b-seg');
 });

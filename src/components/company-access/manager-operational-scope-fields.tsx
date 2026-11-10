@@ -10,7 +10,7 @@ export function OperationalScopeSelectionFields({locations,value,onChange,disabl
  const id=useId(),helpId=id+'-help',errorId=id+'-error';
  return <fieldset className={styles.fields} disabled={disabled} aria-describedby={[helpId,error?errorId:null].filter(Boolean).join(' ')}>
   <legend>Management access</legend>
-  <p id={helpId} className="muted">Choose the operations this Manager can oversee. Scheduling eligibility and payroll permissions are separate.</p>
+  <p id={helpId} className="muted">Choose where this manager can manage the schedule and team. Payroll access is set separately.</p>
   <label className={styles.choice}><input type="radio" name={id} checked={value?.mode==='COMPANY'} onChange={()=>onChange({mode:'COMPANY',locationIds:[]})}/><span><strong>Company-wide</strong><small>Manage operations across all company locations.</small></span></label>
   <label className={styles.choice}><input type="radio" name={id} checked={value?.mode==='LOCATIONS'} onChange={()=>onChange({mode:'LOCATIONS',locationIds:[]})}/><span><strong>Selected locations</strong><small>Manage only the locations selected below.</small></span></label>
   {value?.mode==='LOCATIONS'&&<div className={styles.locations} role="group" aria-label="Management locations">

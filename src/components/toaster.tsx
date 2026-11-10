@@ -16,8 +16,8 @@ export const SUCCESS_FLAGS = ["submitted", "reviewed", "published", "updated", "
 
 /** D-5: a focused review returns with ?decided=; the page it returns to confirms the outcome once. */
 export const DECISION_MESSAGES: Record<string, string> = {
-  "timeoff-approved": "Time off approved. The employee will be told.",
-  "timeoff-declined": "Time off declined. The employee will be told.",
+  "timeoff-approved": "Time off approved. The employee can see it in Time off.",
+  "timeoff-declined": "Time off declined. The employee can see it in Time off.",
 };
 
 export function toast(message: string, tone: Tone = "success") {
@@ -51,7 +51,7 @@ function ToastItem({ item, onClose }: { item: Toast; onClose: (id: number) => vo
     onFocus={() => { focused.current = true; pause(); }} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) { focused.current = false; run(); } }}>
     <Icon size={20} weight="fill" aria-hidden="true" />
     <span>{item.message}</span>
-    <button type="button" aria-label="Dismiss notification" onClick={close}><XIcon size={16} aria-hidden="true" /></button>
+    <button type="button" aria-label="Dismiss message" onClick={close}><XIcon size={16} aria-hidden="true" /></button>
   </li>;
 }
 
@@ -82,7 +82,7 @@ export function Toaster() {
     present.forEach(flag => url.searchParams.delete(flag));
     window.history.replaceState(window.history.state, "", url);
   }, [pathname, search]);
-  return <ol className="nevora-toaster" aria-live="polite" aria-label="Notifications">
+  return <ol className="nevora-toaster" aria-live="polite" aria-label="Messages">
     {items.map(item => <ToastItem key={item.id} item={item} onClose={id => setItems(current => current.filter(t => t.id !== id))} />)}
   </ol>;
 }

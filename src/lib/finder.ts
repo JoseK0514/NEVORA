@@ -81,10 +81,10 @@ export function finderItems(role: UserRole, payroll: PayrollCapabilities | undef
   const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
     { id: 'action:shift', group: 'Actions', label: 'Add shift', href: '/app/schedule/new', keywords: 'add new create shift schedule' },
-    { id: 'action:employee', group: 'Actions', label: 'Add an employee', href: '/app/employees/new', keywords: 'add new hire person team employee staff' },
-    { id: 'action:update', group: 'Actions', label: 'Send an update', href: '/app/updates/compose', keywords: 'send message announcement compose post' },
+    { id: 'action:employee', group: 'Actions', label: 'Add employee', href: '/app/employees/new', keywords: 'add new hire person team employee staff' },
+    { id: 'action:update', group: 'Actions', label: 'Write an update', href: '/app/updates/compose', keywords: 'send message announcement compose post' },
     // UX7: verbs that live inside a page open that page where the action is.
-    { id: 'action:publish', group: 'Actions', label: 'Publish the schedule', detail: 'Schedule', href: '/app/schedule?plan=1#schedule-planning', keywords: 'publish build schedule week send', searchOnly: true },
+    { id: 'action:publish', group: 'Actions', label: 'Build and publish', detail: 'Schedule', href: '/app/schedule?plan=1#schedule-planning', keywords: 'publish build schedule week send', searchOnly: true },
     { id: 'action:copy', group: 'Actions', label: 'Copy previous week', detail: 'Schedule › More', href: '/app/schedule', keywords: 'copy duplicate repeat last previous week schedule', searchOnly: true },
     { id: 'action:time-off', group: 'Actions', label: 'Review time-off requests', detail: 'Time off', href: '/app/requests', keywords: 'approve decline time off vacation leave requests pto', searchOnly: true },
     { id: 'action:timecards', group: 'Actions', label: 'Approve timecards', detail: 'Timecards', href: '/app/timecards', keywords: 'approve finalize timecards hours time sheets', searchOnly: true },

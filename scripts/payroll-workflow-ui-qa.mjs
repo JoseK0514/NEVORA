@@ -105,10 +105,11 @@ try {
       assert.match(await page.locator('.pw-totals').innerText(), /\$70\.00/);
       await page.getByRole('link', { name: 'Payroll settings', exact: true }).click();
       await page.getByRole('heading', { name: 'Company defaults', exact: true }).waitFor();
-      await page.getByRole('checkbox', { name: 'Publish statements after an authorized approval', exact: true }).uncheck();
+      // B7 wording (NV-124): payroll settings labels use plain language ("Bank and file type", "Publish pay statements…").
+      await page.getByRole('checkbox', { name: 'Publish pay statements after payroll is approved', exact: true }).uncheck();
       await page.getByRole('checkbox', { name: 'Queue private payroll notices', exact: true }).uncheck();
       await page.getByLabel('Payroll provider preference', { exact: true }).selectOption('PAYCHEX');
-      await page.getByLabel('Desired bank channel', { exact: true }).selectOption('OTHER');
+      await page.getByLabel('Bank and file type', { exact: true }).selectOption('OTHER');
       await page.getByRole('button', { name: 'Add rule', exact: true }).click();
       const rule = page.locator('.pw-rule').first();
       await rule.getByLabel('Rule name', { exact: true }).fill('Fictional future employer policy');
@@ -118,11 +119,11 @@ try {
       await page.getByLabel('Effective date', { exact: true }).fill('2026-01-01');
       await page.getByLabel('Reason for change', { exact: true }).fill('Fictional manual publication review');
       await page.getByRole('button', { name: 'Save company preferences', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       await page.reload(); await page.getByRole('heading', { name: 'Company defaults', exact: true }).waitFor();
-      assert.equal(await page.getByRole('checkbox', { name: 'Publish statements after an authorized approval', exact: true }).isChecked(), false);
+      assert.equal(await page.getByRole('checkbox', { name: 'Publish pay statements after payroll is approved', exact: true }).isChecked(), false);
       assert.equal(await page.getByLabel('Payroll provider preference', { exact: true }).inputValue(), 'PAYCHEX');
-      assert.equal(await page.getByLabel('Desired bank channel', { exact: true }).inputValue(), 'OTHER');
+      assert.equal(await page.getByLabel('Bank and file type', { exact: true }).inputValue(), 'OTHER');
       assert.equal(await page.locator('.pw-rule').getByLabel('Amount in USD', { exact: true }).inputValue(), '70.00');
       pass('Company settings persist and reload through real APIs');
       await page.getByLabel('Employee', { exact: true }).selectOption(fixture.ids.a);
@@ -130,7 +131,7 @@ try {
       await page.getByLabel('Exception effective date', { exact: true }).fill('2026-01-01');
       await page.getByLabel('Exception reason', { exact: true }).fill('Fictional employee language exception');
       await page.getByRole('button', { name: 'Save employee exception', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       const currentSettings = await context.request.get(app.url + '/api/payroll/settings', { headers: apiHeaders() });
       assert.equal(currentSettings.status(), 200);
       const settings = await currentSettings.json();
@@ -141,7 +142,7 @@ try {
       await page.getByRole('checkbox', { name: 'Approve an exact reviewed payroll revision', exact: true }).uncheck();
       await page.getByLabel('Access change reason', { exact: true }).fill('Fictional reviewer-only access');
       await page.getByRole('button', { name: 'Save payroll access', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       const reviewer = await browser.newContext(); await login(reviewer, fixture.ids.reviewer, fixture.password);
       const reviewPage = await pageFor(reviewer, '/app/payroll');
       await reviewPage.getByRole('heading', { name: 'Pay periods', exact: true }).waitFor();
@@ -174,7 +175,7 @@ try {
       const importedReceipt = (await imported.json()).receipt;
       const reviewedRevision = page.getByRole('checkbox', { name: `I reviewed revision ${importedReceipt.revision}, the provider amounts and all employee details.`, exact: true });
       await reviewedRevision.waitFor();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       pass('Neutral provider import preserves actual amounts and refreshes source review');
       let lost = false;
       let dropConfirmed, dropRejected;
@@ -196,7 +197,7 @@ try {
       assert.match(saved, /^[0-9a-f-]{36}$/);
       await page.unroute('**/api/payroll/runs');
       await page.reload(); await page.getByRole('heading', { name: 'Approval recorded', exact: true }).waitFor();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       assert.equal(await page.evaluate(key => localStorage.getItem(key), ownerStorageKey), null);
       const actual = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); assert.equal(actual.status(), 200);
       assert.equal((await actual.json()).runs.filter(run => run.id === fixture.runId).length, 1);
@@ -213,7 +214,7 @@ try {
       pass('Private PDF downloads contain real PDF bytes and match immutable server SHA-256');
       await page.getByRole('checkbox', { name: 'Share the approved pay statements with each employee.', exact: true }).check();
       await page.getByRole('button', { name: 'Share pay statements', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       pass('Publication is a separate recorded action and worker stage');
       await page.getByText('Corrections and payment instructions', { exact: true }).click();
@@ -235,7 +236,7 @@ try {
       await page.getByRole('button', { name: 'Refresh', exact: true }).click(); await page.locator('.pw-document').first().waitFor();
       await page.getByRole('checkbox', { name: 'Share the approved pay statements with each employee.', exact: true }).check();
       await page.getByRole('button', { name: 'Share pay statements', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       for (let attempt = 0; attempt < 3; attempt++) await workerOnce(app.database.executor);
       const correctionRuns = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const correctedRun = (await correctionRuns.json()).runs.find(run => run.id === correctionReceipt.runId);
       assert.equal(correctedRun.correctionOf, fixture.runId); assert.equal(correctedRun.status, 'APPROVED'); assert.equal(correctedRun.importRevision, 3);
@@ -292,7 +293,7 @@ try {
       await page.getByLabel('Effective date', { exact: true }).fill('2026-01-01');
       await page.getByLabel('Reason for change', { exact: true }).fill('Fictional missed-period and private-notice QA');
       await page.getByRole('button', { name: 'Save company preferences', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       const savedSettings = await context.request.get(app.url + '/api/payroll/settings', { headers: apiHeaders() }); assert.equal(savedSettings.status(), 200);
       let latestSettings = (await savedSettings.json()).revisions.sort((a, b) => b.revision - a.revision)[0];
       assert.deepEqual(latestSettings.preferences.automation.reminderLeadDays, [7]); assert.equal(latestSettings.preferences.automation.reminders, true);
@@ -342,7 +343,7 @@ try {
       const prepared = await preparedResponse; assert.equal(prepared.status(), 200, await prepared.text());
       assert.deepEqual(prepared.request().postDataJSON(), abortedCommand);
       const preparedReceipt = (await prepared.json()).receipt;
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       const repeated = await context.request.post(app.url + '/api/payroll/runs', { headers: apiHeaders(), data: prepared.request().postDataJSON() }); assert.equal(repeated.status(), 200); assert.deepEqual((await repeated.json()).receipt, preparedReceipt);
       const afterPrepare = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const after = await afterPrepare.json();
       assert.equal(after.backlog.missingCount, before.backlog.missingCount - 1);
@@ -371,7 +372,7 @@ try {
       await page.getByText('This reference remains unconfirmed. Check the original action before reconstructing it again; a recorded reference cannot accept changed details.', { exact: true }).waitFor();
       assert.equal(await page.evaluate(key => localStorage.getItem(key), ownerStorageKey), raceCommand.operationId);
       await page.getByRole('button', { name: 'Check action reference', exact: true }).click();
-      await page.getByText('Action recorded. Review the current status below.', { exact: true }).waitFor();
+      await page.getByText('Saved. Check the status below.', { exact: true }).waitFor(); // B7 wording (NV-121)
       assert.equal(await page.evaluate(key => localStorage.getItem(key), ownerStorageKey), null);
       const recoveredRace = await context.request.get(app.url + '/api/payroll/runs', { headers: apiHeaders() }); const raceRuns = (await recoveredRace.json()).runs.filter(run => run.period.startDate === raceCommand.period.startDate && run.period.endDate === raceCommand.period.endDate && !run.correctionOf);
       assert.equal(raceRuns.length, 1); assert.equal(raceRuns[0].payday, raceCommand.payday);

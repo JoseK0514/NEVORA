@@ -470,7 +470,7 @@ function AppShellView({
                 className={active ? "nav-link active" : "nav-link"}
                 // IS-P4-08: a holder (Inbox on Time off) is the current section, not the current page.
                 aria-current={active ? (activeTool?.href === item.href || (item.href === activeHref && !pageItem && !deeper) ? "page" : "true") : undefined}
-                aria-label={item.href === "/app/inbox" && inboxCount ? `${item.label}, ${inboxCount} need${inboxCount === 1 ? "s" : ""} you` : item.label}
+                aria-label={item.href === "/app/inbox" && inboxCount ? `Things to do, ${inboxCount}` : item.label}
               >
                 <span className="nav-icon">
                   {/* Review B2 (NV-043): an Employee's Pay is the phone tab's receipt (FileText read as Requests' clipboard). */}
@@ -569,7 +569,7 @@ function AppShellView({
                     className={active ? "mobile-nav-link active" : "mobile-nav-link"}
                     // Direction B: More and the pages it opens light Home (where they go back to); Home is then "current", not this page.
                     aria-current={active ? (item.href === "/app" && pathname !== "/app" && MORE_FAMILY.test(pathname) ? "true" : "page") : undefined}
-                    aria-label={needsYou !== null ? `${item.label}, ${needsYou} need${needsYou === 1 ? "s" : ""} you` : undefined}
+                    aria-label={needsYou !== null ? `Things to do, ${needsYou}` : undefined}
                     // Owner premium P8: tapping the tab you are on scrolls its page back to the top, as on iOS.
                     onClick={event => {
                       if (location !== item.href || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

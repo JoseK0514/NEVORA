@@ -17,13 +17,13 @@ import {ExchangeDetailB,ExchangeListB,ExchangePaneB,exchangeChip,type ExchangeRo
 import {BStateCard,bTone} from '../employee-b/requests-b';
 export type ExchangeMode='incoming'|'mine';
 export const requestListHref=(mode:ExchangeMode)=>'/app/exchange?tab='+(mode==='incoming'?'foryou':'requests');
-export const requestKind=(row:RequestSummary)=>row.kind==='callout'?'Unable to work':row.kind==='swap'?'Swap request':row.viewer==='recipient'?'Shift pickup':'Cover offer';
+export const requestKind=(row:RequestSummary)=>row.kind==='callout'?'Can’t work':row.kind==='swap'?'Swap request':row.viewer==='recipient'?'Shift pickup':'Cover offer';
 export const requestStatus=(row:RequestSummary)=>shiftRequestStatus(row.status,{recipient:row.viewer==='recipient',callout:row.kind==='callout',releaseApplies:row.releaseApplies});
 const day=(date:string)=>new Intl.DateTimeFormat('en-US',{timeZone:'UTC',weekday:'short',month:'short',day:'numeric'}).format(new Date(date+'T12:00:00Z'));
 const stamp=(at:string,timeZone:string)=>new Intl.DateTimeFormat('en-US',{timeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(at));
-const actionLabels:Record<EmployeeResponseKind,string>={ACCEPT:'Accept swap',DECLINE:'Decline swap',CANCEL:'Cancel request',WITHDRAW:'Withdraw response',CANCEL_CALLOUT:'Cancel report'};
+const actionLabels:Record<EmployeeResponseKind,string>={ACCEPT:'Accept swap',DECLINE:'Decline swap',CANCEL:'Withdraw request',WITHDRAW:'Withdraw response',CANCEL_CALLOUT:'Withdraw request'};
 export function RequestShiftSlot({slot,title}:{slot:RequestSlot|null;title:string}){
- return <section className="em-response-slot"><h2>{title}</h2>{slot?<><p className="em-response-date">{day(slot.date)}</p><p className="em-response-time">{formatTime(slot.startTime)} – {formatTime(slot.endTime)}</p><p>{slot.location}{slot.position?` · ${slot.position}`:''}</p>{slot.lead?<p>Designated shift lead</p>:null}{slot.endTime<=slot.startTime?<p>Ends {day(addDays(slot.date,1))} at {formatTime(slot.endTime)}.</p>:null}</>:<p>Recorded shift details are unavailable.</p>}</section>;
+ return <section className="em-response-slot"><h2>{title}</h2>{slot?<><p className="em-response-date">{day(slot.date)}</p><p className="em-response-time">{formatTime(slot.startTime)} – {formatTime(slot.endTime)}</p><p>{slot.location}{slot.position?` · ${slot.position}`:''}</p>{slot.lead?<p>Shift lead</p>:null}{slot.endTime<=slot.startTime?<p>Ends {day(addDays(slot.date,1))} at {formatTime(slot.endTime)}.</p>:null}</>:<p>Recorded shift details are unavailable.</p>}</section>;
 }
 function HistoryTime({slot,title}:{slot:HistorySlot|null;title:string}){
  return slot?<span>{title}: {day(slot.date)} · {formatTime(slot.startTime)} – {formatTime(slot.endTime)}{slot.endTime<=slot.startTime?` · Ends ${day(addDays(slot.date,1))}`:''}</span>:null;

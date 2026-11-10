@@ -27,7 +27,7 @@ describe('corporate Time formats',()=>{
 describe('corporate Time tab (G-E-Time, E-TimeOnClock)',()=>{
  it('shows the clock status, this week and one way to fix a punch, without clock controls or footers',()=>{
   const data=ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}}),plain=text(renderToStaticMarkup(<CorpTimeTab data={data}/>));
-  expect(plain).toContain('Current shift');expect(plain).toContain('On the clock');expect(plain).toMatch(/Clocked in at 7:58\sAM/);expect(plain).toContain('Condado · 1 h 32 min so far');
+  expect(plain).toContain('Current shift');/* B7 wording (NV-119 glossary: Clocked in) */expect(plain).toContain('Clocked in');expect(plain).toMatch(/Clocked in at 7:58\sAM/);expect(plain).toContain('Condado · 1 h 32 min so far');
   expect(plain).toContain('This week · Oct 26 – Nov 1');expect(plain).toContain('Mon 26');expect(plain).toContain('Tue 27');expect(plain).toContain('8 h 2 min');expect(plain).toContain('30 min break');
   expect(plain).toContain('Fix a missed punch');expect(plain).toContain('Hours include breaks.');
   expect(plain).not.toMatch(/Clocker|Refresh|Your information only|Checked|0h|Clock out<\/button>/);
@@ -105,6 +105,6 @@ describe('Fix my time sheet (E-CorrectionSheet)',()=>{
   const operation=new HoursCorrectionOperation();
   await operation.submit({basis:'a'.repeat(32),command:{operationId:'c3849d11-f86e-4f08-8b90-84a8e2053290',kind:'ENTRY_BOUNDARY',timeEntryId:'no-longer-editable',proposedStartAt:'2026-10-27T13:00:00Z',proposedEndAt:'2026-10-27T17:00:00Z',reason:'Original proposal'}},async()=>({status:'unknown'}),()=>true);
   const plain=text(render('entry:no-longer-editable',operation));
-  expect(plain).toContain('Check submission status');expect(plain).not.toContain('Send');
+  /* B7 wording (NV-035) */expect(plain).toContain('Check request status');expect(plain).not.toContain('Send');
  });
 });

@@ -64,7 +64,8 @@ it("disabled timezone permits name-only save with authoritative zone and actor",
   data.set("workspaceId", "forged");
   data.set("actorEmployeeId", "forged");
   expect(await saveWorkspaceProfileAction(data)).toEqual({
-    success: "Workspace updated.",
+    // B7 wording (glossary: company, not workspace).
+    success: "Company profile saved.",
   });
   expect(mocks.workspace).toHaveBeenCalledWith({
     name: "Northside Renamed",
@@ -90,7 +91,7 @@ it("forged enabled timezone still reaches authoritative repository lock", async 
 });
 it("validation reports useful name and timezone messages without exposing SQL", async () => {
   for (const message of [
-    "Workspace name must contain 1–160 characters.",
+    "Enter your business name (1–160 characters).",
     "Choose a valid IANA business timezone.",
   ]) {
     mocks.workspace.mockRejectedValueOnce(Error(message));

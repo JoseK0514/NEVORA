@@ -30,7 +30,7 @@ const errors: Record<string, string> = {
   OUTSIDE_AVAILABILITY: "It’s outside the person’s availability.",
   LOCATION_NOT_ELIGIBLE: "The person can’t work at that location.",
   EMPLOYEE_INACTIVE: "Someone on this request is inactive.",
-  CALLOUT_EXISTS: "This shift already has an “Unable to work” report.",
+  CALLOUT_EXISTS: "This shift already has a can’t-work request.",
 };
 function statusWord(status: string) {
   if (status === "DENIED") return "Declined";

@@ -51,7 +51,7 @@ export default async function RequestsPage({
   const zone = await getWorkspace().then(workspace => workspace.timeZone).catch(() => "UTC");
 
   const notice = params.error ? <p className="c-error" role="alert">Your request wasn’t sent. Check that the end date is on or after the start date. A partial day needs one date and an end time after the start time.</p> : null;
-  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "The request was reviewed." : null;
+  const status = params.submitted ? "Your request was sent for manager review." : params.reviewed ? "Decision saved." : null;
 
   type Request = (typeof mine)[number];
   const shape = (request: Request): TimeOffView => ({ id: request.id, status: request.status, startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null,

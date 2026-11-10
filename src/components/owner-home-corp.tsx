@@ -214,7 +214,7 @@ function ThingsToDo({ value, connection, offline, onRetryActions, setup }: Owner
     { title: "Time off requests", n: of("TIME_OFF"), href: "/app/requests" },
     { title: "Time corrections", n: corrections, href: "/app/inbox#todo-corrections" },
     { title: "Shift swaps", n: of("EXCHANGE"), href: "/app/exchange" },
-    { title: "Can’t-work reports", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
+    { title: "Can’t-work requests", n: of("CALLOUT"), href: "/app/inbox#todo-cant-work" },
     { title: "Other requests", n: requests.filter(item => !known.includes(item.type)).length, href: "/app/inbox#todo-requests" },
     { title: "Other items to review", n: urgent.length - corrections - repairs, href: "/app/inbox#todo-review" },
   ].filter(row => row.n > 0);

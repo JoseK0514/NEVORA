@@ -195,7 +195,7 @@ function QuietRightNow({ today, monitor, monitorPending = false, refreshing, onR
 
 /** Needs you: one row per kind, said as one phrase ("2 open shifts"). The one red is how late someone is. */
 function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZone: string; observedAt?: string }) {
-  if (value.count === 0) return <QuietSection id="home-needs-you" title="Needs you"><p className="q-empty">Nothing needs you right now.</p></QuietSection>;
+  if (value.count === 0) return <QuietSection id="home-needs-you" title="Things to do"><p className="q-empty">Nothing needs you right now.</p></QuietSection>;
   const gaps = value.now.filter(item => item.type === "COVERAGE_GAP");
   const urgentRequests = value.now.filter(item => item.category === "requests");
   const otherUrgent = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests");
@@ -206,11 +206,11 @@ function QuietNeedsYou({ value, timeZone, observedAt }: { value: NeedsYou; timeZ
   const one = late.length === 1 ? late[0] : null;
   const minutes = one && Number.isFinite(now) ? Math.max(1, Math.round((now - Date.parse(one.startAt)) / 60_000)) : 0;
   const ended = one ? one.status === "no_punches" : false;
-  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : "a can’t-work report"))];
+  const kinds = [...new Set(requests.map(item => item.type === "TIME_OFF" ? "time off" : item.type === "EXCHANGE" ? "a shift swap" : "a can’t-work request"))];
   const requestDetail = requests.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}${person(requests[0]) ? ` from ${person(requests[0])}` : ""}`
     : kinds.length === 1 ? `${kinds[0][0].toUpperCase()}${kinds[0].slice(1)}` : `${kinds.slice(0, -1).join(", ").replace(/^./, c => c.toUpperCase())} and ${kinds.at(-1)}`;
-  return <QuietSection id="home-needs-you" title="Needs you">
-    <QuietList label="Needs you">
+  return <QuietSection id="home-needs-you" title="Things to do">
+    <QuietList label="Things to do">
       {one ? <QuietRow href="/app/inbox?filter=now" title={ended ? `${one.employeeName} didn’t clock in` : `${one.employeeName} is late`}
         detail={ended ? `Shift ended at ${clock(one.endAt, timeZone)}` : `Shift began at ${clock(one.startAt, timeZone)}`}
         value={ended || !minutes ? undefined : minutes >= 60 ? `${Math.floor(minutes / 60)} h ${minutes % 60 ? `${minutes % 60} min` : ""}`.trim() : `${minutes} min`} tone="alert"
@@ -232,7 +232,7 @@ function QuietPending({ connection, onRetry }: { connection: ActionCenterConnect
   const message = busy ? "Checking what needs you…" : connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back."
     : connection === "access_lost" ? "Sign in again to see what needs you." : "What needs you isn’t available right now.";
   return <section id="home-needs-you" aria-labelledby="home-needs-you-title" aria-busy={busy || undefined} className={busy ? undefined : "premium-pending-failed"}>
-    <div className="q-sec"><h2 id="home-needs-you-title">Needs you</h2></div>
+    <div className="q-sec"><h2 id="home-needs-you-title">Things to do</h2></div>
     <p className="q-empty">{message}</p>
     {connection === "access_lost" ? <a className="q-btn q-btn--sec" href="/login">Sign in</a>
       : !busy && onRetry && connection !== "offline" && connection !== "paused" ? <button type="button" className="q-btn q-btn--sec" onClick={onRetry}>Try again</button> : null}

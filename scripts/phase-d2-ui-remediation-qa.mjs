@@ -229,7 +229,7 @@ export async function verifyD2UiRemediation({app,browser,engine,evidence,report,
   await mp.getByRole('button',{name:`Approve correction for ${name}`,exact:true}).first().waitFor();
   stage='stale-source';await q('UPDATE time_entries SET version=version+1 WHERE id=$1',[entryId]);
   await mp.evaluate(()=>{window.dispatchEvent(new Event('blur'));window.dispatchEvent(new Event('focus'));});
-  await mp.getByText('The source or approved baseline changed since this request. The proposed time is not the current effective time.',{exact:true}).first().waitFor();
+  /* B7 wording (NV-020) */await mp.getByText('The timecard changed after this request. Check the current times before deciding.',{exact:true}).first().waitFor();
   await shots(mp,'.manager-corrections','stale');
   // Declines do not consume stale-source approval authority; keyboard Enter is real.
   for(let i=0;i<2;i++){

@@ -34,7 +34,7 @@ export async function waitForFreshHome(page, freshLocation){
 // clock (Nov 1 upscale S9) the "Right now" card says it once, "Not clocked in", with no pill. The page has no Refresh;
 // it re-reads when the app returns to the front and marks itself aria-busy while a read is in flight.
 // Ready only when the released status matches and no read is in flight (not a still-loading or still-refreshing frame).
-const TIME_STATUS={OFF_CLOCK:{label:'Right now',pill:null,big:'Not clocked in'},CLOCKED_IN:{label:'Current shift',pill:'On the clock',big:null},ON_BREAK:{label:'Current shift',pill:'On break',big:null}};
+const TIME_STATUS={OFF_CLOCK:{label:'Right now',pill:null,big:'Not clocked in'},CLOCKED_IN:{label:'Current shift',pill:'Clocked in',big:null},ON_BREAK:{label:'Current shift',pill:'On break',big:null}};
 export async function waitForRecordedTimeReady(page, expectedState){
  const ready=await page.waitForFunction(({expected,status})=>{
   const time=document.querySelector('.c-hours[data-hours-view="records"]');
@@ -84,7 +84,7 @@ export async function runScenario({app,browser,context,page,engine,width,evidenc
  const allSet=()=>page.getByText('You’re all set. Nothing needs you right now.',{exact:true});
  const shownHrefs=async()=>items().evaluateAll(es=>es.map(e=>e.getAttribute('href')));
  // Clock status (Time tab). Phones show the Right now pill; wider layouts the My time status word.
- const clockedIn=()=>page.locator('main').getByText(/^(Clocked in|On the clock)$/);
+ const clockedIn=()=>page.locator('main').getByText(/^Clocked in$/);
  const offClock=()=>page.locator('main #hours-now').getByText('Not clocked in',{exact:true});
  const timePaused=()=>page.locator('.c-hours[data-hours-view="records"][data-hours-state="paused"]');
  const navLink=href=>page.locator(`.mobile-nav a[href="${href}"]:visible, nav[aria-label="Primary navigation"] a[href="${href}"]:visible`).first();

@@ -137,7 +137,7 @@ function requestFacts(facts: RequestFacts): [string, ReactNode][] {
 }
 
 /** Approved leave over a published shift (Nov 9, 2026): who fixes it, and that the leave itself is settled. */
-const repairNote = (item: ActionItem) => `The leave is approved and the published shift is kept. Assign a replacement or change the shift, then publish. ${repairOwnerLine(item)}`;
+const repairNote = (item: ActionItem) => `The time off is approved and the published shift is kept. Assign a replacement or change the shift, then publish. ${repairOwnerLine(item)}`;
 
 export function itemEntry(item: ActionItem, calm: boolean, filter: InboxFilter, timeZone: string): InboxEntry {
   const repair = isStaffingRepair(item);

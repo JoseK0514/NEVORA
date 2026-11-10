@@ -88,8 +88,8 @@ function FocusedReview({ request, origin, error, others, timeZone }: { request: 
   // Copy table 15: "Also off that day · No one".
   const offLabel = request.startDate === request.endDate ? "Also off that day" : "Also off those days";
   return <CorpPage className="c-request c-page--narrow" labelledBy="request-title">
-    <CorpNav back={backTo(origin)} title="Time off request" titleId="request-nav-title" phoneOnly />
-    <CorpTitle id="request-title" title="Time off request" sub={request.employeeName} wide />
+    <CorpNav back={backTo(origin)} title="Time-off request" titleId="request-nav-title" phoneOnly />
+    <CorpTitle id="request-title" title="Time-off request" sub={request.employeeName} wide />
     {error ? <p className="c-error" role="alert">The request may have changed. Check it and decide again.</p> : null}
     <CorpCard ariaLabel={`Time off for ${request.employeeName}`}>
       <div className="c-request__who">

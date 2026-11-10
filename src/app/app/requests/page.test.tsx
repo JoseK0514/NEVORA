@@ -43,7 +43,7 @@ it('names who decided a request and when, and never names anyone on a withdrawal
 it('draws the phone’s first frame as the page’s Direction B hero, checking, before its private read (no request data)', async () => {
   const list = onlyB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({}) })));
   expect(list).toContain('>Time off</h1>'); expect(list).toContain('href="/app/requests/hub"'); expect(list).toContain('aria-current="page" href="/app/requests"');
-  expect(list).toContain('Checking your current planning…'); expect(list).not.toContain('requestId=pending'); expect(list).not.toContain('Fictional');
+  /* B7 wording (NV-148) */expect(list).toContain('Loading your time off…'); expect(list).not.toContain('requestId=pending'); expect(list).not.toContain('Fictional');
   const form = onlyB(renderToStaticMarkup(await RequestsPage({ searchParams: Promise.resolve({ tab: 'new' }) })));
   expect(form).toContain('>Request time off</h1>'); expect(form).toContain('>Cancel</a>'); expect(form).toContain('class="eb-form"'); expect(form).not.toContain('<form');
 });

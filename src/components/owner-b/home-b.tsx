@@ -1,5 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
+import { durationTotal } from "@/lib/duration-format";
 import { CalendarBlankIcon } from "@phosphor-icons/react/dist/ssr/CalendarBlank";
 import { CORP_NO_VALUE } from "@/components/corp/corp";
 import { CoverageFigures } from "@/components/coverage-minutes/coverage-minutes";
@@ -14,7 +15,7 @@ import type { ActionItem } from "@/lib/action-center/project";
 import type { Today, TodayShift } from "@/lib/today/project";
 import type { ClockMonitor } from "@/lib/time-clock";
 import type { ActionCenterConnection } from "@/components/manager-action-center";
-import { compactRange, BAvatar, BButtonLink, BCard, BFaces, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, partOfDay } from "./b-kit";
+import { BAvatar, BButtonLink, BCard, BFaces, BHero, BIcon, BInk, BList, BLive, BRow, BScreen, BStack, partOfDay } from "./b-kit";
 
 /* Direction B, Owner and Manager Home on a phone (mock screen "Owner · Home"). The same reads as the corporate Home: Today's
  * shifts and the clock-in monitor for the live figures, the shared needs-you read for the sentence, the card and the count,
@@ -47,11 +48,12 @@ const utc = (date: string) => new Date(`${date}T12:00:00Z`);
 const fmt = (date: string, options: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-US", { timeZone: "UTC", ...options }).format(utc(date));
 const nextDay = (date: string) => new Date(Date.parse(`${date}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
 const periodEnd = (item: ActionItem) => { try { return new URL(item.href, "https://nevora.invalid").searchParams.get("end"); } catch { return null; } };
-const hoursText = (hours: number) => `${Math.round(hours * 10) / 10} h`;
+// Review B7 (NV-068): a period total is whole hours ("511 h"), through the shared formatter.
+const hoursText = (hours: number) => durationTotal(hours * 60).replace(" ", "\u00a0");
 const firstNames = (names: string[]) => names.length <= 2 ? names.join(", ") : `${names.slice(0, 2).join(", ")} +${names.length - 2}`;
 const shortRange = (start: string, end: string) => start === end ? fmt(start, { month: "short", day: "numeric" })
   : start.slice(0, 7) === end.slice(0, 7) ? `${fmt(start, { month: "short", day: "numeric" })}–${Number(end.slice(8))}` : `${fmt(start, { month: "short", day: "numeric" })} – ${fmt(end, { month: "short", day: "numeric" })}`;
-const requestKind: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time off request", EXCHANGE: "Shift swap request", CALLOUT: "Can’t-work report" };
+const requestKind: Partial<Record<ActionItem["type"], string>> = { TIME_OFF: "Time-off request", EXCHANGE: "Shift request", CALLOUT: "Can’t-work request" };
 
 export function HomeB(props: HomeBProps) {
   const { today, monitor, monitorPending, value, offline, connection } = props;
@@ -76,7 +78,7 @@ export function HomeB(props: HomeBProps) {
       <BLive label="Right now" items={[
         { label: "Clocked in", dot: "live", value: checking ? CORP_NO_VALUE : onShift, small: !checking && scheduled ? `/${scheduled}` : undefined,
           href: checking ? undefined : "/app?view=attendance", aria: checking ? undefined : `Clocked in: ${onShift} of ${scheduled}. Who’s working` },
-        { label: "Late", dot: late ? "warn" : undefined, value: late ?? CORP_NO_VALUE, href: late === null ? undefined : "/app/inbox#todo-missed", aria: late === null ? undefined : `Late: ${late}. Missed clock-ins` },
+        { label: "Missed", dot: late ? "warn" : undefined, value: late ?? CORP_NO_VALUE, href: late === null ? undefined : "/app/inbox#todo-missed", aria: late === null ? undefined : `Missed clock-ins: ${late}` },
         { label: "Open shifts", dot: gaps?.length ? "warn" : undefined, value: gaps ? gaps.length : CORP_NO_VALUE, href: gaps ? openHref : undefined, aria: gaps ? `Open shifts: ${gaps.length}` : undefined },
       ]} />
     </BHero>
@@ -90,13 +92,13 @@ export function HomeB(props: HomeBProps) {
 }
 
 function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: HomeBProps & { gapRows: ReturnType<typeof gapRow>[]; openHref: string }) {
-  if (!value) return <BCard title="Needs you" id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
-    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Things to do isn’t available right now."}</p></BCard>;
+  if (!value) return <BCard title="Things to do" id="b-home-needs"><p className="b-state" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>
+    {offline || connection === "offline" ? "Updates when you reconnect." : connection === "paused" ? "Updates when you’re back." : connection === "loading" || connection === "reconnecting" ? "Checking what needs you…" : "Things to do didn’t load. Pull down to refresh, or try again."}</p></BCard>;
   const rows: ReactNode[] = [];
   if (gapRows.length) {
     const next = gapRows[0];
     rows.push(<BRow key="gaps" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={`Cover ${plural(gapRows.length, "open shift", "open shifts")}`}
-      sub={`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}${compactRange(next.title)}`} href={openHref} label={`Open shifts, ${gapRows.length}`}
+      sub={`Next: ${/^Today\b/.test(next.detail ?? "") ? "today, " : ""}${next.title}`} href={openHref} label={`Open shifts, ${gapRows.length}`}
       trail={<BButtonLink href={next.href} label={`Find cover: ${next.title}`}>Find cover</BButtonLink>} />);
   }
   // Nov 9, 2026: approved leave over a published shift: "Fill Maria Rivera’s shift" (one) or "Fill 2 shifts for approved
@@ -105,9 +107,9 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
   if (repairs.length) {
     const first = repairs[0], shown = presentItem(first, "Fill shift");
     rows.push(<BRow key="repairs" lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>}
-      title={repairs.length === 1 ? shown.title : `Fill ${plural(repairs.length, "shift", "shifts")} for approved leave`}
+      title={repairs.length === 1 ? shown.title : `Fill ${plural(repairs.length, "shift", "shifts")} for approved time off`}
       sub={repairs.length === 1 ? repairWhen(first) : `Next: ${shown.title.replace(/^Fill /, "")}`} href={repairs.length === 1 ? actionCenterNavigation(first).href : "/app/inbox#todo-repair"}
-      label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved leave, ${repairs.length}`} />);
+      label={repairs.length === 1 ? `${shown.title}, ${repairWhen(first)}` : `Shifts to fill for approved time off, ${repairs.length}`} />);
   }
   if (value.noClockIn.length) {
     const names = value.noClockIn.map(shift => shift.employeeName);
@@ -125,8 +127,8 @@ function NeedsYouCard({ value, connection, offline, gapRows, openHref, today }: 
   const others = value.now.filter(item => item.type !== "COVERAGE_GAP" && item.category !== "requests" && !isStaffingRepair(item));
   if (rows.length < 3 && others.length) rows.push(<BRow key="others" lead={<BIcon tone="grey"><CalendarBlankIcon weight="bold" /></BIcon>}
     title={plural(others.length, "item to review", "items to review")} sub="Time corrections and timecards" href="/app/inbox#todo-review" />);
-  return <BCard title="Needs you" count={value.count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
-    {rows.length ? <BList label="Needs you">{rows.slice(0, 3)}</BList>
+  return <BCard title="Things to do" count={value.count} id="b-home-needs" link={{ href: "/app/inbox", label: "See all", aria: "See all things to do" }}>
+    {rows.length ? <BList label="Things to do">{rows.slice(0, 3)}</BList>
       : <p className="b-state">{today?.state === "unavailable" ? "Clock-ins can’t be checked right now." : "Nothing needs you right now."}</p>}
   </BCard>;
 }

@@ -64,7 +64,7 @@ export function EmployeeProfileB({state, onRetry, lang, passkeys, policies, endi
         </BCard>
         <BCard title="Display" id="b-profile-display">
           <ul className="b-list"><li className="b-li"><div className="b-row eb-pref">
-            <span className="b-row__tx"><span className="b-row__t" id="b-profile-language">Language</span><span className="b-row__s" id="b-profile-language-hint">For the sign-in pages</span></span>
+            <span className="b-row__tx"><span className="b-row__t" id="b-profile-language">Language</span><span className="b-row__s" id="b-profile-language-hint">Sign-in pages only. The rest of NEVORA is in English for now.</span></span>
             <div className="eb-lseg" role="group" aria-labelledby="b-profile-language" aria-describedby="b-profile-language-hint">
               {([['en', 'English'], ['es', 'Español']] as const).map(([code, name]) => <button key={code} type="button" lang={code} aria-pressed={lang === code} onClick={() => { if (code !== lang) switchTo(code); }}>{name}</button>)}
             </div>
@@ -105,7 +105,7 @@ type CalendarBProps = Omit<CalendarClientState, 'pendingKind'> & {pendingKind?: 
 export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKind, onCommand, onCopy, onRetry, confirmation, open, onOpen, onAsk, onCancel, onConfirm, feedbackRef, confirmRef, resetRef, revokeRef}: CalendarBProps) {
   const available = !paused && status && 'authority' in status, active = available && status.state === 'active', unknown = !!pendingKind;
   const currentUrl = active ? url : null, confirmationCurrent = active && !busy && !unknown && confirmation && confirmation.generation === status.generation;
-  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BChip>{status.state === 'revoked' ? 'Revoked' : 'Off'}</BChip>;
+  const chip = !available ? null : active ? <BChip tone="teal">Active</BChip> : <BChip>{status.state === 'revoked' ? 'Turned off' : 'Off'}</BChip>;
   return <BScreen back>
     <BHero back={{href: '/app/more', label: 'More'}} title="Add to calendar" titleId="b-calendar-title" sub="Keep your shifts in the calendar you already use" />
     <BStack>
@@ -126,7 +126,7 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
                   requestAnimationFrame(() => { if (document.activeElement === field) field.select(); });
                 }} />
                 <p className="eb-hint" id="b-calendar-link-hint">Shown once. Copy it now, or reset it later to get a new link.</p>
-              </div> : <p className="eb-para">For your privacy the link is shown only once. Reset it to get a new link to copy.</p>
+              </div> : <p className="eb-para">For your privacy the link is shown only once. Get a new link if you need to copy it again.</p>
               : status.state === 'revoked' ? <p className="eb-para">Future access through the previous link has stopped.</p> : null}
             {!status.canIssue && !active ? <p className="eb-para">No eligible work location is currently available. Ask your manager to review your access.</p> : null}
           </>}
@@ -153,13 +153,13 @@ export function EmployeeCalendarB({status, url, paused, busy, notice, pendingKin
           })}</ul>
         </BCard>
         {confirmationCurrent ? <div ref={confirmRef} id="b-calendar-link-confirmation" className="b-card" role="group" aria-labelledby="b-calendar-confirm-title" tabIndex={-1}>
-          <div className="b-card__h"><h2 id="b-calendar-confirm-title">{confirmation.kind === 'ROTATE' ? 'Reset your calendar link?' : 'Revoke your calendar link?'}</h2></div>
+          <div className="b-card__h"><h2 id="b-calendar-confirm-title">{confirmation.kind === 'ROTATE' ? 'Get a new calendar link?' : 'Turn off your calendar link?'}</h2></div>
           <div className="eb-body"><p className="eb-para">{confirmation.kind === 'ROTATE' ? 'The old link stops working right away. Copy the new link and add it to your calendar app again.' : 'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.'}</p>
-            <div className="eb-btns"><BButton kind="quiet" onClick={onCancel}>Keep current link</BButton><button type="button" className="b-btn eb-btn-danger" onClick={onConfirm}>{confirmation.kind === 'ROTATE' ? 'Reset link' : 'Revoke link'}</button></div></div>
+            <div className="eb-btns"><BButton kind="quiet" onClick={onCancel}>Keep current link</BButton><button type="button" className="b-btn eb-btn-danger" onClick={onConfirm}>{confirmation.kind === 'ROTATE' ? 'Get a new link' : 'Turn off link'}</button></div></div>
         </div> : active && !unknown ? <div className="eb-manage">
-          {status.canIssue ? <button ref={resetRef} type="button" className="eb-textbtn eb-textbtn--danger" aria-controls="b-calendar-link-confirmation" aria-expanded={false} onClick={event => onAsk('ROTATE', event.currentTarget)}>Reset link</button> : null}
+          {status.canIssue ? <button ref={resetRef} type="button" className="eb-textbtn eb-textbtn--danger" aria-controls="b-calendar-link-confirmation" aria-expanded={false} onClick={event => onAsk('ROTATE', event.currentTarget)}>Get a new link</button> : null}
           {status.canIssue ? <p className="b-note">The old link stops working right away.</p> : null}
-          <button ref={revokeRef} type="button" className="eb-textbtn" aria-controls="b-calendar-link-confirmation" aria-expanded={false} onClick={event => onAsk('REVOKE', event.currentTarget)}>Revoke link</button>
+          <button ref={revokeRef} type="button" className="eb-textbtn" aria-controls="b-calendar-link-confirmation" aria-expanded={false} onClick={event => onAsk('REVOKE', event.currentTarget)}>Turn off link</button>
         </div> : null}
       </> : null}
     </BStack>

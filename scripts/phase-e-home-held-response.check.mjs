@@ -36,9 +36,9 @@ for(const engine of ['chromium','webkit']){
   assert.equal(result.observations[1].settled,false,'Loading must not release the fresh-generation wait');
   assert.deepEqual(result.resolved,{state:'ready',busy:'false',fresh:true,old:false});
   // Corporate Employee: recorded time is on the Time tab, the same kit page at every width (no Refresh, aria-busy while a
-  // read is in flight). Clocked in, the "Current shift" card carries an "On the clock" pill; off the clock (Nov 1 upscale
+  // read is in flight). Clocked in, the "Current shift" card carries an "Clocked in" pill; off the clock (Nov 1 upscale
   // S9) the "Right now" card says "Not clocked in" once, with no pill.
-  await page.setContent('<main><div class="c-page c-page--narrow c-hours" data-hours-view="records" data-hours-state="loading" aria-busy="true"><section class="c-card" id="hours-now"><div class="c-card__head"><h2 class="c-card__label">Current shift</h2><div class="c-card__aside"><span class="c-pill">On the clock</span></div></div><div class="c-card__body"><b class="c-big">Clocked in at 9:00 AM</b></div></section></div></main>');
+  await page.setContent('<main><div class="c-page c-page--narrow c-hours" data-hours-view="records" data-hours-state="loading" aria-busy="true"><section class="c-card" id="hours-now"><div class="c-card__head"><h2 class="c-card__label">Current shift</h2><div class="c-card__aside"><span class="c-pill">Clocked in</span></div></div><div class="c-card__body"><b class="c-big">Clocked in at 9:00 AM</b></div></section></div></main>');
   let recordedSettled=false;result.recordedReadiness=[];
   const recordedWaiting=waitForRecordedTimeReady(page,'OFF_CLOCK').then(value=>{recordedSettled=true;result.recordedResolved=value;});
   const render=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));

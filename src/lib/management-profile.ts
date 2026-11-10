@@ -2,7 +2,7 @@
 export const managementAlertTopics = [
   {id:'time-off',label:'Time-off requests',detail:'When someone asks for time off'},
   {id:'shift-changes',label:'Shift requests',detail:'When someone asks to swap or give up a shift'},
-  {id:'unable-to-work',label:'Unable to work',detail:'When someone can’t make a shift'},
+  {id:'unable-to-work',label:'Can’t work',detail:'When someone can’t make a shift'},
   {id:'clock-review',label:'Clock-ins to review',detail:'When a clock-in needs your review'},
   {id:'payroll-ready',label:'Payroll ready to review',detail:'When a pay period is ready for you'},
 ] as const;

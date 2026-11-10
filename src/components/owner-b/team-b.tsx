@@ -37,7 +37,7 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
   const sub = `${total} ${total === 1 ? person_word : lowerPeople}${live.ready ? late ? ` · ${late} late now` : working ? ` · ${working} working now` : " · No one working now" : ""}`;
   const row = (person: TeamBPerson) => {
     const now = person.active ? state(person.id) : null;
-    const chip = !person.active ? <BChip>Inactive</BChip> : now === "working" ? <BChip tone="green">Working</BChip> : now === "break" ? <BChip tone="teal">On break</BChip>
+    const chip = !person.active ? <BChip>Inactive</BChip> : now === "working" ? <BChip tone="green">Clocked in</BChip> : now === "break" ? <BChip tone="teal">On break</BChip>
       : now === "late" ? <BChip tone="amber">{lateText(live.late.get(person.id) ?? 0)}</BChip> : now === "off" ? <BChip>Off today</BChip> : undefined;
     return <BRow key={person.id} href={person.href} label={person.label} lead={<BAvatar name={person.name} size={40} ring={now === "late" ? "late" : now === "working" || now === "break" ? "on" : undefined} />}
       title={person.name} chip={chip} sub={person.detail} />;
@@ -56,13 +56,13 @@ export function TeamB({ people, inactive, total, query, filtered, people_word, p
       <BCard label={filtered ? `${people.length} ${people.length === 1 ? "match" : "matches"}` : people_word}>
         {live.ready && people.length ? <BFilters label="Show" items={[
           { key: "all", label: "All", count: people.length, current: filter === "all", onSelect: () => setFilter("all") },
-          { key: "working", label: "Working", count: working, current: filter === "working", onSelect: () => setFilter("working") },
+          { key: "working", label: "Clocked in", count: working, current: filter === "working", onSelect: () => setFilter("working") },
           { key: "late", label: "Late", count: late, current: filter === "late", onSelect: () => setFilter("late") },
           { key: "off", label: "Off today", count: off, current: filter === "off", onSelect: () => setFilter("off") },
         ]} /> : null}
         {shown.length ? <BList label={people_word}>{(filter === "all" && limit ? shown.slice(0, limit) : shown).map(row)}
           {seeAll && filter === "all" ? <BRow href={seeAll.href} lead={<span className="b-lead-space" aria-hidden="true" />} title={seeAll.label} label={seeAll.label} /> : null}</BList>
-          : <p className="b-state">{people.length ? "No one right now." : total ? `No ${lowerPeople} match “${query}”.` : `No ${lowerPeople} yet.`}</p>}
+          : <p className="b-state">{people.length ? (filter === "working" ? "No one is clocked in right now." : filter === "late" ? "No one is late." : "No one is off today.") : total ? `No ${lowerPeople} match “${query}”.` : `No ${lowerPeople} yet.`}</p>}
       </BCard>
       {inactive.length ? <BCard title="Inactive" count={inactive.length}><BList label={`Inactive ${lowerPeople}`}>{inactive.map(row)}</BList></BCard> : null}
       <BCard label="Team tools"><BList label="Team tools">{tools.map(tool =>

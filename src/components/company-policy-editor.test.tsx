@@ -8,10 +8,10 @@ const locations=[{id:'loc-1',name:'Northside',active:true}];
 const render=(rows=policyUIRows())=>renderToStaticMarkup(<CompanyPolicyEditor history={projectCompanyPolicyHistory(rows)} locations={locations} timeZone="America/Puerto_Rico"/>);
 describe('Owner policy history display',()=>{
  it('uses the numerical current revision and keeps malformed older history readable',()=>{
-  const html=render();expect(html).toContain('q-rv--l">Revision 3<');expect(html).toContain('Revision 2');expect(html).toContain('Revision unavailable');expect(html).toContain('Change details unavailable');expect(html).toContain('value="9"');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');expect(html).not.toContain('private-invalid-key-metadata');
+  const html=render();expect(html).toContain('q-rv--l">Revision 3<');expect(html).toContain('Revision 2');/* B7 wording (NV-122): main text says "version"; History keeps revision numbers */expect(html).toContain('This version can’t be used');expect(html).toContain('Change details unavailable');expect(html).toContain('value="9"');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');expect(html).not.toContain('private-invalid-key-metadata');
  });
  it('holds the invalid current policy until explicit earlier-valid replacement review',()=>{
-  const html=render(policyUIRows(false));expect(html).toContain('Current revision 2 unavailable');expect(html).toContain('Review revision 1 as a replacement draft');expect(html).not.toContain('name="lateness.threshold"');expect(html).not.toContain('Save policies');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
+  const html=render(policyUIRows(false));/* B7 wording (NV-122) */expect(html).toContain('Version 2 can’t be used');expect(html).toContain('Start from version 1');expect(html).not.toContain('name="lateness.threshold"');expect(html).not.toContain('Save policies');expect(html).not.toContain('NEVER_RENDER_INVALID_PRIVATE_PAYLOAD');
  });
  it('does not invent an empty replacement when no valid same-scope history exists',()=>{
   const html=render(policyUIRows(false).slice(1));expect(html).toContain('complete replacement');expect(html).not.toContain('name="lateness.threshold"');expect(html).not.toContain('Review revision 1');
@@ -49,7 +49,7 @@ describe('current rule comparison',()=>{
    missingClockOut:{...threshold,association:'CAPTURED_PUBLISHED_SHIFT' as const,cutoff:'AFTER_SCHEDULE_END' as const},
   },labor:{overtimeRisk:{...threshold,basis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS' as const,window:'BUSINESS_WEEK' as const,aggregation:'LOCATION' as const,dayBoundaryTime:'04:30',weekStartsOn:3}}};
   const html=renderToStaticMarkup(<CurrentPolicyRules settings={settings} scope="" timeZone="America/Puerto_Rico"/>);
-  for(const text of ['Time basis','Effective elapsed after corrections','Currently open','Schedule association','Captured published shift','Observation cutoff','After published end','Effective elapsed including breaks','Business week','At this location','Business day starts','04:30','Week starts on','Wednesday'])expect(html).toContain(text);
+  for(const text of ['Time basis','Effective elapsed after corrections','Currently open','Schedule association','Captured published shift',/* B7 wording (NV-122) */'Check-in window ends','After published end','Effective elapsed including breaks','Business week','At this location','Business day starts','04:30','Week starts on','Wednesday'])expect(html).toContain(text);
   expect(html).not.toContain('EFFECTIVE_ELAPSED');
  });
  it('distinguishes inherited and disabled values without inventing custom details',()=>{

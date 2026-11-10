@@ -1,5 +1,6 @@
 import type {ActionItem} from '../action-center/project';
 import type {StaffingConflict} from './model';
+import {durationSentence} from '../duration-format';
 
 /* Words for leave and staffing (Direction B, Nov 9, 2026). Display only: the action center item, the conflict and the
  * read's numbers are shown as they are, never recomputed into a different meaning. Copy rules as elsewhere: the person's
@@ -20,14 +21,13 @@ const possessive=(name:string)=>`${name}’${/s$/i.test(name)?'':'s'}`;
 
 /** "1 h 30 min", "4 h", "45 min". */
 export function minutesText(minutes:number){
- const h=Math.floor(minutes/60),m=minutes%60;
- return [h?`${h}${NBSP}h`:'',m?`${m}${NBSP}min`:''].filter(Boolean).join(' ')||`0${NBSP}min`;
+ return durationSentence(minutes).replace(/(\d) /g,`$1${NBSP}`);
 }
 
 /** The person a repair is about: the read's detail starts with their name ("Maria Rivera · Main Office · …"). */
 export const repairPerson=(item:ActionItem)=>item.detail.split(' · ')[0]?.trim()||null;
 /** "Fill Maria Rivera’s shift". */
-export const repairTitle=(item:ActionItem)=>{const person=repairPerson(item);return person?`Fill ${possessive(person)} shift`:'Fill a shift for approved leave';};
+export const repairTitle=(item:ActionItem)=>{const person=repairPerson(item);return person?`Fill ${possessive(person)} shift`:'Fill a shift for approved time off';};
 /** "Thu, Nov 12 · 7:00 AM – 3:00 PM · Main Office". */
 export function repairWhen(item:ActionItem){
  const place=item.detail.split(' · ')[1]?.trim();
@@ -36,9 +36,9 @@ export function repairWhen(item:ActionItem){
 }
 /** Who fixes it: the reviewer who approved the leave, or (older approvals with no reviewer) an Owner. */
 export function repairOwnerLine(item:ActionItem&{ownerEmployeeId?:string|null},actorId?:string){
- if(item.ownerEmployeeId===null)return 'No one is assigned. An Owner needs to take this.';
- if(actorId&&item.ownerEmployeeId===actorId)return 'You approved this leave, so this is yours to fix.';
- return 'Assigned to the manager who approved the leave.';
+ if(item.ownerEmployeeId===null)return 'No one is assigned yet. An Owner can take it.';
+ if(actorId&&item.ownerEmployeeId===actorId)return 'You approved this time off, so this shift is yours to fill.';
+ return 'Assigned to the manager who approved the time off.';
 }
 
 /** A conflict's shift: "Thu, Nov 12 · 7:00 AM – 3:00 PM · Main Office". */

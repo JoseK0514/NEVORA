@@ -356,12 +356,12 @@ function RunReview({ run, data, names, operation }: { run: PayrollRun; data: Pay
         * is the primary; the unavailable Approve stays visible as a quiet secondary. Its rule (canApproveNow) is unchanged. */}
       {fixes.length ? <CorpButtonLink full href={`/app/payroll/fix?run=${encodeURIComponent(run.id)}`}>{fixes.length === 1 ? 'Review issue' : 'Review issues'}</CorpButtonLink> : null}
       <CorpButton full kind={fixes.length ? 'secondary' : undefined} disabled={!canApproveNow} onClick={() => run.reviewToken && void operation.submit({ action: 'APPROVE', runId: run.id, expectedRevision: run.revision, reviewToken: run.reviewToken })}>Approve payroll</CorpButton>
-      <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approval freezes the reviewed amounts, finalized time, settings and employee exceptions. A changed source requires a fresh review.'}</p>
-    </div> : <p className="c-note c-note--center">An authorized payroll approver must approve this revision.</p>) : null}
+      <p className="c-note c-note--center">{fixes.length ? `Fix the ${fixes.length === 1 ? 'thing' : `${fixes.length} things`} above to approve.` : 'Approving locks the reviewed amounts, finalized time, settings and employee exceptions. If any of them change, review again.'}</p>
+    </div> : <p className="c-note c-note--center">Someone who can approve payroll needs to approve this version.</p>) : null}
     {approved && unpublished ? (capabilities.canApprove ? <div className="c-pay__approve">
       <Check checked={publishConfirmed} onChange={setPublishConfirmed} disabled={locked}>Share the approved pay statements with each employee.</Check>
       <CorpButton full disabled={locked || !publishConfirmed} onClick={() => void operation.submit({ action: 'PUBLISH', runId: run.id, expectedRevision: run.revision })}>Share pay statements</CorpButton>
-    </div> : <p className="c-note c-note--center">An authorized payroll approver must share the pay statements.</p>) : null}
+    </div> : <p className="c-note c-note--center">Someone who can approve payroll needs to share the pay statements.</p>) : null}
   </>;
 }
 
@@ -372,7 +372,7 @@ function Documents({ run, native, names }: { run: PayrollRun; native: boolean; n
   const nameOf = (employeeId: string | null) => employeeId ? run.rows?.find(row => row.employeeId === employeeId)?.employeeName ?? names[employeeId] ?? null : null;
   return <PayGroup id="payroll-documents" label="Documents">
     {run.documents.length ? <CorpRows label="Documents">{run.documents.map(document => <li key={document.id}><DocumentRow document={document} name={nameOf(document.employeeId)} revision={run.revision} /></li>)}</CorpRows>
-      : <CorpBody><p className="c-payroll__state" role="status">Documents are being prepared. They appear when generation succeeds.</p></CorpBody>}
+      : <CorpBody><p className="c-payroll__state" role="status">Documents are being made. They show here when they’re ready.</p></CorpBody>}
     {native && !published ? <CorpBody tight><p className="c-pay__detail" role="status"><b className="c-pay__strong">Statements not shared yet</b>Approved statements are shared with employees automatically once they are made and checked. Approval alone doesn’t mean a PDF is ready.</p></CorpBody> : null}
   </PayGroup>;
 }

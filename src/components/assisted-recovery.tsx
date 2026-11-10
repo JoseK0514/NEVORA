@@ -62,7 +62,7 @@ export function AssistedRecovery({hydrated,busy,message,issued,employeeId,from,t
     <label className="q-fl__label" htmlFor="assisted-proof">Recovery code</label>
     <div className="q-in__wrap" style={{ marginTop: 8 }}><input ref={proof} id="assisted-proof" className="q-in" readOnly value={issued.proof} autoComplete="off" spellCheck={false} aria-describedby="assisted-proof-hint" style={{ paddingRight: 92 }}/>
      <button type="button" className="q-bs" style={{ position: "absolute", right: 9, top: 9 }} onClick={()=>{proof.current?.focus();proof.current?.select();}}>Select</button></div>
-    <p className="q-fl__help" id="assisted-proof-hint">Share it privately. They open <Link href="/reset-access" style={{ color: "#0B6E69" }}>Reset access</Link>, enter the code and choose a new password.</p>
+    <p className="q-fl__help" id="assisted-proof-hint">Share it privately. On the sign-in page they choose <Link href="/forgot-access" style={{ color: "#0B6E69" }}>Forgot password?</Link>, then I have a recovery code, enter it and choose a new password.</p>
    </div>
    <button className="q-btn q-btn--sec" type="button" onClick={onStartAgain}>Prepare another code</button>
    <p className="q-help">Issuing another code retires any unused earlier code. The code hides when you leave this page.</p>

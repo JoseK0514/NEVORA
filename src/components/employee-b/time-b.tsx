@@ -22,7 +22,7 @@ import type {EmployeeTimeCorrections,PublicCorrectionItem} from '@/lib/time-corr
 import {EARLIER_MAX,boardDuration,cardStatus,cardsHref,clockAt,clockRange,compactDuration,correctionStatus,dateKey,dayLong,dayMedium,entryHref,interval,issueText,kindLabel,rangeLabel,seconds,sentAt,shiftCount,span,statusWord,timeWeek,weekOf,type CardState,type Ready,type StatusTone} from '../employee-mobile/hours-model';
 
 /* Employee Time on the phone, Direction B (Jose approved the mock "Employee mobile, Direction B", Nov 6, 2026): the Time
- * tab, a day's punches, Past timecards, Your corrections and Fix my time on the teal hero. Presentation only: each screen
+ * tab, a day's punches, Past timecards, Your correction requests and Fix my time on the teal hero. Presentation only: each screen
  * gets the same reads, links, handlers and states as the corporate page around it (hours-corp.tsx), which still shows on
  * tablets and desktop. The pages' header (title, way back, hero line) comes from hours.tsx through HoursBContext; without
  * it (the corporate views on their own) nothing renders here. */
@@ -60,9 +60,9 @@ export function HoursFrameStatusB({paused,denied,refreshing,refresh}:{paused:boo
 }
 /** An earlier fix is still being checked: the way back to it, first on every Time page. */
 export function HoursRecoveryB({href}:{href:string}){
- return <BCard label="Earlier fix"><div className="eb-status">
-  <div className="b-notice eb-flat"><BIcon tone="amber"><WarningIcon weight="bold"/></BIcon><span className="b-notice__tx" role="status"><span className="b-notice__t">An earlier fix still needs to be checked.</span><span className="b-notice__s">Return to it before starting a new one.</span></span></div>
-  <BButtonLink href={href} kind="quiet" full>Return to my submission</BButtonLink>
+ return <BCard label="Earlier request"><div className="eb-status">
+  <div className="b-notice eb-flat"><BIcon tone="amber"><WarningIcon weight="bold"/></BIcon><span className="b-notice__tx" role="status"><span className="b-notice__t">An earlier correction request still needs to be checked.</span><span className="b-notice__s">Return to it before starting a new one.</span></span></div>
+  <BButtonLink href={href} kind="quiet" full>Check your earlier request</BButtonLink>
  </div></BCard>;
 }
 
@@ -77,9 +77,9 @@ const chip=(status:{word:string;tone:StatusTone})=><BChip tone={status.tone}>{st
 export function TimeTabB({data}:{data:Ready}){
  const context=useContext(HoursBContext),m=timeWeek(data),zone=m.zone,current=m.current;
  const figure=(value:number)=>m.partial?'—':<Dur value={value}/>;
- const status=current?m.onBreak?<BChip tone="amber">On break</BChip>:<BChip tone="teal">On the clock</BChip>:<BChip>Not clocked in</BChip>;
+ const status=current?m.onBreak?<BChip tone="amber">On break</BChip>:<BChip tone="teal">Clocked in</BChip>:<BChip>Not clocked in</BChip>;
  const headline=current?m.onBreak&&m.openBreak?`On break since ${clockAt(m.openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:`Clock in on ${m.tablet}`;
- const line=current?m.onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:'Breaks and clock out happen there too';
+ const line=current?m.onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:'Take breaks and clock out there too';
  const hint=current?m.onBreak?'End your break on your location’s tablet.':'Take breaks and clock out on your location’s tablet.':null;
  return <HoursBScreen hero={m.week.length?<BLive label="This week at a glance" items={[{label:'This week',value:figure(m.worked)},{label:'Breaks',value:figure(m.breaks)}]}/>:null}>
   <BCard title="Right now" id="b-hours-now" chip={status}>
@@ -100,8 +100,8 @@ export function TimeTabB({data}:{data:Ready}){
   </BCard>
   {context?<LastWeekB authority={context.authority} date={data.date}/>:null}
   {/* Desktop: the corrections sit under last week in the right column (the phone reaches them from Past timecards). */}
-  <div className="eb-desk"><BCard label="Your corrections"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your corrections" sub="Fixes you asked your manager for"/>
+  <div className="eb-desk"><BCard label="Your correction requests"><BList>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
   </BList></BCard></div>
  </HoursBScreen>;
 }
@@ -186,13 +186,13 @@ export function PastTimecardsB({data,period,today,chosen,weeks,earlier,earlierCo
      :<Link className="eb-more" href={cardsHref(weekOf(addDays(monday,-7*(EARLIER_MAX+1))))}>Earlier weeks<CaretRightIcon weight="bold" aria-hidden="true"/></Link>}</li>
    </BList>
   </BCard>
-  <BCard label="Your corrections"><BList>
-   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your corrections" sub="Fixes you asked your manager for"/>
+  <BCard label="Your correction requests"><BList>
+   <BRow href="/app/my-time?view=corrections" lead={<BIcon tone="grey"><PencilSimpleIcon weight="bold"/></BIcon>} title="Your correction requests" sub="Sent to your manager for review"/>
   </BList></BCard>
  </HoursBScreen>;
 }
 
-/* ---------- Your corrections ---------- */
+/* ---------- Your correction requests ---------- */
 
 const correctionChip=(status:PublicCorrectionItem['status'])=>chip(correctionStatus(status));
 export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCorrections,{state:'ready'}>;decided:boolean}){
@@ -207,7 +207,7 @@ export function CorrectionsB({snapshot,decided}:{snapshot:Extract<EmployeeTimeCo
     {rows.length?null:<li className="b-li"><div className="eb-none">
      <BIcon tone="grey"><ClockCounterClockwiseIcon weight="bold"/></BIcon>
      <p className="eb-none__t">{decided?'No decided requests':'Nothing waiting for review'}</p>
-     <p className="eb-none__s">{decided?'Nothing decided in your recent history.':'Fixes you send stay here until your manager decides.'}</p>
+     <p className="eb-none__s">{decided?'Nothing decided in your recent history.':'Requests you send stay here until your manager decides.'}</p>
     </div></li>}
     <BAddRow href="/app/my-time?view=corrections&edit=new" icon={<PencilSimpleIcon weight="bold"/>}>Fix a missed punch</BAddRow>
    </BList>
@@ -239,7 +239,7 @@ export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionIte
    <BList>{context.decisions.map((d,index)=><BRow key={index} title={keepWhole(`${d.status==='APPROVED'?'Approved':'Declined'} · ${sentAt(d.decidedAt,zone)}`)} sub={keepWhole(interval(d.startAt,d.endAt,zone)+(d.note?` · ${d.note}`:''))}/>)}</BList>
   </BCard>:null}
   {decision?null:<BNote>Your manager reviews this request. Your original punches stay unchanged.</BNote>}
-  {item.baseChanged?<BCard label="Changed timecard"><div className="b-notice"><BIcon tone="amber"><WarningIcon weight="bold"/></BIcon><span className="b-notice__tx"><span className="b-notice__s eb-ink">Your timecard changed after this request. Check the current times before sending another fix.</span></span></div></BCard>:null}
+  {item.baseChanged?<BCard label="Changed timecard"><div className="b-notice"><BIcon tone="amber"><WarningIcon weight="bold"/></BIcon><span className="b-notice__tx"><span className="b-notice__s eb-ink">Your timecard changed after this request. Check the current times before sending another request.</span></span></div></BCard>:null}
   {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId&&!item.baseChanged?<BButtonLink href={'/app/my-time?view=corrections&requestId='+item.id+'&edit='+encodeURIComponent('missing:'+item.id)} kind="quiet" full>Request another correction</BButtonLink>:null}
  </HoursBScreen>;
 }
@@ -248,16 +248,16 @@ export function CorrectionDetailB({item,decision,zone}:{item:PublicCorrectionIte
 
 export function FixRecordedB({requestId,onReset,heading}:{requestId:string;onReset:()=>void;heading:Ref<HTMLHeadingElement>}){
  return <HoursBScreen sub={null} backLabel="Close"><BCard label="Submission result"><div className="eb-status">
-  <h2 className="eb-receipt" ref={heading} tabIndex={-1}>Correction recorded</h2><p className="b-state">Your manager reviews it. Open it to check its status.</p>
-  <BButtonLink href={'/app/my-time?view=corrections&requestId='+requestId} kind="teal" full>View my correction</BButtonLink>
-  <BButton kind="quiet" full onClick={onReset}>Start another proposal</BButton>
+  <h2 className="eb-receipt" ref={heading} tabIndex={-1}>Correction request sent</h2><p className="b-state">Your manager reviews it. Open it to check its status.</p>
+  <BButtonLink href={'/app/my-time?view=corrections&requestId='+requestId} kind="teal" full>View my request</BButtonLink>
+  <BButton kind="quiet" full onClick={onReset}>Request another correction</BButton>
  </div></BCard></HoursBScreen>;
 }
 export function FixPendingB({pending,onRetry}:{pending:boolean;onRetry:()=>void}){
  return <HoursBScreen sub={null}><BCard label="Submission status"><div className="eb-status">
-  <h2 className="eb-receipt">{pending?'Checking your proposal':'Check your original submission'}</h2>
-  <p className="b-state">{pending?'Your original proposal is being checked.':'The result couldn’t be confirmed. Check the original submission before starting another proposal, even if this time is no longer available for a new correction.'}</p>
-  {pending?<p className="b-state" role="status">Sending your original proposal…</p>:<BButton kind="quiet" full onClick={onRetry}>Check submission status</BButton>}
+  <h2 className="eb-receipt">{pending?'Checking your request…':'Check your earlier request'}</h2>
+  <p className="b-state">{pending?'We’re checking whether your request was sent.':'We couldn’t confirm your request was sent. Check it before you send another.'}</p>
+  {pending?<p className="b-state" role="status">Sending your request…</p>:<BButton kind="quiet" full onClick={onRetry}>Check request status</BButton>}
  </div></BCard></HoursBScreen>;
 }
 
@@ -265,6 +265,6 @@ export function FixPendingB({pending,onRetry}:{pending:boolean;onRetry:()=>void}
 
 export function TimecardsRedirectB({href}:{href:string}){
  return <BScreen back><BHero back={{href:'/app/my-time',label:'Time'}} title="Past timecards"/><BStack>
-  <BCard label="Opening your timecards"><div className="eb-status"><p className="b-state" role="status">Opening your timecards…</p><BButtonLink href={href} kind="quiet" full>Open Past timecards</BButtonLink></div></BCard>
+  <BCard label="Opening your timecards"><div className="eb-status"><p className="b-state" role="status">Opening your timecards…</p><BButtonLink href={href} kind="quiet" full>Open past timecards</BButtonLink></div></BCard>
  </BStack></BScreen>;
 }

@@ -79,7 +79,7 @@ export function CorpTimeTab({data}:{data:Ready}){
  return <>
   <TimeTabB data={data}/>
   {/* Upscale S9: off the clock, the heading says it once (no "Off the clock" pill) and names the tablet to use. */}
-  <CorpCard id="hours-now" label={current?'Current shift':'Right now'} aside={current?onBreak?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>On the clock</CorpPill>:undefined}>
+  <CorpCard id="hours-now" label={current?'Current shift':'Right now'} aside={current?onBreak?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>Clocked in</CorpPill>:undefined}>
    <CorpBody>
     <b className="c-big">{current?onBreak&&openBreak?`On break since ${clockAt(openBreak.startAt,zone)}`:`Clocked in at ${clockAt(current.clockInAt,zone)}`:'Not clocked in'}</b>
     <span className="c-line2">{current?onBreak?`${current.locationName} · clocked in at ${clockAt(current.clockInAt,zone)}`:`${current.locationName} · ${boardDuration(current.elapsedSeconds)} so far`:`Clock in on ${tablet}.`}</span>
@@ -120,8 +120,8 @@ function DayCards({seconds:length,running,status,pill,line,punches,location,fix,
   {notes.map(note=><CorpNote key={note}>{note}</CorpNote>)}
  </>;
 }
-const entryPill=(state:EmployeeTimeEntry['state'])=>state==='CLOCKED_OUT'?<CorpPill>Completed</CorpPill>:state==='ON_BREAK'?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>On the clock</CorpPill>;
-const entryStatus=(state:EmployeeTimeEntry['state']):{word:string;tone:StatusTone}=>state==='CLOCKED_OUT'?{word:'Completed',tone:'grey'}:state==='ON_BREAK'?{word:'On break',tone:'amber'}:{word:'On the clock',tone:'teal'};
+const entryPill=(state:EmployeeTimeEntry['state'])=>state==='CLOCKED_OUT'?<CorpPill>Completed</CorpPill>:state==='ON_BREAK'?<CorpPill tone="amber">On break</CorpPill>:<CorpPill tone="teal" dot>Clocked in</CorpPill>;
+const entryStatus=(state:EmployeeTimeEntry['state']):{word:string;tone:StatusTone}=>state==='CLOCKED_OUT'?{word:'Completed',tone:'grey'}:state==='ON_BREAK'?{word:'On break',tone:'amber'}:{word:'Clocked in',tone:'teal'};
 /** A recorded entry from the Time tab. */
 export function CorpTimeEntry({entry,zone}:{entry:EmployeeTimeEntry;zone:string}){
  const done=!!entry.clockOutAt;
@@ -199,7 +199,7 @@ export function CorpPastTimecards({authority,data,period,today,entryId,onRefresh
    <CorpRows>
     {earlierCount<EARLIER_MAX?<li><CorpRow onClick={more} title={<span className="c-link c-link--l">Show earlier weeks</span>} label="Show earlier weeks" chevron={false} one/></li>
      :<li><CorpRow href={cardsHref(weekOf(addDays(monday,-7*(EARLIER_MAX+1))))} title="Earlier weeks" one/></li>}
-    <li><CorpRow href="/app/my-time?view=corrections" title="Your corrections" one/></li>
+    <li><CorpRow href="/app/my-time?view=corrections" title="Your correction requests" one/></li>
    </CorpRows>
   </CorpCard>
  </>;
@@ -220,7 +220,7 @@ function CorpTimecardDay({entry,zone,status,pill,period}:{entry:TimecardEntry;zo
 
 const statusPill=(status:PublicCorrectionItem['status'])=>status==='PENDING'?<span className="c-meta">Waiting</span>:status==='APPROVED'?<CorpPill tone="teal">Approved</CorpPill>:<CorpPill tone="red">Declined</CorpPill>;
 export function CorpCorrections({snapshot,decisions,requestId,filter,onRefresh}:{snapshot:EmployeeTimeCorrections;decisions:HoursDecision[];requestId:string|null;filter:string;onRefresh:()=>void}){
- if(snapshot.state!=='ready')return <CorpHoursUnavailable message={snapshot.reason==='source_limit'?'This history can’t be loaded in full. Contact your manager for help.':'Your corrections couldn’t be checked.'} onRefresh={onRefresh}/>;
+ if(snapshot.state!=='ready')return <CorpHoursUnavailable message={snapshot.reason==='source_limit'?'This history can’t be loaded in full. Contact your manager for help.':'Your correction requests couldn’t be checked.'} onRefresh={onRefresh}/>;
  const zone=snapshot.timeZone;
  if(requestId){const item=snapshot.requests.find(r=>r.id===requestId);return item?<><CorrectionDetailB item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={zone}/><CorpCorrectionDetail item={item} decision={decisions.find(d=>d.requestId===item.id)} zone={zone}/></>
   :<><HoursBScreen><HoursStatusB label="Correction" message="This correction isn’t available to your current account."/></HoursBScreen><CorpCard ariaLabel="Correction"><p className="c-empty" role="status">This correction isn’t available to your current account.</p></CorpCard></>;}
@@ -259,7 +259,7 @@ function CorpCorrectionDetail({item,decision,zone}:{item:PublicCorrectionItem;de
    <CorpRows>{context.decisions.map((d,index)=><li key={index}><CorpRow bold title={`${d.status==='APPROVED'?'Approved':'Declined'} · ${sentAt(d.decidedAt,zone)}`} detail={interval(d.startAt,d.endAt,zone)+(d.note?` · ${d.note}`:'')}/></li>)}</CorpRows>
   </CorpCard>:null}
   {decision?null:<CorpNote>Your manager reviews this request. Your original punches stay unchanged.</CorpNote>}
-  {item.baseChanged?<p className="c-callout">Your timecard changed after this request. Check the current times before sending another fix.</p>:null}
+  {item.baseChanged?<p className="c-callout">Your timecard changed after this request. Check the current times before sending another request.</p>:null}
   {item.kind==='MISSING_ENTRY'&&item.status==='APPROVED'&&item.currentAdjustmentId&&!item.baseChanged?<CorpButtonLink href={'/app/my-time?view=corrections&requestId='+item.id+'&edit='+encodeURIComponent('missing:'+item.id)} kind="secondary" full>Request another correction</CorpButtonLink>:null}
  </>;
 }
@@ -296,17 +296,17 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
   <FixRecordedB requestId={operation.result.requestId} onReset={onReset} heading={receiptB}/>
   <CorpHoursSheetHead cancel={cancel} cancelLabel="Close"/>
   <CorpCard ariaLabel="Submission result"><CorpBody>
-   <h2 className="c-big" ref={receipt} tabIndex={-1}>Correction recorded</h2><span className="c-line2">Your manager reviews it. Open it to check its status.</span>
-   <div className="c-btns c-btns--stack c-hours-actions"><CorpButtonLink href={'/app/my-time?view=corrections&requestId='+operation.result.requestId}>View my correction</CorpButtonLink><CorpButton kind="secondary" onClick={onReset}>Start another proposal</CorpButton></div>
+   <h2 className="c-big" ref={receipt} tabIndex={-1}>Correction request sent</h2><span className="c-line2">Your manager reviews it. Open it to check its status.</span>
+   <div className="c-btns c-btns--stack c-hours-actions"><CorpButtonLink href={'/app/my-time?view=corrections&requestId='+operation.result.requestId}>View my request</CorpButtonLink><CorpButton kind="secondary" onClick={onReset}>Request another correction</CorpButton></div>
   </CorpBody></CorpCard>
  </>;
  if(isActive&&(pending||uncertain))return <>
   <FixPendingB pending={pending} onRetry={onRetry}/>
   <CorpHoursSheetHead cancel={cancel}/>
   <CorpCard ariaLabel="Submission status"><CorpBody>
-   <h2 className="c-big">{pending?'Checking your proposal':'Check your original submission'}</h2>
-   <span className="c-line2">{pending?'Your original proposal is being checked.':'The result couldn’t be confirmed. Check the original submission before starting another proposal, even if this time is no longer available for a new correction.'}</span>
-   {uncertain?<CorpButton kind="secondary" full onClick={onRetry}>Check submission status</CorpButton>:<span className="c-line3" role="status">Sending your original proposal…</span>}
+   <h2 className="c-big">{pending?'Checking your request…':'Check your earlier request'}</h2>
+   <span className="c-line2">{pending?'We’re checking whether your request was sent.':'We couldn’t confirm your request was sent. Check it before you send another.'}</span>
+   {uncertain?<CorpButton kind="secondary" full onClick={onRetry}>Check request status</CorpButton>:<span className="c-line3" role="status">Sending your request…</span>}
   </CorpBody></CorpCard>
  </>;
  if(!info||!readyDraft)return <><CorpHoursSheetHead cancel={cancel}/><CorpHoursUnavailable message="This time can’t be fixed from here right now. Go back to your time or refresh to check again." onRefresh={onRefresh}/></>;
@@ -368,7 +368,7 @@ export function CorpFixTime({snapshot,basis,edit,draft,onDraft,operation,isActiv
     <CorpField label="Note (required)" htmlFor={uid+'note'} {...under('reason')}><textarea id={uid+'note'} name="reason" className="c-in" rows={3} maxLength={500} value={readyDraft.reason} {...attr('reason')} onChange={e=>change({reason:e.target.value})}/></CorpField>
    </fieldset>
    {error&&!placed?<p className="c-error" id={errorId} role="alert">{message}</p>:null}
-   {pending?<p className="c-note" role="status"><span>Sending your original proposal…</span></p>:isActive&&uncertain?<div className="c-callout c-hours-stack" role="status"><span>The result couldn’t be confirmed. Check your original submission before starting a new proposal.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRetry}>Check submission status</CorpButton></div></div>
+   {pending?<p className="c-note" role="status"><span>Sending your request…</span></p>:isActive&&uncertain?<div className="c-callout c-hours-stack" role="status"><span>We couldn’t confirm your request was sent. Check it before you send another.</span><div className="c-btns"><CorpButton kind="secondary" size="sm" onClick={onRetry}>Check request status</CorpButton></div></div>
     :feedback&&feedback.status!=='recorded'?<p className="c-callout" role="status">{feedback.status==='blocked'?blocked[feedback.reason]:feedback.status==='conflict'?'This time changed or already has a fix waiting. Refresh and check its status.':feedback.status==='denied'?'Your access changed. Sign in again to continue.':'Check the day, times and note.'}</p>:null}
    <button type="submit" className="eb-fix-send" disabled={disabled} aria-disabled={!disabled&&!complete?true:undefined}>{pending?'Sending…':'Send'}</button>
    <CorpNote>Your manager reviews it. Your timecard changes once it’s approved.</CorpNote>

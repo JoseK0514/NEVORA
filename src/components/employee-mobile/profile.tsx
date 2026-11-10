@@ -23,7 +23,7 @@ export function EmployeeProfilePreferences({lang}:{lang:AuthLang}){
  return <CorpCard id="profile-display" label="Display">
   <CorpRows>
    <li><div className="c-row c-row--one em-account-pref">
-    <span className="c-row__main"><span className="c-row__title c-row__title--b" id="em-profile-language">Language</span><span className="c-row__detail"><span id="em-profile-language-hint">For the sign-in pages</span></span></span>
+    <span className="c-row__main"><span className="c-row__title c-row__title--b" id="em-profile-language">Language</span><span className="c-row__detail"><span id="em-profile-language-hint">Sign-in pages only. The rest of NEVORA is in English for now.</span></span></span>
     <div className="c-seg em-account-seg" role="group" aria-labelledby="em-profile-language" aria-describedby="em-profile-language-hint">
      {([['en','English'],['es','Español']] as const).map(([value,name])=><button key={value} type="button" lang={value} aria-pressed={lang===value} onClick={()=>{if(value!==lang)switchTo(value);}}>{name}</button>)}
     </div>

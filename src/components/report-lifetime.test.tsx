@@ -21,7 +21,7 @@ const nextPeriod={startDate:'2026-09-28',endDate:'2026-10-04'};
 const originalName='PRIVATE Original Employee',freshName='PRIVATE Fresh Employee';
 // v3 (approved clean-manager mockups): the duplicate Period summary is gone; the chart, Hours by person and the
 // Period figures lead, and the remaining sections sit in the Period details disclosure, still rendered (and printed).
-const sections=['Recorded time by day','Hours by person','Scheduled vs recorded','Hours by employee','Hours by location','Hours by position','Clock-in notes','Overtime','Time off and unable to work','Shift changes and coverage','Schedule stability','Approval status','Report definitions'];
+const sections=['Recorded time by day','Hours by person','Scheduled vs recorded','Hours by employee','Hours by location','Hours by position','Clock-in notes','Overtime',/* B7 wording (NV-119) */'Time off and can’t work','Shift changes and coverage','Schedule stability','Approval status','Report definitions'];
 function ready(name=originalName,validForMs=15000,p=period){
  const day=p.startDate==='2026-09-21'?'2026-09-22':'2026-09-29';
  const source={employeeId:'E1',employeeName:name,timeZone:'America/Puerto_Rico',...p,pendingCorrections:0,corrections:[],entries:[{id:'T1',locationId:'L1',locationName:'PRIVATE Office',positionId:'P1',positionName:'PRIVATE Captured Support',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:day+'T12:00:00Z',endAt:day+'T20:00:00Z',rawStartAt:day+'T12:00:00Z',rawEndAt:day+'T20:00:00Z',breaks:[]}]};

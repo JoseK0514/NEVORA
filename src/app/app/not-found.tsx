@@ -15,7 +15,7 @@ export default function NotFound() {
       <BHero title="Page not found" back={{ href: "/app", label: "Home" }} />
       <BStack><BCard><BState kind="failed" title="This page doesn’t exist" line="The link may be old, or the page may have moved." action={{ label: "Go to Home", href: "/app" }} /></BCard></BStack>
     </BScreen>
-    <CorpTitle id="not-found-title" title="This page doesn’t exist" />
+    <CorpTitle id="not-found-title" title="Page not found" />
     <CorpCard as="div">
       <div className="c-error-card">
         <span className="c-error-card__body">The link may be old, or the page may have moved.</span>

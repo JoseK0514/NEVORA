@@ -21,7 +21,7 @@ const places = [
 export function SignatureNotFound() {
   return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Error 404">
     <b className={styles.ss404} aria-hidden="true">404</b>
-    <h1 className="sg-head2">This page<br />isn’t here</h1>
+    <h1 className="sg-head2">Page<br />not found</h1>
     <p className="sg-sub"><span>The link may be old, mistyped, or not available to your account.</span></p>
   </SigBand>}>
     <SigHead id="ss-places" title="Pick up where you left off" />
@@ -33,12 +33,12 @@ export function SignatureNotFound() {
 }
 
 export function SignatureError({ action }: { action: ReactNode }) {
-  return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Something went wrong" mark={false}>
+  return <SigPage className={styles.ssRoot} band={<SigBand eyebrow="Error" mark={false}>
     <span className={styles.ssOrb} aria-hidden="true"><WarningIcon size={32} /></span>
-    <h1 className="sg-head2">We couldn’t<br />open this page</h1>
-    <p className="sg-sub"><span>Your current information is unavailable. Nothing was changed.</span></p>
+    <h1 className="sg-head2">This page<br />didn’t load</h1>
+    <p className="sg-sub"><span>Nothing was changed. Check your connection, then try again.</span></p>
   </SigBand>}>
-    <p className="nv-sr" role="alert">This page could not be loaded. Your current information is unavailable. Try loading the page again before taking an action.</p>
+    <p className="nv-sr" role="alert">This page didn’t load. Nothing was changed. Check your connection, then try again.</p>
     {action}
     <div className="sg-center"><Link className="sg-link" href="/app">Go to Home</Link></div>
     <p className="sg-after">Still stuck? Sign out and back in, or ask your manager.</p>

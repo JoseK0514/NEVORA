@@ -15,7 +15,7 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {useManagerCorrectionRecovery} from './manager-correction-recovery';
 export type CorrectionQueueConnection='loading'|'ready'|'offline'|'reconnecting'|'unavailable'|'access_lost'|'paused';
 const changedEvent='nevora:time-correction-changed';
-const unknownNotice='The server outcome could not be confirmed. Retry the same decision safely.';
+const unknownNotice='We couldn’t confirm your decision. Try again; it won’t be applied twice.';
 const approvedNotice='Correction approved. The original recorded punch remains unchanged.';
 const rejectedNotice='Correction declined. The original recorded punch remains unchanged.';
 /** Only fixed, non-identifying receipt feedback survives a private pause. */
@@ -29,17 +29,17 @@ function requestLabel(item:ManagerCorrectionItem){
 function noticeFor(result:CorrectionActionResponse){
   if(result.state==='approved')return approvedNotice;
   if(result.state==='rejected')return rejectedNotice;
-  if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh and review the latest state.';
+  if(result.state==='conflict')return 'This request changed while you were reviewing it. Refresh to see the latest.';
   if(result.state==='outcome_unknown')return unknownNotice;
   if(result.state==='blocked'){
-    if(result.reason==='finalized_period')return 'Reopen the finalized timecard period before reviewing this correction.';
-    if(result.reason==='self_review')return 'Another manager or owner must review your request.';
-    if(result.reason==='stale_source')return 'The recorded source changed. Refresh before deciding.';
-    if(result.reason==='overlap')return 'The proposed correction overlaps another effective entry.';
-    if(result.reason==='live_state')return 'This record is still live in Clocker and cannot be corrected here.';
-    return 'The proposed correction interval is not valid.';
+    if(result.reason==='finalized_period')return 'This period is finalized. Reopen it in Timecards before reviewing this correction.';
+    if(result.reason==='self_review')return 'Another manager or an Owner reviews your own request.';
+    if(result.reason==='stale_source')return 'The recorded times changed. Refresh before deciding.';
+    if(result.reason==='overlap')return 'These times overlap another entry.';
+    if(result.reason==='live_state')return 'This person is still clocked in. Correct it after they clock out.';
+    return 'The end time must be after the start time.';
   }
-  return 'The correction action could not be completed.';
+  return 'That didn’t go through. Refresh and try again.';
 }
 
 export function ManagerTimeCorrectionsSurface({
@@ -78,7 +78,7 @@ export function ManagerTimeCorrectionsSurface({
     </header>
     {notice?<div className="manager-corrections-notice" role="status">{notice}</div>:null}
     {retry?<button className="manager-corrections-retry" type="button" disabled={busyId!==null||mode!=='ready'} onClick={onRetry}>Retry same decision</button>:null}
-    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Sign in with a currently authorized management account.':'The correction queue is unconfirmed. Check a current protected snapshot before reviewing requests.'}</small></div>:
+    {mode!=='ready'?<div className="manager-corrections-empty" role="status"><strong>{({loading:'Loading correction requests',offline:'Correction requests unavailable offline',reconnecting:'Reconnecting to correction requests',unavailable:'Correction requests unavailable',access_lost:'Correction access ended',paused:'Updates paused'})[mode]}</strong><small>{mode==='access_lost'?'Your access changed. Sign in again to review corrections.':'Corrections didn’t load. Refresh to try again.'}</small></div>:
       ready?.requests.length?<div className="manager-corrections-list">
         {ready.requests.map(item=><article className="manager-correction-row" key={item.id} tabIndex={-1} id={`correction-${item.id}`}>
           <div className="manager-correction-topline">
@@ -90,10 +90,10 @@ export function ManagerTimeCorrectionsSurface({
           </div>
           <CorrectionComparison recordedLabel={item.kind==='MISSING_ENTRY'&&item.originalStartAt?'Approved missing time':'Recorded'} recordedStartAt={item.originalStartAt} recordedEndAt={item.originalEndAt} context={item.context} zone={ready.timeZone} proposedStartAt={item.proposedStartAt} proposedEndAt={item.proposedEndAt}/>
           <PriorCorrectionDecisions context={item.context} zone={ready.timeZone}/>
-          {item.baseChanged?<p className="manager-correction-self" role="status">The source or approved baseline changed since this request. The proposed time is not the current effective time.</p>:null}
+          {item.baseChanged?<p className="manager-correction-self" role="status">The timecard changed after this request. Check the current times before deciding.</p>:null}
           <p className="manager-correction-reason">{item.reason}</p>
-          <p className="manager-correction-provenance">Original recorded punches stay unchanged. Approval creates an auditable effective adjustment.</p>
-          {item.isSelf?<p className="manager-correction-self" role="note">Another manager or owner must review your request.</p>:null}
+          <p className="manager-correction-provenance">Approving changes the timecard. The original clock times stay in the history.</p>
+          {item.isSelf?<p className="manager-correction-self" role="note">Another manager or an Owner reviews your own request.</p>:null}
           <div className="manager-correction-actions">
             <button type="button" aria-label={`Decline correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'REJECT')}>Decline</button>
             <button className="primary" type="button" aria-label={`Approve correction for ${item.employeeName}`} disabled={item.isSelf||busyId!==null||retry!==null} onClick={()=>onDecision(item,'APPROVE')}>Approve</button>

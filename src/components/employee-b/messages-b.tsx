@@ -46,7 +46,7 @@ export function BStatusCard({status, title}: {status: BStatus; title?: string}) 
 /** The submission status (MessageRecovery's copy and actions). */
 export function BMessageRecovery({state, allowed, onLookup, onRetry}: {state: CommunicationRecoveryState; allowed: boolean; onLookup: () => void; onRetry: () => void}) {
   if (!state.pending && !state.notice && !state.hasUnknown) return null;
-  const copy = state.pending ? 'Checking your submission…' : state.hasUnknown ? 'The result hasn’t been confirmed. Check the original submission before trying anything new.' : state.notice === 'committed' ? 'Submission recorded. Refresh to check its current status.' : state.notice === 'conflict' ? 'This update or its audience changed. Review the current details before submitting again.' : state.notice === 'signed-out' ? 'Your session ended. Sign in again to continue.' : state.notice === 'blocked' ? 'Your current access or this source changed. Refresh before continuing.' : 'Your submission couldn’t be checked. Refresh to continue.';
+  const copy = state.pending ? 'Checking your submission…' : state.hasUnknown ? 'The result hasn’t been confirmed. Check the original submission before trying anything new.' : state.notice === 'committed' ? 'Sent. Refresh to see its status.' : state.notice === 'conflict' ? 'This update or its audience changed. Review the current details before submitting again.' : state.notice === 'signed-out' ? 'Your session ended. Sign in again to continue.' : state.notice === 'blocked' ? 'This update changed. Refresh to see the latest.' : 'Your submission couldn’t be checked. Refresh to continue.';
   return <section className="b-card" aria-label="Submission status"><div className="eb-status">
     <p className="b-state" role="status">{copy}</p>
     {state.hasUnknown ? <div className="eb-btns">
@@ -174,7 +174,7 @@ export function EmployeeUpdatesB({list, notice, recovery, returnHref, status, pa
             <p className="eb-upd__body">{item.body}</p>
             <div className="eb-upd__acts">
               <Link id={'b-message-' + item.id} className="b-btn b-btn--quiet" href={'/app/updates/' + item.id} onClick={event => list.onOpen(event, item.id, '/app/updates/' + item.id)} aria-label={`Open ${item.title}`}>Open</Link>
-              <BButton kind="teal" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Confirm ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Confirm</BButton>
+              <BButton kind="teal" onClick={() => list.onConfirm(item)} disabled={list.busy} label={`Acknowledge ${item.title}`}><CheckIcon size={16} weight="bold" aria-hidden="true" />Acknowledge</BButton>
             </div>
           </div></li>)}</ul>
         </BCard> : null}
@@ -210,7 +210,8 @@ export function EmployeeUpdateB({back, item, busy, onAction, withdraw, onWithdra
 }) {
   const required = !!item && item.acknowledgement === 'REQUIRED' && !item.ownAcknowledgedAt;
   return <BScreen back>
-    <BHero back={back} title="Team update" titleId="b-update-title" sub="Read, review and respond" />
+    {/* Review B7 (NV-284): the update's own title leads; "Team update" moves to the sub line. */}
+    <BHero back={back} title={item ? item.title : "Team update"} titleId="b-update-title" sub={item ? `Team update · ${item.authorContext} · ${messageTime(item.publishedAt, item.timeZone)}` : "Read, review and respond"} />
     <BStack>
       {recovery}
       {returnHref ? <BReturnCard href={returnHref} /> : null}

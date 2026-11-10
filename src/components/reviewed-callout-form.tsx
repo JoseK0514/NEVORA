@@ -56,7 +56,7 @@ export function ReviewedCalloutForm({
   return (
     <ShiftChangeForm fields={fields ?? {}} className="shift-change-form q-scform" resolvedHref="/app/exchange?tab=requests">
       <div ref={body}>
-        <div className="q-nav"><SheetCancel href="/app/exchange?tab=my" /><h1 className="q-nav__t">Unable to work</h1><PendingButton pending="Sending…" disabled={!fields} className="q-nav__r q-nav__r--b" label="Send report">Send</PendingButton></div>
+        <div className="q-nav"><SheetCancel href="/app/exchange?tab=my" /><h1 className="q-nav__t">Can’t work this shift</h1><PendingButton pending="Sending…" disabled={!fields} className="q-nav__r q-nav__r--b" label="Send report">Send</PendingButton></div>
         {error ? <p className="q-help q-help--alert" role="alert">Your report wasn’t sent. {error}</p> : null}
         {shift ? <><div className="q-grp q-grp--m"><h2>Shift</h2></div><QuietList><SwapShiftRow shift={shift} /></QuietList></> : null}
         <fieldset className="q-fieldset" aria-describedby={`${reasonId}-hint`}>

@@ -57,7 +57,7 @@ export function EmployeeAvailability({authority,selection}:{authority:string;sel
  // read's states show on the hero too.
  const denied=panel.state.snapshot?.state==='unavailable'&&panel.state.snapshot.reason==='access_denied';
  const b=<AvailabilityB sub={availabilitySubB(isNormal?null:selection,isNormal?undefined:formatWeekRange(selection))} change={read&&isNormal?'/app/availability?week='+read.data.nextWeek:null}>
-  {read?null:<AvailabilityStatusB message={panel.state.paused?'Your planning is paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':panel.state.refreshing?'Checking your current planning…':'Your planning couldn’t be checked.'}
+  {read?null:<AvailabilityStatusB message={panel.state.paused?'Availability is paused. Come back to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':panel.state.refreshing?'Loading your availability…':'Your availability didn’t load.'}
    action={denied?<BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>:panel.state.refreshing||panel.state.paused?null:<BButton kind="quiet" full onClick={panel.refresh}>Try again</BButton>}/>}
  </AvailabilityB>;
  return <PlanningFrame title="Availability" sub={isNormal?'Used to build your future schedules':'Used for the week of '+formatWeekRange(selection)} back="/app/schedule" backLabel="Schedule" selection={selection} state={panel.state} ready={!!read} refresh={panel.refresh} b={b}>

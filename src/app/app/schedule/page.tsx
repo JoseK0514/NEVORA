@@ -429,7 +429,7 @@ export default async function SchedulePage({
       {params.published ? <div role="status" className="b-sched-done"><b>{locations.find((location) => location.id === params.published)?.shortName ?? "Schedule"} published.</b>
         <span>Your team can now see their {formatWeekRange(weekStart)} shifts.</span>
         {updatesOn ? <BButtonLink href="/app/updates/compose" kind="ghost">Send an update</BButtonLink> : null}</div> : null}
-      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
       {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
       {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
       {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}
@@ -474,7 +474,7 @@ export default async function SchedulePage({
           </CorpBody>
         </CorpCard>
       ) : null}
-      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change has been notified.</CorpNote> : null}
+      {params.changesPublished ? <CorpNote announce>Changes published. Each person with a change can see it in their schedule.</CorpNote> : null}
       {params.updated ? <CorpNote announce>{pending ? "Shift updated. Publish changes when you’re ready to tell your team." : "Shift updated."}</CorpNote> : null}
       {params.deleted ? <CorpNote announce>Shift deleted.</CorpNote> : null}
       {params.deadlineSaved ? <CorpNote announce>Availability deadline updated.</CorpNote> : null}

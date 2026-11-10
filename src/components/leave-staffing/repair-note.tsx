@@ -54,17 +54,17 @@ export function LeaveRepairNote({variant}:{variant:'b'|'corp'}){
  const person=item?.employeeName;
  const first=person?.split(/\s+/)[0]??'they';
  let tone:'amber'|'green'|'grey'='amber',icon=<CalendarXIcon weight="bold"/>,title:string,body:React.ReactNode,action:React.ReactNode=null;
- if(state.status==='loading'){tone='grey';title='Checking this repair…';body='Reading the approved leave and the published shift.';}
+ if(state.status==='loading'){tone='grey';title='Checking this repair…';body='Reading the approved time off and the published shift.';}
  else if(state.status==='paused'){tone='grey';title='Repair check paused';body='It checks again when you come back.';}
  else if(state.status==='expired'){icon=<WarningIcon weight="bold"/>;title='This check expired';body='Check again to see whether this shift still needs a replacement.';action=<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Check again</button>;}
  else if(state.status==='unavailable'){icon=<WarningIcon weight="bold"/>;title=state.denied?'Your access changed':'Couldn’t check this repair';body=state.denied?'Reload the page to see the schedule with your current access.':'This doesn’t mean it’s fixed. Try again.';action=state.denied?null:<button type="button" className={variant==='b'?'b-btn b-btn--quiet':'c-btn c-btn--secondary'} onClick={refresh}>Try again</button>;}
- else if(!item){tone='green';icon=<CheckCircleIcon weight="bold"/>;title='This shift no longer needs a replacement';body='A published schedule changed it, or the leave changed. Nothing else to do here.';}
+ else if(!item){tone='green';icon=<CheckCircleIcon weight="bold"/>;title='This shift no longer needs a replacement';body='A published schedule changed it, or the time off changed. Nothing else to do here.';}
  else{
   title=`Fill ${person}’${/s$/i.test(person!)?'':'s'} shift`;
   body=<>
    <span className="ls-repair__fact">{`${first}’s time off is approved and overlaps this published shift: ${conflictShift(item)} (${minutesText(item.overlapMinutes)}).`}</span>
    <span>{`Assign someone else or change the shift, then publish. Draft changes don’t clear this; it clears once a published schedule no longer has ${first} on it.`}</span>
-   <span className="ls-repair__owner">{item.ownerEmployeeId===null?'No one is assigned. An Owner needs to take this.':item.ownerEmployeeId===authority?.actorId?'You approved this leave, so this is yours to fix.':'Assigned to the manager who approved the leave.'}</span>
+   <span className="ls-repair__owner">{item.ownerEmployeeId===null?'No one is assigned yet. An Owner can take it.':item.ownerEmployeeId===authority?.actorId?'You approved this time off, so this shift is yours to fill.':'Assigned to the manager who approved the time off.'}</span>
   </>;
   action=<Link className={variant==='b'?'b-btn b-btn--teal':'c-btn'} href={`/app/schedule/edit?shiftId=${encodeURIComponent(item.shiftId)}`}>Open the shift</Link>;
  }

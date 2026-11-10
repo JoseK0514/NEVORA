@@ -11,8 +11,9 @@ vi.mock('next/navigation', () => ({ usePathname: () => '/app/settings/payroll' }
 beforeEach(() => { boundary.native = true; boundary.loading = false; });
 it('explains native company preferences and automatic publication without asking for provider activation', () => {
   const html = renderToStaticMarkup(<PayrollSettings recoveryScope="fictional-owner" nativeSources={{employees:[],locations:[],breakTypes:[]}} />);
-  expect(html).toContain('Native payroll uses verified recorded time');
-  expect(html).toContain('automatically after generation');
+  // B7 wording (NV-124): payroll settings in plain language, same meaning.
+  expect(html).toContain('NEVORA payroll uses finalized timecards');
+  expect(html).toContain('then publishes it to the employee');
   expect(html).toContain('Save company preferences');
   expect(html).toContain('specific payroll locations');
   expect(html).not.toContain('name="bankProfile"');

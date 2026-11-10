@@ -14,7 +14,7 @@ export function BlockedOpenShifts({ shifts, availabilityHref = '/app/availabilit
   const availability = availabilityHref && shifts.some(shift => shift.reasons?.includes(REASON_TEXT.availability));
   return <details className="blocked-open-shifts">
     <summary>
-      <span>Shifts you can’t pick up <span className="blocked-open-count">{shifts.length}</span></span>
+      <span>Why other shifts aren’t available <span className="blocked-open-count">{shifts.length}</span></span>
       <CaretDownIcon size={16} weight="bold" aria-hidden="true" />
     </summary>
     <ul className="blocked-open-list">

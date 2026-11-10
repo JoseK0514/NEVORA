@@ -2,7 +2,7 @@ import type { UserRole } from "@/lib/domain";
 import type { NavIconName } from "@/components/nav-icon";
 import type { PayrollCapabilities } from './payroll/contracts';
 import { ALL_MODULES_ON, pathEnabled, type EnabledModules } from './workspace-presentation/modules';
-import { DEFAULT_WORDS, type WordSlots } from './workspace-presentation/words';
+import { type WordSlots } from './workspace-presentation/words';
 
 /** Company choices that shape navigation (B2): modules that are off disappear
  * everywhere, and the vocabulary names the people page. Defaults change nothing. */
@@ -26,7 +26,7 @@ const managementNavigation: NavigationItem[] = [
   { href: "/app/requests", label: "Time off", icon: "timeOff" },
   { href: "/app/exchange", label: "Shift requests", icon: "exchange" },
   { href: "/app/updates", label: "Updates", icon: "updates" },
-  { href: "/app/employees", label: "Employees", icon: "employees" },
+  { href: "/app/employees", label: "Team", icon: "employees" },
   { href: "/app/timecards", label: "Timecards", icon: "clock" },
   { href: "/app/reports", label: "Insights", icon: "reports" },
   { href: "/app/payroll-export", label: "Time exports", icon: "export" },
@@ -199,10 +199,10 @@ export function activeNavigationHref(role: UserRole, path: string, payroll?: Pay
  */
 export function navigationForRole(role: UserRole, payroll?: PayrollCapabilities, input: NavContext | OperationalAuthorityView = {}): NavigationItem[] {
   const context:NavContext = 'state' in input ? {operational:input} : input;
-  const modules = context.modules ?? ALL_MODULES_ON, words = context.words ?? DEFAULT_WORDS.en;
+  const modules = context.modules ?? ALL_MODULES_ON;
+  // B7 wording (NV-119): the people page is "Team" everywhere (its H1 and tab); the vocabulary preset stays in sentences.
   return baseNavigation(role, payroll, context.operational, context.ownerAdvisorEnabled)
-    .filter(item => pathEnabled(item.href, modules))
-    .map(item => item.href === "/app/employees" ? { ...item, label: words.people } : item);
+    .filter(item => pathEnabled(item.href, modules));
 }
 
 function baseNavigation(role: UserRole, payroll?: PayrollCapabilities, operational?:OperationalAuthorityView, ownerAdvisorEnabled=false): NavigationItem[] {

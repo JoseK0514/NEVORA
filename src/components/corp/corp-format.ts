@@ -4,6 +4,8 @@
  * with no visible change. The AM/PM time-range helpers (timeRangeText, timeParts, CorpTime) are in corp.tsx beside these. */
 
 /** Thin spaces around the en dash in a range ("Oct 12 – 18"). */
+import {durationSentence} from '@/lib/duration-format';
+
 export const RANGE_DASH = ' – ';
 
 const utcDay = (date: string) => new Date(`${date}T12:00:00Z`);
@@ -32,7 +34,5 @@ export function hoursText(nanoseconds: string, zero = '0 h') {
 
 /** The same format from whole minutes: "8 h 2 min", "8 h", "45 min"; zero is "0 min" unless `zero` says otherwise. */
 export function minutesText(totalMinutes: number, zero = '0 min') {
-  const minutes = Math.max(0, Math.floor(totalMinutes));
-  const hours = Math.floor(minutes / 60), rest = minutes % 60;
-  return hours && rest ? `${hours} h ${rest} min` : hours ? `${hours} h` : rest ? `${rest} min` : zero;
+  return durationSentence(totalMinutes, zero);
 }

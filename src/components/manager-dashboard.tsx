@@ -6,6 +6,7 @@ import { ManagerTimeCorrections } from "./manager-time-corrections";
 import {HomeActionCenterProvider} from './manager-action-center';
 import {OwnerSetupCorpLive} from './owner-setup-card';
 import { formatBusinessTimestamp } from "@/lib/business-time";
+import { durationSentence } from "@/lib/duration-format";
 import Link from "next/link";
 import type { ManagerActionItem } from "@/lib/assistance/manager-actions";
 import { CaretLeftIcon, CaretRightIcon } from '@phosphor-icons/react/ssr';
@@ -120,8 +121,8 @@ function dashboardHref(
 
 function revisionSourceLabel(sourceType: string) {
   if (sourceType === "PUBLISH") return "Schedule published";
-  if (sourceType === "EXCHANGE") return "Shift exchange applied";
-  if (sourceType === "CALLOUT") return "Call-out applied";
+  if (sourceType === "EXCHANGE") return "Shift request applied";
+  if (sourceType === "CALLOUT") return "Can’t-work request applied";
   return "Published schedule updated";
 }
 
@@ -147,7 +148,7 @@ function TeamTab(props: Props) {
       {props.hours.length ? <Rows label="Hours this week">{props.hours.slice(0, 8).map(item => <Row key={item.employeeId}
         leading={<Avatar initials={item.employeeName.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join("").toUpperCase()} />}
         title={item.employeeName}
-        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${item.scheduledHours}h scheduled · ${item.targetHours}h target`}
+        meta={item.targetHours === undefined ? "No weekly hour target yet" : `${durationSentence(item.scheduledHours * 60)} scheduled · ${durationSentence(item.targetHours * 60)} target`}
         status={<Status tone={item.status === "ON_TARGET" ? "done" : item.status === "TARGET_MISSING" ? "neutral" : "review"}>
           {item.status === "UNDER" ? "Below target" : item.status === "OVER" ? "Above target" : item.status === "TARGET_MISSING" ? "Not set" : "On target"}</Status>} />)}
       </Rows> : <CardBody><p className="premium-note">Hours appear here as shifts are added.</p></CardBody>}

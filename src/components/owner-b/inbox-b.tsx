@@ -14,7 +14,7 @@ import { useLeaveStaffing, type StaffingState } from "@/components/leave-staffin
 import { conflictsFor } from "@/components/leave-staffing/conflict-check";
 import { MAX_STAFFING_WEEKS, weeksFor } from "@/lib/time-off-staffing/client";
 import { conflictShift } from "@/lib/time-off-staffing/present";
-import { compactRange, BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack } from "./b-kit";
+import { BAvatar, BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack } from "./b-kit";
 
 /* Direction B, Things to do on a phone (mock screen "Owner · Things to do"). The same groups, rows, links and counts as the
  * corporate page (groupThingsToDo); the glass chips filter them by job. An open shift's Find cover opens the same coverage
@@ -51,7 +51,7 @@ export function InboxB({ ready, families, waiting = [], total, connection, statu
     <BHero back={back ? { href: "/app", label: "Home" } : undefined} title="Things to do" titleId="b-todo-title"
       sub={<>{total === null ? statusLine : total === 0 ? "Nothing needs you right now" : `${plural(total, "thing needs", "things need")} you`}<span role="status" className="b-sr">{statusLine}</span></>}>
       {families.length ? <BSeg label="Show" items={[
-        { key: "all", label: `All ${total ?? 0}`, current: filter === "all", onSelect: () => setFilter("all") },
+        { key: "all", label: total === null ? "All" : `All ${total}`, current: filter === "all", onSelect: () => setFilter("all") },
         ...families.map(family => ({ key: family.id, label: `${FILTER_LABEL[family.id as Exclude<Filter, "all">] ?? family.title} ${familyCount(family)}`, current: filter === family.id, onSelect: () => setFilter(family.id as Filter) })),
       ]} /> : null}
     </BHero>
@@ -80,13 +80,14 @@ function GroupCard({ group, items, staffing, checked }: { group: Group; items: M
         // "Today, 12–7 AM" over "Main Office · Needs 1": the day joins the time so the line under it stays short.
         const parts = (row.detail ?? "").split(" · ");
         const day = parts.length > 1 && !/Needs|open/.test(parts[0]) ? parts.shift() : undefined;
-        const title = day ? `${day}, ${compactRange(row.title).replace(/^Open all day$/, "all day")}` : compactRange(row.title);
+        // Review B7 (NV-068): rows keep full times with a spaced en dash; the compact form is for the dense week grid only.
+        const title = day ? `${day}, ${row.title.replace(/^Open all day$/, "all day")}` : row.title;
         return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={title} sub={parts.join(" · ").replace(/Needs[\s\u00a0](\d+)[\s\u00a0](person|people)/, "Needs $1")} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Find cover: ${row.title}`}>Find cover</BButtonLink>} />;
       }
       // Approved leave over a published shift: the schedule's job ("Fill Maria Rivera’s shift"), no Approve or Decline.
       if (group.id === "repair") return <BRow key={row.key} lead={<BIcon tone="amber"><CalendarBlankIcon weight="bold" /></BIcon>} title={row.title}
-        chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved leave</BChip>} sub={row.detail} href={row.href} label={row.label}
+        chip={row.value ? <BChip tone="amber">{row.value}</BChip> : <BChip tone="amber">Approved time off</BChip>} sub={row.detail} href={row.href} label={row.label}
         trail={<BButtonLink href={row.href} kind="ghost" label={`Fill shift: ${row.title}`}>Fill</BButtonLink>} />;
       if (group.id === "missed") return <BRow key={row.key} lead={<BAvatar name={row.title} ring="late" />} title={row.title} chip={row.value ? <BChip tone="amber">{`${row.value} late`}</BChip> : undefined}
         sub={row.detail} href={row.href} label={row.label} />;

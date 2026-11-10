@@ -43,7 +43,8 @@ describe('Assisted recovery workflow presentation',()=>{
   const html=renderToStaticMarkup(<AssistedRecovery {...props} issued={{proof:'A'.repeat(43),employeeId:'QAEMPLOYEE',expiresAt:'2026-10-12T16:30:00Z'}}/>);
   expect(html).toContain('Recovery code ready');expect(html).toContain('QAEMPLOYEE');
   expect(html).toContain('dateTime="2026-10-12T16:30:00Z"');expect(html).toContain('readOnly=""');
-  expect(html).toContain('works once');expect(html).toContain('href="/reset-access"');
+  // B7 wording (NV-021): the steps name the real sign-in link, "Forgot password?", and link to its page.
+  expect(html).toContain('works once');expect(html).toContain('href="/forgot-access"');expect(html).toContain('I have a recovery code');
   expect(html).toContain('hides when you leave this page');expect(html).toContain('unused earlier code');
   expect(html).not.toContain('<form');expect(html).not.toContain('Password updated');
  });

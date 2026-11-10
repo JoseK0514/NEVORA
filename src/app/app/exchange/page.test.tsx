@@ -56,7 +56,7 @@ it('forged URL flags cannot claim a persisted success',async()=>{
 });
 it('trade displays both reviewed slots with position and Lead context',async()=>{
  f.activity=[{...exchange('both'),sourceShift:{...exchange('both').sourceShift,positionName:'Drive-through coordinator',isDesignatedLead:true},targetShift:{...exchange('both').sourceShift,id:'other',date:'2026-10-06',startTime:'16:00',endTime:'20:00',locationName:'East Terrace',positionName:'Kitchen coordinator'}}];
- const result=await html();expect(result).toContain('East Terrace');expect(result).toContain('Kitchen coordinator');expect(result).toContain('Drive-through coordinator');expect(result).toContain('Designated lead');
+ const result=await html();expect(result).toContain('East Terrace');expect(result).toContain('Kitchen coordinator');expect(result).toContain('Drive-through coordinator');/* B7 wording (glossary: Shift lead) */expect(result).toContain('Shift lead');
 });
 it('effective expired lifecycle never offers cancellation',async()=>{
  f.activity=[{...exchange('expired'),status:'OPEN',actionable:false,attention:'EXPIRED'}];
@@ -81,7 +81,7 @@ function assignedReview(){
 }
 it.each(['unknown coverage policy','elapsed coverage submission cutoff'])('trade builder navigation remains independent of %s',async refusal=>{
  // v5: Your shifts open the shift's sheet on Schedule (Swap, Offer it for cover, Unable to work), whatever the coverage policy.
- assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('value="OFFER_COVERAGE"');expect(result).toContain('Unable to work');
+ assignedReview();f.coverageAllowed=false;f.coverageNotice=refusal;const result=await html();expect(result).toContain('&amp;shift=shift');expect(result).not.toContain('value="OFFER_COVERAGE"');/* B7 wording (NV-119) */expect(result).toContain('can’t work it');
 });
 it('builder navigation itself does not declare swap eligibility when only coverage is valid',async()=>{
  // v5: offering for cover starts from the shift (the swap route's cover mode re-reads and checks the terms); this page never posts it.
@@ -96,7 +96,7 @@ it.each(['pending','completed'] as const)('URL result render performs read-only 
 });
 
 it('H04 requester can cancel stale active offers independently of completion eligibility',async()=>{f.activity=[{...exchange('stale'),status:'OPEN',actionable:false,requestRevision:1}];expect(await html()).toContain('value="CANCEL"');});
-it('H09 approved historical callouts never imply current release',async()=>{f.callouts=[{id:'old',shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2035-10-01',date:'2035-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',releaseApplies:false,createdAt:'2026-10-03T12:00:00Z'}];const result=await html();expect(result).toContain('Previously approved — review current assignment');expect(result).not.toContain('Released — check coverage');});
+it('H09 approved historical callouts never imply current release',async()=>{f.callouts=[{id:'old',shiftId:'shift',employeeId:'self',employeeName:'Fictional',locationId:'2',locationName:'Drive',weekStart:'2035-10-01',date:'2035-10-05',startTime:'08:00',endTime:'12:00',reasonCode:'OTHER',status:'APPROVED',releaseApplies:false,createdAt:'2026-10-03T12:00:00Z'}];const result=await html();/* B7 wording (NV-119): can't-work status words, no em dash */expect(result).toContain('Approved earlier · still your shift');expect(result).not.toContain('Approved · shift released');});
 
 it('H10 explanatory notices stay outside employee action grids while recovery controls remain',async()=>{
  assignedReview();f.coverageAllowed=false;
@@ -105,7 +105,8 @@ it('H10 explanatory notices stay outside employee action grids while recovery co
  const result=await html();const actions=[...result.matchAll(/<div class="q-sheet-acts employee-shift-entry-actions"[^>]*>([\s\S]*?)<\/div>/g)].map(match=>match[1]);
  expect(actions.length).toBeGreaterThanOrEqual(2);
  for(const group of actions){expect(group).not.toContain('shift-change-unavailable');expect(group).not.toContain('review current assignment');}
- expect(result).toContain('value="CANCEL"');expect(result).toContain('Unable to work');expect(result).toContain('Historical approval does not release the current assignment');
+ // B7 wording (NV-020/NV-119): "Can’t work" naming and the plain earlier-approval note.
+ expect(result).toContain('value="CANCEL"');expect(result).toContain('Can’t work');expect(result).toContain('This was approved earlier, but you’re still on this shift.');
 });
 it('an empty shift board says so once, in the band (inspection Oct 24)',async()=>{
  const board=renderToStaticMarkup(await ExchangePage({searchParams:Promise.resolve({})})).replace(/<br\/?>/g,' ');

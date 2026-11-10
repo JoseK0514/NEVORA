@@ -21,7 +21,7 @@ export function CalloutSentBoundary({ shift, children }: { shift: ExchangeShift;
   }, [sent]);
   if (!sent) return <SentContext.Provider value={() => setSent(true)}>{children}</SentContext.Provider>;
   return <QuietPage className="q-shiftchange">
-    <div className="q-nav"><span /><span className="q-nav__t">Unable to work</span><SheetCancel href="/app/exchange?tab=my" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>
+    <div className="q-nav"><span /><span className="q-nav__t">Can’t work this shift</span><SheetCancel href="/app/exchange?tab=my" className="q-nav__r q-nav__r--b">Done</SheetCancel></div>
     <div ref={notice} tabIndex={-1} className="q-hd" role="status"><h1>Report sent</h1><p>Your manager will review it.</p></div>
     <QuietList style={{ marginTop: 16 }}>
       <QuietRow title={<time dateTime={shift.date}>{swapBandDay(shift.date)}</time>} detail={swapBandLine(shift)} />

@@ -33,7 +33,7 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
  // The review replaces Reset link and Revoke link, so Keep returns focus to the button that was drawn again in its place.
  function cancel(){const kind=confirmation?.kind;setConfirmation(null);requestAnimationFrame(()=>{const target=trigger.current?.isConnected?trigger.current:kind==='REVOKE'?shown(revokeButton.current,bRevoke.current):shown(resetButton.current,bReset.current);target?.focus();});}
  function confirmNow(){if(!confirmation||!status||!('authority'in status))return;if(confirmation.kind==='ROTATE'&&!status.canIssue)return;const kind=confirmation.kind;setConfirmation(null);onCommand(kind);}
- const pill=!available?null:active?<CorpPill tone="teal">Active</CorpPill>:<CorpPill>{status.state==='revoked'?'Revoked':'Off'}</CorpPill>;
+ const pill=!available?null:active?<CorpPill tone="teal">Active</CorpPill>:<CorpPill>{status.state==='revoked'?'Turned off':'Off'}</CorpPill>;
  return <><EmployeeCalendarB {...{status,url,paused,busy,notice,pendingKind,onCommand,onCopy,onRetry,confirmation,open}} onOpen={setOpen} onAsk={ask} onCancel={cancel} onConfirm={confirmNow} feedbackRef={bFeedback} confirmRef={bConfirm} resetRef={bReset} revokeRef={bRevoke}/>
  <section className="em-account-stack em-calendar" aria-labelledby="employee-calendar-heading" data-calendar-setting data-calendar-state={paused?'paused':busy?'working':status?.state??'loading'}>
   <div className="c-card" aria-busy={busy}>
@@ -52,7 +52,7 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
         // WebKit places the caret after a keyboard focus lands, which undoes select(); select again once it has settled.
         requestAnimationFrame(()=>{if(document.activeElement===field)field.select();});}}/>
        <p className="c-field__help" id="employee-calendar-link-hint">Shown once. Copy it now, or reset it later to get a new link.</p>
-      </div>:<p className="em-calendar-extra">For your privacy the link is shown only once. Reset it to get a new link to copy.</p>
+      </div>:<p className="em-calendar-extra">For your privacy the link is shown only once. Get a new link if you need to copy it again.</p>
       :status.state==='revoked'?<p className="em-calendar-extra">Future access through the previous link has stopped.</p>:null}
      {!status.canIssue&&!active?<p className="em-calendar-extra">No eligible work location is currently available. Ask your manager to review your access.</p>:null}
     </>}
@@ -76,14 +76,14 @@ export function EmployeeMobileCalendarView({status,url,paused,busy,notice,pendin
     </li>;})}</ul>
    </section>
    {confirmationCurrent?<div ref={confirm} id="calendar-link-confirmation" className="c-card" role="group" aria-labelledby="calendar-confirm-title" tabIndex={-1}>
-    <div className="c-card__head"><h2 className="c-card__label" id="calendar-confirm-title">{confirmation.kind==='ROTATE'?'Reset your calendar link?':'Revoke your calendar link?'}</h2></div>
+    <div className="c-card__head"><h2 className="c-card__label" id="calendar-confirm-title">{confirmation.kind==='ROTATE'?'Get a new calendar link?':'Turn off your calendar link?'}</h2></div>
     <div className="c-card__body"><p>{confirmation.kind==='ROTATE'?'The old link stops working right away. Copy the new link and add it to your calendar app again.':'Your calendar app will no longer receive shifts through this link. Events already copied may remain in the app.'}</p>
-     <div className="c-btns em-calendar-confirm-actions"><button type="button" className="c-btn c-btn--secondary" onClick={cancel}>Keep current link</button><button type="button" className="c-btn c-btn--danger" onClick={confirmNow}>{confirmation.kind==='ROTATE'?'Reset link':'Revoke link'}</button></div>
+     <div className="c-btns em-calendar-confirm-actions"><button type="button" className="c-btn c-btn--secondary" onClick={cancel}>Keep current link</button><button type="button" className="c-btn c-btn--danger" onClick={confirmNow}>{confirmation.kind==='ROTATE'?'Get a new link':'Turn off link'}</button></div>
     </div>
    </div>:active&&!unknown?<div className="em-calendar-manage">
-    {status.canIssue?<button ref={resetButton} type="button" className="em-account-textbtn em-account-textbtn--danger" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('ROTATE',event.currentTarget)}>Reset link</button>:null}
+    {status.canIssue?<button ref={resetButton} type="button" className="em-account-textbtn em-account-textbtn--danger" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('ROTATE',event.currentTarget)}>Get a new link</button>:null}
     {status.canIssue?<p className="c-note c-note--center">The old link stops working right away.</p>:null}
-    <button ref={revokeButton} type="button" className="em-account-textbtn em-account-textbtn--quiet" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('REVOKE',event.currentTarget)}>Revoke link</button>
+    <button ref={revokeButton} type="button" className="em-account-textbtn em-account-textbtn--quiet" aria-controls="calendar-link-confirmation" aria-expanded={false} onClick={event=>ask('REVOKE',event.currentTarget)}>Turn off link</button>
    </div>:null}
   </>:null}
  </section></>;

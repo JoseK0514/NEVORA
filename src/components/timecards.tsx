@@ -82,11 +82,11 @@ type TimecardEntryLike=Timecard['entries'][number];
 /** Sentence case for a timecard state: "Draft", "Approved", "Finalized". */
 const stateLabel=(state:string)=>{const text=state.replaceAll('_',' ').toLowerCase();return text.charAt(0).toUpperCase()+text.slice(1);};
 function commandMessage(result:TimecardMutation):string{
-  if(result.status==='blocked')return ({self_review:'A different manager must review your timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the current source revision before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.',payroll_approved:'Payroll for this period is approved. Start a payroll correction for it first, then reopen.'})[result.reason];
+  if(result.status==='blocked')return ({self_review:'Another manager approves your own timecard.',unresolved_time:'Resolve open time, overlaps and pending corrections before approval.',approval_required:'Approve the latest version of this timecard before finalizing.',period_state:'Refresh the period and choose an action for its current state.',overlapping_period:'This period overlaps finalized time. Reopen that period first.',payroll_approved:'Payroll for this period is approved. Start a payroll correction for it first, then reopen.'})[result.reason];
   if(result.status==='conflict')return 'This period changed. Refresh and review the latest time before acting.';
-  if(result.status==='outcome-unknown')return 'The result could not be confirmed. Retry the same action to reconcile it.';
+  if(result.status==='outcome-unknown')return 'We couldn’t confirm that. Try again; it won’t be done twice.';
   if(result.status==='unavailable')return 'The action could not be completed. Refresh your current session and try again.';
-  return result.status==='approved'?'Timecard approved.':result.status==='finalized'?'Timecard finalized.':'Period reopened. Earlier revisions remain preserved.';
+  return result.status==='approved'?'Timecard approved.':result.status==='finalized'?'Timecard finalized.':'Period reopened. Earlier versions are kept in the history.';
 }
 
 function timecardSourceKey(cards:readonly TimecardItem[]){
@@ -179,7 +179,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
   const clearBatch=useCallback(()=>{setSelected([]);setReview(null);setConfirmed(false);setOutcomes(null);},[]);
   const cancelRead=useCallback(()=>{readSequence.current++;request.current?.abort();reading.current=false;if(readTimeout.current)clearTimeout(readTimeout.current);readTimeout.current=null;},[]);
   const invalidate=useCallback(()=>{generation.current++;cancelRead();if(expires.current)clearTimeout(expires.current);if(early.current)clearTimeout(early.current);expires.current=early.current=null;source.current=null;validUntil.current=0;},[cancelRead]);
-  const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('Timecards expired. Refresh a current protected snapshot.');},[invalidate,clearBatch]);
+  const expireProtected=useCallback(()=>{invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setMessage('These timecards are out of date. Refresh to see the latest.');},[invalidate,clearBatch]);
   const refresh=useCallback(async function refreshProjection(selected:Period,background=false):Promise<void>{
     if(!activeView.current||document.visibilityState==='hidden'||!navigator.onLine)return;
     if(background&&(reading.current||running.current))return;
@@ -266,7 +266,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         // lands), and the status line says what happened ("…approved"). A failed background read falls back as before.
         if(['approved','finalized','reopened'].includes(result.status)){running.current=false;setBusy(false);await refresh(period,true);if(generation.current-own<=1)setMessage(feedback);}
       }
-    }catch{if(own===generation.current){if(performance.now()>=validUntil.current)expireProtected();else setMessage('The result could not be confirmed. Retry the same action to reconcile it.');}}
+    }catch{if(own===generation.current){if(performance.now()>=validUntil.current)expireProtected();else setMessage('We couldn’t confirm that. Try again; it won’t be done twice.');}}
     finally{running.current=false;if(own===generation.current)setBusy(false);}
   }
   function prepareBatch(){
@@ -281,7 +281,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     if(!review||!confirmed||busy||running.current||pending||commandRef.current||outcomes)return;
     const own=generation.current;
     const isCurrent=()=>{const current=source.current;return own===generation.current&&performance.now()<validUntil.current&&!!current&&current.actorId===actorId&&reviewIsCurrent(review,period,actorId,current.cards);};
-    if(!isCurrent()){if(performance.now()>=validUntil.current)expireProtected();else{clearBatch();setMessage('The source changed or expired. Refresh and review again.');}return;}
+    if(!isCurrent()){if(performance.now()>=validUntil.current)expireProtected();else{clearBatch();setMessage('Some timecards changed. Refresh and check them again.');}return;}
     cancelRead();running.current=true;setBusy(true);setConfirmed(false);setMessage('Saving reviewed timecards one at a time…');
     const result=await runReviewedBatch(review,isCurrent,async command=>{
       commandRef.current=command;setPending(command);
@@ -295,7 +295,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     running.current=false;
     if(own!==generation.current)return;
     if(performance.now()>=validUntil.current){expireProtected();return;}
-    setReview(null);setOutcomes(result);setBusy(false);setMessage('Each card has its own result. Refresh timecards before reviewing another set.');
+    setReview(null);setOutcomes(result);setBusy(false);setMessage('Each timecard shows its own result below. Refresh timecards before reviewing another set.');
   }
   const currentActor=snapshotActor===actorId;
   // The state card's heading; its sentence is the live status message.
@@ -442,7 +442,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             {pending?.employeeId===openItem.card.employeeId?<button type="button" className={btn('primary')} disabled={busy} onClick={()=>void act(openItem,pending.action)}>Retry pending action</button>:
               openItem.state==='FINALIZED'?<><label className="c-field"><span className="c-field__label">Reopen reason</span><input className="c-in" value={notes[openItem.card.employeeId]??''} maxLength={500} enterKeyHint="done" autoComplete="off" onChange={e=>setNotes({...notes,[openItem.card.employeeId]:e.target.value})}/></label>
                 <button type="button" className={btn('secondary')} disabled={locked||own||!notes[openItem.card.employeeId]?.trim()} onClick={()=>void act(openItem,'REOPEN')}>Reopen period</button></>:
-              own?<p className="c-tc-sheet__note">Your timecard requires a different manager.</p>:
+              own?<p className="c-tc-sheet__note">Another manager approves your own timecard.</p>:
               // Nov 1 upscale: no caption under the panel while approval isn't open (the page's subtitle says when it opens).
               waiting&&!pending&&!outcomes?null:
               // Round 4: an approved card offers its next step only (Finalize), not Approve again.
@@ -502,7 +502,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     const summary=ready&&cards.length&&!showBulk&&!folded?<CorpCard as="div" ariaLabel="Period overview">
       <div className="c-card__body">
         <div className="c-tc-sum"><b>{summaryTitle}</b>
-          {!open&&eligible.length?<CorpButton size="md" onClick={()=>{setSelecting(true);selectAll(true);}}>{`Approve ${Math.min(eligible.length,100)} ready`}</CorpButton>:null}</div>
+          {!open&&eligible.length?<CorpButton size="md" onClick={()=>{setSelecting(true);selectAll(true);}}>{`Approve ${Math.min(eligible.length,100)} ready timecards`}</CorpButton>:null}</div>
         {approvedCount?<span className="c-tc-bar" aria-hidden="true"><span style={{width:`${percent}%`}}/></span>:null}
         {open?approvedCount?<p className="c-tc-note">{`You can approve the rest from ${approveFrom(period)}`}<span className="c-tc-note__total">{` · ${recordedTotal} so far`}</span></p>
           :<p className="c-tc-note c-tc-note__total">{`${recordedTotal} recorded so far`}</p>
@@ -586,7 +586,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
               return <BRow key={id} onClick={()=>setOpenId(id)} label={[name,row.text,hours].filter(Boolean).join(', ')} lead={<BAvatar name={name}/>}
                 title={name} chip={tone?<BChip tone={tone}>{row.text}</BChip>:undefined} sub={[tone?null:row.text,breaks].filter(Boolean).join(' · ')||undefined}
                 extra={hours&&most?<span className="b-bar" aria-hidden="true"><i style={{width:`${Math.max(4,Math.round(minutes/most*100))}%`}}/></span>:undefined}
-                end={hours?<><b className="c-num">{hours}</b><span>Recorded</span></>:undefined} chevron/>;
+                end={hours?<b className="c-num">{hours}</b>:undefined} chevron/>;
             })}</BList>
           </BCard>:null}
           <BCard label="Time tools"><BList label="Time tools">
@@ -813,7 +813,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           <Details card={item.card}/>
           {item.state==='FINALIZED'&&pending?.employeeId!==id?<div className={styles.actions}><label>Reopen reason<input value={notes[id]??''} maxLength={500} onChange={e=>setNotes({...notes,[id]:e.target.value})}/></label>
             <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||own||!notes[id]?.trim()} onClick={()=>void act(item,'REOPEN')}>Reopen period</button></div>:null}
-          {own?<p className={styles.note}>Your timecard requires a different manager.</p>:null}
+          {own?<p className={styles.note}>Another manager approves your own timecard.</p>:null}
           {item.history.length?<details className={styles.history}><summary>Historical revisions ({item.history.length})</summary>
             {item.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>
               <p>{stamp(h.occurredAt,item.card.timeZone)} · {h.actorName}{h.note?` · ${h.note}`:''}</p>
@@ -840,7 +840,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
             <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||actorId===item.card.employeeId||!notes[item.card.employeeId]?.trim()} onClick={()=>void act(item,'REOPEN')}>Reopen period</button></>:
           <><button type="button" className="button primary" disabled={busy||!!pending||!!outcomes||actorId===item.card.employeeId||!!item.card.issues.length} onClick={()=>void act(item,'APPROVE')}>Approve timecard</button>
             <button type="button" className="button secondary" disabled={busy||!!pending||!!outcomes||actorId===item.card.employeeId||item.state!=='APPROVED'||!!item.card.issues.length} onClick={()=>void act(item,'FINALIZE')}>Finalize period</button></>}
-        {actorId===item.card.employeeId?<small>Your timecard requires a different manager.</small>:null}
+        {actorId===item.card.employeeId?<small>Another manager approves your own timecard.</small>:null}
       </div>:null}
       {item.history.length?<details className={styles.history}><summary>Historical revisions ({item.history.length})</summary>
         {item.history.map(h=><div key={h.operationId}><h3>Revision {h.revision} · {h.action==='APPROVE'?'Approved':h.action==='FINALIZE'?'Finalized':'Reopened'}</h3>

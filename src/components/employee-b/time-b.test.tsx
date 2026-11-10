@@ -42,7 +42,8 @@ describe('Time tab (e-time)',()=>{
  });
  it('says where and since when while on the clock; a cut read shows dashes, not short totals',()=>{
   const on=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({current:open,today:{entries:[open],recordedSeconds:5520,breakSeconds:0}})}/>)));
-  expect(on).toContain('On the clock');expect(on).toMatch(/Clocked in at 7:58\sAM/);expect(on).toContain('Condado · 1 h 32 min so far');expect(on).toContain('Take breaks and clock out on your location’s tablet.');
+  // B7 wording (NV-119/NV-035): "Clocked in" status, "correction request" naming.
+  expect(on).toContain('Clocked in');expect(on).toMatch(/Clocked in at 7:58\sAM/);expect(on).toContain('Condado · 1 h 32 min so far');expect(on).toContain('Take breaks and clock out on your location’s tablet.');
   const cut=text(onlyB(inPage(timeHead,<CorpTimeTab data={ready({recent:{entries:[done],total:40,limit:20}})}/>)));
   expect(cut).toMatch(/This week — Breaks —/);
   const none=onlyB(inPage(timeHead,<CorpTimeTab data={ready({recent:{entries:[],total:0,limit:20}})}/>));
@@ -69,9 +70,9 @@ describe('Past timecards (e-timecards)',()=>{
   // Employee desktop (Nov 8, 2026) draws the week shown as a detail card before the list (desktop only, eb-desk), so the
   // list's order is read from its own card on.
   const list=plain.slice(plain.indexOf('Weeks'));
-  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your corrections'].map(range=>list.indexOf(range));
+  const order=['Oct 26 – Nov 1','Oct 19 – 25','Oct 12 – 18','Sep 21 – 27','Show earlier weeks','Your correction requests'].map(range=>list.indexOf(range));
   expect(order.every(at=>at>=0)).toBe(true);expect([...order].sort((a,b)=>a-b)).toEqual(order);
-  expect(plain).toContain('Loading…');expect(plain).toContain('Fixes you asked your manager for');expect(list).not.toContain('Tue 20');
+  expect(plain).toContain('Loading…');expect(plain).toContain('Sent to your manager for review');expect(list).not.toContain('Tue 20');
   // The corporate page keeps its chosen week in full.
   expect(text(withoutB(html))).toContain('Tue 20');
  });
@@ -88,7 +89,7 @@ describe('Your corrections (e-corrections) and Fix my time (e-fix)',()=>{
  it('puts Waiting and Decided on glass and the empty state, the fix link and the hint in one card',()=>{
   const b=onlyB(inPage(head,<CorpCorrections snapshot={empty} decisions={[]} requestId={null} filter="waiting" onRefresh={noop}/>)),plain=text(b);
   expect(b).toMatch(/class="b-seg b-glass"/);expect(b).toMatch(/aria-current="page" href="\/app\/my-time\?view=corrections"|href="\/app\/my-time\?view=corrections" aria-current="page"/);
-  expect(plain).toContain('Nothing waiting for review');expect(plain).toContain('Fixes you send stay here until your manager decides.');
+  expect(plain).toContain('Nothing waiting for review');/* B7 wording (NV-035) */expect(plain).toContain('Requests you send stay here until your manager decides.');
   expect(plain).toContain('Fix a missed punch');expect(plain).toContain('To fix a day you already clocked, open it from Time.');
   expect(text(onlyB(inPage(head,<CorpCorrections snapshot={empty} decisions={[]} requestId={null} filter="decided" onRefresh={noop}/>)))).toContain('No decided requests');
  });
