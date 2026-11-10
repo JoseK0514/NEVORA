@@ -9,6 +9,7 @@ import { assertOwnedFixture, assertSourceUnchanged, assertSuitesPresent, BROWSER
 import { safeBrowserFailure } from './release-browser-diagnostics.mjs';
 import {navigationFetchDiagnostic,observeDocumentNavigation,observeWindowExceptions,verifyNavigationFetchDiagnostic} from './browser-navigation-diagnostic.mjs';
 import {observeNotificationReadWitness} from './notification-read-witness.mjs';
+import {verifyCommunicationActionGeometry} from './communication-action-geometry-probe.mjs';
 
 const nativeErrorNames = new Set(['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'AggregateError', 'AbortError', 'InvalidStateError', 'NetworkError', 'NotAllowedError', 'NotFoundError', 'NotSupportedError', 'OperationError', 'QuotaExceededError', 'SecurityError', 'TimeoutError', 'DataCloneError', 'EncodingError']);
 const canonicalRuntimeMessages = new Set(['ResizeObserver loop completed with undelivered notifications.', 'ResizeObserver loop limit exceeded', 'Connection closed.']);
@@ -206,6 +207,11 @@ async function main() {
       try {
         let navigationDiagnosticVerified=false;
         if(engine==='webkit'){const probe=await raceOwnedAbort(verifyNavigationFetchDiagnostic(browser),controller.signal);report.navigationDiagnosticProbe=probe;navigationDiagnosticVerified=probe.verified;}
+        if(suites.includes('communications')){
+          const probe=await raceOwnedAbort(verifyCommunicationActionGeometry(browser),controller.signal);
+          (report.communicationActionGeometryProbes??=[]).push({engine,...probe});
+          assert.equal(probe.verified,true,'Communications sampler controls must pass before app geometry');
+        }
         for (const [item, runScenario] of modules) for (const width of WIDTHS) {
           controller.signal.throwIfAborted();
           const record = { suite: item, engine, width, status: 'failed', checks: [] }; report.executions.push(record);
