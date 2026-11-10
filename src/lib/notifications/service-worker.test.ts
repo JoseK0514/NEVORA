@@ -133,6 +133,29 @@ describe('portal service worker source', () => {
     const h = harness(); await h.message('SET_OWNER'); await h.push(buildPushEnvelope(intent, generation));
     expect(h.notices).toHaveLength(1); expect(JSON.stringify(h.notices[0].data)).not.toContain('private');
   });
+  it.each([...PUSH_KINDS])('retains exact legacy copy pairs for queued %s envelopes',async kind=>{
+    const pair=kind==='COMMUNICATION'?['NEVORA update','Open NEVORA to review an update.']
+      :['SCHEDULE_PUBLISHED','SCHEDULE_ACKNOWLEDGEMENT_REMINDER'].includes(kind)?['Your NEVORA Schedule Is Ready','Open NEVORA to review your schedule.']
+      :kind==='SCHEDULE_CHANGED'?['Your NEVORA Schedule Changed','Open NEVORA to review your schedule.']
+      :kind==='COVERAGE_ATTENTION'?['Coverage Needs Attention','Open NEVORA to review coverage.']
+      :['NEVORA Request Update','Open NEVORA to review your pending task.'];
+    const h=harness();await h.message('SET_OWNER');await h.push({...envelope,kind,title:pair[0],body:pair[1]});
+    expect(h.notices).toHaveLength(1);
+  });
+  it.each([
+    ['SCHEDULE_CHANGED','Your schedule changed','Open NEVORA to review your schedule.'],
+    ['SCHEDULE_CHANGED','Your NEVORA Schedule Changed','Open NEVORA to see what changed.'],
+    ['COMMUNICATION','New team update','Open NEVORA to review an update.'],
+    ['CALLOUT_APPROVED','Your request has an update','Open NEVORA to review your pending task.'],
+    ['AVAILABILITY_REMINDER','Your request has an update','Open NEVORA to see it.'],
+    ['PAYROLL_STATEMENT','Your request has an update','Open NEVORA to see it.'],
+    ['MANAGER_REVIEW','Your request has an update','Open NEVORA to see it.'],
+    ['SELF_TEST','Your request has an update','Open NEVORA to see it.'],
+    ['CALLOUT_UNSUPPORTED','Your request has an update','Open NEVORA to see it.'],
+    ['SCHEDULE_CHANGED','Your schedule changed','Private medical details'],
+  ])('rejects mixed, private or wrong-kind approved copy for %s: %s',async(kind,title,body)=>{
+    const h=harness();await h.message('SET_OWNER');await h.push({...envelope,kind,title,body});expect(h.notices).toEqual([]);
+  });
   it.each([null, {}, { ...envelope, ownershipGeneration: 'other' }, { ...envelope, expiresAt: '2000-01-01' }, { ...envelope, expiresAt: 'invalid' }, { ...envelope, notificationId: '//evil.example' }, { ...envelope, kind: 'UNKNOWN' }, { ...envelope, title: 'Private medical details' }, { ...envelope, body: 'Private detail' }, { ...envelope, tag: 'unowned' }, { ...envelope, url: 'https://evil.example' }])('suppresses malformed, expired, private or wrong-generation push %#', async value => {
     const h = harness(); await h.message('SET_OWNER'); await h.push(value); expect(h.notices).toEqual([]);
   });

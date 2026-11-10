@@ -213,7 +213,7 @@ it('H06 sparse history facts are explicitly unknown and current camelCase facts 
  await fixtureShift(db.executor,'source');
  await q("INSERT INTO shift_change_events(workspace_id,request_kind,request_id,request_revision,event_kind,source_terms,target_terms,participants) VALUES('workspace-fuel','EXCHANGE','sparse',1,'LEGACY_IMPORTED',$1,$2,$3)",[JSON.stringify({date:'2035-10-02'}),JSON.stringify({date:'2035-10-03',startTime:'08:00',endTime:'16:00',locationId:'loc-1',positionId:null,isDesignatedLead:false}),JSON.stringify({requesterEmployeeId:'e1'})]);
  const {readShiftChangeHistoryView}=await import('../../lib/data/shift-change-views');const [row]=await readShiftChangeHistoryView(proof('e1'),'sparse',db.executor);
- expect(row.source).toContain('Unknown time');expect(row.source).toContain('Position unknown');expect(row.source).toContain('Lead designation unknown');expect(row.target).toContain('08:00 – 16:00');expect(row.target).toContain('No assigned position · No designated lead');
+ expect(row.source).toContain('Unknown time');expect(row.source).toContain('Position unknown');expect(row.source).toContain('Lead designation unknown');expect(row.target).toContain('08:00 – 16:00');expect(row.target).toContain('No assigned position · No shift lead');
 });
 
 it('H11 invalid OTHER details never persist any report or transaction; three characters permit report',async()=>{

@@ -116,7 +116,7 @@ function coverageAction(
   if (missingPositions.length) return {
     id: `COVERAGE:${gap.key}`, type: 'COVERAGE_GAP', priority: 'URGENT',
     title: `Position not covered at ${gap.locationName}`,
-    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Designated lead required' : ''}`,
+    detail: `${gapWhen(gap)} · ${missingPositions.map(position => `${position.positionName}: ${position.missing} open`).join('; ')}${gap.gap > 0 ? ` · Need ${gap.gap} employees overall` : ''}${gap.requiresLead ? ' · Shift lead required' : ''}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`, endDateTime: gapEnd(gap), locationId: gap.locationId,
   };
@@ -131,7 +131,7 @@ function coverageAction(
       ? `No lead scheduled at ${gap.locationName}`
       : `Coverage gap at ${gap.locationName}`,
     detail: leadOnly
-      ? `${gapWhen(gap)} · Designated lead required`
+      ? `${gapWhen(gap)} · Shift lead required`
       : `${gapWhen(gap)} · Need ${people}`,
     href: repairHref,
     dateTime: `${gap.date}T${gap.startTime}`,

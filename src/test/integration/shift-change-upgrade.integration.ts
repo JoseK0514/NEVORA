@@ -52,7 +52,7 @@ it('H06 historical-9 upgrade preserves immutable source/target times, position a
   const {readShiftChangeHistoryView}=await import('../../lib/data/shift-change-views');
   await q("DELETE FROM schedules WHERE id='s'");
   const exchange=await readShiftChangeHistoryView(proof,'legacy',db.executor);
-  expect(exchange[0].source).toContain('10:00 – 18:00');expect(exchange[0].source).toContain('Position legacy-position · Designated lead');expect(exchange[0].target).toContain('11:00 – 19:00');expect(exchange[0].target).toContain('No assigned position · No designated lead');
+  expect(exchange[0].source).toContain('10:00 – 18:00');expect(exchange[0].source).toContain('Position legacy-position · Shift lead');expect(exchange[0].target).toContain('11:00 – 19:00');expect(exchange[0].target).toContain('No assigned position · No shift lead');
   expect((await readShiftChangeHistoryView(proof,'legacy-callout',db.executor))[0].source).toBe(exchange[0].source);
  } finally {await db.dispose();}
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildCalloutOutcomeNotification,
+  buildCoverageInvitationNotification,
   buildExchangeOutcomeNotification,
   buildSchedulePublicationNotification,
   buildSwapResponseRequestedNotification,
@@ -101,6 +102,7 @@ describe("notification event builders", () => {
 
     expect(event).toMatchObject({
       type: "SWAP_RESPONSE_REQUIRED",
+      title: "Swap request",
       actionHref: "/app/exchange?tab=requests",
     });
   });
@@ -176,9 +178,14 @@ it('uses privacy-safe generic swap copy when no requester name is supplied', () 
   expect(buildSwapResponseRequestedNotification({ employeeId: 'QA-E', exchangeId: 'QA-x', requesterName: '' }).body).toBe('A teammate asked to trade shifts with you.');
 });
 
-it.each(['APPROVED','DENIED'] as const)('persists Unable to work wording for %s notifications',status=>{
+it.each(['APPROVED','DENIED'] as const)('persists can’t-work wording for %s notifications',status=>{
  const event=buildCalloutOutcomeNotification({employeeId:'Fictional',calloutId:'fictional-request',status});
- expect(event.title).toBe(`Unable to work ${status==='APPROVED'?'approved':'declined'}`);
- expect(event.body).toContain('Unable to work');
+ expect(event.title).toBe(`Can’t-work request ${status==='APPROVED'?'approved':'declined'}`);
+ expect(event.body).toBe(status==='APPROVED'?'Your can’t-work request was approved. The shift is now open for cover.':'Your can’t-work request was declined. It’s still your shift.');
+ expect(event.eventKey).toBe(`callout:fictional-request:${status}:Fictional`);
  expect(event.title+' '+event.body).not.toMatch(/call.?out|denied|rejected/i);
+});
+
+it('keeps coverage invitation context and uses Shift lead without absence details',()=>{
+ expect(buildCoverageInvitationNotification({employeeId:'E-1',date:'2030-01-01',startTime:'09:00',endTime:'17:00',locationName:'Fictional',positionName:'Server',isDesignatedLead:true})).toEqual({employeeId:'E-1',type:'COVERAGE_INVITATION',title:'Coverage available',body:'2030-01-01 · 09:00–17:00 · Fictional · Server · Shift lead. View shift details before volunteering.',eventKey:''});
 });

@@ -12,9 +12,9 @@ export function invitationEmail(link: string): AccountEmail {
 }
 
 export function recoveryEmail(link: string): AccountEmail {
-  return both(["NEVORA access recovery", "Recupera tu acceso a NEVORA"],
-    `A password reset was requested for your NEVORA account. This single-use link expires in 15 minutes.\n\n${link}\n\nIf you did not request this, keep your existing password and contact your manager. If you cannot use your registered recovery channel, ask a manager for assisted recovery.`,
-    `Se pidió restablecer la contraseña de tu cuenta de NEVORA. Este enlace es de un solo uso y vence en 15 minutos.\n\n${link}\n\nSi no lo pediste, conserva tu contraseña actual y comunícate con tu gerente. Si no puedes usar tu medio de recuperación registrado, pídele a un gerente una recuperación asistida.`);
+  return both(["Reset your NEVORA password", "Restablece tu contraseña de NEVORA"],
+    `A password reset was requested for your NEVORA account. This single-use link expires in 15 minutes.\n\n${link}\n\nIf you did not request this, keep your existing password and contact your manager.\n\nCan’t use this email? Ask your manager for help. Manager and Owner accounts need another Owner.`,
+    `Se pidió restablecer la contraseña de tu cuenta de NEVORA. Este enlace es de un solo uso y vence en 15 minutos.\n\n${link}\n\nSi no lo pediste, conserva tu contraseña actual y comunícate con tu gerente.\n\n¿No puedes usar este correo? Pide ayuda a tu gerente. Las cuentas de gerente y de dueño necesitan a otro dueño.`);
 }
 
 /** Sent after any password reset, including one a Manager or Owner started for the person. */

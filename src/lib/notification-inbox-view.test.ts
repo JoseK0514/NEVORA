@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {filterNotifications,groupNotifications} from './notification-inbox-view';
+import {filterNotifications,groupNotifications,notificationPresentation} from './notification-inbox-view';
 import type {EmployeeNotificationItem} from './employee-view';
 
 const rows:EmployeeNotificationItem[]=[
@@ -24,4 +24,11 @@ it('groups dates in chronological order while preserving every notification',()=
  const groups=groupNotifications(rows);
  expect(groups).toHaveLength(2);
  expect(groups.flatMap(group=>group.items.map(item=>item.id))).toEqual(['unknown','read-required','unread-complete']);
+});
+
+it.each(['Can’t-work update','Unable to work update','Callout update'])('preserves callout presentation for current and stored label %s',label=>{
+ expect(notificationPresentation(label)).toEqual({icon:'callout',destination:'Review your can’t-work request',action:'View can’t-work request'});
+});
+it.each(['Time-off update','Time off update'])('preserves time-off presentation for current and stored label %s',label=>{
+ expect(notificationPresentation(label)).toEqual({icon:'timeOff',destination:'Review your time off request',action:'View request'});
 });

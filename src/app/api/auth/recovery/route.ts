@@ -7,7 +7,7 @@ import {requestPasswordRecovery} from '@/lib/auth/recovery.server';
 import {recoveryDelivery} from '@/lib/auth/recovery-delivery.server';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
-const recoveryMessage='If these details match an active account and its registered recovery channel is available, recovery instructions will be sent. If you cannot use that channel, contact your manager or Owner for assisted recovery.';
+const recoveryMessage='If the details match an active account, we’ll email recovery steps. Can’t use that email? Ask your manager or Owner for help.';
 export async function POST(request:Request){
  const boundary=correctionBoundary(request,true,'x-nevora-recovery');if(boundary)return correctionJson({state:'invalid'},boundary);
  let body:unknown;try{body=await readCorrectionJson(request);}catch{return correctionJson({state:'invalid'},400);}

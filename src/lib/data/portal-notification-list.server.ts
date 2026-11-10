@@ -13,7 +13,7 @@ import type {SqlExecutor,SqlStatement,SourceKind} from '../notifications/types';
 import type {SessionMutationProof} from '../shift-changes/types';
 
 const LIMIT=25,MAX_BYTES=1_000_000;
-const labels:Record<SourceKind,string>={SCHEDULE:'Schedule update',TIME_OFF:'Time off update',EXCHANGE:'Shift request update',CALLOUT:'Unable to work update',AVAILABILITY:'Availability update',MANAGER_SUMMARY:'Operations need review',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_PREPARATION:'Payroll preparation update',PAYROLL_STATEMENT:'Pay statement update'};
+const labels:Record<SourceKind,string>={SCHEDULE:'Schedule update',TIME_OFF:'Time-off update',EXCHANGE:'Shift request update',CALLOUT:'Can’t-work update',AVAILABILITY:'Availability update',MANAGER_SUMMARY:'Operations need review',SELF_TEST:'Device notification test',COMMUNICATION:'Team update',PAYROLL_PREPARATION:'Payroll preparation update',PAYROLL_STATEMENT:'Pay statement update'};
 const candidatesSql=(actor='$1',environment='$2')=>`SELECT id,created_at::text AS at,read_at::text AS read FROM notifications n WHERE employee_id=${actor} AND environment=${environment} AND cancelled_at IS NULL AND ${notificationOperationalAllowedSql()} ORDER BY created_at DESC,id DESC LIMIT 26`;
 const jsonRows=(sql:string)=>`(SELECT COALESCE(jsonb_agg(to_jsonb(r)),'[]'::jsonb) FROM (${sql}) r)`;
 function rows(value:unknown):Record<string,unknown>[]{
