@@ -24,7 +24,7 @@ diff --git a/zz-scan/leave-flow.ts b/zz-scan/leave-flow.ts
 index 7ef9398..ce5f944 100644
 --- a/zz-scan/leave-flow.ts
 +++ b/zz-scan/leave-flow.ts
-@@ -14,9 +14,9 @@ export async function seedLeave(q:Q,actors:string[],week:string,today:string,log
+@@ -14,8 +14,8 @@ export async function seedLeave(q:Q,actors:string[],week:string,today:string,log
     AND p.revision_number=(SELECT max(revision_number) FROM schedule_publication_revisions WHERE week_start=$1) ORDER BY sh.date,sh.start_time LIMIT 1`,[week,employee,today]))[0];
   const m=await next(actors[0]),j=await next(actors[1]),a=await next(actors[2]);
   log.push({leaveShifts:{m,j,a}});
@@ -36,4 +36,3 @@ index 7ef9398..ce5f944 100644
 + if(a){await q(`INSERT INTO time_off_requests(id,employee_id,start_date,end_date,reason,status,reviewed_by,reviewed_at,created_at) VALUES('03300000-0000-4000-8000-000000000003',$1,$2,$2,'Appointment','APPROVED',NULL,now()-interval '2 days',now()-interval '3 days')`,[actors[2],a.date]);seed.ana={id:'03300000-0000-4000-8000-000000000003',date:a.date};}
   return seed;
  }
- 

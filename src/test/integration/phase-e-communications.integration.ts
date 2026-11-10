@@ -12,7 +12,7 @@ import type {SqlExecutor} from '../../lib/notifications/types';
 import {currentShiftFingerprintSql,currentShiftTermsSql} from '../../lib/data/shift-change-release';
 import {runReminders} from '../../lib/notifications/reminders';
 import {sqlNotificationStateRepository} from '../../lib/data/notification-state';
-import {readNotificationConfig} from '../../lib/notifications/config';
+import {readNotificationConfig,bindWorkspaceNotificationConfig} from '../../lib/notifications/config';
 import {getWorkspace} from '../../lib/data/workspaces';
 
 let db:Awaited<ReturnType<typeof createDisposableFoundationDatabase>>;
@@ -322,7 +322,7 @@ it('scanner and manual availability reminder races spend only one shared deliver
   return db.executor.transaction(statements,signal);
  }};
  const workspace=await getWorkspace(executor),base=readNotificationConfig({PUSH_ENVIRONMENT:'test'});
- const config={...base,workspace,featureEnabled:true,policy:{...base.policy,timeZone}};
+ const config={...bindWorkspaceNotificationConfig(base,workspace),featureEnabled:true};
  const [manual]=await Promise.all([executeManagerReminder(owner,command,executor),runReminders({executor,state:sqlNotificationStateRepository(executor,workspace),config,clock:()=>new Date()})]);
  expect(arrivals).toBe(2);expect(manual).toMatchObject({status:'committed'});
  expect(await q("SELECT count(*)::int count FROM notifications WHERE purpose='REMINDER' AND source_kind='AVAILABILITY' AND source_id=$1 AND employee_id='employee'",[command.weekStart])).toEqual([{count:1}]);
