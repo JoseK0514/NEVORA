@@ -17,7 +17,7 @@ export function projectPersonHours(source:PersonHoursSource,locationIds:readonly
   if(card.employeeId!==source.employeeId||card.startDate!==source.weekStart||card.endDate!==addDays(source.weekStart,6)||card.timeZone!==source.timeZone)throw Error('Incorrect hours identity');
   const scoped:TimecardSource={...card,entries:card.entries.filter(e=>allowed(e.locationId))};
   const projected=projectTimecard(scoped,source.observedAt);
-  if(!projected.issues.includes('overlapping_time'))worked=Number(BigInt(projected.recordedNanoseconds)/60_000_000_000n);
+  if(!projected.issues.includes('overlapping_time'))worked=Number(BigInt(projected.recordedNanoseconds)/BigInt(60_000_000_000));
  }
  return {employeeId:source.employeeId,today:source.today,weekStart:source.weekStart,timeZone:source.timeZone,scheduledTodayMinutes:source.scheduledComplete?today:null,scheduledWeekMinutes:source.scheduledComplete?week:null,workedWeekMinutes:worked,workedBasis:'EFFECTIVE_ELAPSED_INCLUDING_BREAKS'};
 }
