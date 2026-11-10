@@ -11,7 +11,7 @@ const evidence=resolve(process.env.PHASE_C_EVIDENCE_DIR??join(homedir(),'.codex/
 await mkdir(evidence,{recursive:true});
 const runtime=createRequire(join(homedir(),'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/package.json'));
 const pw=await import(pathToFileURL(runtime.resolve('playwright')).href);const playwright=pw.default??pw;
-const report={checks:[],errors:[],screenshots:[],diagnostics:[],limits:['Owned disposable SQL and scratch Next, not hosted/physical iPad.','Browser plugin not listed; existing Playwright runtime used.']};
+const report={checks:[],errors:[],geometryFailures:[],screenshots:[],diagnostics:[],limits:['Owned disposable SQL and scratch Next, not hosted/physical iPad.','Browser plugin not listed; existing Playwright runtime used.']};
 let app;const browsers=[];
 const checked=name=>{report.checks.push(name);console.log('[C2 browser] PASS '+name);};
 async function context(browser,viewport={width:1440,height:1000}){
@@ -21,7 +21,20 @@ async function context(browser,viewport={width:1440,height:1000}){
 async function goto(page,path){const r=await page.goto(app.url+path,{waitUntil:'networkidle'});assert.equal(r.status(),200,'Working route '+path);}
 async function login(c){const p=await c.newPage();await goto(p,'/login');await p.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await p.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
  await Promise.all([p.waitForURL(u=>u.pathname==='/app'),p.getByRole('button',{name:'Sign in',exact:true}).click()]);await p.close();}
-async function geometry(page,name){const r=await page.evaluate(()=>{const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height;});return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:controls.filter(e=>e.getBoundingClientRect().height<43.5).length};});assert.equal(r.overflow,false);assert.equal(r.small,0);checked(name);}
+async function geometry(page,name){
+ const r=await page.evaluate(()=>{const controls=[...document.querySelectorAll('button,a.button,input:not([type=hidden]),select')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height;});
+  const smallControls=controls.filter(e=>e.getBoundingClientRect().height<43.5).map(e=>{const r=e.getBoundingClientRect();return {tag:e.tagName,label:e.getAttribute('aria-label')??(e.matches('button,a')?e.textContent?.trim().slice(0,120):null),width:r.width,height:r.height};});
+  return {overflow:document.documentElement.scrollWidth>innerWidth+2,small:smallControls.length,smallControls};
+ });
+ try{assert.equal(r.overflow,false);assert.equal(r.small,0);checked(name);}
+ catch(error){
+  // Keep layout failures red while allowing independent PIN/privacy checks in the other engine.
+  report.geometryFailures.push({name,...r});report.errors.push(`${name}: ${error.message}`);process.exitCode=1;
+  const file=join(evidence,`geometry-failure-${report.geometryFailures.length}.png`);
+  await page.screenshot({path:file,fullPage:true,mask:[page.locator('input,textarea,select')]});report.screenshots.push(file);
+  console.error('[C2 browser] FAIL '+name+' '+JSON.stringify(r));
+ }
+}
 async function save(page,pin){await page.getByLabel('New PIN',{exact:true}).fill(pin);await page.getByLabel('Confirm PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Save',exact:true}).filter({visible:true}).click();await page.getByRole('status').filter({hasText:'PIN saved'}).waitFor();}
 async function verify(page,pin){await page.getByLabel('Employee PIN',{exact:true}).fill(pin);await page.getByRole('button',{name:'Continue',exact:true}).click();}
 async function failureDiagnostics(){
