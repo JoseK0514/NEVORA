@@ -6,6 +6,7 @@ import type {SqlExecutor} from '@/lib/notifications/types';
 import type {SessionMutationProof} from '@/lib/shift-changes/types';
 import {getWorkspace,workspaceReadGuard} from '@/lib/data/workspaces';
 import {getEmployeeManagementProfile} from '@/lib/data/employees';
+import {employeeAllowedLocationsSql} from '@/lib/data/employee-schedule';
 import type {CatalogLocation} from '@/lib/data/locations';
 import {neonNotificationExecutor,pendingPublicationChanges,readNotificationWeekState} from '@/lib/data/notification-transactions';
 import {buildSchedulePendingChanges,type PendingHistoryRow,type SchedulePendingChangesData} from '@/lib/scheduling/pending-changes';
@@ -217,6 +218,8 @@ export async function readOperationalEmployeeHours(proof:SessionMutationProof,em
   const [source]=await ctx.ex.query<PersonHoursSource>({text:`/* operational person hours */
    WITH clock AS MATERIALIZED(SELECT clock_timestamp() AS at), period AS MATERIALIZED(
     SELECT at,(at AT TIME ZONE $3)::date AS today,date_trunc('week',at AT TIME ZONE $3)::date AS week FROM clock
+   ), relevant AS MATERIALIZED(
+    SELECT l.id FROM (${employeeAllowedLocationsSql()}) l WHERE $4::text[] IS NULL OR l.id=ANY($4::text[])
    ), latest AS MATERIALIZED(
     SELECT DISTINCT ON(r.week_start) r.id,r.week_start FROM schedule_publication_revisions r CROSS JOIN period p
     WHERE r.week_start IN(p.week-7,p.week) ORDER BY r.week_start,r.revision_number DESC
@@ -226,7 +229,9 @@ export async function readOperationalEmployeeHours(proof:SessionMutationProof,em
     WHERE sh.employee_id=$2 AND l.workspace_id=$1 AND ($4::text[] IS NULL OR l.id=ANY($4::text[])) AND sh.date BETWEEN p.week-1 AND p.week+6
     ORDER BY sh.date,sh.start_time,sh.id LIMIT 5001
    ) SELECT $2::text AS "employeeId",$3::text AS "timeZone",p.at::text AS "observedAt",p.today::text,p.week::text AS "weekStart",
-    EXISTS(SELECT 1 FROM latest WHERE week_start=p.week) AND NOT EXISTS(SELECT 1 FROM schedules s JOIN locations l ON l.id=s.location_id WHERE l.workspace_id=$1 AND ($4::text[] IS NULL OR l.id=ANY($4::text[])) AND s.status='PUBLISHED' AND s.week_start=p.week-7 AND NOT EXISTS(SELECT 1 FROM latest WHERE week_start=s.week_start)) AS "scheduledComplete",
+    EXISTS(SELECT 1 FROM latest WHERE week_start=p.week)
+    AND (SELECT count(*)>0 AND bool_and(EXISTS(SELECT 1 FROM schedules s WHERE s.location_id=l.id AND s.week_start=p.week AND s.status='PUBLISHED')) FROM relevant l)
+    AND NOT EXISTS(SELECT 1 FROM schedules s JOIN locations l ON l.id=s.location_id WHERE l.workspace_id=$1 AND ($4::text[] IS NULL OR l.id=ANY($4::text[])) AND s.status='PUBLISHED' AND s.week_start=p.week-7 AND NOT EXISTS(SELECT 1 FROM latest WHERE week_start=s.week_start)) AS "scheduledComplete",
     COALESCE((SELECT jsonb_agg(planned) FROM planned),'[]'::jsonb) AS shifts,nevora_timecard_source($1,$2,p.week,p.week+6) AS "timecardSource" FROM period p`,values:[ctx.workspace.id,employeeId,ctx.workspace.timeZone,ctx.ids]});
   if(!source)throw new ReadFailure('read_failed');
   return {data:projectPersonHours(source,ctx.ids),observedAt:source.observedAt};
