@@ -174,6 +174,30 @@ it('deduplicates real concurrent incident mail and keeps ambiguous acknowledgeme
   await processMonitorObservation(pool,role,async()=>'unavailable',true,send);expect(sends).toBe(3);expect((await pool.query("SELECT status FROM nevora_operations.monitor_notices WHERE kind='outage' ORDER BY created_at DESC LIMIT 1")).rows[0].status).toBe('unknown');
  }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
 });
+it('commits a deadline-expired SMTP outcome as unknown, releases the session lock and never retries late acceptance',async()=>{
+ const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC; CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+  const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}const u=new URL(f.connectionUrl);u.username=role;u.password=password;pool=new Pool({connectionString:u.href,max:1});
+  const config:MonitorConfig={enabled:true,mailEnabled:true,origin:'https://fictional.onrender.com',sourceSha:'a'.repeat(40),healthKey:Buffer.alloc(32,1).toString('base64url'),expectedCommands:1,databaseUrl:u.href,role};
+  let sends=0,accept!:(result:{accepted:string[]})=>void;
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,async kind=>{
+   // Only the SMTP wait uses virtual time; all actual PostgreSQL IO uses real time.
+   vi.useFakeTimers();try{
+    const result=sendMonitorNotice(config,kind,{sendRegistered:()=>{sends++;return new Promise(resolve=>{accept=resolve;});}});
+    await vi.advanceTimersByTimeAsync(15000);return await result;
+   }finally{vi.useRealTimers();}
+  });
+  expect((await pool.query('SELECT status FROM nevora_operations.monitor_attempts')).rows).toEqual([{status:'unknown'}]);
+  expect((await pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'unknown'}]);
+  const lock=await f.pool.query('SELECT pg_try_advisory_lock(hashtextextended($1,0)) AS acquired',[role]);expect(lock.rows[0].acquired).toBe(true);
+  await f.pool.query('SELECT pg_advisory_unlock(hashtextextended($1,0))',[role]);
+  accept({accepted:['support@thevelani.com']});
+  await f.pool.query("UPDATE nevora_operations.monitor_notices SET next_attempt_at=clock_timestamp()-interval '1 second'");
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(1);
+  expect((await pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'unknown'}]);
+ }finally{vi.useRealTimers();await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
+});
 it('bounds definite mail retries and daily attempts, records disabled monitoring without sending, and respects principal isolation',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
  try{

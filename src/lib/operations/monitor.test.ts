@@ -1,4 +1,4 @@
-import {expect,it} from 'vitest';
+import {expect,it,vi} from 'vitest';
 import {parseMonitorConfig,observeManagedHost,sendMonitorNotice} from './monitor';
 import {authorizeHealthRequest,signHealthResponse} from './managed-host';
 const source='a'.repeat(40),key=Buffer.alloc(32,7).toString('base64url');
@@ -36,4 +36,27 @@ it('never sends when disabled; fixes recipient and reduces definite versus ambig
  expect(await sendMonitorNotice({...c,mailEnabled:true},'recovery',{sendRegistered:async()=>{throw Object.assign(Error('private'),{code:'EAUTH'});}})).toBe('definite_failure');
  expect(await sendMonitorNotice({...c,mailEnabled:true},'outage',{sendRegistered:async()=>{throw Object.assign(Error('private'),{code:'ETIMEDOUT'});}})).toBe('unknown');
  expect(await sendMonitorNotice({...c,mailEnabled:true},'outage',{sendRegistered:async()=>({accepted:[],rejected:['support@thevelani.com']})})).toBe('definite_failure');
+});
+it('bounds a stalled SMTP acknowledgement and keeps late acceptance ambiguous without resending',async()=>{
+ vi.useFakeTimers();
+ try{
+  const config={...parseMonitorConfig(environment(),source),mailEnabled:true};
+  let resolveSend!:(result:{accepted:string[]})=>void,calls=0;
+  const result=sendMonitorNotice(config,'outage',{sendRegistered:()=>{calls++;return new Promise(resolve=>{resolveSend=resolve;});}});
+  let observed:string|undefined;void result.then(value=>{observed=value;});
+  await vi.advanceTimersByTimeAsync(14999);expect(observed).toBeUndefined();
+  await vi.advanceTimersByTimeAsync(1);expect(observed).toBe('unknown');
+  resolveSend({accepted:['support@thevelani.com']});await vi.advanceTimersByTimeAsync(1);
+  expect(await result).toBe('unknown');expect(calls).toBe(1);expect(vi.getTimerCount()).toBe(0);
+ }finally{vi.useRealTimers();}
+});
+it('clears the absolute SMTP deadline after prompt acceptance or definite rejection',async()=>{
+ vi.useFakeTimers();
+ try{
+  const config={...parseMonitorConfig(environment(),source),mailEnabled:true};
+  expect(await sendMonitorNotice(config,'outage',{sendRegistered:async()=>({accepted:['support@thevelani.com']})})).toBe('accepted');
+  expect(vi.getTimerCount()).toBe(0);
+  expect(await sendMonitorNotice(config,'outage',{sendRegistered:async()=>{throw Object.assign(Error('private'),{code:'EAUTH'});}})).toBe('definite_failure');
+  expect(vi.getTimerCount()).toBe(0);
+ }finally{vi.useRealTimers();}
 });

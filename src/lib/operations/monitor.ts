@@ -37,11 +37,16 @@ export async function observeManagedHost(config:MonitorConfig,fetcher:typeof fet
 }
 type MailTransport={sendRegistered:(to:string,subject:string,text:string)=>Promise<{accepted?:unknown[];rejected?:unknown[]}>};
 /** No company information or model output enters alerts. SMTP acknowledgement
- * is acceptance only; loss of acknowledgement is never silently retried. */
+ * is acceptance only; loss of acknowledgement is never silently retried.
+ * Socket inactivity limits do not bound a slow/stalled SMTP exchange. The
+ * absolute deadline releases observation custody with an unknown outcome;
+ * it cannot prove cancellation or prevent a late provider acceptance. */
 export async function sendMonitorNotice(config:MonitorConfig,kind:NoticeKind,transport:MailTransport):Promise<MailResult>{
  if(!config.mailEnabled)return 'disabled';
+ let timer:ReturnType<typeof setTimeout>|undefined;
  try{
-  const result=await transport.sendRegistered('support@thevelani.com','NEVORA web workers: '+(kind==='outage'?'attention required':'recovered'),kind==='outage'?'The independent observer detected an unavailable or unhealthy NEVORA web-worker service. Inspect the private operations runbook and job status. No job was reset by this alert.':'The independent observer now reports healthy NEVORA web workers. Review the incident and any outstanding job failures before closing it.');
+  const deadline=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('monitor_mail_deadline')),15000);});
+  const result=await Promise.race([deadline,Promise.resolve().then(()=>transport.sendRegistered('support@thevelani.com','NEVORA web workers: '+(kind==='outage'?'attention required':'recovered'),kind==='outage'?'The independent observer detected an unavailable or unhealthy NEVORA web-worker service. Inspect the private operations runbook and job status. No job was reset by this alert.':'The independent observer now reports healthy NEVORA web workers. Review the incident and any outstanding job failures before closing it.'))]);
   if(result.accepted?.length===1&&String(result.accepted[0]).toLowerCase()==='support@thevelani.com'&&!result.rejected?.length)return 'accepted';
   if(!result.accepted?.length&&result.rejected?.length)return 'definite_failure';
   return 'unknown';
@@ -50,5 +55,5 @@ export async function sendMonitorNotice(config:MonitorConfig,kind:NoticeKind,tra
   // Authentication/DNS and explicit SMTP rejection prove non-acceptance.
   // Even ECONNECTION/CONN can follow full DATA in Nodemailer; it is unknown.
   return ['EAUTH','EDNS'].includes(e.code??'')||e.code==='EENVELOPE'||e.code==='EMESSAGE'&&Number(e.responseCode)>=400?'definite_failure':'unknown';
- }
+ }finally{if(timer)clearTimeout(timer);}
 }
