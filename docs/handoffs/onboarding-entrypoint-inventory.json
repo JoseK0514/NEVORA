@@ -4258,6 +4258,46 @@
       ],
       "status": "PROVEN_NON_RUNTIME",
       "reason": "Test, fictional fixture or owned QA scenario; not a deployed application boundary."
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-company.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Fixed read-only SDK proof uses the original company WORKER URI only after strict identity/TLS validation and matches current Worker commerce hash before sealing. No Owner capability or provider API.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-issuer.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Private test-only issuer pins selected control target, source, branch, <=2 independently hashed public requests and closed normal provisioning flags. Uses original private roots inside provisioner custody only.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "scripts/worker-enrollment-operator.mts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Explicit private-file operator boundary; creates separated fresh recipient/public request or curated payroll-only host profiles. No SQL, network, shared-root output or credential arguments.",
+      "isolatedBehavior": "BOUND_WORKER"
+    },
+    {
+      "path": "src/lib/operations/worker-enrollment-runtime.server.ts",
+      "tags": [
+        "worker-enrollment",
+        "private-machine-boundary"
+      ],
+      "status": "CONVERTED",
+      "reason": "Canonical enrolled WORKER material read audits actual scoped machine principal and current encrypted view, identity, expiry and unique recipient before every use. No browser/Owner purpose or plaintext cache.",
+      "isolatedBehavior": "BOUND_WORKER"
     }
   ],
   "routingEvidence": "Task2: actual owned A/B PostgreSQL databases through installed Neon HTTP protocol; not hosted Neon evidence.",

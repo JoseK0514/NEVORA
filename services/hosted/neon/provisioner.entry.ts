@@ -1,3 +1,4 @@
+export {workerEnrollmentMode} from './provisioner-dispatch';
 export {compiledHostedSourceSha} from './source';
 import {createScheduledHandler,observedFetch} from './handlers';
 import {runProvisionerOnce} from '../../../src/lib/onboarding/provisioning/runtime.server';

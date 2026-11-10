@@ -6,7 +6,9 @@ import {managedDestinations} from '../src/lib/operations/managed-destinations';
 
 async function main(){
  const source=compiledHostedSourceSha();if(!source||process.env.RENDER_GIT_COMMIT!==source)throw Error('managed_source_invalid');
+ if(process.argv.length>3||process.argv[2]!==undefined&&process.argv[2]!=='--validate-config')throw Error('managed_configuration_invalid');
  const config=parseManagedHostConfig({...process.env,NEVORA_WORKFORCE_SOURCE_SHA:process.env.NEVORA_WORKFORCE_SOURCE_SHA??source},source,managedDestinations),port=Number(process.env.PORT??10000);
+ if(process.argv[2]==='--validate-config'){process.stdout.write(JSON.stringify({state:'valid',enabled:config.enabled,profiles:config.profiles.length})+'\n');return;}
  if(!Number.isInteger(port)||port<1024||port>65535)throw Error('managed_configuration_invalid');
  const controller=new AbortController();let ready=false,confirmed=true,observations:ManagedObservation[]=[];
  const lease=config.enabled?await acquireManagedState(config):null;

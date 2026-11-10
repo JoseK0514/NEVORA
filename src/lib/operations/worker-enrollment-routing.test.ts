@@ -33,3 +33,6 @@ it('curates enrolled host profiles without synthesizing or passing shared roots'
  expect(parseManagedHostConfig(host([profile(),profile(otherScope,otherPrivate)]),sha,managedDestinations).profiles).toHaveLength(2);
  expect(()=>parseManagedHostConfig(host([profile(),profile(otherScope)]),sha,managedDestinations)).toThrow('managed_configuration_invalid');
 });
+it.each(['NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_COMMERCE_WORKER_BINDING_KEY'])('refuses an unnecessary global %s on a managed host',field=>{
+ expect(()=>parseManagedHostConfig({...host([profile()]),[field]:Buffer.alloc(32,3).toString('base64url')},sha,managedDestinations)).toThrow('managed_configuration_invalid');
+});

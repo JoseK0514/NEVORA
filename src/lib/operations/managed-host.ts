@@ -24,7 +24,7 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
  try{
   const sourceSha=env.NEVORA_WORKFORCE_SOURCE_SHA;
   if(!sha(sourceSha)||sourceSha!==actualSourceSha||!['true','false',undefined].includes(env.NEVORA_WORKFORCE_ENABLED))throw invalid();
-  if(Object.keys(env).some(k=>/^(DATABASE_URL|STRIPE_|NEVORA_RECOVERY_|NEVORA_WORKSPACE_TOKEN_SECRET$|NEVORA_COMMERCE_BINDING_KEY$|OPENAI_API_KEY$)/.test(k)))throw invalid();
+  if(Object.keys(env).some(k=>/^(DATABASE_URL|STRIPE_|NEVORA_RECOVERY_|NEVORA_WORKSPACE_TOKEN_SECRET$|NEVORA_COMMERCE_BINDING_KEY$|NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY$|NEVORA_COMMERCE_WORKER_BINDING_KEY$|OPENAI_API_KEY$)/.test(k)))throw invalid();
   if(env.NEVORA_WORKFORCE_ENABLED!=='true')return {enabled:false,sourceSha,stateDirectory:'',healthKey:'',profiles:[]};
   const stateDirectory=env.NEVORA_WORKFORCE_STATE_DIR,healthKey=env.NEVORA_WORKFORCE_HEALTH_KEY;
   if(!stateDirectory||stateDirectory.length>300||!isAbsolute(stateDirectory)||resolve(stateDirectory)!==stateDirectory||stateDirectory==='/'||!key(healthKey))throw invalid();
