@@ -41,7 +41,7 @@ it.each([
 ] as const)('setup error %s has a stable code',async(_name,body,headers,location,security,status,code)=>{const response=await setup(body,headers,location,security);expect(response.status).toBe(status);expect(await response.json()).toMatchObject({code,error:expect.any(String)});});
 it('keeps setup errors coded without revealing enrollment details',async()=>{
  cookies.set('nevora_clocker_setup','nev_dev_'+'a'.repeat(64));mocks.authenticate.mockResolvedValue(null);
- const {ClockerDeviceError}=await import('./devices.server');mocks.redeem.mockRejectedValue(new ClockerDeviceError('ENROLLMENT_INVALID'));
+ const {ClockerDeviceError}=await import('./devices.server');mocks.redeem.mockRejectedValue(new ClockerDeviceError('ENROLLMENT_INVALID','Private enrollment test detail'));
  const rejected=await setup({step:'redeem',enrollmentToken:'nev_enr_'+'b'.repeat(64)});expect(rejected.status).toBe(409);expect(await rejected.json()).toMatchObject({code:'ENROLLMENT_INVALID',error:'This setup code is expired, already used, or for another location. Ask the Owner for a new code.'});
  mocks.authenticate.mockRejectedValue(Error('private SQL'));const unavailable=await setup({step:'status'});expect(unavailable.status).toBe(503);expect(await unavailable.json()).toMatchObject({code:'SETUP_UNCONFIRMED',error:'We could not confirm tablet setup. Check the connection, then choose Check Setup. Do not enter a new code yet.'});
 });
