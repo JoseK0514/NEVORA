@@ -39,13 +39,24 @@ try{
    addEventListener('error',event=>witness('error',{message:event.message,stack:event.error?.stack}));
   });
   page.on('pageerror',e=>{diagnostic('pageerror',{message:e.message,stack:e.stack});report.errors.push({name:engine+' runtime',error:String(e)});});
-  const reportPath='/app/reports?start=2026-09-21&end=2026-09-27';
-  // Sign in to this test's destination. Forcing a second document navigation as soon
-  // as /app changes URL cancels Home's still-loading lazy chunks in WebKit.
+  // The login return-path allowlist intentionally excludes Reports. Finish Home's
+  // real client reads before a hard navigation; a URL change alone does not mean
+  // its lazy modules have loaded. The negative control retains the old precondition.
   const prematureHome=process.env.PHASE_D_REPORT_PREMATURE_HOME_NEGATIVE_CONTROL==='1';
-  const destination=prematureHome?'/app':reportPath;report.authenticationDestination=destination;
-  await page.goto(app.url+'/login?returnTo='+encodeURIComponent(destination));await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);await Promise.all([page.waitForURL(u=>u.pathname===(prematureHome?'/app':'/app/reports')),page.getByRole('button',{name:'Sign in',exact:true}).click()]);
-  if(!prematureHome)await page.locator('#ins-labor .c-ins__labor b').waitFor();
+  const homeReads=['/api/company-access/operational-authority','/api/manager/inbox-count','/api/notifications','/api/manager/today','/api/manager/clock-monitor','/api/manager/action-center'];
+  await page.goto(app.url+'/login');await page.getByLabel('Employee ID',{exact:true}).fill('QAOWNER');await page.getByLabel('Password',{exact:true}).fill(TEST_PASSWORD);
+  const readyReads=prematureHome?[]:homeReads.map(async path=>{
+   const response=await page.waitForResponse(response=>new URL(response.url()).pathname===path&&response.ok());
+   assert.equal(await response.finished(),null,'The Home client read must finish before navigation: '+path);
+   const body=await response.json();assert.equal(body.state,'ready','The Home client read must verify its state: '+path);
+   return {path,status:response.status(),state:body.state};
+  });
+  const authentication=await Promise.all([page.waitForURL(u=>u.pathname==='/app'),page.getByRole('button',{name:'Sign in',exact:true}).click(),...readyReads]);
+  if(!prematureHome){
+   await page.locator('.c-page.c-home').waitFor();
+   await page.waitForFunction(()=>{const home=document.querySelector('.c-page.c-home');return home&&!home.querySelector('[aria-busy="true"],.c-error-card');});
+  }
+  report.authentication??=[];report.authentication.push({engine,destination:'/app',precondition:prematureHome?'premature URL-only negative control':'actual Home rendered and client reads ready',reads:authentication.slice(2)});
   if(process.env.PHASE_D_REPORT_RUNTIME_NEGATIVE_CONTROL==='1'&&engine==='webkit'){
    const observed=page.waitForEvent('pageerror',error=>error.message.includes('Owned report runtime negative control'));
    await page.evaluate(()=>{setTimeout(()=>{throw new Error('Owned report runtime negative control');},0);});await observed;
