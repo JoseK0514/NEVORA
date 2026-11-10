@@ -1,7 +1,6 @@
 # Company-specific workforce enrollment handoff
 
-Development baseline0cf26329f3021dbd9744f2427e1c114ccfa62637. Implementation is in
-an isolated detached worktree, with tasks1–4 committed and task5 under qualification.
+Development baseline0cf26329f3021dbd9744f2427e1c114ccfa62637. The isolated runtime candidate cb4a4c52 has completed local qualification and independent development integration review.
 This document does not authorize hosted schema/roles/credentials, triggers, Render
 application, live delivery, native work, new companies or Production.
 
@@ -78,3 +77,22 @@ qualification/business inputs, and explicit Production authorization. Rondo is a
 Owner assistant; universal owner replacement or Manager rollout is not certified.
 
 Independent review at fdd83020 is NO-GO with six required findings. Original report and executor remediation candidate are preserved in worker-enrollment-evidence-20261109/. No operating-team self-closure is implied. Final serial qualification and independent replay are pending; the first full run also retained15 default failures and a504/505 Company Access result.
+
+## Final local source checkpoint
+
+The historical NO-GO remains unchanged in its original report. F1/F2/F3/F4/F6
+were independently closed atf6, and F5 independently closed atcb4. The same source
+passed11677default tests with0failures,857skips and55pending assertion records,
+typecheck,lint(0errors/1deferredwarning),web build and all7acceptance steps:
+208onboarding,505Company Access,36exchange plus actual compiled/extracted artifacts.
+The independent gate is GO for normal development integration of that candidate.
+Reports/checksums, decisions and open operational gates are under
+worker-enrollment-evidence-20261109/. This documentation checkpoint follows with
+identical runtime code; final source labels are checked by fresh artifact builds.
+Exact-head CI after publishing remains separate from these local receipts.
+
+No enrolled-reader roles,0007migration,hosted function/schedule,paid Render service,
+real mail/push or new live Rondo model call was activated by this source work.
+Neon CLI reauthentication and separately approved A/B staged enrollment/host
+application remain necessary; original roots/passwords/hash/catalog receipts stay
+unchanged. Native and Production remain excluded.

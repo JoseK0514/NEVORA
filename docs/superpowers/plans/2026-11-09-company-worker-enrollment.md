@@ -1,6 +1,6 @@
 # Company-specific Worker Enrollment Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Make staging workforce commands use company-specific sealed credentials while retaining shared roots only inside the existing private issuer.
 
@@ -36,16 +36,16 @@
 
 **Interfaces:** `WorkerEnrollmentIdentity` contains schemaVersion1, enrollmentId/workspaceId UUID, environment test, incarnation/sourceSecretRef/loginRole/canonicalOrigin/providerProjectId/recipientFingerprint/issuerSourceSha/expiresAt. `WorkerEnrollmentMaterial` has databaseUrl and commerceWorkerSecret. `WorkerEnrollmentEnvelope` has schemaVersion1/keyEnvelope/ciphertext. Export `workerRecipientFingerprint(publicOrPrivatePem:string):string`, `sealWorkerEnrollment(identity:unknown,material:unknown,publicPem):WorkerEnrollmentEnvelope`, `openWorkerEnrollment(identity,envelope,privatePem,now?):WorkerEnrollmentMaterial|null`, and strict identity/envelope parsing. The seal boundary validates unknown input before creating typed values. Reject unknown fields; RSA3072 only; constant error messages; payload bounds8KiB; canonical public-key fingerprint and UTC timestamp.
 
-- [ ] Write real round-trip and wrong recipient/scope/bit-tamper/unknown-field/expired/RSA-size regressions. No mocks for crypto.
+- [x] Write real round-trip and wrong recipient/scope/bit-tamper/unknown-field/expired/RSA-size regressions. No mocks for crypto.
 
 ```ts
 expect(openWorkerEnrollment(identity,sealWorkerEnrollment(identity,material,publicKey),privateKey,now)).toEqual(material);
 expect(openWorkerEnrollment({...identity,incarnation:'2'},envelope,privateKey,now)).toBeNull();
 expect(openWorkerEnrollment(identity,envelope,otherPrivateKey,now)).toBeNull();
 ```
-- [ ] Run `node node_modules/vitest/vitest.mjs run src/lib/operations/worker-enrollment.test.ts` and observe missing implementation RED.
-- [ ] Implement with standard Node crypto, existing AES helper, bound AAD and strict company login/TLS validation; never stringify secrets in an error.
-- [ ] Rerun focused suite GREEN and commit task1.
+- [x] Run `node node_modules/vitest/vitest.mjs run src/lib/operations/worker-enrollment.test.ts` and observe missing implementation RED.
+- [x] Implement with standard Node crypto, existing AES helper, bound AAD and strict company login/TLS validation; never stringify secrets in an error.
+- [x] Rerun focused suite GREEN and commit task1.
 
 ### Task 2: Durable issuer and scoped encrypted reader
 
@@ -55,16 +55,16 @@ expect(openWorkerEnrollment(identity,envelope,otherPrivateKey,now)).toBeNull();
 
 `WorkerEnrollmentRequest` adds registryRevision/recipientPublicKey/requestExpiresAt to task1 identity. Export strict `parseWorkerEnrollmentRequest(value)`, `workerEnrollmentRequestHash(value):string` and operator-only `createWorkerEnrollmentRequest(query,value):Promise<WorkerEnrollmentRequestBinding>`. `EnrollmentQuery` and `EnrollmentDatabase` expose only the actual query/borrowed-client lifecycle used by this module; actual pg pools satisfy them. SQL expiry uses database time, so no client-controlled clock parameter is used for issuance. Runtime issuer identity/flags are checked before custody reads. A unique recipient fingerprint requires a fresh key per operation; source row locks use already held original provisioning rights.
 
-- [ ] Add owned PG regressions: two-company scope/base denial, positive issuer, concurrent issuance and stable result after retry, changed request refusal, source/incarnation/secret/origin/revision drift, expired request, revoked immutable result, no updates to old ciphertext/roles/hashes. Observe RED.
+- [x] Add owned PG regressions: two-company scope/base denial, positive issuer, concurrent issuance and stable result after retry, changed request refusal, source/incarnation/secret/origin/revision drift, expired request, revoked immutable result, no updates to old ciphertext/roles/hashes. Observe RED.
 
 ```ts
 expect(await processWorkerEnrollmentOnce(pool,[{id:requestId,requestHash}],sha,root,workerRoot)).toEqual({state:'processed'});
 expect(await processWorkerEnrollmentOnce(pool,[{id:requestId,requestHash}],sha,root,workerRoot)).toEqual({state:'idle'});
 expect((await admin.query('SELECT key_envelope,ciphertext FROM nevora_onboarding.worker_runtime_enrollments WHERE id=$1',[requestId])).rows).toEqual(originalCompletedRows);
 ```
-- [ ] Implement operator-only forced-RLS table and immutable metadata/result trigger; no bootstrap application. Grant issuer only needed columns, no DELETE. View checks current ACTIVE scope and expiry. Use existing registry explicit columns and shared fixed-principal admission.
-- [ ] Implement transactional issuer using current original WORKER secret AAD and `workspaceInstanceSecret` derivation; no provider API or company writes, no plaintext responses.
-- [ ] Run `node scripts/onboarding-owned.mjs --suite worker-enrollment` with the already approved owned PG tool paths; expect all cases GREEN. Run existing workforce suite to preserve admission positives/negative grants. Commit task2.
+- [x] Implement operator-only forced-RLS table and immutable metadata/result trigger; no bootstrap application. Grant issuer only needed columns, no DELETE. View checks current ACTIVE scope and expiry. Use existing registry explicit columns and shared fixed-principal admission.
+- [x] Implement transactional issuer using current original WORKER secret AAD and `workspaceInstanceSecret` derivation; no provider API or company writes, no plaintext responses.
+- [x] Run `node scripts/onboarding-owned.mjs --suite worker-enrollment` with the already approved owned PG tool paths; expect all cases GREEN. Run existing workforce suite to preserve admission positives/negative grants. Commit task2.
 
 ### Task 3: Canonical enrolled transport, commerce and host profiles
 
@@ -72,15 +72,15 @@ expect((await admin.query('SELECT key_envelope,ciphertext FROM nevora_onboarding
 
 **Interfaces:** explicit `WORKER_ENROLLED` routing variant with `{enrollmentId,privateKey}` and no encryption/token root; legacy variants retain their existing key requirements. New env names `NEVORA_WORKER_ENROLLMENT_ID`, `NEVORA_WORKER_RECIPIENT_PRIVATE_KEY`; mixed old-root/enrolled fields fail. New `readWorkerEnrollmentMaterial(binding,now?)` audits actual control principal, fetches current matching envelope and returns task1 material privately. Transport uses its databaseUrl; commerce uses only its derived WORKER secret and validates the existing company hash. No APP/BOOTSTRAP purpose can adopt this config.
 
-- [ ] Write missing/mixed root, wrong role/scope, recipient reuse across companies, current-source/expiry/revocation/cached transport and commerce Owner-authority negatives; observe RED.
+- [x] Write missing/mixed root, wrong role/scope, recipient reuse across companies, current-source/expiry/revocation/cached transport and commerce Owner-authority negatives; observe RED.
 
 ```ts
 expect(readWorkerRoutingConfig(enrolledEnv).secretScope).toBe('WORKER_ENROLLED');
 expect(()=>readWorkerRoutingConfig({...enrolledEnv,NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:root})).toThrow('Workspace is unavailable');
 ```
-- [ ] Add strict mode parser and route only WORKER reads through the new view. Recheck source before each decrypted use and preserve existing company-side transaction guards. Keep legacy/browser behavior.
-- [ ] Extend managed profile allowlist/curation and recipient uniqueness. Retain compiled destination pins and no key/env inheritance into unrelated commands.
-- [ ] Exercise actual owned WORKER SQL plus existing entitlement contract without shared roots. Explicitly show normal runtime revocation and unchanged underlying login, documenting compromise rotation separately. Run relevant unit/owned suites GREEN and commit task3.
+- [x] Add strict mode parser and route only WORKER reads through the new view. Recheck source before each decrypted use and preserve existing company-side transaction guards. Keep legacy/browser behavior.
+- [x] Extend managed profile allowlist/curation and recipient uniqueness. Retain compiled destination pins and no key/env inheritance into unrelated commands.
+- [x] Exercise actual owned WORKER SQL plus existing entitlement contract without shared roots. Explicitly show normal runtime revocation and unchanged underlying login, documenting compromise rotation separately. Run relevant unit/owned suites GREEN and commit task3.
 
 ### Task 4: Closed scheduled issuance and private operator files
 
@@ -88,17 +88,17 @@ expect(()=>readWorkerRoutingConfig({...enrolledEnv,NEVORA_ONBOARDING_TOKEN_ENCRY
 
 **Interfaces:** `NEVORA_WORKFORCE_ENROLLMENT_ENABLED` defaults false/absent, with `NEVORA_WORKFORCE_ENROLLMENT_REQUESTS` (JSON <=2 `{id,requestHash}` bindings) admitted only on the existing provisioner. `readWorkerEnrollmentIssuerConfig(env,source)` requires test/selected control target, root separation, named issuer DSN, exact source and closed normal provisioning/onboarding/provider gates. `runWorkerEnrollmentIssuerOnce` calls task2 and closes its pool. Existing native `nevora-staging-provisioner` /run callback dispatches only the selected closed/open mode; no new HTTP path or request selector.
 
-- [ ] RED tests for forged/wrong native trigger, mixed enabled modes, unknown config, wrong target/source, absent gate compatibility and no normal-provisioner invocation in enrollment mode.
-- [ ] Implement strict isolated dispatch, opaque responses/logs and bounded shutdown. Do not touch the other five deployed functions.
-- [ ] Add private-file operator tooling: separate public request/recipient-key files; canonical scope/fingerprint; bounded input,0700/0600/no symlink; no secret CLI args/output. Fixtures only until hosted authorization.
-- [ ] Test actual CLI/file behavior and SDK callback bodies GREEN; commit task4.
+- [x] RED tests for forged/wrong native trigger, mixed enabled modes, unknown config, wrong target/source, absent gate compatibility and no normal-provisioner invocation in enrollment mode.
+- [x] Implement strict isolated dispatch, opaque responses/logs and bounded shutdown. Do not touch the other five deployed functions.
+- [x] Add private-file operator tooling: separate public request/recipient-key files; canonical scope/fingerprint; bounded input,0700/0600/no symlink; no secret CLI args/output. Fixtures only until hosted authorization.
+- [x] Test actual CLI/file behavior and SDK callback bodies GREEN; commit task4.
 
 ### Task 5: Source-qualified artifacts, handoff and independent gate
 
 **Files:** runtime inventory, onboarding suite config/acceptance and builder/verifier tests; runbook and this spec/plan; source-custodied enrollment acceptance script.
 
-- [ ] Classify every new runtime/transport. Require actual clean-source provisioner archive extraction with enrollment mode default closed and actual compiled host profile/HTTP checks, plus owned SQL in required onboarding acceptance.
-- [ ] Run focused checks, typecheck, changed lint, complete default suite and source-qualified owned onboarding/company-access/artifact acceptance. Keep output outside source; commit clean candidate before source-guarded checks.
+- [x] Classify every new runtime/transport. Require actual clean-source provisioner archive extraction with enrollment mode default closed and actual compiled host profile/HTTP checks, plus owned SQL in required onboarding acceptance.
+- [x] Run focused checks, typecheck, changed lint, complete default suite and source-qualified owned onboarding/company-access/artifact acceptance. Keep output outside source; commit clean candidate before source-guarded checks.
 - [ ] Prepare a concrete A/B-only hosted activation packet with exact requests/roles/grants/source/custody, existing-secret preservation, snapshots/drain, one bounded native issuance and rollback. Document runtime versus underlying-login revocation. No actual hosted action.
-- [ ] Dispatch ONE fresh whole-change independent reviewer after implementation completes, using base0cf26329 and exact committed HEAD plus Review Focus above. Preserve prior source-review findings, fix Important findings inline RED→GREEN in one pass, and obtain independent closure per QA oversight. Defer Minor findings explicitly.
+- [x] Dispatch ONE fresh whole-change independent reviewer after implementation completes, using base0cf26329 and exact committed HEAD plus Review Focus above. Preserve prior source-review findings, fix Important findings inline RED→GREEN in one pass, and obtain independent closure per QA oversight. Defer Minor findings explicitly.
 - [ ] Fresh fetch/source reconciliation before development integration. Observe exact-head CI; update the unapplied Render plan to that source. Present the concrete hosted credential/plan action for approval only after the engineering gate is satisfied.
