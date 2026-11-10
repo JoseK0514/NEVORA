@@ -51,7 +51,11 @@ export function attentionSourceStatement(proof:SessionMutationProof,workspace:Wo
   WHERE r.workspace_id=$1 AND r.employee_id=$2 AND r.id::text=$3 AND r.location_id IN (SELECT id FROM (${employeeAllowedLocationsSql()}) allowed)`,values};
  // Schedule details are produced by the coherent weekly reader. This limited
  // projection checks current revision plus actual canonical acknowledgement.
- if(ref.kind==='SCHEDULE'&&isValidWeekStart(ref.id))return {text:`SELECT jsonb_build_object('id',r.week_start::text,'version',r.id,'required',NOT EXISTS(
+ if(ref.kind==='SCHEDULE'&&isValidWeekStart(ref.id))return {text:`SELECT jsonb_build_object('id',r.week_start::text,'version',r.id,
+  'acknowledgedRevisionId',(SELECT publication_revision_id FROM schedule_acknowledgements WHERE employee_id=$2 AND week_start=r.week_start),
+  'reviewBaseline',(SELECT result->'_scheduleReview' FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2
+    AND result->>'id'=r.week_start::text AND result->>'version'=r.id AND result ? '_scheduleReview' ORDER BY created_at DESC,operation_id DESC LIMIT 1),
+  'required',NOT EXISTS(
   SELECT 1 FROM schedule_acknowledgements a WHERE a.employee_id=$2 AND a.week_start=r.week_start AND (a.publication_revision_id=r.id OR COALESCE((SELECT jsonb_agg(jsonb_build_array(rs.source_shift_id,rs.location_id,rs.employee_id,rs.date,rs.start_time,rs.end_time,rs.position_id,rs.is_designated_lead,rs.is_callout_approved) ORDER BY rs.source_shift_id) FROM schedule_publication_revision_shifts rs WHERE rs.employee_id=$2 AND rs.revision_id=a.publication_revision_id),'[]'::jsonb)=COALESCE((SELECT jsonb_agg(jsonb_build_array(rs.source_shift_id,rs.location_id,rs.employee_id,rs.date,rs.start_time,rs.end_time,rs.position_id,rs.is_designated_lead,rs.is_callout_approved) ORDER BY rs.source_shift_id) FROM schedule_publication_revision_shifts rs WHERE rs.employee_id=$2 AND rs.revision_id=r.id),'[]'::jsonb)))) AS detail
   FROM (SELECT * FROM schedule_publication_revisions WHERE week_start=$3::date ORDER BY revision_number DESC LIMIT 1) r WHERE r.week_start=$3::date AND EXISTS(SELECT 1 FROM workspaces WHERE id=$1 AND active)
   AND EXISTS(SELECT 1 FROM schedule_publication_revision_shifts rs JOIN schedule_publication_revisions prior ON prior.id=rs.revision_id WHERE prior.week_start=r.week_start AND rs.employee_id=$2
@@ -105,7 +109,7 @@ export async function commitAttention(proof:SessionMutationProof,kind:Kind,comma
   const source=attentionSourceStatement(proof,workspace,ref);
   const observation=await executor.transaction([...guards,source,{text:'SELECT command_hash,result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity},...managementSessionStatements(proof,proof.employee.id,[proof.employee.role])],signal);
   const existing=observation[guards.length+1]?.[0] as {command_hash:string;result:CommandResult}|undefined;
-  if(existing)return existing.command_hash===commandHash?existing.result:{status:'conflict',reason:'operation_payload_changed'};
+  if(existing)return existing.command_hash===commandHash?publicAttentionResult(existing.result):{status:'conflict',reason:'operation_payload_changed'};
   const detail=(observation[guards.length]?.[0] as {detail:Record<string,unknown>}|undefined)?.detail;
   if(!detail)return {status:'unavailable',reason:'source_unavailable'};
   if(attentionSourceVersion(ref,detail)!==ref.version)return {status:'conflict',reason:'source_changed'};
@@ -127,21 +131,31 @@ export async function commitAttention(proof:SessionMutationProof,kind:Kind,comma
   ]:[{text:`INSERT INTO employee_attention_receipts(id,workspace_id,employee_id,source_kind,source_id,source_version)
    SELECT $4::uuid,$1,$2,$5,$6,$7 WHERE ${skip} ON CONFLICT(workspace_id,employee_id,source_kind,source_id,source_version) DO NOTHING`,values:[...identity,receiptId,ref.kind,ref.id,ref.version]}];
   const resultId=kind==='CONFIRM_WEEK'?ref.id:receiptId;
+  // Capture the comparison before overwriting the canonical acknowledgement.
+  // A repeated confirmation of this same revision retains its original baseline.
+  // This is immutable, employee-scoped history; it is never returned as a command result.
+  const baseline=detail.acknowledgedRevisionId===ref.version&&detail.reviewBaseline
+   ? detail.reviewBaseline : {baselineRevisionId:detail.acknowledgedRevisionId??null};
   const finish:SqlStatement={text:`INSERT INTO employee_attention_operations(workspace_id,employee_id,operation_id,command_hash,result)
-   VALUES($1,$2,$3::uuid,$4,jsonb_build_object('status','committed','operationId',$3::text,'id',${kind==='CONFIRM_WEEK'?'$5::text':"(SELECT id::text FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$7 AND source_id=$8 AND source_version=$6)"},'version',$6::text))
-   ON CONFLICT(workspace_id,employee_id,operation_id) DO NOTHING`,values:kind==='CONFIRM_WEEK'?[...identity,commandHash,resultId,ref.version]:[...identity,commandHash,resultId,ref.version,ref.kind,ref.id]};
+   VALUES($1,$2,$3::uuid,$4,jsonb_build_object('status','committed','operationId',$3::text,'id',${kind==='CONFIRM_WEEK'?'$5::text':"(SELECT id::text FROM employee_attention_receipts WHERE workspace_id=$1 AND employee_id=$2 AND source_kind=$7 AND source_id=$8 AND source_version=$6)"},'version',$6::text)${kind==='CONFIRM_WEEK'?" || jsonb_build_object('_scheduleReview',$7::jsonb)":''})
+   ON CONFLICT(workspace_id,employee_id,operation_id) DO NOTHING`,values:kind==='CONFIRM_WEEK'?[...identity,commandHash,resultId,ref.version,JSON.stringify(baseline)]:[...identity,commandHash,resultId,ref.version,ref.kind,ref.id]};
   // A typed unused parameter is intentional in MARK_READ's shared slot layout.
   if(kind==='MARK_READ')finish.text=finish.text.replace('VALUES($1,$2,$3::uuid,$4,','SELECT $1,$2,$3::uuid,$4,').replace("'version',$6::text))","'version',$6::text) WHERE $5::text IS NOT NULL");
   dispatched=true;
   const results=await executor.transaction([...guards,check,sourceGuard,...writes,finish,...managementSessionStatements(proof,proof.employee.id,[proof.employee.role]),
    {text:'SELECT result FROM employee_attention_operations WHERE workspace_id=$1 AND employee_id=$2 AND operation_id=$3::uuid',values:identity}],signal);
-  return (results.at(-1)?.[0] as {result:CommandResult}|undefined)?.result??{status:'outcome_unknown',operationId};
+  const result=(results.at(-1)?.[0] as {result:CommandResult}|undefined)?.result;
+  return result?publicAttentionResult(result):{status:'outcome_unknown',operationId};
  }catch(error){
   if(isManagementAuthorizationError(error))return {status:'blocked',reason:'session_unavailable'};
   if(error instanceof Error&&'code'in error&&error.code==='22P02'&&/attention_(source|operation)_conflict/.test(error.message))return {status:'conflict',reason:'source_or_operation_changed'};
   if(error instanceof Error&&'code'in error&&['55P03','57014','40001','40P01'].includes(String(error.code)))return {status:'unavailable',reason:'retry_original_operation'};
   return dispatched?{status:'outcome_unknown',operationId:command.operationId}:{status:'unavailable',reason:'read_failed'};
  }
+}
+function publicAttentionResult(result:CommandResult):CommandResult {
+ if(result.status!=='committed')return result;
+ return {status:'committed',operationId:result.operationId,id:result.id,version:result.version};
 }
 export async function recordEmployeeAttentionReceipt(proof:SessionMutationProof,command:AttentionCommand,executor:SqlExecutor=neonNotificationExecutor()):Promise<CommandResult>{
  if(command?.kind!=='MARK_READ')return {status:'blocked',reason:'invalid_command'};

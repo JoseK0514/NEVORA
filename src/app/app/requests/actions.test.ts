@@ -18,7 +18,7 @@ it('submits using session ownership, ignoring body identities',async()=>{
 it('time_off_decision_returns_without_provider_contact using session manager identity',async()=>{
  const provider=vi.fn(()=>new Promise(()=>{}));vi.stubGlobal('fetch',provider);vi.mocked(reviewTimeOffRequest).mockResolvedValue(true);
  const data=new FormData();data.set('requestId','r1');data.set('decision','APPROVED');data.set('managerId','other');
- try{await expect(reviewTimeOffAction(data)).rejects.toThrow('reviewed=1');expect(reviewTimeOffRequest).toHaveBeenCalledWith({requestId:'r1',managerId:'M',status:'APPROVED',proof:{employee:{id:'M',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}});expect(requireRoles).toHaveBeenCalledWith(['OWNER','MANAGER']);expect(provider).not.toHaveBeenCalled();}finally{vi.unstubAllGlobals();}
+ try{await expect(reviewTimeOffAction(data)).rejects.toThrow('reviewed=1&decided=timeoff-approved');expect(reviewTimeOffRequest).toHaveBeenCalledWith({requestId:'r1',managerId:'M',status:'APPROVED',proof:{employee:{id:'M',role:'MANAGER'},sessionTokenHash:'a'.repeat(64)}});expect(requireRoles).toHaveBeenCalledWith(['OWNER','MANAGER']);expect(provider).not.toHaveBeenCalled();}finally{vi.unstubAllGlobals();}
 });
 it.each([false,'outbox failure'] as const)('failed_decision_has_no_success_intent: %s',async result=>{
  if(result===false)vi.mocked(reviewTimeOffRequest).mockResolvedValue(false);else vi.mocked(reviewTimeOffRequest).mockRejectedValue(new Error(result));
@@ -42,7 +42,7 @@ it('returns a focused review to the Inbox or Home and never to an arbitrary addr
   const form = (returnTo: string, decision = 'APPROVED') => { const data = new FormData(); data.set('requestId', 'r1'); data.set('decision', decision); data.set('returnTo', returnTo); return data; };
   await expect(reviewTimeOffAction(form('inbox'))).rejects.toThrow('redirect:/app/inbox?filter=requests&decided=timeoff-approved');
   await expect(reviewTimeOffAction(form('home', 'DENIED'))).rejects.toThrow('redirect:/app?decided=timeoff-declined');
-  await expect(reviewTimeOffAction(form('https://example.invalid'))).rejects.toThrow('redirect:/app/requests?tab=pending&reviewed=1');
+  await expect(reviewTimeOffAction(form('https://example.invalid'))).rejects.toThrow('redirect:/app/requests?tab=pending&reviewed=1&decided=timeoff-approved');
   vi.mocked(reviewTimeOffRequest).mockResolvedValue(false);
   await expect(reviewTimeOffAction(form('inbox'))).rejects.toThrow('redirect:/app/requests?tab=pending&error=review&requestId=r1&from=inbox');
 });
