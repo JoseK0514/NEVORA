@@ -4,12 +4,12 @@ import type {PoolClient} from 'pg';
 /** Shared metadata-only admission for machine principals. The caller selects a
  * fixed policy, never arbitrary exception objects. PUBLIC defaults and native
  * object ACLs count as effective access. No grant/revoke is performed here. */
-export async function assertMachinePrincipal(client:PoolClient,role:string,kind:'monitor'|'worker-reader'){
+export async function assertMachinePrincipal(client:PoolClient,role:string,kind:'monitor'|'worker-reader'|'enrolled-worker-reader'){
  const monitor=kind==='monitor';
  // PostgreSQL's FirstNormalObjectId is 16384 (PG16/17 transam.h). A schema
  // name alone does not establish initdb provenance for later-created objects.
- if(!(monitor?/^nv_ops_monitor_[a-f0-9]{24}$/:/^nv_control_worker_[tp]_[a-f0-9]{32}$/).test(role))throw Error('machine_principal_invalid');
- const allowed=monitor?['nevora_operations.monitor_state','nevora_operations.monitor_notices','nevora_operations.monitor_attempts']:['nevora_onboarding.worker_workspace_registry','nevora_onboarding.worker_workspace_secrets'];
+ if(!['monitor','worker-reader','enrolled-worker-reader'].includes(kind)||!(monitor?/^nv_ops_monitor_[a-f0-9]{24}$/:/^nv_control_worker_[tp]_[a-f0-9]{32}$/).test(role))throw Error('machine_principal_invalid');
+ const allowed=monitor?['nevora_operations.monitor_state','nevora_operations.monitor_notices','nevora_operations.monitor_attempts']:['nevora_onboarding.worker_workspace_registry',kind==='enrolled-worker-reader'?'nevora_onboarding.worker_workspace_enrollment_secrets':'nevora_onboarding.worker_workspace_secrets'];
  const r=(await client.query(`WITH version AS (SELECT CASE WHEN pg_catalog.current_setting('server_version_num')::int>=170000 THEN ',MAINTAIN' ELSE '' END AS maintain),
   native_relations AS MATERIALIZED (
    SELECT c.oid,c.relowner,c.relacl,coalesce((SELECT i.initprivs FROM pg_catalog.pg_init_privs i WHERE i.classoid='pg_catalog.pg_class'::pg_catalog.regclass AND i.objoid=c.oid AND i.objsubid=0),pg_catalog.acldefault('r',c.relowner)) initial_acl
