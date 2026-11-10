@@ -1,10 +1,10 @@
+import { OwnerOnlyNotice } from "@/components/owner-only-notice";
 import {ResponsiveEmployeeHours} from '@/components/employee-mobile/hours';
 import {employeeViewAuthority} from '@/lib/employee-view-authority.server';
 import {hoursRequestId,hoursRecordId} from '@/lib/employee-hours';
 import {businessDate} from '@/lib/business-time';
 import {addDays,weekStartFor} from '@/lib/date-utils';
 import {parsePeriod} from '@/lib/timecards/project';
-import { redirect } from "next/navigation";
 import { EmployeeTimePanel } from "@/components/employee-time-panel";
 import { isManagerRole } from "@/lib/auth/permissions";
 import {correctionAuthority} from '@/lib/time-corrections/authority.server';
@@ -21,8 +21,9 @@ export const metadata = { title: "My time" };
 export default async function MyTimePage({searchParams}:{searchParams:Promise<{view?:string;start?:string;end?:string;entry?:string;requestId?:string;edit?:string;filter?:string;from?:string}>}={searchParams:Promise.resolve({})}) {
   const session = await requireSession();
 
+  // Review B2 (NV-136): no silent redirect; the page says whose it is and where a manager's version is.
   if (isManagerRole(session.role)) {
-    redirect("/app");
+    return <OwnerOnlyNotice title="My time" reason="My time is for employees" help="Your team’s hours are in Timecards." next={{ href: "/app/timecards", label: "Open Timecards" }} />;
   }
 
   const proof=await requireSessionMutationProof(),authority=correctionAuthority(proof),params=await searchParams;

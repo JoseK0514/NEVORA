@@ -19,3 +19,6 @@
 /* Desktop and tablet schedule: the week's coverage under the grid's bar, label beside the three figures. */
 :is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage { padding: 4px 22px 16px; text-align: left; }
 :is(#c-root, html) .app-shell[data-nv-b] .cm-grid__coverage .cov { grid-template-columns: auto minmax(0, 560px); align-items: center; column-gap: 18px; }
+/* Review B2 (NV-108): obligations nobody set up, said once under the tiles. */
+:is(#c-root, html) .app-shell[data-nv-b] .cov__none-line { margin: 8px 0 0; font-size: 13.5px; line-height: 18px; color: #6A7176; }
+:is(#c-root, html) .app-shell[data-nv-b] .cov--glass .cov__none-line { color: rgb(255 255 255 / .86); }

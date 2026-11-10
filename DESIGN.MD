@@ -1710,3 +1710,35 @@ change no flow, read, handler or contract.
   the dead `employee-style.css` / `data-nv-e5` rules and the dark blocks were removed.
 - **Still to adopt elsewhere:** the Clocker ("TIME CLOCK" label) and the sign-in and public pages (band text, auth
   buttons) should read `--b-on-band`/`--b-on-band-2`, `--b-band`, the pill radius and the focus pair from `b-tokens.css`.
+
+## Flows and states (review batch B2, Nov 10, 2026)
+Source: `docs/product/review-2026-11-10/` (batch B2). No read, handler, authorization or contract changed.
+- **Offline (Jose, Nov 10):** when the connection drops and the person is still here, every page keeps what it loaded,
+  read-only: no more reads, no expiry, and the page's action pills and form submits are disabled (the disabled pair;
+  rows that only open details still work). The shell's line says "Offline · updated 9:24 PM" with an amber dot (the oldest
+  time a page holds); if nothing is held it says "You're offline. Reconnect to see the latest." Stepping away (window
+  hidden or blurred) still clears, as before, and reconnecting runs a fresh check. The X-Nevora-Failure clears are
+  unchanged. Readers use `controller.hold()` (`src/lib/private-snapshot-client.ts`) or the same rule
+  (`src/lib/offline-hold.ts`); the access frame keeps its page the same way.
+- **One state card:** `BState` in the kit: a 48px icon circle (grey loading or locked, amber offline or paused, red
+  failed), a 16/22 title, one line and one teal pill, left-aligned. The access frame's paused/failed state, the
+  employee state cards, the in-app 404 and every closed page use it. Say the state once.
+- **Closed pages:** never a silent redirect. `OwnerOnlyNotice` says whose page it is, names the workspace's Owners when
+  they can help ("Jose Natal can give you payroll access.") and offers the page that does the job for this role.
+- **Manager navigation** is built from the last current scope while a check is slow, failed or offline; an access
+  denial forgets it. The separate "Management menu unavailable" card is gone; the page's one Try again also re-checks the
+  menus.
+- **Things to do** lists reviews that wait (time corrections, timecards) after today's cards under "Waiting for review";
+  today's count is unchanged. "Done and older" is "Later and done" (plan ahead and earlier this week).
+- **Counts name their scope** ("Oct 26 – Nov 1 · 3 need attention first"); the Timecards filter is "Need review", distinct
+  from "Approve N ready". Home's Payday never says "Ready now" for unreviewed work, and its unlabelled segments are gone.
+- **Approving a timecard** keeps the table while the fresh read runs in the background; the batch controls show only for
+  a selection, a review, results or an unknown outcome.
+- **Schedule:** Add shift and Build and publish are in the "…" menu at every width; the band's white pill is Publish while
+  something waits, otherwise Add shift. A shift on a day of full-day time off has an amber ring, a warning glyph and
+  "Needs cover".
+- **Menus and sheets:** a sheet is modal (the rest of the page is inert); a menu popover is a named group; the finder keeps
+  the current option in view, is 22px with the popover elevation, and lists every Employee page plus three actions
+  (Request time off, Swap a shift, Set availability; Jose, Nov 10). Phone sheets sit on the bottom edge; scrims cover the
+  whole window.
+- **Help** is in the account menu and above "Powered by" in the sidebar.

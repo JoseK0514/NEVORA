@@ -40,7 +40,8 @@ it.each(['iOS', 'Android'])('explains unsupported native roles on %s before load
   for (const role of ['MANAGER', 'LEAD'] as UserRole[]) {
     state.role = role;
     const html = renderToStaticMarkup(await layout());
-    expect(html).toContain('Employee and Owner accounts');
+    // Review B2 (NV-214): says who the app is for in plain words.
+    expect(html).toContain('is for employees and owners');
     expect(html).toContain('web browser');
     expect(html).toContain('Sign out');
     expect(html).not.toContain('PRIVATE');

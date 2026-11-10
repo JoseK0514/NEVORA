@@ -5,6 +5,7 @@ import type { PayrollReceipt, PayrollRunCommand, PayrollSettingsCommand } from '
 import type { NativeProfileCommand } from '@/lib/payroll/native/contracts';
 import { PayrollRequestError, payrollRequest, readReceipt } from './api';
 import { toast } from '../toaster';
+import { announceOfflineHeld, steppedAway } from '@/lib/offline-hold';
 
 type Command = PayrollRunCommand | PayrollSettingsCommand | NativeProfileCommand;
 type WithoutOperation<T> = T extends unknown ? Omit<T, 'operationId'> : never;
@@ -14,8 +15,8 @@ export const PAYROLL_SIGNED_OUT = 'Your session ended. Sign in again to see payr
 
 /**
  * Loads a decoded private payroll resource and ignores superseded responses.
- * Hiding/leaving the page or going offline clears data and invalidates in-flight
- * reads; becoming visible/online reloads current server authority. Keep decode
+ * Hiding/leaving the page clears data and invalidates in-flight reads; going offline keeps loaded data read-only (NV-001)
+ * and drops in-flight reads; becoming visible/online reloads current server authority. Keep decode
  * referentially stable, because it is part of reload's effect dependencies.
  */
 export function usePayrollResource<T>(path: string, decode: (value: unknown) => T) {
@@ -26,15 +27,17 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   // NETWORK, UNREADABLE, PAUSED or OFFLINE.
   const [errorCode, setErrorCode] = useState('');
   const generation = useRef({ value: 0 });
+  // When the shown data arrived (review B2, NV-001: offline keeps it, and the shell says "Offline · updated 9:24 PM").
+  const loadedAt = useRef<string | null>(null);
   const reload = useCallback(async () => {
     const current = ++generation.current.value;
     setLoading(true); setError(''); setErrorCode('');
     try {
       const next = decode(await payrollRequest(path));
-      if (generation.current.value === current) setData(next);
+      if (generation.current.value === current) { setData(next); loadedAt.current = new Date().toISOString(); }
     } catch (failure) {
       if (generation.current.value === current) {
-        setData(null);
+        setData(null); loadedAt.current = null;
         // A dropped connection surfaces as the browser's own TypeError ("Failed to fetch"); show the existing words instead.
         // IS-B13: an ended session says so, and the state offers Sign in (PayrollState), not a retry that can't work.
         setError(failure instanceof PayrollRequestError && failure.status === 401 ? PAYROLL_SIGNED_OUT
@@ -46,15 +49,18 @@ export function usePayrollResource<T>(path: string, decode: (value: unknown) => 
   useEffect(() => {
     let active = true; const lifecycle = generation.current;
     queueMicrotask(() => { if (active) void reload(); });
-    const clear = () => { lifecycle.value++; setData(null); setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
+    const clear = () => { lifecycle.value++; setData(null); loadedAt.current = null; setLoading(false); setErrorCode(navigator.onLine ? 'PAUSED' : 'OFFLINE'); setError(navigator.onLine ? 'Payroll is paused while this page is hidden. Return to reload current access.' : 'Payroll is unavailable offline. Reconnect to reload current access.'); };
+    // Review B2 (NV-001): offline with the person still here, the loaded pay stays on screen read-only (in-flight reads are
+    // dropped); stepping away still clears.
+    const hold = () => { if (steppedAway() || !loadedAt.current) { clear(); return; } lifecycle.value++; setLoading(false); announceOfflineHeld(loadedAt.current); };
     const visible = () => { if (document.visibilityState === 'hidden') clear(); else void reload(); };
     const refresh = () => { if (document.visibilityState !== 'hidden') void reload(); };
-    window.addEventListener('offline', clear); window.addEventListener('online', refresh);
+    window.addEventListener('offline', hold); window.addEventListener('online', refresh);
     window.addEventListener('pagehide', clear); window.addEventListener('pageshow', refresh);
     document.addEventListener('visibilitychange', visible);
     return () => {
       active = false; lifecycle.value++;
-      window.removeEventListener('offline', clear); window.removeEventListener('online', refresh);
+      window.removeEventListener('offline', hold); window.removeEventListener('online', refresh);
       window.removeEventListener('pagehide', clear); window.removeEventListener('pageshow', refresh);
       document.removeEventListener('visibilitychange', visible);
     };

@@ -15,7 +15,9 @@ export function UnsupportedNativeRole() {
     </header>
     <section className="nf-sheet" aria-labelledby="native-unsupported-title">
       <div className="nf-card">
-        <p className="not-found-text">This version of the NEVORA app supports Employee and Owner accounts.</p>
+        {/* Review B2 (NV-214): says who the app is for in plain words, so a shift lead isn't left thinking "I am an employee".
+          Letting Leads into the app (Jose, Nov 10) and an "Open in your browser" button need the app and server (codex-B2.md). */}
+        <p className="not-found-text">This version of the NEVORA app is for employees and owners. Shift leads and managers use NEVORA in a web browser.</p>
         <p className="not-found-text">You can continue using your account in your web browser.</p>
         <form action={logout}><button type="submit" className="nf-cta nu-signout">Sign out</button></form>
       </div>

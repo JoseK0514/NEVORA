@@ -69,10 +69,14 @@ const editHref = (shift: RosterShift) => `/app/schedule/edit?shiftId=${encodeURI
 
 /** Desktop roster block: the times show; the name, day, place, position and state are read out. Nov 1 upscale: the Lead
  * role is on hold, so a shift's lead flag isn't shown (no seal, no "Lead"); the data is unchanged. */
-function Block({ shift, person }: { shift: RosterShift; person: string }) {
-  const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status)].filter(Boolean).join(" · ");
-  return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}`} href={editHref(shift)} title={hint}>
+/** Review B2 (NV-027): `onLeave` marks a shift on a day the person has full-day time off: an amber ring, a warning glyph
+ * and "Needs cover", so it never looks like a normal assignment. */
+function Block({ shift, person, onLeave = false }: { shift: RosterShift; person: string; onLeave?: boolean }) {
+  const hint = [`${formatTime(shift.startTime)} – ${formatTime(shift.endTime)}`, shift.position, shift.location, shift.status === "PUBLISHED" ? null : statusWord(shift.status), onLeave ? "Needs cover (time off)" : null].filter(Boolean).join(" · ");
+  return <Link className={`cm-block${shift.status === "DRAFT" ? " draft" : ""}${onLeave ? " conflict" : ""}`} href={editHref(shift)} title={hint}>
+    {onLeave ? <WarningIcon className="cm-block__warn" size={13} weight="bold" aria-hidden="true" /> : null}
     <span aria-hidden="true"><CorpTime>{range(shift.startTime, shift.endTime)}</CorpTime></span>
+    {onLeave ? <span className="cm-block__need">Needs cover</span> : null}
     <span className="sr-only">{shiftLabel(shift, person)}</span>
     {shift.position ? <span className="sr-only schedule-assigned-position">{`, ${shift.position}`}</span> : null}
     {overnight(shift) ? <span className="sr-only">{`, Ends ${formatDayLabel(addDays(shift.date, 1)).day}`}</span> : null}
@@ -349,7 +353,7 @@ export function ManagerWeeklyRoster({ repairEmployeeId, employees, dates, today,
         const leave = absencesOn(absences, employee.id, date);
         return <td key={date} data-today={date === today || undefined}>
           {leave.length ? <span className="wb-note">{absenceText(leave)}</span> : !absenceKnown(employee.id) ? <span className="wb-note">Time off unavailable</span> : null}
-          {shifts.length ? shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} />)
+          {shifts.length ? shifts.map(shift => <Block shift={shift} person={employee.name} key={shift.id} onLeave={fullDayAbsence(leave)} />)
             : absenceKnown(employee.id) && !fullDayAbsence(leave) ? <Link className="cm-add" tabIndex={-1} aria-hidden="true" href={newShift(date, employee.id)}>+ Add</Link> : null}
         </td>;
       })}

@@ -101,6 +101,8 @@ export function ScheduleB(props: ScheduleBProps) {
       {open ? <BCard label="Open shifts">
         <BList>{open.count ? <BRow href={open.href} label={open.label} lead={<BIcon tone="teal"><PlusIcon weight="bold"/></BIcon>} title={`${open.count} open ${open.count === 1 ? 'shift' : 'shifts'} to pick up`} sub={open.detail}
           trail={<BButtonLink href={open.href} kind="teal" label={`See ${open.count} open ${open.count === 1 ? 'shift' : 'shifts'}`} prefetch={false}>See</BButtonLink>}/>
+          // Review B2 (NV-275): none to pick up is a fact, not a row to open.
+          : open.count === 0 ? <BRow lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="No open shifts right now" sub={open.detail}/>
           : <BRow href={open.href} label={open.label} lead={<BIcon tone="grey"><PlusIcon weight="bold"/></BIcon>} title="Open shifts" sub={open.detail}/>}</BList>
       </BCard> : null}
       {unavailable ? <BCard title="Schedule unavailable">

@@ -155,16 +155,20 @@ export function groupThingsToDo(snapshot: Extract<ActionCenter, { state: "ready"
     { id: "card-requests", title: "Requests", groups: shown(asked) },
   ];
   const families = (coverageFirst ? cards : [cards[1], cards[0], cards[2]]).filter(family => family.groups.length);
+  // Review B2 (NV-002): corrections and timecards that wait for a review are things to do too, so they are listed here, after
+  // today's cards, under their own heading ("Waiting for review"). Today's count stays what Home and the badge count.
+  const waiting: Group[] = [
+    { id: "waiting-corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)) },
+    { id: "waiting-timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], later)), count: of(["TIMECARD"], later).length },
+  ].filter(group => group.rows.length);
   const more: Group[] = [
-    { id: "corrections", title: "Time corrections", rows: of(["TIME_CORRECTION"], later).map(item => itemRow(item, timeZone)) },
-    { id: "timecards", title: "Timecards to approve", rows: timecardRows(of(["TIMECARD"], later)), count: of(["TIMECARD"], later).length },
     { id: "plan", title: "Plan ahead", rows: planRows(later.filter(item => !timeKinds.includes(item.type)), timeZone), count: later.filter(item => !timeKinds.includes(item.type)).length },
     // Earlier this week: one row per kind (a week of past coverage gaps is one row with its count, not a long list).
     { id: "earlier", title: "Earlier this week", rows: value.past.length > 1
       ? [{ key: "earlier:gaps", href: "/app/schedule", label: `Coverage gaps earlier this week, ${value.past.length}`, title: "Coverage gaps", value: String(value.past.length), valueTone: "soft" as const }]
       : value.past.map(item => itemRow(item, timeZone, true)), count: value.past.length },
   ].filter(group => group.rows.length);
-  return { value, families, more };
+  return { value, families, waiting, more };
 }
 
 /** R7 (copy row 6): the screen-reader line matches the page's name. "5 things to do today", never "need you". */
@@ -202,7 +206,7 @@ const moreCard = (timeOffShown: boolean) => <section key="more" id="todo-more" c
     <CorpRows label="More">
       {timeOffShown ? null : <li><CorpRow href="/app/requests" label="All time off requests" title="Time off requests" one chevron /></li>}
       <li><CorpRow href="/app/exchange" label="All shift requests" title="Shift requests" one chevron /></li>
-      <li><CorpRow href="/app/inbox?view=more" label="Done and older, not counted in today’s total" title="Done and older" one chevron /></li>
+      <li><CorpRow href="/app/inbox?view=more" label="Later and done: plan ahead and earlier this week" title="Later and done" one chevron /></li>
     </CorpRows>
   </div>
 </section>;
@@ -215,9 +219,9 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
 }) {
   const ready = connection === "ready" && snapshot?.state === "ready" ? snapshot : null;
   const grouped = ready ? groupThingsToDo(ready, today, timeZone, coverageFirst) : null;
-  const value = grouped?.value ?? null, more = grouped?.more ?? [], families = grouped?.families ?? [];
+  const value = grouped?.value ?? null, more = grouped?.more ?? [], families = grouped?.families ?? [], waiting = grouped?.waiting ?? [];
   const moreView = view === "more";
-  const shown = moreView ? more.length : families.length;
+  const shown = moreView ? more.length : families.length + waiting.length;
   const todayFailed = today?.state === "unavailable";
   const summary = value ? `${toDoSentence(value.count)}${todayFailed ? " Clock-ins can’t be checked right now." : ""}` : statusText[connection];
   let body: ReactNode;
@@ -235,7 +239,7 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
   } else if (!shown) {
     // A10: the kit's empty card, never one bare line.
     body = <CorpCard as="div" ariaLabel="Things to do"><div className="c-empty c-empty--card">{moreView
-      ? <><b className="c-empty__title">Nothing done or older</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
+      ? <><b className="c-empty__title">Nothing later or done</b><span className="c-empty__body">Planning items and earlier gaps appear here.</span></>
       : <><b className="c-empty__title">You’re all set</b><span className="c-empty__body">Nothing needs you right now.</span></>}</div></CorpCard>;
   } else if (moreView) {
     body = more.map(group => <CorpCard key={group.id} id={`todo-${group.id}`} label={headed(group.title, groupCount(group))}>
@@ -246,16 +250,17 @@ export function ThingsToDoPage({ snapshot, today = null, connection, onRefresh, 
     const timeOffShown = families.some(family => family.groups.some(group => group.id === "time-off"));
     body = <>{families.map(family => <div key={family.id} id={`todo-${family.id}`} className="c-card c-todo__card" role="group" aria-label={family.title}>
       {family.groups.map(kindOf)}
-    </div>)}{moreCard(timeOffShown)}</>;
+    </div>)}{waiting.length ? <section className="c-section" aria-labelledby="todo-waiting-label"><h2 className="c-section__label" id="todo-waiting-label">Waiting for review</h2>
+      <div id="todo-card-waiting" className="c-card c-todo__card" role="group" aria-label="Waiting for review">{waiting.map(kindOf)}</div></section> : null}{moreCard(timeOffShown)}</>;
   }
   // The request lists stay one tap away while the page loads, fails or has nothing waiting.
   if (!moreView && (!ready || !shown)) body = <>{body}{moreCard(false)}</>;
-  const title = moreView ? "Done and older" : "Things to do";
+  const title = moreView ? "Later and done" : "Things to do";
   // A7: a single-column page, capped at the kit's narrow width on desktop.
   return <CorpPage className="c-todo c-page--narrow" labelledBy="todo-title">
     <div data-todo-state={ready ? (shown ? "ready" : "clear") : connection} hidden />
     {/* Direction B: the phone screen (phones under data-nv-b); tablets and desktop keep the cards below. */}
-    {moreView ? null : <InboxB ready={ready} families={families} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
+    {moreView ? null : <InboxB ready={ready} families={families} waiting={waiting} total={value ? value.count : null} connection={connection} statusLine={summary} todayFailed={!!ready && todayFailed} onRefresh={onRefresh} back />}
     {/* Phone: "‹ Home" over the page; when Things to do is a tab of its own the shell hides it and the large title shows. */}
     <CorpNav back={moreView ? { href: "/app/inbox", label: "Things to do" } : { href: "/app", label: "Home" }} title={title} phoneOnly />
     <CorpTitle id="todo-title" title={title} sub={moreView ? undefined : <span role="status" className="c-sr">{summary}</span>} wide />

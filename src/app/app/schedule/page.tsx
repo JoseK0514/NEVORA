@@ -375,6 +375,10 @@ export default async function SchedulePage({
               <div className="c-menu-group" role="group" aria-labelledby="schedule-options-week">
                 <p className="c-menu-label" id="schedule-options-week">This week</p>
                 <div className="c-menu-card">
+                {/* Review B2 (NV-013): Add shift and Build and publish are reachable from the menu at every width (the grid's
+                  hover "+ Add" is a pointer-only shortcut). */}
+                <Link className="nevora-action-menu-item" href={addShiftHref}><strong>Add shift</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
+                <Link className="nevora-action-menu-item" href={publishHref}><strong>Build and publish</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <ScheduleCopyForm actorId={session.id} className="nevora-action-menu-item c-sched-menu-copy" label={<strong>Copy previous week</strong>} command={{operationId:randomUUID(),kind:"PREVIOUS_WEEK",weekStart}} />
                 <Link className="nevora-action-menu-item" href={`/app/schedule/templates?week=${weekStart}`}><strong>Week templates</strong><CaretRightIcon className="c-menu-chev" weight="bold" aria-hidden="true" /></Link>
                 <PrintScheduleButton />
@@ -405,7 +409,9 @@ export default async function SchedulePage({
       <ActionMenu id="b-schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="b-ib b-glass" triggerContent={<DotsThreeIcon size={20} weight="bold" aria-hidden="true" />}>
         {moreItems}
       </ActionMenu>
-      {publishLabel ? <BButtonLink href={publishHref} kind="white" label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</BButtonLink> : null}
+      {/* Review B2 (NV-013): the band's white pill publishes while something waits, otherwise it adds a shift. */}
+      {publishLabel ? <BButtonLink href={publishHref} kind="white" label={`${publishLabel}, ${formatWeekRange(weekStart)}`}>{publishLabel}</BButtonLink>
+        : <BButtonLink href={addShiftHref} kind="white" label={`Add shift, ${formatWeekRange(weekStart)}`}><PlusIcon size={15} weight="bold" aria-hidden="true" />Add shift</BButtonLink>}
     </>,
     location: <ActionMenu id="b-schedule-location-menu" label="Location" title="Location" ariaLabel={`Location: ${locationName}`}
       triggerClassName="b-btn b-btn--glass" triggerContent={<><MapPinIcon size={15} weight="bold" aria-hidden="true" />{locationName}<CaretDownIcon size={13} weight="bold" aria-hidden="true" /></>}>
@@ -447,7 +453,8 @@ export default async function SchedulePage({
             <ActionMenu id="schedule-more-actions" label="More" title="Schedule options" ariaLabel="More schedule actions" triggerClassName="c-icon-btn c-sched-more" triggerContent={<DotsThreeCircleIcon className="c-ic" aria-hidden="true" />}>
               {moreItems}
             </ActionMenu>
-            {publishAction}
+            {/* Review B2 (NV-013): with nothing to publish, the title's action is Add shift (Publish when something waits). */}
+            {publishAction ?? <CorpButtonLink href={addShiftHref} size="sm" aria-label={`Add shift, ${formatWeekRange(weekStart)}`}>Add shift</CorpButtonLink>}
           </span>
         </>}
         sub={<><span className="c-sched-sub__long">{todayLong}</span><span className="c-sched-sub__short">{todayShort}</span></>} />

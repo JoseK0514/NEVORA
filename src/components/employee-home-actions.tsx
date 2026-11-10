@@ -10,6 +10,7 @@ import type {EmployeeHomeRead,HomeSnapshot,HomeSource,PublishedAssignment} from 
 import {EmployeeTimePanel,EmployeeTimeView} from './employee-time-panel';
 import {EmployeeHomeQuietView,type HomeWeek} from './employee-home-quiet';
 import {EmployeeHomeCorpView} from './employee-home-corp';
+import {offlineListener} from '@/lib/offline-hold';
 export type HomeLifetime={state:'ready';observedAt:string;validForMs:number;home:Extract<EmployeeHomeRead,{snapshot:HomeSnapshot}>}|{state:'unavailable';reason:string};
 export function createEmployeeHomeController(changed:(state:PrivatePanelState<HomeLifetime>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,authority:string){
  return createPrivateSnapshotController<HomeLifetime>(changed,request,value=>{
@@ -96,10 +97,10 @@ export function EmployeeHomeActions({authority,timeAuthority,displayName,timeZon
   const pause=()=>controller.pause();
   const sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
   document.addEventListener('visibilitychange',sync);
-  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  const offline=offlineListener({pause:()=>controller.pause(),hold:()=>controller.hold()});for(const event of ['blur','pagehide'])window.addEventListener(event,pause);window.addEventListener('offline',offline);
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
+  return ()=>{mounted=false;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',offline);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
  return <EmployeeHomeReviewedRenderer authority={authority} state={state} timeAuthority={timeAuthority} displayName={displayName} timeZone={timeZone} workspaceName={workspaceName} week={week} teamMessage={teamMessage} intro={intro} corporate={corporate} b={b} onRetry={()=>control.current?.refresh()}/>;
 }

@@ -139,7 +139,8 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
   const closed = businessDay ? ends.filter(end => end && end < businessDay).length : 0;
   const openEnd = businessDay ? [...ends, nextPay.period?.endDate].filter((end): end is string => !!end && end >= businessDay).sort()[0] : undefined;
   const step = !timecardsReady ? { title: "Timecards", detail: connection === "loading" || connection === "reconnecting" ? "Checking…" : "Not available right now", done: false }
-    : closed ? { title: `${plural(closed, "timecard", "timecards")} to review`, detail: "Ready now", done: false }
+    // Review B2 (NV-007): the line says the state ("before payroll"), never "Ready now" for work nobody has reviewed.
+    : closed ? { title: `${plural(closed, "timecard", "timecards")} to review`, detail: "Before payroll", done: false }
     : openEnd ? { title: "Approve timecards", detail: `From ${fmt(nextDay(openEnd), { weekday: "short", month: "short", day: "numeric" })}`, done: false }
     : { title: "Timecards", detail: "None waiting", done: true };
   const away = nextPay.daysUntil <= 0 ? "Today" : nextPay.daysUntil === 1 ? "Tomorrow" : `In ${nextPay.daysUntil} days`;
@@ -148,7 +149,7 @@ function PaydayTile({ nextPay, timecards, timecardsReady, connection, businessDa
     <div className="b-ink__top"><span className="b-ink__k">Payday</span><span className={closed ? "b-ink__due" : "b-ink__due b-ink__due--ok"}>{away}</span></div>
     <div className="b-ink__big">{fmt(nextPay.payday, { weekday: "long", month: "short", day: "numeric" })}</div>
     {nextPay.period ? <div className="b-ink__m">Pay period {periodLabel(nextPay.period.startDate, nextPay.period.endDate)}</div> : null}
-    <div className="b-ink__segs" aria-hidden="true"><i className={step.done ? "on" : ""} /><i /><i /></div>
+    {/* Review B2 (NV-007): the three unlabelled segments never lit, so they are gone; the line below says where payroll is. */}
     <div className="b-ink__r2"><span>{step.title}</span><span>{step.detail}</span></div>
     <BButtonLink href={href} kind="white" full label={href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}>{href === "/app/payroll" ? "Prepare payroll" : "Open timecards"}</BButtonLink>
   </BInk>;

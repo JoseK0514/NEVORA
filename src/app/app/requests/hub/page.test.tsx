@@ -36,9 +36,13 @@ it.each(["EMPLOYEE", "LEAD"])("retains the request destinations for %s", async (
   expect(auth.proof).toHaveBeenCalledOnce();
 });
 
-it.each(["MANAGER", "OWNER"])("redirects %s before rendering employee request content", async (role) => {
+// Review B2 (NV-136): no silent redirect; a manager is told whose page it is and gets a way to Things to do.
+it.each(["MANAGER", "OWNER"])("explains to %s that the page is for employees, before rendering employee request content", async (role) => {
   auth.role = role;
-  await expect(RequestsHubPage()).rejects.toThrow("redirect:/app");
+  const html = renderToStaticMarkup(await RequestsHubPage());
+  expect(html).toContain("This Requests page is for employees");
+  expect(html).toContain('href="/app/inbox"');
+  expect(html).not.toContain("Time off and shift changes you’ve sent");
 });
 
 it("does not render the hub when session verification rejects access", async () => {

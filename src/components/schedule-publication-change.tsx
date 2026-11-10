@@ -29,12 +29,19 @@ function was(change: PublicationChange, locationNames: Readonly<Record<string, s
 
 export function SchedulePublicationChange({ changes, locationNames = {} }: { changes: readonly PublicationChange[]; locationNames?: Readonly<Record<string, string>> }) {
   if (!changes.length) return null;
-  return <details className="schedule-publication-change"><summary><span>What changed in your schedule</span><CaretDownIcon className="em-publication-caret" size={20} aria-hidden="true"/></summary><ul>{changes.map((change, index) => {
+  // Review B2 (NV-226): in shift order (date, then start), each change with a tone chip: green added, grey removed, amber
+  // for anything that changed.
+  const ordered = changes.map((change, index) => ({ change, index })).sort((a, b) => {
+    const x = a.change.after ?? a.change.before, y = b.change.after ?? b.change.before;
+    return (x?.date ?? '').localeCompare(y?.date ?? '') || (x?.startTime ?? '').localeCompare(y?.startTime ?? '') || a.index - b.index;
+  });
+  return <details className="schedule-publication-change"><summary><span>What changed in your schedule</span><CaretDownIcon className="em-publication-caret" size={20} aria-hidden="true"/></summary><ul>{ordered.map(({ change, index }) => {
     const shift = change.after ?? change.before;
     const moved = change.type === 'TIME_CHANGED' && change.before && change.after && change.before.date !== change.after.date;
     const prior = change.type === 'ADDED' || change.type === 'REMOVED' ? null : was(change, locationNames);
+    const tone = change.type === 'ADDED' ? 'green' : change.type === 'REMOVED' ? 'grey' : 'amber';
     return <li key={index}>
-      <strong>{keepWhole(`${moved ? 'Moved' : verbs[change.type]}${shift ? ` · ${day(shift.date)}` : ''}`)}</strong>
+      <strong><span className={`b-chip b-chip--${tone} spc-chip`}>{moved ? 'Moved' : verbs[change.type]}</span>{shift ? keepWhole(` ${day(shift.date)}`) : null}</strong>
       {shift ? <span>{shiftLine(shift, locationNames)}</span> : null}
       {prior ? <span>{prior}</span> : null}
     </li>;

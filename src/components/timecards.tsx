@@ -31,6 +31,7 @@ import {PencilSimpleIcon} from '@phosphor-icons/react/dist/ssr/PencilSimple';
 import {CheckIcon} from '@phosphor-icons/react/dist/ssr/Check';
 import {Duration,SigBand,SigLinkRow,SigPage,SigSection} from './signature/signature';
 import sigStyles from './timecards-signature.module.css';
+import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
 
 /** "Oct 14–20", or "Sep 28 – Oct 4" across a month. */
 function signatureRange(start:string,end:string){
@@ -218,14 +219,25 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     let mounted=true;
     if(previousActor.current!==actorId){commandRef.current=null;setPending(null);}previousActor.current=actorId;
     const clear=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;activeView.current=false;invalidate();clearBatch();setSnapshotActor(null);setData(null);setNotes({});setBusy(false);setPaused(true);setMessage(navigator.onLine?'Timecards paused. Return to this window to check the current period.':'You’re offline. Reconnect to see timecards.');};
-    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||activeView.current))return;clear();activeView.current=document.visibilityState!=='hidden'&&navigator.onLine;if(activeView.current)void refresh(period);};
+    // Review B2 (NV-001): offline with the person still here, the loaded timecards stay on screen read-only (no more reads,
+    // no expiry; the shell disables actions and says when they were updated). Stepping away still clears.
+    let holding=false;
+    const hold=()=>{
+      // Already holding (the browser can send 'offline' more than once): nothing changes.
+      if(holding&&!navigator.onLine)return;
+      if(steppedAway()||!source.current){clear();return;}
+      holding=true;
+      const at=(source.current.cards[0] as {card?:{observedAt?:string}}|undefined)?.card?.observedAt;
+      activeView.current=false;invalidate();if(at)announceOfflineHeld(at);
+    };
+    const sync=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||activeView.current))return;holding=false;clear();activeView.current=document.visibilityState!=='hidden'&&navigator.onLine;if(activeView.current)void refresh(period);};
     const account=()=>{commandRef.current=null;setPending(null);sync();};
     document.addEventListener('visibilitychange',sync);window.addEventListener('pagehide',clear);window.addEventListener('pageshow',sync);
-    window.addEventListener('blur',clear);window.addEventListener('offline',clear);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);
+    window.addEventListener('blur',clear);window.addEventListener('offline',hold);window.addEventListener('online',sync);window.addEventListener('focus',sync);window.addEventListener('storage',account);
     const poll=setInterval(()=>{if(activeView.current&&document.visibilityState==='visible'&&navigator.onLine)void refresh(period,true);},30000);
     void Promise.resolve().then(()=>{if(mounted)sync();});
     return ()=>{mounted=false;activeView.current=false;clearInterval(poll);window.removeEventListener('blur',clear);invalidate();document.removeEventListener('visibilitychange',sync);window.removeEventListener('pagehide',clear);
-      window.removeEventListener('pageshow',sync);window.removeEventListener('offline',clear);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
+      window.removeEventListener('pageshow',sync);window.removeEventListener('offline',hold);window.removeEventListener('online',sync);window.removeEventListener('focus',sync);window.removeEventListener('storage',account);};
   },[period,refresh,invalidate,clearBatch,actorId]);
   function choose(event:FormEvent){event.preventDefault();if(paused)return;try{const next=parsePeriod(draft.startDate,draft.endDate);setPeriod(next);if(next.startDate===period.startDate&&next.endDate===period.endDate)void refresh(next);}catch(error){setMessage(error instanceof Error?error.message:'Choose a valid period');}}
   async function act(item?:TimecardItem,action?:TimecardCommand['action']){
@@ -250,7 +262,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
       if(result.status!=='outcome-unknown'){
         if(result.status==='blocked'||result.status==='conflict'||result.status==='unavailable')setOutcomes(current=>current?.map(outcome=>outcome.command.operationId===command.operationId?{...outcome,status:result.status}:outcome)??null);
         commandRef.current=null;setPending(null);
-        if(['approved','finalized','reopened'].includes(result.status)){await refresh(period);if(own===generation.current-1)setMessage(feedback);}
+        // Review B2 (NV-029): the page stays as it was while the fresh read runs in the background (it replaces the rows when it
+        // lands), and the status line says what happened ("…approved"). A failed background read falls back as before.
+        if(['approved','finalized','reopened'].includes(result.status)){running.current=false;setBusy(false);await refresh(period,true);if(generation.current-own<=1)setMessage(feedback);}
       }
     }catch{if(own===generation.current){if(performance.now()>=validUntil.current)expireProtected();else setMessage('The result could not be confirmed. Retry the same action to reconcile it.');}}
     finally{running.current=false;if(own===generation.current)setBusy(false);}
@@ -412,7 +426,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {openItem.card.issues.length?tone==='neutral'?<p className="c-tc-sheet__issue" data-tone="neutral">{`This ${periodNoun(period)} isn’t over. Hours can still change.${waiting&&!pending&&!outcomes?'':` You can approve from ${approveFrom(period)}.`}`}</p>
             :<div className="c-tc-sheet__issue" data-tone={tone}><b>Needs attention</b>
             <ul>{openItem.card.issues.map(issue=><li key={issue}>{issueNames[issue]}</li>)}</ul>
-            <p>Review the entries and resolve open time or corrections before approval.</p></div>:null}
+            <p>Review the entries and resolve open time or corrections before approval.</p>
+            {/* Review B2 (NV-133): a waiting correction has its way in, inside the note (Approve stays disabled under it). */}
+            {openItem.card.issues.includes('pending_correction')?<Link className="c-btn c-btn--primary c-btn--md c-tc-sheet__go" href="/app/timecards/corrections">Review correction</Link>:null}</div>:null}
           {exclusionText(openItem)&&!openItem.card.issues.length&&openItem.state!=='APPROVED'?<p className="c-tc-sheet__note">{exclusionText(openItem)}</p>:null}
           <CorpCard id="tc-days" label="Days">
             {days.length?<ul className="c-rows" aria-label="Days with recorded time">{days.map(day=><li key={day.date}><div className="c-row c-tc-day">
@@ -446,7 +462,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
     // Select, the eligible cards, review the exact set, confirm, then each card's result: the same reviewed batch on every
     // width. Selection, review and results live above the view, so they survive a resize between phone and desktop.
     const toggleSelecting=()=>{setSelecting(!selecting);if(selecting&&!review&&!outcomes&&!pending)setSelected([]);};
-    const showBulk=!!(selected.length||review||outcomes||pending||selecting);
+    // Review B2 (NV-028): a single card's save in progress is not a batch; the batch controls show for a selection, a review,
+    // results, or a command whose outcome is still unknown (Retry original attempted action).
+    const showBulk=!!(selected.length||review||outcomes||(pending&&!busy)||selecting);
     const exclusionShort=(item:TimecardItem)=>{const exclusion=batchExclusion(item,actorId,batchAction);return exclusion?{self:'A different manager must review',issues:'Resolve timecard issues first',state:'Incompatible current state'}[exclusion]:null;};
     const allEligible=eligible.length>0&&eligible.slice(0,100).every(item=>selected.includes(item.card.employeeId));
     const selectAll=(checked:boolean)=>{setSelected(checked?eligible.slice(0,100).map(item=>item.card.employeeId):[]);setReview(null);setConfirmed(false);};
@@ -557,7 +575,7 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
           {stateCard}
           {emptyCard}
           {ready&&cards.length&&!open&&eligible.length?<BCard label="Ready to approve"><div className="b-notice"><BIcon tone="teal"><CheckIcon weight="bold"/></BIcon>
-            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{attention?`${attention} need${attention===1?'s':''} attention first`:`${rangeText(period)} · ${recordedTotal} recorded`}</span></span>
+            <span className="b-notice__tx"><span className="b-notice__t">{`${Math.min(eligible.length,100)} ${eligible.length===1?'timecard':'timecards'} to approve`}</span><span className="b-notice__s">{/* Review B2 (NV-006): every count names its week. */}{`${rangeText(period)} · ${attention?`${attention} need${attention===1?'s':''} attention first`:`${recordedTotal} recorded`}`}</span></span>
             <BButton onClick={()=>{setSelecting(true);selectAll(true);}}>Review</BButton></div></BCard>
           :ready&&cards.length&&open&&approvedCount?<BCard label="Approval"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t">{summaryTitle}</span><span className="b-notice__s">{`You can approve the rest from ${approveFrom(period)}`}</span></span></div></BCard>:null}
           {ready&&cards.length?<BCard id="b-tc-team" title="Team" count={cards.length}>
@@ -641,8 +659,9 @@ export function Timecards({initialPeriod,manager,actorId,employeeCorporate=false
         </section>:null}
         {ready&&cards.length?<section className="c-card c-tc-tablecard" aria-label="Timecards">
           <div className="c-card__head c-tc-tabs" role="group" aria-label="Show">
-            {/* Copy table 37: "Ready to approve"; while the server still marks the period open, "In progress". */}
-            {([['all','All',cards.length],['review',inProgress?'In progress':'Ready to approve',reviewItems.filter(item=>!isApproved(item)).length],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
+            {/* Review B2 (NV-006): "Need review" (every card with time that isn't approved, issues included), so it can't be read
+              as the same count as "Approve N ready" (the cards that can be approved now); while the period is open, "In progress". */}
+            {([['all','All',cards.length],['review',inProgress?'In progress':'Need review',reviewItems.filter(item=>!isApproved(item)).length],['approved','Approved',approvedCount]] as const).map(([value,label,count])=>
               <button key={value} type="button" aria-pressed={tab===value} aria-label={`${label}, ${count}`} onClick={()=>setTab(value)}>{label}<em aria-hidden="true">{count}</em></button>)}
           </div>
           {/* ↑/↓ move focus between people (the shell's row navigation); while the inspector is open it follows. */}

@@ -88,8 +88,9 @@ export function NotificationInbox({state,onRetry,onMarkRead,quiet=false}:{state:
    </div>}
    {ready?<p className="q-sr" role="status" aria-live="polite">{sorted.length} {sorted.length===1?'notification':'notifications'}{filter==='unread'?' unread':''}</p>:null}
    <HoldHeight holding={!ready} memory="notifications-manager" className="q-notif-hold">
-   {!ready?<div className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Couldn’t load notifications':'Loading…'}</h2>
-     {state.paused||denied||unavailable?<p className="q-empty">{state.paused?'Come back to this window while online.':denied?'Sign in again to see notifications.':'Check your connection, then try again.'}</p>:null}
+   {!ready?<div className="q-emptyblock" role="status"><h2 className="q-emptyblock__title">{state.paused?'Updates paused':denied?'Your session ended':unavailable?'Notifications didn’t load':'Loading…'}</h2>
+     {/* Review B2 (NV-012): the connection is blamed only when the device is offline. */}
+     {state.paused||denied||unavailable?<p className="q-empty">{state.paused?'Come back to this window while online.':denied?'Sign in again to see notifications.':typeof navigator!=='undefined'&&!navigator.onLine?'Check your connection, then try again.':'Try again.'}</p>:null}
      {denied?<div className="q-emptyblock__action"><Link className="q-btn q-btn--sec" href="/login">Sign in</Link></div>
       :unavailable?<div className="q-emptyblock__action"><button type="button" className="q-btn q-btn--sec" onClick={onRetry}>Try again</button></div>:null}
     </div>:<>

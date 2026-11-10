@@ -56,7 +56,9 @@ export default async function RequestsPage({
   type Request = (typeof mine)[number];
   const shape = (request: Request): TimeOffView => ({ id: request.id, status: request.status, startDate: request.startDate, endDate: request.endDate, startTime: request.startTime ?? null, endTime: request.endTime ?? null,
     note: request.reason ?? null, createdAt: request.createdAt ?? null, reviewedAt: request.reviewedAt ?? null, reviewer: request.reviewerName ?? null });
-  const shown = mine.filter(request => view === "decided" ? request.status !== "PENDING" : request.status === "PENDING");
+  // Review B2 (NV-140): waiting soonest first; decided most recently decided first.
+  const shown = mine.filter(request => view === "decided" ? request.status !== "PENDING" : request.status === "PENDING")
+    .sort(view === "decided" ? (a, b) => String(b.reviewedAt ?? "").localeCompare(String(a.reviewedAt ?? "")) : (a, b) => a.startDate.localeCompare(b.startDate));
   const detail = !sheetOpen && params.requestId ? mine.find(request => request.id === params.requestId) ?? null : undefined;
   const listHref = view === "decided" ? "/app/requests?filter=decided" : "/app/requests";
 

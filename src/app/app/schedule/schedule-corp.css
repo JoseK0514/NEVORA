@@ -202,40 +202,41 @@ html body .app-shell[data-nv-corp] .c-sched .cm-person .nv-avatar { background: 
   html body .app-shell.nevora-portal.nevora-portal[data-nv-clean][data-nv-clean][data-nv-corp]:not(.cm-a):not(.cm-b):not(.cm-c):not(.cm-d) .c-sched .cm-sched-slot .cm-person { padding-left: 12px; padding-right: 8px; }
 }
 
-/* Schedule options and Location (S5, M7): rows on the page grid, 48px tall with 16px insets, 15/500 ink, hairlines from
+/* Review B2 (NV-064): the Direction B band's menus (#b-schedule-…) take the same rows and grouped sheet.
+ * Schedule options and Location (S5, M7): rows on the page grid, 48px tall with 16px insets, 15/500 ink, hairlines from
  * the text edge (none after a group's last row), the current choice's check 16px from the right. Schedule options is two
  * grouped lists, This week and Settings, each under a 13px label; links end in a 16px grey chevron. */
-html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item {
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item {
   position: relative; display: flex !important; align-items: center !important; gap: 8px; width: 100%; min-height: 48px !important; margin: 0 !important; padding: 0 16px !important;
   border: 0 !important; border-radius: 0 !important; background: none; box-shadow: none !important; text-align: left;
   font: 500 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif !important; letter-spacing: 0 !important; color: #1A1C1E !important; }
-html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: #EDEEEF; }
-html body .app-shell .c-sched #schedule-location-menu .nevora-action-menu-item:last-of-type::before,
-html body .app-shell .c-sched #schedule-more-actions .c-menu-card > :last-child .nevora-action-menu-item::before,
-html body .app-shell .c-sched #schedule-more-actions .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
-html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item[aria-current="true"]::after { right: 16px; }
-html body .app-shell .c-sched #schedule-more-actions .nevora-action-menu-item > strong { flex: 1 1 auto; min-width: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: inherit !important; color: inherit !important; }
-html body .app-shell .c-sched #schedule-more-actions .nevora-action-menu-item > :not(strong):not(.c-menu-value):not(.c-menu-chev) { display: none !important; }
-html body .app-shell .c-sched #schedule-more-actions .c-menu-value { flex: none; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
-html body .app-shell .c-sched #schedule-more-actions .c-menu-chev { flex: none; width: 16px; height: 16px; color: #A7ACB1; }
-html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 16px 16px 8px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.04px; color: #6B7075; }
-html body .app-shell .c-sched #schedule-more-actions .c-menu-card > div { margin: 0; }
-html body .app-shell .c-sched #schedule-more-actions .c-menu-card > div > p { margin: 0 16px 8px; font-size: 13px; line-height: 18px; color: #6B7075; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item::before { content: ""; position: absolute; left: 16px; right: 0; bottom: 0; height: 1px; background: #EDEEEF; }
+html body .app-shell .c-sched :is(#schedule-location-menu, #b-schedule-location-menu) .nevora-action-menu-item:last-of-type::before,
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > :last-child .nevora-action-menu-item::before,
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > .nevora-action-menu-item:last-child::before { display: none; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item[aria-current="true"]::after { right: 16px; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > strong { flex: 1 1 auto; min-width: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font: inherit !important; color: inherit !important; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .nevora-action-menu-item > :not(strong):not(.c-menu-value):not(.c-menu-chev) { display: none !important; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-value { flex: none; font: 400 15px/20px Inter, "Inter Fallback", -apple-system, sans-serif; color: #6B7075; white-space: nowrap; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-chev { flex: none; width: 16px; height: 16px; color: #A7ACB1; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 16px 16px 8px; font: 500 13px/18px Inter, "Inter Fallback", -apple-system, sans-serif; letter-spacing: -0.04px; color: #6B7075; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > div { margin: 0; }
+html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card > div > p { margin: 0 16px 8px; font-size: 13px; line-height: 18px; color: #6B7075; }
 @media (hover: hover) and (pointer: fine) {
-  html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item:hover { background: #F2F4F4; }
+  html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item:hover { background: #F2F4F4; }
 }
-html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item:active { background: #EDEEEF; }
+html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item:active { background: #EDEEEF; }
 /* Phones: the sheet is grey (#F5F6F6) with each group as a white inset card, labels on the cards' text edge. */
 @media (max-width: 760px) {
-  html body .app-shell .c-sched #schedule-more-actions.nevora-action-menu-popover { background: #F5F6F6 !important; padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important; }
-  html body .app-shell .c-sched #schedule-more-actions > .c-menu-head { margin: 0 !important; background: #FFFFFF; }
-  html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 16px 32px 8px; }
-  html body .app-shell .c-sched #schedule-more-actions .c-menu-card { margin: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; overflow: hidden; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions).nevora-action-menu-popover { background: #F5F6F6 !important; padding-bottom: max(28px, env(safe-area-inset-bottom, 0px)) !important; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) > .c-menu-head { margin: 0 !important; background: #FFFFFF; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 16px 32px 8px; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-card { margin: 0 16px; border-radius: 12px; background: #FFFFFF; box-shadow: 0 0 0 1px #E3E5E6; overflow: hidden; }
 }
 /* Desktop popover: the two groups one above the other, a hairline between them. */
 @media (min-width: 761px) {
-  html body .app-shell .c-sched #schedule-more-actions .c-menu-group + .c-menu-group { box-shadow: inset 0 1px 0 #EDEEEF; }
-  html body .app-shell .c-sched #schedule-more-actions .c-menu-label { margin: 12px 16px 4px; }
-  html body .app-shell .c-sched :is(#schedule-more-actions, #schedule-location-menu) .nevora-action-menu-item { min-height: 40px !important; }
-  html body .app-shell .c-sched #schedule-more-actions { min-width: 280px; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-group + .c-menu-group { box-shadow: inset 0 1px 0 #EDEEEF; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) .c-menu-label { margin: 12px 16px 4px; }
+  html body .app-shell .c-sched :is(:is(#schedule-more-actions, #b-schedule-more-actions), :is(#schedule-location-menu, #b-schedule-location-menu)) .nevora-action-menu-item { min-height: 40px !important; }
+  html body .app-shell .c-sched :is(#schedule-more-actions, #b-schedule-more-actions) { min-width: 280px; }
 }

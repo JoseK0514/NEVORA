@@ -90,7 +90,8 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   const [remote, setRemote] = useState<Remote>({ state: "idle", data: null, at: 0 });
   const hint = useRef<HTMLElement>(null);
 
-  const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query), [role, payroll, remote.data, query, context]);
+  // Review B2 (NV-216): an Employee's or Lead's empty finder lists every one of their pages (they fit), not the first six.
+  const results = useMemo(() => rankFinder(finderItems(role, payroll, remote.data, context), query, role === "EMPLOYEE" || role === "LEAD" ? 16 : 6), [role, payroll, remote.data, query, context]);
 
   // Employee desktop (Nov 8, 2026): an Employee's finder lists their own pages only, so it reads nothing and opens only
   // where its top-bar button shows (desktop and tablets, not a phone held sideways).
@@ -137,7 +138,8 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
   }
 
   useEffect(() => {
-    if (hint.current && !/Mac|iPhone|iPad/.test(navigator.platform)) hint.current.textContent = "Ctrl K";
+    // Review B2 (NV-323): the hint is filled once on mount for this device (it no longer swaps from ⌘K on Windows and Linux).
+    if (hint.current) hint.current.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K";
     const shortcut = (event: globalThis.KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") { event.preventDefault(); if (dialog.current?.open) close(); else open(); }
     };
@@ -162,12 +164,14 @@ export function CommandFinder({ role, payroll, context }: { role: UserRole; payr
     else if (event.key === "Enter") { event.preventDefault(); go(active); }
   }
   const current = Math.min(active, Math.max(0, results.length - 1));
+  // Review B2 (NV-062): the arrow keys keep the current option in view inside the scrolling list.
+  useEffect(() => { if (keyboard) document.getElementById(`command-finder-${current}`)?.scrollIntoView?.({ block: "nearest" }); }, [current, keyboard]);
 
   return <>
     <button type="button" className="command-finder-trigger" onClick={event => open(event.currentTarget)} aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K">
-      <MagnifyingGlassIcon size={18} aria-hidden="true" /><span>Search</span><kbd ref={hint} aria-hidden="true">⌘K</kbd>
+      <MagnifyingGlassIcon size={18} aria-hidden="true" /><span>Search</span><kbd ref={hint} aria-hidden="true" suppressHydrationWarning />
     </button>
-    <dialog ref={dialog} className="command-finder" aria-label="Find a page, person or place" onClose={closed}
+    <dialog ref={dialog} className="command-finder" aria-label={own ? "Search your pages" : "Find a page, person or place"} onClose={closed}
       onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <div className="command-finder-panel">
         <div className="command-finder-search">

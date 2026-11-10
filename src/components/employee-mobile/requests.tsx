@@ -17,6 +17,7 @@ import {shiftChangeFeedback} from '../shift-change-form-state';
 import {useEmployeeBScreen} from './use-mobile';
 import {PickupOperation} from './pickup-operation';
 import {formatTime,addDays,weekStartFor} from '@/lib/date-utils';
+import {offlineListener} from '@/lib/offline-hold';
 
 type Mode='hub'|'open';
 const day=requestDay;
@@ -117,10 +118,10 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
   control.current=controller;let mounted=true;
   const pause=()=>controller.pause(),sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
   document.addEventListener('visibilitychange',sync);
-  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  const offline=offlineListener({pause:()=>controller.pause(),hold:()=>controller.hold()});for(const event of ['blur','pagehide'])window.addEventListener(event,pause);window.addEventListener('offline',offline);
   for(const event of ['focus','pageshow','online','storage'])window.addEventListener(event,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return()=>{mounted=false;lifetime.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
+  return()=>{mounted=false;lifetime.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',offline);for(const event of ['focus','pageshow','online','storage'])window.removeEventListener(event,sync);};
  },[authority,pathname]);
  const snapshot=!state.paused&&state.snapshot?.state==='ready'&&state.snapshot.authority===authority?state.snapshot:null;
  const denied=state.snapshot?.state==='unavailable'&&state.snapshot.reason==='access_denied';
@@ -131,21 +132,23 @@ function EmployeeMobileRequests({authority,mode,selected}:{authority:string;mode
  const unavailable=!snapshot?<CorpCard ariaLabel="Requests status"><div className="c-card__body"><p className="c-ereq__state" role="status">{state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}</p>
   {denied?<CorpButtonLink href="/login" kind="secondary" size="md" full>Sign in</CorpButtonLink>:!state.paused&&!state.refreshing?<CorpButton kind="secondary" size="md" full onClick={refresh}>Try again</CorpButton>:null}</div></CorpCard>:null;
  const stateB=!snapshot?<BStateCard label="Requests status" text={state.paused?'Requests paused. Return to this page or reconnect to refresh.':denied?'Your access changed. Sign in again to continue.':state.refreshing?'Checking your current requests…':'We couldn’t load your requests. Try again.'}
-  denied={denied} retry={!state.paused&&!state.refreshing?refresh:null}/>:null;
+  denied={denied} retry={!state.paused&&!state.refreshing?refresh:null} kind={state.paused?'paused':undefined}/>:null;
  if(mode==='hub'){
   const modules=snapshot?.modules;
   const recent=snapshot?.recent;
-  const waiting=recent?recent.filter(row=>waitingStatus(row.status)).map(requestRow):[],decided=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRow):[];
+  // Review B2 (NV-140): waiting requests read soonest first.
+  const soonest=(a:{date:string;startTime:string|null},b:{date:string;startTime:string|null})=>a.date.localeCompare(b.date)||(a.startTime??'').localeCompare(b.startTime??'');
+  const waiting=recent?recent.filter(row=>waitingStatus(row.status)).sort(soonest).map(requestRow):[],decided=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRow):[];
   const incoming=modules?.marketplace&&snapshot!.incoming!==0?<IncomingRequestSection count={snapshot!.incoming} onRetry={refresh}/>:null;
   const historyFailed=snapshot&&recent===null?<div className="c-ereq__inline"><span role="status">Your request history couldn’t be checked.</span><button className="c-ereq__retry" type="button" disabled={state.refreshing} onClick={refresh}>Try again</button></div>:null;
-  const waitingB=recent?recent.filter(row=>waitingStatus(row.status)).map(requestRowB):[],decidedB=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRowB):[];
+  const waitingB=recent?recent.filter(row=>waitingStatus(row.status)).sort(soonest).map(requestRowB):[],decidedB=recent?recent.filter(row=>!waitingStatus(row.status)).slice(0,3).map(requestRowB):[];
   const incomingB=modules?.marketplace&&snapshot!.incoming!==0?<IncomingB count={snapshot!.incoming} onRetry={refresh}/>:null;
   const historyFailedB=snapshot&&recent===null?<InlineRetryB text="Your request history couldn’t be checked." onRetry={refresh} busy={state.refreshing}/>:null;
   return <EmployeeRequestsCorp className="em-requests-corp" state={viewState}
    b={<RequestsHubB sub={requestsSubtitle(modules)} newHref={modules?.timeOff?'/app/requests?tab=new':null}
     waiting={snapshot?waitingB:null} decided={snapshot?decidedB:null} forManager={waitingB.every(row=>waitsOnManager(row.chip))}
     decidedHref={modules?.timeOff?'/app/requests?filter=decided':modules?.marketplace?'/app/exchange?tab=requests':null}
-    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} extraCount={incomingB&&snapshot!.incoming?1:0} state={stateB}
+    waitingExtra={incomingB||historyFailedB?<>{incomingB}{historyFailedB}</>:null} extraCount={incomingB&&snapshot!.incoming?snapshot!.incoming:0} state={stateB}
     answer={modules?.marketplace&&snapshot?snapshot.incoming:null} shiftRequests={!!modules?.marketplace}/>}
    sub={requestsSubtitle(modules)}
    newHref={modules?.timeOff?'/app/requests?tab=new':null}

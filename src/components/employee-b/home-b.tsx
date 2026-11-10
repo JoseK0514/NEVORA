@@ -1,6 +1,6 @@
 'use client';
 
-import type {ReactNode} from 'react';
+import {createContext, useContext, type ReactNode} from 'react';
 import {CalendarCheckIcon} from '@phosphor-icons/react/dist/ssr/CalendarCheck';
 import {ClockIcon} from '@phosphor-icons/react/dist/ssr/Clock';
 import {MegaphoneSimpleIcon} from '@phosphor-icons/react/dist/ssr/MegaphoneSimple';
@@ -83,9 +83,16 @@ function Figures({week, payday, worked, onShift}: {week: HomeWeek | null; payday
 }
 
 /** Hours worked come from the Time tab's own private read; without it the figures show scheduled hours. */
-function HoursFigures({authority, week, payday, onShift}: {authority: string; week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null}) {
+/** Time's records for Home, read once: the hero's hours and the shift card's clock state (review B2, NV-039) share it.
+ * undefined: Home has no live hours (the preview); null: not read yet or unavailable. */
+const HoursRead = createContext<Ready | null | undefined>(undefined);
+function HoursProvider({authority, children}: {authority: string; children: ReactNode}) {
   const panel = useHours(authority, 'records', 'overview', null);
   const data = panel.read?.view === 'records' && panel.read.data.state === 'ready' ? panel.read.data as Ready : null;
+  return <HoursRead.Provider value={data}>{children}</HoursRead.Provider>;
+}
+function HoursFigures({week, payday, onShift}: {week: HomeWeek | null; payday?: string | null; onShift?: OnShiftFigure | null}) {
+  const data = useContext(HoursRead) ?? null;
   return <Figures week={week} payday={payday} worked={data ? workedMinutes(data) : null} onShift={onShift}/>;
 }
 
@@ -106,6 +113,7 @@ function TeamCard({place}: {place?: string}) {
 }
 
 function ShiftCard({snapshot, lead}: {snapshot: HomeSnapshot; lead?: boolean}) {
+  const hours = useContext(HoursRead);
   const zone = snapshot.timeZone;
   if (snapshot.publicationState === 'unavailable') return <BCard title="Next shift" id="b-home-shift"><p className="b-state" role="status">Your schedule couldn’t be checked.</p></BCard>;
   const now = snapshot.currentShift, shift = now ?? snapshot.nextShift;
@@ -114,14 +122,21 @@ function ShiftCard({snapshot, lead}: {snapshot: HomeSnapshot; lead?: boolean}) {
   const where = [shift.positionLabel, shift.locationLabel, shift.designatedLead && !lead ? 'Shift lead' : null].filter(Boolean).join(' · ');
   const href = `/app/schedule?week=${encodeURIComponent(shift.weekStart)}&day=${encodeURIComponent(shift.date)}&shift=${encodeURIComponent(shift.shiftId)}`;
   const ends = businessDate(shift.endAt, zone);
+  const clockIn = hours?.current && hours.current.state !== 'CLOCKED_OUT' ? hours.current : null;
   return <BCard id="b-home-shift" title={now ? 'On shift now' : today ? 'Today’s shift' : 'Next shift'}
     chip={now ? <BChip tone="teal">Until {clock(now.endAt, zone)}</BChip> : <BChip tone="teal">{startsIn(shift, snapshot)}</BChip>}>
     <div className="eb-shift">
       <p className="eb-shift__time"><time dateTime={shift.startAt}>{clock(shift.startAt, zone)}</time><span aria-hidden="true"> – </span><span className="b-sr"> to </span><time dateTime={shift.endAt}>{clock(shift.endAt, zone)}</time></p>
       <p className="eb-shift__where"><Dotted text={[today ? null : shortDay(shift.date), where, !today && ends !== shift.date ? `ends ${shortDay(ends)}` : null].filter(Boolean).join(' · ')}/></p>
       {shift.designatedLead && lead ? <p className="eb-leadline"><BChip tone="teal">Shift lead</BChip>{now || today ? 'You’re the shift lead today' : 'You’re the shift lead'}</p> : null}
-      <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
-        <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>
+      {/* Review B2 (NV-039): the instruction follows Time's clock state, so Home never sends someone who is clocked in back
+        to the tablet to clock in. */}
+      {clockIn ? <div className="eb-tint" data-tone="green"><BIcon tone="green"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        <span className="b-notice__t">{clockIn.state === 'ON_BREAK' ? 'On break' : `Clocked in at ${clock(clockIn.clockInAt, zone)}`}</span><span className="b-notice__s">Breaks and clock out on the {shift.locationLabel} tablet</span></span></div>
+        : now && hours ? <div className="eb-tint" data-tone="amber"><BIcon tone="amber"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        <span className="b-notice__t">Not clocked in yet</span><span className="b-notice__s">Clock in on the {shift.locationLabel} tablet</span></span></div>
+        : <div className="eb-tint"><BIcon tone="teal"><ClockIcon weight="bold"/></BIcon><span className="b-notice__tx">
+        <span className="b-notice__t">Clock in on the {shift.locationLabel} tablet</span><span className="b-notice__s">Breaks and clock out happen there too</span></span></div>}
       {/* On desktop the button sits in the card's footer beside the day and length (eb-desk is desktop only). */}
       <div className="eb-shift__bar"><span className="eb-desk eb-shift__when">{keepWhole([longDay(shift.date), lengthOf(shift)].filter(Boolean).join(' · '))}</span>
         <BButtonLink href={href} kind="quiet" full label={`Shift details, ${shortDay(shift.date)}`}>Shift details</BButtonLink></div>
@@ -186,11 +201,11 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
       ? <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub} label={`${title}, review`} trail={<BButtonLink href={item.href} kind="teal" label={`Review: ${title}`} prefetch={false}>Review</BButtonLink>}/>
       : <BRow key={key} href={item.href} lead={<TodoIcon item={item} confirm={confirm}/>} title={title} sub={sub}/>;
   };
-  return <BScreen>
+  const screen = <BScreen>
     {/* A Lead's desktop: Message today's team is the band's white action (eb-desk); phones use the Today's team card. */}
     {/* Review B1 (NV-160): one way to message the team, in the Today’s team card (the band’s copy is gone). */}
     <BHero big eyebrow={<>{snapshot ? <time dateTime={snapshot.observedAt}>{keepWhole(fmt(snapshot.timeZone, {weekday: 'long', month: 'short', day: 'numeric'}).format(new Date(snapshot.observedAt)))}</time> : date}{place ? <> · {place}</> : null}</>} title={name ? `Welcome back, ${name}` : 'Home'}>
-      {snapshot ? hoursAuthority ? <HoursFigures authority={hoursAuthority} week={weekShown} payday={payday} onShift={onShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift}/> : null}
+      {snapshot ? hoursAuthority ? <HoursFigures week={weekShown} payday={payday} onShift={onShift}/> : <Figures week={weekShown} payday={payday} worked={null} onShift={onShift}/> : null}
     </BHero>
     <BStack>
       {snapshot ? <>
@@ -198,7 +213,8 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
         {snapshot.publicationState === 'partial' ? <BNote>{unpublishedNote(snapshot.unpublishedLocations ?? [])}</BNote> : null}
         {team ? <TeamCard place={(snapshot.currentShift ?? snapshot.nextShift)?.locationLabel}/> : null}
         {todos.length || partial ? <BCard title="Things to do" id="b-home-todo" count={todos.length || undefined}
-          link={todos.length > 3 ? {href: '/app/notifications', label: <>See all<span className="eb-desk">{'\u00a0'}{todos.length}</span></>, aria: `See all ${todos.length} things to do`} : undefined}>
+          // Review B2 (NV-037): the link opens Notifications, so it says so.
+          link={todos.length > 3 ? {href: '/app/notifications', label: 'All notifications', aria: 'See all notifications'} : undefined}>
           <BList>
             {todos.slice(0, 3).map(todoRow)}
             {partial ? HOME_SOURCES.filter(key => !isComplete(snapshot.sources[key])).map(key => {
@@ -222,6 +238,7 @@ export function EmployeeHomeB({snapshot, partial, todos, week, name, date, place
       </BCard>}
     </BStack>
   </BScreen>;
+  return hoursAuthority ? <HoursProvider authority={hoursAuthority}>{screen}</HoursProvider> : screen;
 }
 
 export {weekRange};

@@ -6,7 +6,9 @@ import {createPrivateSnapshotController} from '@/lib/private-snapshot-client';
 import {readOperationalNavigation} from './commands';
 import {useAppNavigation} from '../app-navigation';
 import {QuietSkeleton} from '../quiet/quiet';
-import {BButton,BCard,BHero,BScreen,BStack} from '../owner-b/b-kit';
+import {BCard,BHero,BScreen,BStack,BState} from '../owner-b/b-kit';
+import {OPERATIONAL_RETRY_EVENT} from './use-operational-navigation';
+import {announceOfflineHeld,steppedAway} from '@/lib/offline-hold';
 import {CorpBody,CorpButton,CorpCard,CorpTitle} from '../corp/corp';
 
 export type ScopedObservation={authority:string;observedAt:string;validForMs:number};
@@ -17,6 +19,8 @@ type Recovery={required:boolean;view:CurrentAuthority|null};
 export const STUCK_MS=2500;
 type Body={authority:string|null;phase:'ready'|'expired'|'paused';content:ReactNode};
 const online=()=>document.visibilityState!=='hidden'&&navigator.onLine&&document.hasFocus();
+/** A frame holding its page offline keeps it while the device is still offline and the person is still here. */
+const keepOffline=(held:{current:boolean})=>held.current&&!navigator.onLine&&!steppedAway();
 
 /** One browser tab's fence, shared by every frame instance (inspection Oct 24). Any instance's retirement (hidden,
  * blur, pagehide, offline, storage, pageshow, online, expiry) is recorded here synchronously, so a frame that mounts
@@ -61,6 +65,9 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const observationRef=useRef(observation),versionRef=useRef('');
  // Explicit recovery uses a fresh authority read; a stalled navigation also needs a source navigation to preempt it.
  const explicitRefresh=useRef(false),explicitSource=useRef<string|null>(null);
+ // Offline with the person still here (review B2, NV-001): the page they loaded stays, read-only, until they reconnect
+ // (a fresh check) or step away (cleared, as before).
+ const held=useRef(false);
  const controls=useRef<{recover:(tabWide?:boolean)=>void;pause:()=>void;complete:(view:CurrentAuthority)=>void}|null>(null);
  const observed=observation?Date.parse(observation.observedAt):NaN,duration=observation?.validForMs??0;
  const version=observation?JSON.stringify([observation.authority,observation.observedAt,duration]):'unavailable';
@@ -97,8 +104,17 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    if(Date.parse(result.observedAt)<latest.current)throw Error('Authority observation moved backwards');
    return {...result,requestStartedAt};
   },reason=>({state:'unavailable',reason}),()=> 'read_failed');
-  function pause(){foreground=false;retire('paused');controller.pause();}
-  function recover(tabWide=true){foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  function pause(){held.current=false;foreground=false;retire('paused');controller.pause();}
+  function recover(tabWide=true){if(keepOffline(held))return;held.current=false;foreground=online();retire('expired',tabWide);lastRefresh='';controller.pause();if(foreground)controller.start();}
+  // Offline: stop checking (the controller's own pause publishes nothing here while the page is current), record the
+  // retirement for the tab, and require a fresh check when the person reconnects. Nothing on screen changes.
+  function hold(){
+   // Already holding (the browser can send 'offline' more than once): nothing changes.
+   if(held.current&&!navigator.onLine)return;
+   if(steppedAway()||required.current){pause();return;}
+   held.current=true;foreground=false;controller.pause();retireTab();required.current=true;retiredThrough.current=Math.max(retiredThrough.current,latest.current);
+   const page=observationRef.current;if(page)announceOfflineHeld(page.observedAt);
+  }
   const recoverTab=()=>recover();
   const focus=(event:Event)=>{if(event.target!==window||(foreground&&online()))return;recover();};
   function complete(current:CurrentAuthority){
@@ -108,7 +124,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   const resume=navigation?.subscribe(()=>{if(!active||!online())return;if(required.current)recover(false);else if(deferredRefresh.current){deferredRefresh.current=false;refreshPage(router,versionRef);}});
   const visibility=()=>{if(document.visibilityState==='hidden')pause();else recover();};
   document.addEventListener('visibilitychange',visibility);
-  for(const event of ['blur','pagehide','offline'])window.addEventListener(event,pause);
+  for(const event of ['blur','pagehide'])window.addEventListener(event,pause);
+  window.addEventListener('offline',hold);
   window.addEventListener('focus',focus);
   for(const event of ['pageshow','online','storage'])window.addEventListener(event,recoverTab);
   // A page rendered after this tab's current cutoff, with the fence's authority, needs no second check or render.
@@ -123,14 +140,14 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
    foreground=true;complete(fence);return true;
   }
   queueMicrotask(()=>{if(active&&!adoptTabFence())recover(false);});
-  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide','offline'])window.removeEventListener(event,pause);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
+  return()=>{active=false;resume?.();controller.stop();controls.current=null;document.removeEventListener('visibilitychange',visibility);window.removeEventListener('focus',focus);for(const event of ['blur','pagehide'])window.removeEventListener(event,pause);window.removeEventListener('offline',hold);for(const event of ['pageshow','online','storage'])window.removeEventListener(event,recoverTab);};
  },[router,navigation]);
 
  useEffect(()=>{
   let active=true,early:ReturnType<typeof setTimeout>|undefined,expiry:ReturnType<typeof setTimeout>|undefined;
   queueMicrotask(()=>{
    if(!active)return;
-   if(!online()){controls.current?.pause();return;}
+   if(!online()){if(!keepOffline(held))controls.current?.pause();return;}
    if(required.current&&!recovery.view)return;
    const current=recovery.view??anchor.current;
    // A known server observation anchors elapsed time to the monotonic request
@@ -162,6 +179,8 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
   // NAVIGATE preempts Next's pending queue; REFRESH waits behind it. Capture the accepted source before discarding.
   explicitSource.current=navigation?.current()?.source??null;
   explicitRefresh.current=true;navigation?.discard();controls.current?.recover();
+  // Review B2 (NV-032): one Try again, so the shell's management menus re-check too.
+  window.dispatchEvent(new Event(OPERATIONAL_RETRY_EVENT));
  };
  const ready=!recovery.required&&!!observation&&body.phase==='ready'&&body.authority===observation.authority;
  // Every tab tap runs a fresh check (about a second on the hosted preview). It draws the page's own quiet shape; only a
@@ -180,14 +199,16 @@ export function ScopedReadFrame({observation,children,unavailable}:{observation?
  const checking=body.phase!=='paused'&&!stuck;
  const stateSection=<section className="portal-route-state" role="status" data-checking={checking?'':undefined}>{checking?<QuietSkeleton/>:null}<h2>{body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…'}</h2><p>{body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.'}</p><button className="button secondary" type="button" onClick={refreshCurrent}>Refresh current view</button></section>;
  if(checking)return stateSection;
- // Round 5 (Nov 7, 2026): paused (offline) or stuck, the page says so in the page's own look: Direction B's hero and card
- // on phones, the band and a card on desktop (an older white box sat under a white header). The brief "checking" state
- // above keeps its skeleton, so a normal tab tap never flashes this.
- const title=body.phase==='paused'?'View paused':recovery.required?'Current view needs a fresh check':'Checking current view…';
- const line=body.phase==='paused'?'Return to this window while online to see current information.':'We’ll show updated information when your current access and the page have been checked.';
+ // Round 5 (Nov 7, 2026): paused or stuck, the page says so in the page's own look. Review B2 (NV-032, NV-075): one
+ // message under the hero in the shared state card (amber offline or paused, red when the check failed) with one Try
+ // again, which also re-checks the shell's menus; the brief "checking" state above keeps its skeleton.
+ const offlineNow=typeof navigator!=='undefined'&&!navigator.onLine;
+ const kind=body.phase==='paused'?offlineNow?'offline':'paused':'failed';
+ const title=kind==='offline'?'You’re offline':kind==='paused'?'View paused':'Couldn’t check your access';
+ const line=kind==='offline'?'Reconnect to see this page.':kind==='paused'?'Come back to this window to see current information.':'Try again to load this page.';
  return <div className="c-page c-page--narrow c-route-state" data-corp="">
-  <BScreen back><BHero title={title} back={{href:'/app',label:'Home'}}/><BStack><BCard><div className="b-route-state" role="status"><p>{line}</p><BButton kind="quiet" full onClick={refreshCurrent}>Refresh current view</BButton></div></BCard></BStack></BScreen>
+  <BScreen back><BHero title={title} back={{href:'/app',label:'Home'}}/><BStack><BCard><BState kind={kind} line={line} action={{label:'Try again',onClick:refreshCurrent}}/></BCard></BStack></BScreen>
   <CorpTitle title={title}/>
-  <CorpCard><CorpBody><p className="c-route-state__line" role="status">{line}</p><CorpButton kind="secondary" onClick={refreshCurrent}>Refresh current view</CorpButton></CorpBody></CorpCard>
+  <CorpCard><CorpBody><p className="c-route-state__line" role="status">{line}</p><CorpButton kind="secondary" onClick={refreshCurrent}>Try again</CorpButton></CorpBody></CorpCard>
  </div>;
 }

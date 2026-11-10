@@ -81,13 +81,15 @@ function Check({ checked, onChange, disabled, children }: { checked: boolean; on
   return <label className="c-pay__check"><input type="checkbox" checked={checked} disabled={disabled} onChange={event => onChange(event.target.checked)} /><span>{children}</span></label>;
 }
 
-export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company, tabs = null }: {
+export function PayrollRuns({ recoveryScope, current = null, canEditSettings = false, view = 'home', runId = null, names = {}, company, tabs = null, timeZone }: {
   recoveryScope: string; current?: OpenPayPeriod | null; canEditSettings?: boolean; view?: PayrollView; runId?: string | null; names?: Record<string, string>; company?: string; tabs?: PayrollTab[] | null;
+  /** The workspace's zone: "today" (paydays, overdue periods) is the company's day, as on Home (review B2, NV-024). */
+  timeZone?: string;
 }) {
   const resource = usePayrollResource('/api/payroll/runs', readRuns);
   const operation = usePayrollOperation('/api/payroll/runs', resource.reload, recoveryScope);
   const router = useRouter();
-  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const [today] = useState(() => companyDay(timeZone));
   // A recorded action that made or replaced a run (a prepared draft, a correction) opens that run's review.
   useEffect(() => {
     const next = operation.receipt?.runId;
@@ -134,6 +136,13 @@ export function PayrollRuns({ recoveryScope, current = null, canEditSettings = f
 
 /** The oldest completed period with no payroll whose payday has already passed (missing periods arrive oldest first;
  * sorted again here so the notice never depends on that order). Null when none has passed, or nothing is known. */
+/** Today's date (YYYY-MM-DD) in the company's zone; the device's day only if the zone is unknown or invalid. */
+function companyDay(timeZone?: string) {
+  const now = new Date();
+  try { if (timeZone) return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now); } catch { /* fall through */ }
+  return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+}
+
 function overduePeriod(data: PayrollRunsResponse | null, today: string) {
   const passed = (data?.missingPeriods ?? []).filter(item => item.payday < today);
   return passed.sort((a, b) => a.period.startDate.localeCompare(b.period.startDate))[0] ?? null;

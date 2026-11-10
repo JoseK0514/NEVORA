@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowsClockwiseIcon, CalendarCheckIcon, ClockIcon, HourglassMediumIcon, WarningCircleIcon } from "@phosphor-icons/react/ssr";
 import { createPrivateSnapshotController } from "@/lib/private-snapshot-client";
 import { parseToday, STATUS_TEXT, START_GRACE_MINUTES, type Today, type TodayShift } from "@/lib/today/project";
+import { offlineListener } from "@/lib/offline-hold";
 
 /** Today on the floor (B4): Home tiles and the Inbox's missed punches share one
  * read-only snapshot of published shifts against recorded punches. */
@@ -22,8 +23,10 @@ export function useToday() {
     controller.current = c;
     const sync = () => { if (document.visibilityState === "visible" && navigator.onLine) c.start(); else c.pause(); };
     sync();
-    document.addEventListener("visibilitychange", sync); window.addEventListener("online", sync); window.addEventListener("offline", sync);
-    return () => { c.stop(); controller.current = null; document.removeEventListener("visibilitychange", sync); window.removeEventListener("online", sync); window.removeEventListener("offline", sync); };
+    // Review B2 (NV-001): offline keeps today's loaded list on screen (read-only) unless the person stepped away.
+    const offline = offlineListener({ pause: () => c.pause(), hold: () => c.hold() });
+    document.addEventListener("visibilitychange", sync); window.addEventListener("online", sync); window.addEventListener("offline", offline);
+    return () => { c.stop(); controller.current = null; document.removeEventListener("visibilitychange", sync); window.removeEventListener("online", sync); window.removeEventListener("offline", offline); };
   }, []);
   return { snapshot, refreshing, refresh: () => controller.current?.refresh() };
 }

@@ -12,12 +12,18 @@ import './payroll-workflow.css';
 
 /** Every Payroll page (Release 1): the same access check, then one view of the payroll workspace. The review pages are
  * their own URLs so a phone shows them as pushed pages (‹ Payroll) and Back returns where it should. */
+async function ownerNamesFor() {
+  return listEmployees().then(list => list.filter(employee => employee.role === 'OWNER' && employee.active !== false).map(employee => `${employee.firstName} ${employee.lastName}`.trim())).catch(() => []);
+}
+
 export async function PayrollRoute({ view, runId = null }: { view: PayrollView; runId?: string | null }) {
   if (!payrollFeatureEnabled()) notFound();
   const proof = await requireSessionMutationProof();
   const capabilities = await readPayrollCapabilities(proof);
   // PD9 / UX10: someone without payroll access who opens the link is told why, instead of a silent move to Home.
-  if (!capabilities.canReview) return <OwnerOnlyNotice title="Payroll" reason="Payroll is open to Owners and the people they give payroll access." help="Ask an Owner if you need it." />;
+  // Review B2 (NV-137): the notice names who can help (the workspace's Owners, from the team list the person already sees).
+  if (!capabilities.canReview) return <OwnerOnlyNotice title="Payroll" reason="Payroll is for Owners" help="Owners can give you payroll access." ownersCan="give you payroll access"
+    owners={await ownerNamesFor()} />;
   const workspace = await getWorkspace();
   const recoveryScope = payrollRecoveryScope(workspace.id, proof.employee.id);
   const current = await currentPayPeriod().catch(() => null);
@@ -25,7 +31,7 @@ export async function PayrollRoute({ view, runId = null }: { view: PayrollView; 
   // the Owner already sees). Pay history uses them to name each statement's employee from its record, never its file name.
   const names = view === 'home' ? {} : await listEmployees().then(list => Object.fromEntries(list.map(employee => [employee.id, `${employee.firstName} ${employee.lastName}`.trim()]))).catch(() => ({}));
   return <PayrollRuns key={recoveryScope} recoveryScope={recoveryScope} current={current} canEditSettings={proof.employee.role === 'OWNER'}
-    view={view} runId={runId} names={names} company={workspace.name} tabs={view === 'home' ? payrollTabs(proof.employee.role, capabilities) : null} />;
+    view={view} runId={runId} names={names} company={workspace.name} timeZone={workspace.timeZone} tabs={view === 'home' ? payrollTabs(proof.employee.role, capabilities) : null} />;
 }
 
 export type PayrollSearch = Promise<{ run?: string | string[] }>;

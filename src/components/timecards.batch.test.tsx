@@ -140,8 +140,13 @@ it('counts initial transit and JSON parsing against the supplied finite budget',
 it.each([403,503,'malformed'] as const)('retires private selection and review on a replacement %s',async result=>{
  let reads=0;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):result==='malformed'?Response.json({state:'ready',cards:[]}):new Response(null,{status:result}));await mount();check('Select PRIVATE E1');click('Review selected timecards');await vi.advanceTimersByTimeAsync(10000);expect(html()).not.toContain('PRIVATE');expect(html()).not.toContain('Reviewed approval set');expect(commands).toHaveLength(0);
 });
-it.each(['blur','offline','pagehide'])('fences an early replacement after %s and does not poll a paused view',async event=>{
+it.each(['blur','pagehide'])('fences an early replacement after %s and does not poll a paused view',async event=>{
  let reads=0,resolve!:(r:Response)=>void;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await vi.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));resolve(Response.json(ready(15000)));await flush();await vi.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).not.toContain('PRIVATE');
+});
+// Review B2 (NV-001; Jose, Nov 10, 2026): offline with the person still here, the loaded timecards stay read-only; the late
+// replacement is still fenced out and nothing polls.
+it('keeps the loaded timecards offline, fences an early replacement and does not poll',async()=>{ const event='offline';
+ let reads=0,resolve!:(r:Response)=>void;vi.stubGlobal('fetch',async()=>++reads===1?Response.json(ready(15000)):new Promise<Response>(r=>{resolve=r;}));await mount();await vi.advanceTimersByTimeAsync(10000);window.dispatchEvent(new Event(event));resolve(Response.json(ready(15000)));await flush();await vi.advanceTimersByTimeAsync(31000);expect(reads).toBe(2);expect(html()).toContain('PRIVATE');
 });
 it('clears a frozen review and selection when a fresh projection changes source facts',async()=>{
  let reads=0;vi.stubGlobal('fetch',async()=>{const result=ready(15000);if(++reads>1)result.cards[0].sourceHash='b'.repeat(32);return Response.json(result);});await mount();check('Select PRIVATE E1');click('Review selected timecards');check('Confirm reviewed timecards');await vi.advanceTimersByTimeAsync(10000);expect(html()).toContain('PRIVATE E1');expect(html()).not.toContain('Reviewed approval set');expect(control(n=>n.type==='input'&&n.props['aria-label']==='Select PRIVATE E1').checked).toBe(false);expect(commands).toHaveLength(0);
@@ -154,13 +159,14 @@ it('does not start the deferred first read after unmount',async()=>{
 });
 // Clean Manager v3: one table with a four-figure overview. "Need review" uses the Inbox's rule (not finalized, with
 // recorded time or history), each row says why in a few words, and the batch wording stays for the confirm step only.
-it('counts Ready to approve as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
+// Review B2 (NV-006): the filter is "Need review" (it counts cards with issues too), so it can't read as "Approve N ready".
+it('counts Need review as the Inbox does, names the reason on the row and keeps the legal wording for the confirm step',async()=>{
  const entry={id:'punch-1',locationId:'fixture-office',locationName:'Fixture office',positionId:'p1',positionName:'Front desk',sourceKind:'RECORDED',adjustmentId:null,recordedVersion:1,startAt:'2026-09-22T08:00:00Z',endAt:null,rawStartAt:'2026-09-22T08:00:00Z',rawEndAt:null,breaks:[]};
  const timed=card('E1');
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{if(path==='/api/timecards')return Response.json({...ready(),cards:[{...timed,source:{...timed.source,entries:[entry]}},card('E2'),card('OWNER')]});commands.push(JSON.parse(String(init?.body)));return Response.json({status:'approved'});});
  await mount();const rendered=html();
  expect(rendered).toContain('aria-label="Period overview"');
- expect(rendered).toContain('aria-label="Ready to approve, 1"');
+ expect(rendered).toContain('aria-label="Need review, 1"');
  expect(rendered).toContain('aria-label="Approved, 0"');
  expect(rendered).toContain('Missing clock-out');
  expect(rendered).toContain('Front desk');
@@ -257,7 +263,9 @@ it.each(['escape','done'] as const)('returns focus to the replacement current ro
  expect(focus.original.focus).not.toHaveBeenCalled();
  expect(focus.chooser.focus).not.toHaveBeenCalled();
 });
-it('returns focus to the period chooser when Escape closes a sheet during the post-approval replacement read',async()=>{
+// Review B2 (NV-029): after an approval the table stays while the fresh read runs in the background (no blank page), so
+// Escape returns focus to the row the sheet came from; the fresh rows then replace it.
+it('keeps the table during the post-approval replacement read and returns focus to the row on Escape',async()=>{
  let reads=0,resolve!:(response:Response)=>void;
  vi.stubGlobal('fetch',async(path:string,init?:RequestInit)=>{
   if(path==='/api/timecards')return ++reads===1?Response.json(ready()):new Promise<Response>(r=>{resolve=r;});
@@ -266,16 +274,15 @@ it('returns focus to the period chooser when Escape closes a sheet during the po
  });
  await mount();openFirstSheet();const focus=sheetFocusFixture();
  click('Approve timecard');await flush();
- expect(html()).toContain('Checking period timecards');
- expect(html()).not.toContain('PRIVATE E1');
+ expect(html()).not.toContain('Checking period timecards');
+ expect(html()).toContain('PRIVATE E1');
  closeSheet();
- expect(focus.chooser.focus).toHaveBeenCalledOnce();
- expect(focus.replacement.focus).not.toHaveBeenCalled();
- expect(focus.original.focus).not.toHaveBeenCalled();
+ expect(focus.replacement.focus).toHaveBeenCalledOnce();
+ expect(focus.chooser.focus).not.toHaveBeenCalled();
  resolve(Response.json(ready()));await flush();
  expect(html()).not.toContain('Approve timecard');
  expect(commands).toHaveLength(1);
- expect(focus.chooser.focus).toHaveBeenCalledOnce();
+ expect(focus.replacement.focus).toHaveBeenCalledOnce();
 });
 it.each(['detached','hidden'])('uses the visible period chooser instead of a %s current row',async state=>{
  transport();await mount();openFirstSheet();const focus=sheetFocusFixture();

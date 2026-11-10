@@ -1,4 +1,5 @@
 'use client';
+import {offlineListener} from '@/lib/offline-hold';
 import Link from 'next/link';
 import {createContext,useContext,useEffect,useRef,useState,type ReactNode} from 'react';
 import {createPrivateSnapshotController} from '../lib/private-snapshot-client';
@@ -122,8 +123,8 @@ export function useActionCenter(weekStart:string,actorId:string){
   },value=>parseActionCenter(value,weekStart),reason=>({state:'unavailable',reason}),()=> 'read_failed');controller.current=c;
   let active=false;
   const current=(event?:Event)=>{if(event?.type==='focus'&&(event.target!==window||active))return;active=document.visibilityState==='visible'&&navigator.onLine;if(active)c.start();else c.pause();},pause=(event?:Event)=>{if(event?.type==='blur'&&event.target!==window)return;active=false;c.pause();},online=()=>{setConnection('reconnecting');current();};
-  for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.addEventListener(name,pause);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
-  return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide','offline'])window.removeEventListener(name,pause);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
+  for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.addEventListener(name,current);const offline=offlineListener({pause:()=>pause(),hold:()=>{active=false;c.hold();}});for(const name of ['blur','pagehide'])window.addEventListener(name,pause);window.addEventListener('offline',offline);window.addEventListener('online',online);document.addEventListener('visibilitychange',current);current();
+  return()=>{c.stop();controller.current=null;for(const name of ['focus','pageshow','storage','nevora:time-correction-changed'])window.removeEventListener(name,current);for(const name of ['blur','pagehide'])window.removeEventListener(name,pause);window.removeEventListener('offline',offline);window.removeEventListener('online',online);document.removeEventListener('visibilitychange',current);};
  },[weekStart,actorId]);
  return {snapshot,connection,refresh:()=>controller.current?.refresh()};
 }

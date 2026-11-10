@@ -16,8 +16,9 @@ it('shows staffing, positions and lead apart from canonical coverage minutes, ne
 it('says "—" with no denominator and "Not set up" when coverage isn’t configured, never 0% or 100%',()=>{
  expect(percentText({required:0,covered:0,percent:null})).toBe('—');
  const html=text(renderToStaticMarkup(<CoverageFigures coverage={{state:'ready',staffing:{required:480,covered:480,percent:100},positions:{required:0,covered:0,percent:null},lead:{required:0,covered:0,percent:null}}}/>));
- expect(html).toContain('Positions — No positions required');
- expect(html).toContain('Lead — No lead required');
+ // Review B2 (NV-108): obligations nobody set up fold into one line instead of dash tiles.
+ expect(html).toContain('Positions and leads aren’t required');
+ expect(html).not.toContain('No positions required');
  const none=text(renderToStaticMarkup(<CoverageFigures coverage={summarizeCoverageMinutes([],false)}/>));
  expect(none).toBe('Coverage this week Not set up');
  expect(none).not.toMatch(/%/);

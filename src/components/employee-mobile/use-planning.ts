@@ -2,6 +2,7 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 import {createPrivateSnapshotController,type PrivatePanelState} from '@/lib/private-snapshot-client';
 import {parseEmployeePlanning,type EmployeePlanningSnapshot,type PlanningView,type PlanningResult} from '@/lib/employee-planning';
+import {offlineListener} from '@/lib/offline-hold';
 export function usePlanning(authority:string,view:PlanningView,selection:string){
  const [state,setState]=useState<PrivatePanelState<EmployeePlanningSnapshot>>({snapshot:null,paused:false,refreshing:true});
  const live=useRef<Extract<EmployeePlanningSnapshot,{state:'ready'}>|null>(null),control=useRef<ReturnType<typeof createPrivateSnapshotController<EmployeePlanningSnapshot>>|null>(null);
@@ -13,9 +14,9 @@ export function usePlanning(authority:string,view:PlanningView,selection:string)
   },value=>{const read=parseEmployeePlanning(value);return read.state==='ready'&&(read.authority!==authority||read.view!==view||read.selection!==selection)?{state:'unavailable',reason:'access_denied'}:read;},reason=>({state:'unavailable',reason}),()=>'read_failed');
   control.current=controller;let mounted=true;
   const pause=()=>controller.pause(),sync=()=>{controller.pause();if(document.visibilityState!=='hidden'&&navigator.onLine)controller.start();};
-  document.addEventListener('visibilitychange',sync);for(const e of ['blur','pagehide','offline'])window.addEventListener(e,pause);for(const e of ['focus','pageshow','online','storage'])window.addEventListener(e,sync);
+  document.addEventListener('visibilitychange',sync);const offline=offlineListener({pause:()=>controller.pause(),hold:()=>controller.hold()});for(const e of ['blur','pagehide'])window.addEventListener(e,pause);window.addEventListener('offline',offline);for(const e of ['focus','pageshow','online','storage'])window.addEventListener(e,sync);
   void Promise.resolve().then(()=>{if(mounted)sync();});
-  return()=>{mounted=false;live.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const e of ['blur','pagehide','offline'])window.removeEventListener(e,pause);for(const e of ['focus','pageshow','online','storage'])window.removeEventListener(e,sync);};
+  return()=>{mounted=false;live.current=null;controller.stop();control.current=null;document.removeEventListener('visibilitychange',sync);for(const e of ['blur','pagehide'])window.removeEventListener(e,pause);window.removeEventListener('offline',offline);for(const e of ['focus','pageshow','online','storage'])window.removeEventListener(e,sync);};
  },[authority,view,selection]);
  const refresh=useCallback(()=>control.current?.refresh(),[]);
  const accept=useCallback((result:PlanningResult)=>{if(result.state==='denied'){live.current=null;control.current?.pause();setState({snapshot:{state:'unavailable',reason:'access_denied'},paused:false,refreshing:false});}else if(result.state==='complete'||result.state==='disabled'||result.state==='conflict'||result.state==='locked')control.current?.refresh();},[]);

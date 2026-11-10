@@ -21,10 +21,15 @@ export function CoverageFigures({coverage,label='Coverage this week',variant='b'
   <span className="cov__k">{label}</span><span className="cov__none">Not set up</span>
  </div>;
  const rows:[string,MinuteObligation,string][]=[['Staffing',coverage.staffing,'Nothing required'],['Positions',coverage.positions,'No positions required'],['Lead',coverage.lead,'No lead required']];
+ // Review B2 (NV-108): an obligation nobody set up (nothing required) isn't a tile with a big dash; it folds into one grey
+ // line under the tiles ("Positions and leads aren’t required").
+ const shown=rows.filter(([name,value])=>name==='Staffing'||value.required!==0);
+ const folded=rows.filter(([name,value])=>name!=='Staffing'&&value.required===0).map(([name])=>name==='Positions'?'positions':'leads');
  return <div className={`cov cov--${variant}`} role="group" aria-label={label}>
   <span className="cov__k">{label}</span>
-  <dl className="cov__list">{rows.map(([name,value,none])=><div key={name} data-full={value.percent!==null&&value.percent>=100||undefined} data-short={value.percent!==null&&value.percent<100||undefined}>
+  <dl className="cov__list">{shown.map(([name,value,none])=><div key={name} data-full={value.percent!==null&&value.percent>=100||undefined} data-short={value.percent!==null&&value.percent<100||undefined}>
    <dt>{name}</dt><dd><b className="c-num">{percentText(value)}</b><span>{detail(value,none)}</span></dd>
   </div>)}</dl>
+  {folded.length?<p className="cov__none-line">{`${folded.length===2?'Positions and leads aren’t':folded[0]==='positions'?'Positions aren’t':'Leads aren’t'} required`}</p>:null}
  </div>;
 }

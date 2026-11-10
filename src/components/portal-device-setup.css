@@ -6,6 +6,8 @@
   margin: 0; padding: 0; border: 0; border-radius: 22px; background: #FFFFFF; color: #111517; overflow-y: auto; overscroll-behavior: contain;
   box-shadow: 0 0 0 1px rgb(16 40 38 / .05), 0 1px 2px rgb(16 40 38 / .06), 0 24px 48px -16px rgb(16 40 38 / .32);
   font-family: Inter, "Inter Fallback", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; }
+/* Review B2 (NV-213): phones get the same light scrim, so the page under the sheet reads as behind it, not tappable. */
+:is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b]:not(.employee-shell) .portal-device-settings::backdrop { background: rgb(17 21 23 / .18); }
 @media (min-width: 768px) {
   :is(#c-root, html):is(:root, [data-theme]) :is(#c-root, body) .app-shell[data-nv-b][data-nv-b]:not(.employee-shell) .portal-device-settings.portal-device-settings {
     inset: 0; width: min(420px, calc(100vw - 48px)); height: fit-content; max-height: calc(100dvh - 48px); margin: auto; }

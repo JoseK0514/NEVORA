@@ -5,7 +5,7 @@ import {OwnLeaveNote} from '../leave-staffing/own-leave-note';
 import type {ReactNode} from 'react';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
-import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack} from '../owner-b/b-kit';
+import {BAvatar, BButtonLink, BCard, BChip, BHero, BIcon, BList, BRow, BScreen, BSeg, BStack, BState} from '../owner-b/b-kit';
 import {BCardNote, Dotted} from './parts';
 import {BEmpty, BStateCard, BText, FormMark, bTone} from './requests-b';
 import {timeOffPill} from '../employee-requests-corp';
@@ -95,12 +95,14 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
       {requests.length ? null : <BEmpty icon={<SunIcon weight="bold"/>} title={filter === 'decided' ? 'No decisions yet' : 'Nothing waiting right now'}
         sub={filter === 'decided' ? 'Approved, declined and withdrawn requests will appear here.' : 'When you send a request, you can follow its status here.'}/>}
       <BList>
-        {requests.map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
+        {/* Review B2 (NV-140): waiting soonest first; decided most recently decided first. */}
+        {[...requests].sort(filter === 'decided' ? (a, b) => (b.reviewedAt ?? '').localeCompare(a.reviewedAt ?? '') : (a, b) => a.startDate.localeCompare(b.startDate)).map(item => <TimeOffRowB key={item.id} request={item} filter={filter}/>)}
       </BList>
       {requests.length && filter !== 'decided' ? <BCardNote>Open a request to see its details or withdraw it.</BCardNote> : null}
     </BCard>
       : request ? <><RequestCardB request={request} zone={zone}/><OwnLeaveNote request={request}/></>
-      : <BCard><BText status>This request isn’t available to your current account. Return to Time off to review your requests.</BText></BCard>}
+      // Review B2 (NV-139): the shared state card, with the way back as a pill.
+      : <BCard><BState kind="locked" line="This request isn’t available to your current account." action={{label: 'Back to Time off', href: '/app/requests'}}/></BCard>}
   </>);
   return <BScreen back>
     {page === 'new' ? <FormMark/> : null}
@@ -112,7 +114,7 @@ export function TimeOffB({page, filter, state, enabled, earlier, requests, reque
 /** The planning read's state, said in a card: paused, denied (Sign in), checking, or failed (Try again). */
 export function TimeOffStateB({paused, denied, refreshing, onRetry}: {paused: boolean; denied: boolean; refreshing: boolean; onRetry: () => void}) {
   return <BStateCard label="Planning access" text={paused ? 'Your planning is paused. Return to this page or reconnect to refresh.' : denied ? 'Your access changed. Sign in again to continue.' : refreshing ? 'Checking your current planning…' : 'Your planning couldn’t be checked.'}
-    denied={denied} retry={refreshing || paused ? null : onRetry}/>;
+    denied={denied} retry={refreshing || paused ? null : onRetry} kind={paused ? 'paused' : undefined}/>;
 }
 
 /** The phone's first frame on Time off, before its private read starts: the page's hero, checking. No private data. */

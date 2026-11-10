@@ -56,7 +56,7 @@ function OpenShiftCards({ open, weekStart }: { open: EmployeeMyScheduleProps['op
     {empty ? <section className="c-card" aria-labelledby="open-empty-title"><div className="c-esched__empty">
       <h2 className="c-esched__empty-title" id="open-empty-title">No open shifts right now</h2>
       <p className="c-esched__empty-body">When a teammate offers a shift you can work, it shows here.</p>
-      <Link className="c-link" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon className="c-esched__caret" weight="bold" aria-hidden="true" /></Link>
+      <Link className="c-link" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon className="c-esched__caret" weight="bold" aria-hidden="true" /></Link>
     </div></section>
       : <p className="c-esched__lede">{open.available.length ? 'Shifts at your locations you can pick up' : 'Your requests for open shifts'}</p>}
     {open.requested.map(shift => card(shift, true))}

@@ -9,7 +9,7 @@ import {CaretRightIcon} from '@phosphor-icons/react/dist/ssr/CaretRight';
 import {PlusIcon} from '@phosphor-icons/react/dist/ssr/Plus';
 import {ProhibitIcon} from '@phosphor-icons/react/dist/ssr/Prohibit';
 import {SunIcon} from '@phosphor-icons/react/dist/ssr/Sun';
-import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, type BLiveItem, type BTone} from '../owner-b/b-kit';
+import {BButton, BButtonLink, BCard, BChip, BHero, BIcon, BList, BLive, BRow, BScreen, BSeg, BStack, BState, type BLiveItem, type BStateKind, type BTone} from '../owner-b/b-kit';
 import {Dotted} from './parts';
 import './employee-b.css';
 import './requests.css';
@@ -41,13 +41,12 @@ export function RequestRowB({row}: {row: BRequestRow}) {
 }
 
 /** The read's state in a card: what is happening, then Sign in or Try again (never both, nothing while it checks). */
-export function BStateCard({text, denied, retry, busy, label}: {text: ReactNode; denied?: boolean; retry?: (() => void) | null; busy?: boolean; label?: string}) {
+/** Review B2 (NV-075): the shared state card (icon circle, one line, one teal pill). Without `kind`: signed out is locked,
+ * a retry means it failed, otherwise it is still checking. */
+export function BStateCard({text, denied, retry, busy, label, kind}: {text: ReactNode; denied?: boolean; retry?: (() => void) | null; busy?: boolean; label?: string; kind?: BStateKind}) {
+  const look: BStateKind = kind ?? (denied ? 'locked' : retry ? 'failed' : 'loading');
   return <BCard label={label}>
-    <div className="eb-status">
-      <p className="b-state" role="status">{text}</p>
-      {denied ? <BButtonLink href="/login" kind="teal" full>Sign in</BButtonLink>
-        : retry ? <BButton kind="quiet" full onClick={retry} disabled={busy}>{busy ? 'Checking…' : 'Try again'}</BButton> : null}
-    </div>
+    <BState kind={look} line={text} action={denied ? {label: 'Sign in', href: '/login'} : retry ? {label: 'Try again', onClick: retry, busy} : undefined}/>
   </BCard>;
 }
 
@@ -59,7 +58,8 @@ export function BEmpty({icon, title, sub}: {icon: ReactNode; title: ReactNode; s
 /** Open shifts with nothing to pick up, the same on Schedule's and Pick up and swap's Open shifts. */
 export function OpenShiftsEmptyB() {
   return <><BEmpty icon={<CalendarBlankIcon weight="bold"/>} title="No open shifts right now" sub="When a teammate offers a shift you can work, it shows here."/>
-    <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this phone<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link></>;
+    {/* Review B2 (NV-158): "device", since it shows on computers too. */}
+    <Link className="es-empty-state__a" href="/app/profile/device-alerts">Get alerts on this device<CaretRightIcon size={15} weight="bold" aria-hidden="true"/></Link></>;
 }
 
 /** A plain paragraph inside a card (a notice, a reason). */
@@ -91,7 +91,8 @@ export type RequestsHubBProps = {
 };
 
 export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forManager, waitingExtra, extraCount = 0, state, answer, shiftRequests}: RequestsHubBProps) {
-  const figures: BLiveItem[] = waiting ? [{label: 'Waiting', dot: 'warn', value: waiting.length + extraCount, meta: 'on your manager or a teammate'},
+  // Review B2 (NV-034): Waiting counts your own requests; a swap that needs your answer has its own card and figure.
+  const figures: BLiveItem[] = waiting ? [{label: 'Waiting', dot: 'warn', value: waiting.length, meta: 'on your manager or a teammate'},
     ...(typeof answer === 'number' ? [{label: 'Needs your answer', value: answer, meta: answer === 1 ? 'a swap from a teammate' : 'swaps from teammates'}] : [])] : [];
   return <BScreen>
     {/* Desktop: Request time off is the band's white action and the band counts what's waiting (eb-desk); the phone keeps
@@ -103,10 +104,11 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
     </BHero>
     <BStack>
       {state ?? null}
-      {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length && !extraCount ? 'Waiting for your manager' : 'Waiting'} count={waiting.length + extraCount || undefined}>
-        {waitingExtra ?? null}
+      {waiting && extraCount && waitingExtra ? <BCard id="b-requests-answer" title="Swaps for you" count={extraCount}>{waitingExtra}</BCard> : null}
+      {waiting ? <BCard id="b-requests-waiting" title={forManager && waiting.length ? 'Waiting for your manager' : 'Waiting'} count={waiting.length || undefined}>
+        {extraCount ? null : waitingExtra ?? null}
         {waiting.length ? <BList>{waiting.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
-          : waitingExtra ? null : <BEmpty icon={<ClipboardTextIcon weight="bold"/>} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
+          : waitingExtra && !extraCount ? null : <BEmpty icon={<ClipboardTextIcon weight="bold"/>} title="Nothing waiting right now" sub="Requests you send show here until they’re decided."/>}
       </BCard> : null}
       {decided && decided.length ? <BCard id="b-requests-decided" title="Decided" link={decidedHref ? {href: decidedHref, label: 'See all', aria: 'See all decided requests'} : undefined}>
         <BList>{decided.map(row => <RequestRowB key={row.key} row={row}/>)}</BList>
@@ -123,8 +125,9 @@ export function RequestsHubB({sub, newHref, waiting, decided, decidedHref, forMa
 export function IncomingB({count, onRetry}: {count: number | null; onRetry: () => void}) {
   if (count === null) return <div className="eb-inline"><span role="status">Swaps for you couldn’t be checked. <Link className="eb-inline__a" href="/app/exchange?tab=foryou">Open swaps for you</Link></span>
     <button className="eb-inline__b" type="button" onClick={onRetry}>Try again</button></div>;
-  return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="teal"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
-    title={count === 1 ? 'A teammate requested a swap' : `${count} swaps need your answer`} sub="Review the shifts before responding"/></BList> : null;
+  return count ? <BList label="Needs your answer"><BRow href="/app/exchange?tab=foryou" lead={<BIcon tone="amber"><ArrowsLeftRightIcon weight="bold"/></BIcon>}
+    title={count === 1 ? 'A teammate requested a swap' : `${count} swaps need your answer`} chip={<BChip tone="amber">Needs your answer</BChip>} sub="Review the shifts before responding"
+    trail={<BButtonLink href="/app/exchange?tab=foryou" kind="teal" label={count === 1 ? 'Review the swap request' : 'Review swap requests'}>Review</BButtonLink>}/></BList> : null;
 }
 
 /** A failed part of a read, said inside its card with a quiet Try again. */

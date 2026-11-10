@@ -301,6 +301,8 @@
   :is(#c-root, html) .app-shell[data-nv-b] :is(.b-row, .b-row__hit):has(> .b-row__end > .b-chip) > .b-chev { grid-column: 3; grid-row: 1 / 3; margin-left: 0 !important; }
   /* Narrow phones: a line may take two lines (never cut to "…"), and a chip that doesn't fit drops under the name. */
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__s { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+  /* Review B2 (NV-025): a line with the schedule-conflict note is never cut; the note is the reason to read the row. */
+  :is(#c-root, html) .app-shell[data-nv-b] .b-row__s:has(.b-leave-note) { display: block; -webkit-line-clamp: none; overflow: visible; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__t { flex-wrap: wrap; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-row__tt { white-space: normal; text-wrap: balance; }
   :is(#c-root, html) .app-shell[data-nv-b] .b-week__h { gap: 4px; }

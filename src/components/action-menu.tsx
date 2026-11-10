@@ -94,12 +94,26 @@ export function ActionMenu({
       menu.style.width = `${geometry.width}px`;
       menu.style.left = `${geometry.left}px`;
     };
+    // Review B2 (NV-220): a sheet is modal, so the rest of the page is inert while it is open (Tab stays in the sheet, and
+    // aria-modal tells the truth). Every sibling along the menu's path to <body> is made inert, and restored on close.
+    let inerted: HTMLElement[] = [];
+    const release = () => { for (const element of inerted) element.inert = false; inerted = []; };
+    const holdModal = () => {
+      release();
+      for (let node: HTMLElement | null = menu; node && node !== document.body; node = node.parentElement) {
+        for (const sibling of Array.from(node.parentElement?.children ?? [])) {
+          if (sibling !== node && sibling instanceof HTMLElement && !sibling.inert && sibling.tagName !== "SCRIPT") { sibling.inert = true; inerted.push(sibling); }
+        }
+      }
+    };
     const onToggle = () => {
       position();
       if (!isPopoverOpen(menu)) {
+        release();
         keyboardOpenRef.current = false;
         return;
       }
+      if (sheet) holdModal();
       if (!keyboardOpenRef.current && !sheet) return;
       // The toggle event runs after the popover opens. Keyboard focus must
       // not wait for a paint that a busy/background document can defer.
@@ -118,6 +132,7 @@ export function ActionMenu({
     window.visualViewport?.addEventListener("scroll", position);
 
     return () => {
+      release();
       menu.removeEventListener("beforetoggle", onBeforeToggle);
       menu.removeEventListener("toggle", onToggle);
       window.removeEventListener("resize", position);
@@ -135,7 +150,6 @@ export function ActionMenu({
         className={triggerClassName ?? "button ghost nevora-action-menu-trigger"}
         popoverTarget={id}
         aria-label={ariaLabel ?? label}
-        title={ariaLabel ?? label}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             keyboardOpenRef.current = true;
@@ -156,7 +170,8 @@ export function ActionMenu({
         id={id}
         className={`nevora-action-menu-popover align-${align}`}
         popover="auto"
-        role={sheet ? "dialog" : undefined}
+        // Review B2 (NV-324): a menu popover is a named group (a label on a role-less div is ignored); a sheet is a dialog.
+        role={sheet ? "dialog" : "group"}
         aria-modal={sheet || undefined}
         aria-label={ariaLabel ?? `${label} actions`}
       >

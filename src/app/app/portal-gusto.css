@@ -389,7 +389,7 @@ html body .app-shell.nevora-portal .command-finder::backdrop { background: rgb(2
 html body .app-shell.nevora-portal .command-finder-panel { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; max-height: inherit; }
 html body .app-shell.nevora-portal .command-finder-search { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--g-hairline); color: var(--g-muted); }
 html body .app-shell.nevora-portal .command-finder-search input { flex: 1; min-height: 32px; border: 0; outline: 0; background: transparent; color: var(--g-ink); font: inherit; font-size: calc(17 * var(--type-unit, 1px)); }
-html body .app-shell.nevora-portal .command-finder-results { margin: 0; padding: 6px; overflow-y: auto; list-style: none; }
+html body .app-shell.nevora-portal .command-finder-results { margin: 0; padding: 6px; overflow-y: auto; overscroll-behavior: contain; list-style: none; } /* overscroll: review B2, NV-062 */
 html body .app-shell.nevora-portal .command-finder-results li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 12px; padding: 0 12px; border-radius: 8px; cursor: pointer; }
 html body .app-shell.nevora-portal .command-finder-group { grid-column: 1 / -1; margin: 10px -12px 2px; padding: 0 12px; color: var(--g-muted); font-size: calc(12 * var(--type-unit, 1px)); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
 html body .app-shell.nevora-portal .command-finder-label { min-height: 40px; display: flex; align-items: center; font-size: calc(15 * var(--type-unit, 1px)); }

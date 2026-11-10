@@ -4,6 +4,10 @@ import type { ReactNode, CSSProperties } from "react";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/ssr/CaretLeft";
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr/CaretRight";
 import { XIcon } from "@phosphor-icons/react/dist/ssr/X";
+import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { WifiSlashIcon } from "@phosphor-icons/react/dist/ssr/WifiSlash";
+import { PauseIcon } from "@phosphor-icons/react/dist/ssr/Pause";
+import { LockSimpleIcon } from "@phosphor-icons/react/dist/ssr/LockSimple";
 import { faceTint } from "@/lib/face-tint";
 
 /* Direction B (Jose approved Nov 5, 2026; mock "NEVORA mobile, Direction B"): the Owner and Manager phone screens. Each page
@@ -179,4 +183,29 @@ export function partOfDay(timeZone?: string, now = new Date()) {
   let hour = now.getHours();
   try { if (timeZone) hour = Number(new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", hourCycle: "h23" }).format(now)); } catch { /* the device's hour */ }
   return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+}
+
+/** One state card (review B2, NV-075): a 48px icon circle (grey while loading or locked, amber offline or paused, red when
+ * something failed), a 16/22 title, one line, and one teal recovery pill, left-aligned. Say the state once. */
+export type BStateKind = "failed" | "offline" | "paused" | "locked" | "loading";
+const STATE_LOOK: Record<BStateKind, { tone: BTone; icon: ReactNode }> = {
+  failed: { tone: "red", icon: <WarningCircleIcon weight="bold" /> },
+  offline: { tone: "amber", icon: <WifiSlashIcon weight="bold" /> },
+  paused: { tone: "amber", icon: <PauseIcon weight="bold" /> },
+  locked: { tone: "grey", icon: <LockSimpleIcon weight="bold" /> },
+  loading: { tone: "grey", icon: <span className="b-spin" /> },
+};
+export function BState({ kind, title, line, action, children }: { kind: BStateKind; title?: ReactNode; line?: ReactNode;
+  action?: { label: ReactNode; onClick?: () => void; href?: string; busy?: boolean }; children?: ReactNode }) {
+  const look = STATE_LOOK[kind];
+  return <div className="b-statecard" data-kind={kind} role="status" aria-busy={kind === "loading" || action?.busy || undefined}>
+    <BIcon tone={look.tone}>{look.icon}</BIcon>
+    <div className="b-statecard__main">
+      {title ? <p className="b-statecard__t">{title}</p> : null}
+      {line ? <p className="b-statecard__s">{line}</p> : null}
+      {children}
+      {action ? action.href ? <BButtonLink href={action.href} kind="teal">{action.label}</BButtonLink>
+        : <BButton kind="teal" onClick={action.onClick} disabled={action.busy}>{action.busy ? "Checking…" : action.label}</BButton> : null}
+    </div>
+  </div>;
 }

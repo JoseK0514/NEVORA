@@ -32,8 +32,8 @@ const familyCount = (family: Family) => family.groups.reduce((total, group) => t
 const requestIdOf = (item?: ActionItem) => { try { return item?.request ? new URL(item.request.reviewHref, "https://nevora.invalid").searchParams.get("requestId") : null; } catch { return null; } };
 const FILTER_LABEL: Record<Exclude<Filter, "all">, string> = { "card-open": "Shifts", review: "Time", "card-requests": "Requests" };
 
-export function InboxB({ ready, families, total, connection, statusLine, todayFailed, onRefresh, back }: {
-  ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
+export function InboxB({ ready, families, waiting = [], total, connection, statusLine, todayFailed, onRefresh, back }: {
+  ready: Extract<ActionCenter, { state: "ready" }> | null; families: Family[]; waiting?: Group[]; total: number | null; connection: ActionCenterConnection; statusLine: string;
   todayFailed: boolean; onRefresh: () => void; back: boolean;
 }) {
   const [filter, setFilter] = useState<Filter>("all");
@@ -60,12 +60,13 @@ export function InboxB({ ready, families, total, connection, statusLine, todayFa
         <BButton kind="ghost" onClick={onRefresh}>Try again</BButton></div></BCard> : null}
       {!ready ? <BCard label="Things to do"><div className="b-notice"><span className="b-notice__tx"><span className="b-notice__t" aria-busy={connection === "loading" || connection === "reconnecting" || undefined}>{statusLine}</span></span>
         {connection === "unavailable" || connection === "ready" ? <BButton kind="ghost" onClick={onRefresh}>Try again</BButton> : connection === "access_lost" ? <BButtonLink href="/login" kind="ghost">Sign in</BButtonLink> : null}</div></BCard>
-        : cards.length ? cards : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
+        : cards.length || waiting.length ? <>{cards}{/* Review B2 (NV-002): reviews that wait (not due today) are listed after today's cards. */}
+          {filter === "all" || filter === "review" ? waiting.map(group => <GroupCard key={group.id} group={{ ...group, title: `${group.title} · waiting` }} items={items} staffing={staffing} checked={checked} />) : null}</> : <BCard label="Things to do"><div className="b-notice"><BIcon tone="green"><CheckIcon weight="bold" /></BIcon><span className="b-notice__tx"><span className="b-notice__t">You’re all set</span><span className="b-notice__s">Nothing needs you right now.</span></span></div></BCard>}
       <BCard label="More">
         <BList label="More">
           <BRow lead={<BIcon tone="grey"><SunIcon weight="bold" /></BIcon>} title="Time off requests" sub="Every request, waiting and decided" href="/app/requests" />
           <BRow lead={<BIcon tone="grey"><ArrowsLeftRightIcon weight="bold" /></BIcon>} title="Shift requests" sub="Swaps and covers between teammates" href="/app/exchange" />
-          <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Done and older" sub="Not counted in today’s total" href="/app/inbox?view=more" label="Done and older, not counted in today’s total" />
+          <BRow lead={<BIcon tone="grey"><CheckIcon weight="bold" /></BIcon>} title="Later and done" sub="Plan ahead and earlier this week" href="/app/inbox?view=more" label="Later and done: plan ahead and earlier this week" />
         </BList>
       </BCard>
     </BStack>
@@ -103,7 +104,7 @@ function GroupCard({ group, items, staffing, checked }: { group: Group; items: M
             <Decide name={row.title} approve={clear} reviewHref={reviewHref} />
           </form>} />;
       }
-      const icon = group.id === "swaps" ? <ArrowsLeftRightIcon weight="bold" /> : group.id === "time-off" ? <SunIcon weight="bold" /> : group.id === "timecards" ? <CheckIcon weight="bold" /> : <ClockIcon weight="bold" />;
+      const icon = group.id === "swaps" ? <ArrowsLeftRightIcon weight="bold" /> : group.id === "time-off" ? <SunIcon weight="bold" /> : group.id.endsWith("timecards") ? <CheckIcon weight="bold" /> : <ClockIcon weight="bold" />;
       return <BRow key={row.key} lead={<BIcon tone={group.id === "cant-work" ? "amber" : ["time-off", "swaps", "requests"].includes(group.id) ? "teal" : "grey"}>{icon}</BIcon>} title={row.title}
         chip={row.value ? <BChip>{row.value}</BChip> : undefined} sub={row.detail} href={row.href} label={row.label} />;
     })}</BList>

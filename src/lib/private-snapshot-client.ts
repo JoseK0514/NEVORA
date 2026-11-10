@@ -1,3 +1,4 @@
+import {announceOfflineHeld} from './offline-hold';
 export type PrivateSnapshot={state:'ready';observedAt:string;validForMs:number}|{state:'unavailable';reason:string};
 export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:boolean};
 
@@ -10,6 +11,8 @@ export type PrivatePanelState<T>={snapshot:T|null;refreshing:boolean;paused:bool
  * trip, and expiry stays armed during renewal; a slow response cannot extend
  * access to the previous snapshot. Access denial stops polling until restarted.
  * pause clears displayed data; stop also prevents all later callbacks.
+ * hold (review B2, NV-001; Jose, Nov 10, 2026) is the offline case: no more requests and no expiry, but the person's
+ * loaded snapshot stays on screen read-only until they reconnect or step away (then the caller pauses, which clears).
  */
 export function createPrivateSnapshotController<T extends PrivateSnapshot>(changed:(state:PrivatePanelState<T>)=>void,request:(signal:AbortSignal)=>Promise<unknown>,parse:(value:unknown)=>T,failure:(reason:'read_failed'|'access_denied')=>T,expiryFailure:(validForMs:number)=>'read_failed'|'access_denied'=(validForMs)=>validForMs<45000?'access_denied':'read_failed'){
  let stopped=false,paused=true,sequence=0,current:T|null=null,active:AbortController|undefined;
@@ -49,6 +52,12 @@ export function createPrivateSnapshotController<T extends PrivateSnapshot>(chang
   start(){if(stopped)return;paused=false;refresh();},
   refresh,
   pause(){if(stopped)return;paused=true;sequence++;cancelRequest();clearExpiry();current=null;publish();},
+  hold(){
+   if(stopped)return;
+   if(current?.state!=='ready'){this.pause();return;}
+   paused=true;sequence++;cancelRequest();clearExpiry();announceOfflineHeld(current.observedAt);
+   changed({snapshot:current,refreshing:false,paused:false});
+  },
   stop(){stopped=true;paused=true;sequence++;cancelRequest();clearExpiry();current=null;},
  };
 }

@@ -36,8 +36,10 @@ const count = (title: string, n: number) => `>${title}<span class="c-count c-num
 
 it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at most, and closes with More requests', () => {
   const html = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true}).replace(/\u00a0/g, ' ');
-  // R6: Open shifts, Time (Missed clock-ins) and Requests (Time off, Shift swaps, then More requests): three cards.
-  expect(html.match(/class="c-card c-todo__card"/g)).toHaveLength(3);
+  // R6: Open shifts, Time (Missed clock-ins) and Requests (Time off, Shift swaps, then More requests): three cards, then
+  // (review B2, NV-002) the reviews that wait, under their own "Waiting for review" heading.
+  expect(html.match(/class="c-card c-todo__card"/g)).toHaveLength(4);
+  expect(html).toContain('id="todo-waiting-label">Waiting for review</h2>');
   // R3: one count voice, the label then the figure in grey, no brackets; the counts add up to the badge (1 + 1 + 1 + 1).
   expect(html).toContain(count('Open shifts', 1));
   expect(html).toContain(count('Missed clock-ins', 1));
@@ -59,23 +61,24 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
   for (const id of ['todo-corrections', 'todo-timecards', 'todo-plan', 'todo-earlier']) expect(html).not.toContain(`id="${id}"`);
   const timeOff = html.slice(html.indexOf('id="todo-time-off"'), html.indexOf('id="todo-swaps"'));
   expect(timeOff).toMatch(/<li class="c-todo__seeall"><a class="c-row c-row--one" href="\/app\/requests" aria-label="See all time off requests">/);
-  expect(html).toMatch(/<\/div><section id="todo-more" class="c-section c-todo__more" aria-labelledby="todo-more-label"><h2 class="c-section__label" id="todo-more-label">More<\/h2><div class="c-card">/);
+  expect(html).toMatch(/<\/div><\/section><section id="todo-more" class="c-section c-todo__more" aria-labelledby="todo-more-label"><h2 class="c-section__label" id="todo-more-label">More<\/h2><div class="c-card">/);
   const moreCard = html.slice(html.indexOf('id="todo-more"'));
   expect(moreCard).not.toContain('href="/app/requests"');
-  expect(moreCard).toMatch(/href="\/app\/exchange".*href="\/app\/inbox\?view=more" aria-label="Done and older, not counted in today’s total">.*Done and older/);
+  // Review B2 (NV-002): the entry is "Later and done" (plan ahead and earlier this week); waiting reviews moved onto the page.
+  expect(moreCard).toMatch(/href="\/app\/exchange".*href="\/app\/inbox\?view=more" aria-label="Later and done: plan ahead and earlier this week">.*Later and done/);
   expect(html).not.toContain('More requests');
   expect(html).not.toContain('Older items');
   expect(html).not.toContain('Later and past');
   const more = page({snapshot: ready(items), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true, view: 'more'});
-  const moreOrder = ['todo-corrections', 'todo-timecards', 'todo-plan'].map(id => more.indexOf(`id="${id}"`));
-  expect(moreOrder.every(index => index > 0)).toBe(true);
-  expect([...moreOrder].sort((a, b) => a - b)).toEqual(moreOrder);
+  expect(more).toContain('id="todo-plan"');
+  for (const id of ['todo-corrections', 'todo-timecards']) expect(more).not.toContain(`id="${id}"`);
   expect(more).not.toContain('id="todo-time-off"');
   expect(more).not.toContain('id="todo-more"');
-  expect(more).toContain('>Done and older<');
+  expect(more).toContain('>Later and done<');
   expect(more).toMatch(/<a class="c-nav__back" href="\/app\/inbox">.*Things to do<\/a>/);
-  expect(more).toContain(count('Time corrections', 1));
-  expect(more).toContain(count('Timecards to approve', 2));
+  // The waiting reviews are on Things to do, counted under Waiting for review.
+  expect(html).toContain(count('Time corrections', 1));
+  expect(html).toContain(count('Timecards to approve', 2));
   // Plan ahead: one row per kind; two missing hour targets are one row with its count in grey.
   expect(more).toContain(count('Plan ahead', 2));
   expect(more).toMatch(/People without hour targets<\/span><\/span><span class="c-row__value c-row__value--soft">2</);
@@ -87,14 +90,15 @@ it('splits Shifts into Open shifts and Missed clock-ins, keeps three cards at mo
 it('puts urgent corrections with missed clock-ins in the Time card, and More requests in the Requests card, never more than three cards', () => {
   const urgent = [...items, item('fix2', 'TIME_CORRECTION', 'timekeeping', 'URGENT', {href: '/app/timecards?correction=fix2'}), item('cancel', 'CALLOUT', 'requests', 'URGENT')];
   const html = page({snapshot: ready(urgent), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
-  expect(html.match(/class="c-card c-todo__card"/g)).toHaveLength(3);
+  // Three cards of today's things, plus Waiting for review (review B2, NV-002).
+  expect(html.match(/class="c-card c-todo__card"/g)).toHaveLength(4);
   const time = html.slice(html.indexOf('id="todo-review"'), html.indexOf('id="todo-card-requests"'));
   expect(time).toContain('id="todo-missed"');
   expect(time).toContain('id="todo-corrections"');
   expect(html).toContain(count('Can’t work', 1));
   // No request waiting: the More card follows the two cards, and lists Time off requests too.
   const noRequests = page({snapshot: ready(urgent.filter(entry => entry.category !== 'requests')), today: today([shift('s1', 'not_clocked_in')]), coverageFirst: true});
-  expect(noRequests.match(/class="c-card c-todo__card"/g)).toHaveLength(2);
+  expect(noRequests.match(/class="c-card c-todo__card"/g)).toHaveLength(3);
   expect(noRequests.slice(noRequests.indexOf('id="todo-more"'))).toContain('href="/app/requests" aria-label="All time off requests"');
 });
 
@@ -112,7 +116,8 @@ it('names the person and the dates on a request, and every row opens its full re
 
 it('reads an open shift and a pay period the way the board does', () => {
   expect(page({snapshot: ready(items)}).replace(/[\u00a0\u2009]/g, ' ')).toMatch(/c-row__title c-row__title--b">Barista 1:00 PM – 3:00 PM<\/span><span class="c-row__detail"><span>Today · Condado · 1 open</);
-  const html = page({snapshot: ready(items), view: 'more'});
+  // Review B2 (NV-002): timecards that wait are on Things to do now (Waiting for review), not on Later and done.
+  const html = page({snapshot: ready(items)});
   // Timecards: one row per period, naming whose cards wait; it opens Time.
   expect(html).toMatch(/<a class="c-row" href="\/app\/timecards" aria-label="Timecards to approve, Oct 12 – 18: Marco, Priya">/);
   expect(html).toContain('<span>Marco, Priya</span>');
@@ -120,8 +125,8 @@ it('reads an open shift and a pay period the way the board does', () => {
 
 it('opens Time on the waiting pay period, and on the card when only one waits', () => {
   const card = (id: string, employee: string, name: string) => item(id, 'TIMECARD', 'timekeeping', 'REVIEW', {detail: `${name} · Sep 21 – 27 · Fix recorded-time issues before finalizing.`, href: `/app/timecards?start=2026-09-21&end=2026-09-27#timecard-${employee}`});
-  expect(page({snapshot: ready([card('c1', 'e1', 'Avery Lee')]), view: 'more'})).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27#timecard-e1"');
-  const both = page({snapshot: ready([card('c1', 'e1', 'Avery Lee'), card('c2', 'e2', 'Blair Ruiz')]), view: 'more'});
+  expect(page({snapshot: ready([card('c1', 'e1', 'Avery Lee')])})).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27#timecard-e1"');
+  const both = page({snapshot: ready([card('c1', 'e1', 'Avery Lee'), card('c2', 'e2', 'Blair Ruiz')])});
   expect(both).toContain('href="/app/timecards?start=2026-09-21&amp;end=2026-09-27"');
   expect(both).not.toContain('#timecard-e1');
 });

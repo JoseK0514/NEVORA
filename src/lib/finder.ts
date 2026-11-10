@@ -45,8 +45,8 @@ const SETTINGS_PAGES: { href: string; label: string; keywords: string }[] = [
   { href: '/app/settings/clocker', label: 'Clocker tablets', keywords: 'clocker tablets devices kiosk' },
 ];
 
-/** Employee desktop, Direction B (Nov 8, 2026; default until Jose decides): an Employee searches only their own places.
- * No actions, people or locations (the finder route is the manager's). Pay pages follow the Pay entry, the rest their
+/** Employee desktop, Direction B (Nov 8, 2026): an Employee searches only their own places and, since Nov 10, three
+ * actions. No people or locations (the finder route is the manager's). Pay pages follow the Pay entry, the rest their
  * module. */
 const EMPLOYEE_PAGES: { href: string; label: string; keywords?: string }[] = [
   { href: '/app', label: 'Home', keywords: 'today dashboard start' },
@@ -63,11 +63,20 @@ const EMPLOYEE_PAGES: { href: string; label: string; keywords?: string }[] = [
   { href: '/app/help', label: 'Help', keywords: 'support contact questions' },
 ];
 
+const EMPLOYEE_ACTIONS: { href: string; label: string; keywords?: string }[] = [
+  { href: '/app/requests?tab=new', label: 'Request time off', keywords: 'new vacation leave day off pto ask' },
+  { href: '/app/exchange', label: 'Swap a shift', keywords: 'swap trade cover give away shift' },
+  { href: '/app/availability', label: 'Set availability', keywords: 'when i can work hours usual week change' },
+];
+
 export function finderItems(role: UserRole, payroll: PayrollCapabilities | undefined, data: FinderData | null, context: NavContext = {}): FinderItem[] {
   if (role === 'EMPLOYEE' || role === 'LEAD') {
     const pay = navigationForRole(role, payroll, context).some(item => item.href === '/app/my-pay');
-    return EMPLOYEE_PAGES.filter(page => (pay || !page.href.startsWith('/app/my-pay')) && pathEnabled(page.href, context.modules))
-      .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, href: page.href, keywords: page.keywords }));
+    // Review B2 (NV-323; Jose, Nov 10, 2026: the report's recommendation): the three most common employee tasks are actions.
+    const actions = EMPLOYEE_ACTIONS.filter(action => pathEnabled(action.href, context.modules))
+      .map(action => ({ id: `action:${action.href}`, group: 'Actions' as const, label: action.label, href: action.href, keywords: action.keywords }));
+    return [...actions, ...EMPLOYEE_PAGES.filter(page => (pay || !page.href.startsWith('/app/my-pay')) && pathEnabled(page.href, context.modules))
+      .map(page => ({ id: `page:${page.href}`, group: 'Pages' as const, label: page.label, href: page.href, keywords: page.keywords }))];
   }
   const pages = navigationForRole(role, payroll, context).map(item => ({ id: `page:${item.href}`, group: 'Pages' as const, label: item.label, href: item.href, keywords: PAGE_KEYWORDS[item.href] }));
   const actions: FinderItem[] = [
