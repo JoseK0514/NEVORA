@@ -80,7 +80,10 @@ function processIdentity(pid) {
   if (result.status !== 0 || !result.stdout?.trim()) throw Error('Cannot verify owned process identity');
   const parts = result.stdout.trim().split(/\s+/);
   if (parts[8]?.startsWith('Z')) return undefined;
-  return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(parts.slice(9).join(' ')) };
+  const command=parts.slice(9).join(' ');
+  // procps reports [name] when argv is unavailable. It is an observation of a
+  // lifetime, not a final command identity that can establish a resource lease.
+  return { pid, ppid: Number(parts[1]), pgid: Number(parts[2]), started: parts.slice(3, 8).join(' '), commandHash: hash(command), commandUnavailable:!command||/^\[[\s\S]*\]$/.test(command) };
 }
 const retiredProcess = Symbol('retired-process');
 function environmentFailure(pid, phase, reason, code) {
@@ -215,9 +218,10 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
     let identity = observedIdentity ?? ownedProcessIdentity(pid, ownerId);
     if (!identity) throw Error('Process lacks invocation ownership');
     const previous = leases.get(pid);
-    if (!previous && rootLease && identity.ppid === child.pid && identity.pid === identity.pgid && identity.commandHash === rootLease.commandHash) {
-      // An independent poll can see fork's inherited parent argv before exec
-      // completes. That is not the new program's initial command identity.
+    const awaitingCommand=candidate=>candidate.commandUnavailable||(candidate.ppid===child.pid&&candidate.pid===candidate.pgid&&candidate.commandHash===rootLease?.commandHash);
+    if (!previous && rootLease && awaitingCommand(identity)) {
+      // A poll can see inherited parent argv or Linux's bracketed fallback
+      // before command arguments are available. Neither can create a first lease.
       // Collect a bounded post-exec proof BEFORE creating its first lease;
       // an established lease can never take this path or change its command.
       const birth = identity, by = performance.now() + 250, pause = new Int32Array(new SharedArrayBuffer(4));
@@ -233,7 +237,7 @@ export async function superviseOwnedChild({ command, args, cwd, env, ownerId, ti
           if (!fresh) throw Error('Process lacks invocation ownership');
           if (fresh.pid !== birth.pid || fresh.started !== birth.started || fresh.ppid !== birth.ppid || fresh.pgid !== birth.pgid) throw continuityFailure(birth, fresh);
           identity = fresh;
-        } while (identity.commandHash === rootLease.commandHash);
+        } while (awaitingCommand(identity));
         rootGroupProof();
         table = processTable();
         if (!isDescendant(pid, child.pid, table) || table.get(pid)?.ppid !== birth.ppid) throw continuityFailure(birth, identity);

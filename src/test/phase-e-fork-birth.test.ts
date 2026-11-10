@@ -5,7 +5,7 @@ import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 const runner=new URL('../../scripts/phase-e-owned.mjs',import.meta.url).href;
 
-it.each(['exec-ready','unresolved','changed-birth','delayed-exec'] as const)('first detached-child proof handles a pre-exec parent sample: %s',mode=>{
+it.each(['exec-ready','unresolved','changed-birth','delayed-exec','bracket-ready','bracket-unresolved','bracket-changed-birth','bracket-changed-group','bracket-changed-parent','bracket-delayed-exec'] as const)('first detached-child proof handles parent argv or unavailable command: %s',mode=>{
  const root=mkdtempSync(join(tmpdir(),'nevora-e-fork-birth-'));
  const trace=join(root,'trace.json'),sampled=join(root,'sampled'),registered=join(root,'registered'),receipt=join(root,'receipt.json');
  try{
@@ -27,10 +27,10 @@ cp.spawnSync=function(command,args,options){const result=actual(command,args,opt
  const p=JSON.parse(fs.readFileSync(${JSON.stringify(trace)},'utf8'));
  if(args[1]===String(p.resource)&&result.status===0&&result.stdout?.trim()){
   const fields=result.stdout.trim().split(/\\s+/);
-  if(injected===0||${JSON.stringify(mode)}==='unresolved'){
+  if(injected===0||${JSON.stringify(mode.endsWith('unresolved'))}){
    const parent=actual('ps',['-p',String(p.root),'-o',columns],options);if(parent.status!==0)throw Error('Owned fixture parent unavailable');
-   result.stdout=fields.slice(0,9).concat(parent.stdout.trim().split(/\\s+/).slice(9)).join(' ')+'\\n';injected++;fs.writeFileSync(${JSON.stringify(sampled)},'sampled');
-  }else if(${JSON.stringify(mode)}==='delayed-exec'&&!delayed){delayed=true;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,300);}else if(${JSON.stringify(mode)}==='changed-birth'&&!fs.existsSync(${JSON.stringify(registered)})){fields[7]='1999';result.stdout=fields.join(' ')+'\\n';}
+   result.stdout=fields.slice(0,9).concat(${mode.startsWith('bracket-')?JSON.stringify(['[node]']):"parent.stdout.trim().split(/\\s+/).slice(9)"}).join(' ')+'\\n';injected++;fs.writeFileSync(${JSON.stringify(sampled)},'sampled');
+  }else if(${JSON.stringify(mode.endsWith('delayed-exec'))}&&!delayed){delayed=true;Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,300);}else if(${JSON.stringify(mode.endsWith('changed-birth'))}&&!fs.existsSync(${JSON.stringify(registered)})){fields[7]='1999';result.stdout=fields.join(' ')+'\\n';}else if(${JSON.stringify(mode)}==='bracket-changed-group'&&!fs.existsSync(${JSON.stringify(registered)})){fields[2]=String(p.root);result.stdout=fields.join(' ')+'\\n';}else if(${JSON.stringify(mode)}==='bracket-changed-parent'&&!fs.existsSync(${JSON.stringify(registered)})){fields[1]=String(p.root+100000);result.stdout=fields.join(' ')+'\\n';}
  }
 }return result;};syncBuiltinESMExports();
 const api=await import(${JSON.stringify(runner)}),ownerId='a'.repeat(32),started=Date.now();
@@ -40,7 +40,7 @@ fs.writeFileSync(${JSON.stringify(receipt)},JSON.stringify({result,injected,ackn
   expect(done.status,done.stderr).toBe(0);
   const observed=JSON.parse(readFileSync(receipt,'utf8'));
   expect(observed.injected).toBeGreaterThan(0);
-  if(mode==='exec-ready'){
+  if(mode==='exec-ready'||mode==='bracket-ready'){
    expect(observed.result.status,JSON.stringify(observed)).toBe(0);
    expect(observed.result.resources.some((r:{kind:string;stopped:boolean})=>r.kind==='next'&&r.stopped)).toBe(true);
    expect(readFileSync(registered,'utf8')).toBe('registered');expect(observed.acknowledgements).toBe(1);
