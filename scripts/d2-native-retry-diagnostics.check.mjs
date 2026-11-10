@@ -40,3 +40,32 @@ test('counts only exact owned POST outcomes, bounds history and removes listener
  assert.equal(receipt.transport.length,8);assert.deepEqual(receipt.transport[0],{kind:'response',status:200});assert(!JSON.stringify(receipt).includes('PRIVATE'));
  stop();assert.equal(page.listenerCount('response'),0);assert.equal(page.listenerCount('requestfailed'),0);
 });
+test('treats page-controlled recorder state as untrusted and strips every unknown property',async()=>{
+ const s=surface();
+ s.window.__nevoraD2RetryTrace.events=Array.from({length:100},()=>({type:'keydown',trusted:true,targetIsRetry:true,documentFocused:true,buttonFocused:true,enabled:true,visible:true,atMs:1,privatePayload:'PRIVATE secret'}));
+ s.window.__nevoraD2RetryTrace.eventCount=100;
+ const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>s.read()},'focused',1);
+ assert.equal(receipt.phases[0].events.length,32);assert.equal(receipt.phases[0].tainted,true);assert(!JSON.stringify(receipt).includes('PRIVATE'));
+});
+test('independently validates the persistence boundary even if the returned snapshot is forged',async()=>{
+ const receipt={phases:[]};
+ const forged={documentFocused:'PRIVATE',visible:true,buttonPresent:true,buttonFocused:true,enabled:true,notice:'PRIVATE',eventCount:Infinity,truncated:false,privatePayload:'PRIVATE',events:Array.from({length:100},()=>({type:'PRIVATE',trusted:'PRIVATE',targetIsRetry:true,documentFocused:true,buttonFocused:true,enabled:true,visible:true,atMs:Infinity,privatePayload:'PRIVATE'}))};
+ await captureD2NativeRetry(receipt,{evaluate:async()=>forged},'focused',1);
+ const retained=receipt.phases[0];assert.equal(retained.events.length,32);assert.equal(retained.tainted,true);assert.equal(retained.eventCount,null);assert.equal(retained.events[0].atMs,null);assert(!JSON.stringify(receipt).includes('PRIVATE'));
+});
+test('malformed arrays and scalar metadata produce fixed tainted fields without private values',async()=>{
+ for(const events of [null,'PRIVATE',[null,['PRIVATE']]]){
+  const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>({events,eventCount:'PRIVATE',truncated:'PRIVATE',tainted:'PRIVATE'})},'failed',1);
+  assert.equal(receipt.phases[0].tainted,true);assert(!JSON.stringify(receipt).includes('PRIVATE'));
+ }
+});
+test('a late browser read cannot mutate the bounded failure phase after its deadline',async()=>{
+ let finish;const pending=new Promise(resolve=>{finish=resolve;}),receipt={phases:[]};
+ await captureD2NativeRetry(receipt,{evaluate:()=>pending},'failed',1,20);const retained=JSON.stringify(receipt);
+ finish({privatePayload:'PRIVATE',events:[]});await new Promise(resolve=>setImmediate(resolve));assert.equal(JSON.stringify(receipt),retained);
+});
+test('a forged non-array-sized proxy length cannot create an unbounded projection loop',async()=>{
+ const s=surface();s.window.__nevoraD2RetryTrace.events=new Proxy([],{get:(target,key)=>key==='length'?1e16:Reflect.get(target,key)});
+ const receipt={phases:[]};await captureD2NativeRetry(receipt,{evaluate:async()=>s.read()},'focused',1);
+ assert.equal(receipt.phases[0].tainted,true);assert.deepEqual(receipt.phases[0].events,[]);
+});

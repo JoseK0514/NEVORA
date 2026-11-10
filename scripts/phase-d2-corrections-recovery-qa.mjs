@@ -151,6 +151,7 @@ export async function verifyCorrectionRecovery({browser,engine,app,q,context,log
      await page.getByText(decision==='APPROVE'?'Correction approved. The original recorded punch remains unchanged.':'Correction declined. The original recorded punch remains unchanged.',{exact:true}).waitFor();
      await captureD2NativeRetry(nativeReceipt,page,'confirmed',commands.length);
     }catch(error){await captureD2NativeRetry(nativeReceipt,page,'failed',commands.length);throw error;}
+    assert.equal(nativeReceipt.phases.length,4);assert(nativeReceipt.phases.every(phase=>phase.tainted===false&&phase.diagnosticFailed!==true),'Native retry diagnostics must be complete and untainted');
     assert.equal(commands.length,2);assert.deepEqual(commands[1],commands[0]);
     assert.deepEqual(await q("SELECT count(*)::int AS count FROM time_correction_events WHERE request_id=$1 AND event_kind IN ('APPROVED','REJECTED')",[pending.requestId]),[{count:1}]);
     assert.deepEqual(await q('SELECT count(*)::int AS count FROM time_correction_adjustments WHERE request_id=$1',[pending.requestId]),[{count:decision==='APPROVE'?1:0}]);
