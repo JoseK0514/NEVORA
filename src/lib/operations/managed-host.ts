@@ -1,5 +1,5 @@
 import 'server-only';
-import {createHmac,timingSafeEqual} from 'node:crypto';
+import {createHmac,createHash,timingSafeEqual} from 'node:crypto';
 import {isAbsolute,join,resolve} from 'node:path';
 import {readWorkerRoutingConfig,parseWorkspaceOrigin} from '../workspace-routing/config.server';
 import {WORKER_COMMANDS,type WorkerCommand} from './supervisor';
@@ -8,6 +8,7 @@ import {parseNotificationRuntimeConfig} from '../notifications/runtime-config';
 type Environment='test'|'production';
 export type ManagedProfile={scopeId:string;environment:Environment;commands:readonly WorkerCommand[];stateDirectory:string;env:Readonly<Record<string,string>>};
 export type ManagedHostConfig={enabled:boolean;sourceSha:string;stateDirectory:string;healthKey:string;profiles:readonly ManagedProfile[]};
+export type ManagedDestinations=Readonly<Partial<Record<Environment,Readonly<{controlHostname:string;controlDatabase:string;commerceOrigin:string;portalBaseDomain:string}>>>>;
 export type ManagedObservation={scopeId:string;environment:Environment;command:WorkerCommand;sourceSha:string;observedAt:number;healthy:boolean;reason:'ok'|'invocation_failed'|'health_unavailable'};
 const invalid=()=>Error('managed_configuration_invalid');
 const sha=(v:unknown):v is string=>typeof v==='string'&&/^[a-f0-9]{40}$/.test(v);
@@ -19,7 +20,7 @@ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&
 
 /** A managed profile is operator custody, never a browser/request input. Only
  * fixed canonical workers receive its strictly bounded machine environment. */
-export function parseManagedHostConfig(env:Readonly<Record<string,string|undefined>>,actualSourceSha:string):ManagedHostConfig{
+export function parseManagedHostConfig(env:Readonly<Record<string,string|undefined>>,actualSourceSha:string,destinations:ManagedDestinations):ManagedHostConfig{
  try{
   const sourceSha=env.NEVORA_WORKFORCE_SOURCE_SHA;
   if(!sha(sourceSha)||sourceSha!==actualSourceSha||!['true','false',undefined].includes(env.NEVORA_WORKFORCE_ENABLED))throw invalid();
@@ -35,11 +36,13 @@ export function parseManagedHostConfig(env:Readonly<Record<string,string|undefin
    const environment=p.environment as Environment,scope=p.scopeId+'-'+environment;if(seen.has(scope))throw invalid();seen.add(scope);
    if(Object.entries(p.env).some(([k,v])=>!allowedEnv.has(k)||typeof v!=='string'||v.length>8192))throw invalid();
    const e=p.env as Record<string,string>;
+   const approved=destinations[environment];if(!approved||p.portalBaseDomain!==approved.portalBaseDomain)throw invalid();
    const state=join(stateDirectory,scope);
    const child={...e,NEVORA_WORKSPACE_MODE:'isolated',NEVORA_ONBOARDING_ENVIRONMENT:environment,NEVORA_PORTAL_BASE_DOMAIN:String(p.portalBaseDomain),NEVORA_WORKER_WORKSPACE_ORIGIN:String(p.origin),FUEL_PORTAL_ORIGIN:String(p.origin),PUSH_ENVIRONMENT:environment,NEVORA_OPERATIONS_ENABLED:'true',NEVORA_OPERATIONS_SOURCE_SHA:sourceSha,NEVORA_OPERATIONS_SCOPE_ID:p.scopeId,NEVORA_OPERATIONS_ENVIRONMENT:environment,NEVORA_OPERATIONS_STATE_DIR:state,NEVORA_OPERATIONS_DEADLINE_SECONDS:'120',NEVORA_OPERATIONS_MAX_HEARTBEAT_GAP_SECONDS:'600',NEVORA_OPERATIONS_MAX_QUEUE_AGE_SECONDS:'900'};
-   const routing=readWorkerRoutingConfig(child),role=decodeURIComponent(new URL(routing.controlDatabaseUrl).username);
+   const routing=readWorkerRoutingConfig(child),control=new URL(routing.controlDatabaseUrl),role=decodeURIComponent(control.username);
+   if(control.hostname!==approved.controlHostname||decodeURIComponent(control.pathname.slice(1))!==approved.controlDatabase||control.searchParams.get('sslmode')!=='verify-full'||control.port&&control.port!=='5432')throw invalid();
    if(role!=='nv_control_worker_'+(environment==='test'?'t':'p')+'_'+p.scopeId.replaceAll('-','')||parseWorkspaceOrigin(p.origin,routing)!==p.origin||!key(e.NEVORA_COMMERCE_WORKER_BINDING_KEY)||e.NEVORA_COMMERCE_ENABLED!=='true')throw invalid();
-   const commerce=new URL(e.NEVORA_COMMERCE_API_ORIGIN);if(commerce.protocol!=='https:'||commerce.origin!==e.NEVORA_COMMERCE_API_ORIGIN||!commerce.hostname.endsWith('.aws.neon.tech'))throw invalid();
+   const commerce=new URL(e.NEVORA_COMMERCE_API_ORIGIN);if(commerce.protocol!=='https:'||commerce.origin!==e.NEVORA_COMMERCE_API_ORIGIN||commerce.origin!==approved.commerceOrigin)throw invalid();
    if(p.commands.includes('payroll')&&e.NEVORA_PAYROLL_ENABLED!=='true')throw invalid();
    if(p.commands.some(c=>c!=='payroll')){
     const push=parseNotificationRuntimeConfig({...child,NODE_ENV:'production'});
@@ -66,6 +69,17 @@ export function authorizeHealthRequest(request:Request,secret:string,now:number)
   if(!key(secret)||request.method!=='GET'||u.pathname!=='/private/health'||u.search||!/^\d{13}$/.test(at)||!Number.isSafeInteger(now)||Math.abs(now-Number(at))>60000||!/^[a-f0-9]{32}$/.test(nonce)||!/^[a-f0-9]{64}$/.test(signature))return false;
   return timingSafeEqual(Buffer.from(signature,'hex'),Buffer.from(digest(secret,at,nonce),'hex'));
  }catch{return false;}
+}
+/** A different HMAC purpose authenticates exact response bytes/status and binds
+ * them to this request's timestamp and random nonce. Public SHA/counts alone
+ * cannot let a substituted TLS endpoint manufacture a healthy observation. */
+export function signHealthResponse(secret:string,request:Request,status:number,body:string):string{
+ const at=request.headers.get('x-nevora-ops-time')??'',nonce=request.headers.get('x-nevora-ops-nonce')??'';
+ if(!key(secret)||!/^\d{13}$/.test(at)||!/^[a-f0-9]{32}$/.test(nonce)||!Number.isInteger(status)||status<100||status>599)throw invalid();
+ return createHmac('sha256',Buffer.from(secret,'base64url')).update('NEVORA_WORKFORCE_HEALTH_RESPONSE_V1\n'+at+'\n'+nonce+'\n'+status+'\n'+createHash('sha256').update(body,'utf8').digest('hex')).digest('hex');
+}
+export function authenticHealthResponse(secret:string,request:Request,status:number,body:string,signature:string|null):boolean{
+ try{return !!signature&&/^[a-f0-9]{64}$/.test(signature)&&timingSafeEqual(Buffer.from(signature,'hex'),Buffer.from(signHealthResponse(secret,request,status,body),'hex'));}catch{return false;}
 }
 export function managedHealth(config:ManagedHostConfig,observations:readonly ManagedObservation[],now:number){
  const expected=config.profiles.flatMap(p=>p.commands.map(command=>({scopeId:p.scopeId,environment:p.environment,command})));

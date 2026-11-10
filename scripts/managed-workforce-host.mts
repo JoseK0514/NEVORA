@@ -2,10 +2,11 @@ import {createServer} from 'node:http';
 import {parseManagedHostConfig,type ManagedObservation} from '../src/lib/operations/managed-host';
 import {acquireManagedState,runManagedCycle,managedHttpResponse} from '../src/lib/operations/managed-runtime';
 import {compiledHostedSourceSha} from '../services/hosted/neon/source';
+import {managedDestinations} from '../src/lib/operations/managed-destinations';
 
 async function main(){
  const source=compiledHostedSourceSha();if(!source||process.env.RENDER_GIT_COMMIT!==source)throw Error('managed_source_invalid');
- const config=parseManagedHostConfig({...process.env,NEVORA_WORKFORCE_SOURCE_SHA:process.env.NEVORA_WORKFORCE_SOURCE_SHA??source},source),port=Number(process.env.PORT??10000);
+ const config=parseManagedHostConfig({...process.env,NEVORA_WORKFORCE_SOURCE_SHA:process.env.NEVORA_WORKFORCE_SOURCE_SHA??source},source,managedDestinations),port=Number(process.env.PORT??10000);
  if(!Number.isInteger(port)||port<1024||port>65535)throw Error('managed_configuration_invalid');
  const controller=new AbortController();let ready=false,confirmed=true,observations:ManagedObservation[]=[];
  const lease=config.enabled?await acquireManagedState(config):null;

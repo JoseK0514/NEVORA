@@ -2,11 +2,30 @@ import {it,expect} from 'vitest';
 import {mkdtemp,mkdir,realpath,writeFile,symlink,rm,readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
+import {createServer} from 'node:http';
+import {createHmac,createHash} from 'node:crypto';
+import {once} from 'node:events';
 import {acquireManagedState,runManagedProcess,runManagedCycle,managedHttpResponse,invokeManagedCommand} from './managed-runtime';
 import {signHealthRequest,type ManagedHostConfig} from './managed-host';
+import {observeManagedHost,type MonitorConfig} from './monitor';
 
 const source='a'.repeat(40),scope='b7f07d3e-2255-474c-9a28-10c3185f5234',key=Buffer.alloc(32,7).toString('base64url');
 const config=(root:string):ManagedHostConfig=>({enabled:true,sourceSha:source,stateDirectory:join(root,'state'),healthKey:key,profiles:[{scopeId:scope,environment:'test',commands:['payroll','notifications-reminders'],stateDirectory:join(root,'state',scope+'-test'),env:{}}]});
+it('authenticates the actual health HTTP response with independent request/response HMAC purposes',async()=>{
+ const c=config('/tmp/fictional');let wireSignature='',expectedSignature='';
+ const server=createServer(async(req,res)=>{
+  const request=new Request('http://localhost'+req.url,{headers:Object.fromEntries(Object.entries(req.headers).filter((e):e is [string,string]=>typeof e[1]==='string'))});
+  const observations=c.profiles.flatMap(p=>p.commands.map(command=>({scopeId:p.scopeId,environment:p.environment,command,sourceSha:source,observedAt:Date.now(),healthy:true,reason:'ok' as const})));
+  const response=managedHttpResponse(request,c,observations,Date.now(),true),body=await response.text();wireSignature=response.headers.get('x-nevora-ops-response')??'';
+  expectedSignature=createHmac('sha256',Buffer.from(key,'base64url')).update('NEVORA_WORKFORCE_HEALTH_RESPONSE_V1\n'+request.headers.get('x-nevora-ops-time')+'\n'+request.headers.get('x-nevora-ops-nonce')+'\n'+response.status+'\n'+createHash('sha256').update(body).digest('hex')).digest('hex');
+  res.writeHead(response.status,Object.fromEntries(response.headers));res.end(body);
+ });
+ server.listen(0,'127.0.0.1');await once(server,'listening');const address=server.address();if(!address||typeof address==='string')throw Error('owned_http_unavailable');
+ try{
+  const monitor:MonitorConfig={enabled:true,mailEnabled:false,origin:'https://fictional.onrender.com',sourceSha:source,healthKey:key,expectedCommands:2,databaseUrl:'unused',role:'unused'};
+  expect(await observeManagedHost(monitor,async(_url,init)=>fetch('http://127.0.0.1:'+address.port+'/private/health',init))).toBe('ok');expect(wireSignature).toHaveLength(64);expect(wireSignature).toBe(expectedSignature);
+ }finally{server.closeAllConnections();await new Promise<void>(ok=>server.close(()=>ok()));}
+});
 it('creates private scoped state, excludes overlap and leaves unconfirmed singleton custody in place',async()=>{
  const root=await realpath(await mkdtemp(join(tmpdir(),'nevora-managed-')));
  try{

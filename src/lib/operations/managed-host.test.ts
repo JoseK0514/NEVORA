@@ -1,15 +1,26 @@
 import {expect,it} from 'vitest';
 import {createECDH} from 'node:crypto';
-import {parseManagedHostConfig,managedChildEnvironment,signHealthRequest,authorizeHealthRequest,managedHealth} from './managed-host';
+import {parseManagedHostConfig as parseHost,managedChildEnvironment,signHealthRequest,authorizeHealthRequest,managedHealth} from './managed-host';
 
 const source='a'.repeat(40),scope='b7f07d3e-2255-474c-9a28-10c3185f5234';
 const key=Buffer.alloc(32,7).toString('base64url');
+const destinations={test:{controlHostname:'ep-fictional.neon.tech',controlDatabase:'control',commerceOrigin:'https://fictional.compute.c-15.us-east-1.aws.neon.tech',portalBaseDomain:'portal-staging.nevora.team'}};
+const parseManagedHostConfig=(e:Record<string,string|undefined>,s:string)=>parseHost(e,s,destinations);
 const profile=()=>({scopeId:scope,environment:'test',commands:['payroll'],origin:'https://a.portal-staging.nevora.team',portalBaseDomain:'portal-staging.nevora.team',env:{
  NEVORA_CONTROL_DATABASE_URL:`postgresql://nv_control_worker_t_${scope.replaceAll('-','')}:fictional@ep-fictional.neon.tech/control?sslmode=verify-full`,
  NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY:Buffer.alloc(32,8).toString('base64url'),NEVORA_COMMERCE_WORKER_BINDING_KEY:Buffer.alloc(32,9).toString('base64url'),
  NEVORA_COMMERCE_API_ORIGIN:'https://fictional.compute.c-15.us-east-1.aws.neon.tech',NEVORA_COMMERCE_ENABLED:'true',NEVORA_PAYROLL_ENABLED:'true',
 }});
 const env=()=>({NEVORA_WORKFORCE_ENABLED:'true',NEVORA_WORKFORCE_SOURCE_SHA:source,NEVORA_WORKFORCE_STATE_DIR:'/tmp/fictional-managed-host',NEVORA_WORKFORCE_HEALTH_KEY:key,NEVORA_WORKFORCE_PROFILES:JSON.stringify([profile()])});
+it('pins credential destinations independently of profiles, including TLS, database and environment',()=>{
+ for(const change of [
+  {NEVORA_COMMERCE_API_ORIGIN:'https://other.compute.c-15.us-east-1.aws.neon.tech'},
+  {NEVORA_CONTROL_DATABASE_URL:profile().env.NEVORA_CONTROL_DATABASE_URL.replace('ep-fictional','ep-other')},
+  {NEVORA_CONTROL_DATABASE_URL:profile().env.NEVORA_CONTROL_DATABASE_URL.replace('/control?','/other?')},
+  {NEVORA_CONTROL_DATABASE_URL:profile().env.NEVORA_CONTROL_DATABASE_URL.replace('ep-fictional.neon.tech','127.0.0.1').replace('verify-full','disable')},
+ ])expect(()=>parseManagedHostConfig({...env(),NEVORA_WORKFORCE_PROFILES:JSON.stringify([{...profile(),env:{...profile().env,...change}}])},source)).toThrow('managed_configuration_invalid');
+ expect(()=>parseHost(env(),source,{})).toThrow('managed_configuration_invalid');
+});
 it('rejects silently disabled notification commands and admits only a fully configured web-push profile',()=>{
  const p={...profile(),commands:['notifications-dispatch']};
  expect(()=>parseManagedHostConfig({...env(),NEVORA_WORKFORCE_PROFILES:JSON.stringify([p])},source)).toThrow('managed_configuration_invalid');

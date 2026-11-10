@@ -23,9 +23,13 @@ Do not paste keys into chat, source, commands, build logs or checked-in files. D
 
 The host derives isolated state namespaces and routing/expected-scope variables. Children inherit only PATH, HOME, TMPDIR, LANG and NODE_ENV plus the curated profile. No host health key, ambient proxy, NODE_OPTIONS or unrelated credential reaches a worker. The existing registry, company incarnation, WORKER role, commerce, lease and operation checks remain inside the canonical CLI.
 
+Destinations are independently pinned in `src/lib/operations/managed-destinations.ts`, compiled with the reviewed source. Credential JSON cannot select another control hostname/database, commerce origin or portal domain. The current matrix admits only the selected staging control endpoint with verify-full TLS and the observed staging commerce API. Managed loopback/TLS-disabled profiles and unconfigured production are rejected. The existing owned local SQL fixtures remain separate. An endpoint rotation requires a reviewed matrix/source update and drained deployment; editing a secret profile cannot authorize it.
+
 ## Independent monitor
 
 Apply `db/control-migrations/0006_workforce_monitor.sql` only to the explicitly selected control database after review/authorization. It creates aggregate-only incident/notice/attempt tables, forced session-user RLS and no PUBLIC access. It is deliberately not part of company bootstrap. Set up a fresh restricted `nv_ops_monitor_<24hex>` LOGIN role using `configureMonitorPrincipal` through the approved operator client; the monitor cannot create its own role. Do not give it membership, ownership, schema CREATE, TEMP, company, employee or onboarding grants.
+
+Setup and every observation check effective database CREATE/TEMP, schema CREATE, non-approved SECURITY DEFINER execution, memberships, ownership and extra table/column access, including PUBLIC privileges. Excessive shared defaults fail closed. The helper never revokes shared privileges automatically: an operator must review the existing consumers and an explicit grant-adjustment plan first. Recheck the actual LOGIN identity and denied capabilities at activation.
 
 Build the separate archive from clean source:
 
@@ -38,9 +42,13 @@ Deploy `workforcemonitor` closed on the selected staging Neon branch. Preserve a
 
 When authorized, install the fixed Render HTTPS origin, expected command count, source labels, shared health key and restricted journal DSN under the named `NEVORA_OPERATIONS_MONITOR_*` keys. The monitor requests only `/private/health`, refuses redirects, bounds response size/time, and rejects stale, wrong-source or malformed aggregates. Host health never accepts commands/selectors and reveals no company data or credentials. The observer itself and the hosting provider still need operational supervision; this is not a self-monitoring guarantee for every dependency.
 
+The journal requires a **direct, unpooled** Neon hostname with verify-full TLS; both deployment and runtime configuration reject `-pooler` endpoints. The dedicated session lock is acquired before HTTP sampling and retained through journal commit and bounded SMTP. A simultaneous tick skips sampling and waits for the next schedule, so an older delayed healthy response cannot overwrite a newer outage. PostgreSQL transaction pooling does not support this session-lock contract. Health responses carry a separate-purpose HMAC over the request timestamp/nonce, HTTP status and exact aggregate bytes. A substituted TLS target without the shared key, an unsigned response, a prior nonce or changed bytes fails closed.
+
 `NEVORA_OPERATIONS_ALERT_MAIL_ENABLED=false` initially. SMTP stays only on the monitor, using the existing `NEVORA_RECOVERY_SMTP_*`, `NEVORA_RECOVERY_FROM`, HTTPS `FUEL_PORTAL_ORIGIN`, `NEVORA_ONBOARDING_ENVIRONMENT=test`, and `NEVORA_STAGING_EMAIL_RECIPIENT=support@thevelani.com` transport fence. No real alert test has yet been approved. An authorized exercise must identify the source, fictional scope, exact recipient and finite outage/recovery sends before enabling it. SMTP accepted, delivered and inbox-observed are separate outcomes.
 
 One session advisory lock serializes observations through each bounded send. The journal commits sending intent before SMTP. Repeated outages do not generate repeated notices; each incident has at most an outage and recovery notice, with at most 3 definite-failure attempts per notice and 4 total attempts per UTC day. SMTP or database acknowledgement loss is marked unknown and never automatically resent. Review unknown attempts manually at the approved sink. Do not reset them just to produce another email. Journal rows contain enum states and opaque incident IDs, not employee data, chat content or addresses. Retention/archival policy for this small operations journal remains a production decision; no automatic deletion is installed.
+
+Generic SMTP connection closure, including Nodemailer's `ECONNECTION` with command `CONN`, does not prove non-acceptance: a real sink can already have received the full DATA. Such attempts remain unknown. The retained loopback SMTP/journal regression captures exactly one body and proves no second send after retry eligibility.
 
 ## Pause, drain and rollback
 

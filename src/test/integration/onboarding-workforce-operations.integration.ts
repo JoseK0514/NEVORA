@@ -13,11 +13,62 @@ import * as control from '@/lib/onboarding/control-store.server';
 import {readFile} from 'node:fs/promises';
 import {freshOnboardingControl} from './onboarding-fixture';
 import {configureMonitorPrincipal,processMonitorObservation} from '@/lib/operations/monitor-store';
+import {sendMonitorNotice,type MonitorConfig} from '@/lib/operations/monitor';
+import {ownedSmtpLostAcknowledgement} from './owned-smtp-ack-fixture';
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs();});
+it('refuses effective PUBLIC TEMP, schema/database CREATE and callable security-definer privilege before setup or observation',async()=>{
+ const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex');let pool:Pool|undefined;
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION`);
+  const setup=await f.pool.connect();
+  try{
+   await expect(configureMonitorPrincipal(setup,role)).rejects.toThrow('monitor_principal_invalid');
+   await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+   await f.pool.query(`GRANT CREATE ON DATABASE ${f.name} TO ${role}`);await expect(configureMonitorPrincipal(setup,role)).rejects.toThrow('monitor_principal_invalid');await f.pool.query(`REVOKE CREATE ON DATABASE ${f.name} FROM ${role}`);
+   await f.pool.query(`CREATE SCHEMA monitor_adversary; GRANT USAGE,CREATE ON SCHEMA monitor_adversary TO ${role}`);await expect(configureMonitorPrincipal(setup,role)).rejects.toThrow('monitor_principal_invalid');await f.pool.query(`REVOKE CREATE ON SCHEMA monitor_adversary FROM ${role}`);
+   await f.pool.query("CREATE TABLE monitor_adversary.restricted(s text); INSERT INTO monitor_adversary.restricted VALUES('fictional-private'); CREATE FUNCTION monitor_adversary.private_read() RETURNS text LANGUAGE SQL SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT s FROM monitor_adversary.restricted'");
+   await expect(configureMonitorPrincipal(setup,role)).rejects.toThrow('monitor_principal_invalid');
+   await f.pool.query('REVOKE EXECUTE ON FUNCTION monitor_adversary.private_read() FROM PUBLIC');await f.pool.query(`GRANT EXECUTE ON FUNCTION monitor_adversary.private_read() TO ${role}`);await expect(configureMonitorPrincipal(setup,role)).rejects.toThrow('monitor_principal_invalid');await f.pool.query(`REVOKE EXECUTE ON FUNCTION monitor_adversary.private_read() FROM ${role}`);
+   await configureMonitorPrincipal(setup,role);
+  }finally{setup.release();}
+  // Real login proves the least-privileged positive, not SET ROLE on the owner.
+  const password=randomBytes(32).toString('base64url');await f.pool.query(`ALTER ROLE ${role} PASSWORD '${password}'`);const u=new URL(f.connectionUrl);u.username=role;u.password=password;pool=new Pool({connectionString:u.href});
+  expect((await pool.query("SELECT has_database_privilege(current_database(),'CREATE,TEMPORARY') AS db,has_schema_privilege('monitor_adversary','CREATE') AS schema")).rows[0]).toEqual({db:false,schema:false});await expect(pool.query('SELECT monitor_adversary.private_read()')).rejects.toMatchObject({code:'42501'});
+  await f.pool.query(`GRANT CREATE ON SCHEMA monitor_adversary TO ${role}`);let sampled=false;
+  await expect(processMonitorObservation(pool,role,async()=>{sampled=true;return 'ok';},false,async()=>'accepted')).rejects.toThrow('monitor_principal_invalid');expect(sampled).toBe(false);
+ }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
+});
+it('owns observation before HTTP sampling so delayed healthy callbacks cannot manufacture recovery',async()=>{
+ const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC; CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+  const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}const u=new URL(f.connectionUrl);u.username=role;u.password=password;pool=new Pool({connectionString:u.href,max:2});const sent:string[]=[];const send=async(kind:string)=>{sent.push(kind);return 'accepted' as const;};
+  let release!:()=>void,started!:()=>void;const held=new Promise<void>(ok=>{release=ok;}),sampling=new Promise<void>(ok=>{started=ok;});
+  const old=processMonitorObservation(pool,role,async()=>{started();await held;return 'ok';},true,send);
+  // Let a missing callback API reject visibly instead of hanging the test.
+  await Promise.race([sampling,old.then(()=>{throw Error('observation_did_not_sample');})]);
+  let overlappingSample=false;
+  try{expect(await processMonitorObservation(pool,role,async()=>{overlappingSample=true;return 'unhealthy';},true,send)).toEqual({state:'idle'});expect(overlappingSample).toBe(false);}finally{release();await old;}
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,send);await processMonitorObservation(pool,role,async()=>'unhealthy',true,send);
+  expect(sent).toEqual(['outage']);expect((await pool.query('SELECT condition FROM nevora_operations.monitor_state')).rows[0].condition).toBe('unhealthy');
+ }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
+});
+it('captures full SMTP DATA then loses its ACK and never sends the same notice a second time',async()=>{
+ const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url'),sink=await ownedSmtpLostAcknowledgement();let pool:Pool|undefined;
+ try{
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC; CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'; GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+  const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}const u=new URL(f.connectionUrl);u.username=role;u.password=password;pool=new Pool({connectionString:u.href,max:1});
+  const config:MonitorConfig={enabled:true,mailEnabled:true,origin:'https://fictional.onrender.com',sourceSha:'a'.repeat(40),healthKey:Buffer.alloc(32,1).toString('base64url'),expectedCommands:1,databaseUrl:u.href,role};
+  const send=(kind:'outage'|'recovery')=>sendMonitorNotice(config,kind,sink.mail);
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,send);expect(sink.bodies()).toBe(1);
+  await f.pool.query("UPDATE nevora_operations.monitor_notices SET next_attempt_at=clock_timestamp()-interval '1 second'");await processMonitorObservation(pool,role,async()=>'unhealthy',true,send);
+  expect(sink.bodies()).toBe(1);expect((await pool.query('SELECT status FROM nevora_operations.monitor_attempts')).rows).toEqual([{status:'unknown'}]);
+ }finally{await sink.close();await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
+});
 it('deduplicates real concurrent incident mail and keeps ambiguous acknowledgement from being resent',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
  try{
-  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);
   await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.pool.query(`GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
   const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}
   const url=new URL(f.connectionUrl);url.username=role;url.password=password;pool=new Pool({connectionString:url.href,max:4});
@@ -26,30 +77,30 @@ it('deduplicates real concurrent incident mail and keeps ambiguous acknowledgeme
   await expect(pool.query("INSERT INTO nevora_operations.monitor_state(scope_key,condition) VALUES('nv_ops_monitor_000000000000000000000000','ok')")).rejects.toMatchObject({code:'42501'});
   let sends=0;
   const send=async()=>{sends++;await new Promise(r=>setTimeout(r,30));return 'accepted' as const;};
-  await Promise.all(Array.from({length:4},()=>processMonitorObservation(pool!,role,'unhealthy',true,send)));
-  expect(sends).toBe(1);await processMonitorObservation(pool,role,'unhealthy',true,send);expect(sends).toBe(1);
+  await Promise.all(Array.from({length:4},()=>processMonitorObservation(pool!,role,async()=>'unhealthy',true,send)));
+  expect(sends).toBe(1);await processMonitorObservation(pool,role,async()=>'unhealthy',true,send);expect(sends).toBe(1);
   expect((await pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'accepted'}]);
-  await processMonitorObservation(pool,role,'ok',true,send);await processMonitorObservation(pool,role,'ok',true,send);expect(sends).toBe(2);
-  await processMonitorObservation(pool,role,'unavailable',true,async()=>{sends++;return 'unknown';});
-  await processMonitorObservation(pool,role,'unavailable',true,send);expect(sends).toBe(3);
+  await processMonitorObservation(pool,role,async()=>'ok',true,send);await processMonitorObservation(pool,role,async()=>'ok',true,send);expect(sends).toBe(2);
+  await processMonitorObservation(pool,role,async()=>'unavailable',true,async()=>{sends++;return 'unknown';});
+  await processMonitorObservation(pool,role,async()=>'unavailable',true,send);expect(sends).toBe(3);
   expect((await pool.query("SELECT count(*)::int n FROM nevora_operations.monitor_attempts WHERE status='unknown'")).rows[0].n).toBe(1);
   // A crashed sender committed its intent before losing its SMTP outcome.
   await f.pool.query("UPDATE nevora_operations.monitor_notices SET status='sending' WHERE scope_key=$1 AND status='unknown'",[role]);
-  await processMonitorObservation(pool,role,'unavailable',true,send);expect(sends).toBe(3);expect((await pool.query("SELECT status FROM nevora_operations.monitor_notices WHERE kind='outage' ORDER BY created_at DESC LIMIT 1")).rows[0].status).toBe('unknown');
+  await processMonitorObservation(pool,role,async()=>'unavailable',true,send);expect(sends).toBe(3);expect((await pool.query("SELECT status FROM nevora_operations.monitor_notices WHERE kind='outage' ORDER BY created_at DESC LIMIT 1")).rows[0].status).toBe('unknown');
  }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
 });
 it('bounds definite mail retries and daily attempts, records disabled monitoring without sending, and respects principal isolation',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
  try{
-  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.pool.query(`GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.pool.query(`GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
   const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}
   const url=new URL(f.connectionUrl);url.username=role;url.password=password;pool=new Pool({connectionString:url.href,max:2});let sends=0;const failure=async()=>{sends++;return 'definite_failure' as const;};
-  await processMonitorObservation(pool,role,'unhealthy',false,failure);expect(sends).toBe(0);
-  await processMonitorObservation(pool,role,'unhealthy',true,failure);await processMonitorObservation(pool,role,'unhealthy',true,failure);expect(sends).toBe(1);
-  for(let i=0;i<5;i++){await f.pool.query("UPDATE nevora_operations.monitor_notices SET next_attempt_at=clock_timestamp()-interval '1 second'");await processMonitorObservation(pool,role,'unhealthy',true,failure);}
+  await processMonitorObservation(pool,role,async()=>'unhealthy',false,failure);expect(sends).toBe(0);
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,failure);await processMonitorObservation(pool,role,async()=>'unhealthy',true,failure);expect(sends).toBe(1);
+  for(let i=0;i<5;i++){await f.pool.query("UPDATE nevora_operations.monitor_notices SET next_attempt_at=clock_timestamp()-interval '1 second'");await processMonitorObservation(pool,role,async()=>'unhealthy',true,failure);}
   expect(sends).toBe(3);expect((await pool.query('SELECT count(*)::int n FROM nevora_operations.monitor_attempts')).rows[0].n).toBe(3);
-  await processMonitorObservation(pool,role,'ok',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(4);
-  await processMonitorObservation(pool,role,'unhealthy',true,failure);expect(sends).toBe(4);
+  await processMonitorObservation(pool,role,async()=>'ok',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(4);
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,failure);expect(sends).toBe(4);
   await expect(pool.query("UPDATE nevora_operations.monitor_state SET scope_key='nv_ops_monitor_000000000000000000000000'")).rejects.toMatchObject({code:'42501'});
   const broad=await f.pool.connect();try{await f.pool.query('GRANT SELECT ON nevora_onboarding.workspace_secrets TO '+role);await expect(configureMonitorPrincipal(broad,role)).rejects.toThrow('monitor_principal_invalid');}finally{broad.release();}
  }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
@@ -57,12 +108,12 @@ it('bounds definite mail retries and daily attempts, records disabled monitoring
 it('retains a real committed SMTP intent when the journal connection dies after sending, without replaying it',async()=>{
  const f=await freshOnboardingControl(),role='nv_ops_monitor_'+randomBytes(12).toString('hex'),password=randomBytes(32).toString('base64url');let pool:Pool|undefined;
  try{
-  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.pool.query(`GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
+  await f.pool.query(await readFile('db/control-migrations/0006_workforce_monitor.sql','utf8'));await f.pool.query(`REVOKE CREATE,TEMPORARY ON DATABASE ${f.name} FROM PUBLIC`);await f.pool.query(`CREATE ROLE ${role} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS NOREPLICATION PASSWORD '${password}'`);await f.pool.query(`GRANT CONNECT ON DATABASE ${f.name} TO ${role}`);
   const setup=await f.pool.connect();try{await configureMonitorPrincipal(setup,role);}finally{setup.release();}
   const url=new URL(f.connectionUrl);url.username=role;url.password=password;pool=new Pool({connectionString:url.href,max:1,application_name:'owned-monitor-lost-ack'});let sends=0;
-  await expect(processMonitorObservation(pool,role,'unhealthy',true,async()=>{sends++;await f.pool.query("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename=$1 AND datname=$2 AND application_name='owned-monitor-lost-ack'",[role,f.name]);return 'accepted';})).rejects.toThrow();
+  await expect(processMonitorObservation(pool,role,async()=>'unhealthy',true,async()=>{sends++;await f.pool.query("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE usename=$1 AND datname=$2 AND application_name='owned-monitor-lost-ack'",[role,f.name]);return 'accepted';})).rejects.toThrow();
   expect((await f.pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'sending'}]);
-  await processMonitorObservation(pool,role,'unhealthy',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(1);
+  await processMonitorObservation(pool,role,async()=>'unhealthy',true,async()=>{sends++;return 'accepted';});expect(sends).toBe(1);
   expect((await f.pool.query('SELECT status FROM nevora_operations.monitor_notices')).rows).toEqual([{status:'unknown'}]);
  }finally{await pool?.end();await f.pool.query('DROP OWNED BY '+role).catch(()=>{});await f.pool.query('DROP ROLE '+role).catch(()=>{});await f.close();}
 });

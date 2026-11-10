@@ -5,7 +5,7 @@ import {mkdir,lstat,realpath,open,unlink} from 'node:fs/promises';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {performance} from 'node:perf_hooks';
-import {authorizeHealthRequest,managedHealth,managedChildEnvironment,type ManagedHostConfig,type ManagedProfile,type ManagedObservation} from './managed-host';
+import {authorizeHealthRequest,signHealthResponse,managedHealth,managedChildEnvironment,type ManagedHostConfig,type ManagedProfile,type ManagedObservation} from './managed-host';
 import type {WorkerCommand} from './supervisor';
 
 const unavailable=()=>Error('managed_state_unavailable');
@@ -92,5 +92,6 @@ export function managedHttpResponse(request:Request,config:ManagedHostConfig,obs
  if(request.method==='GET'&&url.pathname==='/ready'&&!url.search)return Response.json({ready},{status:ready?200:503,headers});
  if(url.pathname!=='/private/health'||url.search)return Response.json({error:'not_found'},{status:404,headers});
  if(!authorizeHealthRequest(request,config.healthKey,now))return Response.json({error:'unauthorized'},{status:401,headers});
- const report=managedHealth(config,observations,now);return Response.json(report,{status:report.healthy?200:503,headers});
+ const report=managedHealth(config,observations,now),status=report.healthy?200:503,body=JSON.stringify(report);
+ return new Response(body,{status,headers:{...headers,'x-nevora-ops-response':signHealthResponse(config.healthKey,request,status,body)}});
 }

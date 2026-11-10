@@ -16,4 +16,5 @@ it('refuses every extra business, provider or browser capability and accepts onl
  expect(deploymentCapabilitiesAllowed('workforcemonitor',snapshot)).toBe(true);
  for(const field of ['NEVORA_CONTROL_DATABASE_URL','NEVORA_PROVISIONER_API_KEY','NEVORA_COMMERCE_DATABASE_URL','NEVORA_COMMERCE_WORKER_BINDING_KEY','NEVORA_ONBOARDING_TOKEN_ENCRYPTION_KEY','NEVORA_WORKSPACE_TOKEN_SECRET','STRIPE_SECRET_KEY','OPENAI_API_KEY'])expect(deploymentCapabilitiesAllowed('workforcemonitor',{...snapshot,[field]:'fictional'})).toBe(false);
  expect(deploymentCapabilitiesAllowed('workforcemonitor',{...snapshot,NEVORA_OPERATIONS_MONITOR_DATABASE_URL:'postgresql://owner:fictional@ep-fictional.neon.tech/control?sslmode=verify-full'})).toBe(false);
+ expect(deploymentCapabilitiesAllowed('workforcemonitor',{...snapshot,NEVORA_OPERATIONS_MONITOR_DATABASE_URL:'postgresql://nv_ops_monitor_0123456789abcdef01234567:fictional@ep-fictional-pooler.neon.tech/control?sslmode=verify-full'})).toBe(false);
 });
