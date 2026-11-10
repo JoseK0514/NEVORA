@@ -2,6 +2,7 @@ import {mobileAccessEnabled} from "@/components/mobile-access/config.server";
 import {AccessJourneyProvider} from "@/components/mobile-access/journey";
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import {DocumentAppearanceScripts} from "./document-appearance-scripts";
 import { NUVORA_BRAND } from "../lib/brand";
 import { THEME_SCRIPT } from "../lib/theme";
 import "../components/signature/tokens.css";
@@ -37,9 +38,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <head>
         {/* P3-ST-20: loading placeholders grow with the reader's text size like the pages they stand in for. This tells CSS the
             text scale (root font size ÷ 16) and its nearest measured step (100, 125, 150 or 200%) before first paint, and again whenever the text size changes. Nothing else. */}
-        <script dangerouslySetInnerHTML={{ __html: TEXT_SCALE_SCRIPT }} />
         {/* Appearance: light or dark from the choice in Profile and the device setting, set before first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <DocumentAppearanceScripts textScale={TEXT_SCALE_SCRIPT} theme={THEME_SCRIPT} />
       </head>
       <body>{mobileAccessEnabled() ? <AccessJourneyProvider>{children}</AccessJourneyProvider> : children}</body>
     </html>
