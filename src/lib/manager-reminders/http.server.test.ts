@@ -9,7 +9,7 @@ function request(headers:Record<string,string>={},body:unknown={kind:'COMMUNICAT
 beforeEach(()=>{vi.resetAllMocks();mocks.session.mockResolvedValue({id:'owner',role:'OWNER'});mocks.proof.mockResolvedValue({employee:{id:'owner',role:'OWNER'}});mocks.enabled.mockResolvedValue(true);mocks.execute.mockResolvedValue({status:'committed',notificationId:'notification'});});
 it('returns private committed queue results for management only',async()=>{const r=await managerReminderHttp(request());expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store, private');expect(await r.json()).toMatchObject({notificationId:'notification'});});
 it('rejects cross-site, replacement authority, employee role and disabled updates before command',async()=>{
- for(const headers of [{origin:'https://other.invalid'},{'x-nevora-reminder-authority':'b'.repeat(64)},{'sec-fetch-site':'cross-site'}])expect((await managerReminderHttp(request(headers))).status).toBe(403);
+ for(const headers of [{origin:'https://other.invalid'},{'x-nevora-reminder-authority':'b'.repeat(64)},{'sec-fetch-site':'cross-site'}] as Record<string,string>[])expect((await managerReminderHttp(request(headers))).status).toBe(403);
  mocks.enabled.mockResolvedValue(false);expect((await managerReminderHttp(request())).status).toBe(404);
  mocks.enabled.mockResolvedValue(true);mocks.session.mockResolvedValue({id:'employee',role:'EMPLOYEE'});expect((await managerReminderHttp(request())).status).toBe(403);expect(mocks.execute).not.toHaveBeenCalled();
 });
