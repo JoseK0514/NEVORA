@@ -272,3 +272,13 @@ it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: final s
  const revoked:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{if(statements.some(s=>s.text.includes('AS "expiresAt"')))await q("DELETE FROM employee_sessions WHERE employee_id='owner'");return db.executor.transaction(statements,signal);}};
  expect(await executeManagerReminder(owner,{...c,operationId:randomUUID()},revoked)).toMatchObject({status:'blocked'});
 });
+it.each(['AVAILABILITY','COMMUNICATION'] as const)('manager %s reminder: session expiry inside queue work rolls back queue and audit',async kind=>{
+ const c=await managerReminderFixture(kind);await q("CREATE FUNCTION fixture_reminder_delay() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN PERFORM pg_sleep(0.3); RETURN NEW; END $$; CREATE TRIGGER fixture_reminder_delay BEFORE INSERT ON notifications FOR EACH ROW WHEN (NEW.purpose='REMINDER') EXECUTE FUNCTION fixture_reminder_delay()");
+ const expiring:SqlExecutor={...db.executor,transaction:async(statements,signal)=>{
+  if(statements.some(s=>s.text.includes("'manager-reminder-operation:'")))await q("UPDATE employee_sessions SET expires_at=clock_timestamp()+interval '200 milliseconds' WHERE employee_id='owner'");
+  return db.executor.transaction(statements,signal);
+ }};
+ expect(await executeManagerReminder(owner,c,expiring)).toMatchObject({status:'blocked'});
+ expect(await q("SELECT * FROM notifications WHERE purpose='REMINDER'")).toEqual([]);
+ expect(await q("SELECT * FROM employee_attention_operations WHERE result->>'kind'='MANAGER_REMINDER'")).toEqual([]);
+});
