@@ -8,7 +8,7 @@ Use `ops/workforce/render.workforce.yaml` in Jose's selected Render workspace `t
 
 The build refuses dirty source and compiles its Git SHA into the host. Runtime requires that SHA to equal Render's documented `RENDER_GIT_COMMIT`. An optional `NEVORA_WORKFORCE_SOURCE_SHA` must also match. The monitor ZIP independently embeds its own clean SHA and checks both source labels; deploy matching host/monitor builds as one reviewed candidate. The closed host can answer `/ready` without a database or any secret. This proves process readiness only.
 
-Alert destination is **support@thevelani.com**. A staffed responder and response target have not been confirmed. Jose remains the release decision maker; do not describe that address as a staffed on-call service until ownership is assigned.
+Alert destination is **support@thevelani.com**. Jose is the initial responder and release decision maker. Mailbox access, backup coverage and a response target remain unverified/unassigned; do not describe the address as a staffed on-call service. Use the [renewal/on-call handoff](../../docs/runbooks/renewal-and-on-call.md) and [finite staging acceptance packet](../../docs/runbooks/web-notification-acceptance.md) before unattended activation.
 
 ## Credentials and profiles
 
@@ -51,6 +51,8 @@ The journal requires a **direct, unpooled** Neon hostname with verify-full TLS; 
 One session advisory lock serializes observations through each bounded send. The journal commits sending intent before SMTP. Repeated outages do not generate repeated notices; each incident has at most an outage and recovery notice, with at most 3 definite-failure attempts per notice and 4 total attempts per UTC day. SMTP or database acknowledgement loss is marked unknown and never automatically resent. Review unknown attempts manually at the approved sink. Do not reset them just to produce another email. Journal rows contain enum states and opaque incident IDs, not employee data, chat content or addresses. Retention/archival policy for this small operations journal remains a production decision; no automatic deletion is installed.
 
 Generic SMTP connection closure, including Nodemailer's `ECONNECTION` with command `CONN`, does not prove non-acceptance: a real sink can already have received the full DATA. Such attempts remain unknown. The retained loopback SMTP/journal regression captures exactly one body and proves no second send after retry eligibility.
+
+The monitor also bounds the whole SMTP acknowledgement wait to 15 seconds. Nodemailer's socket timeout bounds inactivity, so a slow exchange could otherwise keep the session advisory lock indefinitely. Overall deadline expiry is `unknown`, never definite failure: it does not prove transport cancellation, and a late acceptance cannot change the journal or authorize a resend. Owned SQL verifies that the unknown outcome is committed, the observation lock is released and later ticks do not resend the notice.
 
 ## Pause, drain and rollback
 
