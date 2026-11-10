@@ -247,3 +247,24 @@ it('privacy reset cancels a pending verification after the previous identity was
  expect(await verifyEmployeeClockerPin(device!.proof,'4567',key,executor)).toEqual({state:'denied'});
  expect(await q('SELECT employee_id FROM clocker_pin_sessions')).toEqual([]);
 });
+
+it.each([
+ ['device failures',5,240,0,0,0,0,0,0,60],
+ ['workspace failures',0,0,20,150,0,0,0,0,150],
+ ['device rate',0,0,0,0,60,40,0,0,20],
+ ['workspace rate',0,0,0,0,0,0,240,15,45],
+ ['all active windows',5,270,20,190,60,10,240,30,110],
+ ['expired failure and active rate',5,301,0,0,60,20,0,0,40],
+] as const)('returns database remaining seconds for %s without spending another hash budget',async(_name,df,dfAge,wf,wfAge,da,daAge,wa,waAge,seconds)=>{
+ await set();await verify();
+ await q(`UPDATE clocker_pin_limits SET failures=CASE scope WHEN 'DEVICE' THEN $1::int ELSE $3::int END,
+ failure_window=clock_timestamp()-(CASE scope WHEN 'DEVICE' THEN $2::int ELSE $4::int END)*interval '1 second',
+ attempts=CASE scope WHEN 'DEVICE' THEN $5::int ELSE $7::int END,
+ attempt_window=clock_timestamp()-(CASE scope WHEN 'DEVICE' THEN $6::int ELSE $8::int END)*interval '1 second'`,[df,dfAge,wf,wfAge,da,daAge,wa,waAge]);
+ const result=await verify();expect(result.state).toBe('limited');
+ if(result.state!=='limited')throw Error('expected limit');
+ expect(result.retryAfterSeconds).toBeGreaterThanOrEqual(seconds-2);expect(result.retryAfterSeconds).toBeLessThanOrEqual(seconds);
+ expect(await q('SELECT * FROM clocker_pin_sessions')).toEqual([]);
+ const rows=await q<{scope:string;attempts:number}>('SELECT scope,attempts FROM clocker_pin_limits ORDER BY scope');
+ expect(rows).toEqual([{scope:'DEVICE',attempts:da},{scope:'WORKSPACE',attempts:wa}]);
+});

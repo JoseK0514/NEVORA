@@ -67,7 +67,7 @@ export async function verifyEmployeeClockerPin(device:ClockerDeviceWriteProof,pi
  const workspace=await getWorkspace(executor);
  const fingerprint=pinFingerprint(pin,workspace.id,key);
  const reservation=await reservePinAttempt(device,workspace,key,executor);
- if(!reservation)return {state:'limited',retryAfterSeconds:300};
+ if('retryAfterSeconds' in reservation)return {state:'limited',retryAfterSeconds:reservation.retryAfterSeconds};
  const [row]=await executor.query<PinRow>(s(`SELECT p.employee_id AS "employeeId",p.pin_hash AS "pinHash",p.version,
    e.updated_at::text AS "employeeUpdatedAt",e.active AND EXISTS(SELECT 1 FROM employee_location_eligibility
    WHERE employee_id=e.id AND location_id=$3) AS eligible

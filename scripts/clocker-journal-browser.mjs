@@ -28,12 +28,28 @@ try{for(const [name,type] of Object.entries({chromium,webkit})){
    const next={...p,subject:'d'.repeat(64)},key='nevora.clocker.pending.v2:2:'+next.subject;sessionStorage.setItem(key,JSON.stringify(next));sessionStorage.setItem('nevora.clocker.pending.v1:2','corrupt');
    const j=await ClockerJournal.openClockerJournal();const migrated=await j.read('2',next.subject),preserved=sessionStorage.getItem('nevora.clocker.pending.v1:2'),removed=sessionStorage.getItem(key);await j.resolveExact('2',next,'recorded');const refs=await j.references('2'),cleared=await j.read('2',next.subject);j.close();return {migrated,preserved,removed,refs,cleared};
   },pending);assert.equal(migration.preserved,'corrupt');assert.equal(migration.removed,null);assert.equal(migration.cleared,null);assert.ok(migration.refs.some(r=>r.commandId===pending.command.commandId));assert.ok(migration.refs.some(r=>r.commandId===null));checks+=3;
+  const scoped=await page.evaluate(async p=>{
+   const j=await ClockerJournal.openClockerJournal(),location='subject-privacy';
+   const own={...p,subject:'1'.repeat(64)},other={...p,subject:'2'.repeat(64),command:{...p.command,commandId:'22222222-2222-4222-8222-222222222222'}};
+   const ownHistory={...own,command:{...p.command,commandId:'33333333-3333-4333-8333-333333333333'}},otherHistory={...other,command:{...p.command,commandId:'44444444-4444-4444-8444-444444444444'}};
+   await j.saveExact(location,ownHistory);await j.resolveExact(location,ownHistory,'recorded');
+   await j.saveExact(location,otherHistory);await j.resolveExact(location,otherHistory,'reviewed-context');
+   await j.saveExact(location,own);await j.saveExact(location,other);
+   await j.saveExact('different-location',own);
+   sessionStorage.setItem('nevora.clocker.pending.v1:'+location,'corrupt');
+   const selected=await j.references(location,own.subject),all=await j.references(location);
+   let invalidRejected=false;try{await j.references(location,'not-a-subject');}catch{invalidRejected=true;}
+   j.close();return {selected,all,invalidRejected};
+  },pending);
+  assert.deepEqual(scoped.selected,{references:[{commandId:pending.command.commandId,action:'CLOCK_IN'},{commandId:'33333333-3333-4333-8333-333333333333',action:'CLOCK_IN'}],otherCount:3});
+  assert.equal(scoped.all.length,5,'Owner overload retains every reference and unreadable recovery record');
+  assert.equal(scoped.invalidRejected,true);checks+=3;
   // A failed write cannot replace an unresolved intent, nor dispatch a command.
   const blocked=await page.evaluate(async p=>{let sent=0;const j=await ClockerJournal.openClockerJournal();try{await j.saveExact('2',{...p,command:{...p.command,commandId:'44444444-4444-4444-8444-444444444444'}});sent++;}catch{}finally{j.close();}return sent;},pending);assert.equal(blocked,0);checks++;
   const tombstone=await page.evaluate(async p=>{const old={...p,subject:'d'.repeat(64)},key='nevora.clocker.pending.v2:2:'+old.subject;sessionStorage.setItem(key,JSON.stringify(old));const j=await ClockerJournal.openClockerJournal();const r=await j.read('2',old.subject);j.close();return r;},pending);assert.equal(tombstone,null,'a second tab cannot resurrect a resolved legacy command');checks++;
   const quota=await page.evaluate(async p=>{const j=await ClockerJournal.openClockerJournal(),original=IDBObjectStore.prototype.put;let sent=0,rejected=false;IDBObjectStore.prototype.put=function(){throw new DOMException('Owned quota failure','QuotaExceededError');};try{await j.saveExact('quota',p);sent++;}catch{rejected=true;}finally{IDBObjectStore.prototype.put=original;}const result=await j.read('quota',p.subject);j.close();return {sent,rejected,result};},pending);assert.deepEqual(quota,{sent:0,rejected:true,result:null});checks++;
   const blockedOpen=await page.evaluate(async()=>{const held=await new Promise((resolve,reject)=>{const r=indexedDB.open('owned-blocked',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});let rejected=false;try{await ClockerJournal.openClockerJournal({open:()=>indexedDB.open('owned-blocked',2)},sessionStorage);}catch{rejected=true;}finally{held.close();}return rejected;});assert.equal(blockedOpen,true);checks++;
-  await context.close();console.log(`${name}: 12 journal checks passed`);
+  await context.close();console.log(`${name}: 15 journal checks passed`);
  }finally{await browser.close();}
 }}finally{await new Promise(resolve=>server.close(resolve));}
 console.log(`PASS: ${checks} journal checks across Chromium and WebKit.`);

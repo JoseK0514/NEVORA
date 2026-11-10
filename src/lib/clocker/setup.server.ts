@@ -1,3 +1,4 @@
+import type {ClockerTransportErrorCode} from './transport-errors';
 import {privateWorkspaceToken} from '../workspace-routing/token-envelope.server';
 import 'server-only';
 import { randomBytes } from 'node:crypto';
@@ -12,7 +13,7 @@ export type ClockerCookieStore = {
   }): void;
 };
 export type ClockerSecurity = { production: boolean; origin?: string };
-type Failure = { status: number; error: string };
+type Failure = { status: number; code: ClockerTransportErrorCode; error: string };
 const SETUP_LIFETIME = 600;
 const DEVICE_LIFETIME = 365 * 86400;
 const MAX_BODY_BYTES = 2048;
@@ -38,9 +39,9 @@ export function clockerOriginFailure(headers: Headers, security: ClockerSecurity
       allowed = new URL(`http://${host}`);
       if (!['127.0.0.1', 'localhost', '[::1]'].includes(allowed.hostname) || allowed.host !== host) throw Error();
     }
-  } catch { return { status: 503, error: 'Clocker setup is not configured for this environment.' }; }
+  } catch { return { status: 503, code: 'SETUP_UNAVAILABLE', error: 'Clocker setup is not configured for this environment.' }; }
   if (headers.get('origin') !== allowed.origin || headers.get('sec-fetch-site') === 'cross-site') {
-    return { status: 403, error: 'Open Clocker directly on this site and try again.' };
+    return { status: 403, code: 'ORIGIN_REJECTED', error: 'Open Clocker directly on this site and try again.' };
   }
   return null;
 }
@@ -49,7 +50,7 @@ function response(body: object, status = 200) {
     'Cache-Control': 'no-store, private', 'Referrer-Policy': 'no-referrer', 'X-Content-Type-Options': 'nosniff',
   } });
 }
-function failure(result: Failure) { return response({ error: result.error }, result.status); }
+function failure(result: Failure) { return response({ code: result.code, error: result.error }, result.status); }
 function validCredential(value: unknown): value is string {
   return typeof value === 'string' && /^nev_dev_[a-f0-9]{64}$/.test(value);
 }
@@ -91,14 +92,14 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
   if (originError) return failure(originError);
   if (request.method !== 'POST' || request.headers.get('x-nevora-clocker') !== '1' ||
       request.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
-    return failure({ status: 403, error: 'Open Clocker directly on this site and try again.' });
+    return failure({ status: 403, code: 'ORIGIN_REJECTED', error: 'Open Clocker directly on this site and try again.' });
   }
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey) || locationKey.length > 64) {
-    return failure({ status: 400, error: 'Choose a valid Clocker location.' });
+    return failure({ status: 400, code: 'LOCATION_INVALID', error: 'Choose a valid Clocker location.' });
   }
   let input: SetupInput;
   try { input = await readInput(request); }
-  catch { return failure({ status: 400, error: 'Check the setup code and try again.' }); }
+  catch { return failure({ status: 400, code: 'SETUP_INPUT_INVALID', error: 'Check the setup code and try again.' }); }
   const names = clockerCookieNames(deps.security.production);
   const options = (maxAge: number) => ({ httpOnly: true, secure: deps.security.production, sameSite: 'strict' as const, path: '/', maxAge });
   const prepared = deps.cookies.get(names.setup)?.value;
@@ -132,7 +133,7 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
       return response({ state: 'prepared' });
     }
     if (!validCredential(prepared)) {
-      return failure({ status: 428, error: 'Allow cookies, then start tablet setup again.' });
+      return failure({ status: 428, code: 'SETUP_COOKIE_REQUIRED', error: 'Allow cookies, then start tablet setup again.' });
     }
     try {
       const result = await redeemClockerEnrollment({
@@ -145,11 +146,11 @@ export async function handleClockerSetup(request: Request, locationKey: string, 
       const recovered = await reconcile();
       if (recovered) return recovered;
       if (error instanceof ClockerDeviceError && ['ENROLLMENT_INVALID', 'OWNER_REQUIRED', 'LOCATION_INVALID'].includes(error.code)) {
-        return failure({ status: 409, error: 'This setup code is expired, already used, or for another location. Ask the Owner for a new code.' });
+        return failure({ status: 409, code: 'ENROLLMENT_INVALID', error: 'This setup code is expired, already used, or for another location. Ask the Owner for a new code.' });
       }
       throw error;
     }
   } catch {
-    return failure({ status: 503, error: 'We could not confirm tablet setup. Check the connection, then choose Check Setup. Do not enter a new code yet.' });
+    return failure({ status: 503, code: 'SETUP_UNCONFIRMED', error: 'We could not confirm tablet setup. Check the connection, then choose Check Setup. Do not enter a new code yet.' });
   }
 }

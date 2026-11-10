@@ -72,7 +72,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
    try{
     const fresh=parseClockView(await postPunch(locationKey,{operation:'state'}));
     if(!current)return;
-    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const refs=await store.references(locationKey);if(!current)return;setReferences(refs);}
+    try{const store=await recoveryJournal();saved=await store.read(locationKey,fresh.subject);const {references:refs}=await store.references(locationKey,fresh.subject);if(!current)return;setReferences(refs);}
     catch{setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');return;}
     setView(fresh);setPending(saved);setMode(saved?'recovery':resumeContinuation(resume,fresh));
    }catch(error){if(current){setPending(saved);failed(error,Boolean(saved));}}
@@ -88,7 +88,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function confirmed(value:unknown,saved:PendingPunch){
   const result=parseReceiptReply(value,saved.command);
   let storageWarning:string|null=null;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,saved,'recorded');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,saved.subject)).references);}
   catch{storageWarning='The action was recorded, but this browser could not clear its recovery data. Check it again after allowing browser storage.';}
   if(alive.current){setReceipt(result);setMessage(storageWarning);setMode('success');}
  }
@@ -152,7 +152,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
  async function reviewCurrent(){
   const proof=reviewProof.current;if(busy.current||mode!=='review-current'||!pending||!view||!proof||proof.commandId!==pending.command.commandId||proof.subject!==view.subject||proof.verificationId!==view.verificationId||!canRetirePendingPunch(pending.command,view))return;
   busy.current=true;
-  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences(await store.references(locationKey));reviewProof.current=null;setMode('ready');setMessage('The earlier reference was kept for review. No action was replayed.');}
+  try{const store=await recoveryJournal();await store.resolveExact(locationKey,pending,'reviewed-context');if(!alive.current)return;setPending(null);setReferences((await store.references(locationKey,pending.subject)).references);reviewProof.current=null;setMode('ready');setMessage('The earlier reference was kept for review. No action was replayed.');}
   catch{if(alive.current){setMode('storage');setMessage('Your recovery record cannot be verified. Keep it saved and ask an Owner to review it.');}}
   finally{busy.current=false;}
  }
@@ -219,7 +219,7 @@ export function ClockerPunchPanel({locationKey,timeZone,onDone,resume,onContinua
   </>:null}
   {mode==='success'&&receipt?<><details className={styles.reference}><summary>{t('Action reference')}</summary><code>{receipt.commandId}</code></details><p role="status" className={styles.saved}>{t("Saved at")}{' '}<time dateTime={receipt.performedAt}>{clockTime(receipt.performedAt,timeZone,locale)}</time>{t(". This screen clears in eight seconds.")}</p><span className={styles.countdown} aria-hidden="true"><i/></span></>:null}
   {mode==='other-person'?<p data-clocker-notice className={styles.notice}>{t("A previous employee’s action needs verification on this tablet. Ask that employee to enter their PIN again. No new action was sent.")}</p>:null}
-  {references.length>0&&!waiting&&mode!=='success'?<ClockerRecoveryHandoff key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null}
+  {references.length>0&&view&&(!pending||pending.subject===view.subject)&&!waiting&&!['success','auth','other-person'].includes(mode)?<ClockerRecoveryHandoff key={pending?.command.commandId??'tablet-assistance'} references={references} locationKey={locationKey} commandId={pending?.command.commandId??null}/>:null}
   {waiting?<p role="status" className={styles.detail}>{t(mode==='sending'?'Keep this screen open while the action is checked.':'Reading the latest saved information.')}</p>:null}
   {waiting?<span className={styles.working} aria-hidden="true"/>:null}
   {message&&mode!=='other-person'?<p role={mode==='ready'||mode==='success'?'status':'alert'} data-clocker-notice className={styles.notice}>{t(message)}</p>:null}

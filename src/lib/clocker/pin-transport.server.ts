@@ -28,16 +28,16 @@ export async function handleClockerPin(request:Request,locationKey:string,deps:{
  cookies:ClockerCookieStore;executor:SqlExecutor;security:ClockerSecurity;key?:Buffer;
 }):Promise<Response>{
  const originError=clockerOriginFailure(request.headers,deps.security);
- if(originError)return json({error:originError.error},originError.status);
- if(request.method!=='POST'||request.headers.get('x-nevora-clocker')!=='1'||request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return json({error:'Open Clocker directly on this site.'},403);
- if(locationKey.length>64||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey))return json({error:'Choose a valid Clocker location.'},400);
- let data:Input;try{data=await input(request);}catch{return json({error:'Enter exactly four PIN digits.'},400);}
+ if(originError)return json({code:originError.code,error:originError.error},originError.status);
+ if(request.method!=='POST'||request.headers.get('x-nevora-clocker')!=='1'||request.headers.get('content-type')?.split(';')[0].trim().toLowerCase()!=='application/json')return json({code:'ORIGIN_REJECTED',error:'Open Clocker directly on this site.'},403);
+ if(locationKey.length>64||!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(locationKey))return json({code:'LOCATION_INVALID',error:'Choose a valid Clocker location.'},400);
+ let data:Input;try{data=await input(request);}catch{return json({code:'PIN_INPUT_INVALID',error:'Enter exactly four PIN digits.'},400);}
  const name=pinCookieName(deps.security.production);
  const options=(maxAge:number)=>({httpOnly:true,secure:deps.security.production,sameSite:'strict' as const,path:'/',maxAge});
  try{
   const credential=deps.cookies.get(clockerCookieNames(deps.security.production).device)?.value??'';
   const device=await authenticateClockerDevice({credential,locationKey},deps.executor);
-  if(!device)return json({state:'device_required',error:'Reconnect this tablet before entering an employee PIN.'},401);
+  if(!device)return json({state:'device_required',code:'DEVICE_REQUIRED',error:'Reconnect this tablet before entering an employee PIN.'},401);
   const token=deps.cookies.get(name)?.value??'';
   if(data.action==='clear'){
    await clearClockerIdentity(device.proof,token,deps.executor);deps.cookies.set(name,'',options(0));return json({state:'idle'});
@@ -50,9 +50,9 @@ export async function handleClockerPin(request:Request,locationKey:string,deps:{
   // Clear the browser proof on any new PIN attempt; never restore stale identity after denial.
   deps.cookies.set(name,'',options(0));
   const result=await verifyEmployeeClockerPin(device.proof,data.pin,key,deps.executor);
-  if(result.state==='denied')return json({state:'denied',error:'PIN not recognized for this location. Try again or ask your manager.'},401);
-  if(result.state==='limited')return json({state:'limited',error:'Too many attempts. Wait a few minutes before trying again.',retryAfterSeconds:result.retryAfterSeconds},429,result.retryAfterSeconds);
+  if(result.state==='denied')return json({state:'denied',code:'PIN_DENIED',error:'PIN not recognized for this location. Try again or ask your manager.'},401);
+  if(result.state==='limited')return json({state:'limited',code:'PIN_LIMITED',error:'Too many attempts. Wait a few minutes before trying again.',retryAfterSeconds:result.retryAfterSeconds},429,result.retryAfterSeconds);
   deps.cookies.set(name,result.token,options(60));
   return json({state:'verified',firstName:result.firstName,expiresAt:result.expiresAt});
- }catch{return json({state:'unavailable',error:'PIN verification is unavailable. Check the connection and try again.'},503);}
+ }catch{return json({state:'unavailable',code:'PIN_UNAVAILABLE',error:'PIN verification is unavailable. Check the connection and try again.'},503);}
 }

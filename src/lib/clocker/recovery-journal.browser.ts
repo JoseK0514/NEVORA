@@ -1,4 +1,4 @@
-import {exactPending,journalKey,legacyRecords,samePending,type ClockerJournal,type LegacyStorage,type JournalReference} from './recovery-journal';
+import {exactPending,journalKey,legacyRecords,samePending,historyReferenceSubject,scopedJournalReferences,type SubjectJournalReferences,type SubjectJournalReference,type ClockerJournal,type LegacyStorage,type JournalReference} from './recovery-journal';
 import type {PendingPunch} from './punch-client';
 const DATABASE='nevora.clocker.recovery',VERSION=1;
 type Slot={key:string;location:string;pending:PendingPunch};
@@ -42,6 +42,25 @@ export async function openClockerJournal(factory:IDBFactory=window.indexedDB,leg
    }catch(error){if(record.pending.subject===subject)throw error;}
   }
  }
+ async function references(location:string):Promise<JournalReference[]>;
+ async function references(location:string,subject:string):Promise<SubjectJournalReferences>;
+ async function references(location:string,subject?:string):Promise<JournalReference[]|SubjectJournalReferences>{
+  if(subject!==undefined)journalKey(location,subject);
+  await migrate(location);const tx=db.transaction(['pending','history'],'readonly'),done=completed(tx);
+  const [slots,history]=await Promise.all([request(tx.objectStore('pending').getAll()) as Promise<Slot[]>,request(tx.objectStore('history').getAll()) as Promise<History[]>]);await done;
+  const entries:SubjectJournalReference[]=slots.filter(slot=>slot.location===location).map(slot=>{
+   try{
+    const p=exactPending(slot.pending);
+    return {subject:slot.key===journalKey(location,p.subject)?p.subject:null,reference:{commandId:p.command.commandId,action:p.command.action}};
+   }catch{return {subject:null,reference:{commandId:null,action:null}};}
+  });
+  entries.push(...history.filter(h=>h.location===location).map(h=>({subject:historyReferenceSubject(h.key,location,h.commandId),reference:{commandId:h.commandId,action:h.action}})),
+   ...legacyRecords(legacy,location).map(r=>({subject:r.pending?.subject??null,reference:{commandId:r.pending?.command.commandId??null,action:r.pending?.command.action??null}})));
+  if(subject!==undefined)return scopedJournalReferences(entries,subject);
+  // Preserve the original all-reference overload for the Owner recovery flow.
+  const refs=entries.map(entry=>entry.reference);
+  return refs.filter((r,i,all)=>r.commandId===null||all.findIndex(x=>x.commandId===r.commandId)===i);
+ }
  return {
   async read(location,subject){journalKey(location,subject);await migrate(location,subject);return readRaw(location,subject);},
   async saveExact(location,value){const p=exactPending(value);await migrate(location,p.subject);await saveRaw(location,p);},
@@ -56,12 +75,6 @@ export async function openClockerJournal(factory:IDBFactory=window.indexedDB,leg
    }catch(error){try{tx.abort();}catch{/* A completed transaction needs no rollback. */}await done.catch(()=>{});throw error;}
    await done;
   },
-  async references(location){
-   await migrate(location);const tx=db.transaction(['pending','history'],'readonly'),done=completed(tx);
-   const [slots,history]=await Promise.all([request(tx.objectStore('pending').getAll()) as Promise<Slot[]>,request(tx.objectStore('history').getAll()) as Promise<History[]>]);await done;
-   const refs:JournalReference[]=slots.filter(s=>s.location===location).map(s=>{try{const p=exactPending(s.pending);return {commandId:p.command.commandId,action:p.command.action};}catch{return {commandId:null,action:null};}});
-   refs.push(...history.filter(h=>h.location===location).map(h=>({commandId:h.commandId,action:h.action})),...legacyRecords(legacy,location).map(r=>({commandId:r.pending?.command.commandId??null,action:r.pending?.command.action??null})));
-   return refs.filter((r,i,all)=>r.commandId===null||all.findIndex(x=>x.commandId===r.commandId)===i);
-  },close(){db.close();},
+  references,close(){db.close();},
  };
 }
