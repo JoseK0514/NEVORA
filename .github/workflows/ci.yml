@@ -49,6 +49,10 @@ jobs:
           npm run test:foundation:qa
           npm run test:release-engineering
       - name: Type check
+        # The cold compiler exhausted the hosted runner's ~2 GiB default heap.
+        # Match the existing build limit without changing any compiler checks.
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
         run: npm run typecheck
       - name: Lint
         run: npm run lint
